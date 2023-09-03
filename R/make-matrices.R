@@ -85,11 +85,11 @@ make_matrix_receivers <- function(.moorings,
   .services <- check_services(.services, .moorings)
 
   #### Process dates, if necessary
-  if (is.null(start)) {
-    start <- min(.moorings$receiver_start, na.rm = TRUE)
+  if (is.null(.start)) {
+    .start <- min(.moorings$receiver_start, na.rm = TRUE)
   }
-  if (is.null(end)) {
-    end <- max(.moorings$receiver_end, na.rm = TRUE)
+  if (is.null(.end)) {
+    .end <- max(.moorings$receiver_end, na.rm = TRUE)
   }
   if (!is.null(.as_POSIXct)) {
     if (!inherits(.moorings$receiver_start, "POSIXct")) {
@@ -98,11 +98,11 @@ make_matrix_receivers <- function(.moorings,
     if (!inherits(.moorings$receiver_end, "POSIXct")) {
       .moorings$receiver_end <- .as_POSIXct(.moorings$receiver_end)
     }
-    if (!inherits(start, "POSIXct")) {
-      start <- .as_POSIXct(start)
+    if (!inherits(.start, "POSIXct")) {
+      .start <- .as_POSIXct(.start)
     }
-    if (!inherits(end, "POSIXct")) {
-      end <- .as_POSIXct(end)
+    if (!inherits(.end, "POSIXct")) {
+      .end <- .as_POSIXct(.end)
     }
     if (!is.null(.services)) {
       if (!inherits(.services$service_start, "POSIXct")) {
@@ -116,7 +116,7 @@ make_matrix_receivers <- function(.moorings,
 
   #### Define time steps over which to consider operations and define operational intervals
   # Define time steps over which to check operational status
-  bin <- seq(start, end, .delta_t)
+  bin <- seq(.start, .end, .delta_t)
   # Define intervals of .moorings deployment
   .moorings$interval <- lubridate::interval(.moorings$receiver_start, .moorings$receiver_end)
   # Define a corresponding list, in the same order as receivers in .moorings, with servicing intervals
