@@ -3,34 +3,31 @@
 \name{check_names}
 \alias{check_names}
 \title{Check the names of an object contain required names}
-\source{
-This function is taken from the `utils.add' package (https://github.com/edwardlavender/utils.add). It is defined separately in \code{\link[flapper:flapper]{flapper::flapper()}} to reduce reliance on non-default packages.
-}
 \usage{
 check_names(
-  arg = deparse(substitute(input)),
   input,
   req,
   extract_names = names,
-  type = any
+  type = all,
+  arg = deparse(substitute(input))
 )
 }
 \arguments{
-\item{arg}{A character string which defines the argument of the parent function.}
-
 \item{input}{An object for which the names need to be checked.}
 
 \item{req}{A character vector of required names.}
 
-\item{extract_names}{A function which is used to extract names from \code{input}, such as \code{\link[base:names]{base::names()}} or \code{\link[base:colnames]{base::colnames()}}.}
+\item{extract_names}{A function that is used to extract names from \code{input}, such as \code{\link[base:names]{base::names()}} or \code{\link[base:colnames]{base::colnames()}}.}
 
-\item{type}{A function which defines the failure criteria. For example, if \code{type = all}, the function will return an error unless all the names in \code{req} are contained within \code{input}. This is the default. If \code{type = any}, the function will return an error only if none of the names in \code{req} are contained within \code{input}.}
+\item{type}{A function that defines the failure criteria. For example, if \code{type = all}, the function will return an error unless all the names in \code{req} are contained within \code{input}. This is the default. If \code{type = any}, the function will return an error only if none of the names in \code{req} are contained within \code{input}.}
+
+\item{arg}{A character string that defines the argument of the parent function.}
 }
 \value{
 If the input fails the check, the function returns a helpful error message. Otherwise, nothing is returned.
 }
 \description{
-This function checks whether required names are contained within an object. If the object does not contain any/all required names (the precise criteria is controlled by the user), the function returns a helpful error message.
+This function checks whether required names are contained within an object. If the object does not contain any/all required names (criteria are controlled by the user), the function returns a helpful error message.
 }
 \author{
 Edward Lavender

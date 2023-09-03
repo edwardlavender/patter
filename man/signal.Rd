@@ -16,14 +16,20 @@ abort(...)
 \arguments{
 \item{...}{Arguments passed to \code{\link[glue:glue]{glue::glue()}}.}
 }
+\value{
+Returned values follow parent functions.
+}
 \description{
 These functions are wrappers for \code{\link[=message]{message()}}, \code{\link[=warning]{warning()}} and \code{\link[=stop]{stop()}}.
 }
 \details{
 \itemize{
-\item \code{\link[=msg]{msg()}} is a wrapper for \code{\link[=message]{message()}};
+\item \code{\link[=msg]{msg()}} is a \code{\link[=message]{message()}} wrapper;
 \item \code{\link[=warn]{warn()}} is a \code{\link[=warning]{warning()}} wrapper for immediate, clean warnings;
 \item \code{\link[=abort]{abort()}} is a \code{\link[=stop]{stop()}} wrapper for clean errors;
 }
+}
+\author{
+Edward Lavender
 }
 \keyword{internal}

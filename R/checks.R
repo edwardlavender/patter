@@ -14,20 +14,20 @@ check_inherits <- function(x, class) {
 
 
 #' @title Check the names of an object contain required names
-#' @description This function checks whether required names are contained within an object. If the object does not contain any/all required names (the precise criteria is controlled by the user), the function returns a helpful error message.
-#' @param arg A character string which defines the argument of the parent function.
+#' @description This function checks whether required names are contained within an object. If the object does not contain any/all required names (criteria are controlled by the user), the function returns a helpful error message.
+#' @param arg A character string that defines the argument of the parent function.
 #' @param input An object for which the names need to be checked.
 #' @param req A character vector of required names.
-#' @param extract_names A function which is used to extract names from `input`, such as [base::names()] or [base::colnames()].
-#' @param type A function which defines the failure criteria. For example, if `type = all`, the function will return an error unless all the names in `req` are contained within `input`. This is the default. If `type = any`, the function will return an error only if none of the names in `req` are contained within `input`.
+#' @param extract_names A function that is used to extract names from `input`, such as [base::names()] or [base::colnames()].
+#' @param type A function that defines the failure criteria. For example, if `type = all`, the function will return an error unless all the names in `req` are contained within `input`. This is the default. If `type = any`, the function will return an error only if none of the names in `req` are contained within `input`.
 #' @return If the input fails the check, the function returns a helpful error message. Otherwise, nothing is returned.
 #'
-#' @source This function is taken from the `utils.add' package (https://github.com/edwardlavender/utils.add). It is defined separately in [flapper::flapper()] to reduce reliance on non-default packages.
 #' @author Edward Lavender
 #' @keywords internal
 #'
 
-check_names <- function(arg = deparse(substitute(input)), input, req, extract_names = names, type = any) {
+check_names <- function(input, req, extract_names = names, type = all,
+                        arg = deparse(substitute(input))) {
   input_names <- extract_names(input)
   if (!type(req %in% input_names)) {
     req_names_missing <- req[which(!(req %in% input_names))]
@@ -44,8 +44,10 @@ check_names <- function(arg = deparse(substitute(input)), input, req, extract_na
 
 #' @title Check input datasets
 #' @description These functions check input datasets.
-#' @param acoustics A data.table.
-#' @param archival A data.table or `NULL`.
+#' @param .moorings,.services,.acoustics,.archival User inputs. `NULL` inputs are allowed for `.services` and `.archival`.
+#' @return The functions invisibly return the inputted object if all checks are passed, with the following adjustments:
+#' * `.moorings$receiver_id` is silently coerced to an integer if numeric;
+#' @author Edward Lavender
 #' @name check_data
 NULL
 
@@ -63,12 +65,12 @@ check_moorings <- function(.moorings) {
   }
   check_inherits(.moorings$receiver_id, "integer")
   if (any(.moorings$receiver_id <= 0)) {
-    stop("Argument 'xy$receiver_id' cannot contain receiver IDs <= 0.")
+    abort("Argument 'xy$receiver_id' cannot contain receiver IDs <= 0.")
   }
   if (any(duplicated(.moorings$receiver_id))) {
-    stop("Argument '.moorings$receiver_id' contains duplicate elements.")
+    abort("Argument '.moorings$receiver_id' contains duplicate elements.")
   }
-  .moorings
+  invisible(.moorings)
 }
 
 #' @rdname check_data
@@ -87,7 +89,7 @@ check_services <- function(.services, .moorings) {
       warn("Not all receivers in .services$receiver_id are in .moorings$receiver_id.")
     }
   }
-  .services
+  invisible(.services)
 }
 
 #' @rdname check_data
@@ -100,6 +102,7 @@ check_acoustics <- function(.acoustics) {
   # TO DO
   # Check sorted
   # TO DO
+  invisible(.acoustics)
 }
 
 #' @rdname check_data
@@ -114,4 +117,5 @@ check_archival <- function(.archival) {
     # Check sorted
     # TO DO
   }
+  invisible(.archival)
 }

@@ -17,11 +17,18 @@ check_acoustics(.acoustics)
 check_archival(.archival)
 }
 \arguments{
-\item{acoustics}{A data.table.}
-
-\item{archival}{A data.table or \code{NULL}.}
+\item{.moorings, .services, .acoustics, .archival}{User inputs. \code{NULL} inputs are allowed for \code{.services} and \code{.archival}.}
+}
+\value{
+The functions invisibly return the inputted object if all checks are passed, with the following adjustments:
+\itemize{
+\item \code{.moorings$receiver_id} is silently coerced to an integer if numeric;
+}
 }
 \description{
 These functions check input datasets.
+}
+\author{
+Edward Lavender
 }
 \keyword{internal}

@@ -2,9 +2,14 @@
 #' @description These functions are wrappers for [`message()`], [`warning()`] and [`stop()`].
 #' @param ... Arguments passed to [`glue::glue()`].
 #' @details
-#' * [`msg()`] is a wrapper for [`message()`];
+#' * [`msg()`] is a [`message()`] wrapper;
 #' * [`warn()`] is a [`warning()`] wrapper for immediate, clean warnings;
 #' * [`abort()`] is a [`stop()`] wrapper for clean errors;
+#'
+#' @return Returned values follow parent functions.
+#'
+#' @author Edward Lavender
+#'
 #' @name signal
 
 #' @rdname signal
