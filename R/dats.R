@@ -48,4 +48,23 @@
 #' @references Data collection and processing are described in Lavender (2022). Modelling the movements of flapper skate (*Dipturus intermedius*) in relation to a Scottish Marine Protected Area. University of St Andrews. https://www.doi.org/10.17630/sta/201
 "dat_archival"
 
+#' @title The bathymetry around the MEFS Firth of Lorn acoustic array
+#' @description A dataset of the bathymetry (m) in an area around a subset of acoustic receivers set up by the Movement Ecology of Flapper Skate (MEFS) project in the Firth of Lorn, off the west coast of Scotland. Bathymetry data are provided by the General Bathymetric Chart of the Oceans (GEBCO).
+#'
+#' @format A \code{\link[terra]{SpatRaster}} with 264, rows, 190 columns and 1 layer, with the following properties:
+#' \describe{
+#'   * dimensions---264, 190, 1 (nrow, ncol, nlyr)
+#'   * resolution---100, 100  (x, y)
+#'   * extent---695492.1, 714492.1, 6246657, 6273057  (xmin, xmax, ymin, ymax)
+#'   * coord. ref.---WGS 84 / UTM zone 29N (EPSG:32629)
+#' }
+#'
+#' @source GEBCO Compilation Group (2019) GEBCO 2019 Grid (doi:10.5285/836f016a-33be-6ddc-e053-6c86abc0788e)
+#' @export
+
+dat_gebco <- function() {
+  terra::rast(system.file("extdata", "dat_gebco.tif", package = "patter", mustWork = TRUE))
+}
+
+
 
