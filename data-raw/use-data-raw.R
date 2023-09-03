@@ -1,0 +1,83 @@
+#########################
+#########################
+#### prepare-data-raw.R
+
+#### Aims
+# 1) Prepare raw data
+
+#### Prerequisites
+# 1) NA
+
+
+#########################
+#########################
+#### Set up
+
+#### Wipe workspace
+rm(list = ls())
+try(pacman::p_unload("all"), silent = TRUE)
+dv::clear()
+
+#### Essential packages
+library(data.table)
+library(dplyr)
+library(sf)
+
+
+#########################
+#########################
+#### Prepare observations
+
+#### Moorings data
+# Define base dase
+dat_moorings <- flapper::dat_moorings
+# Define UTM coordinates
+rxy <-
+  dat_moorings |>
+  st_as_sf(coords = c("receiver_long", "receiver_lat"), crs = 4326) |>
+  st_transform(32629) |>
+  st_coordinates()
+# Define clean dataframe
+dat_moorings <-
+  dat_moorings |>
+  mutate(receiver_id = receiver_id,
+         receiver_start = receiver_start_date,
+         receiver_end =  receiver_end_date,
+         receiver_lat = receiver_lat,
+         receiver_lon = receiver_long,
+         receiver_easting = rxy[, 1],
+         receiver_northing = rxy[, 2]
+         ) |>
+  select(receiver_id,
+         receiver_start, receiver_end,
+         receiver_lat, receiver_lon,
+         receiver_easting, receiver_northing) |>
+  as.data.table() |> str()
+
+#### Acoustic data
+dat_acoustics <-
+  flapper::dat_acoustics |>
+  select(individual_id, timestamp, receiver_id) |>
+  arrange(individual_id, timestamp, receiver_id) |>
+  as.data.table()
+
+#### Archival data
+dat_archival <-
+  flapper::dat_archival |>
+  select(individual_id, timestamp, depth) |>
+  arrange(individual_id, timestamp, depth) |>
+  as.data.table()
+
+
+#########################
+#########################
+#### Update package
+
+usethis::use_data(dat_moorings)
+usethis::use_data(dat_acoustics)
+usethis::use_data(dat_archival)
+
+
+#### End of code.
+#########################
+#########################
