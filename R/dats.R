@@ -24,7 +24,7 @@
 #' @format A dataframe with 39,242 observations and 9 variables:
 #' \describe{
 #'   * `individual_id`---a unique identifier of the individual that was detected.
-#'   * `timestamp`---a `POSIXct` object that defines the time of each observation.}
+#'   * `timestamp`---a `POSIXct` object that defines the time of each observation.
 #'   * `receiver_id`---a unique identifier of the receiver at which the individual was detected (see [`dat_moorings`]).
 #' }
 #'

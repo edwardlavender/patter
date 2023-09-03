@@ -9,7 +9,7 @@ A dataframe with 39,242 observations and 9 variables:
 \describe{
 \itemize{
 \item \code{individual_id}---a unique identifier of the individual that was detected.
-\item \code{timestamp}---a \code{POSIXct} object that defines the time of each observation.}
+\item \code{timestamp}---a \code{POSIXct} object that defines the time of each observation.
 \item \code{receiver_id}---a unique identifier of the receiver at which the individual was detected (see \code{\link{dat_moorings}}).
 }
 }
