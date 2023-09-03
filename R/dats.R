@@ -51,7 +51,7 @@
 #' @title The bathymetry around the MEFS Firth of Lorn acoustic array
 #' @description A dataset of the bathymetry (m) in an area around a subset of acoustic receivers set up by the Movement Ecology of Flapper Skate (MEFS) project in the Firth of Lorn, off the west coast of Scotland. Bathymetry data are provided by the General Bathymetric Chart of the Oceans (GEBCO).
 #'
-#' @format A \code{\link[terra]{SpatRaster}} with 264, rows, 190 columns and 1 layer, with the following properties:
+#' @format A [terra::SpatRaster()] with 264, rows, 190 columns and 1 layer, with the following properties:
 #' \describe{
 #'   * dimensions---264, 190, 1 (nrow, ncol, nlyr)
 #'   * resolution---100, 100  (x, y)

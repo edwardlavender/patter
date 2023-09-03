@@ -3,11 +3,14 @@
 \name{check_data}
 \alias{check_data}
 \alias{check_moorings}
+\alias{check_services}
 \alias{check_acoustics}
 \alias{check_archival}
 \title{Check input datasets}
 \usage{
 check_moorings(.moorings)
+
+check_services(.services, .moorings)
 
 check_acoustics(.acoustics)
 

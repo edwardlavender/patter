@@ -18,11 +18,11 @@ check_inherits <- function(x, class) {
 #' @param arg A character string which defines the argument of the parent function.
 #' @param input An object for which the names need to be checked.
 #' @param req A character vector of required names.
-#' @param extract_names A function which is used to extract names from \code{input}, such as \code{\link[base]{names}} or \code{\link[base]{colnames}}.
-#' @param type A function which defines the failure criteria. For example, if \code{type = all}, the function will return an error unless all the names in \code{req} are contained within \code{input}. This is the default. If \code{type = any}, the function will return an error only if none of the names in \code{req} are contained within \code{input}.
+#' @param extract_names A function which is used to extract names from `input`, such as [base::names()] or [base::colnames()].
+#' @param type A function which defines the failure criteria. For example, if `type = all`, the function will return an error unless all the names in `req` are contained within `input`. This is the default. If `type = any`, the function will return an error only if none of the names in `req` are contained within `input`.
 #' @return If the input fails the check, the function returns a helpful error message. Otherwise, nothing is returned.
 #'
-#' @source This function is taken from the `utils.add' package (https://github.com/edwardlavender/utils.add). It is defined separately in \code{\link[flapper]{flapper}} to reduce reliance on non-default packages.
+#' @source This function is taken from the `utils.add' package (https://github.com/edwardlavender/utils.add). It is defined separately in [flapper::flapper()] to reduce reliance on non-default packages.
 #' @author Edward Lavender
 #' @keywords internal
 #'
@@ -53,12 +53,41 @@ NULL
 #' @keywords internal
 
 check_moorings <- function(.moorings) {
-  # Check columns
   check_inherits(.moorings, "data.table")
   check_names(
     input = .moorings, req = c("receiver_id", "receiver_start", "receiver_end"),
     extract_names = colnames, type = all
   )
+  if (is.numeric(.moorings$receiver_id)) {
+    .moorings$receiver_id <- as.integer(.moorings$receiver_id)
+  }
+  check_inherits(.moorings$receiver_id, "integer")
+  if (any(.moorings$receiver_id <= 0)) {
+    stop("Argument 'xy$receiver_id' cannot contain receiver IDs <= 0.")
+  }
+  if (any(duplicated(.moorings$receiver_id))) {
+    stop("Argument '.moorings$receiver_id' contains duplicate elements.")
+  }
+  .moorings
+}
+
+#' @rdname check_data
+#' @keywords internal
+
+check_services <- function(.services, .moorings) {
+  if (!is.null(.services)) {
+    check_names(
+      input = .services, req = c("receiver_id", "service_start", "service_end"),
+      extract_names = colnames, type = all)
+    if (is.numeric(.services$receiver_id)) {
+      .services$receiver_id <- as.integer(.services$receiver_id)
+    }
+    check_inherits(.services$receiver_id, "integer")
+    if (!all(unique(.services$receiver_id) %in% unique(.moorings$receiver_id))) {
+      warn("Not all receivers in .services$receiver_id are in .moorings$receiver_id.")
+    }
+  }
+  .services
 }
 
 #' @rdname check_data

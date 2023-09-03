@@ -4,7 +4,7 @@
 \alias{dat_gebco}
 \title{The bathymetry around the MEFS Firth of Lorn acoustic array}
 \format{
-A \code{\link[terra]{SpatRaster}} with 264, rows, 190 columns and 1 layer, with the following properties:
+A \code{\link[terra:SpatRaster-class]{terra::SpatRaster()}} with 264, rows, 190 columns and 1 layer, with the following properties:
 \describe{
 \itemize{
 \item dimensions---264, 190, 1 (nrow, ncol, nlyr)

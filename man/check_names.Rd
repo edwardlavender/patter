@@ -4,7 +4,7 @@
 \alias{check_names}
 \title{Check the names of an object contain required names}
 \source{
-This function is taken from the `utils.add' package (https://github.com/edwardlavender/utils.add). It is defined separately in \code{\link[flapper]{flapper}} to reduce reliance on non-default packages.
+This function is taken from the `utils.add' package (https://github.com/edwardlavender/utils.add). It is defined separately in \code{\link[flapper:flapper]{flapper::flapper()}} to reduce reliance on non-default packages.
 }
 \usage{
 check_names(
@@ -22,7 +22,7 @@ check_names(
 
 \item{req}{A character vector of required names.}
 
-\item{extract_names}{A function which is used to extract names from \code{input}, such as \code{\link[base]{names}} or \code{\link[base]{colnames}}.}
+\item{extract_names}{A function which is used to extract names from \code{input}, such as \code{\link[base:names]{base::names()}} or \code{\link[base:colnames]{base::colnames()}}.}
 
 \item{type}{A function which defines the failure criteria. For example, if \code{type = all}, the function will return an error unless all the names in \code{req} are contained within \code{input}. This is the default. If \code{type = any}, the function will return an error only if none of the names in \code{req} are contained within \code{input}.}
 }
