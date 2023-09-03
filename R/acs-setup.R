@@ -88,3 +88,58 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
 
 }
 
+
+#' @title Set up detection containers
+#' @description This function defines receiver detection containers.
+#' @param .grid A [`SpatRaster`].
+#' @param .moorings A [`data.table`]
+#'
+#' @details Details
+#'
+#' @return The function returns a named list.
+#'
+#' @examples
+#' # Define grid
+#' grid <- dat_gebco()
+#' terra::plot(grid)
+#' # Define receiver detection ranges
+#' dat_moorings$receiver_range <- 500
+#' # Define detection containers
+#' containers <- acs_setup_detection_containers(grid, dat_moorings)
+#' # Visualise an example container
+#' terra::plot(containers[[dat_moorings$receiver_id[1]]])
+#' points(dat_moorings$receiver_easting[1], dat_moorings$receiver_northing[1])
+#'
+#' @author Edward Lavender
+#' @export
+
+acs_setup_detection_containers <- function(.grid, .moorings) {
+
+  # TO DO
+  # Add checks
+  # grid can contain NAs
+  # moorings should be data.table contain required columns (receiver_id, receiver_easting, receiver_northing, receiver_range)
+  # receiver_ids should be integer from 1 to n
+  # receiver-specific ranges permitted
+  # For time-step specific ranges, these are computed on the fly in ac()
+
+  rs <- seq_len(max(.moorings$receiver_id))
+  containers <-
+    pbapply::pblapply(rs, function(id) {
+      out <- NULL
+      bool <- .moorings$receiver_id == id
+      if (any(bool)) {
+        d <- .moorings[which(bool), ]
+        g   <- terra::setValues(.grid, NA)
+        rxy <- matrix(c(d$receiver_easting, d$receiver_northing), ncol = 2)
+        g[terra::cellFromXY(g, rxy)] <- 1
+        # terra::plot(g)
+        out <- terra::buffer(g, d$receiver_range)
+        out <- (terra::mask(out, .grid)) + 0
+        # terra::plot(out)
+      }
+      out
+    })
+  names(containers) <- rs
+  containers
+}

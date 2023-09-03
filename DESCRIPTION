@@ -12,8 +12,9 @@ Imports:
     dtplyr,
     glue, 
     lubridate,
-    terra, 
-    rlang
+    pbapply,
+    rlang, 
+    terra
 Suggests: 
     testthat (>= 3.0.0)
 Depends: R (>= 4.0)
