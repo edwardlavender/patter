@@ -2,24 +2,24 @@
 % Please edit documentation in R/dats.R
 \name{dat_gebco}
 \alias{dat_gebco}
-\title{The bathymetry around the MEFS Firth of Lorn acoustic array}
-\format{
-A \code{\link[terra:SpatRaster-class]{terra::SpatRaster()}} with 264, rows, 190 columns and 1 layer, with the following properties:
-\describe{
-\itemize{
-\item dimensions---264, 190, 1 (nrow, ncol, nlyr)
-\item resolution---100, 100  (x, y)
-\item extent---695492.1, 714492.1, 6246657, 6273057  (xmin, xmax, ymin, ymax)
-\item coord. ref.---WGS 84 / UTM zone 29N (EPSG:32629)
-}
-}
-}
+\title{A bathymetry dataset}
 \source{
-GEBCO Compilation Group (2019) GEBCO 2019 Grid (doi:10.5285/836f016a-33be-6ddc-e053-6c86abc0788e)
+Raw data were sourced from GEBCO Compilation Group (2019) GEBCO 2019 Grid (doi:10.5285/836f016a-33be-6ddc-e053-6c86abc0788e)
 }
 \usage{
 dat_gebco()
 }
+\value{
+The function returns a \code{\link{SpatRaster}} with 264, rows, 190 columns and 1 layer, with the following properties:
+\describe{
+\itemize{
+\item \code{dimensions}---264, 190, 1 (nrow, ncol, nlyr)
+\item \code{resolution}---100, 100  (x, y)
+\item \code{extent}---695492.1, 714492.1, 6246657, 6273057  (xmin, xmax, ymin, ymax)
+\item \verb{coord. ref.}---WGS 84 / UTM zone 29N (EPSG:32629)
+}
+}
+}
 \description{
-A dataset of the bathymetry (m) in an area around a subset of acoustic receivers set up by the Movement Ecology of Flapper Skate (MEFS) project in the Firth of Lorn, off the west coast of Scotland. Bathymetry data are provided by the General Bathymetric Chart of the Oceans (GEBCO).
+This function loads a processed bathymetry (m) dataset for the west coast of Scotland.
 }
