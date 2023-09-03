@@ -2,13 +2,16 @@
 % Please edit documentation in R/checks.R
 \name{check_data}
 \alias{check_data}
+\alias{check_moorings}
 \alias{check_acoustics}
 \alias{check_archival}
 \title{Check input datasets}
 \usage{
-check_acoustics(acoustics)
+check_moorings(.moorings)
 
-check_archival(archival)
+check_acoustics(.acoustics)
+
+check_archival(.archival)
 }
 \arguments{
 \item{acoustics}{A data.table.}

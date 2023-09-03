@@ -55,6 +55,10 @@ NULL
 check_moorings <- function(.moorings) {
   # Check columns
   check_inherits(.moorings, "data.table")
+  check_names(
+    input = .moorings, req = c("receiver_id", "receiver_start", "receiver_end"),
+    extract_names = colnames, type = all
+  )
 }
 
 #' @rdname check_data
