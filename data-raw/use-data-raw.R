@@ -26,6 +26,17 @@ library(sf)
 
 #########################
 #########################
+#### Prepare spatial datasets
+
+dat_gebco <- flapper::dat_gebco
+dat_gebco <- terra::rast(dat_gebco)
+blank <- terra::rast(terra::ext(dat_gebco), res = 100)
+dat_gebco <- terra::resample(dat_gebco, blank, method = "bilinear")
+# terra::plot(dat_gebco)
+
+
+#########################
+#########################
 #### Prepare observations
 
 #### Moorings data
@@ -73,9 +84,12 @@ dat_archival <-
 #########################
 #### Update package
 
-usethis::use_data(dat_moorings)
-usethis::use_data(dat_acoustics)
-usethis::use_data(dat_archival)
+overwrite <- TRUE
+terra::writeRaster(dat_gebco, here::here("inst", "extdata", "dat_gebco.tif"))
+usethis::use_data(dat_moorings, overwrite = overwrite)
+usethis::use_data(dat_acoustics, overwrite = overwrite)
+usethis::use_data(dat_archival, overwrite = overwrite)
+
 
 
 #### End of code.
