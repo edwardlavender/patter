@@ -42,6 +42,30 @@ check_names <- function(input, req, extract_names = names, type = all,
 }
 
 
+#' @title Check that a list is named
+#' @description This function checks that the top level of a list is named (ignoring empty lists if requested). If the list is not named, the function returns a helpful error message. Otherwise, the list is returned unchanged. This is particularly useful within functions that use \code{\link[base]{do.call}} to evaluate lists of arguments.
+#' @param arg (optional) A character string which defines the argument of a parent function.
+#' @param input A list.
+#' @param ignore_empty A logical input which defines whether or not to ignore empty lists.
+#' @return The function returns a helpful error message for unnamed lists (ignoring empty lists if requested) or the inputted list unchanged.
+#'
+#' @source This function is taken from the `utils.add' package (https://github.com/edwardlavender/utils.add). It is defined separately in \code{\link[flapper]{flapper}} to reduce reliance on non-default packages.
+#' @author Edward Lavender
+#' @keywords internal
+
+check_named_list <- function(arg = deparse(substitute(input)), input, ignore_empty = TRUE) {
+  if (!any("list" %in% class(input))) stop(paste0("Argument '", arg, "' must be of class list."), call. = FALSE)
+  list_is_empty <- (length(input) == 0)
+  if (!list_is_empty | !ignore_empty) {
+    if (is.null(names(input)) | any(names(input) %in% "")) {
+      msg <- paste0("Argument '", arg, "' must be a named list.")
+      stop(msg, call. = FALSE)
+    }
+  }
+  return(input)
+}
+
+
 #' @title Check input datasets
 #' @description These functions check input datasets.
 #' @param .moorings,.services,.acoustics,.archival User inputs. `NULL` inputs are allowed for `.services` and `.archival`.
