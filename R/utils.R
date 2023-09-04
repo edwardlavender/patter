@@ -32,3 +32,12 @@ warn <- function(...) {
 abort <- function(...) {
   stop(glue::glue(...), call. = FALSE)
 }
+
+
+#' @title Compact a list
+#' @description Remove all \code{NULL} entries from a list.
+#' @param l A list.
+#' @source This function is derived from the \code{plyr::compact()} function. The function is defined separately in \code{\link[flapper]{flapper}} to reduce reliance on non-default packages.
+#' @keywords internal
+
+compact <- function(l) l[which(!sapply(l, is.null))]
