@@ -11,13 +11,11 @@ dat_gebco()
 }
 \value{
 The function returns a \code{\link{SpatRaster}} with 264, rows, 190 columns and 1 layer, with the following properties:
-\describe{
 \itemize{
 \item \code{dimensions}---264, 190, 1 (nrow, ncol, nlyr)
 \item \code{resolution}---100, 100  (x, y)
 \item \code{extent}---695492.1, 714492.1, 6246657, 6273057  (xmin, xmax, ymin, ymax)
 \item \verb{coord. ref.}---WGS 84 / UTM zone 29N (EPSG:32629)
-}
 }
 }
 \description{

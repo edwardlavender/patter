@@ -5,13 +5,11 @@
 \alias{dat_acoustics}
 \title{Passive acoustic telemetry detections}
 \format{
-A dataframe with 39,242 observations and 3 variables:
-\describe{
+A \code{\link{data.table}} with 39,242 observations and 3 variables:
 \itemize{
 \item \code{individual_id}---a unique identifier of the individual that was detected.
 \item \code{timestamp}---a \code{POSIXct} object that defines the time of each observation.
 \item \code{receiver_id}---a unique identifier of the receiver at which the individual was detected (see \code{\link{dat_moorings}}).
-}
 }
 }
 \source{
@@ -24,6 +22,6 @@ dat_acoustics
 A dataset containing a sample of processed flapper skate (\emph{Dipturus intermedius}) detection time series. Data are arranged by \code{individual_id}, \code{timestamp} and then \code{receiver_id} (see below).
 }
 \references{
-Data collection and processing are described in Lavender (2022). Modelling the movements of flapper skate (\emph{Dipturus intermedius}) in relation to a Scottish Marine Protected Area. University of St Andrews. \url{https://www.doi.org/10.17630/sta/201}
+Data collection and processing are described in Lavender (2022). Modelling the movements of flapper skate (\emph{Dipturus intermedius}) in relation to a Scottish Marine Protected Area. University of St Andrews. https://www.doi.org/10.17630/sta/201
 }
 \keyword{datasets}

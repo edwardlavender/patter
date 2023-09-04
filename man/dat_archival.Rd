@@ -5,13 +5,11 @@
 \alias{dat_archival}
 \title{Archival time series}
 \format{
-A dataframe with 75,000 observations and 3 variables:
-\describe{
+A \code{\link{data.table}} with 75,000 observations and 3 variables:
 \itemize{
 \item \code{individual_id}---a number that defines each individual.
 \item \code{timestamp}---a \code{POSIXct} object that defines the time of each observation.
 \item \code{depth}---a number that defines the depth (m) of the individual at each time step.
-}
 }
 }
 \source{
@@ -24,6 +22,6 @@ dat_archival
 A dataset containing a sample of flapper skate (\emph{Dipturus intermedius}) depth (m) time series. Observations were sampled every 2 minutes using archival tags. Data are arranged by \code{individual_id} and then \code{timestamp}.
 }
 \references{
-Data collection and processing are described in Lavender (2022). Modelling the movements of flapper skate (\emph{Dipturus intermedius}) in relation to a Scottish Marine Protected Area. University of St Andrews. \url{https://www.doi.org/10.17630/sta/201}
+Data collection and processing are described in Lavender (2022). Modelling the movements of flapper skate (\emph{Dipturus intermedius}) in relation to a Scottish Marine Protected Area. University of St Andrews. https://www.doi.org/10.17630/sta/201
 }
 \keyword{datasets}

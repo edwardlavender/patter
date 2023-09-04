@@ -6,7 +6,6 @@
 \title{Passive acoustic telemetry moorings}
 \format{
 A \code{\link{data.table}} with 40 observations and 7 variables:
-\describe{
 \itemize{
 \item \code{receiver_id}---an integer that distinguishes each unique receiver deployment.
 \item \code{receiver_start}---a date that defines the start date of each receiver's deployment.
@@ -16,7 +15,6 @@ A \code{\link{data.table}} with 40 observations and 7 variables:
 \item \code{reciver_easting}---a number that defines the receiver easting (UTM 29N).
 \item \code{receiver_northing}---a number that defines the receiver northing (UTM 29N).
 \item \code{receiver_depth}---a number that defines the approximate depth of each receiver below the surface (m).
-}
 }
 }
 \source{
@@ -29,6 +27,6 @@ dat_moorings
 A dataset with receiver locations and associated information. Data are arranged by \code{receiver_id} (see below).
 }
 \references{
-Data collection and processing are described in Lavender (2022). Modelling the movements of flapper skate (\emph{Dipturus intermedius}) in relation to a Scottish Marine Protected Area. University of St Andrews. \url{https://www.doi.org/10.17630/sta/201}
+Data collection and processing are described in Lavender (2022). Modelling the movements of flapper skate (\emph{Dipturus intermedius}) in relation to a Scottish Marine Protected Area. University of St Andrews. https://www.doi.org/10.17630/sta/201
 }
 \keyword{datasets}
