@@ -60,3 +60,79 @@ test_that("acs_setup_detection_containers() and acs_setup_detection_overlaps() w
   }) |> invisible()
 
 })
+
+
+test_that("acs_setup_detection_kernels() works", {
+
+  #### Define example 'moorings' & 'services' dataset
+  # receivers 3 and 4 overlap in space but receiver 5 is further afield
+  m <- data.table(receiver_id = c(3, 4, 5),
+                  receiver_start = as.Date(c("2016-01-01", "2016-01-01", "2016-01-01")),
+                  receiver_end = as.Date(c("2016-01-05", "2016-01-05", "2016-01-05")),
+                  receiver_easting = c(706124.9, 706012.7, 709379.0),
+                  receiver_northing = c(6265030, 6264993, 6260093),
+                  receiver_range = 500)
+  s <- data.table(receiver_id = c(3, 5),
+                  service_start = as.Date(c("2016-01-01", "2016-01-01")),
+                  service_end = as.Date(c("2016-01-01", "2016-01-01")))
+
+  #### Define function to calculate detection probability
+  acs_setup_detection_pr <- function(.data, .bathy, ...) {
+
+    # Define helper function to calculate detection probability give distance
+    calc_dpr <- function(distance) {
+      pr <- stats::plogis(2.5 + -0.02 * distance)
+      pr[distance > .data$receiver_range] <- 0
+      pr
+    }
+    # Calculate Euclidean distance around receiver
+    rxy <- matrix(c(.data$receiver_easting, .data$receiver_northing), ncol = 2)
+    cell <- terra::cellFromXY(.bathy, rxy)
+    grid <- terra::setValues(.bathy, NA)
+    grid[cell] <- 1
+    dist <- terra::distance(grid, unit = "m")
+    # terra::plot(dist)
+    dist <- terra::mask(dist, .bathy)
+    # terra::plot(dist)
+    # Convert distances to detection pr
+    terra::app(dist, calc_dpr)
+  }
+  # Examine output of function for example receiver
+  pr <- lapply(seq_len(max(m$receiver_id)), function(id) {
+    if (!(id %in% m$receiver_id)) return(NULL)
+    acs_setup_detection_pr(m[m$receiver_id == id, , drop = FALSE], dat_gebco())
+  })
+
+
+  #### Implement function
+  k <- acs_setup_detection_kernels(m, s,
+                                   .calc_detection_pr = acs_setup_detection_pr,
+                                   .bathy = dat_gebco())
+
+  #### Check array designs
+  expect_true(all.equal(
+    k$array_design_intervals[, 1:3],
+    data.frame(array_id = c(1, 2),
+               array_start_date = as.Date(c("2016-01-01", "2016-01-02")),
+               array_end_date = as.Date(c("2016-01-01", "2016-01-05")))
+  ))
+
+  #### Check receiver specific kernels & inverse kernels
+  sapply(1:2, \(i) is.null(k$receiver_specific_kernels[[i]]))
+  sapply(3:5, \(i) !is.null(k$receiver_specific_kernels[[i]]))
+  lapply(3:5, function(i) {
+    # Check receiver-specific kernels
+    expect_true(terra::all.equal(k$receiver_specific_kernels[[i]], pr[[i]]))
+    # Check receiver-specific inverse kernels
+    expect_true(terra::all.equal(k$receiver_specific_inv_kernels[[i]], 1 - pr[[i]]))
+  }) |> invisible()
+
+  #### Check background surface by design
+  expect_true(terra::all.equal(k$bkg_surface_by_design[[1]], pr[[4]]))
+
+  #### Check inverse background surface by design
+  a <- k$bkg_inv_surface_by_design[[2]]
+  b <- (1 - pr[[3]]) * (1 - pr[[4]]) * (1 - pr[[5]])
+  names(a) <- names(b) <- "layer"
+  expect_true(terra::all.equal(a, b))
+})
