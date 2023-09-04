@@ -54,8 +54,8 @@ NULL
 #' @rdname check_data
 #' @keywords internal
 
-check_moorings <- function(.moorings) {
-  check_inherits(.moorings, "data.table")
+check_moorings <- function(.moorings, .class = "data.table") {
+  check_inherits(.moorings, .class)
   check_names(
     input = .moorings, req = c("receiver_id", "receiver_start", "receiver_end"),
     extract_names = colnames, type = all
@@ -69,6 +69,9 @@ check_moorings <- function(.moorings) {
   }
   if (any(duplicated(.moorings$receiver_id))) {
     abort("Argument '.moorings$receiver_id' contains duplicate elements.")
+  }
+  if (any(is.na(.moorings))) {
+    warn("`.moorings` contains NAs and some functions may fail unexpectedly.")
   }
   invisible(.moorings)
 }
