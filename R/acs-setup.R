@@ -39,6 +39,7 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
     summarise(receiver_id = list(unique(.data$receiver_id))) |>
     ungroup() |>
     arrange(timestamp) |>
+    # Add additional columns
     mutate(detection_id = dplyr::row_number()) |>
     as.data.table()
 
@@ -70,20 +71,23 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
   #### Tidy outputs & return
   out |>
     lazy_dt(immutable = TRUE) |>
-    mutate(detection_id = data.table::nafill(.data$detection_id, type = "locf")) |>
+    mutate(date = as.character(as.Date(.data$timestamp)),
+           detection_id = data.table::nafill(.data$detection_id, type = "locf")) |>
     group_by(.data$detection_id) |>
     mutate(step_forwards = dplyr::row_number(),
            step_backwards = rev(.data$step_forwards),
-           buffer_1 = .mobility * .data$step_forwards - .mobility,
-           buffer_2 = .mobility * .data$step_backwards) |>
+           # We buffer the past by mobility
+           buffer_past = .mobility,
+           # We shrink the future
+           buffer_future = .mobility * .data$step_backwards) |>
     ungroup() |>
-    select(.data$timestamp,
-           .data$detection_id, .data$detection, .data$receiver_id,
-           .data$step_forwards, .data$step_backwards,
-           .data$buffer_1, .data$buffer_2,
-           .data$depth) |>
     arrange(.data$timestamp) |>
-    mutate(timestep = dplyr::row_number()) |>
+    mutate(timestep = dplyr::row_number(),) |>
+    select(.data$timestep,
+           .data$timestamp, .data$date,
+           .data$detection_id, .data$detection, .data$receiver_id,
+           .data$buffer_past, .data$buffer_future,
+           .data$depth) |>
     as.data.table()
 
 }

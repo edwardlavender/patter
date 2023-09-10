@@ -20,7 +20,7 @@ msg <- function(...) {
 }
 
 #' @rdname signal
-#' @keywords internal
+#' @keywords internalg
 
 warn <- function(...) {
   warning(glue::glue(...), immediate. = TRUE, call. = FALSE)
@@ -31,6 +31,40 @@ warn <- function(...) {
 
 abort <- function(...) {
   stop(glue::glue(...), call. = FALSE)
+}
+
+
+#' @title Create a log file
+#' @description This function creates a .txt file (`.file`) via [`file.create`].
+#' @param .file A character path to a file. `NULL` is permitted.
+#' @return The function returns `invisible(TRUE)`.
+#' @author Edward Lavender
+#' @keywords internal
+
+create_log <- function(.file) {
+  if (!is.null(.file)) {
+    if (tools::file_ext(.file) != "txt") {
+      abort("`con` ('{.file}') should be the path to a text (.txt) file.",
+            .envir = environment())
+    }
+    if (!dir.exists(dirname(.file))) {
+      abort("`dirname(con)` ('{dirname(.file)}') does not exist.",
+            .envir = environment())
+    }
+    if (!file.exists(.file)) {
+      success <- file.create(.file)
+      if (!success) {
+        abort("Failed to create log file ('{.file}').",
+              .envir = environment())
+      }
+    } else {
+      if (length(readLines(.file)) > 0L) {
+        warn("`con` ('{.file}`) already exists and is not empty!",
+             .envir = environment())
+      }
+    }
+  }
+  invisible(TRUE)
 }
 
 

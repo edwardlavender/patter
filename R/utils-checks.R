@@ -1,3 +1,34 @@
+#' @title Check a directory exists
+#' @description This function checks that a directory exists.
+#' @param x A string that defines a directory.
+#' @param type A character that defines whether or not to throw a warning or an error.
+#' @return If the directory `x` does not exist, the function returns a warning or error; otherwise `x` is invisibly returned.
+#' @examples
+#' \dontrun{
+#' check_dir_exists(tempdir()) # works
+#' check_dir_exists(file.path(tempdir(), "blah")) # error
+#' }
+#' @author Edward Lavender
+#' @export
+
+check_dir_exists <- function(x, type = c("abort", "warn")) {
+  type <- match.arg(type)
+  exist <- sapply(x, dir.exists)
+  if (any(!exist)) {
+    msg <-
+      glue::glue(
+        "The following input(s) to 'x' do not exist: '",
+        glue::glue_collapse(x[!exist], sep = "', '"), "'."
+      )
+    switch(type,
+           abort = abort(msg),
+           warn  = warn(msg)
+    )
+  }
+  invisible(x)
+}
+
+
 #' @title Check inherited class(es)
 #' @description This function checks inherited class(es).
 #' @param x An object.
