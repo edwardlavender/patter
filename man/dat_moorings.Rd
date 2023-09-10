@@ -3,7 +3,7 @@
 \docType{data}
 \name{dat_moorings}
 \alias{dat_moorings}
-\title{Passive acoustic telemetry moorings}
+\title{Dataset: Passive acoustic telemetry moorings}
 \format{
 A \code{\link{data.table}} with 40 observations and 7 variables:
 \itemize{

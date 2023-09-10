@@ -204,7 +204,7 @@ acs_setup_detection_containers <- function(.bathy, .moorings) {
 }
 
 
-#' @title Set up detection container overlaps
+#' @title AC* set up: Define detection container overlaps
 #' @description This function identifies receivers with overlapping detection containers in space and time for the AC* algorithms.
 #'
 #' @param .containers A named `list` of `SpatRaster`s that represent receiver detection containers, from [`acs_setup_detection_containers()`].
@@ -214,7 +214,7 @@ acs_setup_detection_containers <- function(.bathy, .moorings) {
 #' * `receiver_end`---a `Date` vector that defines receiver retrieval dates;
 #' @param .services (optional) A [`data.table`] that defines receiver IDs and servicing `Date`s (times during the deployment period of a receiver when it was not active due to servicing) (see [`make_matrix_receivers()`]). If provided, this must contain the following columns:
 #' * `receiver_id`---an `integer` vector of receiver IDs;
-#' * service_start`---a `Date` vector that defines receiver servicing start dates;
+#' * `service_start`---a `Date` vector that defines receiver servicing start dates;
 #' * `service_end`---a `Date` vector that defines receiver servicing completion dates;
 #'
 #' @details In the AC* algorithms, at the moment of detection, the set of possible locations depends on the receiver(s) at which an individual is, and is not, detected. The outputs of this function are used to restrict the probability calculations to the set of receivers that overlap with the receiver(s) at which an individual is detected for improved efficiency.
@@ -419,18 +419,31 @@ acs_setup_detection_pr <- function(.data, .bathy, ...) {
 }
 
 
-#' @title Setup detection kernels
-#' @description TO DO
-#' @param .moorings TO DO
-#' @param .services TO DO
-#' @param .calc_detection_pr,... TO DO
-#' @param .bathy TO DO
-#' @param .verbose TO DO
+#' @title AC* set up: Define detection kernels
+#' @description This function defines the detection kernels for the AC* algorithms.
+#' @param .moorings A [`data.table`] that defines receiver deployments and associated information (see [`dat_moorings`] for an example). At a minimum, this must contain the following columns:
+#' * `receiver_id`---an `integer` vector that defines unique receiver deployments;
+#' * `receiver_start` and `receiver_end`---`Date` vectors that defines receiver operational periods (see [`make_matrix_receivers()`]);
+#' * `receiver_easting` and `receiver_northing`---`numeric` vectors that define receiver locations on `.bathy` (used to validate `.calc_detection_pr()`)
+#' * Plus any columns used internally by `.calc_detection_pr` (see below).
+#' @param .services (optional) A [`data.table`] that defines receiver IDs and servicing `Date`s (times during the deployment period of a receiver when it was not active due to servicing) (see [`make_matrix_receivers()`]). If provided, this must contain the following columns:
+#' * `receiver_id`---an `integer` vector of receiver IDs;
+#' * `service_start`---a `Date` vector that defines receiver servicing start dates;
+#' * `service_end`---a `Date` vector that defines receiver servicing completion dates;
+#' @param .calc_detection_pr,... A function that defines a receiver-specific detection kernel (see [`acs_setup_detection_pr()`] for an example). This must accept three arguments (even if they are ignored):
+#' * `.data`---A one-row [`data.table`] that contains the information in `.moorings` for a specific receiver;
+#' * `.bathy`---A [`SpatRaster`] that defines the grid over which detection probability is calculated (see below);
+#' * `...` Additional arguments passed via [`acs_setup_detection_kernels()`].
+#' Using these inputs, the function must return a [`SpatRaster`] that defines the detection kernel around a specific receiver (see Examples).
+#' @param .bathy A [`SpatRaster`] that defines the grid over which detection kernels are defined;
+#' @param .verbose A `logical` variable that defines whether or not to print messages to the console to relay function progress.
+#'
+#' @details This function permits receiver-specific detection kernels.
 #'
 #' @return The function returns a named `list`, with the following elements:
 #' * **`receiver_specific_kernels`**. A list, with one element for all integers from 1 to the maximum receiver number. Any elements that do not correspond to receivers contain a `NULL` element. List elements that correspond to receivers contain a [`SpatRaster`] of the detection probability kernel around the relevant receiver. Cells values define the detection probability around a receiver, given `.calc_detection_pr` In the AC* algorithm(s), these kernels are used to up-weight location probabilities near to a receiver when it is detected (following modification to account for overlapping areas, if necessary).
 #' * **`receiver_specific_inv_kernels`**. A list, as for `receiver_specific_kernels`, but in which elements contain the inverse detection probability kernels (i.e., 1 - detection probability). In the AC* algorithm(s), these is used to down-weight-weight location probabilities in the overlapping regions between a receiver that recorded detections and others that did not at the same time.
-#' * `array_design_intervals`. A dataframe that defines the number and deployment times of each unique array design, resulting from receiver deployment, servicing and removal. In the times between detections, this is used to select the appropriate 'background' detection probability surface (see below). This contains the following columns:
+#' * **`array_design_intervals`**. A `data.frame` that defines the number and deployment times of each unique array design, resulting from receiver deployment, servicing and removal. In the times between detections, this is used to select the appropriate 'background' detection probability surface (see below). This contains the following columns:
 #'   * `array_id`. An integer vector that defines each unique array design.
 #'   * `array_start_date`. A Date that defines the start date of each array design.
 #'   * `array_end_date`. A Date that defines the end date of each array design.
@@ -441,6 +454,7 @@ acs_setup_detection_pr <- function(.data, .bathy, ...) {
 #' @examples
 #' #### Define example 'moorings' & 'services' dataset
 #' # receivers 3 and 4 overlap in space but receiver 5 is further afield
+#' require(graphics)
 #' require(data.table)
 #' m <- data.table(receiver_id = c(3, 4, 5),
 #'                 receiver_start = as.Date(c("2016-01-01", "2016-01-01", "2016-01-01")),
@@ -482,12 +496,46 @@ acs_setup_detection_pr <- function(.data, .bathy, ...) {
 #'   acs_setup_detection_pr(m[m$receiver_id == id, , drop = FALSE], dat_gebco())
 #' })
 #'
-#' #### Implement function
+#' #### Example (1): Implement function using specified inputs
 #' k <- acs_setup_detection_kernels(m, s,
 #'                                  .calc_detection_pr = acs_setup_detection_pr,
 #'                                  .bathy = dat_gebco())
 #'
-#' #### TO DO (continue)
+#' # Examine list elements
+#' summary(k)
+#'
+#' # Examine example receiver-specific kernels
+#' pp <- par(mfrow = c(1, 2))
+#' lapply(c(3, 4), \(id) {
+#'   terra::plot(k$receiver_specific_kernels[[id]])
+#'   points(m[m$receiver_id == id, .(receiver_easting, receiver_northing)], cex = 2)
+#' }) |> invisible()
+#' par(pp)
+#'
+#' # Examine example receiver-specific inverse kernels
+#' pp <- par(mfrow = c(1, 2))
+#' lapply(c(3, 4), \(id) {
+#'   terra::plot(k$receiver_specific_kernels[[id]])
+#'   points(m[m$receiver_id == id, .(receiver_easting, receiver_northing)], cex = 2)
+#' }) |> invisible()
+#' par(pp)
+#'
+#' # Examine background detection Pr surfaces
+#' # (for each unique combination of receivers that were deployed)
+#' pp <- par(mfrow = c(1, 2))
+#' lapply(k$bkg_surface_by_design, \(bkg) {
+#'   terra::plot(bkg, axes = FALSE)
+#'   box()
+#' }) |> invisible()
+#' par(pp)
+#'
+#' # Examine background inverse detection Pr surfaces
+#' pp <- par(mfrow = c(1, 2))
+#' lapply(k$bkg_inv_surface_by_design, \(bkg) {
+#'   terra::plot(bkg, axes = FALSE)
+#'   box()
+#' }) |> invisible()
+#' par(pp)
 #'
 #' @source This function is based on the [`acs_setup_detection_kernels`](https://edwardlavender.github.io/flapper/reference/acs_setup_detection_kernels.html) function in the [flapper](https://github.com/edwardlavender/flapper) package, where the role of detection kernels in the AC* algorithms is described extensively (see Details).
 #'

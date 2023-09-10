@@ -2,7 +2,7 @@
 % Please edit documentation in R/dats.R
 \name{dat_gebco}
 \alias{dat_gebco}
-\title{A bathymetry dataset}
+\title{Dataset: A bathymetry dataset}
 \source{
 Raw data were sourced from GEBCO Compilation Group (2019) GEBCO 2019 Grid (doi:10.5285/836f016a-33be-6ddc-e053-6c86abc0788e)
 }

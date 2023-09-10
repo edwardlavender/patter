@@ -3,7 +3,7 @@
 \docType{package}
 \name{ac_record-class}
 \alias{ac_record-class}
-\title{\code{\linkS4class{ac_record}} object}
+\title{AC outputs: \code{\linkS4class{ac_record}} objects}
 \description{
 An S3 class that defines the named \code{list} returned by a AC-branch algorithm.
 }

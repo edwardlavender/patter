@@ -1,4 +1,4 @@
-#' @title Passive acoustic telemetry moorings
+#' @title Dataset: Passive acoustic telemetry moorings
 #' @description A dataset with receiver locations and associated information. Data are arranged by `receiver_id` (see below).
 #'
 #' @format A [`data.table`] with 40 observations and 7 variables:
@@ -17,7 +17,7 @@
 "dat_moorings"
 
 
-#' @title Passive acoustic telemetry detections
+#' @title Dataset: Passive acoustic telemetry detections
 #' @description A dataset containing a sample of processed flapper skate (*Dipturus intermedius*) detection time series. Data are arranged by `individual_id`, `timestamp` and then `receiver_id` (see below).
 #'
 #' @format A [`data.table`] with 39,242 observations and 3 variables:
@@ -31,7 +31,7 @@
 "dat_acoustics"
 
 
-#' @title Archival time series
+#' @title Dataset: Archival time series
 #' @description A dataset containing a sample of flapper skate (*Dipturus intermedius*) depth (m) time series. Observations were sampled every 2 minutes using archival tags. Data are arranged by `individual_id` and then `timestamp`.
 #'
 #' @format A [`data.table`] with 75,000 observations and 3 variables:
@@ -45,7 +45,7 @@
 "dat_archival"
 
 
-#' @title A bathymetry dataset
+#' @title Dataset: A bathymetry dataset
 #' @description This function loads a processed bathymetry (m) dataset for the west coast of Scotland.
 #'
 #' @return The function returns a [`SpatRaster`] with 264, rows, 190 columns and 1 layer, with the following properties:
