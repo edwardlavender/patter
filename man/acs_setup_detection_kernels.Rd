@@ -3,6 +3,9 @@
 \name{acs_setup_detection_kernels}
 \alias{acs_setup_detection_kernels}
 \title{Setup detection kernels}
+\source{
+This function is based on the \href{https://edwardlavender.github.io/flapper/reference/acs_setup_detection_kernels.html}{\code{acs_setup_detection_kernels}} function in the \href{https://github.com/edwardlavender/flapper}{flapper} package, where the role of detection kernels in the AC* algorithms is described extensively (see Details).
+}
 \usage{
 acs_setup_detection_kernels(
   .moorings,
@@ -23,6 +26,22 @@ acs_setup_detection_kernels(
 \item{.bathy}{TO DO}
 
 \item{.verbose}{TO DO}
+}
+\value{
+The function returns a named \code{list}, with the following elements:
+\itemize{
+\item \strong{\code{receiver_specific_kernels}}. A list, with one element for all integers from 1 to the maximum receiver number. Any elements that do not correspond to receivers contain a \code{NULL} element. List elements that correspond to receivers contain a \code{\link{SpatRaster}} of the detection probability kernel around the relevant receiver. Cells values define the detection probability around a receiver, given \code{.calc_detection_pr} In the AC* algorithm(s), these kernels are used to up-weight location probabilities near to a receiver when it is detected (following modification to account for overlapping areas, if necessary).
+\item \strong{\code{receiver_specific_inv_kernels}}. A list, as for \code{receiver_specific_kernels}, but in which elements contain the inverse detection probability kernels (i.e., 1 - detection probability). In the AC* algorithm(s), these is used to down-weight-weight location probabilities in the overlapping regions between a receiver that recorded detections and others that did not at the same time.
+\item \code{array_design_intervals}. A dataframe that defines the number and deployment times of each unique array design, resulting from receiver deployment, servicing and removal. In the times between detections, this is used to select the appropriate 'background' detection probability surface (see below). This contains the following columns:
+\itemize{
+\item \code{array_id}. An integer vector that defines each unique array design.
+\item \code{array_start_date}. A Date that defines the start date of each array design.
+\item \code{array_end_date}. A Date that defines the end date of each array design.
+\item \code{array_interval}. A \code{\link[lubridate:Interval-class]{lubridate::Interval}} vector that defines the deployment period of each array design.
+}
+\item \strong{\code{bkg_surface_by_design}}. A list, with one element for each array design, that defines the detection probability surface across all receivers deployed in that phase of the study. In areas that are covered by the detection probability kernel of a single receiver, the detection probability depends only on distance to that receiver (via \code{.calc_detection_pr}). In areas covered by multiple, overlapping kernels, detection probability represents the combined detection probability across all overlapping kernels (see Details).
+\item \strong{\code{bkg_inv_surface_by_design}}. A list, as above for \code{bkg_surface_by_design}, but which contains the inverse detection probability surface (i.e., 1 - \code{bkg_surface_by_design}). In the AC* algorithm(s), this is used to up-weight areas away from receivers (or, equivalently, down-weight areas near to receivers) in the time steps between detections.
+}
 }
 \description{
 TO DO
@@ -70,7 +89,6 @@ pr <- lapply(seq_len(max(m$receiver_id)), function(id) {
   if (!(id \%in\% m$receiver_id)) return(NULL)
   acs_setup_detection_pr(m[m$receiver_id == id, , drop = FALSE], dat_gebco())
 })
-
 
 #### Implement function
 k <- acs_setup_detection_kernels(m, s,

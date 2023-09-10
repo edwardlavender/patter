@@ -206,18 +206,35 @@ acs_setup_detection_containers <- function(.bathy, .moorings) {
 
 
 #' @title Set up detection container overlaps
-#' @description
+#' @description This function identifies receivers with overlapping detection containers in space and time for the AC* algorithms.
 #'
-#' @param .containers A named list
-#' @param .moorings A [`data.table`]
-#' @param .services A [`data.table`]
+#' @param .containers A named `list` of `SpatRaster`s that represent receiver detection containers, from [`acs_setup_detection_containers()`].
+#' @param .moorings A [`data.table`] that defines receiver deployments and associated information (see [`dat_moorings`] for an example). At a minimum, this must contain the following columns:
+#' * `receiver_id`---an `integer` vector of receiver IDs;
+#' * `receiver_start`---a `Date` vector that defines receiver deployment dates;
+#' * `receiver_end`---a `Date` vector that defines receiver retrieval dates;
+#' @param .services (optional) A [`data.table`] that defines receiver IDs and servicing `Date`s (times during the deployment period of a receiver when it was not active due to servicing) (see [`make_matrix_receivers()`]). If provided, this must contain the following columns:
+#' * `receiver_id`---an `integer` vector of receiver IDs;
+#' * service_start`---a `Date` vector that defines receiver servicing start dates;
+#' * `service_end`---a `Date` vector that defines receiver servicing completion dates;
 #'
-#' @details Details.
+#' @details In the AC* algorithms, at the moment of detection, the set of possible locations depends on the receiver(s) at which an individual is, and is not, detected. The outputs of this function are used to restrict the probability calculations to the set of receivers that overlap with the receiver(s) at which an individual is detected for improved efficiency.
 #'
-#' @return The function returns a named list.
+#' @return The function returns a named `list` with two elements:
+#' * `overlap_by_receiver` is `list`, with one element for all integers from `1:max(.containers$receiver_id)`. Any elements that do not correspond to receivers contain a `NULL` element. List elements that correspond to receivers contain a `data.frame` that defines, for each day over the deployment period (defined in `timestamp') of that receiver (defined in `receiver_id'), whether (1) or not (0) that receiver overlapped in space with every other receiver (defined in the remaining columns by their receiver IDs).
+#' * `overlap_by_date` is a named `list`, with one element for each `Date` from the start until the end of the study `(min(.containers$receiver_start_date):max(.containers$receiver_end_date))`, that records an integer vector of all receivers with overlapping containers on that date. In this vector, each receiver overlaps with at least one other receiver (but not every receiver will necessarily overlap with every other receiver).
 #'
 #' @examples
+#' #### Example (1): Basic implementation
+#' # Define detection containers
+#' dat_moorings$receiver_range <- 500
+#' containers <- acs_setup_detection_containers(dat_gebco(), dat_moorings)
 #'
+#' # Identify receiver overlaps
+#' overlaps <- acs_setup_detection_overlaps(containers, dat_moorings)
+#' summary(overlaps)
+#'
+#' @source This function is based on the [`get_detection_containers_overlaps`](https://edwardlavender.github.io/flapper/reference/get_detection_containers_overlap.html) function in the [flapper](https://github.com/edwardlavender/flapper) package.
 #'
 #' @author Edward Lavender
 #' @export
@@ -412,6 +429,17 @@ acs_setup_detection_pr <- function(.data, .bathy, ...) {
 #' @param .bathy TO DO
 #' @param .verbose TO DO
 #'
+#' @return The function returns a named `list`, with the following elements:
+#' * **`receiver_specific_kernels`**. A list, with one element for all integers from 1 to the maximum receiver number. Any elements that do not correspond to receivers contain a `NULL` element. List elements that correspond to receivers contain a [`SpatRaster`] of the detection probability kernel around the relevant receiver. Cells values define the detection probability around a receiver, given `.calc_detection_pr` In the AC* algorithm(s), these kernels are used to up-weight location probabilities near to a receiver when it is detected (following modification to account for overlapping areas, if necessary).
+#' * **`receiver_specific_inv_kernels`**. A list, as for `receiver_specific_kernels`, but in which elements contain the inverse detection probability kernels (i.e., 1 - detection probability). In the AC* algorithm(s), these is used to down-weight-weight location probabilities in the overlapping regions between a receiver that recorded detections and others that did not at the same time.
+#' * `array_design_intervals`. A dataframe that defines the number and deployment times of each unique array design, resulting from receiver deployment, servicing and removal. In the times between detections, this is used to select the appropriate 'background' detection probability surface (see below). This contains the following columns:
+#'   * `array_id`. An integer vector that defines each unique array design.
+#'   * `array_start_date`. A Date that defines the start date of each array design.
+#'   * `array_end_date`. A Date that defines the end date of each array design.
+#'   * `array_interval`. A [`lubridate::Interval-class`] vector that defines the deployment period of each array design.
+#' * **`bkg_surface_by_design`**. A list, with one element for each array design, that defines the detection probability surface across all receivers deployed in that phase of the study. In areas that are covered by the detection probability kernel of a single receiver, the detection probability depends only on distance to that receiver (via `.calc_detection_pr`). In areas covered by multiple, overlapping kernels, detection probability represents the combined detection probability across all overlapping kernels (see Details).
+#' * **`bkg_inv_surface_by_design`**. A list, as above for `bkg_surface_by_design`, but which contains the inverse detection probability surface (i.e., 1 - `bkg_surface_by_design`). In the AC* algorithm(s), this is used to up-weight areas away from receivers (or, equivalently, down-weight areas near to receivers) in the time steps between detections.
+#'
 #' @examples
 #' #### Define example 'moorings' & 'services' dataset
 #' # receivers 3 and 4 overlap in space but receiver 5 is further afield
@@ -456,13 +484,14 @@ acs_setup_detection_pr <- function(.data, .bathy, ...) {
 #'   acs_setup_detection_pr(m[m$receiver_id == id, , drop = FALSE], dat_gebco())
 #' })
 #'
-#'
 #' #### Implement function
 #' k <- acs_setup_detection_kernels(m, s,
 #'                                  .calc_detection_pr = acs_setup_detection_pr,
 #'                                  .bathy = dat_gebco())
 #'
 #' #### TO DO (continue)
+#'
+#' @source This function is based on the [`acs_setup_detection_kernels`](https://edwardlavender.github.io/flapper/reference/acs_setup_detection_kernels.html) function in the [flapper](https://github.com/edwardlavender/flapper) package, where the role of detection kernels in the AC* algorithms is described extensively (see Details).
 #'
 #' @author Edward Lavender
 #' @export

@@ -3,24 +3,52 @@
 \name{acs_setup_detection_overlaps}
 \alias{acs_setup_detection_overlaps}
 \title{Set up detection container overlaps}
+\source{
+This function is based on the \href{https://edwardlavender.github.io/flapper/reference/get_detection_containers_overlap.html}{\code{get_detection_containers_overlaps}} function in the \href{https://github.com/edwardlavender/flapper}{flapper} package.
+}
 \usage{
 acs_setup_detection_overlaps(.containers, .moorings, .services = NULL)
 }
 \arguments{
-\item{.containers}{A named list}
+\item{.containers}{A named \code{list} of \code{SpatRaster}s that represent receiver detection containers, from \code{\link[=acs_setup_detection_containers]{acs_setup_detection_containers()}}.}
 
-\item{.moorings}{A \code{\link{data.table}}}
+\item{.moorings}{A \code{\link{data.table}} that defines receiver deployments and associated information (see \code{\link{dat_moorings}} for an example). At a minimum, this must contain the following columns:
+\itemize{
+\item \code{receiver_id}---an \code{integer} vector of receiver IDs;
+\item \code{receiver_start}---a \code{Date} vector that defines receiver deployment dates;
+\item \code{receiver_end}---a \code{Date} vector that defines receiver retrieval dates;
+}}
 
-\item{.services}{A \code{\link{data.table}}}
+\item{.services}{(optional) A \code{\link{data.table}} that defines receiver IDs and servicing \code{Date}s (times during the deployment period of a receiver when it was not active due to servicing) (see \code{\link[=make_matrix_receivers]{make_matrix_receivers()}}). If provided, this must contain the following columns:
+\itemize{
+\item \code{receiver_id}---an \code{integer} vector of receiver IDs;
+\item service_start\code{---a }Date` vector that defines receiver servicing start dates;
+\item \code{service_end}---a \code{Date} vector that defines receiver servicing completion dates;
+}}
 }
 \value{
-The function returns a named list.
+The function returns a named \code{list} with two elements:
+\itemize{
+\item \code{overlap_by_receiver} is \code{list}, with one element for all integers from \code{1:max(.containers$receiver_id)}. Any elements that do not correspond to receivers contain a \code{NULL} element. List elements that correspond to receivers contain a \code{data.frame} that defines, for each day over the deployment period (defined in \verb{timestamp') of that receiver (defined in }receiver_id'), whether (1) or not (0) that receiver overlapped in space with every other receiver (defined in the remaining columns by their receiver IDs).
+\item \code{overlap_by_date} is a named \code{list}, with one element for each \code{Date} from the start until the end of the study \code{(min(.containers$receiver_start_date):max(.containers$receiver_end_date))}, that records an integer vector of all receivers with overlapping containers on that date. In this vector, each receiver overlaps with at least one other receiver (but not every receiver will necessarily overlap with every other receiver).
+}
 }
 \description{
-Set up detection container overlaps
+This function identifies receivers with overlapping detection containers in space and time for the AC* algorithms.
 }
 \details{
-Details.
+In the AC* algorithms, at the moment of detection, the set of possible locations depends on the receiver(s) at which an individual is, and is not, detected. The outputs of this function are used to restrict the probability calculations to the set of receivers that overlap with the receiver(s) at which an individual is detected for improved efficiency.
+}
+\examples{
+#### Example (1): Basic implementation
+# Define detection containers
+dat_moorings$receiver_range <- 500
+containers <- acs_setup_detection_containers(dat_gebco(), dat_moorings)
+
+# Identify receiver overlaps
+overlaps <- acs_setup_detection_overlaps(containers, dat_moorings)
+summary(overlaps)
+
 }
 \author{
 Edward Lavender
