@@ -73,6 +73,7 @@ dat_acoustics <-
   select(individual_id, timestamp, receiver_id) |>
   arrange(individual_id, timestamp, receiver_id) |>
   as.data.table()
+lubridate::tz(dat_acoustics$timestamp) <- "UTC"
 
 #### Archival data
 dat_archival <-
@@ -80,6 +81,7 @@ dat_archival <-
   select(individual_id, timestamp, depth) |>
   arrange(individual_id, timestamp, depth) |>
   as.data.table()
+lubridate::tz(dat_archival$timestamp) <- "UTC"
 
 
 #########################

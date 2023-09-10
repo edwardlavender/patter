@@ -1,3 +1,46 @@
+test_that("acs_setup_obs() works", {
+
+  #### Fail user input checks
+  # Pass unsorted time series
+  acs_setup_obs(dat_acoustics, .step = "2 mins", .mobility = 500) |>
+    expect_error()
+  # Pass 2-minute archival time series & 3 minute step
+  acs_setup_obs(dat_acoustics[individual_id == 25, ],
+                .archival = dat_archival[individual_id == 25, ],
+                .step = "3 mins", .mobility = 500) |>
+    expect_error()
+  # Pass a single archival observation
+  acs_setup_obs(dat_acoustics[individual_id == 25, ],
+                .archival = dat_archival[1, ],
+                .step = "3 mins", .mobility = 500) |>
+    expect_error()
+  # Pass time series that don't overlap
+  acs_setup_obs(dat_acoustics[individual_id == 25, ],
+                .archival = data.table(timestamp = as.POSIXct(c("2012-01-01", "2012-01-02")), depth = c(1, 2)),
+                .step = "1 day", .mobility = 500) |>
+    expect_error()
+
+  #### Test processing of acoustic data
+  # Define example acoustic time series
+  # * We have two detections at the same receiver in the first two minute period (which should be collapsed)
+  # * We have two detection at different receivers in the last two minute period (which should be retained)
+  acc <- data.table(timestamp = as.POSIXct(c("2016-01-01 00:00:00", "2016-01-01 00:01:00", "2016-01-01 00:05:00", "2016-01-01 00:06:00"), tz = "UTC"),
+                    receiver_id = as.integer(c(1, 1, 2, 3)))
+  ans <-  data.table(timestep = 1:4,
+                     timestamp = as.POSIXct(c("2016-01-01 00:00:00", "2016-01-01 00:02:00", "2016-01-01 00:04:00", "2016-01-01 00:06:00"), tz = "UTC"),
+                     date = as.character(rep(as.Date("2016-01-01"), 4)),
+                     detection_id = as.integer(c(1, 2, 2, 3)),
+                     detection = as.integer(c(1, 1, 0, 1)),
+                     receiver_id = list(1, 1, NULL, c(2, 3)),
+                     buffer_past = rep(500, 4),
+                     buffer_future = c(500, 1000, 500, 500)
+  )
+  expect_equal(acs_setup_obs(acc, .step = "2 mins", .mobility = 500) |> as.data.frame(),
+               ans |> as.data.frame())
+
+})
+
+
 test_that("acs_setup_detection_containers() and acs_setup_detection_overlaps() work", {
 
   #### Define example 'moorings' dataset

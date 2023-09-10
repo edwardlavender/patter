@@ -51,10 +51,14 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
   check_inherits(.step, "character")
   if (!is.null(.archival)) {
     # Check archival time series are spaced `.step` apart
+    if (nrow(.archival) == 1L) {
+      abort("There is only one archival observation.")
+    }
     .step_req <- as.integer(lubridate::seconds(lubridate::period(.step)))
     .step_obs <- as.numeric(difftime(.archival$timestamp[2], .archival$timestamp[1], .step, units = "secs"))
     if (!isTRUE(all.equal(.step_req, .step_obs))) {
-      abort("Archival time series are not spaced `.step` ('{.step}') units apart (observed step: {.step_obs} units).")
+      abort("Archival time series are not spaced `.step` ('{.step}') units apart (observed step: {.step_obs} s).",
+            .envir = environment())
     }
   }
 
@@ -75,7 +79,7 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
     ungroup() |>
     arrange(timestamp) |>
     # Add additional columns
-    mutate(detection_id = dplyr::row_number()) |>
+    mutate(detection_id = as.integer(dplyr::row_number())) |>
     as.data.table()
 
   #### Align time series
@@ -86,10 +90,12 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
       filter(.data$timestamp >= min(.archival$timestamp) &
                .data$timestamp <= max(.archival$timestamp))
     # Filter archival time series by acoustic time series
-    .archival <-
-      .archival |>
-      filter(.data$timestamp >= min(.acoustics$timestamp) &
-               .data$timestamp <= max(.acoustics$timestamp))
+    if (nrow(.acoustics) > 0L) {
+      .archival <-
+        .archival |>
+        filter(.data$timestamp >= min(.acoustics$timestamp) &
+                 .data$timestamp <= max(.acoustics$timestamp))
+    }
     if (nrow(.acoustics) == 0L | nrow(.archival) == 0L) {
       abort("There are no remaining observations after aligning the acoustic and archival time series.")
     }
@@ -100,7 +106,7 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
   out <- data.table(timestamp = seq(min(.acoustics$timestamp), max(.acoustics$timestamp), by = .step))
   # Add acoustic data
   detection <- NULL
-  out[, detection := (timestamp %in% .acoustics$timestamp) + 0]
+  out[, detection := as.integer((timestamp %in% .acoustics$timestamp) + 0)]
   out <- merge(out, .acoustics, all.x = TRUE, by = "timestamp")
   # Add archival data
   if (!is.null(.archival)) {
@@ -112,7 +118,7 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
   out |>
     lazy_dt(immutable = TRUE) |>
     mutate(date = as.character(as.Date(.data$timestamp)),
-           detection_id = data.table::nafill(.data$detection_id, type = "locf")) |>
+           detection_id = as.integer(data.table::nafill(.data$detection_id, type = "locf"))) |>
     group_by(.data$detection_id) |>
     mutate(step_forwards = dplyr::row_number(),
            step_backwards = rev(.data$step_forwards),
@@ -122,7 +128,7 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
            buffer_future = .mobility * .data$step_backwards) |>
     ungroup() |>
     arrange(.data$timestamp) |>
-    mutate(timestep = dplyr::row_number()) |>
+    mutate(timestep = as.integer(dplyr::row_number())) |>
     select(.data$timestep,
            .data$timestamp, .data$date,
            .data$detection_id, .data$detection, .data$receiver_id,
