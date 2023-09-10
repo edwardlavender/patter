@@ -16,7 +16,7 @@ test_that("acs_setup_obs() works", {
     expect_error()
   # Pass time series that don't overlap
   acs_setup_obs(dat_acoustics[individual_id == 25, ],
-                .archival = data.table(timestamp = as.POSIXct(c("2012-01-01", "2012-01-02")), depth = c(1, 2)),
+                .archival = data.table(timestamp = as.POSIXct(c("2012-01-01", "2012-01-02", tz = "UTC")), depth = c(1, 2)),
                 .step = "1 day", .mobility = 500) |>
     expect_error()
 
@@ -36,6 +36,13 @@ test_that("acs_setup_obs() works", {
                      buffer_future = c(500, 1000, 500, 500)
   )
   expect_equal(acs_setup_obs(acc, .step = "2 mins", .mobility = 500) |> as.data.frame(),
+               ans |> as.data.frame())
+
+  #### Test incorporation of archival data
+  arc <- data.table(timestamp = seq(as.POSIXct("2016-01-01 00:00:00", tz = "UTC"), as.POSIXct("2016-01-01 0:08:00", tz = "UTC"), "2 mins"),
+                    depth = c(2, 4, 6, 8, 10))
+  ans$depth <- arc$depth[1:4]
+  expect_equal(acs_setup_obs(acc, .archival = arc, .step = "2 mins", .mobility = 500) |> as.data.frame(),
                ans |> as.data.frame())
 
 })

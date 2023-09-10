@@ -141,7 +141,7 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
 
 #' @title Set up detection containers
 #' @description This function defines receiver detection containers.
-#' @param .grid A [`SpatRaster`].
+#' @param .bathy A [`SpatRaster`].
 #' @param .moorings A [`data.table`]
 #'
 #' @details Details
@@ -160,10 +160,12 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
 #' terra::plot(containers[[dat_moorings$receiver_id[1]]])
 #' points(dat_moorings$receiver_easting[1], dat_moorings$receiver_northing[1])
 #'
+#' @source This function is based on the [`acs_setup_containers`](https://edwardlavender.github.io/flapper/reference/acs_setup_containers.html) function in the [flapper](https://github.com/edwardlavender/flapper) package.
+#'
 #' @author Edward Lavender
 #' @export
 
-acs_setup_detection_containers <- function(.grid, .moorings) {
+acs_setup_detection_containers <- function(.bathy, .moorings) {
 
   # TO DO
   # Add checks
