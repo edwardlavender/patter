@@ -23,7 +23,7 @@ test_that(".acs_absences() and .acs_given_detection() works", {
   overlaps <- acs_setup_detection_overlaps(containers, m, s)
   kernels <- acs_setup_detection_kernels(m, s, acs_setup_detection_pr, gebco)
 
-  #### Implement tests
+  #### Test .acs_absences()
   # Detections only at 3 indicate absences at 4
   (.acs_absences("2016-01-02", 3, overlaps) == 4) |> expect_true()
   (.acs_absences("2016-01-03", 3, overlaps) == 4) |> expect_true()
@@ -43,5 +43,31 @@ test_that(".acs_absences() and .acs_given_detection() works", {
     .acs_absences(date, c(3, 4), overlaps) |> expect_null()
     .acs_absences(date, 5, overlaps) |> expect_null()
   })
+
+  #### Test .acs_given_detection()
+
+  # Test detection at receiver 3 only
+  a <- kernels$receiver_specific_kernels[[3]]
+  b <- .acs_given_detection(.detections = 3, .absences = NULL, .kernels = kernels)
+  names(a) <- names(b) <- "z"
+  terra::all.equal(a, b) |> expect_true()
+
+  # Test detection at receiver 3 only with .zero_to_na = TRUE
+  a <- terra::classify(a, cbind(0, NA))
+  b <- .acs_given_detection(.detections = 3, .absences = NULL, .kernels = kernels, .zero_to_na = TRUE)
+  names(a) <- names(b) <- "z"
+  terra::all.equal(a, b) |> expect_true()
+
+  # Test detection at receiver 3 and at receiver 4
+  a <- kernels$receiver_specific_kernels[[3]] * kernels$receiver_specific_kernels[[4]]
+  b <- .acs_given_detection(.detections = c(3, 4), .absences = NULL, .kernels = kernels)
+  names(a) <- names(b) <- "z"
+  terra::all.equal(a, b) |> expect_true()
+
+  # Test detection at receiver 3 and no detection at receiver 4
+  a <- kernels$receiver_specific_kernels[[3]] * kernels$receiver_specific_inv_kernels[[4]]
+  b <- .acs_given_detection(.detections = 3, .absences = 4, .kernels = kernels)
+  names(a) <- names(b) <- "z"
+  terra::all.equal(a, b) |> expect_true()
 
 })
