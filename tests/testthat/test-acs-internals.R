@@ -21,7 +21,7 @@ test_that(".acs_absences() and .acs_given_detections() works", {
   #### Define overlaps & kernels
   containers <- acs_setup_detection_containers(gebco, m)
   overlaps <- acs_setup_detection_overlaps(containers, m, s)
-  kernels <- acs_setup_detection_kernels(m, s, gebco)
+  kernels <- acs_setup_detection_kernels(m, s, acs_setup_detection_pr, gebco)
 
   #### Implement tests
   # Detections only at 3 indicate absences at 4
@@ -32,10 +32,10 @@ test_that(".acs_absences() and .acs_given_detections() works", {
 
   # Detections at 4 indicate absences at 3
   .acs_absences("2016-01-01", 4, overlaps) |> expect_null()
-  .acs_absences("2016-01-02", 4, overlaps) |> expect_null()
-  .acs_absences("2016-01-03", 4, overlaps) |> expect_null()
-  .acs_absences("2016-01-04", 4, overlaps) |> expect_null()
-  .acs_absences("2016-01-05", 4, overlaps) |> expect_null()
+  (.acs_absences("2016-01-02", 4, overlaps) == 3) |> expect_true()
+  (.acs_absences("2016-01-03", 4, overlaps) == 3) |> expect_true()
+  (.acs_absences("2016-01-04", 4, overlaps) == 3) |> expect_true()
+  (.acs_absences("2016-01-05", 4, overlaps) == 3) |> expect_true()
 
   # Detections both 3 and 4, or at 5, are always isolated
   dates <- c("2016-01-02", "2016-01-03", "2016-01-04", "2016-01-05")

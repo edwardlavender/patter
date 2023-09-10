@@ -61,6 +61,14 @@ test_that("acs_setup_detection_containers() and acs_setup_detection_overlaps() w
 
 })
 
+test_that("acs_setup_detection_pr() works", {
+  m <- dat_moorings[1, , drop = FALSE]
+  p <- acs_setup_detection_pr(m, dat_gebco())
+  expect_equal(terra::extract(p, data.frame(m$receiver_easting, m$receiver_northing))[1, 2],
+               stats::plogis(2.5 + -0.02 * 0))
+
+})
+
 
 test_that("acs_setup_detection_kernels() works", {
 
@@ -76,27 +84,6 @@ test_that("acs_setup_detection_kernels() works", {
                   service_start = as.Date(c("2016-01-01", "2016-01-01")),
                   service_end = as.Date(c("2016-01-01", "2016-01-01")))
 
-  #### Define function to calculate detection probability
-  acs_setup_detection_pr <- function(.data, .bathy, ...) {
-
-    # Define helper function to calculate detection probability give distance
-    calc_dpr <- function(distance) {
-      pr <- stats::plogis(2.5 + -0.02 * distance)
-      pr[distance > .data$receiver_range] <- 0
-      pr
-    }
-    # Calculate Euclidean distance around receiver
-    rxy <- matrix(c(.data$receiver_easting, .data$receiver_northing), ncol = 2)
-    cell <- terra::cellFromXY(.bathy, rxy)
-    grid <- terra::setValues(.bathy, NA)
-    grid[cell] <- 1
-    dist <- terra::distance(grid, unit = "m")
-    # terra::plot(dist)
-    dist <- terra::mask(dist, .bathy)
-    # terra::plot(dist)
-    # Convert distances to detection pr
-    terra::app(dist, calc_dpr)
-  }
   # Examine output of function for example receiver
   pr <- lapply(seq_len(max(m$receiver_id)), function(id) {
     if (!(id %in% m$receiver_id)) return(NULL)
