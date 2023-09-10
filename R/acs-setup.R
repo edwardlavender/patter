@@ -146,7 +146,7 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
 #'
 #' @details Receiver detection containers are the regions within which an individual must be located, given a detection at a receiver. This function defines detection containers simply as a circular buffer (of distance `.moorings$receiver_range`) around receivers, masked by `.bathy` (e.g., land). Receiver detection containers are used to determine receiver overlaps (via [`acs_setup_detection_overlaps()`]), which are used in the AC* algorithms in detection probability calculations.
 #'
-#' @return The function returns a named `list`, with one element for each integer from `1:max(moorings$receiver_id)`. Any list elements that do not correspond to receivers contain a `NULL` element. List elements that correspond to receivers contain a `SpatRaster` that defines the detection container around that receiver.
+#' @return The function returns a named `list`, with one element for each integer from `1:max(moorings$receiver_id)`. Any list elements that do not correspond to receivers contain a `NULL` element. List elements that correspond to receivers contain a [`SpatRaster`] that defines the detection container around that receiver.
 #'
 #' @examples
 #' #### Example (1): Use constant receiver detection ranges
@@ -165,9 +165,8 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
 #' dat_moorings$receiver_range[1] <- 100
 #' dat_moorings$receiver_range[2] <- 1000
 #' containers <- acs_setup_detection_containers(grid, dat_moorings)
-#' terra::plot(containers[[dat_moorings$receiver_id[1]]], col = "red)
+#' terra::plot(containers[[dat_moorings$receiver_id[1]]], col = "red")
 #' terra::lines(terra::as.polygons(containers[[dat_moorings$receiver_id[2]]]), col = "blue")
-#'
 #'
 #' @source This function is based on the [`acs_setup_containers`](https://edwardlavender.github.io/flapper/reference/acs_setup_containers.html) function in the [flapper](https://github.com/edwardlavender/flapper) package.
 #'
@@ -221,15 +220,14 @@ acs_setup_detection_containers <- function(.bathy, .moorings) {
 #' @details In the AC* algorithms, at the moment of detection, the set of possible locations depends on the receiver(s) at which an individual is, and is not, detected. The outputs of this function are used to restrict the probability calculations to the set of receivers that overlap with the receiver(s) at which an individual is detected for improved efficiency.
 #'
 #' @return The function returns a named `list` with two elements:
-#' * `overlap_by_receiver` is `list`, with one element for all integers from `1:max(.containers$receiver_id)`. Any elements that do not correspond to receivers contain a `NULL` element. List elements that correspond to receivers contain a `data.frame` that defines, for each day over the deployment period (defined in `timestamp') of that receiver (defined in `receiver_id'), whether (1) or not (0) that receiver overlapped in space with every other receiver (defined in the remaining columns by their receiver IDs).
-#' * `overlap_by_date` is a named `list`, with one element for each `Date` from the start until the end of the study `(min(.containers$receiver_start_date):max(.containers$receiver_end_date))`, that records an integer vector of all receivers with overlapping containers on that date. In this vector, each receiver overlaps with at least one other receiver (but not every receiver will necessarily overlap with every other receiver).
+#' * **`overlap_by_receiver`** is `list`, with one element for all integers from `1:max(.moorings$receiver_id)`. Any elements that do not correspond to receivers contain a `NULL` element. List elements that correspond to receivers contain a `data.frame` that defines, for each day over the deployment period (defined in `timestamp`) of that receiver (defined in `receiver_id`), whether (1) or not (0) that receiver overlapped in space with every other receiver (defined in the remaining columns by their receiver IDs).
+#' * **`overlap_by_date`** is a named `list`, with one element for each `Date` from the start until the end of the study `(min(.moorings$receiver_start_date):max(.moorings$receiver_end_date))`, that records an integer vector of all receivers with overlapping containers on that date. In this vector, each receiver overlaps with at least one other receiver (but not every receiver will necessarily overlap with every other receiver).
 #'
 #' @examples
 #' #### Example (1): Basic implementation
 #' # Define detection containers
 #' dat_moorings$receiver_range <- 500
 #' containers <- acs_setup_detection_containers(dat_gebco(), dat_moorings)
-#'
 #' # Identify receiver overlaps
 #' overlaps <- acs_setup_detection_overlaps(containers, dat_moorings)
 #' summary(overlaps)

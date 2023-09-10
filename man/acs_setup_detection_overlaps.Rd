@@ -29,8 +29,8 @@ acs_setup_detection_overlaps(.containers, .moorings, .services = NULL)
 \value{
 The function returns a named \code{list} with two elements:
 \itemize{
-\item \code{overlap_by_receiver} is \code{list}, with one element for all integers from \code{1:max(.containers$receiver_id)}. Any elements that do not correspond to receivers contain a \code{NULL} element. List elements that correspond to receivers contain a \code{data.frame} that defines, for each day over the deployment period (defined in \verb{timestamp') of that receiver (defined in }receiver_id'), whether (1) or not (0) that receiver overlapped in space with every other receiver (defined in the remaining columns by their receiver IDs).
-\item \code{overlap_by_date} is a named \code{list}, with one element for each \code{Date} from the start until the end of the study \code{(min(.containers$receiver_start_date):max(.containers$receiver_end_date))}, that records an integer vector of all receivers with overlapping containers on that date. In this vector, each receiver overlaps with at least one other receiver (but not every receiver will necessarily overlap with every other receiver).
+\item \strong{\code{overlap_by_receiver}} is \code{list}, with one element for all integers from \code{1:max(.moorings$receiver_id)}. Any elements that do not correspond to receivers contain a \code{NULL} element. List elements that correspond to receivers contain a \code{data.frame} that defines, for each day over the deployment period (defined in \code{timestamp}) of that receiver (defined in \code{receiver_id}), whether (1) or not (0) that receiver overlapped in space with every other receiver (defined in the remaining columns by their receiver IDs).
+\item \strong{\code{overlap_by_date}} is a named \code{list}, with one element for each \code{Date} from the start until the end of the study \code{(min(.moorings$receiver_start_date):max(.moorings$receiver_end_date))}, that records an integer vector of all receivers with overlapping containers on that date. In this vector, each receiver overlaps with at least one other receiver (but not every receiver will necessarily overlap with every other receiver).
 }
 }
 \description{
@@ -44,7 +44,6 @@ In the AC* algorithms, at the moment of detection, the set of possible locations
 # Define detection containers
 dat_moorings$receiver_range <- 500
 containers <- acs_setup_detection_containers(dat_gebco(), dat_moorings)
-
 # Identify receiver overlaps
 overlaps <- acs_setup_detection_overlaps(containers, dat_moorings)
 summary(overlaps)
