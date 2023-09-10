@@ -1,4 +1,4 @@
-test_that(".acs_absences() and .acs_given_detections() works", {
+test_that(".acs_absences() and .acs_given_detection() works", {
 
   #### Define example 'moorings' dataset
   # receivers 3 and 4 overlap in space but receiver 5 is further afield
