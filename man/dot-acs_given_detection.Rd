@@ -4,7 +4,7 @@
 \alias{.acs_given_detection}
 \title{AC* helper: Define the individual's location given the data}
 \usage{
-.acs_given_detection(.detections, .absences, .kernels)
+.acs_given_detection(.detections, .absences, .kernels, .zero_to_na = FALSE)
 }
 \arguments{
 \item{.detections}{An integer vector of the receiver(s) that recorded detections at a given time step.}
@@ -12,6 +12,8 @@
 \item{.absences}{An integer vector of the remaining, overlapping receiver(s) that did not record a detection, from \code{\link[=.acs_absences]{.acs_absences()}}.}
 
 \item{.kernels}{A list from \code{\link{acs_setup_detection_kernels}}.}
+
+\item{.zero_to_na}{A logical variable that defines whether or not to classify zeros as NAs. This should be \code{FALSE} for defining \code{given_data} in \code{\link[=.acs]{.acs()}}, so that it is correctly masked, but \code{TRUE} for defining \code{next_kernel} in \code{\link[=.acs]{.acs()}}, so that it is correctly buffered.}
 }
 \description{
 This function defines an (unnormalised) probability surface that defines the possible locations of an individual given one or more detections.

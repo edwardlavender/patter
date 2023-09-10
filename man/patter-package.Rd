@@ -4,20 +4,45 @@
 \name{patter-package}
 \alias{patter}
 \alias{patter-package}
-\title{patter: Movement Modelling For Passive Acoustic Telemetry}
+\title{\code{\link{patter}}: Movement Modelling For Passive Acoustic Telemetry}
 \description{
-A new implementation of the 'flapper' family of algorithms for passive acoustic telemetry.
+\code{\link{patter}} is a re-implementation of the \href{https://github.com/edwardlavender/flapper}{flapper} family of algorithms for passive acoustic telemetry that simpler, faster and better tested than its \href{https://github.com/edwardlavender/flapper}{predecessor}.
+}
+\section{Workflow}{
+To implement the depth-contour algorithm, use:
+\itemize{
+\item \code{\link[=dc]{dc()}} to implement the algorithm;
+}
+
+To implement the acoustic-centroid (AC) or acoustic-container depth-contour (ACDC) algorithms, use:
+\itemize{
+\item \code{\link[=acs_setup_obs]{acs_setup_obs()}} to set up observations;
+\item \code{\link[=acs_setup_detection_containers]{acs_setup_detection_containers()}} to set up detection containers;
+\item \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}} to set up detection overlaps;
+\item \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}} to set up detection kernels;
+\item \code{\link[=ac]{ac()}} or \code{\link[=acdc]{acdc()}} to implement the algorithm(s);
+}
+
+To implement particle filtering, use:
+\itemize{
+\item \code{\link[=pf_setup_record]{pf_setup_record()}} to set up the record;
+\item \code{\link[=pf]{pf()}} to implement particle filtering;
+}
+}
+
+\references{
+Lavender, E. et al. (2023). An integrative modelling framework for passive acoustic telemetry. Methods in Ecology and Evolution. \url{https://doi.org/10.1111/2041-210X.14193}.
 }
 \seealso{
-Useful links:
 \itemize{
-  \item \url{https://github.com/edwardlavender/patter/}
-  \item Report bugs at \url{https://github.com/edwardlavender/patter/issues/}
+\item For information on the \href{https://github.com/edwardlavender/flapper}{flapper} algorithms, see Lavender et al. (\href{https://doi.org/10.1111/2041-210X.14193}{2023}).
+\item For information on \code{\link{patter}}'s predecessor, see \url{https://github.com/edwardlavender/flapper}.
+\item For further information on  \code{\link{patter}}, see \url{https://github.com/edwardlavender/patter}.
+\item For feature requests and bug reports, see \url{https://github.com/edwardlavender/patter/issues}.
+\item For support, contact \href{mailto:[edward.lavender@eawag.ch}{edward.lavender@eawag.ch}.
 }
-
 }
 \author{
-\strong{Maintainer}: Edward Lavender \email{edward.lavender@eawag.ch} (\href{https://orcid.org/0000-0002-8040-7489}{ORCID})
-
+Edward Lavender (\href{https://orcid.org/0000-0002-8040-7489}{ORCID})
 }
 \keyword{internal}

@@ -20,7 +20,7 @@ msg <- function(...) {
 }
 
 #' @rdname signal
-#' @keywords internalg
+#' @keywords internal
 
 warn <- function(...) {
   warning(glue::glue(...), immediate. = TRUE, call. = FALSE)
