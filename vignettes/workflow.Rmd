@@ -1,0 +1,98 @@
+---
+title: "A streamlined implementation of the `flapper` algorithms"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{A streamlined implementation of the `flapper` algorithms}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction 
+
+```{r setup}
+library(patter)
+library(data.table)
+library(dtplyr)
+library(dplyr, warn.conflicts = FALSE)
+```
+
+# Collate data 
+
+```{r}
+
+gebco <- dat_gebco()
+
+moorings <- 
+  dat_moorings |> 
+  mutate(receiver_range = 500) |> 
+  as.data.table()
+
+acoustics <- 
+  dat_acoustics |>
+  filter(individual_id == 25) |>
+  slice(1:1000) |>
+  as.data.table()
+
+archival  <-
+  dat_archival |> 
+  filter(individual_id == acoustics$individual_id[1]) |> 
+  filter(timestamp >= min(acoustics$timestamp) & 
+           timestamp <= max(acoustics$timestamp)) |> 
+  as.data.table()
+
+
+```
+
+# DC algorithm
+
+* TO DO
+
+# AC* algorithms 
+
+## Prepare data 
+
+```{r}
+obs <- acs_setup_obs(acoustics, archival, .step = "2 mins", .mobility = 500)
+head(obs)
+```
+
+## Prepare inputs
+
+```{r}
+containers <- acs_setup_detection_containers(gebco, moorings)
+overlaps   <- acs_setup_detection_overlaps(containers, moorings)
+kernels    <- acs_setup_detection_kernels(moorings, 
+                                          .calc_detection_pr = acs_setup_detection_pr, 
+                                          .bathy = gebco)
+```
+
+## AC algorithm
+
+```{r, eval = FALSE}
+out_ac <- patter:::.acs(obs,
+               bathy = gebco, 
+               detection_overlaps = overlaps, 
+               detection_kernels = kernels, 
+               save_cumulative = TRUE, 
+               save_record = TRUE)
+```
+
+## ACDC algorithm
+
+# PF
+
+* TO DO
+
+# Troubleshooting
+
+* TO DO
+
+---
+
