@@ -103,7 +103,6 @@ test_that("acs_setup_detection_kernels() works", {
     acs_setup_detection_pr(m[m$receiver_id == id, , drop = FALSE], dat_gebco())
   })
 
-
   #### Implement function
   k <- acs_setup_detection_kernels(m, s,
                                    .calc_detection_pr = acs_setup_detection_pr,

@@ -27,10 +27,39 @@ test_that("check_*() functions work", {
   expect_error(check_services(services, dat_moorings))
 
   #### check_acoustics()
-  check_acoustics(dat_acoustics)
+  # Check pass
+  check_acoustics(dat_acoustics[individual_id == 25, ])
+  # Fail on class
+  expect_error(check_acoustics(data.frame(timestamp = as.POSIXct("2016-01-01"), receiver_id = "A")))
+  # Fail on column names
+  expect_error(check_acoustics(data.table(blah = as.POSIXct("2016-01-01"), receiver_id = "A")))
+  # Fail on column types
+  expect_error(check_acoustics(data.table(timestamp = as.POSIXct("2016-01-01"), receiver_id = "A")))
+  # Fail on NAs
+  expect_error(check_acoustics(data.table(timestamp = as.POSIXct("2016-01-01"), receiver_id = NA_integer_)))
+  # Fail on multiple individuals
+  expect_error(check_acoustics(dat_acoustics))
+  # Fail on time stamp ordering
+  expect_error(check_acoustics(data.table(timestamp = as.POSIXct(c("2016-01-01", "2015-01-01")), receiver_id = 1:2L)))
 
-  # check_archival()
-  check_archival(dat_archival)
+  #### check_archival()
+  # Check pass
+  check_archival(dat_archival[individual_id == 25, ])
+  # Fail on class
+  expect_error(check_archival(data.frame(timestamp = as.POSIXct("2016-01-01"), depth = 1)))
+  # Fail on column names
+  expect_error(check_archival(data.table(blah = as.POSIXct("2016-01-01"), depth = 1)))
+  # Fail on column types
+  expect_error(check_archival(data.table(timestamp = as.Date("2016-01-01"), depth = 1)))
+  # Fail on NAs
+  expect_error(check_archival(data.table(timestamp = as.POSIXct("2016-01-01"), depth = NA_real_)))
+  # Fail on multiple individuals
+  expect_error(check_archival(dat_archival))
+  # Fail on time stamp ordering
+  expect_error(check_archival(data.table(timestamp = as.POSIXct(c("2016-01-01", "2015-01-01")), depth = c(1, 2.3))))
+  expect_error(check_archival(data.table(timestamp = as.POSIXct(c("2016-01-01", "2016-01-02", "2016-01-04")), depth = c(1, 2.3, 3))))
+  # Fail on depth values
+  expect_error(check_archival(data.table(timestamp = as.POSIXct("2016-01-01"), depth = -1)))
 
 
   })

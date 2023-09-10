@@ -9,7 +9,7 @@
 #' check_dir_exists(file.path(tempdir(), "blah")) # error
 #' }
 #' @author Edward Lavender
-#' @export
+#' @keywords internal
 
 check_dir_exists <- function(x, type = c("abort", "warn")) {
   type <- match.arg(type)
@@ -157,9 +157,21 @@ check_acoustics <- function(.acoustics) {
   # Check class
   check_inherits(.acoustics, "data.table")
   # Check required columns
-  # TO DO
+  check_names(.acoustics, req = c("timestamp", "receiver_id"))
+  check_inherits(.acoustics$timestamp, "POSIXct")
+  check_inherits(.acoustics$receiver_id, "integer")
+  # Check for NAs
+  if (any(is.na(.acoustics))) {
+    abort("The acoustic data contains NAs.")
+  }
+  # Check for multiple individuals
+  if (rlang::has_name(.acoustics, "individual_id") && length(unique(.acoustics$individual_id)) > 1L) {
+    abort("Multiple individuals detected in acoustic data.")
+  }
   # Check sorted
-  # TO DO
+  if (is.unsorted(.acoustics$timestamp)) {
+    abort("Acoustic time stamps should be ordered chronologically.")
+  }
   invisible(.acoustics)
 }
 
@@ -171,9 +183,29 @@ check_archival <- function(.archival) {
     # Check class
     check_inherits(.archival, "data.table")
     # Check required columns
-    # TO DO
+    check_names(.archival, req = c("timestamp", "depth"))
+    check_inherits(.archival$timestamp, "POSIXct")
+    check_inherits(.archival$depth, "numeric")
+    # Check for NAs
+    if (any(is.na(.archival))) {
+      abort("The archival data contains NAs.")
+    }
+    # Check for multiple individuals
+    if (rlang::has_name(.archival, "individual_id") && length(unique(.archival$individual_id)) > 1L) {
+      abort("Multiple individuals detected in acoustic data.")
+    }
     # Check sorted
-    # TO DO
+    if (is.unsorted(.archival$timestamp)) {
+      abort("Archival time stamps should be ordered chronologically.")
+    }
+    # Check regularity
+    if (nrow(.archival) > 1 && length(unique(diff(.archival$timestamp))) != 1L) {
+      abort("Archival time steps are assumed to be regularly spaced.")
+    }
+    # Check depths
+    if (any(.archival$depth < 0)) {
+      abort("Archival depths should be a positive-valued numeric vector and not negative.")
+    }
   }
   invisible(.archival)
 }

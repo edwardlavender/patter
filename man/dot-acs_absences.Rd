@@ -7,14 +7,14 @@
 .acs_absences(.date, .detections, .overlaps)
 }
 \arguments{
-\item{.date}{A character that defines the date (e.g., \code{obs$date[t]} internally in \code{\link[=.acs]{.acs()}}).}
+\item{.date}{A \code{character} that defines the date (e.g., \code{obs$date[t]} internally in \code{\link[=.acs]{.acs()}}).}
 
 \item{.detections}{An \code{integer} vector that defines the receiver(s) that recorded detection(s) at the current time step (e.g., \code{recs_current} or \code{recs_next} internally in \code{\link[=.acs]{.acs()}}).}
 
-\item{.overlaps}{A named list from \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}} that defines receiver overlaps (e.g., \code{detection_overlaps} internally in \code{\link[=.acs]{.acs()}}). \code{NULL} is permitted.}
+\item{.overlaps}{A named \code{list} from \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}} that defines receiver overlaps (e.g., \code{detection_overlaps} internally in \code{\link[=.acs]{.acs()}}). \code{NULL} is permitted.}
 }
 \value{
-The function returns an integer vector that defines the set of receivers that overlap with \code{detections} but did not record detections. \code{NULL} indicates no overlapping receivers.
+The function returns an \code{integer} vector that defines the set of receivers that overlap with \code{.detections} but did not record detections. \code{NULL} indicates no overlapping receivers.
 }
 \description{
 Given a detection at one or more receivers on a given date, this function defines the set of remaining, active, overlapping receivers that did not record detections.

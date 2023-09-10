@@ -1,14 +1,45 @@
-#' @title Set up movement datasets
-#' @description TO DO
-#' @param .acoustics A [`data.table`]
-#' @param .archival A [`data.table`]
-#' @param .step An character
-#' @param .mobility A number that defines ...
-
-#' @return The function returns a [`data.table`].
+#' @title AC* setup: Set up movement datasets
+#' @description This function proccess passive acoustic telemetry detections and (optionally) archival time series for use in AC-branch algorithms.
+#' @param .acoustics A [`data.table`] that defines passive acoustic telemetry detections (see [`dat_acoustics`] for an example) for a single individual. At a minimum, this must contain a `timestamp` column (an ordered, `POSIXct` vector that defines the times of detections) and `receiver_id` (an `integer` vector that defines the receiver(s) that recorded detections).
+#' @param .archival (optional) A [`data.table`] that defines depth (m) observations (see [`dat_archival`] for an example) for the same individual. At a minimum, this must contain a `timestamp` column (as in `.acoustics`) and a `depth` column (a positive-valued `numeric` vector that defines the individual's depth (m) below the surface at each time step).
+#' @param .step An character, passed to [`lubridate::period()`], [`lubridate::round_date()`] and [`seq()`] that defines the duration between sequential time steps (e.g., `"2 mins"`). If `.archival` is supplied, `.step` should be the duration between sequential depth observations.
+#' @param .mobility A number that defines the maximum (Euclidean) distance the individual could move in `.step`.
+#'
+#' @details This function implements the following routines:
+#' * Acoustic time series are rounded to the nearest `.step`;
+#' * All receivers that recorded detection(s) in each time interval are listed;
+#' * Duplicate detections (at the same receiver in the same time interval) are dropped;
+#' * Archival time series, if provided, are defined over the same time interval and both sets of time series are aligned;
+#' * Acoustic and archival time series are merged and ordered by time stamp;
+#' * Information required by the AC* algorithms (utimately [`.acs()`]) is added;
+#'
+#' @return The function returns a [`data.table`] with the following columns:
+#' * `timestep`---an `integer` that defines the time step;
+#' * `timestamp`---a regular sequences of `POSIXct` time stamps;
+#' * `date`---a `character` that defines the date;
+#' * `detection_id`---an `integer` vector that uniquely defines each detection;
+#' * `detection`---an `integer` that distinguishes the time steps at which detections were (1) or were not (0) recorded;
+#' * `receiver_id`---a `list` that defines the receiver(s) that recorded detections at each time step;
+#' * `buffer_past`---a `double` that controls container growth from the past to the present;
+#' * `buffer_future`---a `double` that controls container shrinkage from the future to the present;
+#' * `depth`---if `.archival` is provided, `depth` is a number that defines the individual's depth (m) at each time step;
 #'
 #' @examples
+#' #### Define example datasets
+#' acoustics <- dat_acoustics[dat_acoustics$individual_id == 25, ]
+#' archival  <- dat_archival[dat_archival$individual_id == 25, ]
 #'
+#' #### Example (1): Implement the function for acoustic time series only
+#' obs <- acs_setup_obs(acoustics, .step = "2 mins", .mobility = 500)
+#' utils::head(obs)
+#'
+#' #### Example (2): Use alternative step lengths & mobilities
+#' obs <- acs_setup_obs(acoustics, .step = "4 mins", .mobility = 1000)
+#' utils::head(obs)
+#'
+#' #### Example (3): Implement the function for acoustic & archival time series
+#' obs <- acs_setup_obs(acoustics, archival, .step = "2 mins", .mobility = 500)
+#' utils::head(obs)
 #' @author Edward Lavender
 #' @export
 
@@ -17,11 +48,15 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
   #### Check user inputs
   check_acoustics(.acoustics)
   check_archival(.archival)
-
-  #### Assumptions
-  # * TO DO
-  # * Improve checks in due course
-  # * .archival time series are spaced step apart (important for alignment)
+  check_inherits(.step, "character")
+  if (!is.null(.archival)) {
+    # Check archival time series are spaced `.step` apart
+    .step_req <- as.integer(lubridate::seconds(lubridate::period(.step)))
+    .step_obs <- as.numeric(difftime(.archival$timestamp[2], .archival$timestamp[1], .step, units = "secs"))
+    if (!isTRUE(all.equal(.step_req, .step_obs))) {
+      abort("Archival time series are not spaced `.step` ('{.step}') units apart (observed step: {.step_obs} units).")
+    }
+  }
 
   #### Process acoustics
   # * Round time series & drop duplicates
@@ -45,14 +80,19 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
 
   #### Align time series
   if (!is.null(.archival)) {
+    # Filter acoustics by archival time series
     .acoustics <-
       .acoustics |>
       filter(.data$timestamp >= min(.archival$timestamp) &
                .data$timestamp <= max(.archival$timestamp))
+    # Filter archival time series by acoustic time series
     .archival <-
       .archival |>
       filter(.data$timestamp >= min(.acoustics$timestamp) &
                .data$timestamp <= max(.acoustics$timestamp))
+    if (nrow(.acoustics) == 0L | nrow(.archival) == 0L) {
+      abort("There are no remaining observations after aligning the acoustic and archival time series.")
+    }
   }
 
   #### Define output time series with acoustic & archival data
@@ -82,12 +122,12 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
            buffer_future = .mobility * .data$step_backwards) |>
     ungroup() |>
     arrange(.data$timestamp) |>
-    mutate(timestep = dplyr::row_number(),) |>
+    mutate(timestep = dplyr::row_number()) |>
     select(.data$timestep,
            .data$timestamp, .data$date,
            .data$detection_id, .data$detection, .data$receiver_id,
            .data$buffer_past, .data$buffer_future,
-           .data$depth) |>
+           dplyr::any_of("depth")) |>
     as.data.table()
 
 }
@@ -519,5 +559,3 @@ acs_setup_detection_kernels <-
     # Return outputs
     out
   }
-
-

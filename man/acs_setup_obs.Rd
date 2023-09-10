@@ -2,24 +2,63 @@
 % Please edit documentation in R/acs-setup.R
 \name{acs_setup_obs}
 \alias{acs_setup_obs}
-\title{Set up movement datasets}
+\title{AC* setup: Set up movement datasets}
 \usage{
 acs_setup_obs(.acoustics, .archival = NULL, .step, .mobility)
 }
 \arguments{
-\item{.acoustics}{A \code{\link{data.table}}}
+\item{.acoustics}{A \code{\link{data.table}} that defines passive acoustic telemetry detections (see \code{\link{dat_acoustics}} for an example) for a single individual. At a minimum, this must contain a \code{timestamp} column (an ordered, \code{POSIXct} vector that defines the times of detections) and \code{receiver_id} (an \code{integer} vector that defines the receiver(s) that recorded detections).}
 
-\item{.archival}{A \code{\link{data.table}}}
+\item{.archival}{(optional) A \code{\link{data.table}} that defines depth (m) observations (see \code{\link{dat_archival}} for an example) for the same individual. At a minimum, this must contain a \code{timestamp} column (as in \code{.acoustics}) and a \code{depth} column (a positive-valued \code{numeric} vector that defines the individual's depth (m) below the surface at each time step).}
 
-\item{.step}{An character}
+\item{.step}{An character, passed to \code{\link[lubridate:period]{lubridate::period()}}, \code{\link[lubridate:round_date]{lubridate::round_date()}} and \code{\link[=seq]{seq()}} that defines the duration between sequential time steps (e.g., \code{"2 mins"}). If \code{.archival} is supplied, \code{.step} should be the duration between sequential depth observations.}
 
-\item{.mobility}{A number that defines ...}
+\item{.mobility}{A number that defines the maximum (Euclidean) distance the individual could move in \code{.step}.}
 }
 \value{
-The function returns a \code{\link{data.table}}.
+The function returns a \code{\link{data.table}} with the following columns:
+\itemize{
+\item \code{timestep}---an \code{integer} that defines the time step;
+\item \code{timestamp}---a regular sequences of \code{POSIXct} time stamps;
+\item \code{date}---a \code{character} that defines the date;
+\item \code{detection_id}---an \code{integer} vector that uniquely defines each detection;
+\item \code{detection}---an \code{integer} that distinguishes the time steps at which detections were (1) or were not (0) recorded;
+\item \code{receiver_id}---a \code{list} that defines the receiver(s) that recorded detections at each time step;
+\item \code{buffer_past}---a \code{double} that controls container growth from the past to the present;
+\item \code{buffer_future}---a \code{double} that controls container shrinkage from the future to the present;
+\item \code{depth}---if \code{.archival} is provided, \code{depth} is a number that defines the individual's depth (m) at each time step;
+}
 }
 \description{
-TO DO
+This function proccess passive acoustic telemetry detections and (optionally) archival time series for use in AC-branch algorithms.
+}
+\details{
+This function implements the following routines:
+\itemize{
+\item Acoustic time series are rounded to the nearest \code{.step};
+\item All receivers that recorded detection(s) in each time interval are listed;
+\item Duplicate detections (at the same receiver in the same time interval) are dropped;
+\item Archival time series, if provided, are defined over the same time interval and both sets of time series are aligned;
+\item Acoustic and archival time series are merged and ordered by time stamp;
+\item Information required by the AC* algorithms (utimately \code{\link[=.acs]{.acs()}}) is added;
+}
+}
+\examples{
+#### Define example datasets
+acoustics <- dat_acoustics[dat_acoustics$individual_id == 25, ]
+archival  <- dat_archival[dat_archival$individual_id == 25, ]
+
+#### Example (1): Implement the function for acoustic time series only
+obs <- acs_setup_obs(acoustics, .step = "2 mins", .mobility = 500)
+utils::head(obs)
+
+#### Example (2): Use alternative step lengths & mobilities
+obs <- acs_setup_obs(acoustics, .step = "4 mins", .mobility = 1000)
+utils::head(obs)
+
+#### Example (3): Implement the function for acoustic & archival time series
+obs <- acs_setup_obs(acoustics, archival, .step = "2 mins", .mobility = 500)
+utils::head(obs)
 }
 \author{
 Edward Lavender

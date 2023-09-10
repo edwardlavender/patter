@@ -2,24 +2,24 @@
 % Please edit documentation in R/acs-internals.R
 \name{.acs_given_detection}
 \alias{.acs_given_detection}
-\title{AC* helper: Define the individual's location given the data}
+\title{AC* helper: Define the individual's location given detection(s)}
 \usage{
 .acs_given_detection(.detections, .absences, .kernels, .zero_to_na = FALSE)
 }
 \arguments{
-\item{.detections}{An integer vector of the receiver(s) that recorded detections at a given time step.}
+\item{.detections}{An \code{integer} vector of the receiver(s) that recorded detections at a given time step.}
 
-\item{.absences}{An integer vector of the remaining, overlapping receiver(s) that did not record a detection, from \code{\link[=.acs_absences]{.acs_absences()}}.}
+\item{.absences}{An \code{integer} vector of the remaining, overlapping receiver(s) that did not record a detection, from \code{\link[=.acs_absences]{.acs_absences()}}.}
 
-\item{.kernels}{A list from \code{\link{acs_setup_detection_kernels}}.}
+\item{.kernels}{A \code{list} from \code{\link{acs_setup_detection_kernels}}.}
 
-\item{.zero_to_na}{A logical variable that defines whether or not to classify zeros as NAs. This should be \code{FALSE} for defining \code{given_data} in \code{\link[=.acs]{.acs()}}, so that it is correctly masked, but \code{TRUE} for defining \code{next_kernel} in \code{\link[=.acs]{.acs()}}, so that it is correctly buffered.}
+\item{.zero_to_na}{A logical variable that defines whether or not to classify zeros as \code{NA}s. This should be \code{FALSE} for defining \code{given_data} in \code{\link[=.acs]{.acs()}}, so that this layer is correctly masked, but \code{TRUE} for defining \code{next_kernel} in \code{\link[=.acs]{.acs()}}, so that \code{next_kernel} is correctly buffered.}
 }
 \description{
-This function defines an (unnormalised) probability surface that defines the possible locations of an individual given one or more detections.
+This function defines an (unnormalised) probability surface that represents the possible locations of an individual given one or more detections.
 }
 \details{
-In the AC* algorithms, at the moment of detection, the probability kernels that describe the possible locations of an individual given the data depend on both the receivers that record detections and those that did not (eqn S5 in Lavender et al., 2023). This function solves eqn S5. For computational efficency, the equation is solved in a stepwise manor such that the number of necessary operations is kept to a minimum.
+In the AC* algorithms, at the moment of detection, the probability kernels that describe the possible locations of an individual given the data depend on both the receivers that record detections and those that did not (eqn S5 in Lavender et al., 2023). This function solves eqn S5. For computational efficiency, the equation is solved in a stepwise manor such that the number of necessary operations is kept to a minimum.
 }
 \section{Warning}{
 For speed, this function performs no internal checks.

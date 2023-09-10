@@ -3,6 +3,15 @@
 \name{.acs}
 \alias{.acs}
 \title{AC* algorithm back-end}
+\source{
+This function evolved from \code{.acs()} in the \href{https://github.com/edwardlavender/flapper}{flapper} package. Key developments include:
+\itemize{
+\item Implementation of the algorithm over a single timeline;
+\item Re-parameterisation of container dynamics at each time step with respect to the possible locations of the individual given the data, given the past and given the future;
+\item Exploitation of \code{\link{data.table}} and \code{\link{terra}} for substantially improved speed;
+\item The use of \code{\link[terra:buffer]{terra::buffer()}} to represent container dynamics, which is faster and removes the polygon versus grid discrepancy in \href{https://github.com/edwardlavender/flapper}{flapper};
+}
+}
 \usage{
 .acs(
   obs,
@@ -23,11 +32,11 @@
 
 \item{bathy}{A \code{\link{SpatRaster}} that defines the grid over which the algorithms are implemented.}
 
-\item{detection_overlaps}{A named list, from \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}}.}
+\item{detection_overlaps}{A named \code{list}, from \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}}.}
 
-\item{detection_kernels}{A list, from \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}.}
+\item{detection_kernels}{A \code{list}, from \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}.}
 
-\item{save_record, save_cumulative}{Logical inputs that control save options (for retaining outputs in memory).
+\item{save_record, save_cumulative}{Logical inputs that control options for saving outputs in memory.
 \itemize{
 \item \code{save_record} defines whether or not to save the record of the possible locations of the individual at each time step in the \code{record} element of the output;
 \item \code{save_cumulative} defines whether or not to save a cumulative (probability-of-use) map, derived from the normalised summation of each element in \code{record} in the \code{map} element of the output;
@@ -42,6 +51,9 @@
 \item{verbose}{A logical variable that defines whether or not to print messages to the console or to file to relay function progress. If \code{con = ""}, messages are printed to the console; otherwise, they are written to file (see below).}
 
 \item{con}{If \code{verbose = TRUE}, \code{con} is character string that defines the full pathway to a \code{.txt} file (which can be created on-the-fly) into which messages are written to relay function progress. This approach, rather than printing to the console, is recommended for clarity, speed and debugging.}
+}
+\value{
+The function returns an \code{\linkS4class{ac_record}} object.
 }
 \description{
 This function is the back-end of the acoustic-container and acoustic-container depth-contour algorithms.

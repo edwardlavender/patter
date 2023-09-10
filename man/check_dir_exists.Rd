@@ -26,3 +26,4 @@ check_dir_exists(file.path(tempdir(), "blah")) # error
 \author{
 Edward Lavender
 }
+\keyword{internal}

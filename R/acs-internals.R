@@ -1,14 +1,14 @@
 #' @title AC* helper: Define active, overlapping receivers with absences
 #' @description Given a detection at one or more receivers on a given date, this function defines the set of remaining, active, overlapping receivers that did not record detections.
-#' @param .date A character that defines the date (e.g., `obs$date[t]` internally in [`.acs()`]).
+#' @param .date A `character` that defines the date (e.g., `obs$date[t]` internally in [`.acs()`]).
 #' @param .detections An `integer` vector that defines the receiver(s) that recorded detection(s) at the current time step (e.g., `recs_current` or `recs_next` internally in [`.acs()`]).
-#' @param .overlaps A named list from [`acs_setup_detection_overlaps()`] that defines receiver overlaps (e.g., `detection_overlaps` internally in [`.acs()`]). `NULL` is permitted.
+#' @param .overlaps A named `list` from [`acs_setup_detection_overlaps()`] that defines receiver overlaps (e.g., `detection_overlaps` internally in [`.acs()`]). `NULL` is permitted.
 #' @details In the AC* algorithms, at the moment of detection, the probability kernels that describe the possible locations of an individual given the data depend on both the receivers that record detections and those that did not (eqn S5 in Lavender et al., 2023). This function is used to restrict the set of receivers to which eqn S5 needs to be applied.
 #'
 #' # Warning
 #' For speed, this function performs no internal checks.
 #'
-#' @return The function returns an integer vector that defines the set of receivers that overlap with `detections` but did not record detections. `NULL` indicates no overlapping receivers.
+#' @return The function returns an `integer` vector that defines the set of receivers that overlap with `.detections` but did not record detections. `NULL` indicates no overlapping receivers.
 #' @seealso This function defines the `absences` argument for [`.acs_given_detection()`].
 #' @author Edward Lavender
 #' @keywords internal
@@ -35,14 +35,15 @@
   absences
 }
 
-#' @title AC* helper: Define the individual's location given the data
-#' @description This function defines an (unnormalised) probability surface that defines the possible locations of an individual given one or more detections.
-#' @param .detections An integer vector of the receiver(s) that recorded detections at a given time step.
-#' @param .absences An integer vector of the remaining, overlapping receiver(s) that did not record a detection, from [`.acs_absences()`].
-#' @param .kernels A list from [`acs_setup_detection_kernels`].
-#' @param .zero_to_na A logical variable that defines whether or not to classify zeros as NAs. This should be `FALSE` for defining `given_data` in [`.acs()`], so that it is correctly masked, but `TRUE` for defining `next_kernel` in [`.acs()`], so that it is correctly buffered.
 
-#' @details In the AC* algorithms, at the moment of detection, the probability kernels that describe the possible locations of an individual given the data depend on both the receivers that record detections and those that did not (eqn S5 in Lavender et al., 2023). This function solves eqn S5. For computational efficency, the equation is solved in a stepwise manor such that the number of necessary operations is kept to a minimum.
+#' @title AC* helper: Define the individual's location given detection(s)
+#' @description This function defines an (unnormalised) probability surface that represents the possible locations of an individual given one or more detections.
+#' @param .detections An `integer` vector of the receiver(s) that recorded detections at a given time step.
+#' @param .absences An `integer` vector of the remaining, overlapping receiver(s) that did not record a detection, from [`.acs_absences()`].
+#' @param .kernels A `list` from [`acs_setup_detection_kernels`].
+#' @param .zero_to_na A logical variable that defines whether or not to classify zeros as `NA`s. This should be `FALSE` for defining `given_data` in [`.acs()`], so that this layer is correctly masked, but `TRUE` for defining `next_kernel` in [`.acs()`], so that `next_kernel` is correctly buffered.
+
+#' @details In the AC* algorithms, at the moment of detection, the probability kernels that describe the possible locations of an individual given the data depend on both the receivers that record detections and those that did not (eqn S5 in Lavender et al., 2023). This function solves eqn S5. For computational efficiency, the equation is solved in a stepwise manor such that the number of necessary operations is kept to a minimum.
 #'
 #' # Warning
 #' For speed, this function performs no internal checks.
@@ -82,9 +83,9 @@
 #' @description This function is the back-end of the acoustic-container and acoustic-container depth-contour algorithms.
 #' @param obs A [`data.table`] with observations, from [`acs_setup_obs()`].
 #' @param bathy A [`SpatRaster`] that defines the grid over which the algorithms are implemented.
-#' @param detection_overlaps A named list, from [`acs_setup_detection_overlaps()`].
-#' @param detection_kernels A list, from [`acs_setup_detection_kernels()`].
-#' @param save_record,save_cumulative Logical inputs that control save options (for retaining outputs in memory).
+#' @param detection_overlaps A named `list`, from [`acs_setup_detection_overlaps()`].
+#' @param detection_kernels A `list`, from [`acs_setup_detection_kernels()`].
+#' @param save_record,save_cumulative Logical inputs that control options for saving outputs in memory.
 #' * `save_record` defines whether or not to save the record of the possible locations of the individual at each time step in the `record` element of the output;
 #' * `save_cumulative` defines whether or not to save a cumulative (probability-of-use) map, derived from the normalised summation of each element in `record` in the `map` element of the output;
 #' @param write_record A named list, passed to [`terra::writeRaster`], to save the `record` `SpatRaster`s to file at each time step. The `filename` argument should define the directory in which to write files. Files are named by time step (i.e., 1.tif, 2.tif, ..., N.tif).
@@ -92,9 +93,13 @@
 #' @param prompt A logical variable that defines whether or not a user prompt is required between time steps. If provided, the function plots the possible locations of the individual at each time step. This is useful for diagnostics.
 #' @param verbose A logical variable that defines whether or not to print messages to the console or to file to relay function progress. If `con = ""`, messages are printed to the console; otherwise, they are written to file (see below).
 #' @param con If `verbose = TRUE`, `con` is character string that defines the full pathway to a `.txt` file (which can be created on-the-fly) into which messages are written to relay function progress. This approach, rather than printing to the console, is recommended for clarity, speed and debugging.
-#' @return
+#' @return The function returns an [`ac_record-class`] object.
 #'
-#' @examples
+#' @source This function evolved from `.acs()` in the [flapper](https://github.com/edwardlavender/flapper) package. Key developments include:
+#' * Implementation of the algorithm over a single timeline;
+#' * Re-parameterisation of container dynamics at each time step with respect to the possible locations of the individual given the data, given the past and given the future;
+#' * Exploitation of [`data.table`] and [`terra`] for substantially improved speed;
+#' * The use of [`terra::buffer()`] to represent container dynamics, which is faster and removes the polygon versus grid discrepancy in [flapper](https://github.com/edwardlavender/flapper);
 #'
 #' @seealso For internal helpers, see [`.acs_absences()`] and [`.acs_given_detection()`].
 #' @author Edward Lavender
@@ -312,5 +317,3 @@
   out
 
 }
-
-
