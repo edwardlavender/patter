@@ -343,10 +343,51 @@ acs_setup_detection_overlaps <- function(.containers, .moorings, .services = NUL
   out <- list()
   out$list_by_receiver <- list_by_receiver
   out$list_by_date <- list_by_date
-  return(out)
-
-
+  out
 }
+
+
+#' @title AC* set up: Calculate detection probability around a receiver
+#' @description This function is an example detection probability function, of the kind required by [`acs_setup_detection_kernels()`].
+#' @param .data A one-row [`data.table`] that defines the location of the receiver and associated information used by the model of detection probability.
+#' @param .bathy A [`SpatRaster`] that defines the grid over which detection probability is calculated.
+#' @param ... Additional arguments (none implemented).
+#' @details In the AC* algorithms, a model of the detection process informs the set of possible locations for an individual. The information provided by this model is represented in the form of kernels, which are created via [`acs_setup_detection_kernels()`]. For any one receiver, the form of the kernel depends on the input to `.calc_detection_pr`. This function exemplifies one possible input to this argument, which is a model in which detection probability declines logistically with distance from a receiver.
+#'
+#' # Warning
+#'
+#' * This function is used to streamline examples and does not represent a generically suitable detection probability model.
+#' * The function does not check user inputs.
+#'
+#' @return The function returns a [`SpatRaster`] that defines the probability of detection in each cell, according to a pre-defined model.
+#'
+#' @examples
+#' m <- dat_moorings[1, , drop = FALSE]
+#' p <- acs_setup_detection_pr(m, dat_gebco())
+#' terra::plot(p)
+#' points(m$receiver_easting, m$receiver_northing, pch = ".")
+#'
+#' @author Edward Lavender
+#' @export
+
+acs_setup_detection_pr <- function(.data, .bathy, ...) {
+  # Define helper function to calculate detection probability given distance (m)
+  calc_dpr <- function(distance) {
+    pr <- stats::plogis(2.5 + -0.02 * distance)
+    pr[distance > .data$receiver_range] <- 0
+    pr
+  }
+  # Calculate Euclidean distance around receiver
+  rxy <- matrix(c(.data$receiver_easting, .data$receiver_northing), ncol = 2)
+  cell <- terra::cellFromXY(.bathy, rxy)
+  grid <- terra::setValues(.bathy, NA)
+  grid[cell] <- 1
+  dist <- terra::distance(grid, unit = "m")
+  dist <- terra::mask(dist, .bathy)
+  # Convert distances to detection pr
+  terra::app(dist, calc_dpr)
+}
+
 
 #' @title Setup detection kernels
 #' @description TO DO

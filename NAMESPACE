@@ -3,6 +3,7 @@
 export(acs_setup_detection_containers)
 export(acs_setup_detection_kernels)
 export(acs_setup_detection_overlaps)
+export(acs_setup_detection_pr)
 export(acs_setup_obs)
 export(dat_gebco)
 export(make_matrix_receivers)
