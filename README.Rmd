@@ -61,7 +61,7 @@ To implement the acoustic-centroid (AC) or acoustic-container depth-contour (ACD
 To implement particle filtering, use:
 
 * `pf_setup_record()` to set up the record;
-* `pf()` to implement particle filtering; .
+* `pf()` to implement particle filtering;
 
 # Disclaimer and troubleshooting 
 

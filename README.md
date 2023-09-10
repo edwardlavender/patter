@@ -94,7 +94,7 @@ depth-contour (ACDC) algorithms, use:
 To implement particle filtering, use:
 
 - `pf_setup_record()` to set up the record;
-- `pf()` to implement particle filtering; .
+- `pf()` to implement particle filtering;
 
 # Disclaimer and troubleshooting
 
