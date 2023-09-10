@@ -139,16 +139,17 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
 }
 
 
-#' @title Set up detection containers
+#' @title AC set up: Define detection containers
 #' @description This function defines receiver detection containers.
-#' @param .bathy A [`SpatRaster`].
-#' @param .moorings A [`data.table`]
+#' @param .bathy A [`SpatRaster`] that defines the grid over which the AC algorithms are implemented. `NA`s in this layer are used to mask detection containers.
+#' @param .moorings A [`data.table`] that defines receiver locations and associated information (see [`dat_moorings`] for an example). At a minimum, this must contain `receiver_id`, `receiver_easting`, `receiver_northing` and `receiver_range` columns that define unique receiver deployments, receiver locations and (receiver-specific) detection ranges. Receiver IDs should be an `integer` vector.
 #'
-#' @details Details
+#' @details Receiver detection containers are the regions within which an individual must be located, given a detection at a receiver. This function defines detection containers simply as a circular buffer (of distance `.moorings$receiver_range`) around receivers, masked by `.bathy` (e.g., land). Receiver detection containers are used to determine receiver overlaps (via [`acs_setup_detection_overlaps()`]), which are used in the AC* algorithms in detection probability calculations.
 #'
-#' @return The function returns a named list.
+#' @return The function returns a named `list`, with one element for each integer from `1:max(moorings$receiver_id)`. Any list elements that do not correspond to receivers contain a `NULL` element. List elements that correspond to receivers contain a `SpatRaster` that defines the detection container around that receiver.
 #'
 #' @examples
+#' #### Example (1): Use constant receiver detection ranges
 #' # Define grid
 #' grid <- dat_gebco()
 #' terra::plot(grid)
@@ -160,6 +161,14 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
 #' terra::plot(containers[[dat_moorings$receiver_id[1]]])
 #' points(dat_moorings$receiver_easting[1], dat_moorings$receiver_northing[1])
 #'
+#' #### Example (2): Use receiver-specific detection ranges
+#' dat_moorings$receiver_range[1] <- 100
+#' dat_moorings$receiver_range[2] <- 1000
+#' containers <- acs_setup_detection_containers(grid, dat_moorings)
+#' terra::plot(containers[[dat_moorings$receiver_id[1]]], col = "red)
+#' terra::lines(terra::as.polygons(containers[[dat_moorings$receiver_id[2]]]), col = "blue")
+#'
+#'
 #' @source This function is based on the [`acs_setup_containers`](https://edwardlavender.github.io/flapper/reference/acs_setup_containers.html) function in the [flapper](https://github.com/edwardlavender/flapper) package.
 #'
 #' @author Edward Lavender
@@ -167,15 +176,13 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
 
 acs_setup_detection_containers <- function(.bathy, .moorings) {
 
-  # TO DO
-  # Add checks
-  # grid can contain NAs
-  # moorings should be data.table contain required columns (receiver_id, receiver_easting, receiver_northing, receiver_range)
-  # receiver_ids should be integer from 1 to n
-  # receiver-specific ranges permitted
-  # For time-step specific ranges, these are computed on the fly in ac()
+  #### Check user inputs
+  # * moorings should required columns (receiver_id, receiver_easting, receiver_northing, receiver_range)
+  # * moorings$receiver_id should be an integer from 1 to n
+  check_moorings(.moorings, .class = "data.frame")
   check_names(input = .moorings, req = "receiver_range")
 
+  #### Build containers
   rs <- seq_len(max(.moorings$receiver_id))
   containers <-
     pbapply::pblapply(rs, function(id) {
@@ -183,12 +190,12 @@ acs_setup_detection_containers <- function(.bathy, .moorings) {
       bool <- .moorings$receiver_id == id
       if (any(bool)) {
         d <- .moorings[which(bool), ]
-        g   <- terra::setValues(.grid, NA)
+        g   <- terra::setValues(.bathy, NA)
         rxy <- matrix(c(d$receiver_easting, d$receiver_northing), ncol = 2)
         g[terra::cellFromXY(g, rxy)] <- 1
         # terra::plot(g)
         out <- terra::buffer(g, d$receiver_range)
-        out <- (terra::mask(out, .grid)) + 0
+        out <- (terra::mask(out, .bathy)) + 0
         # terra::plot(out)
       }
       out

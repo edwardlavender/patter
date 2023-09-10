@@ -2,36 +2,26 @@
 % Please edit documentation in R/acs-setup.R
 \name{acs_setup_detection_containers}
 \alias{acs_setup_detection_containers}
-\title{Set up detection containers}
+\title{AC set up: Define detection containers}
+\source{
+This function is based on the \href{https://edwardlavender.github.io/flapper/reference/acs_setup_containers.html}{\code{acs_setup_containers}} function in the \href{https://github.com/edwardlavender/flapper}{flapper} package.
+}
 \usage{
-acs_setup_detection_containers(.grid, .moorings)
+acs_setup_detection_containers(.bathy, .moorings)
 }
 \arguments{
-\item{.grid}{A \code{\link{SpatRaster}}.}
+\item{.bathy}{A \code{\link{SpatRaster}} that defines the grid over which the AC algorithms are implemented. \code{NA}s in this layer are used to mask detection containers.}
 
-\item{.moorings}{A \code{\link{data.table}}}
+\item{.moorings}{A \code{\link{data.table}} that defines receiver locations and associated information (see \code{\link{dat_moorings}} for an example). At a minimum, this must contain \code{receiver_id}, \code{receiver_easting}, \code{receiver_northing} and \code{receiver_range} columns that define unique receiver deployments, receiver locations and (receiver-specific) detection ranges. Receiver IDs should be an \code{integer} vector.}
 }
 \value{
-The function returns a named list.
+The function returns a named \code{list}, with one element for each integer from \code{1:max(moorings$receiver_id)}. Any list elements that do not correspond to receivers contain a \code{NULL} element. List elements that correspond to receivers contain a \code{SpatRaster} that defines the detection container around that receiver.
 }
 \description{
 This function defines receiver detection containers.
 }
 \details{
-Details
-}
-\examples{
-# Define grid
-grid <- dat_gebco()
-terra::plot(grid)
-# Define receiver detection ranges
-dat_moorings$receiver_range <- 500
-# Define detection containers
-containers <- acs_setup_detection_containers(grid, dat_moorings)
-# Visualise an example container
-terra::plot(containers[[dat_moorings$receiver_id[1]]])
-points(dat_moorings$receiver_easting[1], dat_moorings$receiver_northing[1])
-
+Receiver detection containers are the regions within which an individual must be located, given a detection at a receiver. This function defines detection containers simply as a circular buffer (of distance \code{.moorings$receiver_range}) around receivers, masked by \code{.bathy} (e.g., land). Receiver detection containers are used to determine receiver overlaps (via \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}}), which are used in the AC* algorithms in detection probability calculations.
 }
 \author{
 Edward Lavender

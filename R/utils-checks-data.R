@@ -19,9 +19,12 @@ check_moorings <- function(.moorings, .class = "data.table") {
   if (is.numeric(.moorings$receiver_id)) {
     .moorings$receiver_id <- as.integer(.moorings$receiver_id)
   }
+  if (inherits(.moorings$receiver_id, "numeric")) {
+    .moorings$receiver_id <- as.integer(.moorings$receiver_id)
+  }
   check_inherits(.moorings$receiver_id, "integer")
   if (any(.moorings$receiver_id <= 0)) {
-    abort("Argument 'xy$receiver_id' cannot contain receiver IDs <= 0.")
+    abort("Argument '.moorings$receiver_id' cannot contain receiver IDs <= 0.")
   }
   if (any(duplicated(.moorings$receiver_id))) {
     abort("Argument '.moorings$receiver_id' contains duplicate elements.")
