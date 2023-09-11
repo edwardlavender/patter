@@ -147,7 +147,7 @@ test_that("acs_setup_detection_kernels() works", {
 
   #### Check array designs
   expect_true(all.equal(
-    k$array_design_intervals[, 1:3],
+    k$array_design[, 1:3],
     data.frame(array_id = c(1, 2),
                array_start_date = as.Date(c("2016-01-01", "2016-01-02")),
                array_end_date = as.Date(c("2016-01-01", "2016-01-05")))
