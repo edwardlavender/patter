@@ -13,7 +13,7 @@
 
 \item{.kernels}{A \code{list} from \code{\link{acs_setup_detection_kernels}}.}
 
-\item{.zero_to_na}{A logical variable that defines whether or not to classify zeros as \code{NA}s. This should be \code{FALSE} for defining \code{given_data} in \code{\link[=.acs]{.acs()}}, so that this layer is correctly masked, but \code{TRUE} for defining \code{next_kernel} in \code{\link[=.acs]{.acs()}}, so that \code{next_kernel} is correctly buffered.}
+\item{.zero_to_na}{A logical variable that defines whether or not to classify zeros as \code{NA}s. This should be \code{FALSE} for defining \code{given_data} in \code{\link[=acs]{acs()}}, so that this layer is correctly masked, but \code{TRUE} for defining \code{next_kernel} in \code{\link[=acs]{acs()}}, so that \code{next_kernel} is correctly buffered.}
 }
 \description{
 This function defines an (unnormalised) probability surface that represents the possible locations of an individual given one or more detections.

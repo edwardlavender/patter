@@ -73,7 +73,7 @@ create_log <- function(.file) {
 #' @param x A [`SpatRaster`].
 #' @details
 #' # Warning
-#' * For speed in iterative applications (e.g., [`.acs()`]), this function does not implement any internal checks.
+#' * For speed in iterative applications (e.g., [`acs()`]), this function does not implement any internal checks.
 #' * `NA`s are ignored.
 #' @author Edward Lavender
 #' @export

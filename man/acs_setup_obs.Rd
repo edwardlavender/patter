@@ -40,7 +40,7 @@ This function implements the following routines:
 \item Duplicate detections (at the same receiver in the same time interval) are dropped;
 \item Archival time series, if provided, are defined over the same time interval and both sets of time series are aligned;
 \item Acoustic and archival time series are merged and ordered by time stamp;
-\item Information required by the AC* algorithms (utimately \code{\link[=.acs]{.acs()}}) is added;
+\item Information required by the AC* algorithms (ultimately \code{\link[=acs]{acs()}}) is added;
 }
 }
 \examples{

@@ -11,7 +11,7 @@
 #' * Duplicate detections (at the same receiver in the same time interval) are dropped;
 #' * Archival time series, if provided, are defined over the same time interval and both sets of time series are aligned;
 #' * Acoustic and archival time series are merged and ordered by time stamp;
-#' * Information required by the AC* algorithms (utimately [`.acs()`]) is added;
+#' * Information required by the AC* algorithms (ultimately [`acs()`]) is added;
 #'
 #' @return The function returns a [`data.table`] with the following columns:
 #' * `timestep`---an `integer` that defines the time step;
