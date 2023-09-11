@@ -133,7 +133,7 @@ NULL
 #' @param .detections An `integer` vector of the receiver(s) that recorded detections at a given time step.
 #' @param .absences An `integer` vector of the remaining, overlapping receiver(s) that did not record a detection, from [`.acs_absences()`].
 #' @param .kernels A `list` from [`acs_setup_detection_kernels`].
-#' @param .zero_to_na A logical variable that defines whether or not to classify zeros as `NA`s. This should be `FALSE` for defining `given_data` in [`acs()`], so that this layer is correctly masked, but `TRUE` for defining `next_kernel` in [`acs()`], so that `next_kernel` is correctly buffered.
+#' @param .zero_to_na A logical variable that defines whether or not to classify zeros as `NA`s. This should be `FALSE` for defining `given_data` in [`acs()`], but `TRUE` for defining `next_kernel` in [`acs()`], so that `next_kernel` is correctly buffered.
 
 #' @details In the AC* algorithms, at the moment of detection, the probability kernels that describe the possible locations of an individual given the data depend on both the receivers that record detections and those that did not (eqn S5 in Lavender et al., 2023). This function solves eqn S5. For computational efficiency, the equation is solved in a stepwise manor such that the number of necessary operations is kept to a minimum.
 #'

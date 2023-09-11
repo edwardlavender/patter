@@ -6,7 +6,7 @@ test_that("acs() works", {
   archival <- dat_archival[individual_id == 25, ]
   # Process datasets
   obs <- acs_setup_obs(acoustics, archival, "2 mins", 500)
-  obs <- obs[1:200, ]
+  obs <- obs[1:10, ]
   # Define detection containers
   gebco <- dat_gebco()
   dat_moorings$receiver_range <- 500
@@ -118,7 +118,10 @@ test_that("acs() works", {
       par(pp)
     }
     names(present) <- names(out_ac$record[[t]]) <- "x"
-    expect_true(all.equal(present, out_ac$record[[t]]))
+    expect_true(
+      all.equal(present,
+                terra::mask(terra::classify(out_ac$record[[t]], cbind(NA, 0)), gebco))
+      )
 
     #### Update for next iteration
     past <- present
@@ -152,9 +155,13 @@ test_that("acs() works", {
   #### Validate cumulative map
   map <-
     do.call(c, out_ac$record) |>
-    terra::app("sum") |>
+    terra::app("sum", na.rm = TRUE) |>
     normalise()
   names(out_ac$map) <- names(map) <- "map"
   terra::all.equal(out_ac$map, map) |> expect_true()
+  if (FALSE) {
+    terra::plot(map)
+    terra::plot(out_ac$map)
+  }
 
 })

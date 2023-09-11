@@ -196,19 +196,20 @@ acs <- function(.obs,
     # terra::plot(given_past)    # `given_past` is just a buffer (0, 1)
     # terra::plot(given_future)  # `given_future` is just a buffer (0, 1)
     # (B) Define present
-    # * Take given_data as the baseline
-    # * Set NAs to 0
-    # * This is essential to ensure correct masking, since NAs are ignored
-    present <- terra::classify(given_data, cbind(NA, 0))
-    if (!is.null(given_past)) {
-      present <- terra::mask(present, given_past, maskvalues = 0, updatevalue = 0)
-    }
-    if (!is.null(given_future)) {
-      present <- terra::mask(present, given_future, maskvalues = 0, updatevalue = 0)
+    if (t == 1) {
+      present <- given_data * given_future
+    } else if (!is.null(given_future)) {
+      present <- given_data * given_past * given_future
+    } else {
+      present <- given_data * given_past
     }
     present <- terra::mask(present, .bathy)
     # Renormalise
     present <- normalise(present)
+    if (terra::global(present, \(x) all(is.na(x)))[1, 1] | terra::global(present, \(x) all(x == 0, na.rm = TRUE))[1, 1]) {
+      abort("There are no possible locations at time step = {t}. The may be errors in the data (e.g., false detections) or detection probability model and/or mobility may be too restrictive. It is also possible this is a bug.", .envir = environment())
+    }
+
     if (.prompt) {
       terra::plot(present, main = glue::glue("t = {t}"))
       given_data |>
@@ -248,7 +249,7 @@ acs <- function(.obs,
       if (t == 1) {
         cumulative <- present
       } else {
-        cumulative <- cumulative + present
+        cumulative <- sum(cumulative, present, na.rm = TRUE)
       }
     }
 
