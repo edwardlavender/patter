@@ -1,3 +1,94 @@
+#' @title AC* helper: internal checks
+#' @description These are internal check functions.
+#' @param .b The `.bathy` [`SpatRaster`].
+#' @param .k The `.detection_kernels` `list`.
+#' @param .o The `.obs` [`data.table`].
+#' @param .ov The `detection_overlaps` `list`.
+#' @param .w The `write_record` `list`.
+#' @author Edward Lavender
+#' @name .acs_check
+
+#' @rdname .acs_check
+#' @keywords internal
+
+.acs_check_obs <- function(.o) {
+  if (inherits(.o, "data.frame") & !inherits(.o, "data.table")) {
+    .o <- as.data.table(.o)
+  }
+  check_inherits(.o, "data.table")
+  check_names(.o, c("timestep", "timestamp", "date", "detection_id", "detection", "receiver_id", "buffer_past", "buffer_future"))
+  check_inherits(.o$timestep, "integer")
+  check_inherits(.o$timestamp, "POSIXct")
+  check_inherits(.o$detection_id, "integer")
+  check_inherits(.o$detection, "integer")
+  check_inherits(.o$receiver_id, "list")
+  check_inherits(.o$buffer_past, "numeric")
+  check_inherits(.o$buffer_future, "numeric")
+  if (!all(
+    lubridate::year(.o$timestamp) == lubridate::year(.o$date),
+    lubridate::month(.o$timestamp) == lubridate::month(.o$date),
+    lubridate::day(.o$timestamp) == lubridate::day(.o$date)
+  )) {
+    abort("There is a discrepancy between `.obs$timestamp` and `.obs$date`.")
+  }
+  .o
+}
+
+#' @rdname .acs_check
+#' @keywords internal
+
+.acs_check_bathy <- function(.b) {
+  check_inherits(.b, "SpatRaster")
+}
+
+#' @rdname .acs_check
+#' @keywords internal
+
+.acs_check_detection_overlaps <- function(.ov) {
+  check_named_list(.ov)
+  if (!is.null(.ov)) {
+    check_names(.ov, c("list_by_receiver", "list_by_date"))
+  }
+}
+
+#' @rdname .acs_check
+#' @keywords internal
+
+.acs_check_detection_kernels <- function(.k, .b) {
+  check_named_list(.k)
+  check_names(.k, c("receiver_specific_kernels",
+                    "receiver_specific_inv_kernels",
+                    "array_design",
+                    "array_design_by_date",
+                    "bkg_surface_by_design",
+                    "bkg_inv_surface_by_design"))
+  # Check bathy, detection_overlaps & detection_kernels
+  if (!terra::compareGeom(.b, compact(.k$receiver_specific_kernels)[[1]])) {
+    abort("The properties of the bathymetry grid and the detection kernel SpatRaster(s) are not equal.")
+  }
+}
+
+
+#' @rdname .acs_check
+#' @keywords internal
+
+.acs_check_write_record <- function(.w) {
+  if (!is.null(.w)) {
+    check_named_list(.w)
+    check_names(.w, "filename")
+    if (length(.w$filename) != 1L) {
+      abort("write_record$filename should be a single directory in which to save files.")
+    }
+    check_dir(.w$filename)
+    if (length(list.files(.w$filename)) != 0L) {
+      warn("`write_record$filename` ('{.w$filename}') is not an empty directory.",
+           .envir = environment())
+    }
+  }
+  .w$filename
+}
+
+
 #' @title AC* helper: Define active, overlapping receivers with absences
 #' @description Given a detection at one or more receivers on a given date, this function defines the set of remaining, active, overlapping receivers that did not record detections.
 #' @param .date A `character` that defines the date (e.g., `obs$date[t]` internally in [`.acs()`]).
@@ -107,7 +198,7 @@
 
 .acs <- function(obs,
                  bathy,
-                 detection_overlaps,
+                 detection_overlaps = NULL,
                  detection_kernels,
                  save_cumulative = FALSE,
                  save_record = FALSE,
@@ -117,23 +208,19 @@
 
   #### Check user inputs
   t_onset <- Sys.time()
-  # TO DO
+  obs <- .acs_check_obs(obs)
+  .acs_check_bathy(bathy)
+  .acs_check_detection_overlaps(detection_overlaps)
+  .acs_check_detection_kernels(detection_kernels, bathy)
+  if (!save_cumulative && !save_record && is.null(write_record)) {
+    abort("`save_cumulative = FALSE`, `save_record = FALSE` and `write_record = NULL`. There is nothing to do.")
+  }
+  write_record_folder <- .acs_check_write_record(write_record)
   if (!verbose & con != "") {
     warn("Input to `con` ignores since `verbose = FALSE`.")
   }
-  if (!is.null(write_record)) {
-    # check named list
-    # Check write_record$filename
-    # Check filename is a directory
-    # Check write_record$filename is empty
-    if (length(list.files(write_record$filename)) != 0L) {
-      warn("`write_record$filename` ('{write_record$filename}') is not an empty directory.",
-           .envir = environment())
-    }
-    write_record_folder <- write_record$filename
-  }
 
-  #### Function set up
+  #### Set up messages
   # Define log file & function to send messages to the console/file
   if (verbose && con != "") {
     create_log(con)
@@ -144,7 +231,8 @@
   }
   cat_to_cf(paste0("patter::.acs() called (@ ", t_onset, ")..."))
   on.exit(cat_to_cf(paste0("patter::.acs() call ended (@ ", Sys.time(), ").")), add = TRUE)
-  #### Loop set up
+
+  #### Set up loop
   # Define empty list for outputs
   record     <- list()
   cumulative <- NULL
@@ -182,7 +270,7 @@
       }
     } else {
       # (2) Define location _given non-detection_ at current time step
-      given_data <- detection_kernels$bkg_inv_surface_by_design[[detection_kernels$design_by_date[[obs$date[t]]]]]
+      given_data <- detection_kernels$bkg_inv_surface_by_design[[detection_kernels$array_design_by_date[[obs$date[t]]]]]
     }
     # Filter given_data by depth
     # TO DO
@@ -314,6 +402,7 @@
               time = time)
 
   #### Return outputs
+  class(out) <- c(class(out), "ac_record")
   out
 
 }

@@ -16,9 +16,6 @@ check_moorings <- function(.moorings, .class = "data.table") {
     input = .moorings, req = c("receiver_id", "receiver_start", "receiver_end"),
     extract_names = colnames, type = all
   )
-  if (is.numeric(.moorings$receiver_id)) {
-    .moorings$receiver_id <- as.integer(.moorings$receiver_id)
-  }
   if (inherits(.moorings$receiver_id, "numeric")) {
     .moorings$receiver_id <- as.integer(.moorings$receiver_id)
   }
@@ -48,7 +45,7 @@ check_services <- function(.services, .moorings) {
     }
     check_inherits(.services$receiver_id, "integer")
     if (!all(unique(.services$receiver_id) %in% unique(.moorings$receiver_id))) {
-      warn("Not all receivers in .services$receiver_id are in .moorings$receiver_id.")
+      warn("Not all receivers in `.services$receiver_id` are in `.moorings$receiver_id`.")
     }
   }
   invisible(.services)

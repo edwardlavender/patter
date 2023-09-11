@@ -441,15 +441,16 @@ acs_setup_detection_pr <- function(.data, .bathy, ...) {
 #' @details This function permits receiver-specific detection kernels.
 #'
 #' @return The function returns a named `list`, with the following elements:
-#' * **`receiver_specific_kernels`**. A list, with one element for all integers from 1 to the maximum receiver number. Any elements that do not correspond to receivers contain a `NULL` element. List elements that correspond to receivers contain a [`SpatRaster`] of the detection probability kernel around the relevant receiver. Cells values define the detection probability around a receiver, given `.calc_detection_pr` In the AC* algorithm(s), these kernels are used to up-weight location probabilities near to a receiver when it is detected (following modification to account for overlapping areas, if necessary).
-#' * **`receiver_specific_inv_kernels`**. A list, as for `receiver_specific_kernels`, but in which elements contain the inverse detection probability kernels (i.e., 1 - detection probability). In the AC* algorithm(s), these is used to down-weight-weight location probabilities in the overlapping regions between a receiver that recorded detections and others that did not at the same time.
-#' * **`array_design_intervals`**. A `data.frame` that defines the number and deployment times of each unique array design, resulting from receiver deployment, servicing and removal. In the times between detections, this is used to select the appropriate 'background' detection probability surface (see below). This contains the following columns:
+#' * **`receiver_specific_kernels`**. A `list`, with one element for all integers from 1 to the maximum receiver number. Any elements that do not correspond to receivers contain a `NULL` element. List elements that correspond to receivers contain a [`SpatRaster`] of the detection probability kernel around the relevant receiver. Cells values define the detection probability around a receiver, given `.calc_detection_pr` In the AC* algorithm(s), these kernels are used to up-weight location probabilities near to a receiver when it is detected (following modification to account for overlapping areas, if necessary).
+#' * **`receiver_specific_inv_kernels`**. A `list`, as for `receiver_specific_kernels`, but in which elements contain the inverse detection probability kernels (i.e., 1 - detection probability). In the AC* algorithm(s), these is used to down-weight-weight location probabilities in the overlapping regions between a receiver that recorded detections and others that did not at the same time.
+#' * **`array_design`**. A `data.frame` that defines the number and deployment times of each unique array design, resulting from receiver deployment, servicing and removal. In the times between detections, this is used to select the appropriate 'background' detection probability surface (see below). This contains the following columns:
 #'   * `array_id`. An integer vector that defines each unique array design.
 #'   * `array_start_date`. A Date that defines the start date of each array design.
 #'   * `array_end_date`. A Date that defines the end date of each array design.
 #'   * `array_interval`. A [`lubridate::Interval-class`] vector that defines the deployment period of each array design.
-#' * **`bkg_surface_by_design`**. A list, with one element for each array design, that defines the detection probability surface across all receivers deployed in that phase of the study. In areas that are covered by the detection probability kernel of a single receiver, the detection probability depends only on distance to that receiver (via `.calc_detection_pr`). In areas covered by multiple, overlapping kernels, detection probability represents the combined detection probability across all overlapping kernels (see Details).
-#' * **`bkg_inv_surface_by_design`**. A list, as above for `bkg_surface_by_design`, but which contains the inverse detection probability surface (i.e., 1 - `bkg_surface_by_design`). In the AC* algorithm(s), this is used to up-weight areas away from receivers (or, equivalently, down-weight areas near to receivers) in the time steps between detections.
+#' * **`array_design_by_date`**. A named `list` that defines, for each date (list element), the array design on that date (based on `array_id` in `array_design`).
+#' * **`bkg_surface_by_design`**. A `list`, with one element for each array design, that defines the detection probability surface across all receivers deployed in that phase of the study. In areas that are covered by the detection probability kernel of a single receiver, the detection probability depends only on distance to that receiver (via `.calc_detection_pr`). In areas covered by multiple, overlapping kernels, detection probability represents the combined detection probability across all overlapping kernels (see Details).
+#' * **`bkg_inv_surface_by_design`**. A `list`, as above for `bkg_surface_by_design`, but which contains the inverse detection probability surface (i.e., 1 - `bkg_surface_by_design`). In the AC* algorithm(s), this is used to up-weight areas away from receivers (or, equivalently, down-weight areas near to receivers) in the time steps between detections.
 #'
 #' @examples
 #' #### Define example 'moorings' & 'services' dataset
@@ -616,19 +617,28 @@ acs_setup_detection_kernels <-
     # Get receiver status change points (dates when the array design changed)
     rs_mat_cp <- unique(rs_mat)
     # Define the time interval for each array design
-    array_design_intervals <- data.frame(
+    array_design <- data.frame(
       array_id = 1:nrow(rs_mat_cp),
       array_start_date = as.Date(rownames(rs_mat_cp))
     )
-    array_design_intervals$array_end_date <-
-      dplyr::lead(array_design_intervals$array_start_date) - 1
-    array_design_intervals$array_end_date[nrow(array_design_intervals)] <-
+    array_design$array_end_date <-
+      dplyr::lead(array_design$array_start_date) - 1
+    array_design$array_end_date[nrow(array_design)] <-
       max(.moorings$receiver_end)
-    array_design_intervals$array_interval <-
+    array_design$array_interval <-
       lubridate::interval(
-        array_design_intervals$array_start_date,
-        array_design_intervals$array_end_date
+        array_design$array_start_date,
+        array_design$array_end_date
       )
+    # Define array designs by date
+    array_design_by_date <-
+      lapply(split(array_design, array_design$array_id), function(d) {
+        data.frame(array_id = d$array_id[1],
+                   date = seq(d$array_start_date, d$array_end_date, "days"))
+      }) |> rbindlist()
+    cdates <- as.character(array_design_by_date$date)
+    array_design_by_date        <- lapply(array_design_by_date$array_id, \(x) x)
+    names(array_design_by_date) <- as.character(cdates)
 
     #### For each unique array design, create the area-wide kernel surface that represents detection Pr/inverse detection Pr
     cat_to_console("... ... Get area wide kernels for each array design...")
@@ -682,7 +692,8 @@ acs_setup_detection_kernels <-
     out <- list()
     out$receiver_specific_kernels     <- receiver_specific_kernels
     out$receiver_specific_inv_kernels <- receiver_specific_inv_kernels
-    out$array_design_intervals        <- array_design_intervals
+    out$array_design                  <- array_design
+    out$array_design_by_date          <- array_design_by_date
     out$bkg_surface_by_design         <- bkg_by_design
     out$bkg_inv_surface_by_design     <- bkg_inv_by_design
     # Check function duration

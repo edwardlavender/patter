@@ -1,7 +1,12 @@
 test_that("check_*() functions work", {
 
   #### check_moorings()
+  # Check pass
   check_moorings(dat_moorings)
+  m <- dat_moorings
+  m$receiver_id <- as.numeric(m$receiver_id)
+  check_moorings(m)
+  # Check receiver IDs
   m <- dat_moorings
   m$receiver_id[1] <- -1
   check_moorings(m) |>
@@ -10,6 +15,12 @@ test_that("check_*() functions work", {
   m$receiver_id[1:2] <- 1
   check_moorings(m) |>
     expect_error("Argument '.moorings$receiver_id' contains duplicate elements.", fixed = TRUE)
+  # Check NAs
+  m <- dat_moorings
+  m$receiver_easting[1] <- NA
+  check_moorings(m) |>
+    expect_warning("`.moorings` contains NAs and some functions may fail unexpectedly.")
+
 
   #### check_services()
   services <- data.table(receiver_id = dat_moorings$receiver_id[1],
@@ -19,10 +30,17 @@ test_that("check_*() functions work", {
   services$receiver_id <- "blah"
   check_services(services, dat_moorings) |>
     expect_error("`.services$receiver_id` must be a integer.", fixed = TRUE)
+  services$receiver_id <- 100L
+  check_services(services, dat_moorings) |>
+    expect_warning("Not all receivers in `.services$receiver_id` are in `.moorings$receiver_id`.", fixed = TRUE)
 
   #### check_acoustics()
   # Check pass
-  check_acoustics(dat_acoustics[individual_id == 25, ])
+  acc <- dat_acoustics[individual_id == 25, ]
+  check_acoustics(acc)
+  check_acoustics(as.data.frame(acc))
+  acc$receiver_id <- as.numeric(acc$receiver_id)
+  check_acoustics(acc)
   # Fail on column names
   check_acoustics(data.table(blah = as.POSIXct("2016-01-01", tz = "UTC"), receiver_id = "A")) |>
     expect_error("Argument '.acoustics' does not contain all required names. One or more of the following name(s) are missing: 'timestamp'.", fixed = TRUE)
@@ -44,7 +62,9 @@ test_that("check_*() functions work", {
 
   #### check_archival()
   # Check pass
-  check_archival(dat_archival[individual_id == 25, ])
+  arc <- dat_archival[individual_id == 25, ]
+  check_archival(arc)
+  check_archival(as.data.frame(arc))
   # Fail on column names
   check_archival(data.table(blah = as.POSIXct("2016-01-01", tz = "UTC"), depth = 1)) |>
     expect_error("Argument '.archival' does not contain all required names. One or more of the following name(s) are missing: 'timestamp'.", fixed = TRUE)

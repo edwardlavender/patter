@@ -16,7 +16,7 @@ This function evolved from \code{.acs()} in the \href{https://github.com/edwardl
 .acs(
   obs,
   bathy,
-  detection_overlaps,
+  detection_overlaps = NULL,
   detection_kernels,
   save_cumulative = FALSE,
   save_record = FALSE,

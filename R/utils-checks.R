@@ -21,7 +21,7 @@ check_dir <- function(input) {
 
 check_inherits <- function(input, class) {
   if (!inherits(input, class)) {
-    abort("`{deparse(substitute(input))}` must be a {substitute(class)}.",
+    abort("`{deparse(substitute(input))}` must be a {class}.",
           .envir = environment())
   }
   invisible(input)
