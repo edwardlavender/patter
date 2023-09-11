@@ -129,10 +129,10 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
     ungroup() |>
     arrange(.data$timestamp) |>
     mutate(timestep = as.integer(dplyr::row_number())) |>
-    select(.data$timestep,
-           .data$timestamp, .data$date,
-           .data$detection_id, .data$detection, .data$receiver_id,
-           .data$buffer_past, .data$buffer_future,
+    select("timestep",
+           "timestamp", "date",
+           "detection_id", "detection", "receiver_id",
+           "buffer_past", "buffer_future",
            dplyr::any_of("depth")) |>
     as.data.table()
 
