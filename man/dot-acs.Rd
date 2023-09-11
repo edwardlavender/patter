@@ -14,43 +14,45 @@ This function evolved from \code{.acs()} in the \href{https://github.com/edwardl
 }
 \usage{
 .acs(
-  obs,
-  bathy,
-  detection_overlaps = NULL,
-  detection_kernels,
-  save_cumulative = FALSE,
-  save_record = FALSE,
-  write_record = NULL,
-  progress = TRUE,
-  prompt = FALSE,
-  verbose = TRUE,
-  con = ""
+  .obs,
+  .bathy,
+  .detection_overlaps = NULL,
+  .detection_kernels,
+  .update_ac = NULL,
+  ...,
+  .save_cumulative = FALSE,
+  .save_record = FALSE,
+  .write_record = NULL,
+  .progress = TRUE,
+  .prompt = FALSE,
+  .verbose = TRUE,
+  .con = ""
 )
 }
 \arguments{
-\item{obs}{A \code{\link{data.table}} with observations, from \code{\link[=acs_setup_obs]{acs_setup_obs()}}.}
+\item{.obs}{A \code{\link{data.table}} with observations, from \code{\link[=acs_setup_obs]{acs_setup_obs()}}.}
 
-\item{bathy}{A \code{\link{SpatRaster}} that defines the grid over which the algorithms are implemented.}
+\item{.bathy}{A \code{\link{SpatRaster}} that defines the grid over which the algorithms are implemented.}
 
-\item{detection_overlaps}{A named \code{list}, from \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}}.}
+\item{.detection_overlaps}{A named \code{list}, from \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}}.}
 
-\item{detection_kernels}{A \code{list}, from \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}.}
+\item{.detection_kernels}{A \code{list}, from \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}.}
 
-\item{save_record, save_cumulative}{Logical inputs that control options for saving outputs in memory.
+\item{.save_record, .save_cumulative}{Logical inputs that control options for saving outputs in memory.
 \itemize{
-\item \code{save_record} defines whether or not to save the record of the possible locations of the individual at each time step in the \code{record} element of the output;
-\item \code{save_cumulative} defines whether or not to save a cumulative (probability-of-use) map, derived from the normalised summation of each element in \code{record} in the \code{map} element of the output;
+\item \code{.save_record} defines whether or not to save the record of the possible locations of the individual at each time step in the \code{record} element of the output;
+\item \code{.save_cumulative} defines whether or not to save a cumulative (probability-of-use) map, derived from the normalised summation of each element in \code{record} in the \code{map} element of the output;
 }}
 
-\item{write_record}{A named list, passed to \code{\link[terra:writeRaster]{terra::writeRaster}}, to save the \code{record} \code{SpatRaster}s to file at each time step. The \code{filename} argument should define the directory in which to write files. Files are named by time step (i.e., 1.tif, 2.tif, ..., N.tif).}
+\item{.write_record}{A named list, passed to \code{\link[terra:writeRaster]{terra::writeRaster}}, to save the \code{record} \code{SpatRaster}s to file at each time step. The \code{filename} argument should define the directory in which to write files. Files are named by time step (i.e., 1.tif, 2.tif, ..., N.tif).}
 
-\item{progress}{A logical variable that defines whether or not to implement a progress bar (via \code{\link[progress:progress_bar]{progress::progress_bar()}}).}
+\item{.progress}{A logical variable that defines whether or not to implement a progress bar (via \code{\link[progress:progress_bar]{progress::progress_bar()}}).}
 
-\item{prompt}{A logical variable that defines whether or not a user prompt is required between time steps. If provided, the function plots the possible locations of the individual at each time step. This is useful for diagnostics.}
+\item{.prompt}{A logical variable that defines whether or not a user prompt is required between time steps. If provided, the function plots the possible locations of the individual at each time step. This is useful for diagnostics.}
 
-\item{verbose}{A logical variable that defines whether or not to print messages to the console or to file to relay function progress. If \code{con = ""}, messages are printed to the console; otherwise, they are written to file (see below).}
+\item{.verbose}{A logical variable that defines whether or not to print messages to the console or to file to relay function progress. If \code{con = ""}, messages are printed to the console; otherwise, they are written to file (see below).}
 
-\item{con}{If \code{verbose = TRUE}, \code{con} is character string that defines the full pathway to a \code{.txt} file (which can be created on-the-fly) into which messages are written to relay function progress. This approach, rather than printing to the console, is recommended for clarity, speed and debugging.}
+\item{.con}{If \code{.verbose = TRUE}, \code{.con} is character string that defines the full pathway to a \code{.txt} file (which can be created on-the-fly) into which messages are written to relay function progress. This approach, rather than printing to the console, is recommended for clarity, speed and debugging.}
 }
 \value{
 The function returns an \code{\linkS4class{ac_record}} object.
@@ -59,9 +61,8 @@ The function returns an \code{\linkS4class{ac_record}} object.
 This function is the back-end of the acoustic-container and acoustic-container depth-contour algorithms.
 }
 \seealso{
-For internal helpers, see \code{\link[=.acs_absences]{.acs_absences()}} and \code{\link[=.acs_given_detection]{.acs_given_detection()}}.
+For internal helpers, see \verb{.acs_*} functions.
 }
 \author{
 Edward Lavender
 }
-\keyword{internal}
