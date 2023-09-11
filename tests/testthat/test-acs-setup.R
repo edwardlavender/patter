@@ -16,7 +16,7 @@ test_that("acs_setup_obs() works", {
     expect_error()
   # Pass time series that don't overlap
   acs_setup_obs(dat_acoustics[individual_id == 25, ],
-                .archival = data.table(timestamp = as.POSIXct(c("2012-01-01", "2012-01-02", tz = "UTC")), depth = c(1, 2)),
+                .archival = data.table(timestamp = as.POSIXct(c("2012-01-01", "2012-01-02"), tz = "UTC"), depth = c(1, 2)),
                 .step = "1 day", .mobility = 500) |>
     expect_error()
 
@@ -134,13 +134,13 @@ test_that("acs_setup_detection_kernels() works", {
                   service_start = as.Date(c("2016-01-01", "2016-01-01")),
                   service_end = as.Date(c("2016-01-01", "2016-01-01")))
 
-  # Examine output of function for example receiver
+  #### Implement function
+  # Define output for example receiver
   pr <- lapply(seq_len(max(m$receiver_id)), function(id) {
     if (!(id %in% m$receiver_id)) return(NULL)
     acs_setup_detection_pr(m[m$receiver_id == id, , drop = FALSE], dat_gebco())
   })
-
-  #### Implement function
+  # Define kernels
   k <- acs_setup_detection_kernels(m, s,
                                    .calc_detection_pr = acs_setup_detection_pr,
                                    .bathy = dat_gebco())
@@ -171,4 +171,39 @@ test_that("acs_setup_detection_kernels() works", {
   b <- (1 - pr[[3]]) * (1 - pr[[4]]) * (1 - pr[[5]])
   names(a) <- names(b) <- "layer"
   expect_true(terra::all.equal(a, b))
+
+  #### Check validation of invalid inputs
+  # Define invalid input
+  calc_dpr <- function(.data, .bathy, .error = NA) {
+    # Define helper function to calculate detection probability given distance (m)
+    .calc_dpr <- function(distance) {
+      pr <- stats::plogis(2.5 + -0.02 * distance)
+      pr[distance > .data$receiver_range] <- 0
+      pr
+    }
+    # Calculate Euclidean distance around receiver
+    rxy <- matrix(c(.data$receiver_easting, .data$receiver_northing), ncol = 2)
+    cell <- terra::cellFromXY(.bathy, rxy)
+    grid <- terra::setValues(.bathy, NA)
+    grid[cell] <- 1
+    dist <- terra::distance(grid, unit = "m")
+    dist <- terra::mask(dist, .bathy)
+    # Convert distances to detection pr
+    pr <- terra::app(dist, .calc_dpr)
+    # Introduce error: set the receiver 3 location to 0 or NA
+    if (.data$receiver_id == 3L) {
+      pr[cell] <- .error
+    }
+    pr
+  }
+  # Check warnings (NA at receiver)
+  acs_setup_detection_kernels(m, s,
+                              .calc_detection_pr = calc_dpr,
+                              .bathy = dat_gebco()) |>
+    expect_warning("Detection probability is NA at receiver 3.")
+  # Check warnings (0 at receiver)
+  acs_setup_detection_kernels(m, s,
+                              .calc_detection_pr = function(.d, .b) calc_dpr(.d, .b, .error = 0),
+                              .bathy = dat_gebco()) |>
+    expect_warning("Detection probability is 0 at receiver 3.")
 })

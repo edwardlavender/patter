@@ -581,9 +581,11 @@ acs_setup_detection_kernels <-
         # Calculate Pr at receiver and check it is not NA or 0
         pr_at_receiver <- terra::extract(k, data.frame(m$receiver_easting, m$receiver_northing))[1, 2]
         if (is.na(pr_at_receiver)) {
-          warn("Detection probability is NA at receiver {m$receiver_id}.")
+          warn("Detection probability is NA at receiver {m$receiver_id}.",
+               .envir = environment())
         } else if (pr_at_receiver == 0) {
-          warn("Detection probability is 0 at receiver {m$receiver_id}.")
+          warn("Detection probability is 0 at receiver {m$receiver_id}.",
+               .envir = environment())
         }
         # Return kernel
         k
