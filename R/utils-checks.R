@@ -1,9 +1,8 @@
 #' @title Utility checks
 #' @description These functions check user inputs.
-#'
-#'
 #' @author Edward Lavender
 #' @name check_utils
+NULL
 
 #' @rdname check_utils
 #' @keywords internal

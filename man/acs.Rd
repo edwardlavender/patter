@@ -2,15 +2,15 @@
 % Please edit documentation in R/acs.R
 \name{acs}
 \alias{acs}
-\title{AC* algorithm back-end}
+\title{AC* algorithms}
 \source{
-This function evolved from \code{.acs()} in the \href{https://github.com/edwardlavender/flapper}{flapper} package. Key developments include:
+This function evolved from the \code{.acs()}, \code{.acs_pl()}, \href{https://edwardlavender.github.io/flapper/reference/ac.html}{\code{ac}} and \href{https://edwardlavender.github.io/flapper/reference/acdc.html}{\code{acdc}} functions in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package. Key developments include:
 \itemize{
 \item Implementation of the algorithm over a single timeline;
 \item Re-parameterisation of container dynamics at each time step with respect to the possible locations of the individual given the data, given the past and given the future;
 \item Exploitation of \code{\link{data.table}} and \code{\link{terra}} for substantially improved speed;
-\item The use of \code{\link[terra:buffer]{terra::buffer()}} to represent container dynamics, which is faster and removes the polygon versus grid discrepancy in \href{https://github.com/edwardlavender/flapper}{flapper};
-\item Implementation of the \code{.ac_update} argument to implement the ACDC algorithm or any related approach;
+\item The use of \code{\link[terra:buffer]{terra::buffer()}} to represent container dynamics, which is faster and removes the polygon versus grid discrepancy in \href{https://github.com/edwardlavender/flapper}{\code{flapper}};
+\item Implementation of the \code{.ac_update} argument to implement the ACDC algorithm (and related approaches) with enhanced flexibility;
 }
 }
 \usage{
@@ -31,15 +31,27 @@ acs(
 )
 }
 \arguments{
-\item{.obs}{A \code{\link{data.table}} with observations, from \code{\link[=acs_setup_obs]{acs_setup_obs()}}.}
+\item{.obs}{A \code{\link{data.table}} with observations, typically from \code{\link[=acs_setup_obs]{acs_setup_obs()}}. At a minimum, \code{.obs} is expected to contain the following columns:
+\itemize{
+\item \code{timestep}---an \code{integer} that defines the time step;
+\item \code{timestamp}---a regular sequences of \code{POSIXct} time stamps;
+\item \code{date}---a \code{character} that defines the date;
+\item \code{detection_id}---an \code{integer} vector that uniquely defines each detection;
+\item \code{detection}---an \code{integer} that distinguishes the time steps at which detections were (1) or were not (0) recorded;
+\item \code{receiver_id}---a \code{list} that defines the receiver(s) that recorded detections at each time step;
+\item \code{buffer_past}---a \code{double} that controls container growth from the past to the present;
+\item \code{buffer_future}---a \code{double} that controls container shrinkage from the future to the present;
+}
 
-\item{.bathy}{A \code{\link{SpatRaster}} that defines the grid over which the algorithms are implemented.}
+Other columns can be included as necessary for \code{.update_ac} (see below).}
 
-\item{.detection_overlaps}{A named \code{list}, from \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}}.}
+\item{.bathy}{A \code{\link{SpatRaster}} that defines the grid over which the algorithms are implemented. This layer should be the same as that used to define \code{.detection_overlaps} (via \code{\link[=acs_setup_detection_containers]{acs_setup_detection_containers()}} and \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}}) and \code{.detection_kernels} (via \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}).}
 
-\item{.detection_kernels}{A \code{list}, from \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}.}
+\item{.detection_overlaps}{(optional) A named \code{list} of detection container overlaps, defined over \code{.bathy}, from \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}}. If un-supplied, it is silently assumed that receiver detection containers do not overlap. If supplied, receiver overlaps are taken into account in detection probability calculations.}
 
-\item{.update_ac, ...}{(optional) A function and additional arguments used to update the \code{\link{SpatRaster}} that defines the possible locations of the individual given the data (according to the AC algorithm) at each time step. For example, if you have depth observations, you could use a depth-error model to build a probability surface that describes the possible locations of the individual at each time step and that is combined with the information from the AC algorithm. Information from other variables can be integrated in the same way. The must accept five arguments (even if they are unused):
+\item{.detection_kernels}{A named \code{list} of detection probability kernels, defined over \code{.bathy}, from \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}.}
+
+\item{.update_ac, ...}{(optional) A function and additional arguments used to update the \code{\link{SpatRaster}} that defines the possible locations of the individual given the data (according to the AC algorithm) at each time step. For example, if you have depth observations, you could use a depth-error model to define a probability surface that describes the possible locations of the individual at each time step and combine this, via \code{.update_ac}, with the surface from the AC algorithm. Information from other variables can be integrated in the same way. The function must accept five arguments in the following order (even if they are unused):
 \itemize{
 \item \code{.spat}---a \code{\link{SpatRaster}} that defines the possible locations of the individual given the data at each time step;
 \item \code{.bathy}---the \code{.bathy} \code{\link{SpatRaster}} (above);
@@ -50,11 +62,11 @@ acs(
 
 \item{.save_record, .save_cumulative}{Logical inputs that control options for saving outputs in memory.
 \itemize{
-\item \code{.save_record} defines whether or not to save the record of the possible locations of the individual at each time step in the \code{record} element of the output;
-\item \code{.save_cumulative} defines whether or not to save a cumulative (probability-of-use) map, derived from the normalised summation of each element in \code{record} in the \code{map} element of the output;
+\item \code{.save_record} defines whether or not to save the record of the possible locations of the individual at each time step in the \code{record} element of the output. This is only sensible for relatively short time series (use \code{.write_record}, below, otherwise).
+\item \code{.save_cumulative} defines whether or not to save a cumulative (probability-of-use) map, derived from the normalised summation of each element in \code{record} in the \code{map} element of the output. In general, this is not necessary since AC* outputs are refined by particle filtering (see \code{\link[=pf]{pf()}}) before mapping.
 }}
 
-\item{.write_record}{A named list, passed to \code{\link[terra:writeRaster]{terra::writeRaster}}, to save the \code{record} \code{SpatRaster}s to file at each time step. The \code{filename} argument should define the directory in which to write files. Files are named by time step (i.e., 1.tif, 2.tif, ..., N.tif).}
+\item{.write_record}{A named list, passed to \code{\link[terra:writeRaster]{terra::writeRaster}}, to save the \code{record} \code{\link{SpatRaster}}s to file at each time step. The \code{filename} argument should define the directory in which to write files. Files are named by \code{.obs$timestep} (i.e., \verb{1.tif}, \verb{2.tif}, ..., \code{N.tif}). This is typically desirable but considerably reduces speed.}
 
 \item{.progress}{A logical variable that defines whether or not to implement a progress bar (via \code{\link[progress:progress_bar]{progress::progress_bar()}}).}
 
@@ -68,8 +80,38 @@ acs(
 The function returns an \code{\linkS4class{ac_record}} object.
 }
 \description{
-This function is the back-end of the acoustic-container and acoustic-container depth-contour algorithms.
+This function implements the acoustic-container (AC) algorithm and its derivatives (e.g., the acoustic-container depth-contour (ACDC) algorithm).
 }
+\section{Background}{
+For a full description of the AC* algorithms, see the resources linked in 'Source' below.
+}
+
+\section{Tips}{
+\itemize{
+\item \strong{Datasets}. It is good practice to ensure that the datasets that underpin the AC* algorithms (e.g., acoustic data, receiver servicing dates, archival data, receiver locations), as used in \verb{acs_setup_*} functions are aligned (i.e., defined for the same individual, the same receiver(s) and the same time frame). Use a consistent bathymetry grid in all functions. We have tested functions using a bathymetry grid with a Universal Transverse Mercator Projection. We believe other projections should work, providing the units of variables are comparable, but this is untested.
+\item \strong{False detections.}. The usual data processing considerations for passive acoustic telemetry data apply with the AC* algorithms. Of particular importance is to check for false detections and to check whether, given the assumed detection range(s) (see \code{\link[=acs_setup_detection_containers]{acs_setup_detection_containers()}}) and mobility parameter (see \code{\link[=acs_setup_obs]{acs_setup_obs()}}), the individual could have moved have between sequential receivers within the available time. It is worth checking this before implementing \code{\link[=acs]{acs()}} because this check only requires you to consider sequential detections (and should take seconds), while \code{\link[=acs]{acs()}} may consider may intermediate time steps (depending on the implementation) and generally requires longer computation times. See the following functions as a starting point:
+\itemize{
+\item \href{https://rdrr.io/github/ocean-tracking-network/glatos/man/false_detections.html}{\code{false_detections}} in the \href{https://github.com/ocean-tracking-network/glatos}{\code{glatos}} package;
+\item \href{https://edwardlavender.github.io/flapper/reference/process_false_detections_sf.html}{\code{process_false_detections_sf}} in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package;
+\item \href{https://edwardlavender.github.io/flapper/reference/get_detection_overlaps.html}{\code{get_detection_overlaps}} in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package;
+}
+\item \strong{Mobility}. Before you implement the AC* algorithms, check your parameterisation of \code{.mobility} (see \code{\link[=.acs_setup_obs]{.acs_setup_obs()}}) aligns with the data. See the following functions as a starting point:
+\itemize{
+\item \href{https://edwardlavender.github.io/flapper/reference/get_mvt_mobility.html}{\code{get_mvt_mobility_from_acoustics}} in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package;
+\item \href{https://edwardlavender.github.io/flapper/reference/get_mvt_mobility.html}{\code{get_mvt_mobility_from_archival}} in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package;
+}
+\item \strong{Depth}. For implementations of the ACDC algorithm and its derivatives via \code{.update_ac}, it is often preferable to check that the assumed models always identify at least some locations in which the individual could have been located at each time step. For example, in the ACDC algorithm, if your depth-error model is too restrictive, there may be no possible locations in which the individual can be located at a given time step. It is quicker to identify this and resolve it before implementing an AC* algorithm with an inappropriate depth-error model.
+}
+}
+
+\section{Feature requests}{
+Please submit a \href{https://github.com/edwardlavender/patter/issues}{feature request} if you would like to see new features added to this function (and associated routines).
+\itemize{
+\item \strong{Time-specific detection kernels.} This function does not currently support temporally varying detection kernels (although receiver-specific detection kernels are fine).
+\item \strong{Paralellisation.} This function does not currently implement parallelisation (unlike predecessor functions in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package). However, the new approach is simpler and faster.
+}
+}
+
 \examples{
 #### Define datasets
 acoustics <- dat_acoustics[individual_id == 25, ]
@@ -248,7 +290,15 @@ out_acdc <-
 
 }
 \seealso{
-For internal helpers, see \verb{.acs_*} functions.
+This function is part of a series of functions designed to implement the AC* algorithms. See:
+\enumerate{
+\item \code{\link[=acs_setup_obs]{acs_setup_obs()}} to set up observations;
+\item \code{\link[=acs_setup_detection_containers]{acs_setup_detection_containers()}} and \code{\link[=acs_setup_overlaps]{acs_setup_overlaps()}} to identify receiver overlaps (used in detection probability calculations);
+\item \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}} to define detection probability kernels;
+\item \code{\link[=acs]{acs()}} to implement the AC algorithm;
+}
+
+For internal helpers, see \verb{.acs_*()} functions.
 }
 \author{
 Edward Lavender

@@ -72,7 +72,7 @@
 #' utils::str(mat_days)
 #' utils::str(mat_hours)
 #'
-#' @source This function is based on the [`make_matrix_receivers`](https://edwardlavender.github.io/flapper/reference/make_matrix_receivers.html) function in the [flapper](https://github.com/edwardlavender/flapper) package.
+#' @source This function is based on the [`make_matrix_receivers`](https://edwardlavender.github.io/flapper/reference/make_matrix_receivers.html) function in the [`flapper`](https://github.com/edwardlavender/flapper) package.
 #' @author Edward Lavender
 #' @export
 

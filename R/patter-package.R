@@ -1,5 +1,5 @@
 #' @title  [`patter`]: Movement Modelling For Passive Acoustic Telemetry
-#' @description [`patter`] is a re-implementation of the [flapper](https://github.com/edwardlavender/flapper) family of algorithms for passive acoustic telemetry that simpler, faster and better tested than its [predecessor](https://github.com/edwardlavender/flapper).
+#' @description [`patter`] is a re-implementation of the [`flapper`](https://github.com/edwardlavender/flapper) family of algorithms for passive acoustic telemetry that simpler, faster and better tested than its [predecessor](https://github.com/edwardlavender/flapper).
 #'
 #' # Workflow
 #'
@@ -22,7 +22,7 @@
 #'
 #' @author Edward Lavender ([ORCID](https://orcid.org/0000-0002-8040-7489))
 #' @seealso
-#' * For information on the [flapper](https://github.com/edwardlavender/flapper) algorithms, see Lavender et al. ([2023](https://doi.org/10.1111/2041-210X.14193)).
+#' * For information on the [`flapper`](https://github.com/edwardlavender/flapper) algorithms, see Lavender et al. ([2023](https://doi.org/10.1111/2041-210X.14193)).
 #' * For information on [`patter`]'s predecessor, see \url{https://github.com/edwardlavender/flapper}.
 #' * For further information on  [`patter`], see \url{https://github.com/edwardlavender/patter}.
 #' * For feature requests and bug reports, see \url{https://github.com/edwardlavender/patter/issues}.

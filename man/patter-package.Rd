@@ -6,7 +6,7 @@
 \alias{patter-package}
 \title{\code{\link{patter}}: Movement Modelling For Passive Acoustic Telemetry}
 \description{
-\code{\link{patter}} is a re-implementation of the \href{https://github.com/edwardlavender/flapper}{flapper} family of algorithms for passive acoustic telemetry that simpler, faster and better tested than its \href{https://github.com/edwardlavender/flapper}{predecessor}.
+\code{\link{patter}} is a re-implementation of the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} family of algorithms for passive acoustic telemetry that simpler, faster and better tested than its \href{https://github.com/edwardlavender/flapper}{predecessor}.
 }
 \section{Workflow}{
 To implement the depth-contour algorithm, use:
@@ -35,7 +35,7 @@ Lavender, E. et al. (2023). An integrative modelling framework for passive acous
 }
 \seealso{
 \itemize{
-\item For information on the \href{https://github.com/edwardlavender/flapper}{flapper} algorithms, see Lavender et al. (\href{https://doi.org/10.1111/2041-210X.14193}{2023}).
+\item For information on the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} algorithms, see Lavender et al. (\href{https://doi.org/10.1111/2041-210X.14193}{2023}).
 \item For information on \code{\link{patter}}'s predecessor, see \url{https://github.com/edwardlavender/flapper}.
 \item For further information on  \code{\link{patter}}, see \url{https://github.com/edwardlavender/patter}.
 \item For feature requests and bug reports, see \url{https://github.com/edwardlavender/patter/issues}.

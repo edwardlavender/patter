@@ -1,35 +1,75 @@
-#' @title AC* algorithm back-end
-#' @description This function is the back-end of the acoustic-container and acoustic-container depth-contour algorithms.
-#' @param .obs A [`data.table`] with observations, from [`acs_setup_obs()`].
-#' @param .bathy A [`SpatRaster`] that defines the grid over which the algorithms are implemented.
-#' @param .detection_overlaps A named `list`, from [`acs_setup_detection_overlaps()`].
-#' @param .detection_kernels A `list`, from [`acs_setup_detection_kernels()`].
-#' @param .update_ac,... (optional) A function and additional arguments used to update the [`SpatRaster`] that defines the possible locations of the individual given the data (according to the AC algorithm) at each time step. For example, if you have depth observations, you could use a depth-error model to build a probability surface that describes the possible locations of the individual at each time step and that is combined with the information from the AC algorithm. Information from other variables can be integrated in the same way. The must accept five arguments (even if they are unused):
+#' @title AC* algorithms
+#' @description This function implements the acoustic-container (AC) algorithm and its extensions (e.g., the acoustic-container depth-contour (ACDC) algorithm).
+#' @param .obs A [`data.table`] with observations, typically from [`acs_setup_obs()`]. At a minimum, `.obs` is expected to contain the following columns:
+#' * `timestep`---an `integer` that defines the time step;
+#' * `timestamp`---a regular sequences of `POSIXct` time stamps;
+#' * `date`---a `character` that defines the date;
+#' * `detection_id`---an `integer` vector that uniquely defines each detection;
+#' * `detection`---an `integer` that distinguishes the time steps at which detections were (1) or were not (0) recorded;
+#' * `receiver_id`---a `list` that defines the receiver(s) that recorded detections at each time step;
+#' * `buffer_past`---a `double` that controls container growth from the past to the present;
+#' * `buffer_future`---a `double` that controls container shrinkage from the future to the present;
+#'
+#' Other columns can be included as necessary for `.update_ac` (see below).
+#' @param .bathy A [`SpatRaster`] that defines the grid over which the algorithms are implemented. This layer should be the same as that used to define `.detection_overlaps` (via [`acs_setup_detection_containers()`] and [`acs_setup_detection_overlaps()`]) and `.detection_kernels` (via [`acs_setup_detection_kernels()`]).
+#' @param .detection_overlaps (optional) A named `list` of detection container overlaps, defined over `.bathy`, from [`acs_setup_detection_overlaps()`]. If un-supplied, it is silently assumed that receiver detection containers do not overlap. If supplied, receiver overlaps are taken into account in detection probability calculations.
+#' @param .detection_kernels A named `list` of detection probability kernels, defined over `.bathy`, from [`acs_setup_detection_kernels()`].
+#' @param .update_ac,... (optional) A function and additional arguments used to update the [`SpatRaster`] that defines the possible locations of the individual given the data (according to the AC algorithm) at each time step. For example, if you have depth observations, you could use a depth-error model to define a probability surface that describes the possible locations of the individual at each time step and combine this, via `.update_ac`, with the surface from the AC algorithm. Information from other variables can be integrated in the same way. The function must accept five arguments in the following order (even if they are unused):
 #' * `.spat`---a [`SpatRaster`] that defines the possible locations of the individual given the data at each time step;
 #' * `.bathy`---the `.bathy` [`SpatRaster`] (above);
 #' * `.obs`---the `.obs` [`data.table`] (above);
 #' * `.t`---an integer that defines the current time step (i.e., row in `.obs`);
 #' * `...`---Any additional arguments passed to the function;
 #' @param .save_record,.save_cumulative Logical inputs that control options for saving outputs in memory.
-#' * `.save_record` defines whether or not to save the record of the possible locations of the individual at each time step in the `record` element of the output;
-#' * `.save_cumulative` defines whether or not to save a cumulative (probability-of-use) map, derived from the normalised summation of each element in `record` in the `map` element of the output;
-#' @param .write_record A named list, passed to [`terra::writeRaster`], to save the `record` `SpatRaster`s to file at each time step. The `filename` argument should define the directory in which to write files. Files are named by time step (i.e., 1.tif, 2.tif, ..., N.tif).
+#' * `.save_record` defines whether or not to save the record of the possible locations of the individual at each time step in the `record` element of the output. This is only sensible for relatively short time series (use `.write_record`, below, otherwise).
+#' * `.save_cumulative` defines whether or not to save a cumulative (probability-of-use) map, derived from the normalised summation of each element in `record` in the `map` element of the output. In general, this is not necessary since AC* outputs are refined by particle filtering (see [`pf()`]) before mapping.
+#' @param .write_record A named list, passed to [`terra::writeRaster`], to save the `record` [`SpatRaster`]s to file at each time step. The `filename` argument should define the directory in which to write files. Files are named by `.obs$timestep` (i.e., `1.tif`, `2.tif`, ..., `N.tif`). This is typically desirable but considerably reduces speed.
 #' @param .progress A logical variable that defines whether or not to implement a progress bar (via [`progress::progress_bar()`]).
 #' @param .prompt A logical variable that defines whether or not a user prompt is required between time steps. If provided, the function plots the possible locations of the individual at each time step. This is useful for diagnostics.
 #' @param .verbose A logical variable that defines whether or not to print messages to the console or to file to relay function progress. If `con = ""`, messages are printed to the console; otherwise, they are written to file (see below).
 #' @param .con If `.verbose = TRUE`, `.con` is character string that defines the full pathway to a `.txt` file (which can be created on-the-fly) into which messages are written to relay function progress. This approach, rather than printing to the console, is recommended for clarity, speed and debugging.
-#' @return The function returns an [`ac_record-class`] object.
 #'
-#' @source This function evolved from `.acs()` in the [flapper](https://github.com/edwardlavender/flapper) package. Key developments include:
-#' * Implementation of the algorithm over a single timeline;
-#' * Re-parameterisation of container dynamics at each time step with respect to the possible locations of the individual given the data, given the past and given the future;
-#' * Exploitation of [`data.table`] and [`terra`] for substantially improved speed;
-#' * The use of [`terra::buffer()`] to represent container dynamics, which is faster and removes the polygon versus grid discrepancy in [flapper](https://github.com/edwardlavender/flapper);
-#' * Implementation of the `.ac_update` argument to implement the ACDC algorithm or any related approach;
+#' @details
+#' # Background
+#'
+#' For a full description of the AC* algorithms, see the resources linked in 'Source' below.
+#'
+#' # Tips
+#' * **Datasets**. It is good practice to ensure that the datasets that underpin the AC* algorithms (e.g., acoustic data, receiver servicing dates, archival data, receiver locations), as used in `acs_setup_*` functions are aligned (i.e., defined for the same individual, the same receiver(s) and the same time frame). Use a consistent bathymetry grid in all functions. We have tested functions using a bathymetry grid with a Universal Transverse Mercator Projection. We believe other projections should work, providing the units of variables are comparable, but this is untested.
+#' * **False detections.**. The usual data processing considerations for passive acoustic telemetry data apply with the AC* algorithms. Of particular importance is to check for false detections and to check whether, given the assumed detection range(s) (see [`acs_setup_detection_containers()`]) and mobility parameter (see [`acs_setup_obs()`]), the individual could have moved have between sequential receivers within the available time. It is worth checking this before implementing [`acs()`] because this check only requires you to consider sequential detections (and should take seconds), while [`acs()`] may consider may intermediate time steps (depending on the implementation) and generally requires longer computation times. See the following functions as a starting point:
+#'    * [`false_detections`](https://rdrr.io/github/ocean-tracking-network/glatos/man/false_detections.html) in the [`glatos`](https://github.com/ocean-tracking-network/glatos) package;
+#'    * [`process_false_detections_sf`](https://edwardlavender.github.io/flapper/reference/process_false_detections_sf.html) in the [`flapper`](https://github.com/edwardlavender/flapper) package;
+#'    * [`get_detection_overlaps`](https://edwardlavender.github.io/flapper/reference/get_detection_overlaps.html) in the [`flapper`](https://github.com/edwardlavender/flapper) package;
+#' * **Mobility**. Before you implement the AC* algorithms, check your parameterisation of `.mobility` (see [`.acs_setup_obs()`]) aligns with the data. See the following functions as a starting point:
+#'    * [`get_mvt_mobility_from_acoustics`](https://edwardlavender.github.io/flapper/reference/get_mvt_mobility.html) in the [`flapper`](https://github.com/edwardlavender/flapper) package;
+#'    * [`get_mvt_mobility_from_archival`](https://edwardlavender.github.io/flapper/reference/get_mvt_mobility.html) in the [`flapper`](https://github.com/edwardlavender/flapper) package;
+#' * **Depth**. For implementations of the ACDC algorithm and its derivatives via `.update_ac`, it is often preferable to check that the assumed models always identify at least some locations in which the individual could have been located at each time step. For example, in the ACDC algorithm, if your depth-error model is too restrictive, there may be no possible locations in which the individual can be located at a given time step. It is quicker to identify this and resolve it before implementing an AC* algorithm with an inappropriate depth-error model.
+#'
+#' # Feature requests
+#' Please submit a [feature request](https://github.com/edwardlavender/patter/issues) if you would like to see new features added to this function (and associated routines).
+#' * **Time-specific detection kernels.** This function does not currently support temporally varying detection kernels (although receiver-specific detection kernels are fine).
+#' * **Paralellisation.** This function does not currently implement parallelisation (unlike predecessor functions in the [`flapper`](https://github.com/edwardlavender/flapper) package). However, the new approach is simpler and faster.
+#'
+#' @return The function returns an [`ac_record-class`] object.
 #'
 #' @example man/examples/acs-examples.R
 #'
-#' @seealso For internal helpers, see `.acs_*` functions.
+#' @seealso
+#' This function is part of a series of functions designed to implement the AC* algorithms. See:
+#' 1. [`acs_setup_obs()`] to set up observations;
+#' 2. [`acs_setup_detection_containers()`] and [`acs_setup_overlaps()`] to identify receiver overlaps (used in detection probability calculations);
+#' 3. [`acs_setup_detection_kernels()`] to define detection probability kernels;
+#' 4. [`acs()`] to implement the AC algorithm;
+#'
+#' For internal helpers, see `.acs_*()` functions.
+#'
+#' @source This function evolved from the `.acs()`, `.acs_pl()`, [`ac`](https://edwardlavender.github.io/flapper/reference/ac.html) and [`acdc`](https://edwardlavender.github.io/flapper/reference/acdc.html) functions in the [`flapper`](https://github.com/edwardlavender/flapper) package. Key developments include:
+#' * Implementation of the algorithm over a single timeline;
+#' * Re-parameterisation of container dynamics at each time step with respect to the possible locations of the individual given the data, given the past and given the future;
+#' * Exploitation of [`data.table`] and [`terra`] for substantially improved speed;
+#' * The use of [`terra::buffer()`] to represent container dynamics, which is faster and removes the polygon versus grid discrepancy in [`flapper`](https://github.com/edwardlavender/flapper);
+#' * Implementation of the `.ac_update` argument to implement the ACDC algorithm (and related approaches) with enhanced flexibility;
+#'
 #' @author Edward Lavender
 #' @export
 
@@ -67,8 +107,8 @@ acs <- function(.obs,
   cat_to_cf <- function(..., message = .verbose, file = .con, append = append_messages) {
     if (message) cat(paste(..., "\n"), file = .con, append = append)
   }
-  cat_to_cf(paste0("patter::.acs() called (@ ", t_onset, ")..."))
-  on.exit(cat_to_cf(paste0("patter::.acs() call ended (@ ", Sys.time(), ").")), add = TRUE)
+  cat_to_cf(paste0("patter::acs() called (@ ", t_onset, ")..."))
+  on.exit(cat_to_cf(paste0("patter::acs() call ended (@ ", Sys.time(), ").")), add = TRUE)
 
   #### Set up loop
   # Define empty list for outputs
@@ -99,7 +139,6 @@ acs <- function(.obs,
         # * This is only necessary at the very first time step
         # * At subsequent acoustic time steps, given_data is defined by what was
         # * ... the kernel around the next receiver(s) (see below)
-
         # Identify receiver(s) that recorded detections at the selected time step
         detections_current <- .obs$receiver_id[t][[1]]
         # Identify remaining (active) receivers which did not record a detection (if any)
@@ -110,7 +149,7 @@ acs <- function(.obs,
       # (2) Define location _given non-detection_ at current time step
       given_data <- .detection_kernels$bkg_inv_surface_by_design[[.detection_kernels$array_design_by_date[[.obs$date[t]]]]]
     }
-    # Filter by depth (andor other constraints)
+    # Filter by depth (and/or other constraints)
     if (!is.null(.update_ac)) {
       given_data <- .update_ac(given_data, .bathy, .obs, t, ...)
     }
@@ -236,8 +275,8 @@ acs <- function(.obs,
   time <- list(start = t_onset,
                end = t_onset,
                duration = difftime(t_end, t_onset))
-  out <- list(archive = list(record = record,
-                             map = cumulative),
+  out <- list(record = record,
+              map = cumulative,
               time = time)
 
   #### Return outputs

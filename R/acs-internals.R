@@ -6,9 +6,11 @@
 #' @param .ov The `detection_overlaps` `list`.
 #' @param .w The `write_record` `list`.
 #' @author Edward Lavender
-#' @name .acs_check
+#' @name acs_check
+NULL
 
-#' @rdname .acs_check
+
+#' @rdname acs_check
 #' @keywords internal
 
 .acs_check_obs <- function(.o) {
@@ -34,14 +36,14 @@
   .o
 }
 
-#' @rdname .acs_check
+#' @rdname acs_check
 #' @keywords internal
 
 .acs_check_bathy <- function(.b) {
   check_inherits(.b, "SpatRaster")
 }
 
-#' @rdname .acs_check
+#' @rdname acs_check
 #' @keywords internal
 
 .acs_check_detection_overlaps <- function(.ov) {
@@ -51,7 +53,7 @@
   }
 }
 
-#' @rdname .acs_check
+#' @rdname acs_check
 #' @keywords internal
 
 .acs_check_detection_kernels <- function(.k, .b) {
@@ -68,8 +70,7 @@
   }
 }
 
-
-#' @rdname .acs_check
+#' @rdname acs_check
 #' @keywords internal
 
 .acs_check_write_record <- function(.w) {

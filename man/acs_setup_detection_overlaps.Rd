@@ -4,7 +4,7 @@
 \alias{acs_setup_detection_overlaps}
 \title{AC* set up: Define detection container overlaps}
 \source{
-This function is based on the \href{https://edwardlavender.github.io/flapper/reference/get_detection_containers_overlap.html}{\code{get_detection_containers_overlaps}} function in the \href{https://github.com/edwardlavender/flapper}{flapper} package.
+This function is based on the \href{https://edwardlavender.github.io/flapper/reference/get_detection_containers_overlap.html}{\code{get_detection_containers_overlaps}} function in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package.
 }
 \usage{
 acs_setup_detection_overlaps(.containers, .moorings, .services = NULL)

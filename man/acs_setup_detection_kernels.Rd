@@ -4,7 +4,7 @@
 \alias{acs_setup_detection_kernels}
 \title{AC* set up: Define detection kernels}
 \source{
-This function is based on the \href{https://edwardlavender.github.io/flapper/reference/acs_setup_detection_kernels.html}{\code{acs_setup_detection_kernels}} function in the \href{https://github.com/edwardlavender/flapper}{flapper} package, where the role of detection kernels in the AC* algorithms is described extensively (see Details).
+This function is based on the \href{https://edwardlavender.github.io/flapper/reference/acs_setup_detection_kernels.html}{\code{acs_setup_detection_kernels}} function in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package, where the role of detection kernels in the AC* algorithms is described extensively (see Details).
 }
 \usage{
 acs_setup_detection_kernels(

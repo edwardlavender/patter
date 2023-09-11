@@ -40,6 +40,11 @@
 #' #### Example (3): Implement the function for acoustic & archival time series
 #' obs <- acs_setup_obs(acoustics, archival, .step = "2 mins", .mobility = 500)
 #' utils::head(obs)
+#'
+#' @seealso
+#'
+#' See the [`process_receiver_ids`](https://edwardlavender.github.io/flapper/reference/process_receiver_id.html) function in the in the [`flapper`](https://edwardlavender.github.io/flapper/reference/process_receiver_id.html) package to define receiver deployments using an integer vector.
+#'
 #' @author Edward Lavender
 #' @export
 
@@ -168,7 +173,7 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
 #' terra::plot(containers[[dat_moorings$receiver_id[1]]], col = "red")
 #' terra::lines(terra::as.polygons(containers[[dat_moorings$receiver_id[2]]]), col = "blue")
 #'
-#' @source This function is based on the [`acs_setup_containers`](https://edwardlavender.github.io/flapper/reference/acs_setup_containers.html) function in the [flapper](https://github.com/edwardlavender/flapper) package.
+#' @source This function is based on the [`acs_setup_containers`](https://edwardlavender.github.io/flapper/reference/acs_setup_containers.html) function in the [flappe`r](https://github.com/edwardlavender/flapper) package.
 #'
 #' @author Edward Lavender
 #' @export
@@ -232,7 +237,7 @@ acs_setup_detection_containers <- function(.bathy, .moorings) {
 #' overlaps <- acs_setup_detection_overlaps(containers, dat_moorings)
 #' summary(overlaps)
 #'
-#' @source This function is based on the [`get_detection_containers_overlaps`](https://edwardlavender.github.io/flapper/reference/get_detection_containers_overlap.html) function in the [flapper](https://github.com/edwardlavender/flapper) package.
+#' @source This function is based on the [`get_detection_containers_overlaps`](https://edwardlavender.github.io/flapper/reference/get_detection_containers_overlap.html) function in the [`flapper`](https://github.com/edwardlavender/flapper) package.
 #'
 #' @author Edward Lavender
 #' @export
@@ -538,7 +543,7 @@ acs_setup_detection_pr <- function(.data, .bathy, ...) {
 #' }) |> invisible()
 #' par(pp)
 #'
-#' @source This function is based on the [`acs_setup_detection_kernels`](https://edwardlavender.github.io/flapper/reference/acs_setup_detection_kernels.html) function in the [flapper](https://github.com/edwardlavender/flapper) package, where the role of detection kernels in the AC* algorithms is described extensively (see Details).
+#' @source This function is based on the [`acs_setup_detection_kernels`](https://edwardlavender.github.io/flapper/reference/acs_setup_detection_kernels.html) function in the [`flapper`](https://github.com/edwardlavender/flapper) package, where the role of detection kernels in the AC* algorithms is described extensively (see Details).
 #'
 #' @author Edward Lavender
 #' @export

@@ -7,10 +7,9 @@
 #' * [`abort()`] is a [`stop()`] wrapper for clean errors;
 #'
 #' @return Returned values follow parent functions.
-#'
 #' @author Edward Lavender
-#'
 #' @name signal
+NULL
 
 #' @rdname signal
 #' @keywords internal

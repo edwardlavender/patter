@@ -59,6 +59,10 @@ utils::head(obs)
 #### Example (3): Implement the function for acoustic & archival time series
 obs <- acs_setup_obs(acoustics, archival, .step = "2 mins", .mobility = 500)
 utils::head(obs)
+
+}
+\seealso{
+See the \href{https://edwardlavender.github.io/flapper/reference/process_receiver_id.html}{\code{process_receiver_ids}} function in the in the \href{https://edwardlavender.github.io/flapper/reference/process_receiver_id.html}{\code{flapper}} package to define receiver deployments using an integer vector.
 }
 \author{
 Edward Lavender

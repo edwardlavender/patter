@@ -80,6 +80,11 @@ out_ac <-
       .save_record = TRUE)
 # Use prompt = TRUE for debugging
 if (interactive()) {
+  # This produces a map of possible locations at each time step
+  # * red: possible location boundaries given data
+  # * orange: possible location boundaries given past
+  # * green: possible location boundaries given future
+  # * background: possible locations at the present time given data, past and future
   out_ac <-
     acs(obs,
         .bathy = gebco,
