@@ -107,7 +107,7 @@ check_archival <- function(.archival) {
     }
     # Check for multiple individuals
     if (rlang::has_name(.archival, "individual_id") && length(unique(.archival$individual_id)) > 1L) {
-      abort("Multiple individuals detected in acoustic data.")
+      abort("Multiple individuals detected in archival data.")
     }
     # Check time zone
     .archival$timestamp <- check_tz(.archival$timestamp)

@@ -3,22 +3,22 @@ test_that("acs_setup_obs() works", {
   #### Fail user input checks
   # Pass unsorted time series
   acs_setup_obs(dat_acoustics, .step = "2 mins", .mobility = 500) |>
-    expect_error()
+    expect_error("Multiple individuals detected in acoustic data.", fixed = TRUE)
   # Pass 2-minute archival time series & 3 minute step
   acs_setup_obs(dat_acoustics[individual_id == 25, ],
                 .archival = dat_archival[individual_id == 25, ],
                 .step = "3 mins", .mobility = 500) |>
-    expect_error()
+    expect_error("Archival time series are not spaced `.step` ('3 mins') units apart (observed step: 120 s).", fixed = TRUE)
   # Pass a single archival observation
   acs_setup_obs(dat_acoustics[individual_id == 25, ],
                 .archival = dat_archival[1, ],
                 .step = "3 mins", .mobility = 500) |>
-    expect_error()
+    expect_error("There is only one archival observation.", fixed = TRUE)
   # Pass time series that don't overlap
   acs_setup_obs(dat_acoustics[individual_id == 25, ],
                 .archival = data.table(timestamp = as.POSIXct(c("2012-01-01", "2012-01-02"), tz = "UTC"), depth = c(1, 2)),
                 .step = "1 day", .mobility = 500) |>
-    expect_error()
+    expect_error("There are no remaining observations after aligning the acoustic and archival time series.", fixed = TRUE)
 
   #### Test processing of acoustic data
   # Define example acoustic time series
@@ -200,10 +200,10 @@ test_that("acs_setup_detection_kernels() works", {
   acs_setup_detection_kernels(m, s,
                               .calc_detection_pr = calc_dpr,
                               .bathy = dat_gebco()) |>
-    expect_warning("Detection probability is NA at receiver 3.")
+    expect_warning("Detection probability is NA at receiver 3.", fixed = TRUE)
   # Check warnings (0 at receiver)
   acs_setup_detection_kernels(m, s,
                               .calc_detection_pr = function(.d, .b) calc_dpr(.d, .b, .error = 0),
                               .bathy = dat_gebco()) |>
-    expect_warning("Detection probability is 0 at receiver 3.")
+    expect_warning("Detection probability is 0 at receiver 3.", fixed = TRUE)
 })
