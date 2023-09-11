@@ -95,7 +95,7 @@ acs <- function(.obs,
   }
   write_record_folder <- .acs_check_write_record(.write_record)
   if (!.verbose & .con != "") {
-    warn("Input to `con` ignores since `.verbose = FALSE`.")
+    warn("Input to `con` ignored since `.verbose = FALSE`.")
   }
 
   #### Set up messages
