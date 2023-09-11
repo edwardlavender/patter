@@ -20,12 +20,14 @@ test_that("acs() works", {
                                 .bathy = gebco)
 
   #### Validate checks
+  # Check at least one .save/.write argument is supplied
   acs(obs,
       .bathy = gebco,
       .detection_overlaps = overlaps,
       .detection_kernels = kernels) |>
     expect_error("`.save_cumulative = FALSE`, `.save_record = FALSE` and `.write_record = NULL`. There is nothing to do.",
                  fixed = TRUE)
+  # Check .verbose & .con agree
   acs(obs[1:3, ],
       .bathy = gebco,
       .detection_overlaps = overlaps,
@@ -33,6 +35,13 @@ test_that("acs() works", {
       .save_record = TRUE,
       .verbose = FALSE, .con = tempdir()) |>
     expect_warning("Input to `con` ignored since `.verbose = FALSE`.", fixed = TRUE)
+  # Forget the missing period on 'prompt'
+  acs(obs[1:3, ],
+      .bathy = gebco,
+      .detection_overlaps = overlaps,
+      .detection_kernels = kernels,
+      .save_record = TRUE, .verbose = FALSE, prompt = FALSE) |>
+    expect_warning("There are argument(s) passed via `...` that are identical, except for the missing leading period, to the main arguments to `acs()`: `prompt`. Did you mean to use: `.prompt`? Arguments passed via `...` are passed to `.update_ac()` and otherwise unused.", fixed = TRUE)
 
   ##### Implement algorithm
   folder <- file.path(tempdir(), "ac")

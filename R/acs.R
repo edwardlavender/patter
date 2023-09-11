@@ -97,6 +97,8 @@ acs <- function(.obs,
   if (!.verbose & .con != "") {
     warn("Input to `con` ignored since `.verbose = FALSE`.")
   }
+  # Catch dots
+  check_dots_for_missing_period(formals(), list(...))
 
   #### Set up messages
   # Define log file & function to send messages to the console/file

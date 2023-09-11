@@ -74,3 +74,41 @@ check_tz <-
     }
     invisible(input)
   }
+
+#' @rdname check_utils
+#' @keywords internal
+
+check_dots_allowed <- function(not_allowed, ...) {
+  l <- list(...)
+  if (any(names(l) %in% not_allowed)) {
+    trouble <- names(l)[names(l) %in% not_allowed]
+    msg <- paste0(
+      "Additional arguments (", paste(trouble, collapse = ", "),
+      ") have been passed to the function via `...` which are implemented internally."
+    )
+    abort(msg)
+  }
+}
+
+
+#' @rdname check_utils
+#' @keywords internal
+
+check_dots_for_missing_period <- function(args, dots) {
+  # List argument names
+  args <- names(args)
+  # Drop dots ("...")
+  args <- args[!(args %in% "...")]
+  # Drop leading period
+  args <- sub("^\\.", "", args)
+  # Name arguments passed via dots
+  dots <- names(dots)
+  # Check for any arguments in dots that match args without the periods
+  # * This is likely due to the missing period (e.g. 'prompt' instead of '.prompt')
+  dots_bool <- dots %in% args
+  if (any(dots_bool)) {
+    dots_in_args <- dots[dots_bool]
+    warn("There are argument(s) passed via `...` that are identical, except for the missing leading period, to the main arguments to `acs()`: {paste0(paste0('`', dots_in_args, collapse = '`, '), '`')}. Did you mean to use: {paste0(paste0('`.', dots_in_args, collapse = '`, '), '`')}? Arguments passed via `...` are passed to `.update_ac()` and otherwise unused.",
+         .envir = environment())
+  }
+}
