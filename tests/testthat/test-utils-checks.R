@@ -20,6 +20,8 @@ test_that("check_*() utility functions work", {
   #### check_named_list()
   check_named_list(list(a = 1))
   check_named_list(list())
+  check_named_list("blah") |>
+    expect_error("Argument '\"blah\"' must be of class list.", fixed = TRUE)
   check_named_list(list(1, 2)) |>
     expect_error("Argument 'list(1, 2)' must be a named list.", fixed = TRUE)
 

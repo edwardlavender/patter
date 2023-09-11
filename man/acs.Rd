@@ -80,7 +80,7 @@ Other columns can be included as necessary for \code{.update_ac} (see below).}
 The function returns an \code{\linkS4class{ac_record}} object.
 }
 \description{
-This function implements the acoustic-container (AC) algorithm and its derivatives (e.g., the acoustic-container depth-contour (ACDC) algorithm).
+This function implements the acoustic-container (AC) algorithm and its extensions (e.g., the acoustic-container depth-contour (ACDC) algorithm).
 }
 \section{Background}{
 For a full description of the AC* algorithms, see the resources linked in 'Source' below.
@@ -95,7 +95,7 @@ For a full description of the AC* algorithms, see the resources linked in 'Sourc
 \item \href{https://edwardlavender.github.io/flapper/reference/process_false_detections_sf.html}{\code{process_false_detections_sf}} in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package;
 \item \href{https://edwardlavender.github.io/flapper/reference/get_detection_overlaps.html}{\code{get_detection_overlaps}} in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package;
 }
-\item \strong{Mobility}. Before you implement the AC* algorithms, check your parameterisation of \code{.mobility} (see \code{\link[=.acs_setup_obs]{.acs_setup_obs()}}) aligns with the data. See the following functions as a starting point:
+\item \strong{Mobility}. Before you implement the AC* algorithms, check your parameterisation of \code{.mobility} (see \code{\link[=acs_setup_obs]{acs_setup_obs()}}) aligns with the data. See the following functions as a starting point:
 \itemize{
 \item \href{https://edwardlavender.github.io/flapper/reference/get_mvt_mobility.html}{\code{get_mvt_mobility_from_acoustics}} in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package;
 \item \href{https://edwardlavender.github.io/flapper/reference/get_mvt_mobility.html}{\code{get_mvt_mobility_from_archival}} in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package;
@@ -147,12 +147,11 @@ out_ac <-
 # The function returns an ac_record-class object
 class(out_ac)
 summary(out_ac)
-# The archive element contains
+# This contains:
 # * `record` - a time series of maps that define the individual's possible locations
 # * `map` - a cumulative map (if requested)
-out_ac$archive
-terra::plot(out_ac$archive$record[[1]])
-terra::plot(out_ac$archive$record[[120]])
+terra::plot(out_ac$record[[1]])
+terra::plot(out_ac$record[[120]])
 
 #### Example (2): Create a cumulative map on the fly
 out_ac <-
@@ -161,7 +160,7 @@ out_ac <-
       .detection_kernels = kernels,
       .save_record = TRUE,
       .save_cumulative = TRUE)
-terra::plot(out_ac$archive$map)
+terra::plot(out_ac$map)
 
 #### Example (3): Account for receiver overlaps
 out_ac <-
@@ -171,7 +170,7 @@ out_ac <-
       .detection_kernels = kernels,
       .save_record = TRUE,
       .save_cumulative = TRUE)
-terra::plot(out_ac$archive$map)
+terra::plot(out_ac$map)
 
 #### Example (4): Write record to file
 # This is useful for longer time series
@@ -195,6 +194,11 @@ out_ac <-
       .save_record = TRUE)
 # Use prompt = TRUE for debugging
 if (interactive()) {
+  # This produces a map of possible locations at each time step
+  # * red: possible location boundaries given data
+  # * orange: possible location boundaries given past
+  # * green: possible location boundaries given future
+  # * background: possible locations at the present time given data, past and future
   out_ac <-
     acs(obs,
         .bathy = gebco,
@@ -257,9 +261,9 @@ out_acdc <-
 require(graphics)
 pp <- par(mfrow = c(3, 2))
 lapply(1:3, \(i) {
-  out_ac$archive$record[[i]] |>
+  out_ac$record[[i]] |>
     terra::plot(main = paste("AC", i))
-  out_acdc$archive$record[[i]] |>
+  out_acdc$record[[i]] |>
     terra::plot(main = paste("ACDC", i))
 }) |> invisible()
 par(pp)
@@ -293,7 +297,7 @@ out_acdc <-
 This function is part of a series of functions designed to implement the AC* algorithms. See:
 \enumerate{
 \item \code{\link[=acs_setup_obs]{acs_setup_obs()}} to set up observations;
-\item \code{\link[=acs_setup_detection_containers]{acs_setup_detection_containers()}} and \code{\link[=acs_setup_overlaps]{acs_setup_overlaps()}} to identify receiver overlaps (used in detection probability calculations);
+\item \code{\link[=acs_setup_detection_containers]{acs_setup_detection_containers()}} and \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}} to identify receiver overlaps (used in detection probability calculations);
 \item \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}} to define detection probability kernels;
 \item \code{\link[=acs]{acs()}} to implement the AC algorithm;
 }

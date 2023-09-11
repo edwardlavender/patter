@@ -32,12 +32,11 @@ out_ac <-
 # The function returns an ac_record-class object
 class(out_ac)
 summary(out_ac)
-# The archive element contains
+# This contains:
 # * `record` - a time series of maps that define the individual's possible locations
 # * `map` - a cumulative map (if requested)
-out_ac$archive
-terra::plot(out_ac$archive$record[[1]])
-terra::plot(out_ac$archive$record[[120]])
+terra::plot(out_ac$record[[1]])
+terra::plot(out_ac$record[[120]])
 
 #### Example (2): Create a cumulative map on the fly
 out_ac <-
@@ -46,7 +45,7 @@ out_ac <-
       .detection_kernels = kernels,
       .save_record = TRUE,
       .save_cumulative = TRUE)
-terra::plot(out_ac$archive$map)
+terra::plot(out_ac$map)
 
 #### Example (3): Account for receiver overlaps
 out_ac <-
@@ -56,7 +55,7 @@ out_ac <-
       .detection_kernels = kernels,
       .save_record = TRUE,
       .save_cumulative = TRUE)
-terra::plot(out_ac$archive$map)
+terra::plot(out_ac$map)
 
 #### Example (4): Write record to file
 # This is useful for longer time series
@@ -147,9 +146,9 @@ out_acdc <-
 require(graphics)
 pp <- par(mfrow = c(3, 2))
 lapply(1:3, \(i) {
-  out_ac$archive$record[[i]] |>
+  out_ac$record[[i]] |>
     terra::plot(main = paste("AC", i))
-  out_acdc$archive$record[[i]] |>
+  out_acdc$record[[i]] |>
     terra::plot(main = paste("ACDC", i))
 }) |> invisible()
 par(pp)

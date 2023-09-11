@@ -40,7 +40,7 @@
 #'    * [`false_detections`](https://rdrr.io/github/ocean-tracking-network/glatos/man/false_detections.html) in the [`glatos`](https://github.com/ocean-tracking-network/glatos) package;
 #'    * [`process_false_detections_sf`](https://edwardlavender.github.io/flapper/reference/process_false_detections_sf.html) in the [`flapper`](https://github.com/edwardlavender/flapper) package;
 #'    * [`get_detection_overlaps`](https://edwardlavender.github.io/flapper/reference/get_detection_overlaps.html) in the [`flapper`](https://github.com/edwardlavender/flapper) package;
-#' * **Mobility**. Before you implement the AC* algorithms, check your parameterisation of `.mobility` (see [`.acs_setup_obs()`]) aligns with the data. See the following functions as a starting point:
+#' * **Mobility**. Before you implement the AC* algorithms, check your parameterisation of `.mobility` (see [`acs_setup_obs()`]) aligns with the data. See the following functions as a starting point:
 #'    * [`get_mvt_mobility_from_acoustics`](https://edwardlavender.github.io/flapper/reference/get_mvt_mobility.html) in the [`flapper`](https://github.com/edwardlavender/flapper) package;
 #'    * [`get_mvt_mobility_from_archival`](https://edwardlavender.github.io/flapper/reference/get_mvt_mobility.html) in the [`flapper`](https://github.com/edwardlavender/flapper) package;
 #' * **Depth**. For implementations of the ACDC algorithm and its derivatives via `.update_ac`, it is often preferable to check that the assumed models always identify at least some locations in which the individual could have been located at each time step. For example, in the ACDC algorithm, if your depth-error model is too restrictive, there may be no possible locations in which the individual can be located at a given time step. It is quicker to identify this and resolve it before implementing an AC* algorithm with an inappropriate depth-error model.
@@ -57,7 +57,7 @@
 #' @seealso
 #' This function is part of a series of functions designed to implement the AC* algorithms. See:
 #' 1. [`acs_setup_obs()`] to set up observations;
-#' 2. [`acs_setup_detection_containers()`] and [`acs_setup_overlaps()`] to identify receiver overlaps (used in detection probability calculations);
+#' 2. [`acs_setup_detection_containers()`] and [`acs_setup_detection_overlaps()`] to identify receiver overlaps (used in detection probability calculations);
 #' 3. [`acs_setup_detection_kernels()`] to define detection probability kernels;
 #' 4. [`acs()`] to implement the AC algorithm;
 #'
