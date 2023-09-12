@@ -67,6 +67,35 @@ test_that("acs() works", {
   )
   expect_true(file.exists(log.txt))
   expect_true(length(readLines(log.txt)) > 1L)
+
+  #### Validate pf_setup_record() on outputs
+  # Validate correct usage
+  r <- pf_setup_record(folder)
+  expect_equal(basename(r),
+               paste0(obs$timestep, ".tif"))
+  # Validate directory check
+  pf_setup_record("blah") |>
+    expect_error("The directory 'blah' does not exist.", fixed = TRUE)
+  # Validate check on full.names
+  pf_setup_record(folder, full.names = FALSE) |>
+    expect_error("Additional arguments (full.names) have been passed to the function via `...` which are implemented internally.", fixed = TRUE)
+  # Validate check on legacy files
+  f <- file.path(folder, "100.tif")
+  file.create(f)
+  pf_setup_record(folder) |>
+    expect_warning("Files do not match expected naming convention ('1.tif', '2.tif', ..., 'N.tif' where N is the number of files.)", fixed = TRUE)
+  unlink(f)
+  # Validate check on file extensions
+  f <- file.path(folder, "1.txt")
+  file.create(f)
+  pf_setup_record(folder) |>
+    expect_warning("Multiple file types (extensions) identified in `.root`. Do you need to pass `pattern` to `list.files()`?", fixed = TRUE) |>
+    expect_warning("Files do not match expected naming convention ('1.tif', '2.tif', ..., 'N.tif' where N is the number of files.)", fixed = TRUE)
+  # Validate correct functioning with pattern argument
+  pf_setup_record(folder, pattern = "\\.tif$") |>
+    expect_equal(r)
+  unlink(f)
+  # Clean up
   unlink(log.txt)
   unlink(folder, recursive = TRUE)
 
