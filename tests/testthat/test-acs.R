@@ -68,7 +68,7 @@ test_that("acs() works", {
   expect_true(file.exists(log.txt))
   expect_true(length(readLines(log.txt)) > 1L)
   unlink(log.txt)
-  unlink(folder)
+  unlink(folder, recursive = TRUE)
 
   #### Validate dynamics
   # Define whether or not to plot outputs

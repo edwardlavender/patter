@@ -7,6 +7,8 @@
 \alias{check_names}
 \alias{check_named_list}
 \alias{check_tz}
+\alias{check_dots_allowed}
+\alias{check_dots_for_missing_period}
 \title{Utility checks}
 \usage{
 check_dir(input)
@@ -24,6 +26,10 @@ check_names(
 check_named_list(input, ignore_empty = TRUE, arg = deparse(substitute(input)))
 
 check_tz(input, arg = deparse(substitute(input)))
+
+check_dots_allowed(not_allowed, ...)
+
+check_dots_for_missing_period(args, dots)
 }
 \description{
 These functions check user inputs.
