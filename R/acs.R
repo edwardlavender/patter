@@ -208,9 +208,7 @@ acs <- function(.obs,
     present <- terra::mask(present, .bathy)
     # Renormalise
     present <- normalise(present)
-    if (terra::global(present, \(x) all(is.na(x)))[1, 1] | terra::global(present, \(x) all(x == 0, na.rm = TRUE))[1, 1]) {
-      abort("There are no possible locations at time step = {t}. The may be errors in the data (e.g., false detections) or detection probability model and/or mobility may be too restrictive. It is also possible this is a bug.", .envir = environment())
-    }
+    .acs_check_present(present, t)
 
     if (.prompt) {
       terra::plot(present, main = glue::glue("t = {t}"))

@@ -33,6 +33,25 @@ test_that(".acs_check_*() functions work", {
   .acs_check_write_record(list(filename = dirname(f))) |>
     expect_warning(glue::glue("`.write_record$filename` ('{dirname(f)}') is not an empty directory."), fixed = TRUE)
 
+  #### Test .acs_check_present()
+  # Expect error with NAs
+  r <- terra::rast()
+  r[] <- NA
+  .acs_check_present(r, .t = 1) |>
+    expect_error("There are no possible locations at time step = 1. The may be errors in the data (e.g., false detections) or detection probability model and/or mobility may be too restrictive. It is also possible this is a bug.", fixed = TRUE)
+  # Expect error with NAs & zeros
+  r[1] <- 0
+  .acs_check_present(r, .t = 2) |>
+    expect_error("There are no possible locations at time step = 2. The may be errors in the data (e.g., false detections) or detection probability model and/or mobility may be too restrictive. It is also possible this is a bug.", fixed = TRUE)
+  # Expect error with zeros
+  r[] <- 0
+  .acs_check_present(r, .t = 3) |>
+    expect_error("There are no possible locations at time step = 3. The may be errors in the data (e.g., false detections) or detection probability model and/or mobility may be too restrictive. It is also possible this is a bug.", fixed = TRUE)
+  # Expect pass (NULL)
+  r[] <- runif(terra::ncell(r))
+  .acs_check_present(r, .t = 1) |>
+    expect_null()
+
 })
 
 

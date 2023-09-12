@@ -4,6 +4,8 @@
 #' @param .k The `.detection_kernels` `list`.
 #' @param .o The `.obs` [`data.table`].
 #' @param .ov The `detection_overlaps` `list`.
+#' @param .p The `present` [`SpatRaster`].
+#' @param .t The `timestep`.
 #' @param .w The `write_record` `list`.
 #' @author Edward Lavender
 #' @name acs_check
@@ -87,6 +89,18 @@ NULL
     }
   }
   .w$filename
+}
+
+
+#' @rdname acs_check
+#' @export
+
+.acs_check_present <- function(.p, .t) {
+  is_blank <- as.logical(terra::global(.p, \(x) all(is.na(x) | x == 0)))
+  if (is_blank) {
+    abort("There are no possible locations at time step = {.t}. The may be errors in the data (e.g., false detections) or detection probability model and/or mobility may be too restrictive. It is also possible this is a bug.", .envir = environment())
+  }
+  NULL
 }
 
 
