@@ -1,10 +1,10 @@
 #' @title PF set up: List files from AC* for PF
-#' @description This function creates an ordered list of 'record' files derived from an AC* algorithm (e.g., [`acs()`]) for particle filtering (via [`pf()`]).
+#' @description This function creates an ordered `list` of 'record' files derived from an AC* algorithm (e.g., [`acs()`]) for particle filtering (via [`pf()`]).
 #'
 #' @param .root A string that defines the directory in which files are located.
 #' @param ... Additional arguments passed to [`list.files()`], such as `pattern`, excluding `full.names`.
 #'
-#' @return The function returns an ordered character vector of files.
+#' @return The function returns an ordered `list` of file paths.
 #'
 #' @examples
 #' # Quick implementation of AC algorithm
@@ -61,5 +61,6 @@ pf_setup_record <- function(.root, ...) {
     lazy_dt(immutable = TRUE) |>
     mutate(name = as.integer(.data$name)) |>
     arrange(.data$name) |>
-    dplyr::pull(.data$file)
+    dplyr::pull(.data$file) |>
+    as.list()
 }

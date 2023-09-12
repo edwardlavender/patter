@@ -12,10 +12,10 @@ pf_setup_record(.root, ...)
 \item{...}{Additional arguments passed to \code{\link[=list.files]{list.files()}}, such as \code{pattern}, excluding \code{full.names}.}
 }
 \value{
-The function returns an ordered character vector of files.
+The function returns an ordered \code{list} of file paths.
 }
 \description{
-This function creates an ordered list of 'record' files derived from an AC* algorithm (e.g., \code{\link[=acs]{acs()}}) for particle filtering (via \code{\link[=pf]{pf()}}).
+This function creates an ordered \code{list} of 'record' files derived from an AC* algorithm (e.g., \code{\link[=acs]{acs()}}) for particle filtering (via \code{\link[=pf]{pf()}}).
 }
 \examples{
 # Quick implementation of AC algorithm

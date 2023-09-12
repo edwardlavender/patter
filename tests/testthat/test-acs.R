@@ -71,7 +71,7 @@ test_that("acs() works", {
   #### Validate pf_setup_record() on outputs
   # Validate correct usage
   r <- pf_setup_record(folder)
-  expect_equal(basename(r),
+  expect_equal(basename(unlist(r)),
                paste0(obs$timestep, ".tif"))
   # Validate directory check
   pf_setup_record("blah") |>

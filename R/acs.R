@@ -241,10 +241,7 @@ acs <- function(.obs,
       do.call(terra::writeRaster, .write_record)
     }
     # Update cumulative map
-    #
-    # TO DO
-    # * Confirm with SB about adding normalised surfaces
-    #
+    # * Note that it is essential `present` is normalised here
     if (.save_cumulative) {
       if (t == 1) {
         cumulative <- present
@@ -267,6 +264,7 @@ acs <- function(.obs,
   }
 
   #### Renormalise cumulative map
+  # (This is the same as dividing by the number of time steps)
   if (.save_cumulative) {
     cumulative <- normalise(cumulative)
   }
