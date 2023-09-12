@@ -78,11 +78,11 @@ NULL
     check_named_list(.w)
     check_names(.w, "filename")
     if (length(.w$filename) != 1L) {
-      abort("write_record$filename should be a single directory in which to save files.")
+      abort("`.write_record$filename` should be a single directory in which to write files.")
     }
     check_dir(.w$filename)
     if (length(list.files(.w$filename)) != 0L) {
-      warn("`write_record$filename` ('{.w$filename}') is not an empty directory.",
+      warn("`.write_record$filename` ('{.w$filename}') is not an empty directory.",
            .envir = environment())
     }
   }

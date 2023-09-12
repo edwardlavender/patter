@@ -1,3 +1,41 @@
+test_that(".acs_check_*() functions work", {
+
+  #### Test .acs_check_obs()
+  # Define observations
+  acoustics <- dat_acoustics[individual_id == 25, ]
+  archival <- dat_archival[individual_id == 25, ]
+  obs <- acs_setup_obs(acoustics, archival, "2 mins", 500)
+  # Validate .acs_check_obs works
+  .acs_check_obs(obs)
+  .acs_check_obs(as.data.frame(obs))
+  # Validate check on timestamp/date matching
+  obs$date_1 <- obs$date
+  obs$date <- as.character(as.Date(obs$date) - 1)
+  .acs_check_obs(obs) |>
+    expect_error("There is a discrepancy between `.obs$timestamp` and `.obs$date`.")
+  obs$date <- obs$date_1
+
+  #### Test .acs_check_detection_kernels()
+  # The function should throw an error if the kernels & bathy are not identical
+  gebco <- dat_gebco()
+  gebco_c <- terra::crop(gebco, terra::ext(c(701295.7, 710822.9, 6249842, 6250683)))
+  k <- acs_setup_detection_kernels(dat_moorings, .calc_detection_pr = acs_setup_detection_pr, .bathy = gebco_c)
+  .acs_check_detection_kernels(k, gebco) |>
+    expect_error("[compareGeom] extents do not match", fixed = TRUE)
+
+  #### Test .acs_check_write_record()
+  .acs_check_write_record(NULL)
+  .acs_check_write_record(list(filename = "blah")) |>
+    expect_error("The directory 'blah' does not exist.", fixed = TRUE)
+  .acs_check_write_record(list(filename = c(tempdir(), tempdir()))) |>
+    expect_error("`.write_record$filename` should be a single directory in which to write files.", fixed = TRUE)
+  f <- tempfile(fileext = ".tif")
+  .acs_check_write_record(list(filename = dirname(f))) |>
+    expect_warning(glue::glue("`.write_record$filename` ('{dirname(f)}') is not an empty directory."), fixed = TRUE)
+
+})
+
+
 test_that(".acs_absences() and .acs_given_detection() works", {
 
   #### Define example 'moorings' dataset
