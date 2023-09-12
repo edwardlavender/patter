@@ -12,16 +12,16 @@ test_that(".acs_check_*() functions work", {
   obs$date_1 <- obs$date
   obs$date <- as.character(as.Date(obs$date) - 1)
   .acs_check_obs(obs) |>
-    expect_error("There is a discrepancy between `.obs$timestamp` and `.obs$date`.")
+    expect_error("There is a discrepancy between `.obs$timestamp` and `.obs$date`.", fixed = TRUE)
   obs$date <- obs$date_1
 
   #### Test .acs_check_detection_kernels()
   # The function should throw an error if the kernels & bathy are not identical
   gebco <- dat_gebco()
-  gebco_c <- terra::crop(gebco, terra::ext(c(701295.7, 710822.9, 6249842, 6250683)))
-  k <- acs_setup_detection_kernels(dat_moorings, .calc_detection_pr = acs_setup_detection_pr, .bathy = gebco_c)
+  gebco_a <- terra::disagg(gebco, 2)
+  k <- acs_setup_detection_kernels(dat_moorings, .calc_detection_pr = acs_setup_detection_pr, .bathy = gebco_a)
   .acs_check_detection_kernels(k, gebco) |>
-    expect_error("[compareGeom] extents do not match", fixed = TRUE)
+    expect_error("[compareGeom] number of rows and/or columns do not match", fixed = TRUE)
 
   #### Test .acs_check_write_record()
   .acs_check_write_record(NULL)
