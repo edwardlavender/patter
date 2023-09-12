@@ -67,7 +67,7 @@ NULL
                     "bkg_surface_by_design",
                     "bkg_inv_surface_by_design"))
   # Check bathy, detection_overlaps & detection_kernels
-  if (!terra::compareGeom(.b, compact(.k$receiver_specific_kernels)[[1]])) {
+  if (!terra::compareGeom(.b, compact(.k$receiver_specific_kernels)[[1]], messages = TRUE, stopOnError = FALSE)) {
     abort("The properties of the bathymetry grid and the detection kernel SpatRaster(s) are not equal.")
   }
 }

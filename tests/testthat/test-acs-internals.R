@@ -21,7 +21,8 @@ test_that(".acs_check_*() functions work", {
   gebco_a <- terra::disagg(gebco, 2)
   k <- acs_setup_detection_kernels(dat_moorings, .calc_detection_pr = acs_setup_detection_pr, .bathy = gebco_a)
   .acs_check_detection_kernels(k, gebco) |>
-    expect_error("[compareGeom] number of rows and/or columns do not match", fixed = TRUE)
+    expect_message("number of rows and/or columns do not match", fixed = TRUE) |>
+    expect_error("The properties of the bathymetry grid and the detection kernel SpatRaster(s) are not equal.", fixed = TRUE)
 
   #### Test .acs_check_write_record()
   .acs_check_write_record(NULL)
@@ -30,8 +31,10 @@ test_that(".acs_check_*() functions work", {
   .acs_check_write_record(list(filename = c(tempdir(), tempdir()))) |>
     expect_error("`.write_record$filename` should be a single directory in which to write files.", fixed = TRUE)
   f <- tempfile(fileext = ".tif")
+  file.create(f)
   .acs_check_write_record(list(filename = dirname(f))) |>
-    expect_warning(glue::glue("`.write_record$filename` ('{dirname(f)}') is not an empty directory."), fixed = TRUE)
+    expect_warning(paste0("`.write_record$filename` ('", dirname(f), "') is not an empty directory."), fixed = TRUE)
+  unlink(f)
 
   #### Test .acs_check_present()
   # Expect error with NAs
