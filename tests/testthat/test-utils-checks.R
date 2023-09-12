@@ -25,4 +25,14 @@ test_that("check_*() utility functions work", {
   check_named_list(list(1, 2)) |>
     expect_error("Argument 'list(1, 2)' must be a named list.", fixed = TRUE)
 
+  #### check_dots_allowed()
+  f <- function(x, ...) {
+    check_dots_allowed(not_allowed = "bad", ...)
+    x
+  }
+  f(1)
+  f(1, good = 1)
+  f(1, bad = 1) |>
+    expect_error("Additional argument(s) (`bad`) have been passed to the function via `...` which are not permitted.", fixed = TRUE)
+
 })

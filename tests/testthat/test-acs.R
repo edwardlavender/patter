@@ -78,7 +78,7 @@ test_that("acs() works", {
     expect_error("The directory 'blah' does not exist.", fixed = TRUE)
   # Validate check on full.names
   pf_setup_record(folder, full.names = FALSE) |>
-    expect_error("Additional arguments (full.names) have been passed to the function via `...` which are implemented internally.", fixed = TRUE)
+    expect_error("Additional argument(s) (`full.names`) have been passed to the function via `...` which are not permitted.", fixed = TRUE)
   # Validate check on legacy files
   f <- file.path(folder, "100.tif")
   file.create(f)

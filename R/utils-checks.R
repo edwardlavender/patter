@@ -83,8 +83,8 @@ check_dots_allowed <- function(not_allowed, ...) {
   if (any(names(l) %in% not_allowed)) {
     trouble <- names(l)[names(l) %in% not_allowed]
     msg <- paste0(
-      "Additional arguments (", paste(trouble, collapse = ", "),
-      ") have been passed to the function via `...` which are implemented internally."
+      "Additional argument(s) (", paste0("`", trouble, collapse = "`, "),
+      "`) have been passed to the function via `...` which are not permitted."
     )
     abort(msg)
   }
