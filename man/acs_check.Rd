@@ -7,6 +7,7 @@
 \alias{.acs_check_detection_overlaps}
 \alias{.acs_check_detection_kernels}
 \alias{.acs_check_write_record}
+\alias{.acs_check_present}
 \title{AC* helper: internal checks}
 \usage{
 .acs_check_obs(.o)
@@ -18,6 +19,8 @@
 .acs_check_detection_kernels(.k, .b)
 
 .acs_check_write_record(.w)
+
+.acs_check_present(.p, .t)
 }
 \arguments{
 \item{.o}{The \code{.obs} \code{\link{data.table}}.}
@@ -29,6 +32,10 @@
 \item{.k}{The \code{.detection_kernels} \code{list}.}
 
 \item{.w}{The \code{write_record} \code{list}.}
+
+\item{.p}{The \code{present} \code{\link{SpatRaster}}.}
+
+\item{.t}{The \code{timestep}.}
 }
 \description{
 These are internal check functions.
