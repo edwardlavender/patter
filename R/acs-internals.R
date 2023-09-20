@@ -6,7 +6,7 @@
 #' @param .ov The `detection_overlaps` `list`.
 #' @param .p The `present` [`SpatRaster`].
 #' @param .t The `timestep`.
-#' @param .w The `write_record` `list`.
+#' @param .w,.con The `write_record` `list` and the name of the element that defines the directory in which to save files.
 #' @author Edward Lavender
 #' @name acs_check
 NULL
@@ -75,20 +75,21 @@ NULL
 #' @rdname acs_check
 #' @keywords internal
 
-.acs_check_write_record <- function(.w) {
+.acs_check_write_record <- function(.w, .con = "filename") {
   if (!is.null(.w)) {
     check_named_list(.w)
-    check_names(.w, "filename")
-    if (length(.w$filename) != 1L) {
-      abort("`.write_record$filename` should be a single directory in which to write files.")
+    check_names(.w, .con)
+    if (length(.w[[.con]]) != 1L) {
+      abort("`.write_record${.con}` should be a single directory in which to write files.",
+            .envir = environment())
     }
-    check_dir(.w$filename)
-    if (length(list.files(.w$filename)) != 0L) {
-      warn("`.write_record$filename` ('{.w$filename}') is not an empty directory.",
+    check_dir(.w[[.con]])
+    if (length(list.files(.w[[.con]])) != 0L) {
+      warn("`.write_record${.con}` ('{.w[[.con]]}') is not an empty directory.",
            .envir = environment())
     }
   }
-  .w$filename
+  .w[[.con]]
 }
 
 

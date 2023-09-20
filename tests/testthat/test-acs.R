@@ -34,7 +34,7 @@ test_that("acs() works", {
       .detection_kernels = kernels,
       .save_record = TRUE,
       .verbose = FALSE, .con = tempdir()) |>
-    expect_warning("Input to `con` ignored since `.verbose = FALSE`.", fixed = TRUE)
+    expect_warning("Input to `.con` ignored since `.verbose = FALSE`.", fixed = TRUE)
   # Forget the missing period on 'prompt'
   acs(obs[1:3, ],
       .bathy = gebco,

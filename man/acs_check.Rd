@@ -18,7 +18,7 @@
 
 .acs_check_detection_kernels(.k, .b)
 
-.acs_check_write_record(.w)
+.acs_check_write_record(.w, .con = "filename")
 
 .acs_check_present(.p, .t)
 }
@@ -31,7 +31,7 @@
 
 \item{.k}{The \code{.detection_kernels} \code{list}.}
 
-\item{.w}{The \code{write_record} \code{list}.}
+\item{.w, .con}{The \code{write_record} \code{list} and the name of the element that defines the directory in which to save files.}
 
 \item{.p}{The \code{present} \code{\link{SpatRaster}}.}
 
