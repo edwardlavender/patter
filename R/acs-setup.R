@@ -564,7 +564,7 @@ acs_setup_detection_kernels <-
       if (show) cat(paste(..., "\n"))
     }
     t_onset <- Sys.time()
-    cat_to_console(paste0("flapper::acs_setup_detection_kernels() called (@ ", t_onset, ")..."))
+    cat_to_console(paste0("patter::acs_setup_detection_kernels() called (@ ", t_onset, ")..."))
     cat_to_console("... Setting up function...")
 
     #### Check user inputs
@@ -704,7 +704,7 @@ acs_setup_detection_kernels <-
     # Check function duration
     t_end <- Sys.time()
     total_duration <- difftime(t_end, t_onset, units = "mins")
-    cat_to_console(paste0("... flapper::acs_setup_detection_kernels() call completed (@ ", t_end, ") after ~", round(total_duration, digits = 2), " minutes."))
+    cat_to_console(paste0("... patter::acs_setup_detection_kernels() call completed (@ ", t_end, ") after ~", round(total_duration, digits = 2), " minutes."))
     # Return outputs
     out
   }
