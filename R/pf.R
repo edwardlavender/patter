@@ -149,7 +149,7 @@ pf_forward <- function(.obs, .record, .kick, ..., .bathy, .n = 100L,
     #### Visualise particle samples & proposal locations
     if (.prompt) {
       cat_to_cf(paste0("... ... Visualising current & proposal locations..."))
-      print(head(pnow_record))
+      print(utils::head(pnow_record))
       terra::plot(.record[[t]], main = t)
       if (t < timestep_final) {
         graphics::arrows(x0 = pnow$x_now, y0 = pnow$y_now,
