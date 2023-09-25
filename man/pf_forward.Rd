@@ -58,10 +58,10 @@ This function implements forward simulation of possible locations.
 \details{
 The forward simulation is implemented as follows:
 \enumerate{
-\item At each time step, \code{.n} grid cells (particles) are sampled (at \code{t = 1}) or resampled from a set of proposals (at subsequent time steps) with replacement, in line with AC* weights
+\item At each time step, \code{.n} grid cells (particles) are sampled (at \code{t = 1}) or resampled from a set of proposals (at subsequent time steps) with replacement, in line with AC* weights;
 \item The previous locations (\code{NA} for \code{t = 1}) and the (accepted) current locations are recorded;
-\item Each particle is 'kicked' into new (proposal) location, by the movement model
-\item This is repeated until the end of the time series
+\item Each particle is 'kicked' into new (proposal) location, by the movement model;
+\item Steps 1--3 are repeated until the end of the time series;
 }
 }
 \examples{

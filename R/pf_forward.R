@@ -19,10 +19,10 @@
 #' @param .prompt,.verbose,.con Controls on function prompts and messages (see [`acs()`]).
 #'
 #' @details The forward simulation is implemented as follows:
-#' 1. At each time step, `.n` grid cells (particles) are sampled (at `t = 1`) or resampled from a set of proposals (at subsequent time steps) with replacement, in line with AC* weights
+#' 1. At each time step, `.n` grid cells (particles) are sampled (at `t = 1`) or resampled from a set of proposals (at subsequent time steps) with replacement, in line with AC* weights;
 #' 2. The previous locations (`NA` for `t = 1`) and the (accepted) current locations are recorded;
-#' 3. Each particle is 'kicked' into new (proposal) location, by the movement model
-#' 4. This is repeated until the end of the time series
+#' 3. Each particle is 'kicked' into new (proposal) location, by the movement model;
+#' 4. Steps 1--3 are repeated until the end of the time series;
 #'
 #' @return The function returns a [`pf-class`] object.
 #'
