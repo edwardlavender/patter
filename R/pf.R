@@ -102,8 +102,9 @@ pf_forward <- function(.obs, .record, .kick, ..., .bathy, .n = 100L,
         terra::spatSample(size = .n, method = "weights", replace = TRUE,
                           cells = TRUE, xy = TRUE, as.df = FALSE) |>
         lazy_dt() |>
-        mutate(cell_past = NA_integer_) |>
-        select(cell_past, cell_now = cell, x_now = x, y_now = y) |>
+        mutate(cell_past = NA_integer_,
+               cell_now = as.integer(cell)) |>
+        select(cell_past, cell_now, x_now = x, y_now = y) |>
         as.data.table()
     }
 
@@ -128,11 +129,13 @@ pf_forward <- function(.obs, .record, .kick, ..., .bathy, .n = 100L,
       pnow <- pnow[sample.int(.N, size = .n, replace = TRUE, prob = weight), ]
     }
     # Save particles
+    pnow_record <- pnow |> select(cell_past, cell_now)
+    # pnow_record <- pnow |> select("x{t - 1}" = cell_past, "x{t}" = cell_now)
     if (!is.null(.save_history)) {
-      history[[t]] <- pnow[, list(cell_past, cell_now, x_now, y_now)]
+      history[[t]] <- pnow_record
     }
     if (!is.null(.write_history)) {
-      .write_history$x    <- pnow[, list(cell_past, cell_now, x_now, y_now)]
+      .write_history$x    <- pnow_record
       .write_history$sink <- file.path(write_history_folder, paste0(t, ".parquet"))
       do.call(arrow::write_parquet, .write_history)
     }
@@ -141,11 +144,12 @@ pf_forward <- function(.obs, .record, .kick, ..., .bathy, .n = 100L,
     if (t < timestep_final) {
       cat_to_cf(paste0("... ... Kicking particles into new locations..."))
       pnext <- .kick(pnow, .obs, t, .bathy)
-      pnext[, cell_next := terra::cellFromXY(.record[[t]], pnext[, c("x_next", "y_next")])]
+      pnext[, cell_next := as.integer(terra::cellFromXY(.record[[t]], pnext[, c("x_next", "y_next")]))]
     }
     #### Visualise particle samples & proposal locations
     if (.prompt) {
       cat_to_cf(paste0("... ... Visualising current & proposal locations..."))
+      print(head(pnow_record))
       terra::plot(.record[[t]], main = t)
       if (t < timestep_final) {
         graphics::arrows(x0 = pnow$x_now, y0 = pnow$y_now,
