@@ -32,7 +32,7 @@ The functions return a \code{\link{SpatRaster}}. Cells with a value of one are i
 These functions extract 'home range' estimates from a \code{\link{SpatRaster}} that describes the intensity of movements within an area.
 }
 \details{
-These functions are modelled on the \href{https://edwardlavender.github.io/flapper/reference/get_hr.html}{\verb{get_hr_*()}} functions in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package, where full details are provided. The \code{\link{spatialEco}} package is required.
+These functions are modelled on the \href{https://edwardlavender.github.io/flapper/reference/get_hr.html}{\verb{get_hr_*()}} functions in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package, where full details are provided. The \code{spatialEco} package is required.
 }
 \author{
 Edward Lavender
