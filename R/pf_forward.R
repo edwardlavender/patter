@@ -26,7 +26,7 @@
 #'
 #' @return The function returns a [`pf-class`] object.
 #'
-#' @example man/examples/pf-examples.R
+#' @example man/examples/pf_forward-examples.R
 #'
 #' @author Edward Lavender
 #' @export
