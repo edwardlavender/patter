@@ -1,4 +1,4 @@
-#' @title PF set up: List files from AC* for PF
+#' @title PF set up: list files from AC* for PF
 #' @description This function creates an ordered `list` of 'record' files derived from an AC* algorithm (e.g., [`acs()`]) for particle filtering (via [`pf()`]).
 #'
 #' @param .root A string that defines the directory in which files are located.

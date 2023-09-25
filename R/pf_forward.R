@@ -1,4 +1,4 @@
-#' @title PF: forward simulation
+#' @title PF: run the forward simulation
 #' @description This function implements forward simulation of possible locations.
 #' @param .obs A [`data.table`] that defines the time series of observations (see [`acs()`]). For [`pf()`], at a minimum, this must contain the following column(s):
 #' * `timestep`---an `integer` that defines the time step;

@@ -3,7 +3,7 @@
 \docType{data}
 \name{dat_acoustics}
 \alias{dat_acoustics}
-\title{Dataset: Passive acoustic telemetry detections}
+\title{Dataset: passive acoustic telemetry detections}
 \format{
 A \code{\link{data.table}} with 39,242 observations and 3 variables:
 \itemize{

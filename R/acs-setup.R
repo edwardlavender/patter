@@ -1,4 +1,4 @@
-#' @title AC* setup: Set up movement datasets
+#' @title AC* set up: set up movement datasets
 #' @description This function proccess passive acoustic telemetry detections and (optionally) archival time series for use in AC-branch algorithms.
 #' @param .acoustics A [`data.table`] that defines passive acoustic telemetry detections (see [`dat_acoustics`] for an example) for a single individual. At a minimum, this must contain a `timestamp` column (an ordered, `POSIXct` vector that defines the times of detections) and `receiver_id` (an `integer` vector that defines the receiver(s) that recorded detections).
 #' @param .archival (optional) A [`data.table`] that defines depth (m) observations (see [`dat_archival`] for an example) for the same individual. At a minimum, this must contain a `timestamp` column (as in `.acoustics`) and a `depth` column (a positive-valued `numeric` vector that defines the individual's depth (m) below the surface at each time step).
@@ -144,7 +144,7 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
 }
 
 
-#' @title AC set up: Define detection containers
+#' @title AC* set up: define detection containers
 #' @description This function defines receiver detection containers.
 #' @param .bathy A [`SpatRaster`] that defines the grid over which the AC algorithms are implemented. `NA`s in this layer are used to mask detection containers.
 #' @param .moorings A [`data.table`] that defines receiver locations and associated information (see [`dat_moorings`] for an example). At a minimum, this must contain `receiver_id`, `receiver_easting`, `receiver_northing` and `receiver_range` columns that define unique receiver deployments, receiver locations and (receiver-specific) detection ranges. Receiver IDs should be an `integer` vector.
@@ -209,7 +209,7 @@ acs_setup_detection_containers <- function(.bathy, .moorings) {
 }
 
 
-#' @title AC* set up: Define detection container overlaps
+#' @title AC* set up: define detection container overlaps
 #' @description This function identifies receivers with overlapping detection containers in space and time for the AC* algorithms.
 #'
 #' @param .containers A named `list` of `SpatRaster`s that represent receiver detection containers, from [`acs_setup_detection_containers()`].
@@ -382,7 +382,7 @@ acs_setup_detection_overlaps <- function(.containers, .moorings, .services = NUL
 }
 
 
-#' @title AC* set up: Calculate detection probability around a receiver
+#' @title AC* set up: calculate detection probability around a receiver
 #' @description This function is an example detection probability function, of the kind required by [`acs_setup_detection_kernels()`].
 #' @param .data A one-row [`data.table`] that defines the location of the receiver and associated information used by the model of detection probability.
 #' @param .bathy A [`SpatRaster`] that defines the grid over which detection probability is calculated.
@@ -424,7 +424,7 @@ acs_setup_detection_pr <- function(.data, .bathy, ...) {
 }
 
 
-#' @title AC* set up: Define detection kernels
+#' @title AC* set up: define detection kernels
 #' @description This function defines the detection kernels for the AC* algorithms.
 #' @param .moorings A [`data.table`] that defines receiver deployments and associated information (see [`dat_moorings`] for an example). At a minimum, this must contain the following columns:
 #' * `receiver_id`---an `integer` vector that defines unique receiver deployments;

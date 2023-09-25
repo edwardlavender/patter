@@ -2,7 +2,7 @@
 % Please edit documentation in R/pf-setup.R
 \name{pf_setup_record}
 \alias{pf_setup_record}
-\title{PF set up: List files from AC* for PF}
+\title{PF set up: list files from AC* for PF}
 \usage{
 pf_setup_record(.root, ...)
 }

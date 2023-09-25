@@ -2,7 +2,7 @@
 % Please edit documentation in R/pf-pou.R
 \name{pf_pou}
 \alias{pf_pou}
-\title{PF: Map probability-of-use}
+\title{PF: map probability-of-use}
 \usage{
 pf_pou(.history, .bathy, .plot = TRUE, ...)
 }

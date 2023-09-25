@@ -2,7 +2,7 @@
 % Please edit documentation in R/pf_backward.R
 \name{pf_backward}
 \alias{pf_backward}
-\title{PF: backward simulation}
+\title{PF: run the backward pass}
 \usage{
 pf_backward(
   .history,

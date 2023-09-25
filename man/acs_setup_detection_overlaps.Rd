@@ -2,7 +2,7 @@
 % Please edit documentation in R/acs-setup.R
 \name{acs_setup_detection_overlaps}
 \alias{acs_setup_detection_overlaps}
-\title{AC* set up: Define detection container overlaps}
+\title{AC* set up: define detection container overlaps}
 \source{
 This function is based on the \href{https://edwardlavender.github.io/flapper/reference/get_detection_containers_overlap.html}{\code{get_detection_containers_overlaps}} function in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package.
 }

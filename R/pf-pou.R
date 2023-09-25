@@ -1,4 +1,4 @@
-#' @title PF: Map probability-of-use
+#' @title PF: map probability-of-use
 #' @description This function builds a 'probability-of-use' utilisation distribution from (processed) particle samples.
 #' @param .history The (processed) particle samples, provided as:
 #' * A `list` of [`data.table`]s that define cell samples; i.e., the `history` element of a [`pf-class`] object. This must contain a column that defines cell samples at each time step named `cell_now`.

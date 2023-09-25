@@ -3,7 +3,7 @@
 \docType{data}
 \name{dat_archival}
 \alias{dat_archival}
-\title{Dataset: Archival time series}
+\title{Dataset: archival time series}
 \format{
 A \code{\link{data.table}} with 75,000 observations and 3 variables:
 \itemize{

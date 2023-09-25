@@ -2,7 +2,7 @@
 % Please edit documentation in R/acs-setup.R
 \name{acs_setup_obs}
 \alias{acs_setup_obs}
-\title{AC* setup: Set up movement datasets}
+\title{AC* set up: set up movement datasets}
 \usage{
 acs_setup_obs(.acoustics, .archival = NULL, .step, .mobility)
 }

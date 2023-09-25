@@ -2,7 +2,7 @@
 % Please edit documentation in R/pf_forward.R
 \name{pf_forward}
 \alias{pf_forward}
-\title{PF: forward simulation}
+\title{PF: run the forward simulation}
 \usage{
 pf_forward(
   .obs,

@@ -3,7 +3,7 @@
 \docType{data}
 \name{dat_moorings}
 \alias{dat_moorings}
-\title{Dataset: Passive acoustic telemetry moorings}
+\title{Dataset: passive acoustic telemetry moorings}
 \format{
 A \code{\link{data.table}} with 40 observations and 7 variables:
 \itemize{
@@ -12,7 +12,7 @@ A \code{\link{data.table}} with 40 observations and 7 variables:
 \item \code{receiver_end}---a date that defines the end date of each receiver's deployment.
 \item \code{receiver_lon}---a number that defines the longitude (decimal degrees) of each receiver.
 \item \code{receiver_lat}---a number that defines the latitude (decimal degrees) of each receiver.
-\item \code{reciver_easting}---a number that defines the receiver easting (UTM 29N).
+\item \code{receiver_easting}---a number that defines the receiver easting (UTM 29N).
 \item \code{receiver_northing}---a number that defines the receiver northing (UTM 29N).
 \item \code{receiver_depth}---a number that defines the approximate depth of each receiver below the surface (m).
 }
