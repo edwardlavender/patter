@@ -34,6 +34,24 @@ These functions extract 'home range' estimates from a \code{\link{SpatRaster}} t
 \details{
 These functions are modelled on the \href{https://edwardlavender.github.io/flapper/reference/get_hr.html}{\verb{get_hr_*()}} functions in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package, where full details are provided. The \code{spatialEco} package is required.
 }
+\examples{
+#### Set up example
+# Define hypothetical input SpatRaster
+require(terra)
+r <- rast()
+n <- ncell(r)
+i <- 2e4
+r[i] <- 1
+r <- distance(r)
+r <- r / global(r, "sum")[1, 1]
+plot(r)
+
+#### Examples
+map <- get_hr_full(r, .add = TRUE, lwd = 5)
+map <- get_hr_home(r, .add = TRUE, border = "blue")
+map <- get_hr_core(r, .add = TRUE, border = "orange")
+map <- get_hr_prop(r, .prop = 0.2, .add = TRUE, border = "red")
+}
 \author{
 Edward Lavender
 }
