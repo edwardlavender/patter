@@ -19,9 +19,9 @@ Imports:
     terra, 
     tidyr
 Suggests: 
-    circular,
-    knitr,
-    rmarkdown,
+    circular, 
+    spatialEco,
+    knitr, rmarkdown,
     testthat (>= 3.0.0)
 Depends: R (>= 4.0)
 Config/testthat/edition: 3
