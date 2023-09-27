@@ -6,7 +6,7 @@ test_that("pf_path_pivot() works", {
     pf_path_pivot(paths),
     lapply(seq_len(nrow(paths)), function(i) {
       data.table(id = rep(i, ncol(paths)),
-                 timestep = seq_len(ncol(paths)),
+                 timestep = seq_len(ncol(paths)) - 1,
                  cell = unlist(paths[i, ]))
     }) |> rbindlist()
   )
