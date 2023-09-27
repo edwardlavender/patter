@@ -40,6 +40,13 @@ get_hr_prop <- function(.x, .prop = 0.5, .add = FALSE, ...) {
   if (length(.prop) != 1L) {
     abort("`.prop` should be a single number (proportion).")
   }
+  if (.prop <= 0 | .prop > 1) {
+    if (.prop == 0) {
+      abort("`.prop` equals zero.")
+    } else {
+      abort("`.prop` should be a proportion (between zero and one).")
+    }
+  }
   .x <- terra::classify(.x, cbind(0, NA))
   map <- spatialEco::raster.vol(.x, p = .prop, sample = FALSE)
   if (.add) {
