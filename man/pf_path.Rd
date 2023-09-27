@@ -103,6 +103,29 @@ log.txt <- tempfile(fileext = ".txt")
 p4 <- pf_path(out_pfb$history, .con = log.txt)
 readLines(log.txt)
 
+#### Example (5): Examine outputs
+# Load packages
+require(data.table)
+require(dtplyr)
+require(dplyr, warn.conflicts = FALSE)
+# Compute (Euclidean) distances between sequential samples
+gebco <- dat_gebco()
+p1 <-
+  p1 |>
+  group_by(id) |>
+  mutate(
+    cell_x = terra::xFromCell(gebco, cell),
+    cell_y = terra::yFromCell(gebco, cell),
+    dist = terra::distance(cbind(cell_x, cell_y),
+                           lonlat = FALSE, sequential = TRUE))
+max(p1$dist, na.rm = TRUE)
+# Visualise example path
+terra::plot(gebco)
+path_1 <- p1[p1$id == 1, ]
+s <- seq_len(nrow(path_1))
+graphics::arrows(x0 = path_1$cell_x[s], x1 = path_1$cell_x[s + 1],
+                 y0 = path_1$cell_y[s], y1 = path_1$cell_y[s + 1],
+                 length = 0.02)
 }
 \seealso{
 \itemize{
