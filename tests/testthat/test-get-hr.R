@@ -8,7 +8,7 @@ test_that("get_hr_*() functions work", {
   r[i] <- 1
   r <- distance(r)
   r <- r / global(r, "sum")[1, 1]
-  plot(r)
+  terra::plot(r)
 
   # Check error handling
   get_hr_prop(r, .prop = c(0.2, 0.3)) |>
@@ -24,15 +24,15 @@ test_that("get_hr_*() functions work", {
 
   # Check outputs match `spatialEco::raster.vol()`
   all.equal(
-    get_hr_prop(r, .prop = 0.2, .add = TRUE, lwd = 5),
+    get_hr_prop(r, .prop = 0.2, .add = TRUE),
     spatialEco::raster.vol(r, 0.2),
   ) |> expect_true()
   all.equal(
-    get_hr_prop(r, .prop = 0.8, .add = TRUE, lwd = 5),
+    get_hr_prop(r, .prop = 0.8, .add = TRUE),
     spatialEco::raster.vol(r, 0.8)
   ) |> expect_true()
   all.equal(
-    get_hr_full(r, .add = TRUE, lwd = 5),
+    get_hr_full(r, .add = TRUE),
     spatialEco::raster.vol(r, 1)
   ) |> expect_true()
   all.equal(
