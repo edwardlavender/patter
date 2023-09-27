@@ -6,7 +6,7 @@
 \alias{.pf_path_chain}
 \title{PF: path reconstruction helpers}
 \usage{
-.pf_path_join(.data, .current, .t, .pb)
+.pf_path_join(.data, .current, .t, .pb = NULL)
 
 .pf_path_chain(.history, .read)
 }

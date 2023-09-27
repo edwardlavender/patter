@@ -37,9 +37,11 @@ NULL
 #' @keywords internal
 
 .pf_path_join <-
-  function(.data, .current, .t, .pb) {
+  function(.data, .current, .t, .pb = NULL) {
     # print(.t)
-    .pb$tick()
+    if (!is.null(.pb)) {
+      .pb$tick()
+    }
     collapse::join(.data,
                    .current |>
                      select("x{.t - 1}" := "cell_past", "x{.t}" := "cell_now"),
