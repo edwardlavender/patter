@@ -8,25 +8,53 @@
 \description{
 \code{\link{patter}} is a re-implementation of the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} family of algorithms for passive acoustic telemetry that simpler, faster and better tested than its \href{https://github.com/edwardlavender/flapper}{predecessor}.
 }
+\section{Datasets}{
+For example datasets, see:
+\itemize{
+\item \code{\link{dat_moorings}} for receiver locations and associated information;
+\item \code{\link{dat_acoustics}} for acoustic time series;
+\item \code{\link{dat_archival}} for archival (depth) time series;
+\item \code{\link[=dat_gebco]{dat_gebco()}} for a bathymetry grid;
+}
+}
+
 \section{Workflow}{
 To implement the depth-contour algorithm, use:
 \itemize{
 \item \code{\link[=dc]{dc()}} to implement the algorithm;
 }
 
-To implement the acoustic-centroid (AC) or acoustic-container depth-contour (ACDC) algorithms, use:
+To implement the AC* algorithms, use:
 \itemize{
 \item \code{\link[=acs_setup_obs]{acs_setup_obs()}} to set up observations;
 \item \code{\link[=acs_setup_detection_containers]{acs_setup_detection_containers()}} to set up detection containers;
 \item \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}} to set up detection overlaps;
 \item \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}} to set up detection kernels;
-\item \code{\link[=ac]{ac()}} or \code{\link[=acdc]{acdc()}} to implement the algorithm(s);
+\item \code{\link[=acs]{acs()}} to implement the algorithm(s);
 }
 
 To implement particle filtering, use:
 \itemize{
 \item \code{\link[=pf_setup_record]{pf_setup_record()}} to set up the record;
-\item \code{\link[=pf]{pf()}} to implement particle filtering;
+\item \code{\link[=pf_setup_kick]{pf_setup_kick()}} for an example movement model;
+\item \code{\link[=pf_forward]{pf_forward()}} to implement the forward simulation;
+\item \code{\link[=pf_backward]{pf_backward()}} to implement the backward path'
+\item \code{\link[=pf_pou]{pf_pou()}} to map probability-of-use;
+\item \code{\link[=pf_path]{pf_path()}} (and \code{\link[=pf_path_pivot]{pf_path_pivot()}}) to reconstruct movement paths;
+}
+
+For home ranges, use:
+\itemize{
+\item \code{\link[=get_hr_prop]{get_hr_prop()}} for a custom range;
+\item \code{\link[=get_hr_core]{get_hr_core()}} for the 'core' range;
+\item \code{\link[=get_hr_home]{get_hr_home()}} for the 'home' range;
+\item \code{\link[=get_hr_full]{get_hr_full()}} for the full range;
+}
+
+For supporting functions, see \code{help(package = 'patter')}:
+\itemize{
+\item \code{\link[=make_matrix_receivers]{make_matrix_receivers()}} matricises receiver deployment time series;
+\item \code{\link[=normalise]{normalise()}} normalises a \code{\link{SpatRaster}};
 }
 }
 

@@ -1,24 +1,47 @@
 #' @title  [`patter`]: Movement Modelling For Passive Acoustic Telemetry
 #' @description [`patter`] is a re-implementation of the [`flapper`](https://github.com/edwardlavender/flapper) family of algorithms for passive acoustic telemetry that simpler, faster and better tested than its [predecessor](https://github.com/edwardlavender/flapper).
 #'
+#' # Datasets
+#'
+#' For example datasets, see:
+#'
+#' * [`dat_moorings`] for receiver locations and associated information;
+#' * [`dat_acoustics`] for acoustic time series;
+#' * [`dat_archival`] for archival (depth) time series;
+#' * [`dat_gebco()`] for a bathymetry grid;
+#'
 #' # Workflow
 #'
 #' To implement the depth-contour algorithm, use:
 #'
 #' * [`dc()`] to implement the algorithm;
 #'
-#' To implement the acoustic-centroid (AC) or acoustic-container depth-contour (ACDC) algorithms, use:
+#' To implement the AC* algorithms, use:
 #'
 #' * [`acs_setup_obs()`] to set up observations;
 #' * [`acs_setup_detection_containers()`] to set up detection containers;
 #' * [`acs_setup_detection_overlaps()`] to set up detection overlaps;
 #' * [`acs_setup_detection_kernels()`] to set up detection kernels;
-#' * [`ac()`] or [`acdc()`] to implement the algorithm(s);
+#' * [`acs()`] to implement the algorithm(s);
 #'
 #' To implement particle filtering, use:
 #'
 #' * [`pf_setup_record()`] to set up the record;
-#' * [`pf()`] to implement particle filtering;
+#' * [`pf_setup_kick()`] for an example movement model;
+#' * [`pf_forward()`] to implement the forward simulation;
+#' * [`pf_backward()`] to implement the backward path'
+#' * [`pf_pou()`] to map probability-of-use;
+#' * [`pf_path()`] (and [`pf_path_pivot()`]) to reconstruct movement paths;
+#'
+#' For home ranges, use:
+#' * [`get_hr_prop()`] for a custom range;
+#' * [get_hr_core()] for the 'core' range;
+#' * [get_hr_home()] for the 'home' range;
+#' * [`get_hr_full()`] for the full range;
+#'
+#' For supporting functions, see `help(package = 'patter')`:
+#' * [`make_matrix_receivers()`] matricises receiver deployment time series;
+#' * [`normalise()`] normalises a [`SpatRaster`];
 #'
 #' @author Edward Lavender ([ORCID](https://orcid.org/0000-0002-8040-7489))
 #' @seealso
