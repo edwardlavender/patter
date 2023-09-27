@@ -29,7 +29,7 @@ out_ac <-
       .bathy = gebco,
       .detection_kernels = kernels,
       .save_record = TRUE)
-# The function returns an ac_record-class object
+# The function returns an acs-class object
 class(out_ac)
 summary(out_ac)
 # This contains:

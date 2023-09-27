@@ -58,7 +58,7 @@ test_that("acs() works", {
         .verbose = TRUE, .con = log.txt)
 
   #### Validate outputs
-  check_inherits(out_ac, "ac_record")
+  check_inherits(out_ac, "acs")
   check_names(out_ac, c("record", "map", "time"))
   expect_equal(length(out_ac$record), nrow(obs))
   expect_equal(
