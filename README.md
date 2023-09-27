@@ -67,14 +67,15 @@ up, you can install [`patter`](https://github.com/edwardlavender/patter)
 via:
 
 ``` r
-devtools::install_github("edwardlavender/pattern", dependencies = TRUE, build_vignettes = TRUE)
+devtools::install_github("edwardlavender/patter", 
+                         dependencies = TRUE, 
+                         build_vignettes = TRUE)
 ```
 
 The `dependencies = TRUE` argument ensures that suggested packages are
 also installed, which are required for some functions and to build
 vignettes. To access the introductory vignette, use
-`vignette("patter_introduction", package = "patter")`. *Note that
-vignettes have not yet been added to the package.*
+`vignette("patter_introduction", package = "patter")`.
 
 # Workflow
 
@@ -89,12 +90,13 @@ depth-contour (ACDC) algorithms, use:
 - `acs_setup_detection_containers()` to set up detection containers;
 - `acs_setup_detection_overlaps()` to set up detection overlaps;
 - `acs_setup_detection_kernels()` to set up detection kernels;
-- `ac()` or `acdc()` to implement the algorithm(s);
+- `acs()` to implement the algorithm(s);
 
 To implement particle filtering, use:
 
 - `pf_setup_record()` to set up the record;
-- `pf()` to implement particle filtering;
+- `pf_forward()` and `pf_backward()` to implement particle filtering;
+- `pf_pou()` to map probability-of-use;
 
 # Disclaimer and troubleshooting
 
