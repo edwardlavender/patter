@@ -19,7 +19,7 @@ Imports:
     terra, 
     tidyr
 Suggests: 
-    circular, 
+    collapse, circular, 
     spatialEco,
     knitr, rmarkdown,
     testthat (>= 3.0.0)

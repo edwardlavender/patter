@@ -1,0 +1,86 @@
+#### Set up examples
+
+# (A) Define input datasets
+acoustics <- dat_acoustics[individual_id == 25, ]
+archival <- dat_archival[individual_id == 25, ]
+obs <- acs_setup_obs(acoustics, archival, "2 mins", 500)
+obs <- obs[1:200, ]
+gebco <- dat_gebco()
+
+# (B) Implement AC* algorithm
+dat_moorings$receiver_range <- 500
+containers <- acs_setup_detection_containers(gebco, dat_moorings)
+overlaps <- acs_setup_detection_overlaps(containers, dat_moorings)
+kernels <-
+  acs_setup_detection_kernels(dat_moorings,
+                              .calc_detection_pr = acs_setup_detection_pr,
+                              .bathy = gebco)
+ac_folder <- file.path(tempdir(), "ac")
+dir.create(ac_folder)
+out_ac <-
+  acs(obs,
+      .bathy = gebco,
+      .detection_overlaps = overlaps,
+      .detection_kernels = kernels,
+      .save_record = TRUE)
+
+# (C) Implement forward simulation
+forward_folder <- file.path(tempdir(), "pf", "forward")
+dir.create(forward_folder, recursive = TRUE)
+out_pff <- pf_forward(.obs = obs,
+                      .record = out_ac$record,
+                      .n = 1e3,
+                      .kick = pf_setup_kick,
+                      .bathy = gebco,
+                      .save_history = TRUE,
+                      .write_history = list(sink = forward_folder))
+
+# (D) Implement backward pass
+backward_folder <- file.path(tempdir(), "pf", "backward")
+dir.create(backward_folder, recursive = TRUE)
+out_pfb <- pf_backward(pf_setup_record(forward_folder),
+                       .save_history = TRUE,
+                       .write_history = list(sink = backward_folder))
+
+#### Example (1): Implement pf_path() from `pf` object
+p1 <- pf_path(out_pfb$history)
+
+#### Example (2): Implement pf_path from parquet files
+p2 <- pf_path(pf_setup_record(backward_folder))
+stopifnot(all.equal(p1, p2))
+
+#### Example (3): Change output format
+p3 <- pf_path(out_pfb$history, .return = "wide")
+str(p3)
+
+#### Example (4): Control messages
+# Suppress messages
+p4 <- pf_path(out_pfb$history, .verbose = FALSE)
+# Write messages to log
+log.txt <- tempfile(fileext = ".txt")
+p4 <- pf_path(out_pfb$history, .con = log.txt)
+readLines(log.txt)
+
+#### Example (5): Examine outputs
+# Load packages
+require(data.table)
+require(dtplyr)
+require(dplyr, warn.conflicts = FALSE)
+# Compute (Euclidean) distances between sequential samples
+gebco <- dat_gebco()
+p1 <-
+  p1 |>
+  group_by(id) |>
+  mutate(
+    cell_x = terra::xFromCell(gebco, cell),
+    cell_y = terra::yFromCell(gebco, cell),
+    dist = terra::distance(cbind(cell_x, cell_y),
+                           lonlat = FALSE, sequential = TRUE))
+max(p1$dist, na.rm = TRUE)
+# Visualise example path
+terra::plot(gebco)
+path_1 <- p1[p1$id == 1, ]
+s <- seq_len(nrow(path_1))
+graphics::arrows(x0 = path_1$cell_x[s], x1 = path_1$cell_x[s + 1],
+                 y0 = path_1$cell_y[s], y1 = path_1$cell_y[s + 1],
+                 length = 0.02)
