@@ -47,7 +47,7 @@ For home ranges, use:
 \itemize{
 \item \code{\link[=get_hr_prop]{get_hr_prop()}} for a custom range;
 \item \code{\link[=get_hr_core]{get_hr_core()}} for the 'core' range;
-\item \code{\link[=get_hr_home]{get_hr_home()}} for the 'home' range;
+\item [\verb{get_hr_home()]} for the 'home' range;
 \item \code{\link[=get_hr_full]{get_hr_full()}} for the full range;
 }
 

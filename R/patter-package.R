@@ -34,12 +34,14 @@
 #' * [`pf_path()`] (and [`pf_path_pivot()`]) to reconstruct movement paths;
 #'
 #' For home ranges, use:
+#'
 #' * [`get_hr_prop()`] for a custom range;
-#' * [get_hr_core()] for the 'core' range;
-#' * [get_hr_home()] for the 'home' range;
+#' * [`get_hr_core()`] for the 'core' range;
+#' * [`get_hr_home()]` for the 'home' range;
 #' * [`get_hr_full()`] for the full range;
 #'
 #' For supporting functions, see `help(package = 'patter')`:
+#'
 #' * [`make_matrix_receivers()`] matricises receiver deployment time series;
 #' * [`normalise()`] normalises a [`SpatRaster`];
 #'
