@@ -96,10 +96,15 @@ NULL
 #' @rdname acs_check
 #' @export
 
-.acs_check_present <- function(.p, .t) {
+.acs_check_present <- function(.p, .t, .type = c("acs", "dc")) {
   is_blank <- as.logical(terra::global(.p, \(x) all(is.na(x) | x == 0)))
   if (is_blank) {
-    abort("There are no possible locations at time step = {.t}. The may be errors in the data (e.g., false detections) or detection probability model and/or mobility may be too restrictive. It is also possible this is a bug.", .envir = environment())
+    .type <- match.arg(type)
+    if (.type == "acs") {
+      abort("There are no possible locations at time step = {.t}. There may be errors in the data (e.g., false detections) or detection probability model and/or mobility may be too restrictive. It is also possible this is a bug.", .envir = environment())
+    } else if (.type == "dc") {
+      abort("There are no possible locations at time step = {.t}. There may be errors in the observations or bathymetry data, or the depth model may be incorrect.", .envir = environment())
+    }
   }
   NULL
 }
