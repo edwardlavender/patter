@@ -245,7 +245,6 @@ acs_setup_detection_containers <- function(.bathy, .moorings) {
 acs_setup_detection_overlaps <- function(.containers, .moorings, .services = NULL) {
 
   #### Check user inputs
-  rlang::check_installed("tidyr")
   .moorings <- check_moorings(.moorings)
   check_inherits(.moorings$receiver_start, "Date")
   check_inherits(.moorings$receiver_end, "Date")
@@ -347,12 +346,15 @@ acs_setup_detection_overlaps <- function(.containers, .moorings, .services = NUL
   #### On each date, get the vector of overlapping receivers
   # Note that not every receiver in this list will necessarily overlap with every other receiver though.
   lbd <- lapply(list_by_receiver, function(d) {
-    tidyr::pivot_longer(
-      data = d,
-      cols = 3:ncol(d),
-      names_to = "receiver_id_2",
-      names_transform = list(receiver_id_2 = as.integer)
-    )
+    d |>
+      as.data.table() |>
+      data.table::melt(id.vars = c("timestamp", "receiver_id"),
+                       measure.vars = names(d)[3:ncol(d)],
+                       variable.name = "receiver_id_2",
+                       variable.factor = FALSE) |>
+      arrange(.data$timestamp) |>
+      mutate(receiver_id_2 = as.integer(.data$receiver_id_2)) |>
+      as.data.table()
   })
   lbd <- dplyr::bind_rows(lbd) |> dplyr::filter(.data$value == 1)
   lbd <- lapply(split(lbd, lbd$timestamp), function(d) unique(c(d$receiver_id[1], d$receiver_id_2)))

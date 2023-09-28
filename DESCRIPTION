@@ -8,19 +8,14 @@ Description: A new implementation of the 'flapper' family of algorithms for pass
 License: MIT + file LICENSE
 Imports:
     arrow, 
-    data.table,
-    dplyr,
-    dtplyr,
-    glue, 
-    lubridate,
-    pbapply,
-    progress,
-    rlang, 
-    terra, 
-    tidyr
+    data.table, dplyr, dtplyr, rlang, 
+    glue, lubridate,
+    pbapply, progress, 
+    terra
 Suggests: 
     collapse, circular, 
-    spatialEco,
+    spatialEco, 
+    stringr,
     knitr, rmarkdown,
     testthat (>= 3.0.0)
 Depends: R (>= 4.0)
