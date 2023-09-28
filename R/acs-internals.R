@@ -99,7 +99,7 @@ NULL
 .acs_check_present <- function(.p, .t, .type = c("acs", "dc")) {
   is_blank <- as.logical(terra::global(.p, \(x) all(is.na(x) | x == 0)))
   if (is_blank) {
-    .type <- match.arg(type)
+    .type <- match.arg(.type)
     if (.type == "acs") {
       abort("There are no possible locations at time step = {.t}. There may be errors in the data (e.g., false detections) or detection probability model and/or mobility may be too restrictive. It is also possible this is a bug.", .envir = environment())
     } else if (.type == "dc") {
