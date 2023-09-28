@@ -16,6 +16,9 @@ NULL
   if (!rlang::has_name(.o, "timestep")) {
     abort("`.obs` should be a data.table with a `timestep` column. ")
   }
+  if (is.unsorted(.o$timestep)) {
+    abort("`.obs$timestep` is not sorted.")
+  }
   .o
 }
 
