@@ -1,0 +1,10 @@
+citHeader("To cite {patter} in publications, use Lavender et al. (2023).")
+
+bibentry(
+  bibtype  = "Article",
+  title    = "An integrative modelling framework for passive acoustic telemetry",
+  author   = c("Edward Lavender", "Stanisław Biber", "Janine Illian", "Mark James", "Peter J. Wright", "James Thorburn", "Sophie Smout"),
+  journal  = "Methods in Ecology and Evolution",
+  year     = "2023",
+  doi      = "10.1111/2041-210X.14193"
+)
