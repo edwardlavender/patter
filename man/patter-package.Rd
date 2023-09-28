@@ -4,7 +4,7 @@
 \name{patter-package}
 \alias{patter}
 \alias{patter-package}
-\title{\code{\link{patter}}: Movement Modelling For Passive Acoustic Telemetry}
+\title{\code{\link{patter}}: Movement modelling For passive acoustic telemetry}
 \description{
 \code{\link{patter}} is a re-implementation of the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} family of algorithms for passive acoustic telemetry that simpler, faster and better tested than its \href{https://github.com/edwardlavender/flapper}{predecessor}.
 }
@@ -21,6 +21,7 @@ For example datasets, see:
 \section{Workflow}{
 To implement the depth-contour algorithm, use:
 \itemize{
+\item \code{\link[=dc_setup_model]{dc_setup_model()}} for an example DC model;
 \item \code{\link[=dc]{dc()}} to implement the algorithm;
 }
 
@@ -38,7 +39,7 @@ To implement particle filtering, use:
 \item \code{\link[=pf_setup_record]{pf_setup_record()}} to set up the record;
 \item \code{\link[=pf_setup_kick]{pf_setup_kick()}} for an example movement model;
 \item \code{\link[=pf_forward]{pf_forward()}} to implement the forward simulation;
-\item \code{\link[=pf_backward]{pf_backward()}} to implement the backward path'
+\item \code{\link[=pf_backward]{pf_backward()}} to implement the backward pass;
 \item \code{\link[=pf_pou]{pf_pou()}} to map probability-of-use;
 \item \code{\link[=pf_path]{pf_path()}} (and \code{\link[=pf_path_pivot]{pf_path_pivot()}}) to reconstruct movement paths;
 }
@@ -47,7 +48,7 @@ For home ranges, use:
 \itemize{
 \item \code{\link[=get_hr_prop]{get_hr_prop()}} for a custom range;
 \item \code{\link[=get_hr_core]{get_hr_core()}} for the 'core' range;
-\item [\verb{get_hr_home()]} for the 'home' range;
+\item \code{\link[=get_hr_home]{get_hr_home()}} for the 'home' range;
 \item \code{\link[=get_hr_full]{get_hr_full()}} for the full range;
 }
 
@@ -55,6 +56,7 @@ For supporting functions, see \code{help(package = 'patter')}:
 \itemize{
 \item \code{\link[=make_matrix_receivers]{make_matrix_receivers()}} matricises receiver deployment time series;
 \item \code{\link[=normalise]{normalise()}} normalises a \code{\link{SpatRaster}};
+\item \verb{cl_*()} functions for parallelisation helpers;
 }
 }
 

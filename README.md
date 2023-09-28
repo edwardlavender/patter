@@ -1,8 +1,8 @@
 
-# `patter`(<https://github.com/edwardlavender/patter>) for passive acoustic telemetry
+# [`patter`](https://github.com/edwardlavender/patter) for passive acoustic telemetry
 
 **A re-implementation of the
-`flapper`(<https://github.com/edwardlavender/flapper>) family of
+[`flapper`](https://github.com/edwardlavender/flapper) family of
 algorithms for passive acoustic telemetry**
 
 <!-- badges: start -->
@@ -16,19 +16,19 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 status](https://www.r-pkg.org/badges/version/patter)](https://CRAN.R-project.org/package=patter)
 <!-- badges: end -->
 
-`patter`(<https://github.com/edwardlavender/patter>) is
+[`patter`](https://github.com/edwardlavender/patter) is
 [R](https://www.r-project.org) package implementation of the
-`flapper`(<https://github.com/edwardlavender/flapper>) family of
+[`flapper`](https://github.com/edwardlavender/flapper) family of
 algorithms for passive acoustic telemetry (Lavender et al., 2023). This
 evolved from the experimental
-`flapper`(<https://github.com/edwardlavender/flapper>) package, but is
+[`flapper`](https://github.com/edwardlavender/flapper) package, but is
 simpler, faster and better tested.
 
 # Key features
 
 Building on its
 [predecessor](https://github.com/edwardlavender/flapper),
-`patter`(<https://github.com/edwardlavender/patter>) has been designed
+[`patter`](https://github.com/edwardlavender/patter) has been designed
 to be:
 
 - **Simpler** to use and maintain;
@@ -37,20 +37,20 @@ to be:
 - **More stable**, with fewer dependencies and an upgraded spatial
   ecosystem;
 - **Faster**, with revised internal routines that exploit the
-  `data.table`(<https://github.com/Rdatatable/data.table>) and
-  `terra`(<https://github.com/rspatial/terra>) packages and substantive,
+  [`data.table`](https://github.com/Rdatatable/data.table) and
+  [`terra`](https://github.com/rspatial/terra) packages and substantive,
   new algorithm parameterisations;
 - **Better tested**, with comprehensive unit tests;
 
-At the time of writing (September 2023),
-`patter`(<https://github.com/edwardlavender/patter>) solely provides the
-functions required to implement the
-`flapper`(<https://github.com/edwardlavender/flapper>) family of
+At the time of writing (September
+2023),[`patter`](https://github.com/edwardlavender/patter) solely
+provides the functions required to implement the
+[`flapper`](https://github.com/edwardlavender/flapper) family of
 algorithms, which represent a subset of the capacity provided by
-`flapper`(<https://github.com/edwardlavender/flapper>). Further
+[`flapper`](https://github.com/edwardlavender/flapper). Further
 developments will be driven by user requirements. Please get in touch if
 you would like to see additional functionality brought into
-`patter`(<https://github.com/edwardlavender/patter>).
+[`patter`](https://github.com/edwardlavender/patter).
 
 # Installation
 
@@ -63,7 +63,7 @@ with `pkgbuild::has_rtools()`. If `Rtools` is not installed, it is
 necessary to download and install the appropriate version of `Rtools`
 before proceeding by following the instructions
 [here](https://cran.r-project.org/bin/windows/Rtools/). Once you are set
-up, you can install `patter`(<https://github.com/edwardlavender/patter>)
+up, you can install [`patter`](https://github.com/edwardlavender/patter)
 via:
 
 ``` r
@@ -90,6 +90,7 @@ For example datasets, see:
 
 To implement the depth-contour algorithm, use:
 
+- `dc_setup_model()` for an example DC model;
 - `dc()` to implement the algorithm;
 
 To implement the AC\* algorithms, use:
@@ -120,10 +121,11 @@ For supporting functions, see `help(package = 'patter')`:
 
 - `make_matrix_receivers()` matricises receiver deployment time series;
 - `normalise()` normalises a `SpatRaster`;
+- `cl_*()` functions for parallelisation helpers;
 
 # Disclaimer and troubleshooting
 
-`patter`(<https://github.com/edwardlavender/patter>) is a new
+[`patter`](https://github.com/edwardlavender/patter) is a new
 [R](https://www.r-project.org/) package. All routines are experimental.
 Researchers interested in using the package are encouraged to get in
 touch while the methods and package remain at an early stage of
@@ -131,14 +133,14 @@ evolution (<edward.lavender@eawag.ch>).
 
 # Citation
 
-To cite `patter`(<https://edwardlavender.github.io/flapper/>) in
+To cite [`patter`](https://edwardlavender.github.io/flapper/) in
 publications, please use Lavender, E. et al. (2023). An integrative
 modelling framework for passive acoustic telemetry. Methods in Ecology
 and Evolution. <https://doi.org/10.1111/2041-210X.14193>
 
 ------------------------------------------------------------------------
 
-Please note that `patter`(<https://github.com/edwardlavender/patter>) is
+Please note that [`patter`](https://github.com/edwardlavender/patter) is
 released with a [Contributor Code of
 Conduct](https://contributor-covenant.org/version/2/1/CODE_OF_CONDUCT.html).
 By contributing to this project, you agree to abide by its terms.

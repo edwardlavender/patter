@@ -1,4 +1,4 @@
-#' @title  [`patter`]: Movement Modelling For Passive Acoustic Telemetry
+#' @title  [`patter`]: Movement modelling For passive acoustic telemetry
 #' @description [`patter`] is a re-implementation of the [`flapper`](https://github.com/edwardlavender/flapper) family of algorithms for passive acoustic telemetry that simpler, faster and better tested than its [predecessor](https://github.com/edwardlavender/flapper).
 #'
 #' # Datasets
@@ -14,6 +14,7 @@
 #'
 #' To implement the depth-contour algorithm, use:
 #'
+#' * [`dc_setup_model()`] for an example DC model;
 #' * [`dc()`] to implement the algorithm;
 #'
 #' To implement the AC* algorithms, use:
@@ -29,7 +30,7 @@
 #' * [`pf_setup_record()`] to set up the record;
 #' * [`pf_setup_kick()`] for an example movement model;
 #' * [`pf_forward()`] to implement the forward simulation;
-#' * [`pf_backward()`] to implement the backward path'
+#' * [`pf_backward()`] to implement the backward pass;
 #' * [`pf_pou()`] to map probability-of-use;
 #' * [`pf_path()`] (and [`pf_path_pivot()`]) to reconstruct movement paths;
 #'
@@ -37,13 +38,14 @@
 #'
 #' * [`get_hr_prop()`] for a custom range;
 #' * [`get_hr_core()`] for the 'core' range;
-#' * [`get_hr_home()]` for the 'home' range;
+#' * [`get_hr_home()`] for the 'home' range;
 #' * [`get_hr_full()`] for the full range;
 #'
 #' For supporting functions, see `help(package = 'patter')`:
 #'
 #' * [`make_matrix_receivers()`] matricises receiver deployment time series;
 #' * [`normalise()`] normalises a [`SpatRaster`];
+#' * `cl_*()` functions for parallelisation helpers;
 #'
 #' @author Edward Lavender ([ORCID](https://orcid.org/0000-0002-8040-7489))
 #' @seealso
