@@ -29,7 +29,7 @@ The function returns a \code{\link{data.table}}, as supplied, with two additiona
 This function is an example movement model, of the kind required by \code{.kick} in \code{\link[=pf]{pf()}}.
 }
 \details{
-This template movement model is a correlated random walk. Step lengths are simulated from a Gamma distribution via \code{\link[stats:GammaDist]{stats::rgamma()}}. Turning angles are simulated from a wrapped normal distribution via \code{\link[circular:wrappednormal]{circular::rwrappednormal()}}. See the the code for the parameters used.
+This template movement model is a biased random walk. Step lengths are simulated from a Gamma distribution via \code{\link[stats:GammaDist]{stats::rgamma()}}. Turning angles are simulated from a wrapped normal distribution via \code{\link[circular:wrappednormal]{circular::rwrappednormal()}}. See the the code for the parameters used.
 }
 \section{Warning}{
 \itemize{
