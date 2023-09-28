@@ -20,7 +20,7 @@
 
 .acs_check_write_record(.w, .con = "filename")
 
-.acs_check_present(.p, .t)
+.acs_check_present(.p, .t, .type = c("acs", "dc"))
 }
 \arguments{
 \item{.o}{The \code{.obs} \code{\link{data.table}}.}
