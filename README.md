@@ -16,6 +16,7 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 status](https://www.r-pkg.org/badges/version/patter)](https://CRAN.R-project.org/package=patter)
 [![Codecov test
 coverage](https://codecov.io/gh/edwardlavender/patter/branch/main/graph/badge.svg)](https://app.codecov.io/gh/edwardlavender/patter?branch=main)
+[![R-CMD-check](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 [`patter`](https://github.com/edwardlavender/patter) is
