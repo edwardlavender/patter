@@ -4,7 +4,7 @@
 \alias{pf_path}
 \title{PF: path reconstruction}
 \usage{
-pf_path(.history, .return = c("long", "wide"), .verbose = TRUE, .con = "")
+pf_path(.history, .verbose = TRUE, .con = "", .return = c("long", "wide"))
 }
 \arguments{
 \item{.history}{Particle samples from the particle filter, provided either as:
@@ -12,6 +12,8 @@ pf_path(.history, .return = c("long", "wide"), .verbose = TRUE, .con = "")
 \item A \code{list} of \code{\link{data.table}}s that define cell samples; i.e., the \code{history} element of a \code{\linkS4class{pf}} object. This must contain columns that define cell samples at each time step (\code{cell_now}) alongside previous samples (\code{cell_past}).
 \item An ordered list of file paths (from \code{\link[=pf_setup_record]{pf_setup_record()}}) that define the directories in which particle samples were written from the forward simulation (as parquet files).
 }}
+
+\item{.verbose, .con}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
 
 \item{.return}{A \code{character} that defines the return format:
 \itemize{
@@ -27,8 +29,6 @@ pf_path(.history, .return = c("long", "wide"), .verbose = TRUE, .con = "")
 \item one column for each time step (named \code{x0}, \code{x1}, etc.);
 }
 }}
-
-\item{.verbose, .con}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
 }
 \value{
 The function returns a long- or wide-format \code{\link{data.table}} (see \code{.return}).
@@ -72,7 +72,7 @@ dir.create(forward_folder, recursive = TRUE)
 out_pff <- pf_forward(.obs = obs,
                       .record = out_ac$record,
                       .n = 1e3,
-                      .kick = pf_setup_kick,
+                      .kick = pf_kick,
                       .bathy = gebco,
                       .save_history = TRUE,
                       .write_history = list(sink = forward_folder))

@@ -26,8 +26,7 @@ pf_pou <-
         abort("`.history` contains non parquet files.")
       }
       samples <-
-        arrow::open_dataset(.history, format = "parquet") |>
-        arrow::to_duckdb()
+        arrow::open_dataset(.history, format = "parquet") # |> arrow::to_duckdb()
     } else {
       # Prepare samples from pf_*() list
       check_names(.history[[1]], req = "cell_now")

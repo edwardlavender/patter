@@ -61,7 +61,7 @@ dir.create(forward_folder, recursive = TRUE)
 out_pf <- pf_forward(.obs = obs,
                      .record = out_ac$record,
                      .n = 1e3,
-                     .kick = pf_setup_kick,
+                     .kick = pf_kick,
                      .bathy = gebco,
                      .save_history = TRUE,
                      .write_history = list(sink = forward_folder))

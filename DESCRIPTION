@@ -15,7 +15,8 @@ Imports:
 Suggests: 
     collapse, circular, 
     spatialEco, 
-    stringr, purrr,
+    purrr, stringr,
+    truncdist,
     knitr, rmarkdown,
     testthat (>= 3.0.0)
 Depends: R (>= 4.0)

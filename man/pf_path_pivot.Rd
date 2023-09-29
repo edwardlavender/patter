@@ -9,7 +9,7 @@ pf_path_pivot(.mat)
 \arguments{
 \item{.mat}{A wide-format \code{\link{data.table}}, from \code{\link[=pf_path]{pf_path()}} with \code{.return = "wide"}, in which:
 \itemize{
-\item columns (\code{x0}, \code{x1}, etc.) represent time steps;
+\item columns (\code{x1}, etc.) represent time steps;
 \item rows represent time steps;
 }}
 }

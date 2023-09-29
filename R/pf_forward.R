@@ -11,7 +11,7 @@
 #' * (optional) `.bathy`---a [`SpatRaster`] that defines the bathymetry;
 #' * (optional) `...`---additional arguments, passed via [`pf()`], if required;
 #'
-#' See [`pf_setup_kick()`] for an example movement model.
+#' See [`pf_kick()`] for an example movement model.
 #' @param .n An `integer` that defines the number of particle samples at each time step.
 #' @param .save_history A logical variable that defines whether or not to save particle samples in the `history` element of the output. This is only sensible for small-scale applications (i.e., short time series and few particles).
 #' @param .write_history A named list, passed to [`arrow::write_parquet()`], to save particle samples to file at each time step. The `sink` argument should be the directory in which to write files. Files are named by `.obs$timestep` (i.e., `1.parquet`, `2.parquet`, ..., `N.parquet`).

@@ -28,7 +28,7 @@
 #' To implement particle filtering, use:
 #'
 #' * [`pf_setup_record()`] to set up the record;
-#' * [`pf_setup_kick()`] for an example movement model;
+#' * [`pf_kick()`] for an example movement model;
 #' * [`pf_forward()`] to implement the forward simulation;
 #' * [`pf_backward()`] to implement the backward pass;
 #' * [`pf_pou()`] to map probability-of-use;

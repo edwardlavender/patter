@@ -37,7 +37,7 @@ pf_forward(
 \item (optional) \code{...}---additional arguments, passed via \code{\link[=pf]{pf()}}, if required;
 }
 
-See \code{\link[=pf_setup_kick]{pf_setup_kick()}} for an example movement model.}
+See \code{\link[=pf_kick]{pf_kick()}} for an example movement model.}
 
 \item{.n}{An \code{integer} that defines the number of particle samples at each time step.}
 
@@ -96,7 +96,7 @@ out_ac <-
 out_pf <- pf_forward(.obs = obs,
                      .record = out_ac$record,
                      .n = 1e3,
-                     .kick = pf_setup_kick,
+                     .kick = pf_kick,
                      .bathy = gebco,
                      .save_history = TRUE)
 # The function returns a named list:
@@ -107,7 +107,7 @@ spats <- pf_setup_record(ac_folder)
 out_pf <- pf_forward(.obs = obs,
                      .record = spats,
                      .n = 1e3,
-                     .kick = pf_setup_kick,
+                     .kick = pf_kick,
                      .bathy = gebco,
                      .save_history = TRUE)
 
@@ -117,7 +117,7 @@ dir.create(pf_folder)
 pf_forward(.obs = obs,
            .record = out_ac$record,
            .n = 1e3,
-           .kick = pf_setup_kick,
+           .kick = pf_kick,
            .bathy = gebco,
            .save_history = TRUE,
            .write_history = list(sink = pf_folder))
@@ -128,7 +128,7 @@ utils::head(list.files(pf_folder))
 out_pf <- pf_forward(.obs = obs,
                      .record = out_ac$record,
                      .n = 1e3,
-                     .kick = pf_setup_kick,
+                     .kick = pf_kick,
                      .bathy = gebco,
                      .save_history = TRUE,
                      .progress = FALSE)
@@ -137,7 +137,7 @@ if (interactive()) {
   out_pf <- pf_forward(.obs = obs,
                        .record = out_ac$record,
                        .n = 1e3,
-                       .kick = pf_setup_kick,
+                       .kick = pf_kick,
                        .bathy = gebco,
                        .save_history = TRUE,
                        .prompt = TRUE)
@@ -148,7 +148,7 @@ out_pf <-
   pf_forward(.obs = obs,
              .record = out_ac$record,
              .n = 1e3,
-             .kick = pf_setup_kick,
+             .kick = pf_kick,
              .bathy = gebco,
              .con = log.txt,
              .save_history = TRUE)

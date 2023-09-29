@@ -26,7 +26,9 @@
 #' @author Edward Lavender
 #' @export
 
-pf_path <- function(.history, .return = c("long", "wide"), .verbose = TRUE, .con = ""){
+pf_path <- function(.history,
+                    .verbose = TRUE, .con = "",
+                    .return = c("long", "wide")){
 
   # Check user inputs
   t_onset <- Sys.time()
@@ -75,6 +77,7 @@ pf_path <- function(.history, .return = c("long", "wide"), .verbose = TRUE, .con
   .pb <- progress::progress_bar$new(total = length(.history))
   .pb$tick(0)
   paths <- eval(parse(text = txt))
+  paths[, 1] <- NULL
 
   # Reorientate paths (long format)
   if (.return == "long") {
@@ -91,7 +94,7 @@ pf_path <- function(.history, .return = c("long", "wide"), .verbose = TRUE, .con
 #' @description This function converts paths in 'wide format' to paths in 'long format'.
 #'
 #' @param .mat A wide-format [`data.table`], from [`pf_path()`] with `.return = "wide"`, in which:
-#' * columns (`x0`, `x1`, etc.) represent time steps;
+#' * columns (`x1`, etc.) represent time steps;
 #' * rows represent time steps;
 #'
 #' @details
@@ -120,7 +123,7 @@ pf_path_pivot <- function(.mat) {
   .mat |>
     collapse::pivot() |>
     as.data.table() |>
-    mutate(timestep = as.integer(rep(seq_len(ncol(.mat)), each = nrow(.mat))) - 1,
+    mutate(timestep = as.integer(rep(seq_len(ncol(.mat)), each = nrow(.mat))),
            id = as.integer(rep(seq_len(nrow(.mat)), ncol(.mat)))) |>
     select("id", "timestep", cell = "value") |>
     arrange(.data$id, .data$timestep) |>

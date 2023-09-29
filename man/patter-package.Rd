@@ -37,7 +37,7 @@ To implement the AC* algorithms, use:
 To implement particle filtering, use:
 \itemize{
 \item \code{\link[=pf_setup_record]{pf_setup_record()}} to set up the record;
-\item \code{\link[=pf_setup_kick]{pf_setup_kick()}} for an example movement model;
+\item \code{\link[=pf_kick]{pf_kick()}} for an example movement model;
 \item \code{\link[=pf_forward]{pf_forward()}} to implement the forward simulation;
 \item \code{\link[=pf_backward]{pf_backward()}} to implement the backward pass;
 \item \code{\link[=pf_pou]{pf_pou()}} to map probability-of-use;
