@@ -48,9 +48,13 @@ test_that("cl_*() helpers work", {
   cl_stop()
 
   # Check cl_lapply()
-  cl_lapply(1:10, \(x) x + 1, .cl = 2L)
-  cl_lapply(1:10, \(x) x + 1, .cl = 2L, .use_chunks = TRUE)
-  cl_lapply(1:10, \(x) x + 1, .cl = parallel::makeCluster(2L))
-  cl_lapply(1:10, \(x) x + 1, .cl = parallel::makeCluster(2L), .use_chunks = FALSE)
+  cl_lapply(1:10, \(x) x + 0, .cl = 2L) |>
+    expect_equal(as.list(1:10L))
+  cl_lapply(1:10, \(x) x + 0, .cl = 1L, .use_chunks = TRUE) |>
+    expect_equal(as.list(1:10L))
+  cl_lapply(1:10, \(x) x + 0, .cl = parallel::makeCluster(2L)) |>
+    expect_equal(as.list(1:10L))
+  cl_lapply(1:10, \(x) x + 0, .cl = parallel::makeCluster(2L), .use_chunks = FALSE) |>
+    expect_equal(as.list(1:10L))
 
 })

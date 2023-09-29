@@ -58,7 +58,7 @@ cl_lapply <- function(.x, .fun, ...,
       y_for_chunk
     })
     # Close cluster
-    cl_stop(.cl = .cl)
+    cl_stop(.cl)
     # Flatten list-by-chunk into a single level list
     y <- purrr::flatten(y_by_chunks)
   } else {
@@ -67,7 +67,7 @@ cl_lapply <- function(.x, .fun, ...,
     y <- pbapply::pblapply(.x, cl = .cl, function(xi) {
       .fun(xi, ...)
     })
-    cl_stop(.cl = .cl)
+    cl_stop(.cl)
   }
   y
 }
