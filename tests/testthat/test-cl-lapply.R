@@ -25,7 +25,7 @@ test_that("cl_*() helpers work", {
   cl_stop(cl)
   cl <- parallel::makeForkCluster(2L)
   cl_cores(cl) |> expect_equal(2L)
-  cl_stop()
+  cl_stop(cl)
 
   # Check cl_chunks()
   cl_chunks(NULL, 10) |>
@@ -50,8 +50,10 @@ test_that("cl_*() helpers work", {
   # Check cl_lapply()
   cl_lapply(1:10, \(x) x + 0, .cl = 2L) |>
     expect_equal(as.list(1:10L))
-  cl_lapply(1:10, \(x) x + 0, .cl = 1L, .use_chunks = TRUE) |>
-    expect_equal(as.list(1:10L))
+  if (.Platform$OS.type == "unix") {
+    cl_lapply(1:10, \(x) x + 0, .cl = 2L, .use_chunks = TRUE) |>
+      expect_equal(as.list(1:10L))
+  }
   cl_lapply(1:10, \(x) x + 0, .cl = parallel::makeCluster(2L)) |>
     expect_equal(as.list(1:10L))
   cl_lapply(1:10, \(x) x + 0, .cl = parallel::makeCluster(2L), .use_chunks = FALSE) |>
