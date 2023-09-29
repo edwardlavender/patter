@@ -6,6 +6,7 @@
 #' @param .fun,... A function that is applied to elements of `.x` alongside any optional arguments to `.fun`.
 #' @param .cl (optional) A cluster from [`parallel::makeCluster()`] or an integer that defines the number of child processes (see [`pbapply::pblapply()`]).
 #' @param .varlist (optional) A character vector of objects for export (see [`parallel::clusterExport()`]). If `.cl` is a cluster, this may be required. Exported objects must be located in the global environment.
+#' @param .envir The environment from which to export variables (see [`parallel::clusterExport()`]).
 #' @param .use_chunks A logical vector that defines whether to parallelise over 'chunks' (`TRUE`) or over the elements of `.x` (`FALSE`). If `.use_chunks = TRUE`, `.x` is split into \emph{n} chunks (one per core) that are processed in parallel; within each chunk `.x` is updated iteratively.
 #' @param .length An integer that defines the number of elements in the iteration.
 #'
@@ -36,15 +37,17 @@ NULL
 #' @rdname cl
 #' @export
 
-cl_lapply <- function(.x, .fun, ..., .cl = NULL, .varlist = NULL, .use_chunks = FALSE) {
+cl_lapply <- function(.x, .fun, ...,
+                      .cl = NULL, .varlist = NULL, .envir = .GlobalEnv,
+                      .use_chunks = FALSE) {
   # Check cluster
-  cl_check(.cl = .cl, .varlist = .varlist)
+  cl_check(.cl, .varlist)
   if (.use_chunks) {
     # Define list of indices by chunk
     rlang::check_installed("purrr")
-    index_by_chunk <- cl_chunks(.cl = .cl, .length = length(.x))
+    index_by_chunk <- cl_chunks(.cl, length(.x))
     # Loop over chunks in parallel
-    cl_export(.cl = .cl, .varlist = .varlist)
+    cl_export(.cl, .varlist)
     y_by_chunks <- pbapply::pblapply(index_by_chunk, cl = .cl, function(index_for_chunk) {
       # Get indices for chunk
       x_for_chunk <- .x[index_for_chunk]
@@ -60,7 +63,7 @@ cl_lapply <- function(.x, .fun, ..., .cl = NULL, .varlist = NULL, .use_chunks = 
     y <- purrr::flatten(y_by_chunks)
   } else {
     # Loop over x elements in parallel
-    cl_export(.cl = .cl, .varlist = .varlist)
+    cl_export(.cl, .varlist, .envir)
     y <- pbapply::pblapply(.x, cl = .cl, function(xi) {
       .fun(xi, ...)
     })
@@ -75,21 +78,15 @@ cl_lapply <- function(.x, .fun, ..., .cl = NULL, .varlist = NULL, .use_chunks = 
 cl_check <- function(.cl = NULL, .varlist = NULL) {
   if (is.null(.cl)) {
     if (!is.null(.varlist)) {
-      warning("`.cl` is NULL: input to `.varlist` ignored.",
-              immediate. = TRUE, call. = FALSE
-      )
+      warn("`.cl` is NULL: input to `.varlist` ignored.")
     }
   } else {
     if (!inherits(.cl, "cluster")) {
       if (.Platform$OS.type == "windows") {
-        warning("Integer specifications for `.cl` (i.e., forking) on Windows are not supported.",
-                immediate. = TRUE, call. = FALSE
-        )
+        warn("Integer specifications for `.cl` (i.e., forking) on Windows are not supported.")
       }
       if (!is.null(.varlist)) {
-        warning("`.cl` is an integer: input to `.varlist` ignored.",
-                immediate. = TRUE, call. = FALSE
-        )
+        warn("`.cl` is an integer: input to `.varlist` ignored.")
       }
     }
   }
@@ -120,9 +117,9 @@ cl_chunks <- function(.cl = NULL, .length) {
 #' @rdname cl
 #' @export
 
-cl_export <- function(.cl = NULL, .varlist = NULL) {
+cl_export <- function(.cl = NULL, .varlist = NULL, .envir = .GlobalEnv) {
   if (!is.null(.cl) && inherits(.cl, "cluster") && !is.null(.varlist)) {
-    parallel::clusterExport(cl = .cl, varlist = .varlist)
+    parallel::clusterExport(cl = .cl, varlist = .varlist, envir = .envir)
   }
   invisible(NULL)
 }

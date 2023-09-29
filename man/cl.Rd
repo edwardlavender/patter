@@ -10,7 +10,15 @@
 \alias{cl_stop}
 \title{Parallelisation helpers}
 \usage{
-cl_lapply(.x, .fun, ..., .cl = NULL, .varlist = NULL, .use_chunks = FALSE)
+cl_lapply(
+  .x,
+  .fun,
+  ...,
+  .cl = NULL,
+  .varlist = NULL,
+  .envir = .GlobalEnv,
+  .use_chunks = FALSE
+)
 
 cl_check(.cl = NULL, .varlist = NULL)
 
@@ -18,7 +26,7 @@ cl_cores(.cl = NULL)
 
 cl_chunks(.cl = NULL, .length)
 
-cl_export(.cl = NULL, .varlist = NULL)
+cl_export(.cl = NULL, .varlist = NULL, .envir = .GlobalEnv)
 
 cl_stop(.cl = NULL)
 }
@@ -30,6 +38,8 @@ cl_stop(.cl = NULL)
 \item{.cl}{(optional) A cluster from \code{\link[parallel:makeCluster]{parallel::makeCluster()}} or an integer that defines the number of child processes (see \code{\link[pbapply:pbapply]{pbapply::pblapply()}}).}
 
 \item{.varlist}{(optional) A character vector of objects for export (see \code{\link[parallel:clusterApply]{parallel::clusterExport()}}). If \code{.cl} is a cluster, this may be required. Exported objects must be located in the global environment.}
+
+\item{.envir}{The environment from which to export variables (see \code{\link[parallel:clusterApply]{parallel::clusterExport()}}).}
 
 \item{.use_chunks}{A logical vector that defines whether to parallelise over 'chunks' (\code{TRUE}) or over the elements of \code{.x} (\code{FALSE}). If \code{.use_chunks = TRUE}, \code{.x} is split into \emph{n} chunks (one per core) that are processed in parallel; within each chunk \code{.x} is updated iteratively.}
 
