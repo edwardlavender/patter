@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN status](https://www.r-pkg.org/badges/version/patter)](https://CRAN.R-project.org/package=patter)
+[![Codecov test coverage](https://codecov.io/gh/edwardlavender/patter/branch/main/graph/badge.svg)](https://app.codecov.io/gh/edwardlavender/patter?branch=main)
 <!-- badges: end -->
 
 [`patter`](https://github.com/edwardlavender/patter) is [R](https://www.r-project.org) package implementation of the [`flapper`](https://github.com/edwardlavender/flapper) family of algorithms for passive acoustic telemetry (Lavender et al., 2023). This evolved from the experimental [`flapper`](https://github.com/edwardlavender/flapper) package, but is simpler, faster and better tested. 

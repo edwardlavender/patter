@@ -14,6 +14,8 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/patter)](https://CRAN.R-project.org/package=patter)
+[![Codecov test
+coverage](https://codecov.io/gh/edwardlavender/patter/branch/main/graph/badge.svg)](https://app.codecov.io/gh/edwardlavender/patter?branch=main)
 <!-- badges: end -->
 
 [`patter`](https://github.com/edwardlavender/patter) is
@@ -104,7 +106,7 @@ To implement the AC\* algorithms, use:
 To implement particle filtering, use:
 
 - `pf_setup_record()` to set up the record;
-- `pf_setup_kick()` for an example movement model;
+- `pf_kick()` for an example movement model;
 - `pf_forward()` to implement the forward simulation;
 - `pf_backward()` to implement the backward path’
 - `pf_pou()` to map probability-of-use;
