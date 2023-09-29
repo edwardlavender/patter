@@ -1,4 +1,4 @@
-#' @title  [`patter`]: Movement modelling For passive acoustic telemetry
+#' @title  [`patter`]: Movement modelling for passive acoustic telemetry
 #' @description [`patter`] is a re-implementation of the [`flapper`](https://github.com/edwardlavender/flapper) family of algorithms for passive acoustic telemetry that simpler, faster and better tested than its [predecessor](https://github.com/edwardlavender/flapper).
 #'
 #' # Datasets

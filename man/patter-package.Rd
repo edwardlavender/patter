@@ -4,7 +4,7 @@
 \name{patter-package}
 \alias{patter}
 \alias{patter-package}
-\title{\code{\link{patter}}: Movement modelling For passive acoustic telemetry}
+\title{\code{\link{patter}}: Movement modelling for passive acoustic telemetry}
 \description{
 \code{\link{patter}} is a re-implementation of the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} family of algorithms for passive acoustic telemetry that simpler, faster and better tested than its \href{https://github.com/edwardlavender/flapper}{predecessor}.
 }
