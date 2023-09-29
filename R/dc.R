@@ -89,8 +89,10 @@ dc <- function(.obs, .bathy, .model, ...,
   record     <- list()
   cumulative <- NULL
   # Wrap .bathy for cluster
+  unwrap_bathy <- FALSE
   if (inherits(.cl, "cluster")) {
     .bathy <- terra::wrap(.bathy)
+    unwrap_bathy <- TRUE
   }
   # Implement progress bar
   if (!.progress) {
@@ -104,7 +106,7 @@ dc <- function(.obs, .bathy, .model, ...,
 
     #### Implement depth model
     cat_to_cf(paste0("... ... Implementing DC model..."))
-    present <- .model(.obs, t, .bathy, .unwrap = inherits(.cl, "cluster"), ...)
+    present <- .model(.obs, t, .bathy, .unwrap = unwrap_bathy, ...)
     cat_to_cf(paste0("... ... Confirming validity..."))
     .acs_check_present(present, t, .type = "dc")
 
