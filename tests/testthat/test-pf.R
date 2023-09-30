@@ -81,7 +81,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   dir.create(pff_folder, recursive = TRUE)
 
   ##### Validate checks on user inputs
-  ## Validate .save_history and/or .write_history are specified
+  ## Validate `.save_history` and/or `.write_history` are specified
   pf_forward(.obs = obs,
              .record = out_ac$record,
              .n = n_particles,
@@ -89,7 +89,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
              .bathy = gebco) |>
     expect_error("`.save_history = FALSE` and `.write_history = NULL`. There is nothing to do.",
                  fixed = TRUE)
-  ## Validate .verbose & .con align
+  ## Validate `.verbose` & `.con` align
   pf_forward(.obs = obs,
              .record = out_ac$record,
              .n = n_particles,
@@ -123,7 +123,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   check_inherits(out_pff[[1]], "data.table")
   expect_equal(colnames(out_pff[[1]]), c("cell_past", "cell_now"))
 
-  #### Implement pf_forward with .save_history = FALSE to confirm particles are dropped
+  #### Implement pf_forward with `.save_history = FALSE` to confirm particles are dropped
   out_pff <- pf_forward(.obs = obs,
                        .record = out_ac$record,
                        .n = n_particles,
@@ -187,7 +187,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
                               relationship = "many-to-many")
     colnames(pair) <- c("cell_past", "cell_now", "cell_next")
     # Define cell coordinates
-    xy_now <- terra::xyFromCell(gebco, pair$cell_now)
+    xy_now  <- terra::xyFromCell(gebco, pair$cell_now)
     xy_next <- terra::xyFromCell(gebco, pair$cell_next)
     # Calculate distances between locations
     pair$dist <- terra::distance(xy_now, xy_next,
@@ -209,7 +209,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
                .verbose = FALSE, .con = tempfile()) |>
      expect_warning("Input to `.con` ignored since `.verbose = FALSE`.", fixed = TRUE)
 
-   #### Validate implementation with .save_history = FALSE
+   #### Validate implementation with `.save_history = FALSE`
    pfb_folder <- file.path(tempdir(), "pf", "backward")
    dir.create(pfb_folder, recursive = TRUE)
    out_pfb <- pf_backward(out_pff$history,
@@ -362,6 +362,12 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   check_inherits(mat, "data.table")
   expect_equal(nrow(mat), n_particles)
   expect_equal(colnames(mat), paste0("x", seq_len(nrow(obs))))
+
+  #### Clean up
+  unlink(log.txt)
+  unlink(ac_folder, recursive = TRUE)
+  unlink(pff_folder)
+  unlink(pfb_folder)
 
 })
 
