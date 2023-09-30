@@ -4,7 +4,15 @@
 \alias{pf_path}
 \title{PF: path reconstruction}
 \usage{
-pf_path(.history, .verbose = TRUE, .con = "", .return = c("long", "wide"))
+pf_path(
+  .history,
+  .bathy = NULL,
+  .obs = NULL,
+  .cols = NULL,
+  .verbose = TRUE,
+  .con = "",
+  .return = c("long", "wide")
+)
 }
 \arguments{
 \item{.history}{Particle samples from the particle filter, provided either as:
@@ -13,20 +21,19 @@ pf_path(.history, .verbose = TRUE, .con = "", .return = c("long", "wide"))
 \item An ordered list of file paths (from \code{\link[=pf_setup_record]{pf_setup_record()}}) that define the directories in which particle samples were written from the forward simulation (as parquet files).
 }}
 
+\item{.bathy}{(optional) If \code{.return = "long"}, a bathymetry \code{\link{SpatRaster}} can be supplied to define cell coordinates (see \code{\link[=pf_path_pivot]{pf_path_pivot()}}).}
+
+\item{.obs, .cols}{(optional) If \code{.return = "long"}, \code{.obs} and \code{.cols} are a \code{\link{data.table}} and a \code{character} vector of column names in \code{.obs} to match onto the output (see \code{\link[=pf_path_pivot]{pf_path_pivot()}}).}
+
 \item{.verbose, .con}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
 
 \item{.return}{A \code{character} that defines the return format:
 \itemize{
-\item \code{long} specifies a long-format \code{\link{data.table}}, with three columns:
-\itemize{
-\item \code{id}---An \code{integer} that defines each path;
-\item \code{timestep}---An \code{integer} that defines each time step;
-\item \code{cell}---An integer that defines each cell;
-}
+\item \code{long} specifies a long-format \code{\link{data.table}} that defines path IDs, time steps and associated locations (see \code{\link[=pf_path_pivot]{pf_path_pivot()}}).
 \item \code{wide} specifies a wide-format \code{\link{data.table}}, with:
 \itemize{
 \item one row for each path;
-\item one column for each time step (named \code{x0}, \code{x1}, etc.);
+\item one column for each time step (named \code{x1}, \code{x2}, etc.);
 }
 }}
 }
@@ -91,9 +98,9 @@ p1 <- pf_path(out_pfb$history)
 p2 <- pf_path(pf_setup_record(backward_folder))
 stopifnot(all.equal(p1, p2))
 
-#### Example (3): Change output format
-p3 <- pf_path(out_pfb$history, .return = "wide")
-str(p3)
+#### Example (3): Include cell coordinates/obs columns
+p3 <- pf_path(out_pfb$history, gebco, obs, .cols = "depth")
+head(p3)
 
 #### Example (4): Control messages
 # Suppress messages
@@ -110,22 +117,24 @@ require(dtplyr)
 require(dplyr, warn.conflicts = FALSE)
 # Compute (Euclidean) distances between sequential samples
 gebco <- dat_gebco()
-p1 <-
-  p1 |>
-  group_by(id) |>
+p5 <-
+  p3 |>
+  group_by(path_id) |>
   mutate(
-    cell_x = terra::xFromCell(gebco, cell),
-    cell_y = terra::yFromCell(gebco, cell),
     dist = terra::distance(cbind(cell_x, cell_y),
                            lonlat = FALSE, sequential = TRUE))
-max(p1$dist, na.rm = TRUE)
+max(p5$dist, na.rm = TRUE)
 # Visualise example path
 terra::plot(gebco)
-path_1 <- p1[p1$id == 1, ]
+path_1 <- p5[p5$path_id == 1, ]
 s <- seq_len(nrow(path_1))
 graphics::arrows(x0 = path_1$cell_x[s], x1 = path_1$cell_x[s + 1],
                  y0 = path_1$cell_y[s], y1 = path_1$cell_y[s + 1],
                  length = 0.02)
+
+#### Example (6): Change output format
+p6 <- pf_path(out_pfb$history, .return = "wide")
+str(p6)
 }
 \seealso{
 \itemize{

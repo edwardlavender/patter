@@ -4,22 +4,35 @@
 \alias{pf_path_pivot}
 \title{PF: pivot path matrices}
 \usage{
-pf_path_pivot(.mat)
+pf_path_pivot(.mat, .bathy = NULL, .obs = NULL, .cols = NULL)
 }
 \arguments{
 \item{.mat}{A wide-format \code{\link{data.table}}, from \code{\link[=pf_path]{pf_path()}} with \code{.return = "wide"}, in which:
 \itemize{
-\item columns (\code{x1}, etc.) represent time steps;
-\item rows represent time steps;
+\item columns (\code{x1}, \code{x2}, etc.) represent time steps;
+\item rows represent paths;
 }}
+
+\item{.bathy}{(optional) The bathymetry \code{\link{SpatRaster}} (used to extract cell coordinates).}
+
+\item{.obs, .cols}{(optional) A \code{\link{data.table}} and a \code{character} vector of column names in \code{.obs} to match onto the output. \code{.obs} must contain a \code{timestep} column for matching.}
 }
 \value{
-The function returns a \code{\link{data.table}} with three columns:
+The function returns a \code{\link{data.table}} with at least three columns:
 \itemize{
-\item \code{id}---An \code{integer} that defines each path (row in \code{.mat});
+\item \code{path_id}---An \code{integer} that defines each path (row in \code{.mat});
 \item \code{timestep}---An \code{integer} that defines each time step (column in \code{.mat});
-\item \code{cell}---An integer that defines each cell (value in \code{.mat});
+\item \code{cell_id}---An integer that defines each cell (value in \code{.mat});
 }
+
+If \code{.bathy} is supplied, the \code{\link{data.table}} contains three additional columns:
+\itemize{
+\item \code{cell_x}---A \code{double} that defines the cell's x coordinate;
+\item \code{cell_y}---A \code{double} that defines the cell's y coordinate;
+\item \code{cell_z}---A \code{double} that defines the cell's z coordinate;
+}
+
+If \code{.obs} is supplied, the output also contains any columns specified in \code{.cols}.
 }
 \description{
 This function converts paths in 'wide format' to paths in 'long format'.
@@ -32,7 +45,7 @@ This function uses the fast \code{\link[collapse:pivot]{collapse::pivot()}} func
 require(data.table)
 mat <- matrix(1:25, ncol = 5)
 mat <- as.data.table(mat)
-colnames(mat) <- c("x0", "x1", "x2", "x3", "x4")
+colnames(mat) <- c("x1", "x2", "x3", "x4", "x5")
 
 # Convert to long format
 pf_path_pivot(mat)

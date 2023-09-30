@@ -4,11 +4,14 @@
 \alias{pf_check}
 \alias{.pf_check_obs}
 \alias{.pf_check_write_history}
+\alias{.pf_path_pivot_checks}
 \title{PF helper: internal checks}
 \usage{
 .pf_check_obs(.o)
 
 .pf_check_write_history(.w)
+
+.pf_path_pivot_checks(.obs, .cols)
 }
 \description{
 These are internal check functions.
