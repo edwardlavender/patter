@@ -300,6 +300,23 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   pf_path(out_pfb$history, .verbose = FALSE, .con = tempfile()) |>
     expect_warning("Input to `.con` ignored since `.verbose = FALSE`.", fixed = TRUE)
 
+  #### Validate output structure
+  expect_equal(c("path_id", "timestep", "cell_id"),
+               colnames(pf_path(out_pfb$history)))
+  expect_equal(c("path_id", "timestep", "cell_id", "cell_x", "cell_y", "cell_z"),
+               colnames(pf_path(out_pfb$history, gebco)))
+  expect_equal(c("path_id", "timestep", "cell_id", "cell_x", "cell_y", "cell_z", "date", "depth"),
+               colnames(pf_path(out_pfb$history, gebco, obs, .cols = c("date", "depth"))))
+  # Check specification of .obs and .cols
+  pf_path(out_pfb$history, gebco, .obs = NULL, .cols = "blah") |>
+    expect_warning("`.obs = NULL` so input to `.cols` is ignored.", fixed = TRUE)
+  pf_path(out_pfb$history, gebco, .obs = obs |> select(!timestep)) |>
+    expect_error("`.obs` must have a `timestep` column.", fixed = TRUE)
+  pf_path(out_pfb$history, gebco, .obs = obs) |>
+    expect_error("You must specify the columns in `.obs` required in the output (via `.cols`).", fixed = TRUE)
+  pf_path(out_pfb$history, gebco, obs, .cols = c("date", "blah")) |>
+    expect_error("All elements in `.cols` must be column names in `.obs`.")
+
   #### Build path from particle samples and parquet files
   out_pfp_by_history <-
     lapply(list(out_pfb$history, pf_setup_record(pfb_folder)), \(h) {
@@ -317,25 +334,22 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   #### Check output structure
   # Check class
   check_inherits(out_pfp, "data.table")
-  # Check column names (documentation)
-  all(colnames(out_pfp) == c("id", "timestep", "cell")) |>
-    expect_true()
   # Check path IDs (one for each particle sample)
-  expect_true(max(out_pfp$id) == n_particles)
+  expect_true(max(out_pfp$path_id) == n_particles)
   # Check time steps (1:nrow(obs) for each path)
-  lapply(split(out_pfp, out_pfp$id), function(d) {
+  lapply(split(out_pfp, out_pfp$path_id), function(d) {
     expect_equal(d$timestep, seq_len(nrow(obs)))
   }) |> invisible()
 
   #### Check depth time series alignment
   # The depth time series should match bathy within the limits of the depth error model
   out_pfp[, depth := obs$depth[match(timestep, obs$timestep)]]
-  out_pfp[, bathy := terra::extract(gebco, cell)]
+  out_pfp[, bathy := terra::extract(gebco, cell_id)]
   out_pfp[, error := abs(depth - bathy)]
   expect_true(all(out_pfp$error < de))
   # Visually check the alignment
   if (interactive()) {
-    pos <- which(out_pfp$id == 1L)
+    pos <- which(out_pfp$path_id == 1L)
     plot(out_pfp$timestep[pos], out_pfp$depth[pos] * -1,
          pch = 21, type = "b", cex = 0.2)
     lines(out_pfp$timestep[pos], out_pfp$bathy[pos] * -1,
@@ -347,10 +361,10 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   # (accounting for the effects of grid resolution)
   out_pfp <-
     out_pfp |>
-    group_by(id) |>
+    group_by(path_id) |>
     mutate(
-      cell_x = terra::xyFromCell(gebco, cell),
-      cell_y = terra::xyFromCell(gebco, cell),
+      cell_x = terra::xyFromCell(gebco, cell_id),
+      cell_y = terra::xyFromCell(gebco, cell_id),
       dist = terra::distance(cbind(cell_x, cell_y),
                              lonlat = FALSE,
                              sequential = TRUE)) |>
@@ -378,9 +392,9 @@ test_that("pf_path_pivot() works", {
   expect_equal(
     pf_path_pivot(paths),
     lapply(seq_len(nrow(paths)), function(i) {
-      data.table(id = rep(i, ncol(paths)),
+      data.table(path_id = rep(i, ncol(paths)),
                  timestep = seq_len(ncol(paths)),
-                 cell = unlist(paths[i, ]))
+                 cell_id = unlist(paths[i, ]))
     }) |> rbindlist()
   )
 })
