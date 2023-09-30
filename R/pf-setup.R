@@ -66,21 +66,21 @@ pf_setup_record <- function(.root, ...) {
 }
 
 #' @title PF: template movement models
-#' @description These functions implement example movement models, of the kind required by `.kick` in [`pf()`].
+#' @description These functions are example movement models, of the kind required by `.kick` in [`pf()`].
 #' @param .n An `integer` that defines the number of particles to kick.
 #' @param .particles A [`data.table`], from [`pf()`], that defines the current particle samples:
 #' * `cell_now` is an integer vector of cell IDs;
 #' * `x_now` is a numerical vector of `x` coordinates;
 #' * `y_now` is a numerical vector of `y` coordinates;
 #' @param .obs,.t,.bathy (optional) The `.obs` [`data.table`], an integer that indexes `.obs` and the `.bathy` [`SpatRaster`] (see [`pf()`]). These inputs are unused in this template movement model but supported within [`pf()`].
-#' @param .sim_step,.sim_angle Functions that simulate `n` step lengths and turning angles.
+#' @param .sim_step,.sim_angle Functions that simulate `.n` step lengths and turning angles.
 #' @param ... Additional arguments passed from [`pf()`] (unused here).
 #'
 #' @details This template movement model is a biased random walk. Step lengths are simulated from a Gamma distribution via [`stats::rgamma()`]. Turning angles are simulated from a wrapped normal distribution via [`circular::rwrappednormal()`]. See the the code for the parameters used.
 #'
 #' # Warning
 #'
-#' * These function are used to streamline examples and do not represent a generically suitable detection probability model.
+#' * These function are used to streamline examples and do not represent a generically suitable model.
 #' * The functions do not check user inputs.
 #'
 #' @examples

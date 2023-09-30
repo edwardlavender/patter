@@ -32,7 +32,7 @@ pf_kick(
 
 \item{.obs, .t, .bathy}{(optional) The \code{.obs} \code{\link{data.table}}, an integer that indexes \code{.obs} and the \code{.bathy} \code{\link{SpatRaster}} (see \code{\link[=pf]{pf()}}). These inputs are unused in this template movement model but supported within \code{\link[=pf]{pf()}}.}
 
-\item{.sim_step, .sim_angle}{Functions that simulate \code{n} step lengths and turning angles.}
+\item{.sim_step, .sim_angle}{Functions that simulate \code{.n} step lengths and turning angles.}
 
 \item{...}{Additional arguments passed from \code{\link[=pf]{pf()}} (unused here).}
 }
@@ -44,14 +44,14 @@ The function returns a \code{\link{data.table}}, as supplied, with two additiona
 }
 }
 \description{
-These functions implement example movement models, of the kind required by \code{.kick} in \code{\link[=pf]{pf()}}.
+These functions are example movement models, of the kind required by \code{.kick} in \code{\link[=pf]{pf()}}.
 }
 \details{
 This template movement model is a biased random walk. Step lengths are simulated from a Gamma distribution via \code{\link[stats:GammaDist]{stats::rgamma()}}. Turning angles are simulated from a wrapped normal distribution via \code{\link[circular:wrappednormal]{circular::rwrappednormal()}}. See the the code for the parameters used.
 }
 \section{Warning}{
 \itemize{
-\item These function are used to streamline examples and do not represent a generically suitable detection probability model.
+\item These function are used to streamline examples and do not represent a generically suitable model.
 \item The functions do not check user inputs.
 }
 }
