@@ -366,8 +366,8 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   #### Clean up
   unlink(log.txt)
   unlink(ac_folder, recursive = TRUE)
-  unlink(pff_folder)
-  unlink(pfb_folder)
+  unlink(pff_folder, recursive = TRUE)
+  unlink(pfb_folder, recursive = TRUE)
 
 })
 
