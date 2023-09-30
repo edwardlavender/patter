@@ -96,13 +96,16 @@ pf_backward <- function(.history, .save_history = FALSE, .write_history = NULL,
       do.call(arrow::write_parquet, .write_history)
     }
     # Drop saved particles for current time step, if necessary
-    if (is.null(.save_history)) {
+    if (!.save_history) {
       .history[[t]] <- NA
     }
 
   }
 
   #### Return outputs (modified from pf_forward())
+  if (!.save_history) {
+    .history <- list()
+  }
   t_end <- Sys.time()
   time <- list(start = t_onset,
                end = t_onset,

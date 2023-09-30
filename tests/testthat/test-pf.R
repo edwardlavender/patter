@@ -13,7 +13,8 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   require(dplyr, warn.conflicts = TRUE)
 
   # Define input datasets
-  set.seed(123)
+  seed <- 123
+  set.seed(seed)
   acoustics <- dat_acoustics[individual_id == 25, ]
   archival <- dat_archival[individual_id == 25, ]
   obs <- acs_setup_obs(acoustics, archival, "2 mins", 500)
@@ -64,7 +65,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   #########################
   #### Test pf_forward()
 
-  #### Implement pf_forward()
+  #### Set inputs
   n_particles <- 1e3
   mobility    <- 500
   kick <- function(.particles, .obs = NULL, .t = NULL, .bathy = NULL){
@@ -78,24 +79,104 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   }
   pff_folder <- file.path(tempdir(), "pf", "forward")
   dir.create(pff_folder, recursive = TRUE)
-  out_pff <- pf_forward(.obs = obs,
-                        .record = out_ac$record,
-                        .n = n_particles,
-                        .kick = kick,
-                        .bathy = gebco,
-                        .save_history = TRUE,
-                        .write_history = list(sink = pff_folder))
 
+  ##### Validate checks on user inputs
+  ## Validate .save_history and/or .write_history are specified
+  pf_forward(.obs = obs,
+             .record = out_ac$record,
+             .n = n_particles,
+             .kick = kick,
+             .bathy = gebco) |>
+    expect_error("`.save_history = FALSE` and `.write_history = NULL`. There is nothing to do.",
+                 fixed = TRUE)
+  ## Validate .verbose & .con align
+  pf_forward(.obs = obs,
+             .record = out_ac$record,
+             .n = n_particles,
+             .kick = kick,
+             .bathy = gebco,
+             .save_history = TRUE,
+             .verbose = FALSE, .con = tempdir()) |>
+    expect_warning("Input to `.con` ignored since `.verbose = FALSE`",
+                 fixed = TRUE)
+  ## Validate the function handles time steps without any possible locations
+  # Imagine there are no possible locations at time step 10
+  out_ac_tmp <- out_ac
+  out_ac_tmp$record[[10]][] <- 0
+  # Confirm message
+  pf_forward(.obs = obs,
+             .record = out_ac_tmp$record,
+             .n = n_particles,
+             .kick = kick,
+             .bathy = gebco,
+             .save_history = TRUE) |>
+    expect_message("There are no particles with positive weights at timestep 10. `history` returned up to this point.",
+                   fixed = TRUE)
+  # Confirm output comprises particle samples up to time step 10
+  out_pff <- pf_forward(.obs = obs,
+                       .record = out_ac_tmp$record,
+                       .n = n_particles,
+                       .kick = kick,
+                       .bathy = gebco,
+                       .save_history = TRUE)
+  expect_equal(length(out_pff), 9L)
+  check_inherits(out_pff[[1]], "data.table")
+  expect_equal(colnames(out_pff[[1]]), c("cell_past", "cell_now"))
+
+  #### Implement pf_forward with .save_history = FALSE to confirm particles are dropped
+  out_pff <- pf_forward(.obs = obs,
+                       .record = out_ac$record,
+                       .n = n_particles,
+                       .kick = kick,
+                       .bathy = gebco,
+                       .save_history = FALSE,
+                       .write_history = list(sink = pff_folder))
+  check_inherits(out_pff$history, "list")
+  expect_length(out_pff$history, 0L)
+
+  #### Implement pf_forward() using out_ac$record or SpatRasters from file & validate outputs are equal
+  out_pff_by_record <-
+    lapply(list(out_ac$record, pf_setup_record(ac_folder)), \(record) {
+      # Implement pf
+      set.seed(seed)
+      log.txt <- tempfile(fileext = ".txt")
+      out_pff <- pf_forward(.obs = obs,
+                 .record = record,
+                 .n = n_particles,
+                 .kick = kick,
+                 .bathy = gebco,
+                 .save_history = TRUE,
+                 .write_history = list(sink = pff_folder),
+                 .con = log.txt)
+      # Confirm log.txt created properly
+      expect_true(file.exists(log.txt))
+      # Confirm output classes & names
+      check_inherits(out_pff$history, "list")
+      check_inherits(out_pff$history[[1]], "data.table")
+      expect_equal(colnames(out_pff$history[[1]]), c("cell_past", "cell_now"))
+      # Confirm record & parquet files match
+      lapply(seq_len(nrow(obs)), function(i) {
+        expect_equal(out_pff$history[[i]],
+                  arrow::read_parquet(file.path(pff_folder, paste0(i, ".parquet"))))
+      }) |> invisible()
+      out_pff
+    })
+  # Confirm outputs are requal
+  expect_equal(
+    out_pff_by_record[[1]]$history,
+    out_pff_by_record[[2]]$history
+  )
+
+  #### Validate the simulation
   # Confirm that cell samples always have positive weights
+  out_pff <- out_pff_by_record[[1]]
   lapply(seq_len(nrow(obs)), function(i) {
     all(terra::extract(out_ac$record[[i]], out_pff$history[[i]]$cell_now) > 0,
         na.rm = FALSE) |>
       expect_true()
   }) |> invisible()
-
   # Confirm n particles sampled at each time step
   all(sapply(out_pff$history, nrow) == n_particles) |> expect_true()
-
   # Confirm sequential particle samples fit with the constraints of the movement model
   for (t in seq_len(nrow(obs) - 1)) {
     # Define particle pair (current and proposal locations)
@@ -121,20 +202,56 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   #########################
   #### Test pf_backward()
 
-  #### Implement pf_backward()
-  pfb_folder <- file.path(tempdir(), "pf", "backward")
-  dir.create(pfb_folder, recursive = TRUE)
-  out_pfb <- pf_backward(out_pff$history,
-                         .save_history = TRUE,
-                         .write_history = list(sink = pfb_folder))
+  #### Validate usual user input checks
+  pf_backward(out_pff$history) |>
+    expect_error("`.save_history = FALSE` and `.write_history = NULL`. There is nothing to do.")
+   pf_backward(out_pff$history, .save_history = TRUE,
+               .verbose = FALSE, .con = tempfile()) |>
+     expect_warning("Input to `.con` ignored since `.verbose = FALSE`.", fixed = TRUE)
 
-  # Validate output length
-  expect_equal(length(out_pfb$history), nrow(obs))
-  # Validate output columns
-  lapply(out_pfb$history,
-         \(d) expect_equal(colnames(d), c("cell_past", "cell_now"))) |>
-    invisible()
+   #### Validate implementation with .save_history = FALSE
+   pfb_folder <- file.path(tempdir(), "pf", "backward")
+   dir.create(pfb_folder, recursive = TRUE)
+   out_pfb <- pf_backward(out_pff$history,
+                          .save_history = FALSE,
+                          .write_history = list(sink = pfb_folder))
+   lapply(out_pfb$history, is.na) |> unlist() |> all() |> expect_true()
 
+  #### Implement pf_backward() from out_pff$history and parquet files
+  log.txt <- tempfile(fileext = ".txt")
+  out_pfb_by_history <-
+    lapply(list(out_pff$history, pf_setup_record(pff_folder)), \(h) {
+      out_pfb <- pf_backward(h,
+                             .save_history = TRUE,
+                             .write_history = list(sink = pfb_folder),
+                             .con = log.txt)
+      # Validate files match
+      expect_equal(
+        out_pfb$history,
+        lapply(pf_setup_record(pfb_folder), arrow::read_parquet)
+      )
+      # Validate output length
+      expect_equal(length(out_pfb$history), nrow(obs))
+      # Validate output columns
+      lapply(out_pfb$history,
+             \(d) expect_equal(colnames(d), c("cell_past", "cell_now"))) |>
+        invisible()
+      out_pfb
+    })
+  # Validate outputs match
+  expect_equal(
+    out_pfb_by_history[[1]]$history,
+    out_pfb_by_history[[2]]$history
+  )
+
+  #### Validate removal of dead ends
+  out_pfb <- out_pfb_by_history[[1]]
+  out_pfb_h <- out_pfb[[1]]$history
+  for (i in 1:(nrow(obs) - 1)) {
+    # print(i)
+    all(out_pfb_h[[i]]$cell_now, out_pfb_h[[i + 1]]$cell_past) |>
+      expect_true()
+  }
 
   #########################
   #########################
@@ -167,6 +284,13 @@ test_that("pf_*() functions work using example flapper skate datasets", {
     expect_equal(pou_manual, pou_from_raster)
   }) |> invisible()
 
+  #### Validate pf_pou()
+  blah.txt <- file.path(pfb_folder, "blah.txt")
+  file.create(blah.txt)
+  pf_pou(pfb_folder, gebco) |>
+    expect_error("`.history` contains non parquet files.", fixed = TRUE)
+  unlink(blah.txt)
+
 
   #########################
   #########################
@@ -176,12 +300,19 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   pf_path(out_pfb$history, .verbose = FALSE, .con = tempfile()) |>
     expect_warning("Input to `.con` ignored since `.verbose = FALSE`.", fixed = TRUE)
 
-  #### Build paths
-  log.txt <- tempfile(fileext = ".txt")
-  out_pfp <- pf_path(out_pfb$history, .con = log.txt)
-  expect_true(file.exists(log.txt))
-  expect_true(length(readLines(log.txt)) > 0L)
-  unlink(log.txt)
+  #### Build path from particle samples and parquet files
+  out_pfp_by_history <-
+    lapply(list(out_pfb$history, pf_setup_record(pfb_folder)), \(h) {
+    log.txt <- tempfile(fileext = ".txt")
+    out_pfp <- pf_path(h, .con = log.txt)
+    expect_true(file.exists(log.txt))
+    expect_true(length(readLines(log.txt)) > 0L)
+    unlink(log.txt)
+    out_pfp
+  })
+  expect_equal(out_pfp_by_history[[1]],
+               out_pfp_by_history[[2]])
+  out_pfp <- out_pfp_by_history[[1]]
 
   #### Check output structure
   # Check class

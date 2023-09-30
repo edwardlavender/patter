@@ -131,7 +131,7 @@ pf_forward <- function(.obs, .record, .kick, ..., .bathy, .n = 100L,
     # Save particles
     pnow_record <- pnow |> select(cell_past, cell_now)
     # pnow_record <- pnow |> select("x{t - 1}" = cell_past, "x{t}" = cell_now)
-    if (!is.null(.save_history)) {
+    if (.save_history) {
       history[[t]] <- pnow_record
     }
     if (!is.null(.write_history)) {
