@@ -135,7 +135,7 @@ pf_kick_angle <- function(.n) {
     rho = 0.1,
     sd = 1,
     control.circular = list(units = "degrees")
-  )
+  ) |> as.numeric()
 }
 
 #' @rdname pf_kick
