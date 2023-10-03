@@ -41,7 +41,7 @@ test_that("acs() works", {
       .detection_overlaps = overlaps,
       .detection_kernels = kernels,
       .save_record = TRUE, .verbose = FALSE, prompt = FALSE) |>
-    expect_warning("There are argument(s) passed via `...` that are identical, except for the missing leading period, to the main arguments to `acs()`: `prompt`. Did you mean to use: `.prompt`?", fixed = TRUE)
+    expect_warning("There are argument(s) passed via `...` that are identical, except for the missing leading period, to the function's main arguments: `prompt`. Did you mean to use: `.prompt`?", fixed = TRUE)
 
   ##### Implement algorithm
   folder <- file.path(tempdir(), "ac")

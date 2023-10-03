@@ -108,7 +108,7 @@ check_dots_for_missing_period <- function(args, dots) {
   dots_bool <- dots %in% args
   if (any(dots_bool)) {
     dots_in_args <- dots[dots_bool]
-    warn("There are argument(s) passed via `...` that are identical, except for the missing leading period, to the main arguments to `acs()`: {paste0(paste0('`', dots_in_args, collapse = '`, '), '`')}. Did you mean to use: {paste0(paste0('`.', dots_in_args, collapse = '`, '), '`')}?",
+    warn("There are argument(s) passed via `...` that are identical, except for the missing leading period, to the function's main arguments: {paste0(paste0('`', dots_in_args, collapse = '`, '), '`')}. Did you mean to use: {paste0(paste0('`.', dots_in_args, collapse = '`, '), '`')}?",
          .envir = environment())
   }
 }

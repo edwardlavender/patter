@@ -6,7 +6,7 @@
 \alias{.coa_check_lonlat}
 \title{COA internals}
 \usage{
-.coa_check_acoustics(.o, .split)
+.coa_check_acoustics(.acoustics, .split)
 
 .coa_check_lonlat(.acoustics)
 }

@@ -70,6 +70,8 @@
 #' @importFrom dplyr slice
 #' @importFrom dplyr arrange
 #' @importFrom dplyr select
+#' @importFrom dplyr n
+#' @importFrom dplyr row_number
 #'
 #' @importFrom dtplyr lazy_dt
 #'

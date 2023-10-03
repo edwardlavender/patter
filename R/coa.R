@@ -86,11 +86,12 @@ coa <- function(.acoustics, .delta_t, .split = NULL, .lonlat = NULL,
   # * Define split column
   # * Group by split & define bins
   # * Calculate the frequency of detections in each bin
+  tz <- lubridate::tz(.acoustics$timestamp)
   .acoustics <-
     .acoustics |>
     mutate(split = .acoustics[[.split]]) |>
     group_by(.data$split) |>
-    mutate(bin = cut(.data$timestamp, .delta_t)) |>
+    mutate(bin = as.POSIXct(cut(.data$timestamp, .delta_t), tz = tz)) |>
     ungroup() |>
     group_by(.data$split, .data$bin, .data$receiver_id) |>
     mutate(n = dplyr::n()) |>

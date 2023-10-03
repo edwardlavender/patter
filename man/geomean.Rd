@@ -4,7 +4,7 @@
 \alias{geomean}
 \title{Calculate the centre of mass of weighted coordinates}
 \usage{
-geomean(xy, w)
+geomean(xy, w = NULL)
 }
 \arguments{
 \item{xy, w}{Arguments passed to \code{\link[geosphere:geomean]{geosphere::geomean()}}.}
