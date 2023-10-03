@@ -16,11 +16,11 @@
 #' @export
 
 rast_template <- function(.xmin = 0, .xmax = 1000,
-                       .ymin = 0, .ymax = 1000,
-                       .res = c(10, 10),
-                       .crs = "+proj=utm +zone=1 +datum=WGS84",
-                       .value = 0,
-                       .units = "m", ...) {
+                          .ymin = 0, .ymax = 1000,
+                          .res = c(10, 10),
+                          .crs = "+proj=utm +zone=1 +datum=WGS84",
+                          .value = 0,
+                          .units = "m", ...) {
   r <- terra::rast(xmin = .xmin, xmax = .xmax,
                    ymin = .ymin, ymax = .ymax,
                    res = .res,
@@ -36,7 +36,7 @@ rast_template <- function(.xmin = 0, .xmax = 1000,
 #' @author Edward Lavender
 #' @keywords internal
 
-geomean <- function(xy, w) {
+geomean <- function(xy, w = NULL) {
   if (nrow(xy) == 1L) {
     xy
   } else {
