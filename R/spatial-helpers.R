@@ -1,10 +1,10 @@
 #' @title Spatial helper: create a template [`SpatRaster`]
 #' @description This function creates a template [`SpatRaster`].
 #' @param .xmin,.xmax,.ymin,.ymax Numbers that define the [`SpatRaster`] limits.
-#' @param .res A numeric vector that defines [`SpatRaster`] resolution.
+#' @param .res A `numeric` vector that defines [`SpatRaster`] resolution.
 #' @param .crs A `character` that defines the Coordinate Reference System.
 #' @param .value The value of the [`SpatRaster`] cells.
-#' @param .units A character that defines the units.
+#' @param .units A `character` that defines the units.
 #' @param ... Additional arguments passed to [`SpatRaster`].
 #' @return The function returns a [`SpatRaster`].
 #' @examples

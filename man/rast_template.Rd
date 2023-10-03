@@ -19,13 +19,13 @@ rast_template(
 \arguments{
 \item{.xmin, .xmax, .ymin, .ymax}{Numbers that define the \code{\link{SpatRaster}} limits.}
 
-\item{.res}{A numeric vector that defines \code{\link{SpatRaster}} resolution.}
+\item{.res}{A \code{numeric} vector that defines \code{\link{SpatRaster}} resolution.}
 
 \item{.crs}{A \code{character} that defines the Coordinate Reference System.}
 
 \item{.value}{The value of the \code{\link{SpatRaster}} cells.}
 
-\item{.units}{A character that defines the units.}
+\item{.units}{A \code{character} that defines the units.}
 
 \item{...}{Additional arguments passed to \code{\link{SpatRaster}}.}
 }

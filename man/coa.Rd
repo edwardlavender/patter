@@ -22,7 +22,7 @@ coa(
 \item \code{receiver_easting} and \code{receiver_northing} (planar coordinates) or \code{receiver_lon} and \code{receiver_lat} (longitude/latitude coordinates)---receiver locations;
 }}
 
-\item{.delta_t}{The time interval over which to calculate COAs. This can be specified in any way understood by \code{cut.POSIXt()} (see the \code{breaks} argument).}
+\item{.delta_t}{The time interval over which to calculate COAs. This can be specified in any way understood by \code{\link[=cut.POSIXt]{cut.POSIXt()}} (see the \code{breaks} argument).}
 
 \item{.split}{(optional) A \code{character} that defines the name of the grouping factor in \code{.acoustics} (e.g., \code{individual_id} for \code{\link{dat_acoustics}}).}
 
