@@ -14,7 +14,7 @@ Imports:
     terra
 Suggests: 
     collapse, circular, 
-    spatialEco, 
+    geosphere, spatialEco, sf, 
     purrr, stringr,
     truncdist,
     knitr, rmarkdown,

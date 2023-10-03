@@ -59,6 +59,10 @@ For example datasets, see:
 
 # Workflow
 
+For an overview of the workflow, see:
+
+`vignette("workflow", package = "patter")`.
+
 To implement the depth-contour algorithm, use:
 
 * `dc_setup_model()` for an example DC model;
