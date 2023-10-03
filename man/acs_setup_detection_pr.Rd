@@ -4,12 +4,19 @@
 \alias{acs_setup_detection_pr}
 \title{AC* set up: calculate detection probability around a receiver}
 \usage{
-acs_setup_detection_pr(.data, .bathy, ...)
+acs_setup_detection_pr(
+  .data,
+  .bathy,
+  .coef = c(alpha = 2.5, beta = -0.02),
+  ...
+)
 }
 \arguments{
 \item{.data}{A one-row \code{\link{data.table}} that defines the location of the receiver and associated information used by the model of detection probability.}
 
 \item{.bathy}{A \code{\link{SpatRaster}} that defines the grid over which detection probability is calculated.}
+
+\item{.coef}{A named vector that defines the intercept (\code{alpha}) and gradient (\code{beta}) parameters of a logistic model for detection probability (on the logit scale) (see Details).}
 
 \item{...}{Additional arguments (none implemented).}
 }
@@ -20,7 +27,7 @@ The function returns a \code{\link{SpatRaster}} that defines the probability of 
 This function is an example detection probability function, of the kind required by \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}.
 }
 \details{
-In the AC* algorithms, a model of the detection process informs the set of possible locations for an individual. The information provided by this model is represented in the form of kernels, which are created via \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}. For any one receiver, the form of the kernel depends on the input to \code{.calc_detection_pr}. This function exemplifies one possible input to this argument, which is a model in which detection probability declines logistically with distance from a receiver.
+In the AC* algorithms, a model of the detection process informs the set of possible locations for an individual. The information provided by this model is represented in the form of kernels, which are created via \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}. For any one receiver, the form of the kernel depends on the input to \code{.calc_detection_pr}. This function exemplifies one possible input to this argument, which is a model in which detection probability declines logistically with distance from a receiver, according to the values specified in \code{.coef}.
 }
 \section{Warning}{
 \itemize{

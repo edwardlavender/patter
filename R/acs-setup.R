@@ -184,7 +184,9 @@ acs_setup_detection_containers <- function(.bathy, .moorings) {
   # * moorings should required columns (receiver_id, receiver_easting, receiver_northing, receiver_range)
   # * moorings$receiver_id should be an integer from 1 to n
   check_moorings(.moorings, .class = "data.frame")
-  check_names(input = .moorings, req = "receiver_range")
+  check_names(input = .moorings,
+              req = c("receiver_id", "receiver_range",
+                      "receiver_easting", "receiver_northing"))
 
   #### Build containers
   rs <- seq_len(max(.moorings$receiver_id))
@@ -388,8 +390,10 @@ acs_setup_detection_overlaps <- function(.containers, .moorings, .services = NUL
 #' @description This function is an example detection probability function, of the kind required by [`acs_setup_detection_kernels()`].
 #' @param .data A one-row [`data.table`] that defines the location of the receiver and associated information used by the model of detection probability.
 #' @param .bathy A [`SpatRaster`] that defines the grid over which detection probability is calculated.
+#' @param .coef A named vector that defines the intercept (`alpha`) and gradient (`beta`) parameters of a logistic model for detection probability (on the logit scale) (see Details).
 #' @param ... Additional arguments (none implemented).
-#' @details In the AC* algorithms, a model of the detection process informs the set of possible locations for an individual. The information provided by this model is represented in the form of kernels, which are created via [`acs_setup_detection_kernels()`]. For any one receiver, the form of the kernel depends on the input to `.calc_detection_pr`. This function exemplifies one possible input to this argument, which is a model in which detection probability declines logistically with distance from a receiver.
+#'
+#' @details In the AC* algorithms, a model of the detection process informs the set of possible locations for an individual. The information provided by this model is represented in the form of kernels, which are created via [`acs_setup_detection_kernels()`]. For any one receiver, the form of the kernel depends on the input to `.calc_detection_pr`. This function exemplifies one possible input to this argument, which is a model in which detection probability declines logistically with distance from a receiver, according to the values specified in `.coef`.
 #'
 #' # Warning
 #'
@@ -407,10 +411,10 @@ acs_setup_detection_overlaps <- function(.containers, .moorings, .services = NUL
 #' @author Edward Lavender
 #' @export
 
-acs_setup_detection_pr <- function(.data, .bathy, ...) {
+acs_setup_detection_pr <- function(.data, .bathy, .coef = c(alpha = 2.5, beta = -0.02), ...) {
   # Define helper function to calculate detection probability given distance (m)
   calc_dpr <- function(distance) {
-    pr <- stats::plogis(2.5 + -0.02 * distance)
+    pr <- stats::plogis(.coef[["alpha"]] + .coef[["beta"]] * distance)
     pr[distance > .data$receiver_range] <- 0
     pr
   }
