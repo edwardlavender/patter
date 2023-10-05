@@ -30,6 +30,33 @@ rast_template <- function(.xmin = 0, .xmax = 1000,
   r
 }
 
+#' @title Normalise a [`SpatRaster`]
+#' @description This function normalises a [`SpatRaster`].
+#' @param x A [`SpatRaster`].
+#' @details
+#' # Warning
+#' * For speed in iterative applications (e.g., [`acs()`]), this function does not implement any internal checks.
+#' * `NA`s are ignored.
+#' @author Edward Lavender
+#' @export
+
+normalise <- function(x) {
+  x / as.numeric(terra::global(x, "sum", na.rm = TRUE))
+}
+
+#' @title Calculate serial distances
+#' @description This function calculates distances between sequential coordinates in a matrix.
+#' @param .xy A two-column matrix of coordinates.
+#' @param .lonlat A `logical` variable that defines whether or not the coordinates are in longitude/latitude format.
+#' @details This function is a simple wrapper for [`terra::distance()`].
+#' @export
+
+serial_distance <- function(.xy, .lonlat = FALSE) {
+  terra::distance(as.matrix(.xy, ncol = 2),
+                  lonlat = .lonlat,
+                  sequential = TRUE)
+}
+
 #' @title Calculate the centre of mass of weighted coordinates
 #' @description This is a wrapper for [`geosphere::geomean()`] that handles one-row matrices.
 #' @param xy,w Arguments passed to [`geosphere::geomean()`].

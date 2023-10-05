@@ -14,7 +14,7 @@ sim_array(
   .receiver_range = NULL,
   .n_arrays = 1L,
   .plot = TRUE,
-  .one_page = TRUE
+  .one_page = FALSE
 )
 }
 \arguments{
@@ -38,7 +38,7 @@ Single inputs are expected to these arguments, which are constant across all rec
 
 \item{.plot}{A \code{logical} variable that defines whether or not to plot simulated arrays.}
 
-\item{.one_page}{If \code{.plot = TRUE}, \code{.one_page} is a \code{logical} variable that defines whether or not to produce plots on a single page (see \code{\link[=par_mf]{par_mf()}}).}
+\item{.one_page}{If \code{.plot = TRUE}, \code{.one_page} is a \code{logical} variable that defines whether or not to produce plots on a single page.}
 }
 \value{
 The function returns a \code{list}. Each element of the list is a \code{data.table} with the following columns:

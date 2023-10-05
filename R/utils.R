@@ -66,22 +66,6 @@ create_log <- function(.file) {
   invisible(TRUE)
 }
 
-
-#' @title Normalise a [`SpatRaster`]
-#' @description This function normalises a [`SpatRaster`].
-#' @param x A [`SpatRaster`].
-#' @details
-#' # Warning
-#' * For speed in iterative applications (e.g., [`acs()`]), this function does not implement any internal checks.
-#' * `NA`s are ignored.
-#' @author Edward Lavender
-#' @export
-
-normalise <- function(x) {
-  x / as.numeric(terra::global(x, "sum", na.rm = TRUE))
-}
-
-
 #' @title Compact a list
 #' @description Remove all \code{NULL} entries from a list.
 #' @param l A list.
