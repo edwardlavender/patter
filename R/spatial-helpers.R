@@ -51,7 +51,7 @@ normalise <- function(x) {
 #' @details This function is a simple wrapper for [`terra::distance()`].
 #' @export
 
-serial_distance <- function(.xy, .lonlat = FALSE) {
+dist_along_path <- function(.xy, .lonlat = FALSE) {
   terra::distance(as.matrix(.xy, ncol = 2),
                   lonlat = .lonlat,
                   sequential = TRUE)

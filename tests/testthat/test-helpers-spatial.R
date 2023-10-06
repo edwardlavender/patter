@@ -19,6 +19,21 @@ test_that("rast_template() works", {
   )
 })
 
+test_that("normalise() works", {
+  r <- rast_template(.value = 10)
+  expect_equal(1,
+               terra::global(normalise(r), "sum")[, 1])
+
+})
+
+test_that("dist_along_path() works", {
+  xy <- cbind(c(1, 2, 3), c(3, 2, 1))
+  expect_equal(
+    dist_along_path(xy, .lonlat = FALSE),
+    terra::distance(xy, lonlat = FALSE, sequential = TRUE)
+  )
+})
+
 test_that("geomean() works", {
   # Verify weights
   xy <- cbind(x = c(-179, 179, 177), y = c(12, 14, 16))
