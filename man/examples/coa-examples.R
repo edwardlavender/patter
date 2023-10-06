@@ -10,17 +10,8 @@ index <- match(acc$receiver_id, dat_moorings$receiver_id)
 acc$receiver_easting  <- dat_moorings$receiver_easting[index]
 acc$receiver_northing <- dat_moorings$receiver_northing[index]
 # Add lon/lat coordinates
-acc <-
-  cbind(acc,
-        acc |>
-          sf::st_as_sf(coords = c("receiver_easting", "receiver_northing"),
-                       crs = terra::crs(dat_gebco())) |>
-          sf::st_transform(crs = 4326) |>
-          sf::st_coordinates() |>
-          as.data.table() |>
-          dplyr::select(receiver_lon = X, receiver_lat = Y) |>
-          as.data.table()
-  )
+acc$receiver_lon <- dat_moorings$receiver_lon[index]
+acc$receiver_lat <- dat_moorings$receiver_lat[index]
 
 #### Example (1): Calculate COAs for an example individual
 pos <- which(acc$individual_id == acc$individual_id[1])
