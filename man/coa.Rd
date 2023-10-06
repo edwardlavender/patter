@@ -66,9 +66,7 @@ coa(acc, .delta_t = "6 hours", .split = "individual_id")
 
 #### Example (3): Use planar or lon/lat coordinates
 coa(acc, .delta_t = "8 hours", .split = "individual_id", .lonlat = FALSE)
-if (requireNamespace("sf", quietly = TRUE)) {
-  coa(acc, .delta_t = "8 hours", .split = "individual_id", .lonlat = TRUE)
-}
+coa(acc, .delta_t = "8 hours", .split = "individual_id", .lonlat = TRUE)
 }
 \author{
 Edward Lavender
