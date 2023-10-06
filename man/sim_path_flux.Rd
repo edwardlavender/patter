@@ -34,7 +34,15 @@
   .angle = rwn(nrow(.xy_now))
 )
 
-.step_iter(.xy_now, .xy_next, .flux, .fv, .t, .move, .bathy)
+.step_iter(
+  .xy_now,
+  .xy_next = matrix(NA, nrow = nrow(.xy_now), ncol = ncol(.xy_now)),
+  .flux,
+  .fv,
+  .t,
+  .move,
+  .bathy
+)
 
 .sim_path_pivot(.mat, .n_step, .n_path)
 
@@ -65,7 +73,7 @@ These functions facilitate the simulation of animal movement paths.
 \itemize{
 \item The default \code{\link[=.flux_template]{.flux_template()}} function generates a list with place holders for simulated step lengths and turning angles.
 }
-\item The \code{.flux} argument is a function that is used to simulate the new values of any flux parameters at each time step and update (by reference) the flux template (i.e., \code{.flux_vals}).
+\item The \code{.flux} argument is a function that is used to simulate the new values of any flux parameters at each time step and update (by reference) the flux template (i.e., \code{.flux_vals}). This must accept \code{.fv}, \code{.row} and \code{.col} arguments, as implemented in \code{\link[=.step_iter]{.step_iter()}}.
 \item \code{.move} is a function that defines new proposal locations based on the simulated flux values.
 \itemize{
 \item For example, \code{\link[=.step_using_flux]{.step_using_flux()}}, which wraps \code{\link[=.step]{.step()}}, defines proposal locations based on simulated step lengths and turning angles.

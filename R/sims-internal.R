@@ -16,7 +16,7 @@
 #'
 #' * To implement this approach, a 'flux template' must be provided (to the `.flux_vals` argument), which is a list of [`data.table`]s that will hold the 'flux' parameters for each time step and can be updated by reference.
 #'    * The default [`.flux_template()`] function generates a list with place holders for simulated step lengths and turning angles.
-#' * The `.flux` argument is a function that is used to simulate the new values of any flux parameters at each time step and update (by reference) the flux template (i.e., `.flux_vals`).
+#' * The `.flux` argument is a function that is used to simulate the new values of any flux parameters at each time step and update (by reference) the flux template (i.e., `.flux_vals`). This must accept `.fv`, `.row` and `.col` arguments, as implemented in [`.step_iter()`].
 #' * `.move` is a function that defines new proposal locations based on the simulated flux values.
 #'    * For example, [`.step_using_flux()`], which wraps [`.step()`], defines proposal locations based on simulated step lengths and turning angles.
 #' * Internally, `.move` is wrapped within [`.step_iter()`] and implemented iteratively to ensure that simulated location(s) at each time step are valid (in non NA cells on `.bathy`).
@@ -127,7 +127,8 @@ NULL
 #' @rdname sim_path_flux
 #' @keywords internal
 
-.step_iter <- function(.xy_now, .xy_next,
+.step_iter <- function(.xy_now,
+                       .xy_next = matrix(NA, nrow = nrow(.xy_now), ncol = ncol(.xy_now)),
                       .flux, .fv, .t,
                       .move,
                       .bathy) {
@@ -155,7 +156,9 @@ NULL
     }
   }
   if (any(is.na(.xy_next))) {
-    abort("Failed to generate valid path(s) at time {.t}.", .envir = environment())
+    n_invalid <- length(which(is.na(.xy_next[, 1])))
+    pc_invalid <- round((n_invalid / nrow(.xy_next)) * 100, digits = 2)
+    abort("Failed to generate {n_invalid}/{nrow(.xy_next)} path(s) ({pc_invalid} %) at time {.t}.", .envir = environment())
   }
   .xy_next
 }

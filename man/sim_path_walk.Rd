@@ -194,7 +194,7 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = 1000L,
-                     .sim_angle = sim_angle_vmd, .rho = 0.5,
+                     .sim_angle = sim_angle_vmd,
                      .one_page = FALSE)
   p
 
