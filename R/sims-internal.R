@@ -1,13 +1,25 @@
 #' @title Simulate movement paths
-#' @description These functions facilitate the simulation of animal movement paths. [`.sim_path_flux()`] implements the simulation. A [`SpatRaster`] (`.bathy`) defines the area of the simulation. A starting location (`.origin`) on `.bathy` can be specified or  sampled at random from `.bathy`. `.n_path` movement path(s) from this point are simulated using time-specific ('flux') parameters (such as step lengths and turning angles). To implement this approach, a 'flux template' must be provided, which is a list of [`data.table`]s that will hold the 'flux' parameters for each time step and can be updated by reference. The default [`.flux_template()`] function generates a list with placeholders for simulated step lengths and turning angles. The `.flux()` function is used to simulate the new values of any flux parameters at each time step and update (by reference) the flux template. `.move` is a function that defines new proposal locations based on the simulated flux values. For example, [`.step_using_flux()`], which wraps [`.step()`], defines proposal locations based on simulated step lengths and turning angles. Internally, `.move` is wrapped within [`.step_iter()`] and implemented iteratively to ensure that simulated location(s) at each time step are valid (in non NA cells on `.bathy`).
+#' @description Internal functions that support the simulation of movement paths.
+#' * [`.sim_path_flux()`] simulates the movement path(s) from flux parameters that are generated dynamically at each time step. This is supported by the following helpers:
+#'    * [`.flux_template()`] defines a list of [`data.table`] objects in which the simulated 'flux' parameters (e.g., step lengths and turning angles) for each step are stored;
+#'    * [`.step_using_flux()`] and [`step()`] are functions which, given current location(s), calculate new locations, based on step lengths and turning angles;
+#'    * [`.step_iter()`] is an internal wrapper for [`.step()`] that validates proposal steps into new locations;
+#'    * [`.sim_path_pivot()`] and [`.flux_pivot()`] reorientate simulated paths/flux values;
 #'
 #' @details
 #'
-#' * [`.flux_template()`] defines a list of [`data.table`] objects in which the simulated step lengths and turning angles for each step are stored;
-#' * [`.step_using_flux()`] and [`step()`] are functions which, given current location(s), calculates new locations, based on step lengths and turning angles;
-#' * [`.step_iter()`] is an internal wrapper for [`.step()`] that validates proposal steps into new locations;
-#' * [`.sim_path_pivot()`] and [`.flux_pivot()`] reorientate simulated paths/flux values;
-#' * [`.sim_path_flux()`] simulates the movement path(s);
+#' These functions facilitate the simulation of animal movement paths.
+#' * [`.sim_path_flux()`] implements the simulation.
+#'    * A [`SpatRaster`] (`.bathy`) defines the area of the simulation.
+#'    * A starting location (`.origin`) on `.bathy` can be specified or  sampled at random from `.bathy`.
+#'    * `.n_path` movement path(s) from this point are simulated using time-specific ('flux') parameters (such as step lengths and turning angles).
+#'
+#' * To implement this approach, a 'flux template' must be provided (to the `.flux_vals` argument), which is a list of [`data.table`]s that will hold the 'flux' parameters for each time step and can be updated by reference.
+#'    * The default [`.flux_template()`] function generates a list with place holders for simulated step lengths and turning angles.
+#' * The `.flux` argument is a function that is used to simulate the new values of any flux parameters at each time step and update (by reference) the flux template (i.e., `.flux_vals`).
+#' * `.move` is a function that defines new proposal locations based on the simulated flux values.
+#'    * For example, [`.step_using_flux()`], which wraps [`.step()`], defines proposal locations based on simulated step lengths and turning angles.
+#' * Internally, `.move` is wrapped within [`.step_iter()`] and implemented iteratively to ensure that simulated location(s) at each time step are valid (in non NA cells on `.bathy`).
 #'
 #' @author Edward Lavender
 #' @name sim_path_flux

@@ -41,15 +41,36 @@
 .flux_pivot(.fv, .n_step = ncol(.fv), .n_path = nrow(.fv))
 }
 \description{
-These functions facilitate the simulation of animal movement paths. \code{\link[=.sim_path_flux]{.sim_path_flux()}} implements the simulation. A \code{\link{SpatRaster}} (\code{.bathy}) defines the area of the simulation. A starting location (\code{.origin}) on \code{.bathy} can be specified or  sampled at random from \code{.bathy}. \code{.n_path} movement path(s) from this point are simulated using time-specific ('flux') parameters (such as step lengths and turning angles). To implement this approach, a 'flux template' must be provided, which is a list of \code{\link{data.table}}s that will hold the 'flux' parameters for each time step and can be updated by reference. The default \code{\link[=.flux_template]{.flux_template()}} function generates a list with placeholders for simulated step lengths and turning angles. The \code{.flux()} function is used to simulate the new values of any flux parameters at each time step and update (by reference) the flux template. \code{.move} is a function that defines new proposal locations based on the simulated flux values. For example, \code{\link[=.step_using_flux]{.step_using_flux()}}, which wraps \code{\link[=.step]{.step()}}, defines proposal locations based on simulated step lengths and turning angles. Internally, \code{.move} is wrapped within \code{\link[=.step_iter]{.step_iter()}} and implemented iteratively to ensure that simulated location(s) at each time step are valid (in non NA cells on \code{.bathy}).
-}
-\details{
+Internal functions that support the simulation of movement paths.
 \itemize{
-\item \code{\link[=.flux_template]{.flux_template()}} defines a list of \code{\link{data.table}} objects in which the simulated step lengths and turning angles for each step are stored;
-\item \code{\link[=.step_using_flux]{.step_using_flux()}} and \code{\link[=step]{step()}} are functions which, given current location(s), calculates new locations, based on step lengths and turning angles;
+\item \code{\link[=.sim_path_flux]{.sim_path_flux()}} simulates the movement path(s) from flux parameters that are generated dynamically at each time step. This is supported by the following helpers:
+\itemize{
+\item \code{\link[=.flux_template]{.flux_template()}} defines a list of \code{\link{data.table}} objects in which the simulated 'flux' parameters (e.g., step lengths and turning angles) for each step are stored;
+\item \code{\link[=.step_using_flux]{.step_using_flux()}} and \code{\link[=step]{step()}} are functions which, given current location(s), calculate new locations, based on step lengths and turning angles;
 \item \code{\link[=.step_iter]{.step_iter()}} is an internal wrapper for \code{\link[=.step]{.step()}} that validates proposal steps into new locations;
 \item \code{\link[=.sim_path_pivot]{.sim_path_pivot()}} and \code{\link[=.flux_pivot]{.flux_pivot()}} reorientate simulated paths/flux values;
-\item \code{\link[=.sim_path_flux]{.sim_path_flux()}} simulates the movement path(s);
+}
+}
+}
+\details{
+These functions facilitate the simulation of animal movement paths.
+\itemize{
+\item \code{\link[=.sim_path_flux]{.sim_path_flux()}} implements the simulation.
+\itemize{
+\item A \code{\link{SpatRaster}} (\code{.bathy}) defines the area of the simulation.
+\item A starting location (\code{.origin}) on \code{.bathy} can be specified or  sampled at random from \code{.bathy}.
+\item \code{.n_path} movement path(s) from this point are simulated using time-specific ('flux') parameters (such as step lengths and turning angles).
+}
+\item To implement this approach, a 'flux template' must be provided (to the \code{.flux_vals} argument), which is a list of \code{\link{data.table}}s that will hold the 'flux' parameters for each time step and can be updated by reference.
+\itemize{
+\item The default \code{\link[=.flux_template]{.flux_template()}} function generates a list with place holders for simulated step lengths and turning angles.
+}
+\item The \code{.flux} argument is a function that is used to simulate the new values of any flux parameters at each time step and update (by reference) the flux template (i.e., \code{.flux_vals}).
+\item \code{.move} is a function that defines new proposal locations based on the simulated flux values.
+\itemize{
+\item For example, \code{\link[=.step_using_flux]{.step_using_flux()}}, which wraps \code{\link[=.step]{.step()}}, defines proposal locations based on simulated step lengths and turning angles.
+}
+\item Internally, \code{.move} is wrapped within \code{\link[=.step_iter]{.step_iter()}} and implemented iteratively to ensure that simulated location(s) at each time step are valid (in non NA cells on \code{.bathy}).
 }
 }
 \author{

@@ -101,33 +101,33 @@ sim_array <- function(.bathy = rast_template(),
 }
 
 #' @title Simulate movement paths
-#' @description These functions facilitate the simulation of animal movement paths from walk models (e.g., random walks, biased random walks, correlated random walks).
+#' @description These functions facilitate the simulation of discrete-time animal movement paths from walk models (e.g., random walks, biased random walks, correlated random walks).
 #'
 #' @param .bathy A [`SpatRaster`] that defines the region within which movements are simulated. Movements are simulated in continuous space but restricted within the boundaries defined by `.bathy` and non-NA regions.
 #' @param .origin (optional) A one-row, two-column matrix that defines the origin. If unsupplied, `.origin` is sampled at random from `.bathy`. One origin is used for all simulated paths (see `.n_path`).
-#' @param .n_step An `integer` that defines the number of steps.
+#' @param .n_step An `integer` that defines the number of time steps.
 #' @param .sim_length,.sim_angle,... Functions and accompanying arguments that simulate step lengths and turning angles. These must accept four named arguments, even if unused:
-#' * `.n`---an `integer` that defines the number of simulated outcome(s) (defined internally);
+#' * `.n`---an `integer` that defines the number of simulated outcome(s);
 #' * `.prior`---a `numeric` vector that defines the simulated value(s) from the previous time step;
 #' * `.t`---an `integer` that defines the time step;
 #' * `...`---additional arguments, if needed;
 #'
 #' If `.prior` is used, the function should be able to handle the first time step (when `.prior` is set to `NULL`). See [`sim_angle_crw()`] (below) for an example.
 #'
-#' Note that `...` is passed down from [`sim_path_walk()`] to both `.sim_length` and `sim_angle` so care is required to ensure that `...` parameters are used by the correct function(s).
+#' Note that `...` is passed down from [`sim_path_walk()`] to both `.sim_length` and `.sim_angle` so care is required to ensure that `...` parameters are handled correctly).
 #'
 #' The following template functions are provided:
-#' * [`sim_length()`] is an example `.sim_length` function that simulated step lengths from a truncated Gamma distribution (via [`rtruncgamma()`]);
+#' * [`sim_length()`] is an example `.sim_length` function that simulates step lengths from a truncated Gamma distribution (via [`rtruncgamma()`]);
 #' * [`sim_angle_rw()`] is an example `.sim_angle` function that simulates uncorrelated turning angles from a wrapped normal distribution (via [`rwn()`]);
 #' * [`sim_angle_crw()`] is an example `.sim_angle` function that can simulate correlated turning angles (via [`rwn()`]);
 #'
-#' @param .n_path An `integer` that defines the number of paths to simulated.
+#' @param .n_path An `integer` that defines the number of paths to simulate.
 #' @param .plot,.one_page Plot options.
-#' * `.plot` is a `logical` variable that defined whether or not to plot `.bathy` and simulated path(s). Each plot is created on a separate panel.
+#' * `.plot` is a `logical` variable that defined whether or not to plot `.bathy` and simulated path(s). Each path is plotted on a separate plot.
 #' * `.one_page` is a logical variable that defines whether or not to produce all plots on a single page.
 #'
 #' @param .n,.prior,.t Arguments required for `.sim_length` and `.sim_step` functions (defined above).
-#' @param .shape,.scale,.mobility Arguments for [`rtruncgamma()`] for the simulation of step lengths.
+#' @param .shape,.scale,.mobility Arguments for [`rtruncgamma()`] for the simulation of step lengths:
 #' * `.shape` is a `numeric` value that defines the shape parameter of a Gamma distribution (see [`stats::rgamma()`]).
 #' * `.scale` is a `numeric` value that defines the scale parameter of a Gamma distribution (see [`stats::rgamma()`]).
 #' * `.mobility` is a `numeric` value that defines the maximum length (see [`truncdist::rtrunc()`]).

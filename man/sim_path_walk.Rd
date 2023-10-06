@@ -36,11 +36,11 @@ sim_angle_crw(.n = 1, .prior = NULL, .t = NULL, ...)
 
 \item{.origin}{(optional) A one-row, two-column matrix that defines the origin. If unsupplied, \code{.origin} is sampled at random from \code{.bathy}. One origin is used for all simulated paths (see \code{.n_path}).}
 
-\item{.n_step}{An \code{integer} that defines the number of steps.}
+\item{.n_step}{An \code{integer} that defines the number of time steps.}
 
 \item{.sim_length, .sim_angle, ...}{Functions and accompanying arguments that simulate step lengths and turning angles. These must accept four named arguments, even if unused:
 \itemize{
-\item \code{.n}---an \code{integer} that defines the number of simulated outcome(s) (defined internally);
+\item \code{.n}---an \code{integer} that defines the number of simulated outcome(s);
 \item \code{.prior}---a \code{numeric} vector that defines the simulated value(s) from the previous time step;
 \item \code{.t}---an \code{integer} that defines the time step;
 \item \code{...}---additional arguments, if needed;
@@ -48,26 +48,26 @@ sim_angle_crw(.n = 1, .prior = NULL, .t = NULL, ...)
 
 If \code{.prior} is used, the function should be able to handle the first time step (when \code{.prior} is set to \code{NULL}). See \code{\link[=sim_angle_crw]{sim_angle_crw()}} (below) for an example.
 
-Note that \code{...} is passed down from \code{\link[=sim_path_walk]{sim_path_walk()}} to both \code{.sim_length} and \code{sim_angle} so care is required to ensure that \code{...} parameters are used by the correct function(s).
+Note that \code{...} is passed down from \code{\link[=sim_path_walk]{sim_path_walk()}} to both \code{.sim_length} and \code{.sim_angle} so care is required to ensure that \code{...} parameters are handled correctly).
 
 The following template functions are provided:
 \itemize{
-\item \code{\link[=sim_length]{sim_length()}} is an example \code{.sim_length} function that simulated step lengths from a truncated Gamma distribution (via \code{\link[=rtruncgamma]{rtruncgamma()}});
+\item \code{\link[=sim_length]{sim_length()}} is an example \code{.sim_length} function that simulates step lengths from a truncated Gamma distribution (via \code{\link[=rtruncgamma]{rtruncgamma()}});
 \item \code{\link[=sim_angle_rw]{sim_angle_rw()}} is an example \code{.sim_angle} function that simulates uncorrelated turning angles from a wrapped normal distribution (via \code{\link[=rwn]{rwn()}});
 \item \code{\link[=sim_angle_crw]{sim_angle_crw()}} is an example \code{.sim_angle} function that can simulate correlated turning angles (via \code{\link[=rwn]{rwn()}});
 }}
 
-\item{.n_path}{An \code{integer} that defines the number of paths to simulated.}
+\item{.n_path}{An \code{integer} that defines the number of paths to simulate.}
 
 \item{.plot, .one_page}{Plot options.
 \itemize{
-\item \code{.plot} is a \code{logical} variable that defined whether or not to plot \code{.bathy} and simulated path(s). Each plot is created on a separate panel.
+\item \code{.plot} is a \code{logical} variable that defined whether or not to plot \code{.bathy} and simulated path(s). Each path is plotted on a separate plot.
 \item \code{.one_page} is a logical variable that defines whether or not to produce all plots on a single page.
 }}
 
 \item{.n, .prior, .t}{Arguments required for \code{.sim_length} and \code{.sim_step} functions (defined above).}
 
-\item{.shape, .scale, .mobility}{Arguments for \code{\link[=rtruncgamma]{rtruncgamma()}} for the simulation of step lengths.
+\item{.shape, .scale, .mobility}{Arguments for \code{\link[=rtruncgamma]{rtruncgamma()}} for the simulation of step lengths:
 \itemize{
 \item \code{.shape} is a \code{numeric} value that defines the shape parameter of a Gamma distribution (see \code{\link[stats:GammaDist]{stats::rgamma()}}).
 \item \code{.scale} is a \code{numeric} value that defines the scale parameter of a Gamma distribution (see \code{\link[stats:GammaDist]{stats::rgamma()}}).
@@ -87,7 +87,7 @@ The following template functions are provided:
 }
 }
 \description{
-These functions facilitate the simulation of animal movement paths from walk models (e.g., random walks, biased random walks, correlated random walks).
+These functions facilitate the simulation of discrete-time animal movement paths from walk models (e.g., random walks, biased random walks, correlated random walks).
 }
 \details{
 \itemize{
