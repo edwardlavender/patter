@@ -17,7 +17,7 @@
 #' }
 #' @keywords internal
 
-one_page <- function(.one_page, .n) {
+one_page <- function(.one_page, .n = 1L) {
   if (.one_page) {
     if (.n > 25) {
       warn("`.one_page = TRUE` but there are more than 25 plots.")
