@@ -36,7 +36,7 @@ test_that(".acs_check_*() functions work", {
     expect_warning(paste0("`.write_record$filename` ('", dirname(f), "') is not an empty directory."), fixed = TRUE)
   unlink(f)
 
-  #### Test .acs_check_present()
+  #### Test .acs_check_present() for .type = "acs"
   # Expect error with NAs
   r <- terra::rast()
   r[] <- NA
@@ -53,6 +53,24 @@ test_that(".acs_check_*() functions work", {
   # Expect pass (NULL)
   r[] <- runif(terra::ncell(r))
   .acs_check_present(r, .t = 1) |>
+    expect_null()
+
+  #### Test .acs_check_present() for .type = "dc"
+  r <- terra::rast()
+  r[] <- NA
+  .acs_check_present(r, .t = 1, .type = "dc") |>
+    expect_error("There are no possible locations at time step = 1. There may be errors in the observations or bathymetry data, or the depth model may be incorrect.", fixed = TRUE)
+  # Expect error with NAs & zeros
+  r[1] <- 0
+  .acs_check_present(r, .t = 2, .type = "dc") |>
+    expect_error("There are no possible locations at time step = 2. There may be errors in the observations or bathymetry data, or the depth model may be incorrect.", fixed = TRUE)
+  # Expect error with zeros
+  r[] <- 0
+  .acs_check_present(r, .t = 3, .type = "dc") |>
+    expect_error("There are no possible locations at time step = 3. There may be errors in the observations or bathymetry data, or the depth model may be incorrect.", fixed = TRUE)
+  # Expect pass (NULL)
+  r[] <- runif(terra::ncell(r))
+  .acs_check_present(r, .t = 1, .type = "dc") |>
     expect_null()
 
 })
