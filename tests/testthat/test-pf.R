@@ -397,4 +397,19 @@ test_that("pf_path_pivot() works", {
                  cell_id = unlist(paths[i, ]))
     }) |> rbindlist()
   )
+  # Repeat when obs is specified
+  obs <- data.table(timestep = c(1, 2, 3, 4, 5),
+                    value = c(1, 2, 3, 4, NA_real_))
+  p <-
+    expect_equal(
+      pf_path_pivot(paths, .obs = obs, .cols = "value"),
+        lapply(seq_len(nrow(paths)), function(i) {
+          data.table(path_id = rep(i, ncol(paths)),
+                     timestep = seq_len(ncol(paths)),
+                     cell_id = unlist(paths[i, ]),
+                     value = c(1, 2, 3, 4, NA_real_))
+        }) |> rbindlist()
+    ) |>
+    expect_warning("There are NAs in the value column in the output.",
+                   fixed = TRUE)
 })
