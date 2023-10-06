@@ -7,10 +7,13 @@
 geomean(xy, w = NULL)
 }
 \arguments{
-\item{xy, w}{Arguments passed to \code{\link[geosphere:geomean]{geosphere::geomean()}}.}
+\item{xy, w}{Arguments passed to \code{geosphere::geomean()}.}
 }
 \description{
-This is a wrapper for \code{\link[geosphere:geomean]{geosphere::geomean()}} that handles one-row matrices.
+This is a wrapper for \code{geosphere::geomean()} that handles one-row matrices.
+}
+\details{
+This function uses the internal code of \code{geosphere::geomean()} without the checks of the \code{.pointsToMatrix()} function.
 }
 \author{
 Edward Lavender

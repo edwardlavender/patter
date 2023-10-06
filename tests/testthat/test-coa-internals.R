@@ -40,5 +40,14 @@ test_that(".coa_check_*() functions works", {
                             fixed = TRUE)
 
            }) |> invisible()
+  # Check for errors in lon/lat coordinates
+  .coa_check_lonlat(data.table(receiver_lon = -181, receiver_lat = 0)) |>
+    expect_error("Longitudes should be between -180 and 180 degrees.", fixed = TRUE)
+  .coa_check_lonlat(data.table(receiver_lon = 181, receiver_lat = 0)) |>
+    expect_error("Longitudes should be between -180 and 180 degrees.", fixed = TRUE)
+  .coa_check_lonlat(data.table(receiver_lon = 0, receiver_lat = -91)) |>
+    expect_error("Latitudes should be between -90 and 90 degrees.", fixed = TRUE)
+  .coa_check_lonlat(data.table(receiver_lon = 0, receiver_lat = 91)) |>
+    expect_error("Latitudes should be between -90 and 90 degrees.", fixed = TRUE)
 
 })
