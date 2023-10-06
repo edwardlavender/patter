@@ -7,16 +7,15 @@ Authors@R:
 Description: A new implementation of the 'flapper' family of algorithms for passive acoustic telemetry. 
 License: MIT + file LICENSE
 Imports:
-    arrow, 
+    arrow, collapse,
     data.table, dplyr, dtplyr, rlang, 
     glue, lubridate,
     pbapply, progress, 
     terra
 Suggests: 
-    collapse, circular, 
+    circular, truncdist, 
     geosphere, spatialEco, 
     purrr, stringr,
-    truncdist,
     knitr, rmarkdown,
     testthat (>= 3.0.0)
 Depends: R (>= 4.0)
