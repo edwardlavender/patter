@@ -20,6 +20,10 @@ test_that("rast_template() works", {
 })
 
 test_that("geomean() works", {
+  # Verify weights
+  xy <- cbind(x = c(-179, 179, 177), y = c(12, 14, 16))
+  geomean(xy, w = 1) |>
+    expect_error("length of weights not correct. It should be: 3", fixed = TRUE)
   # Test that geomean() handles one-row matrices
   expect_equal(cbind(0, 1), geomean(cbind(0, 1)))
   # Otherwise, outputs should match geosphere::geomean()
@@ -33,4 +37,5 @@ test_that("geomean() works", {
     expect_equal(geosphere::geomean(xy),
                  geomean(xy))
   }) |> invisible()
+
 })
