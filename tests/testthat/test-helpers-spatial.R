@@ -25,4 +25,12 @@ test_that("geomean() works", {
   # Otherwise, outputs should match geosphere::geomean()
   xy <- cbind(x = c(-179, 179, 177), y = c(12, 14, 16))
   expect_equal(geosphere::geomean(xy), geomean(xy))
+  # Run simulation
+  n_runs <- 100
+  lapply(seq_len(n_runs), function(i) {
+    n <- 100
+    xy <- cbind(runif(n, -180, 180), runif(n, -90, 90))
+    expect_equal(geosphere::geomean(xy),
+                 geomean(xy))
+  }) |> invisible()
 })

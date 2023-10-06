@@ -13,7 +13,7 @@
   check_inherits(.acoustics, "data.table")
   # Check names
   # * receiver_easting/receiver_northing or receiver_lon/receiver_lat
-  # ... are automatically checked via acoustics_is_lonlat()
+  # ... are automatically checked via .coa_check_lonlat()
   check_names(.acoustics, c("timestamp", "receiver_id", .split))
   .acoustics
 }
@@ -37,6 +37,15 @@
   }
   if (is_utm) {
     is_lonlat <- FALSE
+  }
+  if (is_lonlat) {
+    # Check ranges
+    if (min(.acoustics$receiver_lon) < -180 | max(.acoustics$receiver_lon) > 180) {
+      abort("Longitudes should be between -180 and 180 degrees.")
+    }
+    if (min(.acoustics$receiver_lat) < -90 | max(.acoustics$receiver_lat) > 90) {
+      abort("Latitudes should be between -90 and 90 degrees.")
+    }
   }
   is_lonlat
 }
