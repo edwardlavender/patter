@@ -7,7 +7,7 @@
 \alias{add_sp_path}
 \title{\code{prettyGraphics} helpers in \code{\link{patter}}}
 \usage{
-one_page(.one_page, .n)
+one_page(.one_page, .n = 1L)
 
 par_mf(.n)
 
