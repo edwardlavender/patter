@@ -1,38 +1,40 @@
 #' @title Simulate an acoustic array
 #' @description This function simulates acoustic receivers on a grid.
 #' @param .bathy A [`SpatRaster`] that defines the region of interest.
+#' @param .lonlat A `logical` variable that defines whether or not coordinates on `.bathy` are longitudes/latitudes. This input controls the output name of the coordinates column (see Value).
 #' @param .arrangement A character that defines the receiver arrangement (passed to the `method` argument of [`terra::spatSample()`]).
-#' @param .n_receivers An `integer` that defines the number of receivers (passed to the `size` argument of [`terra::spatSample()`]).
+#' @param .n_receiver An `integer` that defines the number of receivers (passed to the `size` argument of [`terra::spatSample()`]).
 #' @param ... Additional arguments passed to [`terra::spatSample()`].
 #' @param .receiver_start,.receiver_end,.receiver_range (optional) Additional columns to include in the output:
-#'  * `.receiver_start` and `.receiver_end` specify the deployment time period;
-#'  * `.receiver_range` defines the detection range;
+#'  * `.receiver_start` and `.receiver_end` are `Date` or `POSIXct` inputs that specify the deployment time period;
+#'  * `.receiver_range` is a `numeric` input that defines the detection range;
 #'
 #'  Single inputs are expected to these arguments, which are constant across all receivers.
 #'
-#' @param .n_arrays An `integer` that defines the number of array designs to simulate.
+#' @param .n_array An `integer` that defines the number of array designs to simulate.
 #' @param .plot A `logical` variable that defines whether or not to plot simulated arrays.
 #' @param .one_page If `.plot = TRUE`, `.one_page` is a `logical` variable that defines whether or not to produce plots on a single page.
 #'
 #' @details
 #' Receiver locations are simulated using [`terra::spatSample()`].
 #'
-#' @return The function returns a `list`. Each element of the list is a `data.table` with the following columns:
+#' @return The function returns a `data.table` with the following columns:
+#' * `array_id`---an `integer` vector of array IDs,
 #' * `receiver_id`---an `integer` vector of receiver IDs;
-#' * `receiver_easting`---a `numeric` vector that defines receiver x coordinates;
-#' * `receiver_northing`---a `numeric` vector that defines receiver y coordinates;
+#' * `receiver_easting` (if `.lonlat = FALSE`) or `receiver_lon` (if `.lonlat = TRUE`)---a `numeric` vector that defines receiver x coordinates;
+#' * `receiver_northing` (if `.lonlat = FALSE`) or `receiver_lat` (if `.lonlat = TRUE`)---a `numeric` vector that defines receiver y coordinates;
 #' * `receiver_start`---receiver start dates (if defined);
 #' * `receiver_end`---receiver end dates (if defined);
 #' * `receiver_range`---receiver detection ranges (if defined);
 #'
 #' @examples
 #' #### Example (1): The default implementation
-#' # The function returns a list, with one element for each simulated array
+#' # The function returns a data.table
 #' a <- sim_array()
-#' summary(a)
+#' a
 #'
 #' #### Example (2): Customise receiver placement/number
-#' a <- sim_array(.arrangement = "regular", .n_receivers = 100)
+#' a <- sim_array(.arrangement = "regular", .n_receiver = 100)
 #'
 #' #### Example (3): Add additional columns for downstream functions
 #' a <- sim_array(.receiver_start = as.Date("2013-01-01"),
@@ -41,34 +43,52 @@
 #'
 #' #### Example (4): Control the plot(s)
 #' sim_array(.plot = FALSE)
-#' sim_array(.n_arrays = 5L, .plot = TRUE, .one_page = TRUE)
-#' sim_array(.n_arrays = 5L, .plot = TRUE, .one_page = FALSE)
+#' sim_array(.n_array = 5L, .plot = TRUE, .one_page = TRUE)
+#' sim_array(.n_array = 5L, .plot = TRUE, .one_page = FALSE)
 #'
 #' @author Edward Lavender
 #' @export
 
-sim_array <- function(.bathy = rast_template(),
-                      .arrangement = "random", .n_receivers = 10L, ...,
+sim_array <- function(.bathy = rast_template(), .lonlat = FALSE,
+                      .arrangement = "random", .n_receiver = 10L, ...,
                       .receiver_start = NULL, .receiver_end = NULL, .receiver_range = NULL,
-                      .n_arrays = 1L,
+                      .n_array = 1L,
                       .plot = TRUE, .one_page = FALSE) {
   #### Check user inputs
-  # * Check ... are not implement internally
+  # Check dots
+  check_dots_for_missing_period(formals(), list(...))
+  check_dots_allowed(c("x", "size", "method", "replace", "na.rm", "xy",
+                       "cells", "values"))
   # * Check receiver_end is after receiver_start (if supplied)
+  lapply(list(.receiver_start, .receiver_end, .receiver_range), \(x) {
+    if (!is.null(x) && length(x) != 1L) {
+      abort("Single inputs are expected for `.receiver_start`, `.receiver_end` and `.receiver_range`.")
+    }
+  })
+  if (!is.null(.receiver_start) && !is.null(.receiver_end)) {
+    if (.receiver_end <= .receiver_start) {
+      warn("`.receiver_end` should be after `.receiver_start`.")
+    }
+  }
 
   #### Simulate arrays
   arrays <-
-    lapply(seq_len(.n_arrays), function(i) {
+    lapply(seq_len(.n_array), function(i) {
       # Sample receiver locations
       array <-
         .bathy |>
-        terra::spatSample(size = .n_receivers,
+        terra::spatSample(size = .n_receiver,
                           method = .arrangement, replace = FALSE,
                           na.rm = TRUE, xy = TRUE, cells = TRUE, values = FALSE, ...) |>
         as.data.table() |>
-        mutate(receiver_id = as.integer(dplyr::row_number())) |>
-        select("receiver_id", receiver_easting = "x", receiver_northing = "y") |>
+        mutate(array_id = i,
+               receiver_id = as.integer(dplyr::row_number())) |>
+        select("array_id", "receiver_id", receiver_easting = "x", receiver_northing = "y") |>
         as.data.table()
+      if (.lonlat) {
+        colnames(array) <- c("array_id", "receiver_id",
+                             "receiver_lon", "receiver_lat")
+      }
       # Add optional columns
       if (!is.null(.receiver_start)) {
         receiver_start <- NULL
@@ -97,7 +117,7 @@ sim_array <- function(.bathy = rast_template(),
   }
 
   #### Return outputs
-  arrays
+  rbindlist(arrays)
 }
 
 #' @title Simulate movement paths

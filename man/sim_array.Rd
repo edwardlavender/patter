@@ -6,13 +6,14 @@
 \usage{
 sim_array(
   .bathy = rast_template(),
+  .lonlat = FALSE,
   .arrangement = "random",
-  .n_receivers = 10L,
+  .n_receiver = 10L,
   ...,
   .receiver_start = NULL,
   .receiver_end = NULL,
   .receiver_range = NULL,
-  .n_arrays = 1L,
+  .n_array = 1L,
   .plot = TRUE,
   .one_page = FALSE
 )
@@ -20,32 +21,35 @@ sim_array(
 \arguments{
 \item{.bathy}{A \code{\link{SpatRaster}} that defines the region of interest.}
 
+\item{.lonlat}{A \code{logical} variable that defines whether or not coordinates on \code{.bathy} are longitudes/latitudes. This input controls the output name of the coordinates column (see Value).}
+
 \item{.arrangement}{A character that defines the receiver arrangement (passed to the \code{method} argument of \code{\link[terra:sample]{terra::spatSample()}}).}
 
-\item{.n_receivers}{An \code{integer} that defines the number of receivers (passed to the \code{size} argument of \code{\link[terra:sample]{terra::spatSample()}}).}
+\item{.n_receiver}{An \code{integer} that defines the number of receivers (passed to the \code{size} argument of \code{\link[terra:sample]{terra::spatSample()}}).}
 
 \item{...}{Additional arguments passed to \code{\link[terra:sample]{terra::spatSample()}}.}
 
 \item{.receiver_start, .receiver_end, .receiver_range}{(optional) Additional columns to include in the output:
 \itemize{
-\item \code{.receiver_start} and \code{.receiver_end} specify the deployment time period;
-\item \code{.receiver_range} defines the detection range;
+\item \code{.receiver_start} and \code{.receiver_end} are \code{Date} or \code{POSIXct} inputs that specify the deployment time period;
+\item \code{.receiver_range} is a \code{numeric} input that defines the detection range;
 }
 
 Single inputs are expected to these arguments, which are constant across all receivers.}
 
-\item{.n_arrays}{An \code{integer} that defines the number of array designs to simulate.}
+\item{.n_array}{An \code{integer} that defines the number of array designs to simulate.}
 
 \item{.plot}{A \code{logical} variable that defines whether or not to plot simulated arrays.}
 
 \item{.one_page}{If \code{.plot = TRUE}, \code{.one_page} is a \code{logical} variable that defines whether or not to produce plots on a single page.}
 }
 \value{
-The function returns a \code{list}. Each element of the list is a \code{data.table} with the following columns:
+The function returns a \code{data.table} with the following columns:
 \itemize{
+\item \code{array_id}---an \code{integer} vector of array IDs,
 \item \code{receiver_id}---an \code{integer} vector of receiver IDs;
-\item \code{receiver_easting}---a \code{numeric} vector that defines receiver x coordinates;
-\item \code{receiver_northing}---a \code{numeric} vector that defines receiver y coordinates;
+\item \code{receiver_easting} (if \code{.lonlat = FALSE}) or \code{receiver_lon} (if \code{.lonlat = TRUE})---a \code{numeric} vector that defines receiver x coordinates;
+\item \code{receiver_northing} (if \code{.lonlat = FALSE}) or \code{receiver_lat} (if \code{.lonlat = TRUE})---a \code{numeric} vector that defines receiver y coordinates;
 \item \code{receiver_start}---receiver start dates (if defined);
 \item \code{receiver_end}---receiver end dates (if defined);
 \item \code{receiver_range}---receiver detection ranges (if defined);
@@ -59,12 +63,12 @@ Receiver locations are simulated using \code{\link[terra:sample]{terra::spatSamp
 }
 \examples{
 #### Example (1): The default implementation
-# The function returns a list, with one element for each simulated array
+# The function returns a data.table
 a <- sim_array()
-summary(a)
+a
 
 #### Example (2): Customise receiver placement/number
-a <- sim_array(.arrangement = "regular", .n_receivers = 100)
+a <- sim_array(.arrangement = "regular", .n_receiver = 100)
 
 #### Example (3): Add additional columns for downstream functions
 a <- sim_array(.receiver_start = as.Date("2013-01-01"),
@@ -73,8 +77,8 @@ a <- sim_array(.receiver_start = as.Date("2013-01-01"),
 
 #### Example (4): Control the plot(s)
 sim_array(.plot = FALSE)
-sim_array(.n_arrays = 5L, .plot = TRUE, .one_page = TRUE)
-sim_array(.n_arrays = 5L, .plot = TRUE, .one_page = FALSE)
+sim_array(.n_array = 5L, .plot = TRUE, .one_page = TRUE)
+sim_array(.n_array = 5L, .plot = TRUE, .one_page = FALSE)
 
 }
 \author{
