@@ -14,6 +14,7 @@ test_that("one_page() works", {
 test_that("par_mf() works", {
 
   # Test selected examples
+  expect_equal(c(1, 1), par_mf(0))
   expect_equal(c(2, 3), par_mf(6))
   expect_equal(c(3, 3), par_mf(7))
   expect_equal(c(10, 10), par_mf(100))
