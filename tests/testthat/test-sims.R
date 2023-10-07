@@ -231,12 +231,19 @@ test_that("sim_path_walk() works", {
   # Validate no NAs
   expect_true(all(!is.na(p$cell_z)))
 
-  #### Test reproductibility
+  #### Test reproducibility
   set.seed(1)
   a <- sim_path_walk()
   set.seed(1)
   b <- sim_path_walk()
   expect_equal(a, b)
+
+  #### Test `.lonlat` argument
+  r <- dat_gebco()
+  r <- terra::project(r, "EPSG:4326")
+  p <- sim_path_walk(r, .lonlat = TRUE)
+  expect_equal(c(0, p$length[-nrow(p)]),
+               dist_along_path(cbind(p$x, p$y), .lonlat = TRUE))
 
   #### Test `.origin` argument
   origin <- cbind(710275.3, 6259763)
@@ -387,6 +394,27 @@ test_that(".sim_detections() works", {
 })
 
 test_that("sim_detections() works", {
+
+  #### Test checks on user inputs
+  # Function can handle missing array_id & path_id columns
+  a <- sim_array()
+  p <- sim_path_walk()
+  a$array_id <- NULL
+  p$path_id <- NULL
+  sim_detections(.paths = p, .arrays = a) |>
+    check_inherits("data.table")
+  # Function validates .type correctly
+  a <- sim_array(.n_array = 2L)
+  p <- sim_path_walk(.n_path = 3L)
+  sim_detections(.paths = p, .arrays = a, .type = "pairwise") |>
+    expect_error("`.type = 'pairwise'` requires the number of arrays and paths to be identical.", fixed = TRUE)
+  # Function handles .lonlat columns (receiver_lon, receiver_lat) correctly
+  r <- dat_gebco()
+  r <- terra::project(r, "EPSG:4326")
+  p <- sim_path_walk(r, .lonlat = TRUE)
+  a <- sim_array(r, .lonlat = TRUE)
+  sim_detections(.paths = p, .arrays = a, .lonlat = TRUE) |>
+    check_inherits("data.table")
 
   #### Validate handling of multiple paths/arrays
   # Validate pairwise implementation

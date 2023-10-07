@@ -118,9 +118,10 @@ check_dots_for_missing_period <- function(args, dots) {
 
 check_new_colnames <- function(.data, .new) {
   bool <- .new %in% colnames(.data)
-  if (any(bool %in% colnames(.data))) {
+  if (any(bool)) {
     replace <- .new[which(bool)]
-    warn("Some columns in `.data` are being replaced: {paste0(paste0('`', replace, collapse = '`, '), '`')}", .envir = environment())
+    warn("Column(s) in `.data` are being replaced: {paste0(paste0('`', replace, collapse = '`, '), '`')}.",
+         .envir = environment())
   }
   NULL
 }

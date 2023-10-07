@@ -35,4 +35,13 @@ test_that("check_*() utility functions work", {
   f(1, bad = 1) |>
     expect_error("Additional argument(s) (`bad`) have been passed to the function via `...` which are not permitted.", fixed = TRUE)
 
-})
+  #### check_new_colnames()
+  check_new_colnames(data.table(x = 1, y = 1), .new = "z") |>
+    expect_null()
+  check_new_colnames(data.table(x = 1, y = 1, z = 1), .new = "z") |>
+    expect_warning("Column(s) in `.data` are being replaced: `z`.", fixed = TRUE)
+  check_new_colnames(data.table(x = 1, y = 1, z = 1), .new = c("x", "z")) |>
+    expect_warning("Column(s) in `.data` are being replaced: `x`, `z`.", fixed = TRUE)
+
+
+  })
