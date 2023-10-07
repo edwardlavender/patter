@@ -13,7 +13,7 @@ Imports:
     pbapply, progress, 
     terra
 Suggests: 
-    circular, truncdist, 
+    circular, extraDistr, truncdist, 
     geosphere, spatialEco, 
     purrr, stringr,
     knitr, rmarkdown,

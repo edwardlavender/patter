@@ -45,7 +45,6 @@ test_that("sim_array() works", {
 
 })
 
-
 test_that("sim_path_*() helper functions work", {
 
   set.seed(1)
@@ -99,7 +98,6 @@ test_that("sim_path_*() helper functions work", {
   flux_vals$angle[, V2 := 20]
   flux_vals$angle[, V3 := 30]
 
-
   # Test .step() function uses flux values to update starting locations correctly
   xy_now <- matrix(c(1, 2,
                      3, 4), ncol = 2)
@@ -113,14 +111,16 @@ test_that("sim_path_*() helper functions work", {
 
   # Test .step_using_flux() wrapper works
   expect_equal(
-    .step_using_flux(xy_now, xy_now, .fv = flux_vals, .t = 1),
+    .step_using_flux(xy_now, xy_now, .lonlat = FALSE,
+                     .fv = flux_vals, .t = 1),
     cbind(
       xy_now[, 1] + flux_vals$length$V1 * cos(flux_vals$angle$V1),
       xy_now[, 2] + flux_vals$length$V1 * sin(flux_vals$angle$V1)
     )
   )
   expect_equal(
-    .step_using_flux(xy_now, xy_now, .fv = flux_vals, .t = 2),
+    .step_using_flux(xy_now, xy_now, .lonlat = FALSE,
+                     .fv = flux_vals, .t = 2),
     cbind(
       xy_now[, 1] + flux_vals$length$V2 * cos(flux_vals$angle$V2),
       xy_now[, 2] + flux_vals$length$V2 * sin(flux_vals$angle$V2)
@@ -181,7 +181,7 @@ test_that(".step_iter() works", {
   # * We expect the flux function to print 1,2 once
   set.seed(1)
   p <- 1:2
-  .step_iter(.xy_now = pts[p, ],
+  .step_iter(.xy_now = pts[p, ], .lonlat = FALSE,
              .flux = flux, .fv = .flux_template(.n_step = 2, .n_path = length(p)),
              .t = 1,
              .move = .step_using_flux,
@@ -192,7 +192,7 @@ test_that(".step_iter() works", {
   # * Then the function will fail
   set.seed(1)
   p <- 1:3
-  .step_iter(.xy_now = pts[p, ],
+  .step_iter(.xy_now = pts[p, ], .lonlat = FALSE,
              .flux = flux, .fv = .flux_template(.n_step = 2, .n_path = length(p)),
              .t = 1,
              .move = .step_using_flux,
@@ -300,6 +300,110 @@ test_that("sim_path_walk() works", {
                            degrees(angle[-1])),
     0.8, tolerance = 0.1
   )
+})
 
+test_that("calc_detection_pr*() functions work", {
+  expect_equal(
+    calc_detection_pr(data.table(distance = 100)),
+    calc_detection_pr_logistic(100)
+  )
+  expect_equal(
+    calc_detection_pr(data.table(distance = 100), .beta = -0.03),
+    calc_detection_pr_logistic(100, .beta = -0.03)
+  )
+
+  calc_dpr <- function(.data) {
+    calc_detection_pr_logistic(.distance = .data$dist, .gamma = .data$receiver_range)
+  }
+  expect_equal(
+    calc_dpr(data.table(distance = c(50, 100), receiver_range = c(20, 150))),
+    c(0, calc_detection_pr_logistic(100, .gamma = 150))
+  )
+})
+
+test_that(".sim_detections() works", {
+
+  #### Basic tests on .sim_detections()
+  # Simulate array/walk
+  a <- sim_array(.n_receiver = 1000)
+  a$receiver_x <- a$receiver_easting
+  a$receiver_y <- a$receiver_northing
+  p <- sim_path_walk(.n_step = 1000)
+  # Implement .sim_detections()
+  out <- .sim_detections(.path = p, .array = a)
+  # Test object properties
+  check_inherits(out, "data.table")
+  expect_equal(c("array_id", "path_id",
+                 "timestep", "receiver_id", "dist", "pr"),
+               colnames(out))
+  # Re-implement .sim_detections() & retain all columns to validate distances/prs
+  out <- .sim_detections(.path = p, .array = a, .return = NULL)
+  # Validate distance calculations
+  expect_equal(
+    out$dist,
+    terra::distance(cbind(out$x, out$y),
+                    cbind(out$receiver_easting, out$receiver_northing),
+                    lonlat = FALSE,
+                    pairwise = TRUE)
+  )
+  # Validate detection probability calculations
+  expect_equal(
+    calc_detection_pr_logistic(out$dist),
+    out$pr
+  )
+  # Validate simulation of detections
+  expect_true(all(out$pr > 0))
+
+  #### Validation of lon lat coordinates
+  r <- dat_gebco()
+  r <- terra::project(r, "EPSG:4326")
+  p <- sim_path_walk(r, .lonlat = TRUE, .n_step = 1000, .n_path = 1L)
+  a <- sim_array(r, .lonlat = TRUE, .n_receiver = 1000, .n_array = 1L)
+  a$receiver_x <- a$receiver_lon
+  a$receiver_y <- a$receiver_lat
+  out <- .sim_detections(.path = p, .array = a, .lonlat = TRUE, .return = NULL)
+  expect_equal(
+    out$dist,
+    terra::distance(cbind(out$x, out$y),
+                    cbind(out$receiver_lon, out$receiver_lat),
+                    lonlat = TRUE,
+                    pairwise = TRUE)
+  )
+
+  #### Validate implementation of .calc_detection_pr()
+  # Re-simulate arrays
+  a <- sim_array(.n_receiver = 1000)
+  a$receiver_x <- a$receiver_easting
+  a$receiver_y <- a$receiver_northing
+  p <- sim_path_walk(.n_step = 1000)
+  # If gamma = 0, we expect no detections:
+  .sim_detections(.path = p, .array = a, .gamma = 0) |>
+    expect_warning("No detections generated.", fixed = TRUE)
+  # If .alpha = Inf, .beta = 1, .gamma = Inf, we expect all detections:
+  out <- .sim_detections(.path = p, .array = a,
+                         .alpha = Inf, .beta = 1, .gamma = Inf)
+  expect_true(nrow(out) == 1000 * 1000)
+  expect_true(all(out$pr == 1))
+})
+
+test_that("sim_detections() works", {
+
+  #### Validate handling of multiple paths/arrays
+  # Validate pairwise implementation
+  # * Each array ID should correspond to the same path ID
+  a <- sim_array(.n_receiver = 1000, .n_array = 2L)
+  p <- sim_path_walk(.n_step = 1000, .n_path = 2L)
+  out <- sim_detections(.path = p, .array = a, .type = "pairwise")
+  expect_equal(out$array_id, out$path_id)
+  # Each array ID should correspond to every path ID
+  a <- sim_array(.n_receiver = 1000, .n_array = 2L)
+  p <- sim_path_walk(.n_step = 1000, .n_path = 3L)
+  out <- sim_detections(.paths = p, .arrays = a, .type = "combinations")
+  out |>
+    group_by(array_id) |>
+    summarise(test = all(1:3 %in% path_id) & all(path_id %in% 1:3)) |>
+    dplyr::pull(test) |>
+    all() |>
+    expect_true()
 
 })

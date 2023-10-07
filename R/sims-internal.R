@@ -28,7 +28,7 @@ NULL
 #' @rdname sim_path_flux
 #' @keywords internal
 
-.sim_path_flux <- function(.bathy = rast_template(),
+.sim_path_flux <- function(.bathy = rast_template(), .lonlat = FALSE,
                           .origin = NULL,
                           .n_step = 10L,
                           .flux, .flux_vals = .flux_template(.n_step, .n_path),
@@ -62,6 +62,7 @@ NULL
     pb$tick()
     mat[, lookup[[t + 1]]] <- .step_iter(.xy_now = mat[, lookup[[t]], drop = FALSE],
                                         .xy_next = mat[, lookup[[t + 1]], drop = FALSE],
+                                        .lonlat = .lonlat,
                                         .flux = .flux, .fv = .flux_vals,
                                         .move = .move, .t = t,
                                         .bathy = .bathy)
@@ -108,8 +109,9 @@ NULL
 #' @rdname sim_path_flux
 #' @keywords internal
 
-.step_using_flux <- function(.xy_now, .xy_next, .fv, .t) {
-  .step(.xy_now, .xy_next, .length = .fv$length[[.t]], .angle = .fv$angle[[.t]])
+.step_using_flux <- function(.xy_now, .xy_next, .lonlat, .fv, .t) {
+  .step(.xy_now = .xy_now, .xy_next = .xy_next, .lonlat = .lonlat,
+        .length = .fv$length[[.t]], .angle = .fv$angle[[.t]])
 }
 
 #' @rdname sim_path_flux
@@ -117,10 +119,15 @@ NULL
 
 .step <- function(.xy_now,
                  .xy_next = matrix(NA, nrow = nrow(.xy_now), ncol = 2L),
+                 .lonlat = FALSE,
                  .length = rtruncgamma(nrow(.xy_now)),
                  .angle = rwn(nrow(.xy_now))) {
-  .xy_next[, 1] <- .xy_now[, 1] + .length * cos(.angle)
-  .xy_next[, 2] <- .xy_now[, 2] + .length * sin(.angle)
+  if (.lonlat) {
+    .xy_next <- geosphere::destPoint(p = .xy_now, b = .angle, d = .length)
+  } else {
+    .xy_next[, 1] <- .xy_now[, 1] + .length * cos(.angle)
+    .xy_next[, 2] <- .xy_now[, 2] + .length * sin(.angle)
+  }
   .xy_next
 }
 
@@ -129,6 +136,7 @@ NULL
 
 .step_iter <- function(.xy_now,
                        .xy_next = matrix(NA, nrow = nrow(.xy_now), ncol = ncol(.xy_now)),
+                       .lonlat,
                       .flux, .fv, .t,
                       .move,
                       .bathy) {
@@ -145,6 +153,7 @@ NULL
     .flux(.fv, .row = pos, .col = .t)
     .xy_next <- .move(.xy_now = .xy_now,
                       .xy_next = .xy_next,
+                      .lonlat = .lonlat,
                       .fv = .fv, .t = .t)
     # Validate simulated positions
     vals <- terra::extract(.bathy, .xy_next[pos, , drop = FALSE])
@@ -191,4 +200,86 @@ NULL
     arrange(.data$path_id, .data$timestep) |>
     select("path_id", "timestep", "value") |>
     as.data.table()
+}
+
+
+#' @title Simulate detections
+#' @name sim_detections_internals
+#' @keywords internal
+
+#' @rdname sim_detections_internals
+#' @keywords internal
+
+.sim_detections <- function(.path, .array,
+                            .calc_distance = terra::distance, .lonlat = FALSE,
+                            .calc_detection_pr = calc_detection_pr, ...,
+                            .sim_obs = stats::rbinom,
+                            .return = c("array_id", "path_id",
+                                        "timestep", "receiver_id",
+                                        "dist", "pr")
+                            ){
+
+  #### Calculate distances between path and receivers
+  # Define matrices for distance calculations
+  x <- y <- receiver_x <- receiver_y <- NULL
+  pxy <- as.matrix(.path[, list(x, y)])
+  rxy <- as.matrix(.array[, list(receiver_x, receiver_y)])
+  # Define (Euclidean) distance matrix between points along the path & receivers
+  # * Rows represent time steps (for one paths)
+  # * Columns represent receivers (for one array)
+  # * Note that this approach will fail for very large matrices
+  dist_mat <- .calc_distance(pxy, rxy, lonlat = .lonlat)
+
+  #### Calculate detection probability
+  out <-
+    dist_mat |>
+    as.data.table() |>
+    collapse::pivot() |>
+    mutate(path_id = .path$path_id[1],
+           array_id = .array$array_id[1],
+           receiver_id = rep(.array$receiver_id, each = nrow(dist_mat)),
+           timestep = rep(.path$timestep, ncol(dist_mat))) |>
+    select("path_id", "array_id", "timestep", "receiver_id", dist = "value") |>
+    arrange(.data$timestep, .data$receiver_id) |>
+    as.data.table()
+
+  #### Define detection probabilities from distances
+  out <-
+    out |>
+    merge(.path, by = c("path_id", "timestep")) |>
+    merge(.array, by = c("array_id", "receiver_id"))
+
+  #### Calculate detection probabilities
+  pr <- NULL
+  out[, pr := .calc_detection_pr(out, ...)]
+
+  #### Simulate detections & return outputs
+  out <-
+    out |>
+    # Simulate detections
+    mutate(detection = .sim_obs(n = nrow(out), size = 1, prob = .data$pr)) |>
+    # Drop non detections
+    filter(.data$detection == 1L) |>
+    mutate(detection = NULL) |>
+    arrange(.data$timestep, .data$receiver_id) |>
+    as.data.table()
+  if (!is.null(.return)) {
+    out <-
+      out |>
+      select(dplyr::all_of(.return)) |>
+      as.data.table()
+  }
+  if (nrow(out) == 0L) {
+    warn("No detections generated.")
+  }
+  out
+}
+
+#' @rdname sim_detections_internals
+#' @keywords internal
+
+.sim_detections_call <- function(.path, .array, .args) {
+  .args$.path <- .path
+  .args$.array <- .array
+  do.call(.sim_detections, .args)
 }

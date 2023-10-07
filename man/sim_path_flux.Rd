@@ -13,6 +13,7 @@
 \usage{
 .sim_path_flux(
   .bathy = rast_template(),
+  .lonlat = FALSE,
   .origin = NULL,
   .n_step = 10L,
   .flux,
@@ -25,11 +26,12 @@
 
 .flux_template(.n_step, .n_path)
 
-.step_using_flux(.xy_now, .xy_next, .fv, .t)
+.step_using_flux(.xy_now, .xy_next, .lonlat, .fv, .t)
 
 .step(
   .xy_now,
   .xy_next = matrix(NA, nrow = nrow(.xy_now), ncol = 2L),
+  .lonlat = FALSE,
   .length = rtruncgamma(nrow(.xy_now)),
   .angle = rwn(nrow(.xy_now))
 )
@@ -37,6 +39,7 @@
 .step_iter(
   .xy_now,
   .xy_next = matrix(NA, nrow = nrow(.xy_now), ncol = ncol(.xy_now)),
+  .lonlat,
   .flux,
   .fv,
   .t,

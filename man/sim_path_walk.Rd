@@ -11,6 +11,7 @@
 \usage{
 sim_path_walk(
   .bathy = rast_template(),
+  .lonlat = FALSE,
   .origin = NULL,
   .n_step = 10L,
   .sim_length = sim_length,
@@ -34,11 +35,13 @@ sim_angle_crw(.n = 1, .prior = NULL, .t = NULL, ...)
 \arguments{
 \item{.bathy}{A \code{\link{SpatRaster}} that defines the region within which movements are simulated. Movements are simulated in continuous space but restricted within the boundaries defined by \code{.bathy} and non-NA regions.}
 
+\item{.lonlat}{A \code{logical} variable that defines whether or not \code{.bathy} uses longitude/latitude coordinates.}
+
 \item{.origin}{(optional) A one-row, two-column matrix that defines the origin. If unsupplied, \code{.origin} is sampled at random from \code{.bathy}. One origin is used for all simulated paths (see \code{.n_path}).}
 
 \item{.n_step}{An \code{integer} that defines the number of time steps.}
 
-\item{.sim_length, .sim_angle, ...}{Functions and accompanying arguments that simulate step lengths and turning angles. These must accept four named arguments, even if unused:
+\item{.sim_length, .sim_angle, ...}{Functions and accompanying arguments that simulate step lengths and turning angles. Simulated step lengths should be in map units (e.g., metres) if \code{.lonlat = FALSE} or metres if \code{.lonlat = TRUE}. Turning angles should be in degrees. The functions must accept four named arguments, even if unused:
 \itemize{
 \item \code{.n}---an \code{integer} that defines the number of simulated outcome(s);
 \item \code{.prior}---a \code{numeric} vector that defines the simulated value(s) from the previous time step;
@@ -90,11 +93,18 @@ The following template functions are provided:
 These functions facilitate the simulation of discrete-time animal movement paths from walk models (e.g., random walks, biased random walks, correlated random walks).
 }
 \details{
+The following convenience functions are provided:
 \itemize{
 \item \code{\link[=rtruncgamma]{rtruncgamma()}} and \code{\link[=rwn]{rwn()}} simulate step lengths (from a truncated Gamma distribution) and turning angles (from a wrapped normal distribution);
 \item \code{\link[=sim_length]{sim_length()}}, \code{\link[=sim_angle_rw]{sim_angle_rw()}} and \code{\link[=sim_angle_crw]{sim_angle_crw()}} are wrappers in the form required by \code{\link[=sim_path_walk]{sim_path_walk()}};
 \item \code{\link[=sim_path_walk]{sim_path_walk()}} simulates the movement path(s);
 }
+
+Within \code{\link[=sim_path_walk]{sim_path_walk()}}, at each time step, if \code{.lonlat = FALSE}, current locations (x, y) are updated via \code{x + length * cos(angle)} and \code{y + length * sin(angle)}.
+
+If \code{.lonlat = TRUE}, current locations are updated via \code{\link[geosphere:destPoint]{geosphere::destPoint()}}.
+
+\code{.lonlat} support is experimental. Be especially careful with correlated random walks if \code{lonlat = TRUE}. On an ellipsoid, the initial (simulated) bearing is not the same as the final bearing, but is not currently updated.
 }
 \examples{
 if (rlang::is_installed(c("circular", "truncdist"))) {
