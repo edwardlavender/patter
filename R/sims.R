@@ -425,7 +425,8 @@ sim_detections <- function(.paths, .arrays,
   #### Return outputs
   out |>
     rbindlist() |>
-    arrange("array_id", "path_id", "timestep")
+    arrange("array_id", "path_id", "timestep") |>
+    as.data.table()
 
 }
 

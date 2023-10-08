@@ -426,12 +426,29 @@ test_that("sim_detections() works", {
   # Each array ID should correspond to every path ID
   a <- sim_array(.n_receiver = 1000, .n_array = 2L)
   p <- sim_path_walk(.n_step = 1000, .n_path = 3L)
-  out <- sim_detections(.paths = p, .arrays = a, .type = "combinations")
+  out <- sim_detections(.paths = p, .arrays = a,
+                        .type = "combinations", .return = NULL)
   out |>
     group_by(array_id) |>
     summarise(test = all(1:3 %in% path_id) & all(path_id %in% 1:3)) |>
     dplyr::pull(test) |>
     all() |>
     expect_true()
+  # Validate path time steps/coordinates are correctly represented
+  # * Path coordinates should correctly align with time steps
+  p[, test_p_key := paste(path_id, timestep)]
+  out[, test_p_key := paste(path_id, timestep)]
+  out[, test_x := p$x[match(test_p_key, p$test_p_key)]]
+  out[, test_y := p$y[match(test_p_key, p$test_p_key)]]
+  expect_identical(out$x, out$test_x)
+  expect_identical(out$y, out$test_y)
+  # Validate receivers/receiver coordinates are correctly represented
+  # * Receiver coordinates should correctly align with receiver IDs
+  a[, test_a_key := paste(array_id, receiver_id)]
+  out[, test_a_key := paste(array_id, receiver_id)]
+  out[, test_receiver_easting := a$receiver_easting[match(out$test_a_key, a$test_a_key)]]
+  out[, test_receiver_northing := a$receiver_northing[match(out$test_a_key, a$test_a_key)]]
+  expect_identical(out$receiver_easting, out$test_receiver_easting)
+  expect_identical(out$receiver_northing, out$test_receiver_northing)
 
 })
