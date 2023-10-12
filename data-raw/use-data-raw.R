@@ -59,12 +59,14 @@ dat_moorings <-
          receiver_lat = receiver_lat,
          receiver_lon = receiver_long,
          receiver_easting = rxy[, 1],
-         receiver_northing = rxy[, 2]
+         receiver_northing = rxy[, 2],
+         receiver_range = 750
          ) |>
   select(receiver_id,
          receiver_start, receiver_end,
+         receiver_easting, receiver_northing,
          receiver_lat, receiver_lon,
-         receiver_easting, receiver_northing) |>
+         receiver_range) |>
   as.data.table()
 
 #### Acoustic data
