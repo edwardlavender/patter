@@ -4,16 +4,17 @@ test_that("Example datasets follow documented structure", {
     check_inherits(.dt, "data.table")
     expect_equal(nrow(.dt), .n_row)
     expect_equal(ncol(.dt), .n_col)
-    expect_true(all(colnames(.dt) %in% .cols))
+    expect_true(all(.cols %in% colnames(.dt)) &
+                  all(colnames(.dt) %in% .cols))
   }
 
   #### dat_moorings
-  check_dt(dat_moorings, "data.table", 40, 7,
+  check_dt(dat_moorings, "data.table", 40, 8,
            c("receiver_id",
              "receiver_start", "receiver_end",
              "receiver_lon", "receiver_lat",
              "receiver_easting", "receiver_northing",
-             "receiver_depth"))
+             "receiver_range"))
 
   #### dat_acoustics
   check_dt(dat_acoustics, "data.table", 39242, 3,
