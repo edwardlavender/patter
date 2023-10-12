@@ -442,8 +442,8 @@ calc_detection_pr <- function(.data, ...) {
 #' @export
 
 calc_detection_pr_logistic <- function(.distance,
-                                       .alpha = 2.5, .beta = -0.02,
-                                       .gamma = 500) {
+                                       .alpha = 4, .beta = -0.01,
+                                       .gamma = 750) {
   pr <- stats::plogis(.alpha + .beta * .distance)
   pr[.distance > .gamma] <- 0
   pr
