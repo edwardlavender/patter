@@ -39,28 +39,28 @@ out_pff <- pf_forward(.obs = obs,
 out_pfb <- pf_backward(out_pff$history, .save_history = TRUE)
 
 #### Example (2): Implement backward simulation from parquet files
-out_pfb <- pf_backward(pf_setup_record(forward_folder),
+out_pfb <- pf_backward(pf_setup_files(forward_folder),
                        .save_history = TRUE)
 
 #### Example (3): Write history to file (as in `pf_forward()`)
 backward_folder <- file.path(tempdir(), "pf", "backward")
 dir.create(backward_folder, recursive = TRUE)
-out_pfb <- pf_backward(pf_setup_record(forward_folder),
+out_pfb <- pf_backward(pf_setup_files(forward_folder),
                        .write_history = list(sink = backward_folder))
 utils::head(list.files(backward_folder))
 
 #### Example (4): Control monitoring of function progress
 # Suppress progress bar
-out_pfb <- pf_backward(pf_setup_record(forward_folder),
+out_pfb <- pf_backward(pf_setup_files(forward_folder),
                        .save_history = TRUE,
                        .progress = FALSE)
 # Save messages
 log.txt <- tempfile(fileext = ".txt")
-out_pfb <- pf_backward(pf_setup_record(forward_folder),
+out_pfb <- pf_backward(pf_setup_files(forward_folder),
                        .save_history = TRUE,
                        .con = log.txt)
 utils::head(readLines(log.txt), 15)
 # Suppress messages
-out_pfb <- pf_backward(pf_setup_record(forward_folder),
+out_pfb <- pf_backward(pf_setup_files(forward_folder),
                        .save_history = TRUE,
                        .verbose = FALSE)

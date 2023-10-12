@@ -38,7 +38,7 @@ out_pff <- pf_forward(.obs = obs,
 # (D) Implement backward pass
 backward_folder <- file.path(tempdir(), "pf", "backward")
 dir.create(backward_folder, recursive = TRUE)
-out_pfb <- pf_backward(pf_setup_record(forward_folder),
+out_pfb <- pf_backward(pf_setup_files(forward_folder),
                        .save_history = TRUE,
                        .write_history = list(sink = backward_folder))
 
@@ -46,7 +46,7 @@ out_pfb <- pf_backward(pf_setup_record(forward_folder),
 p1 <- pf_path(out_pfb$history)
 
 #### Example (2): Implement pf_path from parquet files
-p2 <- pf_path(pf_setup_record(backward_folder))
+p2 <- pf_path(pf_setup_files(backward_folder))
 stopifnot(all.equal(p1, p2))
 
 #### Example (3): Include cell coordinates/obs columns

@@ -31,7 +31,7 @@
 
 \item{.k}{The \code{.detection_kernels} \code{list}.}
 
-\item{.w, .con}{The \code{write_record} \code{list} and the name of the element that defines the directory in which to save files.}
+\item{.w, .con}{The \code{.write_record} \code{list} and the name of the element that defines the directory in which to save files.}
 
 \item{.p}{The \code{present} \code{\link{SpatRaster}}.}
 

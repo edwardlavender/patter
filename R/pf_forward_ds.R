@@ -3,7 +3,7 @@
 #' @param .obs A [`data.table`] that defines the time series of observations (see [`acs()`]). For [`pf_forward()`], at a minimum, this must contain the following column(s):
 #' * `timestep`---an `integer` that defines the time step;
 #' * Any columns required by `.kick` (see below);
-#' @param .record A list of [`SpatRaster`]s, or a character vector of file paths to [`SpatRaster`]s (see [`pf_setup_record()`]), that define the set of possible locations of the individual according to the data (i.e., an AC* algorithm).
+#' @param .record A list of [`SpatRaster`]s, or a character vector of file paths to [`SpatRaster`]s (see [`pf_setup_files()`]), that define the set of possible locations of the individual according to the data (i.e., an AC* algorithm).
 #' @param .kick,...,.bathy A function, and associated inputs, used to 'kick' particles into new (proposal) locations. `.kick` must support the following inputs:
 #' * `.particles`---a [`data.table`] that defines the `cell` IDs and associated coordinates (`x_now` and `y_now`) of current particle samples;
 #' * (optional) `.obs`---the `.obs` [`data.table`];

@@ -18,7 +18,7 @@ pf_path(
 \item{.history}{Particle samples from the particle filter, provided either as:
 \itemize{
 \item A \code{list} of \code{\link{data.table}}s that define cell samples; i.e., the \code{history} element of a \code{\linkS4class{pf}} object. This must contain columns that define cell samples at each time step (\code{cell_now}) alongside previous samples (\code{cell_past}).
-\item An ordered list of file paths (from \code{\link[=pf_setup_record]{pf_setup_record()}}) that define the directories in which particle samples were written from the forward simulation (as parquet files).
+\item An ordered list of file paths (from \code{\link[=pf_setup_files]{pf_setup_files()}}) that define the directories in which particle samples were written from the forward simulation (as parquet files).
 }}
 
 \item{.bathy}{(optional) If \code{.return = "long"}, a bathymetry \code{\link{SpatRaster}} can be supplied to define cell coordinates (see \code{\link[=pf_path_pivot]{pf_path_pivot()}}).}
@@ -87,7 +87,7 @@ out_pff <- pf_forward(.obs = obs,
 # (D) Implement backward pass
 backward_folder <- file.path(tempdir(), "pf", "backward")
 dir.create(backward_folder, recursive = TRUE)
-out_pfb <- pf_backward(pf_setup_record(forward_folder),
+out_pfb <- pf_backward(pf_setup_files(forward_folder),
                        .save_history = TRUE,
                        .write_history = list(sink = backward_folder))
 
@@ -95,7 +95,7 @@ out_pfb <- pf_backward(pf_setup_record(forward_folder),
 p1 <- pf_path(out_pfb$history)
 
 #### Example (2): Implement pf_path from parquet files
-p2 <- pf_path(pf_setup_record(backward_folder))
+p2 <- pf_path(pf_setup_files(backward_folder))
 stopifnot(all.equal(p1, p2))
 
 #### Example (3): Include cell coordinates/obs columns

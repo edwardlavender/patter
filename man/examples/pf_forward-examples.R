@@ -36,7 +36,7 @@ out_pf <- pf_forward(.obs = obs,
 summary(out_pf)
 
 #### Example (2): Pass a list of SpatRasters to `.record`
-spats <- pf_setup_record(ac_folder)
+spats <- pf_setup_files(ac_folder)
 out_pf <- pf_forward(.obs = obs,
                      .record = spats,
                      .n = 1e3,

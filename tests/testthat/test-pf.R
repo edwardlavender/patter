@@ -136,7 +136,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
 
   #### Implement pf_forward() using out_ac$record or SpatRasters from file & validate outputs are equal
   out_pff_by_record <-
-    lapply(list(out_ac$record, pf_setup_record(ac_folder)), \(record) {
+    lapply(list(out_ac$record, pf_setup_files(ac_folder)), \(record) {
       # Implement pf
       set.seed(seed)
       log.txt <- tempfile(fileext = ".txt")
@@ -220,7 +220,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   #### Implement pf_backward() from out_pff$history and parquet files
   log.txt <- tempfile(fileext = ".txt")
   out_pfb_by_history <-
-    lapply(list(out_pff$history, pf_setup_record(pff_folder)), \(h) {
+    lapply(list(out_pff$history, pf_setup_files(pff_folder)), \(h) {
       out_pfb <- pf_backward(h,
                              .save_history = TRUE,
                              .write_history = list(sink = pfb_folder),
@@ -228,7 +228,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
       # Validate files match
       expect_equal(
         out_pfb$history,
-        lapply(pf_setup_record(pfb_folder), arrow::read_parquet)
+        lapply(pf_setup_files(pfb_folder), arrow::read_parquet)
       )
       # Validate output length
       expect_equal(length(out_pfb$history), nrow(obs))
@@ -319,7 +319,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
 
   #### Build path from particle samples and parquet files
   out_pfp_by_history <-
-    lapply(list(out_pfb$history, pf_setup_record(pfb_folder)), \(h) {
+    lapply(list(out_pfb$history, pf_setup_files(pfb_folder)), \(h) {
     log.txt <- tempfile(fileext = ".txt")
     out_pfp <- pf_path(h, .con = log.txt)
     expect_true(file.exists(log.txt))

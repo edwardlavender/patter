@@ -57,7 +57,7 @@ out_dc <- dc(.obs = archival,
              .bathy = gebco,
              .model = dc_setup_model,
              .write_record = list(filename = folder))
-pf_setup_record(folder)[1:5]
+pf_setup_files(folder)[1:5]
 
 #### Example (3): Use parallelisation via `cl_lapply()`
 if (.Platform$OS.type == "unix") {
@@ -111,7 +111,7 @@ cumulative_1 <-
   terra::rast() |>
   terra::app("sum")
 # For large problems, perhaps use terra::app() on chunks:
-files <- pf_setup_record(folder)
+files   <- pf_setup_files(folder)
 chunk_s <- 10
 chunk_n <- ceiling(length(files) / chunk_s)
 chunks  <- rep(seq_len(chunk_s), each = chunk_n)

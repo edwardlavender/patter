@@ -1,5 +1,5 @@
-#' @title PF set up: list files from AC* for PF
-#' @description This function creates an ordered `list` of 'record' files derived from an AC* algorithm (e.g., [`acs()`]) for particle filtering (via [`pf_forward()`]).
+#' @title PF set up: list files for PF
+#' @description This function creates an ordered `list` of files for PF, either from an AC* algorithm (i.e., [`acs()`] or [`dc()`]) for the forward simulation ([`pf_forward()`]), or from the forward simulation ([`pf_forward()`]) for the backward pass ([`pf_backward()`]).
 #'
 #' @param .root A string that defines the directory in which files are located.
 #' @param ... Additional arguments passed to [`list.files()`], such as `pattern`, excluding `full.names`.
@@ -30,34 +30,36 @@
 #'       .write_record = list(filename = folder, overwrite = TRUE))
 #'
 #' # List files
-#' pf_setup_record(folder)
+#' pf_setup_files(folder)
 #'
 #' # Clean up
 #' unlink(folder, recursive = TRUE)
 #'
-#'
-#' @seealso This function is designed to list outputs from [`acs()`] (see the `.write_record` argument) for \code{\link[flapper]{pf}} (see the \code{.record} argument).
-#'
 #' @author Edward Lavender
 #' @export
 
-pf_setup_record <- function(.root, ...) {
+pf_setup_files <- function(.root, ...) {
   # Check inputs
   check_dir(input = .root)
   check_dots_allowed("full.names", ...)
   check_dots_for_missing_period(formals(), list(...))
   files <- list.files(.root, full.names = TRUE, ...)
-  if (length(unique(tools::file_ext(files))) != 1L) {
-    warn("Multiple file types (extensions) identified in `.root`. Do you need to pass `pattern` to `list.files()`?")
+  exts  <- tools::file_ext(files)
+  if (length(unique(exts)) != 1L) {
+    abort("Multiple file types (extensions) identified in `.root`. Do you need to pass `pattern` to `list.files()`?")
+  }
+  if (!all(exts %in% c("tif", "parquet"))) {
+    abort("Either .tif files (for `pf_forward()` or .parquet files (for `pf_backward()` are expected.")
   }
   bsname <- basename(files)
-  if (!isTRUE(all.equal(sort(paste0(seq_len(length(files)), ".tif")), bsname))) {
-    warn("Files do not match expected naming convention ('1.tif', '2.tif', ..., 'N.tif' where N is the number of files.)")
+  ext <- exts[1]
+  if (!isTRUE(all.equal(paste0(sort(paste0(seq_len(length(files)), ".", ext))), bsname))) {
+    abort("Files do not match expected naming convention ('1.{ext}', '2.{ext}', ..., 'N.{ext}' where N is the number of files.)", .envir = environment())
   }
   # Define ordered vector of files
   data.table(file = files,
              name = tools::file_path_sans_ext(bsname),
-             ext = tools::file_ext(bsname)) |>
+             ext = exts) |>
     lazy_dt(immutable = TRUE) |>
     mutate(name = as.integer(.data$name)) |>
     arrange(.data$name) |>
