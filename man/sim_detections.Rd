@@ -20,12 +20,7 @@ sim_detections(
 
 calc_detection_pr(.data, ...)
 
-calc_detection_pr_logistic(
-  .distance,
-  .alpha = 2.5,
-  .beta = -0.02,
-  .gamma = 500
-)
+calc_detection_pr_logistic(.distance, .alpha = 4, .beta = -0.01, .gamma = 750)
 }
 \arguments{
 \item{.paths}{A \code{\link{data.table}} that defines movement path(s) (e.g., from \code{\link[=sim_path_walk]{sim_path_walk()}}. This should contain the following columns:

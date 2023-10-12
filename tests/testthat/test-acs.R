@@ -82,14 +82,13 @@ test_that("acs() works", {
   f <- file.path(folder, "100.tif")
   file.create(f)
   pf_setup_files(folder) |>
-    expect_warning("Files do not match expected naming convention ('1.tif', '2.tif', ..., 'N.tif' where N is the number of files.)", fixed = TRUE)
+    expect_error("Files do not match expected naming convention ('1.tif', '2.tif', ..., 'N.tif' where N is the number of files.)", fixed = TRUE)
   unlink(f)
   # Validate check on file extensions
   f <- file.path(folder, "1.txt")
   file.create(f)
   pf_setup_files(folder) |>
-    expect_warning("Multiple file types (extensions) identified in `.root`. Do you need to pass `pattern` to `list.files()`?", fixed = TRUE) |>
-    expect_warning("Files do not match expected naming convention ('1.tif', '2.tif', ..., 'N.tif' where N is the number of files.)", fixed = TRUE)
+    expect_error("Multiple file types (extensions) identified in `.root`. Do you need to pass `pattern` to `list.files()`?", fixed = TRUE)
   # Validate correct functioning with pattern argument
   pf_setup_files(folder, pattern = "\\.tif$") |>
     expect_equal(r)

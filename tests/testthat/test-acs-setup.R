@@ -115,7 +115,7 @@ test_that("acs_setup_detection_pr() works", {
   m <- dat_moorings[1, , drop = FALSE]
   p <- acs_setup_detection_pr(m, dat_gebco())
   expect_equal(terra::extract(p, data.frame(m$receiver_easting, m$receiver_northing))[1, 2],
-               stats::plogis(2.5 + -0.02 * 0))
+               calc_detection_pr_logistic(0))
 
 })
 

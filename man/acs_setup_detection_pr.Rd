@@ -7,7 +7,7 @@
 acs_setup_detection_pr(
   .data,
   .bathy,
-  .coef = c(alpha = 2.5, beta = -0.02),
+  .calc_detection_pr = calc_detection_pr_logistic,
   ...
 )
 }
@@ -16,9 +16,9 @@ acs_setup_detection_pr(
 
 \item{.bathy}{A \code{\link{SpatRaster}} that defines the grid over which detection probability is calculated.}
 
-\item{.coef}{A named vector that defines the intercept (\code{alpha}) and gradient (\code{beta}) parameters of a logistic model for detection probability (on the logit scale) (see Details).}
+\item{.calc_detection_pr}{A function that calculates detection probability. In this implementation, the function is used to translate a \code{\link{SpatRaster}} of distances (m) (from each grid cell to the receiver in \code{.data}) via \code{\link[terra:app]{terra::app()}}.}
 
-\item{...}{Additional arguments (none implemented).}
+\item{...}{Additional arguments passed to \code{.calc_detection_pr} (\code{\link[=calc_detection_pr_logistic]{calc_detection_pr_logistic()}}  by default.)}
 }
 \value{
 The function returns a \code{\link{SpatRaster}} that defines the probability of detection in each cell, according to a pre-defined model.
@@ -27,7 +27,7 @@ The function returns a \code{\link{SpatRaster}} that defines the probability of 
 This function is an example detection probability function, of the kind required by \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}.
 }
 \details{
-In the AC* algorithms, a model of the detection process informs the set of possible locations for an individual. The information provided by this model is represented in the form of kernels, which are created via \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}. For any one receiver, the form of the kernel depends on the input to \code{.calc_detection_pr}. This function exemplifies one possible input to this argument, which is a model in which detection probability declines logistically with distance from a receiver, according to the values specified in \code{.coef}.
+In the AC* algorithms, a model of the detection process informs the set of possible locations for an individual. The information provided by this model is represented in the form of kernels, which are created via \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}. For any one receiver, the form of the kernel depends on the input to \code{.calc_detection_pr}. This function exemplifies one possible input to this argument, which is a model in which detection probability declines logistically with distance from a receiver.
 }
 \section{Warning}{
 \itemize{

@@ -389,10 +389,10 @@ acs_setup_detection_overlaps <- function(.containers, .moorings, .services = NUL
 #' @description This function is an example detection probability function, of the kind required by [`acs_setup_detection_kernels()`].
 #' @param .data A one-row [`data.table`] that defines the location of the receiver and associated information used by the model of detection probability.
 #' @param .bathy A [`SpatRaster`] that defines the grid over which detection probability is calculated.
-#' @param .coef A named vector that defines the intercept (`alpha`) and gradient (`beta`) parameters of a logistic model for detection probability (on the logit scale) (see Details).
-#' @param ... Additional arguments (none implemented).
+#' @param .calc_detection_pr A function that calculates detection probability. In this implementation, the function is used to translate a [`SpatRaster`] of distances (m) (from each grid cell to the receiver in `.data`) via [`terra::app()`].
+#' @param ... Additional arguments passed to `.calc_detection_pr` ([`calc_detection_pr_logistic()`]  by default.)
 #'
-#' @details In the AC* algorithms, a model of the detection process informs the set of possible locations for an individual. The information provided by this model is represented in the form of kernels, which are created via [`acs_setup_detection_kernels()`]. For any one receiver, the form of the kernel depends on the input to `.calc_detection_pr`. This function exemplifies one possible input to this argument, which is a model in which detection probability declines logistically with distance from a receiver, according to the values specified in `.coef`.
+#' @details In the AC* algorithms, a model of the detection process informs the set of possible locations for an individual. The information provided by this model is represented in the form of kernels, which are created via [`acs_setup_detection_kernels()`]. For any one receiver, the form of the kernel depends on the input to `.calc_detection_pr`. This function exemplifies one possible input to this argument, which is a model in which detection probability declines logistically with distance from a receiver.
 #'
 #' # Warning
 #'
@@ -410,22 +410,18 @@ acs_setup_detection_overlaps <- function(.containers, .moorings, .services = NUL
 #' @author Edward Lavender
 #' @export
 
-acs_setup_detection_pr <- function(.data, .bathy, .coef = c(alpha = 2.5, beta = -0.02), ...) {
-  # Define helper function to calculate detection probability given distance (m)
-  calc_dpr <- function(distance) {
-    pr <- stats::plogis(.coef[["alpha"]] + .coef[["beta"]] * distance)
-    pr[distance > .data$receiver_range] <- 0
-    pr
-  }
+acs_setup_detection_pr <- function(.data,
+                                   .bathy,
+                                   .calc_detection_pr = calc_detection_pr_logistic, ...) {
   # Calculate Euclidean distance around receiver
-  rxy <- matrix(c(.data$receiver_easting, .data$receiver_northing), ncol = 2)
+  rxy  <- matrix(c(.data$receiver_easting, .data$receiver_northing), ncol = 2)
   cell <- terra::cellFromXY(.bathy, rxy)
   grid <- terra::setValues(.bathy, NA)
   grid[cell] <- 1
   dist <- terra::distance(grid, unit = "m")
   dist <- terra::mask(dist, .bathy)
   # Convert distances to detection pr
-  terra::app(dist, calc_dpr)
+  terra::app(dist, calc_detection_pr_logistic, ...)
 }
 
 
