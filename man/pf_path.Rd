@@ -57,7 +57,6 @@ obs <- obs[1:200, ]
 gebco <- dat_gebco()
 
 # (B) Implement AC* algorithm
-dat_moorings$receiver_range <- 500
 containers <- acs_setup_detection_containers(gebco, dat_moorings)
 overlaps <- acs_setup_detection_overlaps(containers, dat_moorings)
 kernels <-

@@ -23,13 +23,13 @@ test_that("sim_array() works", {
   # Test column names/values with receiver_start/end/range
   a <- sim_array(.receiver_start = as.Date("2016-01-01"),
                  .receiver_end = as.Date("2017-01-01"),
-                 .receiver_range = 500)
+                 .receiver_range = 750)
   expect_equal(colnames(a), c("array_id", "receiver_id",
                               "receiver_easting", "receiver_northing",
                               "receiver_start", "receiver_end", "receiver_range"))
   expect_true(all(a$receiver_start == as.Date("2016-01-01")))
   expect_true(all(a$receiver_end == as.Date("2017-01-01")))
-  expect_true(all(a$receiver_range == 500))
+  expect_true(all(a$receiver_range == 750))
 
   #### Test multiple array implementation
   a <- sim_array(.n_receiver = 2, .n_array = 2)

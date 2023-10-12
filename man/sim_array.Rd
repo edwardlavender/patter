@@ -73,7 +73,7 @@ a <- sim_array(.arrangement = "regular", .n_receiver = 100)
 #### Example (3): Add additional columns for downstream functions
 a <- sim_array(.receiver_start = as.Date("2013-01-01"),
                .receiver_end = as.Date("2014-01-01"),
-               .receiver_range = 500)
+               .receiver_range = 750)
 
 #### Example (4): Control the plot(s)
 sim_array(.plot = FALSE)

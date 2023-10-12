@@ -32,7 +32,6 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   res <- terra::res(gebco)[1]
 
   # Implement ACDC algorithm
-  dat_moorings$receiver_range <- 500
   containers <- acs_setup_detection_containers(gebco, dat_moorings)
   overlaps <- acs_setup_detection_overlaps(containers, dat_moorings)
   kernels <-

@@ -159,7 +159,7 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
 #' grid <- dat_gebco()
 #' terra::plot(grid)
 #' # Define receiver detection ranges
-#' dat_moorings$receiver_range <- 500
+#' dat_moorings$receiver_range
 #' # Define detection containers
 #' containers <- acs_setup_detection_containers(grid, dat_moorings)
 #' # Visualise an example container
@@ -233,7 +233,6 @@ acs_setup_detection_containers <- function(.bathy, .moorings) {
 #' @examples
 #' #### Example (1): Basic implementation
 #' # Define detection containers
-#' dat_moorings$receiver_range <- 500
 #' containers <- acs_setup_detection_containers(dat_gebco(), dat_moorings)
 #' # Identify receiver overlaps
 #' overlaps <- acs_setup_detection_overlaps(containers, dat_moorings)
@@ -473,7 +472,7 @@ acs_setup_detection_pr <- function(.data, .bathy, .coef = c(alpha = 2.5, beta = 
 #'                 receiver_end = as.Date(c("2016-01-05", "2016-01-05", "2016-01-05")),
 #'                 receiver_easting = c(706124.9, 706012.7, 709379.0),
 #'                 receiver_northing = c(6265030, 6264993, 6260093),
-#'                 receiver_range = 500)
+#'                 receiver_range = 750)
 #' s <- data.table(receiver_id = c(3, 5),
 #'                 service_start = as.Date(c("2016-01-01", "2016-01-01")),
 #'                 service_end = as.Date(c("2016-01-01", "2016-01-01")))

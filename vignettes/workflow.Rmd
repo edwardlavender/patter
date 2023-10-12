@@ -47,10 +47,7 @@ set.seed(1)
 gebco <- dat_gebco()
 
 # Define passive acoustic telemetry receiver locations 
-moorings <- 
-  dat_moorings |> 
-  mutate(receiver_range = 500) |> 
-  as.data.table()
+moorings <- dat_moorings
 head(moorings)
 
 # Define a sample of acoustic time series 

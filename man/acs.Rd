@@ -125,7 +125,6 @@ head(obs, 25)
 #### Define overlapping receivers
 # Define detection containers
 gebco <- dat_gebco()
-dat_moorings$receiver_range <- 500
 containers <- acs_setup_detection_containers(gebco, dat_moorings)
 terra::plot(containers[[3]])
 # Identify receivers with overlapping containers for each array design

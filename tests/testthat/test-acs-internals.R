@@ -86,7 +86,7 @@ test_that(".acs_absences() and .acs_given_detection() works", {
                   receiver_end = as.Date(c("2016-01-05", "2016-01-05", "2016-01-05")),
                   receiver_easting = c(706124.9, 706012.7, 709379.0),
                   receiver_northing = c(6265030, 6264993, 6260093),
-                  receiver_range = 500)
+                  receiver_range = 750)
   s <- data.table(receiver_id = c(3, 5),
                   service_start = as.Date(c("2016-01-01", "2016-01-01")),
                   service_end = as.Date(c("2016-01-01", "2016-01-01")))

@@ -13,7 +13,6 @@
 #' obs <- acs_setup_obs(acoustics, archival, "2 mins", 500)
 #' obs <- obs[1:10, ]
 #' gebco <- dat_gebco()
-#' dat_moorings$receiver_range <- 500
 #' containers <- acs_setup_detection_containers(gebco, dat_moorings)
 #' # (For speed only, ignore overlaps)
 #' # overlaps <- acs_setup_detection_overlaps(containers, dat_moorings)

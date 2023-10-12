@@ -29,7 +29,7 @@ Receiver detection containers are the regions within which an individual must be
 grid <- dat_gebco()
 terra::plot(grid)
 # Define receiver detection ranges
-dat_moorings$receiver_range <- 500
+dat_moorings$receiver_range
 # Define detection containers
 containers <- acs_setup_detection_containers(grid, dat_moorings)
 # Visualise an example container

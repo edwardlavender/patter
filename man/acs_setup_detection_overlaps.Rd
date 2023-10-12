@@ -42,7 +42,6 @@ In the AC* algorithms, at the moment of detection, the set of possible locations
 \examples{
 #### Example (1): Basic implementation
 # Define detection containers
-dat_moorings$receiver_range <- 500
 containers <- acs_setup_detection_containers(dat_gebco(), dat_moorings)
 # Identify receiver overlaps
 overlaps <- acs_setup_detection_overlaps(containers, dat_moorings)

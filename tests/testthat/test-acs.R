@@ -9,7 +9,6 @@ test_that("acs() works", {
   obs <- obs[1:10, ]
   # Define detection containers
   gebco <- dat_gebco()
-  dat_moorings$receiver_range <- 500
   containers <- acs_setup_detection_containers(gebco, dat_moorings)
   # Identify receivers with overlapping containers for each array design
   overlaps <- acs_setup_detection_overlaps(containers, dat_moorings)
