@@ -1,9 +1,9 @@
 #########################
 #########################
-#### prepare-data-raw.R
+#### add-data-mefs.R
 
 #### Aims
-# 1) Prepare raw data
+# 1) Prepare MEFS data
 
 #### Prerequisites
 # 1) NA
