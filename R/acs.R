@@ -48,7 +48,7 @@
 #' # Feature requests
 #' Please submit a [feature request](https://github.com/edwardlavender/patter/issues) if you would like to see new features added to this function (and associated routines).
 #' * **Time-specific detection kernels.** This function does not currently support temporally varying detection kernels (although receiver-specific detection kernels are fine).
-#' * **Paralellisation.** This function does not currently implement parallelisation (unlike predecessor functions in the [`flapper`](https://github.com/edwardlavender/flapper) package). However, the new approach is simpler and faster.
+#' * **Parallelisation.** This function does not currently implement parallelisation (unlike predecessor functions in the [`flapper`](https://github.com/edwardlavender/flapper) package). However, the new approach is simpler and faster.
 #'
 #' @return The function returns an [`acs-class`] object.
 #'
@@ -61,7 +61,9 @@
 #' 3. [`acs_setup_detection_kernels()`] to define detection probability kernels;
 #' 4. [`acs()`] to implement the AC algorithm;
 #'
-#' For internal helpers, see `.acs_*()` functions.
+#' See [`dc()`] to implement the DC algorithm.
+#'
+#' AC-branch algorithms (i.e., [`acs()`], [`dc()`]) are typically followed by particle filtering to reconstruct movement paths and refine maps of space use (see [`pf_forward()`] and associated `pf_*()` functions.
 #'
 #' @source This function evolved from the `.acs()`, `.acs_pl()`, [`ac`](https://edwardlavender.github.io/flapper/reference/ac.html) and [`acdc`](https://edwardlavender.github.io/flapper/reference/acdc.html) functions in the [`flapper`](https://github.com/edwardlavender/flapper) package. Key developments include:
 #' * Implementation of the algorithm over a single timeline;

@@ -108,7 +108,7 @@ For a full description of the AC* algorithms, see the resources linked in 'Sourc
 Please submit a \href{https://github.com/edwardlavender/patter/issues}{feature request} if you would like to see new features added to this function (and associated routines).
 \itemize{
 \item \strong{Time-specific detection kernels.} This function does not currently support temporally varying detection kernels (although receiver-specific detection kernels are fine).
-\item \strong{Paralellisation.} This function does not currently implement parallelisation (unlike predecessor functions in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package). However, the new approach is simpler and faster.
+\item \strong{Parallelisation.} This function does not currently implement parallelisation (unlike predecessor functions in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package). However, the new approach is simpler and faster.
 }
 }
 
@@ -301,7 +301,9 @@ This function is part of a series of functions designed to implement the AC* alg
 \item \code{\link[=acs]{acs()}} to implement the AC algorithm;
 }
 
-For internal helpers, see \verb{.acs_*()} functions.
+See \code{\link[=dc]{dc()}} to implement the DC algorithm.
+
+AC-branch algorithms (i.e., \code{\link[=acs]{acs()}}, \code{\link[=dc]{dc()}}) are typically followed by particle filtering to reconstruct movement paths and refine maps of space use (see \code{\link[=pf_forward]{pf_forward()}} and associated \verb{pf_*()} functions.
 }
 \author{
 Edward Lavender
