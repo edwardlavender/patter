@@ -59,19 +59,19 @@
 #' * Lavender, E. et al. (2022). Benthic animal-borne sensors and citizen science combine to validate ocean modelling. Sci. Rep. 12: 16613. \url{https://www.doi.org/1038/s41598-022-20254-z}
 #' * Lavender, E. et al. (2023). An integrative modelling framework for passive acoustic telemetry. Meth. Ecol. Evol: 14, 2626–2638. \url{https://doi.org/10.1111/2041-210X.14193}
 #'
-#' @name mefs
+#' @name datasets-mefs
 NULL
 
-#' @rdname mefs
+#' @rdname datasets-mefs
 "dat_moorings"
 
-#' @rdname mefs
+#' @rdname datasets-mefs
 "dat_acoustics"
 
-#' @rdname mefs
+#' @rdname datasets-mefs
 "dat_archival"
 
-#' @rdname mefs
+#' @rdname datasets-mefs
 #' @export
 
 dat_gebco <- function() {
