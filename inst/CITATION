@@ -6,5 +6,7 @@ bibentry(
   author   = c("Edward Lavender", "Stanisław Biber", "Janine Illian", "Mark James", "Peter J. Wright", "James Thorburn", "Sophie Smout"),
   journal  = "Methods in Ecology and Evolution",
   year     = "2023",
+  volume   = "14",
+  pages    = "2626–2638",
   doi      = "10.1111/2041-210X.14193"
 )
