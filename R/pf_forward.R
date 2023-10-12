@@ -1,6 +1,6 @@
 #' @title PF: run the forward simulation
 #' @description This function implements forward simulation of possible locations.
-#' @param .obs A [`data.table`] that defines the time series of observations (see [`acs()`]). For [`pf()`], at a minimum, this must contain the following column(s):
+#' @param .obs A [`data.table`] that defines the time series of observations (see [`acs()`]). For [`pf_forward()`], at a minimum, this must contain the following column(s):
 #' * `timestep`---an `integer` that defines the time step;
 #' * Any columns required by `.kick` (see below);
 #' @param .record A list of [`SpatRaster`]s, or a character vector of file paths to [`SpatRaster`]s (see [`pf_setup_record()`]), that define the set of possible locations of the individual according to the data (i.e., an AC* algorithm).
@@ -9,7 +9,7 @@
 #' * (optional) `.obs`---the `.obs` [`data.table`];
 #' * (optional) `.t`---the `timestep` (used to index `.obs`);
 #' * (optional) `.bathy`---a [`SpatRaster`] that defines the bathymetry;
-#' * (optional) `...`---additional arguments, passed via [`pf()`], if required;
+#' * (optional) `...`---additional arguments, passed via [`pf_forward()`], if required;
 #'
 #' See [`pf_kick()`] for an example movement model.
 #' @param .n An `integer` that defines the number of particle samples at each time step.
@@ -57,8 +57,8 @@ pf_forward <- function(.obs, .record, .kick, ..., .bathy, .n = 100L,
   cat_to_cf <- function(..., message = .verbose, file = .con, append = append_messages) {
     if (message) cat(paste(..., "\n"), file = .con, append = append)
   }
-  cat_to_cf(paste0("patter::pf() called (@ ", t_onset, ")..."))
-  on.exit(cat_to_cf(paste0("patter::pf() call ended (@ ", Sys.time(), ").")), add = TRUE)
+  cat_to_cf(paste0("patter::pf_forward() called (@ ", t_onset, ")..."))
+  on.exit(cat_to_cf(paste0("patter::pf_forward() call ended (@ ", Sys.time(), ").")), add = TRUE)
 
   #### Set up loop
   history <- list()

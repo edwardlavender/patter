@@ -23,18 +23,18 @@ pf_kick(
 \arguments{
 \item{.n}{An \code{integer} that defines the number of particles to kick.}
 
-\item{.particles}{A \code{\link{data.table}}, from \code{\link[=pf]{pf()}}, that defines the current particle samples:
+\item{.particles}{A \code{\link{data.table}}, from \code{\link[=pf_forward]{pf_forward()}}, that defines the current particle samples:
 \itemize{
 \item \code{cell_now} is an integer vector of cell IDs;
 \item \code{x_now} is a numerical vector of \code{x} coordinates;
 \item \code{y_now} is a numerical vector of \code{y} coordinates;
 }}
 
-\item{.obs, .t, .bathy}{(optional) The \code{.obs} \code{\link{data.table}}, an integer that indexes \code{.obs} and the \code{.bathy} \code{\link{SpatRaster}} (see \code{\link[=pf]{pf()}}). These inputs are unused in this template movement model but supported within \code{\link[=pf]{pf()}}.}
+\item{.obs, .t, .bathy}{(optional) The \code{.obs} \code{\link{data.table}}, an integer that indexes \code{.obs} and the \code{.bathy} \code{\link{SpatRaster}} (see \code{\link[=pf_forward]{pf_forward()}}). These inputs are unused in this template movement model but supported within \code{\link[=pf_forward]{pf_forward()}}.}
 
 \item{.sim_step, .sim_angle}{Functions that simulate \code{.n} step lengths and turning angles.}
 
-\item{...}{Additional arguments passed from \code{\link[=pf]{pf()}} (unused here).}
+\item{...}{Additional arguments passed from \code{\link[=pf_forward]{pf_forward()}} (unused here).}
 }
 \value{
 The function returns a \code{\link{data.table}}, as supplied, with two additional columns:
@@ -44,7 +44,7 @@ The function returns a \code{\link{data.table}}, as supplied, with two additiona
 }
 }
 \description{
-These functions are example movement models, of the kind required by \code{.kick} in \code{\link[=pf]{pf()}}.
+These functions are example movement models, of the kind required by \code{.kick} in \code{\link[=pf_forward]{pf_forward()}}.
 }
 \details{
 This template movement model is a biased random walk. Step lengths are simulated from a Gamma distribution via \code{\link[stats:GammaDist]{stats::rgamma()}}. Turning angles are simulated from a wrapped normal distribution via \code{\link[circular:wrappednormal]{circular::rwrappednormal()}}. See the the code for the parameters used.

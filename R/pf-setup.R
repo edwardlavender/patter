@@ -1,5 +1,5 @@
 #' @title PF set up: list files from AC* for PF
-#' @description This function creates an ordered `list` of 'record' files derived from an AC* algorithm (e.g., [`acs()`]) for particle filtering (via [`pf()`]).
+#' @description This function creates an ordered `list` of 'record' files derived from an AC* algorithm (e.g., [`acs()`]) for particle filtering (via [`pf_forward()`]).
 #'
 #' @param .root A string that defines the directory in which files are located.
 #' @param ... Additional arguments passed to [`list.files()`], such as `pattern`, excluding `full.names`.
@@ -66,15 +66,15 @@ pf_setup_record <- function(.root, ...) {
 }
 
 #' @title PF: template movement models
-#' @description These functions are example movement models, of the kind required by `.kick` in [`pf()`].
+#' @description These functions are example movement models, of the kind required by `.kick` in [`pf_forward()`].
 #' @param .n An `integer` that defines the number of particles to kick.
-#' @param .particles A [`data.table`], from [`pf()`], that defines the current particle samples:
+#' @param .particles A [`data.table`], from [`pf_forward()`], that defines the current particle samples:
 #' * `cell_now` is an integer vector of cell IDs;
 #' * `x_now` is a numerical vector of `x` coordinates;
 #' * `y_now` is a numerical vector of `y` coordinates;
-#' @param .obs,.t,.bathy (optional) The `.obs` [`data.table`], an integer that indexes `.obs` and the `.bathy` [`SpatRaster`] (see [`pf()`]). These inputs are unused in this template movement model but supported within [`pf()`].
+#' @param .obs,.t,.bathy (optional) The `.obs` [`data.table`], an integer that indexes `.obs` and the `.bathy` [`SpatRaster`] (see [`pf_forward()`]). These inputs are unused in this template movement model but supported within [`pf_forward()`].
 #' @param .sim_step,.sim_angle Functions that simulate `.n` step lengths and turning angles.
-#' @param ... Additional arguments passed from [`pf()`] (unused here).
+#' @param ... Additional arguments passed from [`pf_forward()`] (unused here).
 #'
 #' @details This template movement model is a biased random walk. Step lengths are simulated from a Gamma distribution via [`stats::rgamma()`]. Turning angles are simulated from a wrapped normal distribution via [`circular::rwrappednormal()`]. See the the code for the parameters used.
 #'

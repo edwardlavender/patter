@@ -20,7 +20,7 @@ pf_forward(
 )
 }
 \arguments{
-\item{.obs}{A \code{\link{data.table}} that defines the time series of observations (see \code{\link[=acs]{acs()}}). For \code{\link[=pf]{pf()}}, at a minimum, this must contain the following column(s):
+\item{.obs}{A \code{\link{data.table}} that defines the time series of observations (see \code{\link[=acs]{acs()}}). For \code{\link[=pf_forward]{pf_forward()}}, at a minimum, this must contain the following column(s):
 \itemize{
 \item \code{timestep}---an \code{integer} that defines the time step;
 \item Any columns required by \code{.kick} (see below);
@@ -34,7 +34,7 @@ pf_forward(
 \item (optional) \code{.obs}---the \code{.obs} \code{\link{data.table}};
 \item (optional) \code{.t}---the \code{timestep} (used to index \code{.obs});
 \item (optional) \code{.bathy}---a \code{\link{SpatRaster}} that defines the bathymetry;
-\item (optional) \code{...}---additional arguments, passed via \code{\link[=pf]{pf()}}, if required;
+\item (optional) \code{...}---additional arguments, passed via \code{\link[=pf_forward]{pf_forward()}}, if required;
 }
 
 See \code{\link[=pf_kick]{pf_kick()}} for an example movement model.}

@@ -63,7 +63,7 @@ Other columns can be included as necessary for \code{.update_ac} (see below).}
 \item{.save_record, .save_cumulative}{Logical inputs that control options for saving outputs in memory.
 \itemize{
 \item \code{.save_record} defines whether or not to save the record of the possible locations of the individual at each time step in the \code{record} element of the output. This is only sensible for relatively short time series (use \code{.write_record}, below, otherwise).
-\item \code{.save_cumulative} defines whether or not to save a cumulative (probability-of-use) map, derived from the normalised summation of each element in \code{record} in the \code{map} element of the output. In general, this is not necessary since AC* outputs are refined by particle filtering (see \code{\link[=pf]{pf()}}) before mapping.
+\item \code{.save_cumulative} defines whether or not to save a cumulative (probability-of-use) map, derived from the normalised summation of each element in \code{record} in the \code{map} element of the output. In general, this is not necessary since AC* outputs are refined by particle filtering (see \code{\link[=pf_forward]{pf_forward()}}) before mapping.
 }}
 
 \item{.write_record}{A named list, passed to \code{\link[terra:writeRaster]{terra::writeRaster}}, to save the \code{record} \code{\link{SpatRaster}}s to file at each time step. The \code{filename} argument should define the directory in which to write files. Files are named by \code{.obs$timestep} (i.e., \verb{1.tif}, \verb{2.tif}, ..., \code{N.tif}). This is typically desirable but considerably reduces speed.}

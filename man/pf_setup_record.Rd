@@ -15,7 +15,7 @@ pf_setup_record(.root, ...)
 The function returns an ordered \code{list} of file paths.
 }
 \description{
-This function creates an ordered \code{list} of 'record' files derived from an AC* algorithm (e.g., \code{\link[=acs]{acs()}}) for particle filtering (via \code{\link[=pf]{pf()}}).
+This function creates an ordered \code{list} of 'record' files derived from an AC* algorithm (e.g., \code{\link[=acs]{acs()}}) for particle filtering (via \code{\link[=pf_forward]{pf_forward()}}).
 }
 \examples{
 # Quick implementation of AC algorithm
