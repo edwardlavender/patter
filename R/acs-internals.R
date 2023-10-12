@@ -6,11 +6,9 @@
 #' @param .ov The `detection_overlaps` `list`.
 #' @param .p The `present` [`SpatRaster`].
 #' @param .t The `timestep`.
-#' @param .w,.con The `write_record` `list` and the name of the element that defines the directory in which to save files.
+#' @param .w,.con The `.write_record` `list` and the name of the element that defines the directory in which to save files.
 #' @author Edward Lavender
 #' @name acs_check
-NULL
-
 
 #' @rdname acs_check
 #' @keywords internal
@@ -109,7 +107,6 @@ NULL
   NULL
 }
 
-
 #' @title AC* helper: Define active, overlapping receivers with absences
 #' @description Given a detection at one or more receivers on a given date, this function defines the set of remaining, active, overlapping receivers that did not record detections.
 #' @param .date A `character` that defines the date (e.g., `obs$date[t]` internally in [`acs()`]).
@@ -146,7 +143,6 @@ NULL
   }
   absences
 }
-
 
 #' @title AC* helper: Define the individual's location given detection(s)
 #' @description This function defines an (unnormalised) probability surface that represents the possible locations of an individual given one or more detections.
