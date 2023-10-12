@@ -31,6 +31,18 @@ NULL
 #' @rdname pf_check
 #' @keywords internal
 
+.pf_check_rows <- function(.data, .filter, .t) {
+  fail <- FALSE
+  if (collapse::fnrow(.data) == 0L) {
+    fail <- TRUE
+    msg("There are no particles that pass the {.filter} filter at time {.t}. `history` returned up to this point.", .envir = environment())
+  }
+  fail
+}
+
+#' @rdname pf_check
+#' @keywords internal
+
 .pf_path_pivot_checks <- function(.obs, .cols) {
   if (is.null(.obs) & !is.null(.cols)) {
     .cols <- NULL

@@ -21,7 +21,7 @@
 #' @details The forward simulation is implemented as follows:
 #' 1. At each time step, `.n` grid cells (particles) are sampled (at `t = 1`) or resampled from a set of proposals (at subsequent time steps) with replacement, in line with AC* weights;
 #' 2. The previous locations (`NA` for `t = 1`) and the (accepted) current locations are recorded;
-#' 3. Each particle is 'kicked' into new (proposal) location, by the movement model;
+#' 3. Each particle is 'kicked' into new (proposal) location (grid cell), by the movement model;
 #' 4. Steps 1--3 are repeated until the end of the time series;
 #'
 #' @return The function returns a [`pf-class`] object.
