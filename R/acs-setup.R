@@ -233,7 +233,9 @@ acs_setup_detection_containers <- function(.bathy, .moorings) {
 #' @examples
 #' #### Example (1): Basic implementation
 #' # Define detection containers
-#' containers <- acs_setup_detection_containers(dat_gebco(), dat_moorings)
+#' # containers <- acs_setup_detection_containers(dat_gebco(), dat_moorings)
+#' # (For speed, we use a pre-computed dataset):
+#' containers <- dat_containers()
 #' # Identify receiver overlaps
 #' overlaps <- acs_setup_detection_overlaps(containers, dat_moorings)
 #' summary(overlaps)
