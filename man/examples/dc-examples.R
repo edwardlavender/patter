@@ -21,7 +21,7 @@ archival <-
          depth_shallow = depth + cde(depth)[1, ],
          depth_deep = depth + cde(depth)[2, ]) |>
   select(timestep, depth_deep, depth, depth_shallow) |>
-  slice(1:200) |>
+  slice(1:50) |>
   as.data.table()
 
 # (D) Visualise depth limits
@@ -38,7 +38,7 @@ gebco <- dat_gebco()
 map_1 <- dc_setup_model(.obs = archival[1:10], .t = 1, .bathy = gebco)
 terra::plot(map_1)
 
-#### Example (1): Implement dc() using default options
+#### Example (1): Implement `dc()` using default options
 out_dc <- dc(.obs = archival,
              .bathy = gebco,
              .model = dc_setup_model,
@@ -50,7 +50,7 @@ terra::plot(out_dc$record[[1]])
 terra::plot(out_dc$record[[2]])
 terra::plot(out_dc$record[[3]])
 
-#### Example (2): Write record to file via `.write_record` (as in acs())
+#### Example (2): Write record to file via `.write_record` (as in `acs()`)
 folder <- file.path(tempdir(), "dc")
 dir.create(folder)
 out_dc <- dc(.obs = archival,
@@ -105,12 +105,12 @@ out_dc <- dc(.obs = archival,
 readLines(log.txt)
 
 #### Example (5): Generate cumulative map
-# For small problems, use terra::app() directly
+# For small problems, use `terra::app()` directly
 cumulative_1 <-
   out_dc$record |>
   terra::rast() |>
   terra::app("sum")
-# For large problems, perhaps use terra::app() on chunks:
+# For large problems, perhaps use `terra::app()` on chunks:
 files   <- pf_setup_files(folder)
 chunk_s <- 10
 chunk_n <- ceiling(length(files) / chunk_s)

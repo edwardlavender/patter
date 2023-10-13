@@ -9,6 +9,7 @@
 
 #### Set up examples using pre-defined datasets for speed
 obs <- dat_obs()
+gebco      <- dat_gebco()
 containers <- dat_containers()
 overlaps   <- dat_overlaps()
 kernels    <- dat_kernels()
@@ -27,7 +28,7 @@ summary(out_ac)
 # * `record` - a time series of maps that define the individual's possible locations
 # * `map` - a cumulative map (if requested)
 terra::plot(out_ac$record[[1]])
-terra::plot(out_ac$record[[120]])
+terra::plot(out_ac$record[[2]])
 
 #### Example (2): Create a cumulative map on the fly
 out_ac <-
@@ -84,7 +85,7 @@ if (interactive()) {
         .save_record = TRUE,
         .prompt = TRUE)
 }
-# Use con to write messages to file
+# Use `.con` to write messages to file
 # * This is highly recommended
 log.txt <- tempfile(fileext = ".txt")
 out_ac <-
