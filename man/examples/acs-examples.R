@@ -1,25 +1,17 @@
-#### Define datasets
-acoustics <- dat_acoustics[individual_id == 25, ]
-archival <- dat_archival[individual_id == 25, ]
+#### Workflow
+# A. Define input datasets & objects
+# * ?`acs_setup_obs()`
+# * ?`acs_setup_detection_containers()`
+# * ?`acs_setup_detection_overlaps()`
+# * ?`acs_setup_detection_kernels()`
+# B. Implement AC* algorithm(s)
+# C. Proceed with particle filtering (?`pf_forward()`)
 
-#### Process datasets
-obs <- acs_setup_obs(acoustics, archival, "2 mins", 500)
-obs <- obs[1:200, ]
-head(obs, 25)
-
-#### Define overlapping receivers
-# Define detection containers
-gebco <- dat_gebco()
-containers <- acs_setup_detection_containers(gebco, dat_moorings)
-terra::plot(containers[[3]])
-# Identify receivers with overlapping containers for each array design
-overlaps <- acs_setup_detection_overlaps(containers, dat_moorings)
-
-#### Define detection kernels
-kernels <-
-  acs_setup_detection_kernels(dat_moorings,
-                              .calc_detection_pr = acs_setup_detection_pr,
-                              .bathy = gebco)
+#### Set up examples using pre-defined datasets for speed
+obs <- dat_obs()
+containers <- dat_containers()
+overlaps   <- dat_overlaps()
+kernels    <- dat_kernels()
 
 #### Example (1): AC algorithm minimal implementation
 # This implementation assumes there are no overlapping receivers!
@@ -28,7 +20,7 @@ out_ac <-
       .bathy = gebco,
       .detection_kernels = kernels,
       .save_record = TRUE)
-# The function returns an acb-class object
+# The function returns an `acb-class` object
 class(out_ac)
 summary(out_ac)
 # This contains:

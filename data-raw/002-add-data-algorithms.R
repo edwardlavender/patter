@@ -30,7 +30,7 @@ devtools::load_all()
 acoustics <- dat_acoustics[individual_id == 25, ]
 archival <- dat_archival[individual_id == 25, ]
 obs <- acs_setup_obs(acoustics, archival, "2 mins", 500)
-obs <- obs[1:200, ]
+obs <- obs[1:50, ]
 gebco <- dat_gebco()
 
 # Implement AC* algorithm
