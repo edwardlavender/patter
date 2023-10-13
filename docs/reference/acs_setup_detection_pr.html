@@ -32,7 +32,7 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/workflow.html">A streamlined implementation of the `flapper` algorithms</a>
+      <a href="../articles/workflow.html">A re-implementation of the `flapper` algorithms</a>
     </li>
   </ul></li>
 <li>
@@ -63,7 +63,12 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">acs_setup_detection_pr</span><span class="op">(</span><span class="va">.data</span>, <span class="va">.bathy</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">acs_setup_detection_pr</span><span class="op">(</span></span>
+<span>  <span class="va">.data</span>,</span>
+<span>  <span class="va">.bathy</span>,</span>
+<span>  .calc_detection_pr <span class="op">=</span> <span class="va">calc_detection_pr_logistic</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -76,8 +81,12 @@
 <dd><p>A <code>SpatRaster</code> that defines the grid over which detection probability is calculated.</p></dd>
 
 
+<dt>.calc_detection_pr</dt>
+<dd><p>A function that calculates detection probability. In this implementation, the function is used to translate a <code>SpatRaster</code> of distances (m) (from each grid cell to the receiver in <code>.data</code>) via <code><a href="https://rdrr.io/pkg/terra/man/app.html" class="external-link">terra::app()</a></code>.</p></dd>
+
+
 <dt>...</dt>
-<dd><p>Additional arguments (none implemented).</p></dd>
+<dd><p>Additional arguments passed to <code>.calc_detection_pr</code> (<code><a href="sim_detections.html">calc_detection_pr_logistic()</a></code>  by default.)</p></dd>
 
 </dl></div>
     <div id="value">
@@ -104,7 +113,7 @@
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="va">dat_moorings</span><span class="op">[</span><span class="fl">1</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">acs_setup_detection_pr</span><span class="op">(</span><span class="va">m</span>, <span class="fu"><a href="dat_gebco.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">acs_setup_detection_pr</span><span class="op">(</span><span class="va">m</span>, <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">m</span><span class="op">$</span><span class="va">receiver_easting</span>, <span class="va">m</span><span class="op">$</span><span class="va">receiver_northing</span>, pch <span class="op">=</span> <span class="st">"."</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="acs_setup_detection_pr-1.png" alt="" width="700" height="433"></span>

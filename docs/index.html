@@ -50,7 +50,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="articles/workflow.html">A streamlined implementation of the `flapper` algorithms</a>
+      <a href="articles/workflow.html">A re-implementation of the `flapper` algorithms</a>
     </li>
   </ul>
 </li>
@@ -85,7 +85,7 @@
 <p><strong>A re-implementation of the <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a> family of algorithms for passive acoustic telemetry</strong></p>
 <!-- badges: start -->
 
-<p><a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a> is <a href="https://www.r-project.org" class="external-link">R</a> package implementation of the <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a> family of algorithms for passive acoustic telemetry (Lavender et al., 2023). This evolved from the experimental <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a> package, but is simpler, faster and better tested.</p>
+<p><a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a> is <a href="https://www.r-project.org" class="external-link">R</a> package implementation of the <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a> family of algorithms for passive acoustic telemetry (Lavender et al., 2023). This evolved from the experimental <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a> package, but is simpler, faster and better tested. The aim of the package is to facilitate the reconstruction of movement paths and patterns of space use in passive acoustic telemetry systems.</p>
 </div>
 <div class="section level1">
 <h1 id="key-features">Key features<a class="anchor" aria-label="anchor" href="#key-features"></a>
@@ -99,11 +99,11 @@
 <li>
 <strong>More stable</strong>, with fewer dependencies and an upgraded spatial ecosystem;</li>
 <li>
-<strong>Faster</strong>, with revised internal routines that exploit the <a href="https://github.com/Rdatatable/data.table" class="external-link"><code>data.table</code></a> and <a href="https://github.com/rspatial/terra" class="external-link"><code>terra</code></a> packages and substantive, new algorithm parameterisations;</li>
+<strong>Faster</strong>, with revised internal routines that exploit faster packages and substantive, new algorithm parameterisations;</li>
 <li>
 <strong>Better tested</strong>, with comprehensive unit tests;</li>
 </ul>
-<p>At the time of writing (September 2023),<a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a> solely provides the functions required to implement the <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a> family of algorithms, which represent a subset of the capacity provided by <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a>. Further developments will be driven by user requirements. Please get in touch if you would like to see additional functionality brought into <a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a>.</p>
+<p>At the time of writing (October 2023),<a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a> principally provides the functions required to implement the <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a> family of algorithms, which represent a subset of the capacity provided by <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a>. Further developments will be driven by user requirements. Please get in touch if you would like to see additional functionality brought into <a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a>.</p>
 </div>
 <div class="section level1">
 <h1 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -113,12 +113,22 @@
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"edwardlavender/patter"</span>, </span>
 <span>                         dependencies <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>The <code>dependencies = TRUE</code> argument ensures that suggested packages are also installed, which are required for some functions and to build vignettes. To access the introductory vignette, use <code>vignette("patter_introduction", package = "patter")</code>.</p>
+<p>The <code>dependencies = TRUE</code> argument ensures that suggested packages are also installed, which are required for some functions and to build vignettes.</p>
+</div>
+<div class="section level1">
+<h1 id="vignettes">Vignettes<a class="anchor" aria-label="anchor" href="#vignettes"></a>
+</h1>
+<p>For an introduction to [<code>patter</code>], use:</p>
+<ul>
+<li>
+<code><a href="articles/workflow.html">vignette("workflow", package = "patter")</a></code> for an overview of the analytical workflow</li>
+</ul>
+<p>For a full list of all functions, see <code><a href="https://rdrr.io/pkg/patter/man" class="external-link">help(package = 'patter')</a></code>.</p>
 </div>
 <div class="section level1">
 <h1 id="datasets">Datasets<a class="anchor" aria-label="anchor" href="#datasets"></a>
 </h1>
-<p>For example datasets, see:</p>
+<p>For example datasets from the Movement Ecology of Flapper Skate project (<code>datasets-mefs</code>), see:</p>
 <ul>
 <li>
 <code>dat_moorings</code> for receiver locations and associated information;</li>
@@ -127,20 +137,83 @@
 <li>
 <code>dat_archival</code> for archival (depth) time series;</li>
 <li>
-<code><a href="reference/dat_gebco.html">dat_gebco()</a></code> for a bathymetry grid;</li>
+<code><a href="reference/datasets-mefs.html">dat_gebco()</a></code> for a bathymetry grid;</li>
+</ul>
+<p>For example algorithm outputs <code>datasets-algorithms</code>, see:</p>
+<ul>
+<li>
+<code><a href="reference/datasets-algorithms.html">dat_obs()</a></code> for an example input dataset from <code><a href="reference/acs_setup_obs.html">acs_setup_obs()</a></code>;</li>
+<li>
+<code><a href="reference/datasets-algorithms.html">dat_containers()</a></code> for an example output from <code><a href="reference/acs_setup_detection_containers.html">acs_setup_detection_containers()</a></code>;</li>
+<li>
+<code><a href="reference/datasets-algorithms.html">dat_overlaps()</a></code> for an example output from <code><a href="reference/acs_setup_detection_overlaps.html">acs_setup_detection_overlaps()</a></code>;</li>
+<li>
+<code><a href="reference/datasets-algorithms.html">dat_kernels()</a></code> for an example output from <code><a href="reference/acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code>;</li>
+<li>
+<code><a href="reference/datasets-algorithms.html">dat_ac()</a></code> for an example output from <code><a href="reference/acs.html">acs()</a></code>;</li>
+<li>
+<code><a href="reference/datasets-algorithms.html">dat_pff()</a></code> for an example output from <code><a href="reference/pf_forward.html">pf_forward()</a></code>;</li>
+<li>
+<code><a href="reference/datasets-algorithms.html">dat_pfb()</a></code> for an example output from <code><a href="reference/pf_backward.html">pf_backward()</a></code>;</li>
+<li>
+<code><a href="reference/datasets-algorithms.html">dat_pfp()</a></code> for an example output from <code><a href="reference/pf_path.html">pf_path()</a></code>;</li>
 </ul>
 </div>
 <div class="section level1">
-<h1 id="workflow">Workflow<a class="anchor" aria-label="anchor" href="#workflow"></a>
+<h1 id="simulation">Simulation<a class="anchor" aria-label="anchor" href="#simulation"></a>
 </h1>
-<p>To implement the depth-contour algorithm, use:</p>
+<p>To simulate passive acoustic telemetry data, see:</p>
+<ul>
+<li>
+<code><a href="reference/sim_array.html">sim_array()</a></code> to simulate an acoustic array;</li>
+<li>
+<code><a href="reference/sim_path_walk.html">sim_path_walk()</a></code> to simulate a movement path from a walk model, with the help of:
+<ul>
+<li>
+<code><a href="reference/sim_path_walk.html">rtruncgamma()</a></code> and <code><a href="reference/sim_path_walk.html">sim_length()</a></code> to simulate step lengths;</li>
+<li>
+<code><a href="reference/sim_path_walk.html">rwn()</a></code>, <code><a href="reference/sim_path_walk.html">sim_angle_rw()</a></code> and <code><a href="reference/sim_path_walk.html">sim_angle_crw()</a></code> to simulate turning angles;</li>
+</ul>
+</li>
+<li>
+<code><a href="reference/sim_detections.html">sim_detections()</a></code> to simulate detections at receivers, with the help of:
+<ul>
+<li>
+<code><a href="reference/sim_detections.html">calc_detection_pr_logistic()</a></code> and <code><a href="reference/sim_detections.html">calc_detection_pr()</a></code>, which represent example detection probability models;</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section level1">
+<h1 id="data-preparation">Data preparation<a class="anchor" aria-label="anchor" href="#data-preparation"></a>
+</h1>
+<p>For help with data acquisition, processing, checking and preliminary analyses, see the <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a> package. This facilitates:</p>
+<ul>
+<li>Simulation;</li>
+<li>Data preparation;</li>
+<li>Spatial operations;</li>
+<li>Distance calculations;</li>
+<li>Movement analyses;</li>
+</ul>
+<p>Please submit a <a href="https://github.com/edwardlavender/patter/issues" class="external-link">feature request</a> if you would like functions from <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a> in <a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a>.</p>
+</div>
+<div class="section level1">
+<h1 id="modelling-workflow">Modelling workflow<a class="anchor" aria-label="anchor" href="#modelling-workflow"></a>
+</h1>
+<p>The main thrust of <a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a> is the provision of an integrated modelling workflow for reconstructing animal movement paths and emergent patterns of space use in passive acoustic telemetry systems.</p>
+<p>To implement the centre-of-activity algorithm use:</p>
+<ul>
+<li>
+<code><a href="reference/coa.html">coa()</a></code> to calculate centres of activity;</li>
+</ul>
+<p>To implement the depth-contour (DC) algorithm, use:</p>
 <ul>
 <li>
 <code><a href="reference/dc_setup_model.html">dc_setup_model()</a></code> for an example DC model;</li>
 <li>
 <code><a href="reference/dc.html">dc()</a></code> to implement the algorithm;</li>
 </ul>
-<p>To implement the AC* algorithms, use:</p>
+<p>To implement the acoustic-centroid* (AC*) algorithm(s) (e.g., AC and ACDC), use:</p>
 <ul>
 <li>
 <code><a href="reference/acs_setup_obs.html">acs_setup_obs()</a></code> to set up observations;</li>
@@ -153,10 +226,10 @@
 <li>
 <code><a href="reference/acs.html">acs()</a></code> to implement the algorithm(s);</li>
 </ul>
-<p>To implement particle filtering, use:</p>
+<p>To implement particle filtering (PF), use:</p>
 <ul>
 <li>
-<code><a href="reference/pf_setup_record.html">pf_setup_record()</a></code> to set up the record;</li>
+<code><a href="reference/pf_setup_files.html">pf_setup_files()</a></code> to set up the record;</li>
 <li>
 <code><a href="reference/pf_kick.html">pf_kick()</a></code> for an example movement model;</li>
 <li>
@@ -179,14 +252,24 @@
 <li>
 <code><a href="reference/get_hr.html">get_hr_full()</a></code> for the full range;</li>
 </ul>
-<p>For supporting functions, see <code><a href="https://rdrr.io/pkg/patter/man" class="external-link">help(package = 'patter')</a></code>:</p>
+</div>
+<div class="section level1">
+<h1 id="miscellaneous-helpers">Miscellaneous helpers<a class="anchor" aria-label="anchor" href="#miscellaneous-helpers"></a>
+</h1>
+<p>The following convenience functions are also made available to users of <a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a>. See:</p>
 <ul>
 <li>
-<code><a href="reference/make_matrix_receivers.html">make_matrix_receivers()</a></code> matricises receiver deployment time series;</li>
+<code><a href="reference/cl.html">cl_lapply()</a></code> and associated <code>cl_*()</code> for parallelisation;</li>
 <li>
-<code><a href="reference/normalise.html">normalise()</a></code> normalises a <code>SpatRaster</code>;</li>
+<code><a href="reference/degrees.html">degrees()</a></code> to create circular angles;</li>
 <li>
-<code>cl_*()</code> functions for parallelisation helpers;</li>
+<code><a href="reference/dist_along_path.html">dist_along_path()</a></code> to calculate distances along a movement path;</li>
+<li>
+<code><a href="reference/make_matrix_receivers.html">make_matrix_receivers()</a></code> to matricise receiver deployment time series;</li>
+<li>
+<code><a href="reference/normalise.html">normalise()</a></code> to normalise a <code>SpatRaster</code>;</li>
+<li>
+<code><a href="reference/rast_template.html">rast_template()</a></code> to create a template <code>SpatRaster</code>;</li>
 </ul>
 </div>
 <div class="section level1">

@@ -32,7 +32,7 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/workflow.html">A streamlined implementation of the `flapper` algorithms</a>
+      <a href="../articles/workflow.html">A re-implementation of the `flapper` algorithms</a>
     </li>
   </ul></li>
 <li>
@@ -63,13 +63,17 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">create_log</span><span class="op">(</span><span class="va">.file</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">create_log</span><span class="op">(</span><span class="va">.file</span>, <span class="va">.verbose</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.file</dt>
-<dd><p>A character path to a file. <code>NULL</code> is permitted.</p></dd>
+<dd><p>A character path to a file. <code>NULL</code> and <code>""</code> are permitted.</p></dd>
+
+
+<dt>.verbose</dt>
+<dd><p>A logical variable that defines whether or not to act on <code>.file</code>.</p></dd>
 
 </dl></div>
     <div id="value">

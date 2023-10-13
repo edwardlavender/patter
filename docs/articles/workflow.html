@@ -5,13 +5,13 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>A streamlined implementation of the `flapper` algorithms • patter</title>
+<title>A re-implementation of the `flapper` algorithms • patter</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="A streamlined implementation of the `flapper` algorithms">
+<script src="../pkgdown.js"></script><meta property="og:title" content="A re-implementation of the `flapper` algorithms">
 <meta property="og:description" content="patter">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -50,7 +50,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/workflow.html">A streamlined implementation of the `flapper` algorithms</a>
+      <a href="../articles/workflow.html">A re-implementation of the `flapper` algorithms</a>
     </li>
   </ul>
 </li>
@@ -78,8 +78,8 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>A streamlined implementation of the
-<code>flapper</code> algorithms</h1>
+      <h1 data-toc-skip>A re-implementation of the <code>flapper</code>
+algorithms</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/edwardlavender/patter/blob/HEAD/vignettes/workflow.Rmd" class="external-link"><code>vignettes/workflow.Rmd</code></a></small>
@@ -92,6 +92,21 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
+<p>The <code>patter</code> package is a re-implementation of the
+‘flapper’ algorithms for passive acoustic telemetry (Lavender et al.,
+2023). These algorithms reconstruct movement paths and emergent patterns
+of space use from detections at receivers (and ancillary datasets) in
+passive acoustic telemetry systems (Lavender et al., 2023). This
+introductory vignette outlines the basic workflow for their
+implementation via <code>patter</code>. Its purpose is simply to
+illustrate how functions fit together. For full details and additional
+functionality, see the package/function documentation.</p>
+</div>
+<div class="section level2">
+<h2 id="set-up">Set up<a class="anchor" aria-label="anchor" href="#set-up"></a>
+</h2>
+<p>Let’s start by loading and attaching some essential <code>R</code>
+packages.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/edwardlavender/patter/" class="external-link">patter</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; This is {patter} v.0.0.0.9000. For an overview, see `?patter`. For support, contact edward.lavender@eawag.ch.</span></span>
@@ -102,41 +117,67 @@
 <div class="section level2">
 <h2 id="collate-data">Collate data<a class="anchor" aria-label="anchor" href="#collate-data"></a>
 </h2>
+<p>Step 1 is to collate the data. In this vignette, we use a small
+sample of acoustic and archival (depth) time series from flapper skate
+(<em>Dipturus intermedius</em>) to reconstruct movement paths and
+patterns of space use.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="va">gebco</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dat_gebco.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Set seed</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">moorings</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="va">dat_moorings</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>receiver_range <span class="op">=</span> <span class="fl">500</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># Define the bathymetry grid over the study area </span></span>
+<span><span class="va">gebco</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># Define passive acoustic telemetry receiver locations </span></span>
+<span><span class="va">moorings</span> <span class="op">&lt;-</span> <span class="va">dat_moorings</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">moorings</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    receiver_id receiver_start receiver_end receiver_easting receiver_northing</span></span>
+<span><span class="co">#&gt; 1:           3     2016-03-03   2016-11-02         706472.2           6254001</span></span>
+<span><span class="co">#&gt; 2:           4     2016-03-03   2017-03-08         709757.8           6267727</span></span>
+<span><span class="co">#&gt; 3:           7     2016-03-03   2016-11-26         708776.6           6269137</span></span>
+<span><span class="co">#&gt; 4:           9     2016-03-03   2016-10-13         706039.9           6254330</span></span>
+<span><span class="co">#&gt; 5:          11     2016-03-03   2016-11-18         707542.3           6267727</span></span>
+<span><span class="co">#&gt; 6:          12     2016-03-03   2017-03-08         710076.1           6267321</span></span>
+<span><span class="co">#&gt;    receiver_lat receiver_lon receiver_range</span></span>
+<span><span class="co">#&gt; 1:     56.38545    -5.655350            750</span></span>
+<span><span class="co">#&gt; 2:     56.50710    -5.591217            750</span></span>
+<span><span class="co">#&gt; 3:     56.52018    -5.606000            750</span></span>
+<span><span class="co">#&gt; 4:     56.38858    -5.662083            750</span></span>
+<span><span class="co">#&gt; 5:     56.50808    -5.627150            750</span></span>
+<span><span class="co">#&gt; 6:     56.50332    -5.586383            750</span></span>
+<span></span>
+<span><span class="co"># Define a sample of acoustic time series </span></span>
 <span><span class="va">acoustics</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="va">dat_acoustics</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">individual_id</span> <span class="op">==</span> <span class="fl">25</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">1000</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">acoustics</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    individual_id           timestamp receiver_id</span></span>
+<span><span class="co">#&gt; 1:            25 2016-03-17 01:50:00          26</span></span>
+<span><span class="co">#&gt; 2:            25 2016-03-17 01:52:00          26</span></span>
+<span><span class="co">#&gt; 3:            25 2016-03-17 01:54:00          26</span></span>
+<span><span class="co">#&gt; 4:            25 2016-03-17 01:58:00          26</span></span>
+<span><span class="co">#&gt; 5:            25 2016-03-17 02:00:00          26</span></span>
+<span><span class="co">#&gt; 6:            25 2016-03-17 02:04:00          26</span></span>
 <span></span>
+<span><span class="co"># (optional) Define accompanying depth time series</span></span>
 <span><span class="va">archival</span>  <span class="op">&lt;-</span></span>
 <span>  <span class="va">dat_archival</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">individual_id</span> <span class="op">==</span> <span class="va">acoustics</span><span class="op">$</span><span class="va">individual_id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">timestamp</span> <span class="op">&gt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">acoustics</span><span class="op">$</span><span class="va">timestamp</span><span class="op">)</span> <span class="op">&amp;</span> </span>
 <span>           <span class="va">timestamp</span> <span class="op">&lt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">acoustics</span><span class="op">$</span><span class="va">timestamp</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="dc-algorithm">DC algorithm<a class="anchor" aria-label="anchor" href="#dc-algorithm"></a>
-</h2>
-<ul>
-<li>TO DO</li>
-</ul>
-</div>
-<div class="section level2">
-<h2 id="ac-algorithms">AC* algorithms<a class="anchor" aria-label="anchor" href="#ac-algorithms"></a>
-</h2>
-<div class="section level3">
-<h3 id="prepare-data">Prepare data<a class="anchor" aria-label="anchor" href="#prepare-data"></a>
-</h3>
+<span>  <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">archival</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    individual_id           timestamp depth</span></span>
+<span><span class="co">#&gt; 1:            25 2016-03-17 01:50:00 73.78</span></span>
+<span><span class="co">#&gt; 2:            25 2016-03-17 01:52:00 73.32</span></span>
+<span><span class="co">#&gt; 3:            25 2016-03-17 01:54:00 73.32</span></span>
+<span><span class="co">#&gt; 4:            25 2016-03-17 01:56:00 73.32</span></span>
+<span><span class="co">#&gt; 5:            25 2016-03-17 01:58:00 73.55</span></span>
+<span><span class="co">#&gt; 6:            25 2016-03-17 02:00:00 68.70</span></span></code></pre></div>
+<p>We prepare the data for the algorithms via
+<code><a href="../reference/acs_setup_obs.html">acs_setup_obs()</a></code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/acs_setup_obs.html">acs_setup_obs</a></span><span class="op">(</span><span class="va">acoustics</span>, <span class="va">archival</span>, .step <span class="op">=</span> <span class="st">"2 mins"</span>, .mobility <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">obs</span><span class="op">)</span></span>
@@ -155,131 +196,230 @@
 <span><span class="co">#&gt; 5:         500           500 73.55</span></span>
 <span><span class="co">#&gt; 6:         500          1000 68.70</span></span></code></pre></div>
 </div>
+<div class="section level2">
+<h2 id="ac-branch-algorithms">AC-branch algorithms<a class="anchor" aria-label="anchor" href="#ac-branch-algorithms"></a>
+</h2>
 <div class="section level3">
-<h3 id="prepare-inputs">Prepare inputs<a class="anchor" aria-label="anchor" href="#prepare-inputs"></a>
+<h3 id="dc-algorithm">DC algorithm<a class="anchor" aria-label="anchor" href="#dc-algorithm"></a>
 </h3>
+<p>To implement the AC-branch algorithms, use <code><a href="../reference/dc.html">dc()</a></code> or
+<code><a href="../reference/acs.html">acs()</a></code>. The DC algorithm is implemented via
+<code><a href="../reference/dc.html">dc()</a></code>. In the following example, we assign equal probability
+to all locations that lie between a lower and upper depth limit at each
+time step, based on the expected correspondence between the depth of the
+individual and the depth of the seabed (Lavender et al., 2023). The
+model includes a ‘fudge’ factor that accounts for the low resolution of
+the bathymetry data in this example.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">containers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/acs_setup_detection_containers.html">acs_setup_detection_containers</a></span><span class="op">(</span><span class="va">gebco</span>, <span class="va">moorings</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># (A) Define a depth-error model</span></span>
+<span><span class="va">fudge</span> <span class="op">&lt;-</span> <span class="fl">10</span></span>
+<span><span class="va">cde</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.depth</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">e</span> <span class="op">&lt;-</span> <span class="fl">4.77</span> <span class="op">+</span> <span class="fl">2.5</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">0.5</span><span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="op">(</span><span class="fl">0.013</span> <span class="op">*</span> <span class="va">.depth</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="va">fudge</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="op">(</span><span class="va">e</span> <span class="op">+</span> <span class="fl">5</span><span class="op">)</span>, <span class="va">e</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">cde</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Vectorize.html" class="external-link">Vectorize</a></span><span class="op">(</span><span class="va">cde</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># (B) Pre-calculate depth limits for efficiency</span></span>
+<span><span class="va">obs</span> <span class="op">&lt;-</span></span>
+<span>  <span class="va">obs</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    depth_shallow <span class="op">=</span> <span class="va">depth</span> <span class="op">+</span> <span class="fu">cde</span><span class="op">(</span><span class="va">depth</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>,</span>
+<span>    depth_deep <span class="op">=</span> <span class="va">depth</span> <span class="op">+</span> <span class="fu">cde</span><span class="op">(</span><span class="va">depth</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span>, <span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># (C) Visualise depth-error model</span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">obs</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">obs</span><span class="op">$</span><span class="va">timestep</span><span class="op">[</span><span class="va">p</span><span class="op">]</span>, <span class="va">obs</span><span class="op">$</span><span class="va">depth</span><span class="op">[</span><span class="va">p</span><span class="op">]</span> <span class="op">*</span> <span class="op">-</span><span class="fl">1</span>,</span>
+<span>     ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">obs</span><span class="op">$</span><span class="va">depth_shallow</span><span class="op">[</span><span class="va">p</span><span class="op">]</span>, <span class="va">obs</span><span class="op">$</span><span class="va">depth_deep</span><span class="op">[</span><span class="va">p</span><span class="op">]</span><span class="op">)</span> <span class="op">*</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span>,</span>
+<span>     xlab <span class="op">=</span> <span class="st">"Time step"</span>, ylab <span class="op">=</span> <span class="st">"Depth (m)"</span>,</span>
+<span>     type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">obs</span><span class="op">$</span><span class="va">timestep</span><span class="op">[</span><span class="va">p</span><span class="op">]</span>, <span class="va">obs</span><span class="op">$</span><span class="va">depth_shallow</span><span class="op">[</span><span class="va">p</span><span class="op">]</span> <span class="op">*</span> <span class="op">-</span><span class="fl">1</span>, col <span class="op">=</span> <span class="st">"lightblue"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">obs</span><span class="op">$</span><span class="va">timestep</span><span class="op">[</span><span class="va">p</span><span class="op">]</span>, <span class="va">obs</span><span class="op">$</span><span class="va">depth_deep</span><span class="op">[</span><span class="va">p</span><span class="op">]</span> <span class="op">*</span> <span class="op">-</span><span class="fl">1</span>, col <span class="op">=</span> <span class="st">"darkblue"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="workflow_files/figure-html/unnamed-chunk-4-1.png" width="576" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co"># (D) Visualise depth distribution based on depth-error model at time 1</span></span>
+<span><span class="va">map_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dc_setup_model.html">dc_setup_model</a></span><span class="op">(</span>.obs <span class="op">=</span> <span class="va">obs</span>, .t <span class="op">=</span> <span class="fl">1</span>, .bathy <span class="op">=</span> <span class="va">gebco</span><span class="op">)</span></span>
+<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">map_1</span><span class="op">)</span></span></code></pre></div>
+<p><img src="workflow_files/figure-html/unnamed-chunk-4-2.png" width="576" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co"># (E) Implement dc():</span></span>
+<span><span class="va">out_dc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dc.html">dc</a></span><span class="op">(</span>.obs <span class="op">=</span> <span class="va">obs</span>,</span>
+<span>             .bathy <span class="op">=</span> <span class="va">gebco</span>,</span>
+<span>             .model <span class="op">=</span> <span class="va">dc_setup_model</span>,</span>
+<span>             .save_record <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>             .verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p>We can examine the possible locations of the individual at each time
+step using the <code>record</code> <code>SpatRaster</code>s in
+<code>out_dc</code>:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">out_dc</span><span class="op">$</span><span class="va">record</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, main <span class="op">=</span> <span class="va">obs</span><span class="op">$</span><span class="va">timestep</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">out_dc</span><span class="op">$</span><span class="va">record</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span>, main <span class="op">=</span> <span class="va">obs</span><span class="op">$</span><span class="va">timestep</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<p><img src="workflow_files/figure-html/unnamed-chunk-5-1.png" width="576" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">pp</span><span class="op">)</span></span></code></pre></div>
+<p>We can also create a cumulative map:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">out_dc</span><span class="op">$</span><span class="va">record</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/app.html" class="external-link">app</a></span><span class="op">(</span><span class="st">"sum"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="../reference/normalise.html">normalise</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="workflow_files/figure-html/unnamed-chunk-6-1.png" width="576" style="display: block; margin: auto;"></p>
+</div>
+<div class="section level3">
+<h3 id="ac-algorithms">AC* algorithms<a class="anchor" aria-label="anchor" href="#ac-algorithms"></a>
+</h3>
+<div class="section level4">
+<h4 id="prepare-inputs">Prepare inputs<a class="anchor" aria-label="anchor" href="#prepare-inputs"></a>
+</h4>
+<p>The AC* algorithms (e.g., AC, ACDC) are implemented via
+<code><a href="../reference/acs.html">acs()</a></code>. To implement this function, we first need to
+define:</p>
+<ul>
+<li>Detection containers and overlaps, which inform the distribution of
+detection probability;</li>
+<li>Detection kernels, which describe how detection probability is
+distributed around receivers;</li>
+</ul>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Define detection containers</span></span>
+<span><span class="va">containers</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/acs_setup_detection_containers.html">acs_setup_detection_containers</a></span><span class="op">(</span><span class="va">gebco</span>, <span class="va">moorings</span><span class="op">)</span></span>
+<span><span class="co"># Define detection overlaps from detection containers </span></span>
 <span><span class="va">overlaps</span>   <span class="op">&lt;-</span> <span class="fu"><a href="../reference/acs_setup_detection_overlaps.html">acs_setup_detection_overlaps</a></span><span class="op">(</span><span class="va">containers</span>, <span class="va">moorings</span><span class="op">)</span></span>
+<span><span class="co"># Define detection kernels </span></span>
 <span><span class="va">kernels</span>    <span class="op">&lt;-</span> <span class="fu"><a href="../reference/acs_setup_detection_kernels.html">acs_setup_detection_kernels</a></span><span class="op">(</span><span class="va">moorings</span>, </span>
 <span>                                          .calc_detection_pr <span class="op">=</span> <span class="va">acs_setup_detection_pr</span>, </span>
-<span>                                          .bathy <span class="op">=</span> <span class="va">gebco</span><span class="op">)</span></span>
-<span><span class="co">#&gt; patter::acs_setup_detection_kernels() called (@ 2023-09-29 21:11:10)... </span></span>
-<span><span class="co">#&gt; ... Setting up function... </span></span>
-<span><span class="co">#&gt; ... Getting receiver-specific kernels (for detection)... </span></span>
-<span><span class="co">#&gt; ... Getting receiver-specific inverse kernels... </span></span>
-<span><span class="co">#&gt; ... Getting area-wide kernels (for non-detection)... </span></span>
-<span><span class="co">#&gt; ... ... Get unique array designs... </span></span>
-<span><span class="co">#&gt; ... ... Get area wide kernels for each array design... </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ... ... ... For design 1/19... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Extract detection probability kernels for active receivers... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)... </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ... ... ... For design 2/19... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Extract detection probability kernels for active receivers... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)... </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ... ... ... For design 3/19... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Extract detection probability kernels for active receivers... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)... </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ... ... ... For design 4/19... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Extract detection probability kernels for active receivers... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)... </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ... ... ... For design 5/19... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Extract detection probability kernels for active receivers... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)... </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ... ... ... For design 6/19... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Extract detection probability kernels for active receivers... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)... </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ... ... ... For design 7/19... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Extract detection probability kernels for active receivers... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)... </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ... ... ... For design 8/19... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Extract detection probability kernels for active receivers... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)... </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ... ... ... For design 9/19... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Extract detection probability kernels for active receivers... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)... </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ... ... ... For design 10/19... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Extract detection probability kernels for active receivers... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)... </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ... ... ... For design 11/19... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Extract detection probability kernels for active receivers... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)... </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ... ... ... For design 12/19... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Extract detection probability kernels for active receivers... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)... </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ... ... ... For design 13/19... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Extract detection probability kernels for active receivers... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)... </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ... ... ... For design 14/19... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Extract detection probability kernels for active receivers... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)... </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ... ... ... For design 15/19... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Extract detection probability kernels for active receivers... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)... </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ... ... ... For design 16/19... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Extract detection probability kernels for active receivers... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)... </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ... ... ... For design 17/19... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Extract detection probability kernels for active receivers... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)... </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ... ... ... For design 18/19... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Extract detection probability kernels for active receivers... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)... </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ... ... ... For design 19/19... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Extract detection probability kernels for active receivers... </span></span>
-<span><span class="co">#&gt; ... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)... </span></span>
-<span><span class="co">#&gt; ... Process detection probability kernels ... </span></span>
-<span><span class="co">#&gt; ... patter::acs_setup_detection_kernels() call completed (@ 2023-09-29 21:11:11) after ~0.02 minutes.</span></span></code></pre></div>
+<span>                                          .bathy <span class="op">=</span> <span class="va">gebco</span>, </span>
+<span>                                          .verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="ac-algorithm">AC algorithm<a class="anchor" aria-label="anchor" href="#ac-algorithm"></a>
-</h3>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">out_ac</span> <span class="op">&lt;-</span> <span class="fu">patter</span><span class="fu">:::</span><span class="fu">.acs</span><span class="op">(</span><span class="va">obs</span>,</span>
-<span>               bathy <span class="op">=</span> <span class="va">gebco</span>, </span>
-<span>               detection_overlaps <span class="op">=</span> <span class="va">overlaps</span>, </span>
-<span>               detection_kernels <span class="op">=</span> <span class="va">kernels</span>, </span>
-<span>               save_cumulative <span class="op">=</span> <span class="cn">TRUE</span>, </span>
-<span>               save_record <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<div class="section level4">
+<h4 id="ac-algorithm">AC algorithm<a class="anchor" aria-label="anchor" href="#ac-algorithm"></a>
+</h4>
+<p>We can now implement an AC* algorithm. The optional
+<code>.update_ac</code> argument is used to update the AC layer at each
+time step using ancillary data (e.g., depth observations), as
+illustrated below:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">out_acs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/acs.html">acs</a></span><span class="op">(</span><span class="va">obs</span>,</span>
+<span>               .bathy <span class="op">=</span> <span class="va">gebco</span>, </span>
+<span>               .detection_overlaps <span class="op">=</span> <span class="va">overlaps</span>, </span>
+<span>               .detection_kernels <span class="op">=</span> <span class="va">kernels</span>, </span>
+<span>               .update_ac <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">.spat</span>, <span class="va">.bathy</span>, <span class="va">.obs</span>, <span class="va">.t</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<span>                 <span class="va">.spat</span> <span class="op">*</span></span>
+<span>                   <span class="fu"><a href="../reference/normalise.html">normalise</a></span><span class="op">(</span></span>
+<span>                   <span class="op">(</span><span class="va">.bathy</span> <span class="op">&gt;=</span> <span class="va">.obs</span><span class="op">$</span><span class="va">depth_shallow</span><span class="op">[</span><span class="va">.t</span><span class="op">]</span> <span class="op">&amp;</span></span>
+<span>                     <span class="va">.bathy</span> <span class="op">&lt;=</span> <span class="va">.obs</span><span class="op">$</span><span class="va">depth_deep</span><span class="op">[</span><span class="va">.t</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0</span></span>
+<span>                   <span class="op">)</span></span>
+<span>                 <span class="op">}</span>,</span>
+<span>               .save_record <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>               .verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p>The output format matches that for <code><a href="../reference/dc.html">dc()</a></code>.</p>
 </div>
-<div class="section level3">
-<h3 id="acdc-algorithm">ACDC algorithm<a class="anchor" aria-label="anchor" href="#acdc-algorithm"></a>
-</h3>
 </div>
 </div>
 <div class="section level2">
 <h2 id="pf">PF<a class="anchor" aria-label="anchor" href="#pf"></a>
 </h2>
-<ul>
-<li>TO DO</li>
-</ul>
+<div class="section level3">
+<h3 id="forward-simulation">Forward simulation<a class="anchor" aria-label="anchor" href="#forward-simulation"></a>
+</h3>
+<p>The particle filter builds movement into the AC-branch algorithms.
+This comprises (1) a forward simulation of possible locations and (b) a
+backward pass that refines simulated trajectories. The forward
+simulation is implemented via <code><a href="../reference/pf_forward.html">pf_forward()</a></code>. This requires
+the observations <code>data.table</code>, the AC-branch
+<code>SpatRaster</code>s and a movement model that ‘kicks’ the particles
+sampled at each time step into new (proposal) locations. For brevity,
+here we use a template movement model specified by
+<code><a href="../reference/pf_kick.html">pf_kick()</a></code>.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">out_pff</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pf_forward.html">pf_forward</a></span><span class="op">(</span>.obs <span class="op">=</span> <span class="va">obs</span>,</span>
+<span>                      .record <span class="op">=</span> <span class="va">out_acs</span><span class="op">$</span><span class="va">record</span>,</span>
+<span>                      .n <span class="op">=</span> <span class="fl">1000L</span>,</span>
+<span>                      .kick <span class="op">=</span> <span class="va">pf_kick</span>,</span>
+<span>                      .bathy <span class="op">=</span> <span class="va">gebco</span>, </span>
+<span>                      .save_history <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                      .verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p>Particle samples are stored in the <code>history</code> element of
+the output. We can plot the first few samples as follows:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, \<span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">out_acs</span><span class="op">$</span><span class="va">record</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span>, main <span class="op">=</span> <span class="va">obs</span><span class="op">$</span><span class="va">timestep</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="va">xy</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/xyCellFrom.html" class="external-link">xyFromCell</a></span><span class="op">(</span><span class="va">gebco</span>, <span class="va">out_pff</span><span class="op">$</span><span class="va">history</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cell_now</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">xy</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="workflow_files/figure-html/unnamed-chunk-10-1.png" width="576" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">pp</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="backward-pass">Backward pass<a class="anchor" aria-label="anchor" href="#backward-pass"></a>
+</h3>
+<p><code><a href="../reference/pf_backward.html">pf_backward()</a></code> implements the backward pass.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">out_pfb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pf_backward.html">pf_backward</a></span><span class="op">(</span><span class="va">out_pff</span><span class="op">$</span><span class="va">history</span>, .save_history <span class="op">=</span> <span class="cn">TRUE</span>, .verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p>The structure of the output matches that for
+<code><a href="../reference/pf_forward.html">pf_forward()</a></code>.</p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="troubleshooting">Troubleshooting<a class="anchor" aria-label="anchor" href="#troubleshooting"></a>
+<h2 id="outputs">Outputs<a class="anchor" aria-label="anchor" href="#outputs"></a>
 </h2>
-<ul>
-<li>TO DO</li>
-</ul>
-<hr>
+<div class="section level3">
+<h3 id="movement-paths">Movement paths<a class="anchor" aria-label="anchor" href="#movement-paths"></a>
+</h3>
+<p>Particle samples can be used to reconstruct movement paths and build
+utilisation distributions. To reconstruct movement paths, use
+<code><a href="../reference/pf_path.html">pf_path()</a></code>:</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">out_pfp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pf_path.html">pf_path</a></span><span class="op">(</span><span class="va">out_pfb</span><span class="op">$</span><span class="va">history</span>, </span>
+<span>                   .bathy <span class="op">=</span> <span class="va">gebco</span>, </span>
+<span>                   .obs <span class="op">=</span> <span class="va">obs</span>, </span>
+<span>                   .cols <span class="op">=</span> <span class="st">"depth"</span>,</span>
+<span>                   .verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">out_pfp</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    path_id timestep cell_id   cell_x  cell_y   cell_z depth</span></span>
+<span><span class="co">#&gt; 1:       1        1   37758 709242.1 6253207 63.35369 73.78</span></span>
+<span><span class="co">#&gt; 2:       1        2   37379 709342.1 6253407 65.31673 73.32</span></span>
+<span><span class="co">#&gt; 3:       1        3   37377 709142.1 6253407 87.54828 73.32</span></span>
+<span><span class="co">#&gt; 4:       1        4   37189 709342.1 6253507 73.44244 73.32</span></span>
+<span><span class="co">#&gt; 5:       1        5   37568 709242.1 6253307 68.53316 73.55</span></span>
+<span><span class="co">#&gt; 6:       1        6   37948 709242.1 6253107 58.17422 68.70</span></span></code></pre></div>
+<p>We can visualise an example path as follows:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gebco</span><span class="op">)</span></span>
+<span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="va">out_pfp</span><span class="op">[</span><span class="va">out_pfp</span><span class="op">$</span><span class="va">path_id</span> <span class="op">==</span> <span class="fl">1</span>, <span class="op">]</span></span>
+<span><span class="va">s</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">p1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/arrows.html" class="external-link">arrows</a></span><span class="op">(</span>x0 <span class="op">=</span> <span class="va">p1</span><span class="op">$</span><span class="va">cell_x</span><span class="op">[</span><span class="va">s</span><span class="op">]</span>, x1 <span class="op">=</span> <span class="va">p1</span><span class="op">$</span><span class="va">cell_x</span><span class="op">[</span><span class="va">s</span> <span class="op">+</span> <span class="fl">1</span><span class="op">]</span>,</span>
+<span>       y0 <span class="op">=</span> <span class="va">p1</span><span class="op">$</span><span class="va">cell_y</span><span class="op">[</span><span class="va">s</span><span class="op">]</span>, y1 <span class="op">=</span> <span class="va">p1</span><span class="op">$</span><span class="va">cell_y</span><span class="op">[</span><span class="va">s</span> <span class="op">+</span> <span class="fl">1</span><span class="op">]</span>,</span>
+<span>       length <span class="op">=</span> <span class="fl">0.02</span><span class="op">)</span></span></code></pre></div>
+<p><img src="workflow_files/figure-html/unnamed-chunk-13-1.png" width="576" style="display: block; margin: auto;"></p>
+</div>
+<div class="section level3">
+<h3 id="utilisation-distribution">Utilisation distribution<a class="anchor" aria-label="anchor" href="#utilisation-distribution"></a>
+</h3>
+<p>To build a utilisation distribution, we simply sum (and renormalise)
+the number of copies of each location, via <code><a href="../reference/pf_pou.html">pf_pou()</a></code>:</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Map POU </span></span>
+<span><span class="va">pou</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pf_pou.html">pf_pou</a></span><span class="op">(</span><span class="va">out_pfb</span><span class="op">$</span><span class="va">history</span>, <span class="va">gebco</span>, .plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co"># Draw full range </span></span>
+<span><span class="fu"><a href="../reference/get_hr.html">get_hr_full</a></span><span class="op">(</span><span class="va">pou</span>, .add <span class="op">=</span> <span class="cn">TRUE</span>, border <span class="op">=</span> <span class="st">"dimgrey"</span><span class="op">)</span></span>
+<span><span class="co"># Highlight home/core range via get_hr_home() or get_hr_core()</span></span>
+<span><span class="fu"><a href="../reference/get_hr.html">get_hr_home</a></span><span class="op">(</span><span class="va">pou</span>, .add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="workflow_files/figure-html/unnamed-chunk-14-1.png" width="576" style="display: block; margin: auto;"></p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<p>Lavender E, Biber S, Illian J, James M, Wright PJ, Thorburn J, Smout
+S (2023). An integrative modelling framework for passive acoustic
+telemetry. <em>Methods in Ecology and Evolution</em>. <a href="https://doi.org/10.1111/2041-210X.14193" class="external-link uri">https://doi.org/10.1111/2041-210X.14193</a>.</p>
 </div>
   </div>
 

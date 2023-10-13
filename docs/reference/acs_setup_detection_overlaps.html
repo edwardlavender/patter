@@ -32,7 +32,7 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/workflow.html">A streamlined implementation of the `flapper` algorithms</a>
+      <a href="../articles/workflow.html">A re-implementation of the `flapper` algorithms</a>
     </li>
   </ul></li>
 <li>
@@ -77,7 +77,7 @@
 
 
 <dt>.moorings</dt>
-<dd><p>A <code><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines receiver deployments and associated information (see <code><a href="dat_moorings.html">dat_moorings</a></code> for an example). At a minimum, this must contain the following columns:</p><ul><li><p><code>receiver_id</code>---an <code>integer</code> vector of receiver IDs;</p></li>
+<dd><p>A <code><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines receiver deployments and associated information (see <code><a href="datasets-mefs.html">dat_moorings</a></code> for an example). At a minimum, this must contain the following columns:</p><ul><li><p><code>receiver_id</code>---an <code>integer</code> vector of receiver IDs;</p></li>
 <li><p><code>receiver_start</code>---a <code>Date</code> vector that defines receiver deployment dates;</p></li>
 <li><p><code>receiver_end</code>---a <code>Date</code> vector that defines receiver retrieval dates;</p></li>
 </ul></dd>
@@ -110,8 +110,9 @@
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#### Example (1): Basic implementation</span></span></span>
 <span class="r-in"><span><span class="co"># Define detection containers</span></span></span>
-<span class="r-in"><span><span class="va">dat_moorings</span><span class="op">$</span><span class="va">receiver_range</span> <span class="op">&lt;-</span> <span class="fl">500</span></span></span>
-<span class="r-in"><span><span class="va">containers</span> <span class="op">&lt;-</span> <span class="fu"><a href="acs_setup_detection_containers.html">acs_setup_detection_containers</a></span><span class="op">(</span><span class="fu"><a href="dat_gebco.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">dat_moorings</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># containers &lt;- acs_setup_detection_containers(dat_gebco(), dat_moorings)</span></span></span>
+<span class="r-in"><span><span class="co"># (For speed, we use a pre-computed dataset):</span></span></span>
+<span class="r-in"><span><span class="va">containers</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_containers</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Identify receiver overlaps</span></span></span>
 <span class="r-in"><span><span class="va">overlaps</span> <span class="op">&lt;-</span> <span class="fu">acs_setup_detection_overlaps</span><span class="op">(</span><span class="va">containers</span>, <span class="va">dat_moorings</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">overlaps</span><span class="op">)</span></span></span>

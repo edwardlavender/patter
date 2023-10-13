@@ -32,7 +32,7 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/workflow.html">A streamlined implementation of the `flapper` algorithms</a>
+      <a href="../articles/workflow.html">A re-implementation of the `flapper` algorithms</a>
     </li>
   </ul></li>
 <li>
@@ -80,7 +80,7 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.moorings</dt>
-<dd><p>A <code><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines receiver deployments and associated information (see <code><a href="dat_moorings.html">dat_moorings</a></code> for an example). At a minimum, this must contain the following columns:</p><ul><li><p><code>receiver_id</code>---an <code>integer</code> vector that defines unique receiver deployments;</p></li>
+<dd><p>A <code><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines receiver deployments and associated information (see <code><a href="datasets-mefs.html">dat_moorings</a></code> for an example). At a minimum, this must contain the following columns:</p><ul><li><p><code>receiver_id</code>---an <code>integer</code> vector that defines unique receiver deployments;</p></li>
 <li><p><code>receiver_start</code> and <code>receiver_end</code>---<code>Date</code> vectors that defines receiver operational periods (see <code><a href="make_matrix_receivers.html">make_matrix_receivers()</a></code>);</p></li>
 <li><p><code>receiver_easting</code> and <code>receiver_northing</code>---<code>numeric</code> vectors that define receiver locations on <code>.bathy</code> (used to validate <code>.calc_detection_pr()</code>)</p></li>
 <li><p>Plus any columns used internally by <code>.calc_detection_pr</code> (see below).</p></li>
@@ -146,7 +146,7 @@ Using these inputs, the function must return a <code>SpatRaster</code> that defi
 <span class="r-in"><span>                receiver_end <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2016-01-05"</span>, <span class="st">"2016-01-05"</span>, <span class="st">"2016-01-05"</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                receiver_easting <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">706124.9</span>, <span class="fl">706012.7</span>, <span class="fl">709379.0</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                receiver_northing <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6265030</span>, <span class="fl">6264993</span>, <span class="fl">6260093</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                receiver_range <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                receiver_range <span class="op">=</span> <span class="fl">750</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>receiver_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">5</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                service_start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2016-01-01"</span>, <span class="st">"2016-01-01"</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                service_end <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2016-01-01"</span>, <span class="st">"2016-01-01"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -178,14 +178,14 @@ Using these inputs, the function must return a <code>SpatRaster</code> that defi
 <span class="r-in"><span><span class="co"># Examine output of function for example receiver</span></span></span>
 <span class="r-in"><span><span class="va">pr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">m</span><span class="op">$</span><span class="va">receiver_id</span><span class="op">)</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">id</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="va">id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">m</span><span class="op">$</span><span class="va">receiver_id</span><span class="op">)</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="acs_setup_detection_pr.html">acs_setup_detection_pr</a></span><span class="op">(</span><span class="va">m</span><span class="op">[</span><span class="va">m</span><span class="op">$</span><span class="va">receiver_id</span> <span class="op">==</span> <span class="va">id</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>, <span class="fu"><a href="dat_gebco.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="acs_setup_detection_pr.html">acs_setup_detection_pr</a></span><span class="op">(</span><span class="va">m</span><span class="op">[</span><span class="va">m</span><span class="op">$</span><span class="va">receiver_id</span> <span class="op">==</span> <span class="va">id</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>, <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (1): Implement function using specified inputs</span></span></span>
 <span class="r-in"><span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu">acs_setup_detection_kernels</span><span class="op">(</span><span class="va">m</span>, <span class="va">s</span>,</span></span>
 <span class="r-in"><span>                                 .calc_detection_pr <span class="op">=</span> <span class="va">acs_setup_detection_pr</span>,</span></span>
-<span class="r-in"><span>                                 .bathy <span class="op">=</span> <span class="fu"><a href="dat_gebco.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs_setup_detection_kernels() called (@ 2023-09-29 21:08:54)... </span>
+<span class="r-in"><span>                                 .bathy <span class="op">=</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs_setup_detection_kernels() called (@ 2023-10-13 16:46:41)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up function... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting receiver-specific kernels (for detection)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting receiver-specific inverse kernels... </span>
@@ -201,7 +201,7 @@ Using these inputs, the function must return a <code>SpatRaster</code> that defi
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... ... Extract detection probability kernels for active receivers... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Process detection probability kernels ... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... patter::acs_setup_detection_kernels() call completed (@ 2023-09-29 21:08:54) after ~0 minutes. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... patter::acs_setup_detection_kernels() call completed (@ 2023-10-13 16:46:41) after ~0 minutes. </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Examine list elements</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">k</span><span class="op">)</span></span></span>

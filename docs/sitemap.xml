@@ -28,6 +28,9 @@
     <loc>/news/index.html</loc>
   </url>
   <url>
+    <loc>/reference/acb-class.html</loc>
+  </url>
+  <url>
     <loc>/reference/acs-class.html</loc>
   </url>
   <url>
@@ -52,6 +55,9 @@
     <loc>/reference/acs_setup_obs.html</loc>
   </url>
   <url>
+    <loc>/reference/cat_helper.html</loc>
+  </url>
+  <url>
     <loc>/reference/check_data.html</loc>
   </url>
   <url>
@@ -59,6 +65,12 @@
   </url>
   <url>
     <loc>/reference/cl.html</loc>
+  </url>
+  <url>
+    <loc>/reference/coa.html</loc>
+  </url>
+  <url>
+    <loc>/reference/coa_check.html</loc>
   </url>
   <url>
     <loc>/reference/compact.html</loc>
@@ -79,16 +91,31 @@
     <loc>/reference/dat_moorings.html</loc>
   </url>
   <url>
+    <loc>/reference/datasets-algorithms.html</loc>
+  </url>
+  <url>
+    <loc>/reference/datasets-mefs.html</loc>
+  </url>
+  <url>
     <loc>/reference/dc.html</loc>
   </url>
   <url>
     <loc>/reference/dc_setup_model.html</loc>
   </url>
   <url>
+    <loc>/reference/degrees.html</loc>
+  </url>
+  <url>
+    <loc>/reference/dist_along_path.html</loc>
+  </url>
+  <url>
     <loc>/reference/dot-acs_absences.html</loc>
   </url>
   <url>
     <loc>/reference/dot-acs_given_detection.html</loc>
+  </url>
+  <url>
+    <loc>/reference/geomean.html</loc>
   </url>
   <url>
     <loc>/reference/get_hr.html</loc>
@@ -133,9 +160,36 @@
     <loc>/reference/pf_pou.html</loc>
   </url>
   <url>
+    <loc>/reference/pf_setup_files.html</loc>
+  </url>
+  <url>
     <loc>/reference/pf_setup_record.html</loc>
   </url>
   <url>
+    <loc>/reference/prettyGraphics.html</loc>
+  </url>
+  <url>
+    <loc>/reference/rast_template.html</loc>
+  </url>
+  <url>
     <loc>/reference/signal.html</loc>
+  </url>
+  <url>
+    <loc>/reference/sim_array.html</loc>
+  </url>
+  <url>
+    <loc>/reference/sim_detections.html</loc>
+  </url>
+  <url>
+    <loc>/reference/sim_detections_internals.html</loc>
+  </url>
+  <url>
+    <loc>/reference/sim_path_flux.html</loc>
+  </url>
+  <url>
+    <loc>/reference/sim_path_walk.html</loc>
+  </url>
+  <url>
+    <loc>/reference/unwrap_elm.html</loc>
   </url>
 </urlset>

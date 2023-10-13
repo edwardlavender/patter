@@ -32,7 +32,7 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/workflow.html">A streamlined implementation of the `flapper` algorithms</a>
+      <a href="../articles/workflow.html">A re-implementation of the `flapper` algorithms</a>
     </li>
   </ul></li>
 <li>
@@ -61,9 +61,9 @@
           <p class="section-desc"></p>
         </th>
       </tr></tbody><tbody><tr><td>
-          <p><code><a href="acs-class.html">acs-class</a></code> </p>
+          <p><code><a href="acb-class.html">acb-class</a></code> </p>
         </td>
-        <td><p>AC outputs: <code>acs</code> objects</p></td>
+        <td><p>AC-branch algorithms: <code>acb</code> objects</p></td>
       </tr><tr><td>
           <p><code><a href="acs.html">acs()</a></code> </p>
         </td>
@@ -93,21 +93,17 @@
         </td>
         <td><p>Parallelisation helpers</p></td>
       </tr><tr><td>
-          <p><code><a href="dat_acoustics.html">dat_acoustics</a></code> </p>
+          <p><code><a href="coa.html">coa()</a></code> </p>
         </td>
-        <td><p>Dataset: passive acoustic telemetry detections</p></td>
+        <td><p>The centres of activity (COA) algorithm</p></td>
       </tr><tr><td>
-          <p><code><a href="dat_archival.html">dat_archival</a></code> </p>
+          <p><code><a href="datasets-algorithms.html">dat_obs()</a></code> <code><a href="datasets-algorithms.html">dat_containers()</a></code> <code><a href="datasets-algorithms.html">dat_overlaps()</a></code> <code><a href="datasets-algorithms.html">dat_kernels()</a></code> <code><a href="datasets-algorithms.html">dat_ac()</a></code> <code><a href="datasets-algorithms.html">dat_pff()</a></code> <code><a href="datasets-algorithms.html">dat_pfb()</a></code> <code><a href="datasets-algorithms.html">dat_pfp()</a></code> </p>
         </td>
-        <td><p>Dataset: archival time series</p></td>
+        <td><p>Datasets: example algorithm outputs</p></td>
       </tr><tr><td>
-          <p><code><a href="dat_gebco.html">dat_gebco()</a></code> </p>
+          <p><code><a href="datasets-mefs.html">dat_moorings</a></code> <code><a href="datasets-mefs.html">dat_acoustics</a></code> <code><a href="datasets-mefs.html">dat_archival</a></code> <code><a href="datasets-mefs.html">dat_gebco()</a></code> </p>
         </td>
-        <td><p>Dataset: a bathymetry dataset</p></td>
-      </tr><tr><td>
-          <p><code><a href="dat_moorings.html">dat_moorings</a></code> </p>
-        </td>
-        <td><p>Dataset: passive acoustic telemetry moorings</p></td>
+        <td><p>Datasets: the MEFS project</p></td>
       </tr><tr><td>
           <p><code><a href="dc.html">dc()</a></code> </p>
         </td>
@@ -116,6 +112,14 @@
           <p><code><a href="dc_setup_model.html">dc_setup_model()</a></code> </p>
         </td>
         <td><p>DC: a template DC model</p></td>
+      </tr><tr><td>
+          <p><code><a href="degrees.html">degrees()</a></code> </p>
+        </td>
+        <td><p>Create circular angle in degrees</p></td>
+      </tr><tr><td>
+          <p><code><a href="dist_along_path.html">dist_along_path()</a></code> </p>
+        </td>
+        <td><p>Calculate serial distances</p></td>
       </tr><tr><td>
           <p><code><a href="get_hr.html">get_hr_prop()</a></code> <code><a href="get_hr.html">get_hr_core()</a></code> <code><a href="get_hr.html">get_hr_home()</a></code> <code><a href="get_hr.html">get_hr_full()</a></code> </p>
         </td>
@@ -157,9 +161,25 @@
         </td>
         <td><p>PF: map probability-of-use</p></td>
       </tr><tr><td>
-          <p><code><a href="pf_setup_record.html">pf_setup_record()</a></code> </p>
+          <p><code><a href="pf_setup_files.html">pf_setup_files()</a></code> </p>
         </td>
-        <td><p>PF set up: list files from AC* for PF</p></td>
+        <td><p>PF set up: list files for PF</p></td>
+      </tr><tr><td>
+          <p><code><a href="rast_template.html">rast_template()</a></code> </p>
+        </td>
+        <td><p>Spatial helper: create a template <code>SpatRaster</code></p></td>
+      </tr><tr><td>
+          <p><code><a href="sim_array.html">sim_array()</a></code> </p>
+        </td>
+        <td><p>Simulate an acoustic array</p></td>
+      </tr><tr><td>
+          <p><code><a href="sim_detections.html">sim_detections()</a></code> <code><a href="sim_detections.html">calc_detection_pr()</a></code> <code><a href="sim_detections.html">calc_detection_pr_logistic()</a></code> </p>
+        </td>
+        <td><p>Simulate detections at receivers</p></td>
+      </tr><tr><td>
+          <p><code><a href="sim_path_walk.html">sim_path_walk()</a></code> <code><a href="sim_path_walk.html">rtruncgamma()</a></code> <code><a href="sim_path_walk.html">rwn()</a></code> <code><a href="sim_path_walk.html">sim_length()</a></code> <code><a href="sim_path_walk.html">sim_angle_rw()</a></code> <code><a href="sim_path_walk.html">sim_angle_crw()</a></code> </p>
+        </td>
+        <td><p>Simulate movement paths</p></td>
       </tr></tbody></table></div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
