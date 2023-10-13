@@ -125,3 +125,12 @@ check_new_colnames <- function(.data, .new) {
   }
   NULL
 }
+
+#' @rdname check_utils
+#' @keywords internal
+
+check_verbose_and_log <- function(.verbose, .con) {
+  if (!.verbose & .con != "") {
+    warn("Input to `.con` ignored since `.verbose = FALSE`.")
+  }
+}

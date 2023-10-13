@@ -96,9 +96,8 @@ acs <- function(.obs,
     abort("`.save_cumulative = FALSE`, `.save_record = FALSE` and `.write_record = NULL`. There is nothing to do.")
   }
   write_record_folder <- .acs_check_write_record(.write_record)
-  if (!.verbose & .con != "") {
-    warn("Input to `.con` ignored since `.verbose = FALSE`.")
-  }
+  check_verbose_and_log(.verbose, .con)
+
   # Catch dots
   check_dots_for_missing_period(formals(), list(...))
 

@@ -27,9 +27,7 @@ pf_backward <- function(.history, .save_history = FALSE, .write_history = NULL,
     abort("`.save_history = FALSE` and `.write_history = NULL`. There is nothing to do.")
   }
   write_history_folder <- .pf_check_write_history(.write_history)
-  if (!.verbose & .con != "") {
-    warn("Input to `.con` ignored since `.verbose = FALSE`.")
-  }
+  check_verbose_and_log(.verbose, .con)
 
   #### Set up messages (modied from pf_forward())
   if (.verbose && .con != "") {

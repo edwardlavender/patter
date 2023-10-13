@@ -40,9 +40,7 @@ pf_path <- function(.history,
   }
 
   # Set up messages
-  if (!.verbose & .con != "") {
-    warn("Input to `.con` ignored since `.verbose = FALSE`.")
-  }
+  check_verbose_and_log(.verbose, .con)
   if (.verbose && .con != "") {
     create_log(.con)
   }

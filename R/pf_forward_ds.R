@@ -42,9 +42,8 @@ pf_forward <- function(.obs, .record, .kick, ..., .bathy, .n = 100L,
     abort("`.save_history = FALSE` and `.write_history = NULL`. There is nothing to do.")
   }
   write_history_folder <- .pf_check_write_history(.write_history)
-  if (!.verbose & .con != "") {
-    warn("Input to `.con` ignored since `.verbose = FALSE`.")
-  }
+  check_verbose_and_log(.verbose, .con)
+
   # Catch dots
   check_dots_for_missing_period(formals(), list(...))
 
