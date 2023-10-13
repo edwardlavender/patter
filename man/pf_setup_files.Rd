@@ -19,31 +19,44 @@ This function creates an ordered \code{list} of files for PF, either from an AC*
 }
 \examples{
 # Quick implementation of AC algorithm
-acoustics <- dat_acoustics[individual_id == 25, ]
-archival <- dat_archival[individual_id == 25, ]
-obs <- acs_setup_obs(acoustics, archival, "2 mins", 500)
-obs <- obs[1:10, ]
-gebco <- dat_gebco()
-containers <- acs_setup_detection_containers(gebco, dat_moorings)
-# (For speed only, ignore overlaps)
-# overlaps <- acs_setup_detection_overlaps(containers, dat_moorings)
-kernels <-
-  acs_setup_detection_kernels(dat_moorings,
-                              .calc_detection_pr = acs_setup_detection_pr,
-                              .bathy = gebco)
-folder <- file.path(tempdir(), "ac")
-dir.create(folder)
+obs    <- dat_obs()[1:10, ]
+gebco  <- dat_gebco()
+con    <- tempdir()
+ac_folder <- file.path(con, "patter", "ac")
+dir.create(ac_folder, recursive = TRUE)
 out_ac <-
   acs(obs,
       .bathy = gebco,
-      .detection_kernels = kernels,
-      .write_record = list(filename = folder, overwrite = TRUE))
+      .detection_overlaps = dat_overlaps(),
+      .detection_kernels = dat_kernels(),
+      .write_record = list(filename = ac_folder, overwrite = TRUE))
 
-# List files
-pf_setup_files(folder)
+# List files for pf_forward()
+files <- pf_setup_files(ac_folder)
+
+# Quick implementation of pf_forward()
+pff_folder <- file.path(con, "patter", "pf", "forward")
+dir.create(pff_folder, recursive = TRUE)
+out_pff <- pf_forward(obs,
+                      .record = files,
+                      .kick = pf_kick,
+                      .bathy = gebco,
+                      .write_history = list(sink = pff_folder))
+
+# List files for pf_backward()
+files <- pf_setup_files(pff_folder)
+
+# Quick implementation of pf_backward()
+pfb_folder <- file.path(con, "patter", "pf", "backward")
+dir.create(pfb_folder, recursive = TRUE)
+out_pfb <- pf_backward(files,
+                       .write_history = list(sink = pfb_folder))
+
+# List files from pf_backward()
+pf_setup_files(pfb_folder)
 
 # Clean up
-unlink(folder, recursive = TRUE)
+unlink(file.path(con, "patter"), recursive = TRUE)
 
 }
 \author{
