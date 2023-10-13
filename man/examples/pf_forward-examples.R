@@ -1,21 +1,13 @@
 #### Set up examples
-
-# Define input datasets
-acoustics <- dat_acoustics[individual_id == 25, ]
-archival <- dat_archival[individual_id == 25, ]
-obs <- acs_setup_obs(acoustics, archival, "2 mins", 500)
-obs <- obs[1:200, ]
-gebco <- dat_gebco()
-
-# Implement AC* algorithm
-containers <- acs_setup_detection_containers(gebco, dat_moorings)
-overlaps <- acs_setup_detection_overlaps(containers, dat_moorings)
-kernels <-
-  acs_setup_detection_kernels(dat_moorings,
-                              .calc_detection_pr = acs_setup_detection_pr,
-                              .bathy = gebco)
-ac_folder <- file.path(tempdir(), "ac")
-dir.create(ac_folder)
+# Use pre-prepared datasets
+obs       <- dat_obs()
+overlaps  <- dat_overlaps()
+kernels   <- dat_kernels()
+gebco     <- dat_gebco()
+con       <- tempdir()
+# Implement AC-branch (e.g., AC) algorithm with default settings
+ac_folder <- file.path(con, "patter", "ac")
+dir.create(ac_folder, recursive = TRUE)
 out_ac <-
   acs(obs,
       .bathy = gebco,
@@ -25,58 +17,58 @@ out_ac <-
       .write_record = list(filename = ac_folder, overwrite = TRUE))
 
 #### Example (1): Implement pf_forward() with default options
-out_pf <- pf_forward(.obs = obs,
-                     .record = out_ac$record,
-                     .n = 1e3,
-                     .kick = pf_kick,
-                     .bathy = gebco,
-                     .save_history = TRUE)
+out_pff <- pf_forward(.obs = obs,
+                      .record = out_ac$record,
+                      .n = 1e3,
+                      .kick = pf_kick,
+                      .bathy = gebco,
+                      .save_history = TRUE)
 # The function returns a named list:
-summary(out_pf)
+summary(out_pff)
 
 #### Example (2): Pass a list of SpatRasters to `.record`
-spats <- pf_setup_files(ac_folder)
-out_pf <- pf_forward(.obs = obs,
-                     .record = spats,
-                     .n = 1e3,
-                     .kick = pf_kick,
-                     .bathy = gebco,
-                     .save_history = TRUE)
+files <- pf_setup_files(ac_folder)
+out_pff <- pf_forward(.obs = obs,
+                      .record = files,
+                      .n = 1e3,
+                      .kick = pf_kick,
+                      .bathy = gebco,
+                      .save_history = TRUE)
 
-#### Example (3): Write history to file (similar to acs())
-pf_folder <- file.path(tempdir(), "pf")
-dir.create(pf_folder)
+#### Example (3): Write history to file (similar to `acs()`)
+pff_folder <- file.path(con, "patter", "pf", "forward")
+dir.create(pff_folder, recursive = TRUE)
 pf_forward(.obs = obs,
            .record = out_ac$record,
            .n = 1e3,
            .kick = pf_kick,
            .bathy = gebco,
            .save_history = TRUE,
-           .write_history = list(sink = pf_folder))
-utils::head(list.files(pf_folder))
+           .write_history = list(sink = pff_folder))
+utils::head(pf_setup_files(pff_folder))
 
 #### Example (4): Customise verbose options (as in acs())
 # Suppress progress bar
-out_pf <- pf_forward(.obs = obs,
-                     .record = out_ac$record,
-                     .n = 1e3,
-                     .kick = pf_kick,
-                     .bathy = gebco,
-                     .save_history = TRUE,
-                     .progress = FALSE)
+out_pff <- pf_forward(.obs = obs,
+                      .record = out_ac$record,
+                      .n = 1e3,
+                      .kick = pf_kick,
+                      .bathy = gebco,
+                      .save_history = TRUE,
+                      .progress = FALSE)
 # Use prompt = TRUE for debugging
 if (interactive()) {
-  out_pf <- pf_forward(.obs = obs,
-                       .record = out_ac$record,
-                       .n = 1e3,
-                       .kick = pf_kick,
-                       .bathy = gebco,
-                       .save_history = TRUE,
-                       .prompt = TRUE)
+  out_pff <- pf_forward(.obs = obs,
+                        .record = out_ac$record,
+                        .n = 1e3,
+                        .kick = pf_kick,
+                        .bathy = gebco,
+                        .save_history = TRUE,
+                        .prompt = TRUE)
 }
 # Use con to write messages to file
 log.txt <- tempfile(fileext = ".txt")
-out_pf <-
+out_pff <-
   pf_forward(.obs = obs,
              .record = out_ac$record,
              .n = 1e3,
@@ -93,6 +85,8 @@ readLines(log.txt) |> utils::head()
 # * Use temporally varying movement model
 # * Use spatio-temporal movement model
 
+#### Example (6): Implement the backward pass
+# `pf_forward()` should be followed by `pf_backward()`
+
 # Clean up
-unlink(ac_folder, recursive = TRUE)
-unlink(pf_folder, recursive = TRUE)
+unlink(file.path(con, "patter"), recursive = TRUE)
