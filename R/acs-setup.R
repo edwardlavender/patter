@@ -51,8 +51,8 @@
 acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
 
   #### Check user inputs
-  check_acoustics(.acoustics)
-  check_archival(.archival)
+  .acoustics <- check_acoustics(.acoustics)
+  .archival  <- check_archival(.archival)
   check_inherits(.step, "character")
   if (!is.null(.archival)) {
     # Check archival time series are spaced `.step` apart
