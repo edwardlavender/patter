@@ -2,7 +2,7 @@
 % Please edit documentation in R/acs-internals.R
 \name{.acs_given_detection}
 \alias{.acs_given_detection}
-\title{AC* helper: Define the individual's location given detection(s)}
+\title{AC* helper: define the individual's location given detection(s)}
 \usage{
 .acs_given_detection(.detections, .absences, .kernels, .zero_to_na = FALSE)
 }

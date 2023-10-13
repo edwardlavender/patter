@@ -1,5 +1,5 @@
 #' @title AC* set up: set up movement datasets
-#' @description This function proccess passive acoustic telemetry detections and (optionally) archival time series for use in AC-branch algorithms.
+#' @description This function processes passive acoustic telemetry detections and (optionally) archival time series for use in AC-branch algorithms.
 #' @param .acoustics A [`data.table`] that defines passive acoustic telemetry detections (see [`dat_acoustics`] for an example) for a single individual. At a minimum, this must contain a `timestamp` column (an ordered, `POSIXct` vector that defines the times of detections) and `receiver_id` (an `integer` vector that defines the receiver(s) that recorded detections).
 #' @param .archival (optional) A [`data.table`] that defines depth (m) observations (see [`dat_archival`] for an example) for the same individual. At a minimum, this must contain a `timestamp` column (as in `.acoustics`) and a `depth` column (a positive-valued `numeric` vector that defines the individual's depth (m) below the surface at each time step).
 #' @param .step An character, passed to [`lubridate::period()`], [`lubridate::round_date()`] and [`seq()`] that defines the duration between sequential time steps (e.g., `"2 mins"`). If `.archival` is supplied, `.step` should be the duration between sequential depth observations.
@@ -173,7 +173,7 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
 #' terra::plot(containers[[dat_moorings$receiver_id[1]]], col = "red")
 #' terra::lines(terra::as.polygons(containers[[dat_moorings$receiver_id[2]]]), col = "blue")
 #'
-#' @source This function is based on the [`acs_setup_containers`](https://edwardlavender.github.io/flapper/reference/acs_setup_containers.html) function in the [flappe`r](https://github.com/edwardlavender/flapper) package.
+#' @source This function is based on the [`acs_setup_containers`](https://edwardlavender.github.io/flapper/reference/acs_setup_containers.html) function in the [`flapper`](https://github.com/edwardlavender/flapper) package.
 #'
 #' @author Edward Lavender
 #' @export

@@ -4,7 +4,7 @@
 \alias{acs_setup_detection_containers}
 \title{AC* set up: define detection containers}
 \source{
-This function is based on the \href{https://edwardlavender.github.io/flapper/reference/acs_setup_containers.html}{\code{acs_setup_containers}} function in the \href{https://github.com/edwardlavender/flapper}{flappe`r} package.
+This function is based on the \href{https://edwardlavender.github.io/flapper/reference/acs_setup_containers.html}{\code{acs_setup_containers}} function in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package.
 }
 \usage{
 acs_setup_detection_containers(.bathy, .moorings)

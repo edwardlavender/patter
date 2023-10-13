@@ -28,7 +28,7 @@ out_ac <-
       .bathy = gebco,
       .detection_kernels = kernels,
       .save_record = TRUE)
-# The function returns an acs-class object
+# The function returns an acb-class object
 class(out_ac)
 summary(out_ac)
 # This contains:
@@ -158,7 +158,7 @@ calc_pr_given_depth <- function(.depth_seabed, .depth_obs) {
   dnorm(.depth_seabed, mean = .depth_obs, sd = 1)
 }
 # Test function works as expected
-# * If the observed depth is 30 m, this is the implies set of possible locations
+# * If the observed depth is 30 m, this is the implied set of possible locations
 pr_given_depth <- terra::app(gebco, fun = \(x) calc_pr_given_depth(x, .depth_obs = 30))
 terra::plot(pr_given_depth)
 # Update update_ac() function
@@ -176,3 +176,6 @@ out_acdc <-
       .save_record = TRUE,
       .verbose = FALSE)
 
+#### Example (7): AC* algorithms are typically followed by particle filtering
+# See ?`pf_forward()` and associated pf_*() functions
+# ... to produce movement paths & refined maps of space use

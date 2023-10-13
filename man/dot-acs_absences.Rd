@@ -2,7 +2,7 @@
 % Please edit documentation in R/acs-internals.R
 \name{.acs_absences}
 \alias{.acs_absences}
-\title{AC* helper: Define active, overlapping receivers with absences}
+\title{AC* helper: define active, overlapping receivers with absences}
 \usage{
 .acs_absences(.date, .detections, .overlaps)
 }

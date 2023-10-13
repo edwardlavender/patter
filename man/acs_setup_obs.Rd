@@ -30,7 +30,7 @@ The function returns a \code{\link{data.table}} with the following columns:
 }
 }
 \description{
-This function proccess passive acoustic telemetry detections and (optionally) archival time series for use in AC-branch algorithms.
+This function processes passive acoustic telemetry detections and (optionally) archival time series for use in AC-branch algorithms.
 }
 \details{
 This function implements the following routines:

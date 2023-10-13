@@ -107,7 +107,7 @@
   NULL
 }
 
-#' @title AC* helper: Define active, overlapping receivers with absences
+#' @title AC* helper: define active, overlapping receivers with absences
 #' @description Given a detection at one or more receivers on a given date, this function defines the set of remaining, active, overlapping receivers that did not record detections.
 #' @param .date A `character` that defines the date (e.g., `obs$date[t]` internally in [`acs()`]).
 #' @param .detections An `integer` vector that defines the receiver(s) that recorded detection(s) at the current time step (e.g., `recs_current` or `recs_next` internally in [`acs()`]).
@@ -144,7 +144,7 @@
   absences
 }
 
-#' @title AC* helper: Define the individual's location given detection(s)
+#' @title AC* helper: define the individual's location given detection(s)
 #' @description This function defines an (unnormalised) probability surface that represents the possible locations of an individual given one or more detections.
 #' @param .detections An `integer` vector of the receiver(s) that recorded detections at a given time step.
 #' @param .absences An `integer` vector of the remaining, overlapping receiver(s) that did not record a detection, from [`.acs_absences()`].
