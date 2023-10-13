@@ -120,7 +120,7 @@ To simulate passive acoustic telemetry data, see:
 - `sim_path_walk()` to simulate a movement path from a walk model, with
   the help of:
   - `rtruncgamma()` and `sim_length()` to simulate step lengths;
-  - `rwn()`, `sim_angle_rw()` and `sim_angles_crw()` to simulate turning
+  - `rwn()`, `sim_angle_rw()` and `sim_angle_crw()` to simulate turning
     angles;
 - `sim_detections()` to simulate detections at receivers, with the help
   of:

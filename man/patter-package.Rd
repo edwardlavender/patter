@@ -46,7 +46,7 @@ To simulate passive acoustic telemetry data, see:
 \item \code{\link[=sim_path_walk]{sim_path_walk()}} to simulate a movement path from a walk model, with the help of:
 \itemize{
 \item \code{\link[=rtruncgamma]{rtruncgamma()}} and \code{\link[=sim_length]{sim_length()}} to simulate step lengths;
-\item \code{\link[=rwn]{rwn()}}, \code{\link[=sim_angle_rw]{sim_angle_rw()}} and \code{\link[=sim_angles_crw]{sim_angles_crw()}} to simulate turning angles;
+\item \code{\link[=rwn]{rwn()}}, \code{\link[=sim_angle_rw]{sim_angle_rw()}} and \code{\link[=sim_angle_crw]{sim_angle_crw()}} to simulate turning angles;
 }
 \item \code{\link[=sim_detections]{sim_detections()}} to simulate detections at receivers, with the help of:
 \itemize{
