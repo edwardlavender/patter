@@ -4,28 +4,85 @@
 \name{patter-package}
 \alias{patter}
 \alias{patter-package}
-\title{\code{\link{patter}}: Movement modelling for passive acoustic telemetry}
+\title{\code{\link{patter}} for passive acoustic telemetry}
 \description{
-\code{\link{patter}} is a re-implementation of the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} family of algorithms for passive acoustic telemetry that simpler, faster and better tested than its \href{https://github.com/edwardlavender/flapper}{predecessor}.
+\code{\link{patter}} is a re-implementation of the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} family of algorithms for passive acoustic telemetry that is simpler, faster and better tested than its \href{https://github.com/edwardlavender/flapper}{predecessor}. The aim of the package is to facilitate the reconstruction of movement paths and patterns of space use in passive acoustic telemetry systems.
 }
+\section{Vignettes}{
+For an introduction to \code{\link{patter}}, use:
+\itemize{
+\item \code{vignette("workflow", package = "patter")} for an overview of the analytical workflow;
+}
+
+For a full list of all functions, see \code{help(package = 'patter')}.
+}
+
 \section{Datasets}{
-For example datasets, see:
+For example datasets from the Movement Ecology of Flapper Skate project (\code{\link{datasets-mefs}}), see:
 \itemize{
 \item \code{\link{dat_moorings}} for receiver locations and associated information;
 \item \code{\link{dat_acoustics}} for acoustic time series;
 \item \code{\link{dat_archival}} for archival (depth) time series;
 \item \code{\link[=dat_gebco]{dat_gebco()}} for a bathymetry grid;
 }
+
+For example algorithm outputs (\code{\link{datasets-algorithms}}), see:
+\itemize{
+\item \code{\link[=dat_obs]{dat_obs()}} for an example input dataset from \code{\link[=acs_setup_obs]{acs_setup_obs()}};
+\item \code{\link[=dat_containers]{dat_containers()}} for an example output from \code{\link[=acs_setup_detection_containers]{acs_setup_detection_containers()}};
+\item \code{\link[=dat_overlaps]{dat_overlaps()}} for an example output from \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}};
+\item \code{\link[=dat_kernels]{dat_kernels()}} for an example output from \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}};
+\item \code{\link[=dat_ac]{dat_ac()}} for an example output from \code{\link[=acs]{acs()}};
+\item \code{\link[=dat_pff]{dat_pff()}} for an example output from \code{\link[=pf_forward]{pf_forward()}};
+\item \code{\link[=dat_pfb]{dat_pfb()}} for an example output from \code{\link[=pf_backward]{pf_backward()}};
+\item \code{\link[=dat_pfp]{dat_pfp()}} for an example output from \code{\link[=pf_path]{pf_path()}};
+}
 }
 
-\section{Workflow}{
-To implement the depth-contour algorithm, use:
+\section{Simulation}{
+To simulate passive acoustic telemetry data, see:
+\itemize{
+\item \code{\link[=sim_array]{sim_array()}} to simulate an acoustic array;
+\item \code{\link[=sim_path_walk]{sim_path_walk()}} to simulate a movement path from a walk model, with the help of:
+\itemize{
+\item \code{\link[=rtruncgamma]{rtruncgamma()}} and \code{\link[=sim_length]{sim_length()}} to simulate step lengths;
+\item \code{\link[=rwn]{rwn()}}, \code{\link[=sim_angle_rw]{sim_angle_rw()}} and \code{\link[=sim_angles_crw]{sim_angles_crw()}} to simulate turning angles;
+}
+\item \code{\link[=sim_detections]{sim_detections()}} to simulate detections at receivers, with the help of:
+\itemize{
+\item \code{\link[=calc_detection_pr_logistic]{calc_detection_pr_logistic()}} and \code{\link[=calc_detection_pr]{calc_detection_pr()}}, which represent example detection probability models;
+}
+}
+}
+
+\section{Data preparation}{
+For help with data acquisition, processing, checking and preliminary analyses, see the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package. This facilitates:
+\itemize{
+\item Simulation;
+\item Data preparation;
+\item Spatial operations;
+\item Distance calculations;
+\item Movement analyses;
+}
+
+Please submit a \href{https://github.com/edwardlavender/patter/issues}{feature request} if you would like functions from \href{https://github.com/edwardlavender/flapper}{\code{flapper}} in \href{https://github.com/edwardlavender/patter}{\code{patter}}.
+}
+
+\section{Modelling workflow}{
+The main thrust of \href{https://github.com/edwardlavender/patter}{\code{patter}} is the provision of an integrated modelling workflow for reconstructing animal movement paths and emergent patterns of space use in passive acoustic telemetry systems.
+
+To implement the centre-of-activity algorithm use:
+\itemize{
+\item \code{\link[=coa]{coa()}} to calculate centres of activity;
+}
+
+To implement the depth-contour (DC) algorithm, use:
 \itemize{
 \item \code{\link[=dc_setup_model]{dc_setup_model()}} for an example DC model;
 \item \code{\link[=dc]{dc()}} to implement the algorithm;
 }
 
-To implement the AC* algorithms, use:
+To implement the acoustic-centroid* (AC*) algorithm(s) (e.g., AC and ACDC), use:
 \itemize{
 \item \code{\link[=acs_setup_obs]{acs_setup_obs()}} to set up observations;
 \item \code{\link[=acs_setup_detection_containers]{acs_setup_detection_containers()}} to set up detection containers;
@@ -34,7 +91,7 @@ To implement the AC* algorithms, use:
 \item \code{\link[=acs]{acs()}} to implement the algorithm(s);
 }
 
-To implement particle filtering, use:
+To implement particle filtering (PF), use:
 \itemize{
 \item \code{\link[=pf_setup_files]{pf_setup_files()}} to set up files;
 \item \code{\link[=pf_kick]{pf_kick()}} for an example movement model;
@@ -51,12 +108,17 @@ For home ranges, use:
 \item \code{\link[=get_hr_home]{get_hr_home()}} for the 'home' range;
 \item \code{\link[=get_hr_full]{get_hr_full()}} for the full range;
 }
+}
 
-For supporting functions, see \code{help(package = 'patter')}:
+\section{Miscellaneous helpers}{
+The following convenience functions are also made available to users of \href{https://github.com/edwardlavender/patter}{\code{patter}}. See:
 \itemize{
-\item \code{\link[=make_matrix_receivers]{make_matrix_receivers()}} matricises receiver deployment time series;
-\item \code{\link[=normalise]{normalise()}} normalises a \code{\link{SpatRaster}};
-\item \verb{cl_*()} functions for parallelisation helpers;
+\item \code{\link[=cl_lapply]{cl_lapply()}} and associated \verb{cl_*()} for parallelisation;
+\item \code{\link[=degrees]{degrees()}} to create circular angles;
+\item \code{\link[=dist_along_path]{dist_along_path()}} to calculate distances along a movement path;
+\item \code{\link[=make_matrix_receivers]{make_matrix_receivers()}} to matricise receiver deployment time series;
+\item \code{\link[=normalise]{normalise()}} to normalise a \code{\link{SpatRaster}};
+\item \code{\link[=rast_template]{rast_template()}} to create a template \code{\link{SpatRaster}};
 }
 }
 

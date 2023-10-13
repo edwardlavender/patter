@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-[`patter`](https://github.com/edwardlavender/patter) is [R](https://www.r-project.org) package implementation of the [`flapper`](https://github.com/edwardlavender/flapper) family of algorithms for passive acoustic telemetry (Lavender et al., 2023). This evolved from the experimental [`flapper`](https://github.com/edwardlavender/flapper) package, but is simpler, faster and better tested. 
+[`patter`](https://github.com/edwardlavender/patter) is [R](https://www.r-project.org) package implementation of the [`flapper`](https://github.com/edwardlavender/flapper) family of algorithms for passive acoustic telemetry (Lavender et al., 2023). This evolved from the experimental [`flapper`](https://github.com/edwardlavender/flapper) package, but is simpler, faster and better tested. The aim of the package is to facilitate the reconstruction of movement paths and patterns of space use in passive acoustic telemetry systems.
 
 # Key features
 
@@ -31,10 +31,10 @@ Building on its [predecessor](https://github.com/edwardlavender/flapper), [`patt
 * **Simpler** to use and maintain;
 * **More streamlined**, with fewer functions and function arguments that are better tested;
 * **More stable**, with fewer dependencies and an upgraded spatial ecosystem;
-* **Faster**, with revised internal routines that exploit the [`data.table`](https://github.com/Rdatatable/data.table) and [`terra`](https://github.com/rspatial/terra) packages and substantive, new algorithm parameterisations; 
+* **Faster**, with revised internal routines that exploit faster packages and substantive, new algorithm parameterisations; 
 * **Better tested**, with comprehensive unit tests; 
 
-At the time of writing (September 2023),[ `patter`](https://github.com/edwardlavender/patter) solely provides the functions required to implement the [`flapper`](https://github.com/edwardlavender/flapper) family of algorithms, which represent a subset of the capacity provided by [`flapper`](https://github.com/edwardlavender/flapper). Further developments will be driven by user requirements. Please get in touch if you would like to see additional functionality brought into [`patter`](https://github.com/edwardlavender/patter). 
+At the time of writing (October 2023),[ `patter`](https://github.com/edwardlavender/patter) principally provides the functions required to implement the [`flapper`](https://github.com/edwardlavender/flapper) family of algorithms, which represent a subset of the capacity provided by [`flapper`](https://github.com/edwardlavender/flapper). Further developments will be driven by user requirements. Please get in touch if you would like to see additional functionality brought into [`patter`](https://github.com/edwardlavender/patter). 
 
 # Installation 
 
@@ -46,29 +46,73 @@ devtools::install_github("edwardlavender/patter",
                          build_vignettes = TRUE)
 ```
 
-The `dependencies = TRUE` argument ensures that suggested packages are also installed, which are required for some functions and to build vignettes. To access the introductory vignette, use `vignette("patter_introduction", package = "patter")`.
+The `dependencies = TRUE` argument ensures that suggested packages are also installed, which are required for some functions and to build vignettes.
+
+# Vignettes
+
+For an introduction to [`patter`], use:
+
+* `vignette("workflow", package = "patter")` for an overview of the analytical workflow
+
+For a full list of all functions, see `help(package = 'patter')`.
 
 # Datasets
 
-For example datasets, see:
+For example datasets from the Movement Ecology of Flapper Skate project (`datasets-mefs`), see:
 
 * `dat_moorings` for receiver locations and associated information;
 * `dat_acoustics` for acoustic time series;
 * `dat_archival` for archival (depth) time series;
 * `dat_gebco()` for a bathymetry grid;
 
-# Workflow
+For example algorithm outputs `datasets-algorithms`, see:
 
-For an overview of the workflow, see:
+* `dat_obs()` for an example input dataset from `acs_setup_obs()`;
+* `dat_containers()` for an example output from `acs_setup_detection_containers()`;
+* `dat_overlaps()` for an example output from `acs_setup_detection_overlaps()`;
+* `dat_kernels()` for an example output from `acs_setup_detection_kernels()`;
+* `dat_ac()` for an example output from `acs()`;
+* `dat_pff()` for an example output from `pf_forward()`;
+* `dat_pfb()` for an example output from `pf_backward()`;
+* `dat_pfp()` for an example output from `pf_path()`;
 
-`vignette("workflow", package = "patter")`.
+# Simulation
 
-To implement the depth-contour algorithm, use:
+To simulate passive acoustic telemetry data, see:
+
+* `sim_array()` to simulate an acoustic array;
+* `sim_path_walk()` to simulate a movement path from a walk model, with the help of:
+   * `rtruncgamma()` and `sim_length()` to simulate step lengths;
+   * `rwn()`, `sim_angle_rw()` and `sim_angles_crw()` to simulate turning angles;
+* `sim_detections()` to simulate detections at receivers, with the help of:
+   * `calc_detection_pr_logistic()` and `calc_detection_pr()`, which represent example detection probability models;
+
+# Data preparation
+
+For help with data acquisition, processing, checking and preliminary analyses, see the [`flapper`](https://github.com/edwardlavender/flapper) package. This facilitates:
+
+   * Simulation;
+   * Data preparation;
+   * Spatial operations;
+   * Distance calculations;
+   * Movement analyses;
+
+Please submit a [feature request](https://github.com/edwardlavender/patter/issues) if you would like functions from [`flapper`](https://github.com/edwardlavender/flapper) in [`patter`](https://github.com/edwardlavender/patter).
+
+# Modelling workflow
+
+The main thrust of [`patter`](https://github.com/edwardlavender/patter) is the provision of an integrated modelling workflow for reconstructing animal movement paths and emergent patterns of space use in passive acoustic telemetry systems.
+
+To implement the centre-of-activity algorithm use:
+
+* `coa()` to calculate centres of activity;
+
+To implement the depth-contour (DC) algorithm, use:
 
 * `dc_setup_model()` for an example DC model;
 * `dc()` to implement the algorithm;
 
-To implement the AC* algorithms, use:
+To implement the acoustic-centroid* (AC*) algorithm(s) (e.g., AC and ACDC), use:
 
 * `acs_setup_obs()` to set up observations;
 * `acs_setup_detection_containers()` to set up detection containers;
@@ -76,7 +120,7 @@ To implement the AC* algorithms, use:
 * `acs_setup_detection_kernels()` to set up detection kernels;
 * `acs()` to implement the algorithm(s);
  
-To implement particle filtering, use:
+To implement particle filtering (PF), use:
  
 * `pf_setup_files()` to set up the record;
 * `pf_kick()` for an example movement model;
@@ -92,11 +136,16 @@ For home ranges, use:
 * `get_hr_home()` for the 'home' range;
 * `get_hr_full()` for the full range;
  
-For supporting functions, see `help(package = 'patter')`:
+# Miscellaneous helpers
 
-  * `make_matrix_receivers()` matricises receiver deployment time series;
-  * `normalise()` normalises a `SpatRaster`;
-  * `cl_*()` functions for parallelisation helpers;
+The following convenience functions are also made available to users of [`patter`](https://github.com/edwardlavender/patter). See:
+
+* `cl_lapply()` and associated `cl_*()` for parallelisation;
+* `degrees()` to create circular angles;
+* `dist_along_path()` to calculate distances along a movement path;
+* `make_matrix_receivers()` to matricise receiver deployment time series;
+* `normalise()` to normalise a `SpatRaster`;
+* `rast_template()` to create a template `SpatRaster`;
  
 # Disclaimer and troubleshooting 
 
