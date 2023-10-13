@@ -39,7 +39,7 @@ out_pfb <- pf_backward(pf_setup_files(pff_folder),
 log.txt <- tempfile(fileext = ".txt")
 out_pfb <- pf_backward(pf_setup_files(pff_folder),
                        .save_history = TRUE,
-                       .con = log.txt)
+                       .txt = log.txt)
 utils::head(readLines(log.txt), 15)
 # Suppress messages
 out_pfb <- pf_backward(pf_setup_files(pff_folder),

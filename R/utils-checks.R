@@ -129,8 +129,8 @@ check_new_colnames <- function(.data, .new) {
 #' @rdname check_utils
 #' @keywords internal
 
-check_verbose_and_log <- function(.verbose, .con) {
-  if (!.verbose & .con != "") {
-    warn("Input to `.con` ignored since `.verbose = FALSE`.")
+check_verbose_and_log <- function(.verbose, .txt) {
+  if (!.verbose & .txt != "") {
+    warn("Input to `.txt` ignored since `.verbose = FALSE`.")
   }
 }

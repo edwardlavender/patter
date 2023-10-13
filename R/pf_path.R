@@ -5,7 +5,7 @@
 #' * An ordered list of file paths (from [`pf_setup_files()`]) that define the directories in which particle samples were written from the forward simulation (as parquet files).
 #' @param .bathy (optional) If `.return = "long"`, a bathymetry [`SpatRaster`] can be supplied to define cell coordinates (see [`pf_path_pivot()`]).
 #' @param .obs,.cols (optional) If `.return = "long"`, `.obs` and `.cols` are a [`data.table`] and a `character` vector of column names in `.obs` to match onto the output (see [`pf_path_pivot()`]).
-#' @param .verbose,.con Arguments to monitor function progress (see [`pf_forward()`]).
+#' @param .verbose,.txt Arguments to monitor function progress (see [`pf_forward()`]).
 #' @param .return A `character` that defines the return format:
 #' * `long` specifies a long-format [`data.table`] that defines path IDs, time steps and associated locations (see [`pf_path_pivot()`]).
 #' * `wide` specifies a wide-format [`data.table`], with:
@@ -27,7 +27,7 @@
 
 pf_path <- function(.history,
                     .bathy = NULL, .obs = NULL, .cols = NULL,
-                    .verbose = TRUE, .con = "",
+                    .verbose = TRUE, .txt = "",
                     .return = c("long", "wide")){
 
   # Check user inputs
@@ -40,7 +40,7 @@ pf_path <- function(.history,
   }
 
   # Set up messages
-  cat_to_cf <- cat_helper(.verbose = .verbose, .con = .con)
+  cat_to_cf <- cat_helper(.verbose = .verbose, .txt = .txt)
   cat_to_cf(paste0("patter::pf_path() called (@ ", t_onset, ")..."))
   on.exit(cat_to_cf(paste0("patter::pf_path() call ended (@ ", Sys.time(), ").")), add = TRUE)
 

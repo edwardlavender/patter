@@ -15,7 +15,7 @@ dc(
   .varlist = NULL,
   .progress = TRUE,
   .verbose = TRUE,
-  .con = ""
+  .txt = ""
 )
 }
 \arguments{
@@ -44,7 +44,7 @@ dc(
 
 \item{.cl, .varlist}{Parallelisation options (see \code{\link[=cl_lapply]{cl_lapply()}}).}
 
-\item{.progress, .verbose, .con}{Options to monitor function progress (see \code{\link[=acs]{acs()}})}
+\item{.progress, .verbose, .txt}{Options to monitor function progress (see \code{\link[=acs]{acs()}})}
 }
 \value{
 The function returns an AC-branch (\code{\linkS4class{acb}}) object.
@@ -137,7 +137,7 @@ if (.Platform$OS.type \%in\% c("unix", "windows")) {
   terra::rast(file.path(folder, "1.tif"))
 }
 
-#### Example (4): Control function messages via `.progress`, `.verbose` & `.con`
+#### Example (4): Control function messages via `.progress`, `.verbose` & `.txt`
 # Suppress progress bar
 out_dc <- dc(.obs = archival,
              .bathy = gebco,
@@ -156,7 +156,7 @@ out_dc <- dc(.obs = archival,
              .bathy = gebco,
              .model = dc_setup_model,
              .save_record = TRUE,
-             .con = log.txt)
+             .txt = log.txt)
 readLines(log.txt)
 
 #### Example (5): Generate cumulative map

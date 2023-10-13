@@ -47,7 +47,7 @@ dc_setup_model <- function(.obs, .t, .bathy,
 #' @param .save_record A logical variable that defines whether or not to save the output of `.model` at each time step in memory.
 #' @param .write_record A named list, passed to [`terra::writeRaster`], to save the `record` [`SpatRaster`]s to file at each time step. The `filename` argument should define the directory in which to write files (see [`acs()`]).
 #' @param .cl,.varlist Parallelisation options (see [`cl_lapply()`]).
-#' @param .progress,.verbose,.con Options to monitor function progress (see [`acs()`])
+#' @param .progress,.verbose,.txt Options to monitor function progress (see [`acs()`])
 #' @return The function returns an AC-branch ([`acb-class`]) object.
 #' @example man/examples/dc-examples.R
 #' @author Edward Lavender
@@ -56,7 +56,7 @@ dc_setup_model <- function(.obs, .t, .bathy,
 dc <- function(.obs, .bathy, .model, ...,
                .save_record = FALSE, .write_record = NULL,
                .cl = NULL, .varlist = NULL,
-               .progress = TRUE, .verbose = TRUE, .con = "") {
+               .progress = TRUE, .verbose = TRUE, .txt = "") {
 
   #### Check user inputs
   t_onset <- Sys.time()
@@ -69,7 +69,7 @@ dc <- function(.obs, .bathy, .model, ...,
   check_dots_for_missing_period(formals(), list(...))
 
   #### Set up messages
-  cat_to_cf <- cat_helper(.verbose = .verbose, .con = .con)
+  cat_to_cf <- cat_helper(.verbose = .verbose, .txt = .txt)
   cat_to_cf(paste0("patter::dc() called (@ ", t_onset, ")..."))
   on.exit(cat_to_cf(paste0("patter::dc() call ended (@ ", Sys.time(), ").")), add = TRUE)
 

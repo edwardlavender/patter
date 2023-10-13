@@ -5,7 +5,7 @@
 #' * An ordered list of file paths (from [`pf_setup_files()`]) that define the directories in which particle samples were written from the forward simulation (as parquet files).
 #' @param .save_history A logical variable that defines whether or not to save updated particle samples in memory (see [`pf_forward()`]).
 #' @param .write_history A named list, passed to [`arrow::write_parquet()`], to write updated particle samples to file (see [`pf_forward()`]).
-#' @param .progress,.verbose,.con Arguments to monitor function progress (see [`pf_forward()`]).
+#' @param .progress,.verbose,.txt Arguments to monitor function progress (see [`pf_forward()`]).
 #'
 #' @details At the time of writing, this function only removes 'dead ends' from particle samples. Backwards smoothing is not currently implemented.
 #'
@@ -18,7 +18,7 @@
 #' @export
 
 pf_backward <- function(.history, .save_history = FALSE, .write_history = NULL,
-                        .progress = TRUE, .verbose = TRUE, .con = "") {
+                        .progress = TRUE, .verbose = TRUE, .txt = "") {
 
   #### Check user inputs
   t_onset <- Sys.time()
@@ -29,7 +29,7 @@ pf_backward <- function(.history, .save_history = FALSE, .write_history = NULL,
   write_history_folder <- .pf_check_write_history(.write_history)
 
   #### Set up messages (modied from pf_forward())
-  cat_to_cf <- cat_helper(.verbose = .verbose, .con = .con)
+  cat_to_cf <- cat_helper(.verbose = .verbose, .txt = .txt)
   cat_to_cf(paste0("patter::pf_backward() called (@ ", t_onset, ")..."))
   on.exit(cat_to_cf(paste0("patter::pf_backward() call ended (@ ", Sys.time(), ").")), add = TRUE)
 

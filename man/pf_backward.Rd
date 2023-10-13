@@ -10,7 +10,7 @@ pf_backward(
   .write_history = NULL,
   .progress = TRUE,
   .verbose = TRUE,
-  .con = ""
+  .txt = ""
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ pf_backward(
 
 \item{.write_history}{A named list, passed to \code{\link[arrow:write_parquet]{arrow::write_parquet()}}, to write updated particle samples to file (see \code{\link[=pf_forward]{pf_forward()}}).}
 
-\item{.progress, .verbose, .con}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
+\item{.progress, .verbose, .txt}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
 }
 \value{
 The function returns a \code{\linkS4class{pf}} object.
@@ -77,7 +77,7 @@ out_pfb <- pf_backward(pf_setup_files(pff_folder),
 log.txt <- tempfile(fileext = ".txt")
 out_pfb <- pf_backward(pf_setup_files(pff_folder),
                        .save_history = TRUE,
-                       .con = log.txt)
+                       .txt = log.txt)
 utils::head(readLines(log.txt), 15)
 # Suppress messages
 out_pfb <- pf_backward(pf_setup_files(pff_folder),

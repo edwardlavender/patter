@@ -4,7 +4,7 @@
 \alias{cat_helper}
 \title{\code{cat_to_cf()} helper}
 \usage{
-cat_helper(.verbose, .con)
+cat_helper(.verbose, .txt)
 }
 \description{
 \code{cat_to_cf()} helper

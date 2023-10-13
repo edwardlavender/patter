@@ -18,7 +18,7 @@
 
 .acs_check_detection_kernels(.detection_kernels, .bathy)
 
-.acs_check_write_record(.write_record, .con = "filename")
+.acs_check_write_record(.write_record, .element = "filename")
 
 .acs_check_present(.p, .t, .type = c("acs", "dc"))
 }

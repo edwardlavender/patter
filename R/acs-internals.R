@@ -67,21 +67,21 @@
 #' @rdname acs_check
 #' @keywords internal
 
-.acs_check_write_record <- function(.write_record, .con = "filename") {
+.acs_check_write_record <- function(.write_record, .element = "filename") {
   if (!is.null(.write_record)) {
     check_named_list(.write_record)
-    check_names(.write_record, .con)
-    if (length(.write_record[[.con]]) != 1L) {
-      abort("`.write_record${.con}` should be a single directory in which to write files.",
+    check_names(.write_record, .element)
+    if (length(.write_record[[.element]]) != 1L) {
+      abort("`.write_record${.co.elementn}` should be a single directory in which to write files.",
             .envir = environment())
     }
-    check_dir(.write_record[[.con]])
-    if (length(list.files(.write_record[[.con]])) != 0L) {
-      warn("`.write_record${.con}` ('{.write_record[[.con]]}') is not an empty directory.",
+    check_dir(.write_record[[.element]])
+    if (length(list.files(.write_record[[.element]])) != 0L) {
+      warn("`.write_record${.element}` ('{.write_record[[.element]]}') is not an empty directory.",
            .envir = environment())
     }
   }
-  .write_record[[.con]]
+  .write_record[[.element]]
 }
 
 

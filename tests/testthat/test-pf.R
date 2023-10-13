@@ -88,15 +88,15 @@ test_that("pf_*() functions work using example flapper skate datasets", {
              .bathy = gebco) |>
     expect_error("`.save_history = FALSE` and `.write_history = NULL`. There is nothing to do.",
                  fixed = TRUE)
-  ## Validate `.verbose` & `.con` align
+  ## Validate `.verbose` & `.txt` align
   pf_forward(.obs = obs,
              .record = out_ac$record,
              .n = n_particles,
              .kick = kick,
              .bathy = gebco,
              .save_history = TRUE,
-             .verbose = FALSE, .con = tempdir()) |>
-    expect_warning("Input to `.con` ignored since `.verbose = FALSE`",
+             .verbose = FALSE, .txt = tempdir()) |>
+    expect_warning("Input to `.txt` ignored since `.verbose = FALSE`",
                  fixed = TRUE)
   ## Validate the function handles time steps without any possible locations
   # Imagine there are no possible locations at time step 10
@@ -146,7 +146,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
                  .bathy = gebco,
                  .save_history = TRUE,
                  .write_history = list(sink = pff_folder),
-                 .con = log.txt)
+                 .txt = log.txt)
       # Confirm log.txt created properly
       expect_true(file.exists(log.txt))
       # Confirm output classes & names
@@ -205,8 +205,8 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   pf_backward(out_pff$history) |>
     expect_error("`.save_history = FALSE` and `.write_history = NULL`. There is nothing to do.")
    pf_backward(out_pff$history, .save_history = TRUE,
-               .verbose = FALSE, .con = tempfile()) |>
-     expect_warning("Input to `.con` ignored since `.verbose = FALSE`.", fixed = TRUE)
+               .verbose = FALSE, .txt = tempfile()) |>
+     expect_warning("Input to `.txt` ignored since `.verbose = FALSE`.", fixed = TRUE)
 
    #### Validate implementation with `.save_history = FALSE`
    pfb_folder <- file.path(tempdir(), "pf", "backward")
@@ -223,7 +223,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
       out_pfb <- pf_backward(h,
                              .save_history = TRUE,
                              .write_history = list(sink = pfb_folder),
-                             .con = log.txt)
+                             .txt = log.txt)
       # Validate files match
       expect_equal(
         out_pfb$history,
@@ -296,8 +296,8 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   #### Test build paths
 
   #### Validate user input checks
-  pf_path(out_pfb$history, .verbose = FALSE, .con = tempfile()) |>
-    expect_warning("Input to `.con` ignored since `.verbose = FALSE`.", fixed = TRUE)
+  pf_path(out_pfb$history, .verbose = FALSE, .txt = tempfile()) |>
+    expect_warning("Input to `.txt` ignored since `.verbose = FALSE`.", fixed = TRUE)
 
   #### Validate output structure
   expect_equal(c("path_id", "timestep", "cell_id"),
@@ -320,7 +320,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   out_pfp_by_history <-
     lapply(list(out_pfb$history, pf_setup_files(pfb_folder)), \(h) {
     log.txt <- tempfile(fileext = ".txt")
-    out_pfp <- pf_path(h, .con = log.txt)
+    out_pfp <- pf_path(h, .txt = log.txt)
     expect_true(file.exists(log.txt))
     expect_true(length(readLines(log.txt)) > 0L)
     unlink(log.txt)

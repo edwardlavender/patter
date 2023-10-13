@@ -40,8 +40,8 @@ test_that("dc_setup_model() & dc() work", {
     expect_error("`.save_record = FALSE` and `.write_record = NULL`. There is nothing to do.",
                  fixed = TRUE)
   dc(obs, gebco, dc_setup_model, .save_record = TRUE,
-     .verbose = FALSE, .con = tempfile()) |>
-    expect_warning("Input to `.con` ignored since `.verbose = FALSE`.",
+     .verbose = FALSE, .txt = tempfile()) |>
+    expect_warning("Input to `.txt` ignored since `.verbose = FALSE`.",
                    fixed = TRUE)
 
   # Check outputs
@@ -91,7 +91,7 @@ test_that("dc_setup_model() & dc() work", {
   log.txt <- tempfile(fileext = ".txt")
   out_dc <- dc(obs, gebco, dc_setup_model,
                .save_record = TRUE,
-               .con = log.txt)
+               .txt = log.txt)
   expect_true(file.exists(log.txt))
   expect_true(length(readLines(log.txt)) > 0L)
   unlink(log.txt)

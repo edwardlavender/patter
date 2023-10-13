@@ -26,14 +26,14 @@ test_that("acs() works", {
       .detection_kernels = kernels) |>
     expect_error("`.save_cumulative = FALSE`, `.save_record = FALSE` and `.write_record = NULL`. There is nothing to do.",
                  fixed = TRUE)
-  # Check .verbose & .con agree
+  # Check .verbose & .txt agree
   acs(obs[1:3, ],
       .bathy = gebco,
       .detection_overlaps = overlaps,
       .detection_kernels = kernels,
       .save_record = TRUE,
-      .verbose = FALSE, .con = tempdir()) |>
-    expect_warning("Input to `.con` ignored since `.verbose = FALSE`.", fixed = TRUE)
+      .verbose = FALSE, .txt = tempdir()) |>
+    expect_warning("Input to `.txt` ignored since `.verbose = FALSE`.", fixed = TRUE)
   # Forget the missing period on 'prompt'
   acs(obs[1:3, ],
       .bathy = gebco,
@@ -54,7 +54,7 @@ test_that("acs() works", {
         .save_record = TRUE,
         .save_cumulative = TRUE,
         .write_record = list(filename = folder, overwrite = TRUE),
-        .verbose = TRUE, .con = log.txt)
+        .verbose = TRUE, .txt = log.txt)
 
   #### Validate outputs
   check_inherits(out_ac, "acb")

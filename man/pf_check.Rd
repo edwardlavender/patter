@@ -10,7 +10,7 @@
 \usage{
 .pf_check_obs(.obs)
 
-.pf_check_write_history(.write_history, .con = "sink")
+.pf_check_write_history(.write_history, .element = "sink")
 
 .pf_check_rows(.data, .filter, .t)
 

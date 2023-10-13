@@ -74,7 +74,7 @@ out_pff <-
              .n = 1e3,
              .kick = pf_kick,
              .bathy = gebco,
-             .con = log.txt,
+             .txt = log.txt,
              .save_history = TRUE)
 readLines(log.txt) |> utils::head()
 

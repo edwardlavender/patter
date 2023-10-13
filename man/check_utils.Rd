@@ -35,7 +35,7 @@ check_dots_for_missing_period(args, dots)
 
 check_new_colnames(.data, .new)
 
-check_verbose_and_log(.verbose, .con)
+check_verbose_and_log(.verbose, .txt)
 }
 \description{
 These functions check user inputs.

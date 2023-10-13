@@ -1,10 +1,10 @@
 test_that("create_log() works", {
 
   create_log(.file = "some-folder", .verbose = TRUE) |>
-    expect_error("`.con` ('some-folder') should be the path to a text (.txt) file.", fixed = TRUE)
+    expect_error("`.txt` ('some-folder') should be the path to a text (.txt) file.", fixed = TRUE)
 
   create_log("some-folder/log.txt", .verbose = TRUE) |>
-    expect_error("`dirname(.con)` ('some-folder') does not exist.", fixed = TRUE)
+    expect_error("`dirname(.txt)` ('some-folder') does not exist.", fixed = TRUE)
 
   f <- tempfile(fileext = ".txt")
   create_log(f, .verbose = TRUE)
@@ -15,7 +15,7 @@ test_that("create_log() works", {
   sink()
 
   create_log(f, .verbose = TRUE) |>
-    expect_warning(paste0("`.con` ('", f, "`) already exists and is not empty!"), fixed = TRUE)
+    expect_warning(paste0("`.txt` ('", f, "`) already exists and is not empty!"), fixed = TRUE)
   unlink(f)
 
 })

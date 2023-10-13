@@ -27,7 +27,7 @@
 #' @param .progress A logical variable that defines whether or not to implement a progress bar (via [`progress::progress_bar()`]).
 #' @param .prompt A logical variable that defines whether or not a user prompt is required between time steps. If provided, the function plots the possible locations of the individual at each time step. This is useful for diagnostics.
 #' @param .verbose A logical variable that defines whether or not to print messages to the console or to file to relay function progress. If `con = ""`, messages are printed to the console; otherwise, they are written to file (see below).
-#' @param .con If `.verbose = TRUE`, `.con` is character string that defines the full pathway to a `.txt` file (which can be created on-the-fly) into which messages are written to relay function progress. This approach, rather than printing to the console, is recommended for clarity, speed and debugging.
+#' @param .txt If `.verbose = TRUE`, `.txt` is character string that defines the full pathway to a `.txt` file (which can be created on-the-fly) into which messages are written to relay function progress. This approach, rather than printing to the console, is recommended for clarity, speed and debugging.
 #'
 #' @details
 #' # Background
@@ -84,7 +84,7 @@ acs <- function(.obs,
                 .save_record = FALSE,
                 .write_record = NULL,
                 .progress = TRUE, .prompt = FALSE,
-                .verbose = TRUE, .con = "") {
+                .verbose = TRUE, .txt = "") {
 
   #### Check user inputs
   t_onset <- Sys.time()
@@ -99,7 +99,7 @@ acs <- function(.obs,
   check_dots_for_missing_period(formals(), list(...))
 
   #### Set up messages
-  cat_to_cf <- cat_helper(.verbose = .verbose, .con = .con)
+  cat_to_cf <- cat_helper(.verbose = .verbose, .txt = .txt)
   cat_to_cf(paste0("patter::acs() called (@ ", t_onset, ")..."))
   on.exit(cat_to_cf(paste0("patter::acs() call ended (@ ", Sys.time(), ").")), add = TRUE)
 

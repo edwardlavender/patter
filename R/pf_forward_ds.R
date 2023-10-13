@@ -16,7 +16,7 @@
 #' @param .save_history A logical variable that defines whether or not to save particle samples in the `history` element of the output. This is only sensible for small-scale applications (i.e., short time series and few particles).
 #' @param .write_history A named list, passed to [`arrow::write_parquet()`], to save particle samples to file at each time step. The `sink` argument should be the directory in which to write files. Files are named by `.obs$timestep` (i.e., `1.parquet`, `2.parquet`, ..., `N.parquet`).
 #' @param .progress A logical variable that defines whether or not to implement a progress bar (via [`progress::progress_bar()`]).
-#' @param .prompt,.verbose,.con Controls on function prompts and messages (see [`acs()`]).
+#' @param .prompt,.verbose,.txt Controls on function prompts and messages (see [`acs()`]).
 #'
 #' @details The forward simulation is implemented as follows:
 #' 1. At each time step, `.n` grid cells (particles) are sampled (at `t = 1`) or resampled from a set of proposals (at subsequent time steps) with replacement, in line with AC* weights;
@@ -33,7 +33,7 @@
 
 pf_forward <- function(.obs, .record, .kick, ..., .bathy, .n = 100L,
                        .save_history = FALSE, .write_history = NULL, .progress = TRUE,
-                       .prompt = FALSE, .verbose = TRUE, .con = "") {
+                       .prompt = FALSE, .verbose = TRUE, .txt = "") {
 
   #### Check user inputs
   t_onset <- Sys.time()
@@ -45,7 +45,7 @@ pf_forward <- function(.obs, .record, .kick, ..., .bathy, .n = 100L,
   check_dots_for_missing_period(formals(), list(...))
 
   #### Set up messages
-  cat_to_cf <- cat_helper(.verbose = .verbose, .con = .con)
+  cat_to_cf <- cat_helper(.verbose = .verbose, .txt = .txt)
   cat_to_cf(paste0("patter::pf_forward() called (@ ", t_onset, ")..."))
   on.exit(cat_to_cf(paste0("patter::pf_forward() call ended (@ ", Sys.time(), ").")), add = TRUE)
 

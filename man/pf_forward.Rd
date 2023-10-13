@@ -16,7 +16,7 @@ pf_forward(
   .progress = TRUE,
   .prompt = FALSE,
   .verbose = TRUE,
-  .con = ""
+  .txt = ""
 )
 }
 \arguments{
@@ -47,7 +47,7 @@ See \code{\link[=pf_kick]{pf_kick()}} for an example movement model.}
 
 \item{.progress}{A logical variable that defines whether or not to implement a progress bar (via \code{\link[progress:progress_bar]{progress::progress_bar()}}).}
 
-\item{.prompt, .verbose, .con}{Controls on function prompts and messages (see \code{\link[=acs]{acs()}}).}
+\item{.prompt, .verbose, .txt}{Controls on function prompts and messages (see \code{\link[=acs]{acs()}}).}
 }
 \value{
 The function returns a \code{\linkS4class{pf}} object.
@@ -141,7 +141,7 @@ out_pff <-
              .n = 1e3,
              .kick = pf_kick,
              .bathy = gebco,
-             .con = log.txt,
+             .txt = log.txt,
              .save_history = TRUE)
 readLines(log.txt) |> utils::head()
 

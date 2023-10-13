@@ -24,21 +24,21 @@ NULL
 #' @rdname pf_check
 #' @keywords internal
 
-.pf_check_write_history <- function(.write_history, .con = "sink") {
+.pf_check_write_history <- function(.write_history, .element = "sink") {
   if (!is.null(.write_history)) {
     check_named_list(.write_history)
-    check_names(.write_history, .con)
-    if (length(.write_history[[.con]]) != 1L) {
-      abort("`.write_history${.con}` should be a single directory in which to write files.",
+    check_names(.write_history, .element)
+    if (length(.write_history[[.element]]) != 1L) {
+      abort("`.write_history${.element}` should be a single directory in which to write files.",
             .envir = environment())
     }
-    check_dir(.write_history[[.con]])
-    if (length(list.files(.write_history[[.con]])) != 0L) {
-      warn("`.write_history${.con}` ('{.write_history[[.con]]}') is not an empty directory.",
+    check_dir(.write_history[[.element]])
+    if (length(list.files(.write_history[[.element]])) != 0L) {
+      warn("`.write_history${.element}` ('{.write_history[[.element]]}') is not an empty directory.",
            .envir = environment())
     }
   }
-  .write_history[[.con]]
+  .write_history[[.element]]
 }
 
 #' @rdname pf_check

@@ -44,11 +44,11 @@ abort <- function(...) {
 create_log <- function(.file, .verbose) {
   if (.verbose & !is.null(.file) & .file != "") {
     if (tools::file_ext(.file) != "txt") {
-      abort("`.con` ('{.file}') should be the path to a text (.txt) file.",
+      abort("`.txt` ('{.file}') should be the path to a text (.txt) file.",
             .envir = environment())
     }
     if (!dir.exists(dirname(.file))) {
-      abort("`dirname(.con)` ('{dirname(.file)}') does not exist.",
+      abort("`dirname(.txt)` ('{dirname(.file)}') does not exist.",
             .envir = environment())
     }
     if (!file.exists(.file)) {
@@ -59,7 +59,7 @@ create_log <- function(.file, .verbose) {
       }
     } else {
       if (length(readLines(.file)) > 0L) {
-        warn("`.con` ('{.file}`) already exists and is not empty!",
+        warn("`.txt` ('{.file}`) already exists and is not empty!",
              .envir = environment())
       }
     }
@@ -70,14 +70,14 @@ create_log <- function(.file, .verbose) {
 #' @title `cat_to_cf()` helper
 #' @keywords internal
 
-cat_helper <- function(.verbose, .con) {
+cat_helper <- function(.verbose, .txt) {
   # Define log file
-  check_verbose_and_log(.verbose = .verbose, .con = .con)
-  create_log(.file = .con, .verbose = .verbose)
+  check_verbose_and_log(.verbose = .verbose, .txt = .txt)
+  create_log(.file = .txt, .verbose = .verbose)
   # Define function to send messages to console or file
-  append_messages <- ifelse(.con == "", FALSE, TRUE)
-  function(..., message = .verbose, file = .con, append = append_messages) {
-    if (message) cat(paste(..., "\n"), file = .con, append = append)
+  append_messages <- ifelse(.txt == "", FALSE, TRUE)
+  function(..., message = .verbose, file = .txt, append = append_messages) {
+    if (message) cat(paste(..., "\n"), file = .txt, append = append)
   }
 }
 

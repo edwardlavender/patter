@@ -27,7 +27,7 @@ acs(
   .progress = TRUE,
   .prompt = FALSE,
   .verbose = TRUE,
-  .con = ""
+  .txt = ""
 )
 }
 \arguments{
@@ -74,7 +74,7 @@ Other columns can be included as necessary for \code{.update_ac} (see below).}
 
 \item{.verbose}{A logical variable that defines whether or not to print messages to the console or to file to relay function progress. If \code{con = ""}, messages are printed to the console; otherwise, they are written to file (see below).}
 
-\item{.con}{If \code{.verbose = TRUE}, \code{.con} is character string that defines the full pathway to a \code{.txt} file (which can be created on-the-fly) into which messages are written to relay function progress. This approach, rather than printing to the console, is recommended for clarity, speed and debugging.}
+\item{.txt}{If \code{.verbose = TRUE}, \code{.txt} is character string that defines the full pathway to a \code{.txt} file (which can be created on-the-fly) into which messages are written to relay function progress. This approach, rather than printing to the console, is recommended for clarity, speed and debugging.}
 }
 \value{
 The function returns an AC-branch (\code{\linkS4class{acb}}) object.
@@ -200,7 +200,7 @@ if (interactive()) {
         .save_record = TRUE,
         .prompt = TRUE)
 }
-# Use `.con` to write messages to file
+# Use `.txt` to write messages to file
 # * This is highly recommended
 log.txt <- tempfile(fileext = ".txt")
 out_ac <-
@@ -209,7 +209,7 @@ out_ac <-
       .detection_overlaps = overlaps,
       .detection_kernels = kernels,
       .save_record = TRUE,
-      .con = log.txt)
+      .txt = log.txt)
 readLines(log.txt) |> utils::head()
 # Suppress messages
 # * This is not recommended

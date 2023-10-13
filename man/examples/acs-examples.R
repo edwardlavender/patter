@@ -85,7 +85,7 @@ if (interactive()) {
         .save_record = TRUE,
         .prompt = TRUE)
 }
-# Use `.con` to write messages to file
+# Use `.txt` to write messages to file
 # * This is highly recommended
 log.txt <- tempfile(fileext = ".txt")
 out_ac <-
@@ -94,7 +94,7 @@ out_ac <-
       .detection_overlaps = overlaps,
       .detection_kernels = kernels,
       .save_record = TRUE,
-      .con = log.txt)
+      .txt = log.txt)
 readLines(log.txt) |> utils::head()
 # Suppress messages
 # * This is not recommended
