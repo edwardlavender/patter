@@ -1,71 +1,65 @@
 #' @title AC* helper: internal checks
 #' @description These are internal check functions.
-#' @param .b The `.bathy` [`SpatRaster`].
-#' @param .k The `.detection_kernels` `list`.
-#' @param .o The `.obs` [`data.table`].
-#' @param .ov The `detection_overlaps` `list`.
-#' @param .p The `present` [`SpatRaster`].
-#' @param .t The `timestep`.
-#' @param .w,.con The `.write_record` `list` and the name of the element that defines the directory in which to save files.
 #' @author Edward Lavender
 #' @name acs_check
 
 #' @rdname acs_check
 #' @keywords internal
 
-.acs_check_obs <- function(.o) {
-  if (inherits(.o, "data.frame") & !inherits(.o, "data.table")) {
-    .o <- as.data.table(.o)
+.acs_check_obs <- function(.obs) {
+  if (inherits(.obs, "data.frame") & !inherits(.obs, "data.table")) {
+    .obs <- as.data.table(.obs)
   }
-  check_inherits(.o, "data.table")
-  check_names(.o, c("timestep", "timestamp", "date", "detection_id", "detection", "receiver_id", "buffer_past", "buffer_future"))
-  check_inherits(.o$timestep, "integer")
-  check_inherits(.o$timestamp, "POSIXct")
-  check_inherits(.o$detection_id, "integer")
-  check_inherits(.o$detection, "integer")
-  check_inherits(.o$receiver_id, "list")
-  check_inherits(.o$buffer_past, "numeric")
-  check_inherits(.o$buffer_future, "numeric")
+  check_inherits(.obs, "data.table")
+  check_names(.obs, c("timestep", "timestamp", "date", "detection_id", "detection", "receiver_id", "buffer_past", "buffer_future"))
+  check_inherits(.obs$timestep, "integer")
+  check_inherits(.obs$timestamp, "POSIXct")
+  check_inherits(.obs$detection_id, "integer")
+  check_inherits(.obs$detection, "integer")
+  check_inherits(.obs$receiver_id, "list")
+  check_inherits(.obs$buffer_past, "numeric")
+  check_inherits(.obs$buffer_future, "numeric")
   if (!all(
-    lubridate::year(.o$timestamp) == lubridate::year(.o$date),
-    lubridate::month(.o$timestamp) == lubridate::month(.o$date),
-    lubridate::day(.o$timestamp) == lubridate::day(.o$date)
+    lubridate::year(.obs$timestamp) == lubridate::year(.obs$date),
+    lubridate::month(.obs$timestamp) == lubridate::month(.obs$date),
+    lubridate::day(.obs$timestamp) == lubridate::day(.obs$date)
   )) {
     abort("There is a discrepancy between `.obs$timestamp` and `.obs$date`.")
   }
-  .o
+  .obs
 }
 
 #' @rdname acs_check
 #' @keywords internal
 
-.acs_check_bathy <- function(.b) {
-  check_inherits(.b, "SpatRaster")
+.acs_check_bathy <- function(.bathy) {
+  check_inherits(.bathy, "SpatRaster")
 }
 
 #' @rdname acs_check
 #' @keywords internal
 
-.acs_check_detection_overlaps <- function(.ov) {
-  if (!is.null(.ov)) {
-    check_named_list(.ov)
-    check_names(.ov, c("list_by_receiver", "list_by_date"))
+.acs_check_detection_overlaps <- function(.detection_overlaps) {
+  if (!is.null(.detection_overlaps)) {
+    check_named_list(.detection_overlaps)
+    check_names(.detection_overlaps, c("list_by_receiver", "list_by_date"))
   }
 }
 
 #' @rdname acs_check
 #' @keywords internal
 
-.acs_check_detection_kernels <- function(.k, .b) {
-  check_named_list(.k)
-  check_names(.k, c("receiver_specific_kernels",
+.acs_check_detection_kernels <- function(.detection_kernels, .bathy) {
+  check_named_list(.detection_kernels)
+  check_names(.detection_kernels, c("receiver_specific_kernels",
                     "receiver_specific_inv_kernels",
                     "array_design",
                     "array_design_by_date",
                     "bkg_surface_by_design",
                     "bkg_inv_surface_by_design"))
   # Check bathy, detection_overlaps & detection_kernels
-  if (!terra::compareGeom(.b, compact(.k$receiver_specific_kernels)[[1]], messages = TRUE, stopOnError = FALSE)) {
+  if (!terra::compareGeom(.bathy, compact(.detection_kernels$receiver_specific_kernels)[[1]],
+                          messages = TRUE, stopOnError = FALSE)) {
     abort("The properties of the bathymetry grid and the detection kernel SpatRaster(s) are not equal.")
   }
 }
@@ -73,21 +67,21 @@
 #' @rdname acs_check
 #' @keywords internal
 
-.acs_check_write_record <- function(.w, .con = "filename") {
-  if (!is.null(.w)) {
-    check_named_list(.w)
-    check_names(.w, .con)
-    if (length(.w[[.con]]) != 1L) {
+.acs_check_write_record <- function(.write_record, .con = "filename") {
+  if (!is.null(.write_record)) {
+    check_named_list(.write_record)
+    check_names(.write_record, .con)
+    if (length(.write_record[[.con]]) != 1L) {
       abort("`.write_record${.con}` should be a single directory in which to write files.",
             .envir = environment())
     }
-    check_dir(.w[[.con]])
-    if (length(list.files(.w[[.con]])) != 0L) {
-      warn("`.write_record${.con}` ('{.w[[.con]]}') is not an empty directory.",
+    check_dir(.write_record[[.con]])
+    if (length(list.files(.write_record[[.con]])) != 0L) {
+      warn("`.write_record${.con}` ('{.write_record[[.con]]}') is not an empty directory.",
            .envir = environment())
     }
   }
-  .w[[.con]]
+  .write_record[[.con]]
 }
 
 

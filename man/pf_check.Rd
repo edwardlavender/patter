@@ -8,9 +8,9 @@
 \alias{.pf_path_pivot_checks}
 \title{PF helper: internal checks}
 \usage{
-.pf_check_obs(.o)
+.pf_check_obs(.obs)
 
-.pf_check_write_history(.w)
+.pf_check_write_history(.write_history, .con = "sink")
 
 .pf_check_rows(.data, .filter, .t)
 

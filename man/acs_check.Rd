@@ -10,32 +10,17 @@
 \alias{.acs_check_present}
 \title{AC* helper: internal checks}
 \usage{
-.acs_check_obs(.o)
+.acs_check_obs(.obs)
 
-.acs_check_bathy(.b)
+.acs_check_bathy(.bathy)
 
-.acs_check_detection_overlaps(.ov)
+.acs_check_detection_overlaps(.detection_overlaps)
 
-.acs_check_detection_kernels(.k, .b)
+.acs_check_detection_kernels(.detection_kernels, .bathy)
 
-.acs_check_write_record(.w, .con = "filename")
+.acs_check_write_record(.write_record, .con = "filename")
 
 .acs_check_present(.p, .t, .type = c("acs", "dc"))
-}
-\arguments{
-\item{.o}{The \code{.obs} \code{\link{data.table}}.}
-
-\item{.b}{The \code{.bathy} \code{\link{SpatRaster}}.}
-
-\item{.ov}{The \code{detection_overlaps} \code{list}.}
-
-\item{.k}{The \code{.detection_kernels} \code{list}.}
-
-\item{.w, .con}{The \code{.write_record} \code{list} and the name of the element that defines the directory in which to save files.}
-
-\item{.p}{The \code{present} \code{\link{SpatRaster}}.}
-
-\item{.t}{The \code{timestep}.}
 }
 \description{
 These are internal check functions.

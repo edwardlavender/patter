@@ -7,25 +7,38 @@ NULL
 #' @rdname pf_check
 #' @keywords internal
 
-.pf_check_obs <- function(.o) {
-  if (inherits(.o, "data.frame") & !inherits(.o, "data.table")) {
-    .o <- as.data.table(.o)
+.pf_check_obs <- function(.obs) {
+  if (inherits(.obs, "data.frame") & !inherits(.obs, "data.table")) {
+    .obs <- as.data.table(.obs)
   }
-  check_inherits(.o, "data.table")
-  if (!rlang::has_name(.o, "timestep")) {
+  check_inherits(.obs, "data.table")
+  if (!rlang::has_name(.obs, "timestep")) {
     abort("`.obs` should be a data.table with a `timestep` column. ")
   }
-  if (is.unsorted(.o$timestep)) {
+  if (is.unsorted(.obs$timestep)) {
     abort("`.obs$timestep` is not sorted.")
   }
-  .o
+  .obs
 }
 
 #' @rdname pf_check
 #' @keywords internal
 
-.pf_check_write_history <- function(.w) {
-  .acs_check_write_record(.w, .con = "sink")
+.pf_check_write_history <- function(.write_history, .con = "sink") {
+  if (!is.null(.write_history)) {
+    check_named_list(.write_history)
+    check_names(.write_history, .con)
+    if (length(.write_history[[.con]]) != 1L) {
+      abort("`.write_history${.con}` should be a single directory in which to write files.",
+            .envir = environment())
+    }
+    check_dir(.write_history[[.con]])
+    if (length(list.files(.write_history[[.con]])) != 0L) {
+      warn("`.write_history${.con}` ('{.write_history[[.con]]}') is not an empty directory.",
+           .envir = environment())
+    }
+  }
+  .write_history[[.con]]
 }
 
 #' @rdname pf_check
