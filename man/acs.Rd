@@ -77,7 +77,7 @@ Other columns can be included as necessary for \code{.update_ac} (see below).}
 \item{.con}{If \code{.verbose = TRUE}, \code{.con} is character string that defines the full pathway to a \code{.txt} file (which can be created on-the-fly) into which messages are written to relay function progress. This approach, rather than printing to the console, is recommended for clarity, speed and debugging.}
 }
 \value{
-The function returns an \code{\linkS4class{acs}} object.
+The function returns an AC-branch (\code{\linkS4class{acb}}) object.
 }
 \description{
 This function implements the acoustic-container (AC) algorithm and its extensions (e.g., the acoustic-container depth-contour (ACDC) algorithm).

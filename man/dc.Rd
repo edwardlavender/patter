@@ -47,7 +47,7 @@ dc(
 \item{.progress, .verbose, .con}{Options to monitor function progress (see \code{\link[=acs]{acs()}})}
 }
 \value{
-The function returns an \code{\linkS4class{acs}} object.
+The function returns an AC-branch (\code{\linkS4class{acb}}) object.
 }
 \description{
 This function implements the depth-contour algorithm.

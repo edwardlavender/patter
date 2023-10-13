@@ -50,7 +50,7 @@
 #' * **Time-specific detection kernels.** This function does not currently support temporally varying detection kernels (although receiver-specific detection kernels are fine).
 #' * **Parallelisation.** This function does not currently implement parallelisation (unlike predecessor functions in the [`flapper`](https://github.com/edwardlavender/flapper) package). However, the new approach is simpler and faster.
 #'
-#' @return The function returns an [`acs-class`] object.
+#' @return The function returns an AC-branch ([`acb-class`]) object.
 #'
 #' @example man/examples/acs-examples.R
 #'
@@ -281,7 +281,7 @@ acs <- function(.obs,
               time = time)
 
   #### Return outputs
-  class(out) <- c(class(out), "acs")
+  class(out) <- c(class(out), "acb")
   out
 
 }

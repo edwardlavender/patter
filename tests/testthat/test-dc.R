@@ -50,7 +50,7 @@ test_that("dc_setup_model() & dc() work", {
   out_dc <- dc(obs, gebco, dc_setup_model,
                .save_record = TRUE,
                .write_record = list(filename = folder, overwrite = TRUE))
-  check_inherits(out_dc, "acs")
+  check_inherits(out_dc, "acb")
   check_record <- function(dc_1, dc_2, out_dc, folder) {
     terra::all.equal(dc_1, out_dc$record[[1]]) |> expect_true()
     terra::all.equal(dc_2, out_dc$record[[2]]) |> expect_true()

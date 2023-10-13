@@ -48,7 +48,7 @@ dc_setup_model <- function(.obs, .t, .bathy,
 #' @param .write_record A named list, passed to [`terra::writeRaster`], to save the `record` [`SpatRaster`]s to file at each time step. The `filename` argument should define the directory in which to write files (see [`acs()`]).
 #' @param .cl,.varlist Parallelisation options (see [`cl_lapply()`]).
 #' @param .progress,.verbose,.con Options to monitor function progress (see [`acs()`])
-#' @return The function returns an [`acs-class`] object.
+#' @return The function returns an AC-branch ([`acb-class`]) object.
 #' @example man/examples/dc-examples.R
 #' @author Edward Lavender
 #' @export
@@ -144,7 +144,7 @@ dc <- function(.obs, .bathy, .model, ...,
               time = time)
 
   #### Return outputs
-  class(out) <- c(class(out), "acs")
+  class(out) <- c(class(out), "acb")
   out
 
 }
