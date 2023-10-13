@@ -3,6 +3,7 @@
 #' @description These functions load example outputs from key [`patter`] functions. They are included in the package to streamline function examples and tests.
 #'
 #' @details
+#' * [`dat_obs()`] reads an example input dataset from [`acs_setup_obs()`];
 #' * [`dat_containers()`] reads an example output from [`acs_setup_detection_containers()`];
 #' * [`dat_overlaps()`] reads an example output from [`acs_setup_detection_overlaps()`];
 #' * [`dat_kernels()`] reads an example output from [`acs_setup_detection_kernels()`];
@@ -12,6 +13,7 @@
 #' * [`dat_pfp()`] reads an example output from [`pf_path()`];
 #'
 #' @examples
+#' dat_obs() |> summary()
 #' dat_containers() |> summary()
 #' dat_overlaps() |> summary()
 #' dat_kernels() |> summary()
@@ -24,6 +26,15 @@
 #'
 #' @author Edward Lavender
 #' @name datasets-algorithms
+
+#' @rdname datasets-algorithms
+#' @export
+
+dat_obs <- function() {
+  path <- system.file("extdata", "dat_obs.rds",
+                      package = "patter", mustWork = TRUE)
+  data <- readRDS(path)
+}
 
 #' @rdname datasets-algorithms
 #' @export

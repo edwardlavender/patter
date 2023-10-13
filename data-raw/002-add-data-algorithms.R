@@ -71,6 +71,7 @@ out_pou <- terra::wrap(out_pou)
 #### Update package
 
 #### Define dataset names
+dat_obs        <- obs
 dat_containers <- containers
 dat_overlaps   <- overlaps
 dat_kernels    <- kernels
@@ -102,7 +103,8 @@ dat_ac$record <- lapply(dat_ac$record, wrap_elm)
 
 #### Check dataset sizes
 datasets <-
-  list(dat_containers = dat_containers,
+  list(dat_obs = dat_obs,
+       dat_containers = dat_containers,
        dat_overlaps = dat_overlaps,
        dat_kernels = dat_kernels,
        dat_ac = dat_ac,

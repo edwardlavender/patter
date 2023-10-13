@@ -5,7 +5,10 @@ test_that("Algorithm datasets can be loaded", {
 
   # Check algorithm outputs can be loaded
   # Check SpatRasters have been correctly unwrapped
-  # (* Plot SpatRasters: this will fail if not unwrapped)
+  # (* Plot SpatRasters: this will fail if not unwrapped
+
+  x <- dat_obs()
+  x |> check_inherits("data.table")
 
   x <- dat_containers()
   x[[4]] |> terra::plot()
