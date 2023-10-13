@@ -10,6 +10,7 @@
 \alias{check_dots_allowed}
 \alias{check_dots_for_missing_period}
 \alias{check_new_colnames}
+\alias{check_verbose_and_log}
 \title{Utility checks}
 \usage{
 check_dir(input)
@@ -33,6 +34,8 @@ check_dots_allowed(not_allowed, ...)
 check_dots_for_missing_period(args, dots)
 
 check_new_colnames(.data, .new)
+
+check_verbose_and_log(.verbose, .con)
 }
 \description{
 These functions check user inputs.

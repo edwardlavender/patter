@@ -27,16 +27,9 @@ pf_backward <- function(.history, .save_history = FALSE, .write_history = NULL,
     abort("`.save_history = FALSE` and `.write_history = NULL`. There is nothing to do.")
   }
   write_history_folder <- .pf_check_write_history(.write_history)
-  check_verbose_and_log(.verbose, .con)
 
   #### Set up messages (modied from pf_forward())
-  if (.verbose && .con != "") {
-    create_log(.con)
-  }
-  append_messages <- ifelse(.con == "", FALSE, TRUE)
-  cat_to_cf <- function(..., message = .verbose, file = .con, append = append_messages) {
-    if (message) cat(paste(..., "\n"), file = .con, append = append)
-  }
+  cat_to_cf <- cat_helper(.verbose = .verbose, .con = .con)
   cat_to_cf(paste0("patter::pf_backward() called (@ ", t_onset, ")..."))
   on.exit(cat_to_cf(paste0("patter::pf_backward() call ended (@ ", Sys.time(), ").")), add = TRUE)
 

@@ -40,14 +40,7 @@ pf_path <- function(.history,
   }
 
   # Set up messages
-  check_verbose_and_log(.verbose, .con)
-  if (.verbose && .con != "") {
-    create_log(.con)
-  }
-  append_messages <- ifelse(.con == "", FALSE, TRUE)
-  cat_to_cf <- function(..., message = .verbose, file = .con, append = append_messages) {
-    if (message) cat(paste(..., "\n"), file = .con, append = append)
-  }
+  cat_to_cf <- cat_helper(.verbose = .verbose, .con = .con)
   cat_to_cf(paste0("patter::pf_path() called (@ ", t_onset, ")..."))
   on.exit(cat_to_cf(paste0("patter::pf_path() call ended (@ ", Sys.time(), ").")), add = TRUE)
 

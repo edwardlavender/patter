@@ -66,20 +66,10 @@ dc <- function(.obs, .bathy, .model, ...,
     abort("`.save_record = FALSE` and `.write_record = NULL`. There is nothing to do.")
   }
   write_record_folder <- .acs_check_write_record(.write_record)
-  check_verbose_and_log(.verbose, .con)
-
-  # Catch dots
   check_dots_for_missing_period(formals(), list(...))
 
   #### Set up messages
-  # Define log file & function to send messages to the console/file
-  if (.verbose && .con != "") {
-    create_log(.con)
-  }
-  append_messages <- ifelse(.con == "", FALSE, TRUE)
-  cat_to_cf <- function(..., message = .verbose, file = .con, append = append_messages) {
-    if (message) cat(paste(..., "\n"), file = .con, append = append)
-  }
+  cat_to_cf <- cat_helper(.verbose = .verbose, .con = .con)
   cat_to_cf(paste0("patter::dc() called (@ ", t_onset, ")..."))
   on.exit(cat_to_cf(paste0("patter::dc() call ended (@ ", Sys.time(), ").")), add = TRUE)
 

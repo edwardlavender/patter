@@ -4,10 +4,12 @@
 \alias{create_log}
 \title{Create a log file}
 \usage{
-create_log(.file)
+create_log(.file, .verbose)
 }
 \arguments{
-\item{.file}{A character path to a file. \code{NULL} is permitted.}
+\item{.file}{A character path to a file. \code{NULL} and \code{""} are permitted.}
+
+\item{.verbose}{A logical variable that defines whether or not to act on \code{.file}.}
 }
 \value{
 The function returns \code{invisible(TRUE)}.

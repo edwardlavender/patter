@@ -35,19 +35,20 @@ abort <- function(...) {
 
 #' @title Create a log file
 #' @description This function creates a .txt file (`.file`) via [`file.create`].
-#' @param .file A character path to a file. `NULL` is permitted.
+#' @param .file A character path to a file. `NULL` and `""` are permitted.
+#' @param .verbose A logical variable that defines whether or not to act on `.file`.
 #' @return The function returns `invisible(TRUE)`.
 #' @author Edward Lavender
 #' @keywords internal
 
-create_log <- function(.file) {
-  if (!is.null(.file)) {
+create_log <- function(.file, .verbose) {
+  if (.verbose & !is.null(.file) & .file != "") {
     if (tools::file_ext(.file) != "txt") {
-      abort("`con` ('{.file}') should be the path to a text (.txt) file.",
+      abort("`.con` ('{.file}') should be the path to a text (.txt) file.",
             .envir = environment())
     }
     if (!dir.exists(dirname(.file))) {
-      abort("`dirname(con)` ('{dirname(.file)}') does not exist.",
+      abort("`dirname(.con)` ('{dirname(.file)}') does not exist.",
             .envir = environment())
     }
     if (!file.exists(.file)) {
@@ -58,12 +59,26 @@ create_log <- function(.file) {
       }
     } else {
       if (length(readLines(.file)) > 0L) {
-        warn("`con` ('{.file}`) already exists and is not empty!",
+        warn("`.con` ('{.file}`) already exists and is not empty!",
              .envir = environment())
       }
     }
   }
   invisible(TRUE)
+}
+
+#' @title `cat_to_cf()` helper
+#' @keywords internal
+
+cat_helper <- function(.verbose, .con) {
+  # Define log file
+  check_verbose_and_log(.verbose = .verbose, .con = .con)
+  create_log(.file = .con, .verbose = .verbose)
+  # Define function to send messages to console or file
+  append_messages <- ifelse(.con == "", FALSE, TRUE)
+  function(..., message = .verbose, file = .con, append = append_messages) {
+    if (message) cat(paste(..., "\n"), file = .con, append = append)
+  }
 }
 
 #' @title Compact a list
