@@ -72,7 +72,7 @@
     check_named_list(.write_record)
     check_names(.write_record, .element)
     if (length(.write_record[[.element]]) != 1L) {
-      abort("`.write_record${.co.elementn}` should be a single directory in which to write files.",
+      abort("`.write_record${.element}` should be a single directory in which to write files.",
             .envir = environment())
     }
     check_dir(.write_record[[.element]])
