@@ -2,27 +2,20 @@
 % Please edit documentation in R/pf_kick.R
 \name{pf_kick}
 \alias{pf_kick}
-\alias{pf_kick_step}
-\alias{pf_kick_angle}
 \title{PF: template movement models}
 \usage{
-pf_kick_step(.n)
-
-pf_kick_angle(.n)
-
 pf_kick(
   .particles,
   .obs = NULL,
   .t = NULL,
   .bathy = NULL,
-  .sim_step = pf_kick_step,
-  .sim_angle = pf_kick_angle,
+  .sim_length = sim_length,
+  .sim_angle = sim_angle_rw,
+  .lonlat = FALSE,
   ...
 )
 }
 \arguments{
-\item{.n}{An \code{integer} that defines the number of particles to kick.}
-
 \item{.particles}{A \code{\link{data.table}}, from \code{\link[=pf_forward]{pf_forward()}}, that defines the current particle samples:
 \itemize{
 \item \code{cell_now} is an integer vector of cell IDs;
@@ -32,9 +25,9 @@ pf_kick(
 
 \item{.obs, .t, .bathy}{(optional) The \code{.obs} \code{\link{data.table}}, an integer that indexes \code{.obs} and the \code{.bathy} \code{\link{SpatRaster}} (see \code{\link[=pf_forward]{pf_forward()}}). These inputs are unused in this template movement model but supported within \code{\link[=pf_forward]{pf_forward()}}.}
 
-\item{.sim_step, .sim_angle}{Functions that simulate \code{.n} step lengths and turning angles.}
+\item{.sim_length, .sim_angle, ...}{Functions and additional arguments that simulate step lengths and turning angles. The first argument of each function should be the number of step lengths/turning angles to simulate (defined internally).}
 
-\item{...}{Additional arguments passed from \code{\link[=pf_forward]{pf_forward()}} (unused here).}
+\item{.lonlat}{A logical variable that defines whether or not coordinates are longitudes/latitudes.}
 }
 \value{
 The function returns a \code{\link{data.table}}, as supplied, with two additional columns:
@@ -47,7 +40,7 @@ The function returns a \code{\link{data.table}}, as supplied, with two additiona
 These functions are example movement models, of the kind required by \code{.kick} in \code{\link[=pf_forward]{pf_forward()}}.
 }
 \details{
-This template movement model is a biased random walk. Step lengths are simulated from a Gamma distribution via \code{\link[stats:GammaDist]{stats::rgamma()}}. Turning angles are simulated from a wrapped normal distribution via \code{\link[circular:wrappednormal]{circular::rwrappednormal()}}. See the the code for the parameters used.
+This template movement model is a biased random walk. Step lengths are simulated from a truncated Gamma distribution via \code{\link[=sim_length]{sim_length()}}. Turning angles are simulated from a wrapped normal distribution via \code{\link[=sim_angle_rw]{sim_angle_rw()}}.
 }
 \section{Warning}{
 \itemize{

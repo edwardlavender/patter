@@ -118,10 +118,10 @@ NULL
 #' @keywords internal
 
 .step <- function(.xy_now,
-                 .xy_next = matrix(NA, nrow = nrow(.xy_now), ncol = 2L),
-                 .lonlat = FALSE,
-                 .length = rtruncgamma(nrow(.xy_now)),
-                 .angle = rwn(nrow(.xy_now))) {
+                  .xy_next = matrix(NA, nrow = nrow(.xy_now), ncol = 2L),
+                  .lonlat = FALSE,
+                  .length = rtruncgamma(nrow(.xy_now)),
+                  .angle = rwn(nrow(.xy_now))) {
   if (.lonlat) {
     .xy_next <- geosphere::destPoint(p = .xy_now, b = .angle, d = .length)
   } else {

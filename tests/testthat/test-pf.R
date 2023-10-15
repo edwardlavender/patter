@@ -67,15 +67,6 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   #### Set inputs
   n_particles <- 1e3
   mobility    <- 500
-  kick <- function(.particles, .obs = NULL, .t = NULL, .bathy = NULL){
-    pf_kick(
-      .particles, .obs, .t, .bathy,
-      .sim_step = function(n) {
-        truncdist::rtrunc(n, "gamma", a = 0, b = mobility, shape = 15, scale = 15)
-      },
-      .sim_angle = pf_kick_angle
-    )
-  }
   pff_folder <- file.path(tempdir(), "pf", "forward")
   dir.create(pff_folder, recursive = TRUE)
 
@@ -84,7 +75,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   pf_forward(.obs = obs,
              .record = out_ac$record,
              .n = n_particles,
-             .kick = kick,
+             .kick = pf_kick,
              .bathy = gebco) |>
     expect_error("`.save_history = FALSE` and `.write_history = NULL`. There is nothing to do.",
                  fixed = TRUE)
@@ -92,7 +83,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   pf_forward(.obs = obs,
              .record = out_ac$record,
              .n = n_particles,
-             .kick = kick,
+             .kick = pf_kick,
              .bathy = gebco,
              .save_history = TRUE,
              .verbose = FALSE, .txt = tempdir()) |>
@@ -106,7 +97,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   pf_forward(.obs = obs,
              .record = out_ac_tmp$record,
              .n = n_particles,
-             .kick = kick,
+             .kick = pf_kick,
              .bathy = gebco,
              .save_history = TRUE) |>
     expect_message("There are no particles with positive weights at timestep 10. `history` returned up to this point.",
@@ -115,7 +106,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   out_pff <- pf_forward(.obs = obs,
                        .record = out_ac_tmp$record,
                        .n = n_particles,
-                       .kick = kick,
+                       .kick = pf_kick,
                        .bathy = gebco,
                        .save_history = TRUE)
   expect_equal(length(out_pff), 9L)
@@ -126,7 +117,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   out_pff <- pf_forward(.obs = obs,
                        .record = out_ac$record,
                        .n = n_particles,
-                       .kick = kick,
+                       .kick = pf_kick,
                        .bathy = gebco,
                        .save_history = FALSE,
                        .write_history = list(sink = pff_folder))
@@ -142,7 +133,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
       out_pff <- pf_forward(.obs = obs,
                  .record = record,
                  .n = n_particles,
-                 .kick = kick,
+                 .kick = pf_kick,
                  .bathy = gebco,
                  .save_history = TRUE,
                  .write_history = list(sink = pff_folder),

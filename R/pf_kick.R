@@ -1,15 +1,14 @@
 #' @title PF: template movement models
 #' @description These functions are example movement models, of the kind required by `.kick` in [`pf_forward()`].
-#' @param .n An `integer` that defines the number of particles to kick.
 #' @param .particles A [`data.table`], from [`pf_forward()`], that defines the current particle samples:
 #' * `cell_now` is an integer vector of cell IDs;
 #' * `x_now` is a numerical vector of `x` coordinates;
 #' * `y_now` is a numerical vector of `y` coordinates;
 #' @param .obs,.t,.bathy (optional) The `.obs` [`data.table`], an integer that indexes `.obs` and the `.bathy` [`SpatRaster`] (see [`pf_forward()`]). These inputs are unused in this template movement model but supported within [`pf_forward()`].
-#' @param .sim_step,.sim_angle Functions that simulate `.n` step lengths and turning angles.
-#' @param ... Additional arguments passed from [`pf_forward()`] (unused here).
+#' @param .sim_length,.sim_angle,... Functions and additional arguments that simulate step lengths and turning angles. The first argument of each function should be the number of step lengths/turning angles to simulate (defined internally).
+#' @param .lonlat A logical variable that defines whether or not coordinates are longitudes/latitudes.
 #'
-#' @details This template movement model is a biased random walk. Step lengths are simulated from a Gamma distribution via [`stats::rgamma()`]. Turning angles are simulated from a wrapped normal distribution via [`circular::rwrappednormal()`]. See the the code for the parameters used.
+#' @details This template movement model is a biased random walk. Step lengths are simulated from a truncated Gamma distribution via [`sim_length()`]. Turning angles are simulated from a wrapped normal distribution via [`sim_angle_rw()`].
 #'
 #' # Warning
 #'
@@ -54,41 +53,26 @@
 #' @rdname pf_kick
 #' @export
 
-pf_kick_step <- function(.n) {
-  stats::rgamma(.n, shape = 15, scale = 15)
-}
-
-#' @rdname pf_kick
-#' @export
-
-pf_kick_angle <- function(.n) {
-  circular::rwrappednormal(
-    n = .n,
-    mu = circular::circular(0),
-    rho = 0.1,
-    sd = 1,
-    control.circular = list(units = "degrees")
-  ) |> as.numeric()
-}
-
-#' @rdname pf_kick
-#' @export
-
 pf_kick <- function(.particles,
                     .obs = NULL,
                     .t = NULL,
                     .bathy = NULL,
-                    .sim_step = pf_kick_step,
-                    .sim_angle = pf_kick_angle, ...) {
+                    .sim_length = sim_length,
+                    .sim_angle = sim_angle_rw,
+                    .lonlat = FALSE, ...) {
   # Simulate step length & turning angle
-  n <- nrow(.particles)
-  rlen <- .sim_step(n)
-  rang <- .sim_angle(n)
+  n    <- nrow(.particles)
+  rlen <- .sim_length(n, ...)
+  rang <- .sim_angle(n, ...)
   # Kick each particle into new proposal locations
-  x_next <- x_now <- y_next <- y_now <- NULL
-  dx <- rlen * cos(rang)             # change in x position
-  dy <- rlen * sin(rang)             # change in y position
-  .particles[, x_next := x_now + dx] # new x position is x + change in x
-  .particles[, y_next := y_now + dy] # new y position is previous x + change in x
+  x_now <- y_now <- NULL
+  xy_next <- .step(.xy_now = as.matrix(.particles[, list(x_now, y_now)]),
+                   .lonlat = .lonlat,
+                   .length = rlen,
+                   .angle = rang)
+  # Update data.table
+  x_next <- y_next <- NULL
+  .particles[, x_next := xy_next[, 1]]
+  .particles[, y_next := xy_next[, 2]]
   .particles
 }

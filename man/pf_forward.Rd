@@ -10,6 +10,7 @@ pf_forward(
   .kick,
   ...,
   .bathy,
+  .lonlat = FALSE,
   .n = 100L,
   .save_history = FALSE,
   .write_history = NULL,
@@ -28,16 +29,17 @@ pf_forward(
 
 \item{.record}{A list of \code{\link{SpatRaster}}s, or a character vector of file paths to \code{\link{SpatRaster}}s (see \code{\link[=pf_setup_files]{pf_setup_files()}}), that define the set of possible locations of the individual according to the data (i.e., an AC* algorithm).}
 
-\item{.kick, ..., .bathy}{A function, and associated inputs, used to 'kick' particles into new (proposal) locations. \code{.kick} must support the following inputs:
+\item{.kick, ..., .bathy, .lonlat}{A function, and associated inputs, used to 'kick' particles into new (proposal) locations. \code{.kick} must support the following inputs:
 \itemize{
 \item \code{.particles}---a \code{\link{data.table}} that defines the \code{cell} IDs and associated coordinates (\code{x_now} and \code{y_now}) of current particle samples;
 \item (optional) \code{.obs}---the \code{.obs} \code{\link{data.table}};
 \item (optional) \code{.t}---the \code{timestep} (used to index \code{.obs});
 \item (optional) \code{.bathy}---a \code{\link{SpatRaster}} that defines the bathymetry;
+\item (optional) \code{.lonlat}---a \code{logical} variable that define whether or not particle samples are longitude/latitude or planar coordinates;
 \item (optional) \code{...}---additional arguments, passed via \code{\link[=pf_forward]{pf_forward()}}, if required;
 }
 
-See \code{\link[=pf_kick]{pf_kick()}} for an example movement model.}
+See \code{\link[=pf_kick]{pf_kick()}} for a template random walk movement model. In this function, \code{...} are passed to \code{\link[=sim_length]{sim_length()}} and \code{\link[=sim_angle_rw]{sim_angle_rw()}}.}
 
 \item{.n}{An \code{integer} that defines the number of particle samples at each time step.}
 

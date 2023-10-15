@@ -4,14 +4,15 @@
 #' * `timestep`---an `integer` that defines the time step;
 #' * Any columns required by `.kick` (see below);
 #' @param .record A list of [`SpatRaster`]s, or a character vector of file paths to [`SpatRaster`]s (see [`pf_setup_files()`]), that define the set of possible locations of the individual according to the data (i.e., an AC* algorithm).
-#' @param .kick,...,.bathy A function, and associated inputs, used to 'kick' particles into new (proposal) locations. `.kick` must support the following inputs:
+#' @param .kick,...,.bathy,.lonlat A function, and associated inputs, used to 'kick' particles into new (proposal) locations. `.kick` must support the following inputs:
 #' * `.particles`---a [`data.table`] that defines the `cell` IDs and associated coordinates (`x_now` and `y_now`) of current particle samples;
 #' * (optional) `.obs`---the `.obs` [`data.table`];
 #' * (optional) `.t`---the `timestep` (used to index `.obs`);
 #' * (optional) `.bathy`---a [`SpatRaster`] that defines the bathymetry;
+#' * (optional) `.lonlat`---a `logical` variable that define whether or not particle samples are longitude/latitude or planar coordinates;
 #' * (optional) `...`---additional arguments, passed via [`pf_forward()`], if required;
 #'
-#' See [`pf_kick()`] for an example movement model.
+#' See [`pf_kick()`] for a template random walk movement model. In this function, `...` are passed to [`sim_length()`] and [`sim_angle_rw()`].
 #' @param .n An `integer` that defines the number of particle samples at each time step.
 #' @param .save_history A logical variable that defines whether or not to save particle samples in the `history` element of the output. This is only sensible for small-scale applications (i.e., short time series and few particles).
 #' @param .write_history A named list, passed to [`arrow::write_parquet()`], to save particle samples to file at each time step. The `sink` argument should be the directory in which to write files. Files are named by `.obs$timestep` (i.e., `1.parquet`, `2.parquet`, ..., `N.parquet`).
@@ -31,7 +32,7 @@
 #' @author Edward Lavender
 #' @export
 
-pf_forward <- function(.obs, .record, .kick, ..., .bathy, .n = 100L,
+pf_forward <- function(.obs, .record, .kick, ..., .bathy, .lonlat = FALSE, .n = 100L,
                        .save_history = FALSE, .write_history = NULL, .progress = TRUE,
                        .prompt = FALSE, .verbose = TRUE, .txt = "") {
 
@@ -132,7 +133,7 @@ pf_forward <- function(.obs, .record, .kick, ..., .bathy, .n = 100L,
     #### Kick particles into new (proposal) locations
     if (t < timestep_final) {
       cat_to_cf(paste0("... ... Kicking particles into new locations..."))
-      pnext <- .kick(pnow, .obs, t, .bathy)
+      pnext <- .kick(.particles = pnow, .obs = .obs, .t = t, .bathy = .bathy, .lonlat = .lonlat, ...)
       pnext[, cell_next := as.integer(terra::cellFromXY(.record[[t]], pnext[, c("x_next", "y_next")]))]
     }
     #### Visualise particle samples & proposal locations
