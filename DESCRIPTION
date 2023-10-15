@@ -16,6 +16,7 @@ Imports:
 Suggests: 
     circular, extraDistr, truncdist, 
     geosphere, spatialEco, 
+    spatstat.geom, spatstat.explore,
     purrr, stringr,
     knitr, rmarkdown,
     testthat (>= 3.0.0)

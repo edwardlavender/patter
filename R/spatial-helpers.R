@@ -94,3 +94,29 @@ geomean <- function(xy, w = NULL) {
     cbind(x, y) * 180/pi
   }
 }
+
+#' @title Convert a `SpatRaster` to a `spatstat` `im`
+#' @source This function is based on `maptools::as.im.RasterLayer`.
+#' @keywords internal
+
+as.im.SpatRaster <- function(from) {
+  # Check user inputs
+  rlang::check_installed("spatstat.geom")
+  if (!terra::hasValues(from))
+    abort("The SpatRaster is empty.")
+  if (terra::is.rotated(from)) {
+    abort("The SpatRaster is rotated.")
+  }
+  # Coerce SpatRaster
+  rs <- terra::res(from)
+  # Define xmin and ymin (shifted to the cell centre)
+  # orig <- sp::bbox(from)[, 1] + 0.5 * rs
+  orig <- terra::ext(from)[c(1, 3)] + 0.5 * rs
+  dm <- dim(from)[2:1]
+  xx <- unname(orig[1] + cumsum(c(0, rep(rs[1], dm[1] - 1))))
+  yy <- unname(orig[2] + cumsum(c(0, rep(rs[2], dm[2] - 1))))
+  val <- terra::values(from)
+  dim(val) <- dm
+  val <- spatstat.geom::transmat(val, from = list(x = "-i", y = "j"), to = "spatstat")
+  spatstat.geom::im(val, xcol = xx, yrow = yy)
+}
