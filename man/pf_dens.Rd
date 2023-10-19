@@ -4,7 +4,15 @@
 \alias{pf_dens}
 \title{PF: map point density}
 \usage{
-pf_dens(.xpf, .coord = NULL, .plot = TRUE, .use_tryCatch = TRUE, ...)
+pf_dens(
+  .xpf,
+  .coord = NULL,
+  .plot = TRUE,
+  .use_tryCatch = TRUE,
+  .verbose = TRUE,
+  .txt = "",
+  ...
+)
 }
 \arguments{
 \item{.xpf}{A \code{\link{SpatRaster}} that defines the grid for density estimation and, if \code{.coord = NULL}, the points (and associated weights) that are smoothed. The coordinate reference system of \code{.xpf} must be planar and specified.}
@@ -18,6 +26,8 @@ pf_dens(.xpf, .coord = NULL, .plot = TRUE, .use_tryCatch = TRUE, ...)
 \item If \code{.use_tryCatch = FALSE}, if density estimation fails with an error, the function fails with the same error.
 \item If \code{.use_tryCatch = TRUE}, if density estimation fails with an error, the function produces a warning with the error message and returns \code{NULL}.
 }}
+
+\item{.verbose, .txt}{Controls on function prompts and messages (see \code{\link[=acs]{acs()}}).}
 
 \item{...}{Arguments passed to \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}}, such as \code{sigma} (i.e., the bandwidth).}
 }

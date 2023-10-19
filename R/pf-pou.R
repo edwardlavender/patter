@@ -61,6 +61,7 @@ pf_pou <-
 #' @param .use_tryCatch A `logical` variable that controls error handling:
 #' * If `.use_tryCatch = FALSE`, if density estimation fails with an error, the function fails with the same error.
 #' * If `.use_tryCatch = TRUE`, if density estimation fails with an error, the function produces a warning with the error message and returns `NULL`.
+#' @param .verbose,.txt Controls on function prompts and messages (see [`acs()`]).
 #' @param ... Arguments passed to [`spatstat.explore::density.ppp()`], such as `sigma` (i.e., the bandwidth).
 #'
 #' @details This function smooths (a) a [`SpatRaster`] or (b) a set of inputted coordinates:
@@ -80,10 +81,12 @@ pf_dens <- function(.xpf,
                     .coord = NULL,
                     .plot = TRUE,
                     .use_tryCatch = TRUE,
+                    .verbose = TRUE, .txt = "",
                     ...) {
 
   #### Check user inputs
   # Check packages
+  t_onset <- Sys.time()
   rlang::check_installed("spatstat.explore")
   rlang::check_installed("spatstat.geom")
   # Check `.xpf`
@@ -91,25 +94,45 @@ pf_dens <- function(.xpf,
   # Check dots (`at` and `se` are not currently supported)
   check_dots_allowed(c("at", "se"))
 
+  #### Set up messages
+  cat_to_cf <- cat_helper(.verbose = .verbose, .txt = .txt)
+  cat_to_cf(paste0("patter::pf_dens() called (@ ", t_onset, ")..."))
+  on.exit(cat_to_cf(paste0("patter::pf_dens() call ended (@ ", Sys.time(), ").")), add = TRUE)
+
   #### Process SpatRaster
   # spatstat assumes planar coordinates
+  cat_to_cf("... Processing `.xpf`...")
   crs <- terra::crs(.xpf)
   if (is.na(terra::crs(.xpf))) {
     abort("`terra::crs(.xpf)` must be specified (and should be planar).")
   }
   terra::crs(.xpf) <- NA
   # Set up window
+  cat_to_cf("... Converting `.xpf` to an `im` object...")
   rim  <- as.im.SpatRaster(.xpf)
-  rwin <- spatstat.geom::as.owin(rim)
+  cat_to_cf("... Defining the window...")
+  if (terra::global(.xpf, function(x) any(is.na(x)))[1, 1]) {
+    # Define the window based on rim if there are NAs
+    cat_to_cf("... ... Using `.xpf`...")
+    rwin <- spatstat.geom::as.owin(rim)
+  } else {
+    # Define the window based on the extent otherwise (for improved speed)
+    cat_to_cf("... ... Using `.xpf` extent only...")
+    ext  <- terra::ext(.xpf)
+    rwin <- spatstat.geom::as.owin(W = c(xmin= ext[1], xmax = ext[2], ymin = ext[3], ymax = ext[4]))
+  }
 
   #### Get ppp
+  cat_to_cf("... Building `ppp` object...")
   # (A) Define coordinates & weights from the SpatRaster
   if (is.null(.coord)) {
+    cat_to_cf("... ... Using `.xpf`...")
     .coord <- terra::as.data.frame(.xpf, xy = TRUE)
     colnames(.coord) <- c("x", "y", "mark")
     marks <- .coord[, 3]
   } else {
     # (B) Define coordinates & weights from `.coord` input
+    cat_to_cf("... ... Using `.coord`...")
     if (inherits(.coord, "matrix")) {
       .coord <- as.data.frame(.coord[, 1:2])
       colnames(.coord) <- c("x", "y")
@@ -148,15 +171,16 @@ pf_dens <- function(.xpf,
                             values = .coord$mark)
     rim <- as.im.SpatRaster(rim)
   }
+  cat_to_cf("... ... Defining `ppp` object...")
   rppp <- spatstat.geom::ppp(x = .coord$x, y = .coord$y,
                              window = rwin, marks = marks)
 
   #### Estimate density surface
   # Get intensity (expected number of points PER UNIT AREA)
+  cat_to_cf("... Estimating density surface...")
   dens <- tryCatch(spatstat.explore::density.ppp(rppp, weights = rim,
                                                  at = "pixels", se = FALSE, ...),
                    error = function(e) e)
-  return(dens)
   if (inherits(dens, "error")) {
     if (!.use_tryCatch) {
       abort(dens)
@@ -166,6 +190,7 @@ pf_dens <- function(.xpf,
     }
   }
   # Translate intensity into expected number of points PER PIXEL
+  cat_to_cf("... Scaling density surface...")
   dens <- terra::rast(dens)
   terra::crs(dens) <- crs
   dens <- dens * terra::cellSize(dens, unit = "m")
