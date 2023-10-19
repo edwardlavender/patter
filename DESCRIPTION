@@ -11,8 +11,7 @@ Imports:
     data.table, dplyr, dtplyr, rlang, 
     glue, lubridate,
     pbapply, progress, 
-    sf, terra, 
-    Rfast, zoo
+    terra
 Suggests: 
     circular, extraDistr, truncdist, 
     geosphere, spatialEco, 
