@@ -88,3 +88,18 @@ cat_helper <- function(.verbose, .txt) {
 #' @keywords internal
 
 compact <- function(l) l[which(!sapply(l, is.null))]
+
+#' @title Calculate column products
+#' @description This function calculates column products for each row in a [`matrix`].
+#' @param .data A [`matrix`].
+#' @param .cols A vector that defines the columns in `.data` to multiply.
+#' @return The function returns a `numeric` vector.
+#' @author Edward Lavender
+#' @keywords internal
+
+colProds.matrix <- function(.data, .cols = seq_len(ncol(.data))) {
+  if (length(.cols) == 1L) {
+    return(.data[, .cols])
+  }
+  eval(parse(text = paste0(".data[, ", .cols, "]", collapse = " * ")))
+}

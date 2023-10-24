@@ -30,6 +30,21 @@ rast_template <- function(.xmin = 0, .xmax = 1000,
   r
 }
 
+#' @title Intersect `SpatRaster`s in a list
+#' @description This function identifies the cells on a `SpatRaster`s where all `SpatRaster` layers in a `list` have the same value.
+#' @param .x A list.
+#' @param .value A number that defines the value.
+#' @keywords internal
+
+spatIntersect <- function(.x, .value = 1) {
+  check_inherits(.x, "list")
+  if (length(.x) == 1) {
+    return(.x[[1]])
+  }
+  .x <- terra::rast(.x)
+  terra::app(.x, function(x) all(x == .value))
+}
+
 #' @title Normalise a [`SpatRaster`]
 #' @description This function normalises a [`SpatRaster`].
 #' @param x A [`SpatRaster`].
@@ -44,17 +59,30 @@ normalise <- function(x) {
   x / as.numeric(terra::global(x, "sum", na.rm = TRUE))
 }
 
-#' @title Calculate serial distances
-#' @description This function calculates distances between sequential coordinates in a matrix.
-#' @param .xy A two-column matrix of coordinates.
-#' @param .lonlat A `logical` variable that defines whether or not the coordinates are in longitude/latitude format.
-#' @details This function is a simple wrapper for [`terra::distance()`].
-#' @export
+#' @title Convert a `SpatRaster` to a `spatstat` `im`
+#' @source This function is based on `maptools::as.im.RasterLayer`.
+#' @keywords internal
 
-dist_along_path <- function(.xy, .lonlat = FALSE) {
-  terra::distance(as.matrix(.xy, ncol = 2),
-                  lonlat = .lonlat,
-                  sequential = TRUE)
+as.im.SpatRaster <- function(from) {
+  # Check user inputs
+  rlang::check_installed("spatstat.geom")
+  if (!terra::hasValues(from))
+    abort("The SpatRaster is empty.")
+  if (terra::is.rotated(from)) {
+    abort("The SpatRaster is rotated.")
+  }
+  # Coerce SpatRaster
+  rs <- terra::res(from)
+  # Define xmin and ymin (shifted to the cell centre)
+  # orig <- sp::bbox(from)[, 1] + 0.5 * rs
+  orig <- terra::ext(from)[c(1, 3)] + 0.5 * rs
+  dm <- dim(from)[2:1]
+  xx <- unname(orig[1] + cumsum(c(0, rep(rs[1], dm[1] - 1))))
+  yy <- unname(orig[2] + cumsum(c(0, rep(rs[2], dm[2] - 1))))
+  val <- terra::values(from)
+  dim(val) <- dm
+  val <- spatstat.geom::transmat(val, from = list(x = "-i", y = "j"), to = "spatstat")
+  spatstat.geom::im(val, xcol = xx, yrow = yy)
 }
 
 #' @title Calculate the centre of mass of weighted coordinates
@@ -93,30 +121,4 @@ geomean <- function(xy, w = NULL) {
     y <- atan2(Sy, Cy)
     cbind(x, y) * 180/pi
   }
-}
-
-#' @title Convert a `SpatRaster` to a `spatstat` `im`
-#' @source This function is based on `maptools::as.im.RasterLayer`.
-#' @keywords internal
-
-as.im.SpatRaster <- function(from) {
-  # Check user inputs
-  rlang::check_installed("spatstat.geom")
-  if (!terra::hasValues(from))
-    abort("The SpatRaster is empty.")
-  if (terra::is.rotated(from)) {
-    abort("The SpatRaster is rotated.")
-  }
-  # Coerce SpatRaster
-  rs <- terra::res(from)
-  # Define xmin and ymin (shifted to the cell centre)
-  # orig <- sp::bbox(from)[, 1] + 0.5 * rs
-  orig <- terra::ext(from)[c(1, 3)] + 0.5 * rs
-  dm <- dim(from)[2:1]
-  xx <- unname(orig[1] + cumsum(c(0, rep(rs[1], dm[1] - 1))))
-  yy <- unname(orig[2] + cumsum(c(0, rep(rs[2], dm[2] - 1))))
-  val <- terra::values(from)
-  dim(val) <- dm
-  val <- spatstat.geom::transmat(val, from = list(x = "-i", y = "j"), to = "spatstat")
-  spatstat.geom::im(val, xcol = xx, yrow = yy)
 }
