@@ -135,7 +135,7 @@ if (interactive()) {
                         .save_history = TRUE,
                         .prompt = TRUE)
 }
-# Use con to write messages to file
+# Use `.txt` to write messages to file
 log.txt <- tempfile(fileext = ".txt")
 out_pff <-
   pf_forward(.obs = obs,
