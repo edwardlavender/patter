@@ -119,7 +119,7 @@ pf_forward <- function(.obs, .record, .kick, ..., .bathy, .lonlat = FALSE, .n = 
       pnow <- pnow[sample.int(.N, size = .n, replace = TRUE, prob = weight), ]
     }
     # Save particles
-    pnow_record <- pnow |> select(cell_past, cell_now)
+    pnow_record <- pnow |> select("cell_past", "cell_now") |> as.data.table()
     # pnow_record <- pnow |> select("x{t - 1}" = cell_past, "x{t}" = cell_now)
     if (.save_history) {
       history[[t]] <- pnow_record
@@ -136,6 +136,7 @@ pf_forward <- function(.obs, .record, .kick, ..., .bathy, .lonlat = FALSE, .n = 
       pnext <- .kick(.particles = pnow, .obs = .obs, .t = t, .bathy = .bathy, .lonlat = .lonlat, ...)
       pnext[, cell_next := as.integer(terra::cellFromXY(.record[[t]], pnext[, c("x_next", "y_next")]))]
     }
+
     #### Visualise particle samples & proposal locations
     if (.prompt) {
       cat_to_cf(paste0("... ... Visualising current & proposal locations..."))
@@ -156,7 +157,7 @@ pf_forward <- function(.obs, .record, .kick, ..., .bathy, .lonlat = FALSE, .n = 
       pnow <-
         pnext |>
         lazy_dt(immutable = FALSE) |>
-        select(cell_past = cell_now, cell_now = cell_next, x_now = x_next, y_now = y_next) |>
+        select(cell_past = "cell_now", cell_now = "cell_next", x_now = "x_next", y_now = "y_next") |>
         as.data.table()
       # clean up .record[[t]] for speed
       .record[[t]] <- NA
@@ -167,7 +168,7 @@ pf_forward <- function(.obs, .record, .kick, ..., .bathy, .lonlat = FALSE, .n = 
   #### Return outputs
   t_end <- Sys.time()
   time <- list(start = t_onset,
-               end = t_onset,
+               end = t_end,
                duration = difftime(t_end, t_onset))
   out <- list(history = history,
               time = time)
