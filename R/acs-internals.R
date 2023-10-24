@@ -272,7 +272,7 @@
   bufs <- lapply(cells, function(cell) {
     buf <- terra::setValues(.bathy, NA)
     buf[cell] <- 1
-    buf <- terra::buffer(buf, .buffer)
+    terra::buffer(buf, .buffer)
   })
 
   # Define the intersection between buffer(s)
@@ -302,7 +302,7 @@
     # Define buffer around receiver(s)
     # * I.e., the detection container for the current time step
     detection_container <-
-      .acs_container(.moorings,
+      .acs_container(.moorings = .moorings,
                      .receivers = receivers_current,
                      .bathy = .bathy,
                      .buffer = .obs$buffer_past[pos_current])
@@ -315,7 +315,7 @@
   pos_next <- ifelse(start_with_detection, yes = pos_detections[2], no = pos_detections[1])
   receivers_next <- .obs$receiver_id[[pos_next]]
   future_container <-
-    .acs_container(.moorings,
+    .acs_container(.moorings = .moorings,
                    .receivers = receivers_next,
                    .bathy = .bathy,
                    .buffer = .obs$buffer_past[pos_current])
