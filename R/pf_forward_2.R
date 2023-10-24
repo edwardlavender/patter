@@ -67,6 +67,8 @@
 #'
 #' @return The function returns a [`pf`] object.
 #'
+#' @example man/examples/pf_forward_2-examples.R
+#'
 #' @author Edward Lavender
 #' @export
 
@@ -150,7 +152,7 @@ pf_forward_2 <- function(.obs,
   for (t in .obs$timestep) {
     # t = 1
     if (.progress) pb$tick()
-    cat_to_cf(paste0("... Time step ", t, ":"))
+    cat_to_cf(paste0("\n... Time step ", t, ":"))
 
     #### Define starting surface (quadrature points)
     if (t == 1) {
