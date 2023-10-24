@@ -17,6 +17,7 @@ Suggests:
     geosphere, spatialEco, 
     spatstat.geom, spatstat.explore,
     purrr, stringr,
+    Rfast, zoo,
     knitr, rmarkdown,
     testthat (>= 3.0.0)
 Depends: R (>= 4.0)

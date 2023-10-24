@@ -136,7 +136,7 @@ acs <- function(.obs,
         detections_current <- .obs$receiver_id[t][[1]]
         # Identify remaining (active) receivers which did not record a detection (if any)
         absences_current <- .acs_absences(.obs$date[t], detections_current, .detection_overlaps)
-        given_data       <- .acs_given_detection(detections_current, absences_current, .detection_kernels)
+        given_data       <- .acs_given_detection_SpatRaster(detections_current, absences_current, .detection_kernels)
       }
     } else {
       # (2) Define location _given non-detection_ at current time step
@@ -170,7 +170,7 @@ acs <- function(.obs,
         detections_next <- .obs$receiver_id[t_next][[1]]
         absences_next   <- .acs_absences(.obs$date[t_next], detections_next, .detection_overlaps)
         if (t == 1 | !isTRUE(all.equal(detections_current, detections_next)) | !isTRUE(all.equal(absences_current, absences_next))) {
-          next_kernel <- .acs_given_detection(detections_next, absences_next, .detection_kernels, .zero_to_na = TRUE)
+          next_kernel <- .acs_given_detection_SpatRaster(detections_next, absences_next, .detection_kernels, .zero_to_na = TRUE)
         }
       }
       # (2) Define given_future for current time step

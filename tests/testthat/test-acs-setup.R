@@ -32,6 +32,7 @@ test_that("acs_setup_obs() works", {
                      detection_id = as.integer(c(1, 2, 2, 3)),
                      detection = as.integer(c(1, 1, 0, 1)),
                      receiver_id = list(1, 1, NULL, c(2, 3)),
+                     receiver_id_next = list(1, c(2, 3), c(2, 3), NA_integer_),
                      buffer_past = rep(500, 4),
                      buffer_future = c(500, 1000, 500, 500)
   )

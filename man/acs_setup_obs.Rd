@@ -23,7 +23,8 @@ The function returns a \code{\link{data.table}} with the following columns:
 \item \code{date}---a \code{character} that defines the date;
 \item \code{detection_id}---an \code{integer} vector that uniquely defines each detection;
 \item \code{detection}---an \code{integer} that distinguishes the time steps at which detections were (1) or were not (0) recorded;
-\item \code{receiver_id}---a \code{list} that defines the receiver(s) that recorded detections at each time step;
+\item \code{receiver_id}---a \code{list} that defines the receiver(s) that recorded detection(s) at each time step;
+\item \code{receiver_id_next}---a \code{list} that defines the receiver(s) that recorded the next detection(s);
 \item \code{buffer_past}---a \code{double} that controls container growth from the past to the present;
 \item \code{buffer_future}---a \code{double} that controls container shrinkage from the future to the present;
 \item \code{depth}---if \code{.archival} is provided, \code{depth} is a number that defines the individual's depth (m) at each time step;

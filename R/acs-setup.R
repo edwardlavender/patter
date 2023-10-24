@@ -19,7 +19,8 @@
 #' * `date`---a `character` that defines the date;
 #' * `detection_id`---an `integer` vector that uniquely defines each detection;
 #' * `detection`---an `integer` that distinguishes the time steps at which detections were (1) or were not (0) recorded;
-#' * `receiver_id`---a `list` that defines the receiver(s) that recorded detections at each time step;
+#' * `receiver_id`---a `list` that defines the receiver(s) that recorded detection(s) at each time step;
+#' * `receiver_id_next`---a `list` that defines the receiver(s) that recorded the next detection(s);
 #' * `buffer_past`---a `double` that controls container growth from the past to the present;
 #' * `buffer_future`---a `double` that controls container shrinkage from the future to the present;
 #' * `depth`---if `.archival` is provided, `depth` is a number that defines the individual's depth (m) at each time step;
@@ -125,6 +126,7 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
     mutate(date = as.character(as.Date(.data$timestamp)),
            detection_id = as.integer(data.table::nafill(.data$detection_id, type = "locf"))) |>
     group_by(.data$detection_id) |>
+    # Define buffers
     mutate(step_forwards = dplyr::row_number(),
            step_backwards = rev(.data$step_forwards),
            # We buffer the past by mobility
@@ -133,10 +135,13 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
            buffer_future = .mobility * .data$step_backwards) |>
     ungroup() |>
     arrange(.data$timestamp) |>
-    mutate(timestep = as.integer(dplyr::row_number())) |>
+    mutate(timestep = as.integer(dplyr::row_number()),
+           receiver_id_next = .acs_setup_obs_receiver_id_next(.data$receiver_id)
+           ) |>
+    # Tidy
     select("timestep",
            "timestamp", "date",
-           "detection_id", "detection", "receiver_id",
+           "detection_id", "detection", "receiver_id", "receiver_id_next",
            "buffer_past", "buffer_future",
            dplyr::any_of("depth")) |>
     as.data.table()

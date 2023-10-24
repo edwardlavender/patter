@@ -27,7 +27,7 @@ For speed, this function performs no internal checks.
 }
 
 \seealso{
-This function defines the \code{absences} argument for \code{\link[=.acs_given_detection]{.acs_given_detection()}}.
+This function defines the \code{absences} argument for \code{\link[=.acs_given_detection_SpatRaster]{.acs_given_detection_SpatRaster()}} and \code{\link[=.acs_given_detection_particles]{.acs_given_detection_particles()}}.
 }
 \author{
 Edward Lavender

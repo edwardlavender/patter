@@ -107,7 +107,7 @@ test_that("acs() works", {
 
     #### Define location given data
     if (!is.null(obs$receiver_id[t][[1]])) {
-      given_data <- .acs_given_detection(obs$receiver_id[t][[1]],
+      given_data <- .acs_given_detection_SpatRaster(obs$receiver_id[t][[1]],
                                          .acs_absences(obs$date[t], obs$receiver_id[t][[1]], overlaps),
                                          kernels)
     } else {
@@ -125,10 +125,10 @@ test_that("acs() works", {
     t_next <- obs$timestep[obs$detection_id == obs$detection_id[t] + 1][1]
     if (!is.null(obs$receiver_id[t_next][[1]])) {
       given_future <-
-        .acs_given_detection(obs$receiver_id[t_next][[1]],
-                             .acs_absences(obs$date[t_next], obs$receiver_id[t_next][[1]], overlaps),
-                             kernels,
-                             .zero_to_na = TRUE) |>
+        .acs_given_detection_SpatRaster(obs$receiver_id[t_next][[1]],
+                                        .acs_absences(obs$date[t_next], obs$receiver_id[t_next][[1]], overlaps),
+                                        kernels,
+                                        .zero_to_na = TRUE) |>
         terra::buffer(obs$buffer_future[t])
       if (p) terra::plot(given_future)
     } else {
