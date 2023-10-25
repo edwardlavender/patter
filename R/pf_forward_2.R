@@ -202,7 +202,7 @@ pf_forward_2 <- function(.obs,
     # (We eliminate particles here to improve speed in subsequent calculations)
     if (is_land) {
       pnow <- .acs_filter_by_land(pnow, .bathy)
-      fail <- .pf_check_rows(pnow, .filter = "AC container", .t = t)
+      fail <- .pf_check_rows(pnow, .filter = "AC mask (e.g., land)", .t = t)
       if (fail) {
         return(history)
       }
@@ -216,7 +216,7 @@ pf_forward_2 <- function(.obs,
                                          .moorings = .moorings,
                                          .receivers = .obs$receiver_id_next[t][[1]],
                                          .threshold = .obs$buffer_future[t])
-        fail <- .pf_check_rows(pnow, .filter = "AC container", .t = t)
+        fail <- .pf_check_rows(pnow, .filter = "AC dynamics", .t = t)
         if (fail) {
           return(history)
         }
