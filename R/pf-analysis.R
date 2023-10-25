@@ -1,3 +1,76 @@
+#' @title PF: particle coordinates
+#' @description This function collects particle samples and extracts coordinates.
+#'
+#' @param .history Particle samples from the particle filter, provided either as:
+#' * A `list` of [`data.table`]s that define cell samples; i.e., the `history` element of a [`pf-class`] object. This must contain a column that defines accepted cell samples at each time step (`cell_now`).
+#' * An ordered list of file paths (from [`pf_setup_files()`]) that define the directories in which particle samples were written from the forward simulation (as parquet files).
+#' @param .bathy The bathymetry [`SpatRaster`].
+#' @param .obs,.cols (optional) A [`data.table`] and a character vector of column names in `.obs` to match onto the output. `.obs` must contain a `timestep` column for matching.
+#'
+#' @details
+#' This function is not memory safe.
+#'
+#' @return The function returns a [`data.table`] that defines timesteps, sampled locations and, optionally, information from `.obs`, with the following columns:
+#' * `timestep`---an `integer` vector that defines the time step;
+#' * `cell_id`---an `integer` vector that defines the cell ID on `.bathy`;
+#' * `cell_x`, `cell_y`, `cell_z`---`double`s that define cell coordinates;
+#'
+#' If `.obs` is supplied, the output also contains any columns specified in `.cols`.
+#'
+#' @examples
+#' p <- dat_pfb()
+#' pf_coords(p$history, dat_gebco())
+#'
+#' @author Edward Lavender
+#' @export
+
+pf_coords <- function(.history, .bathy, .obs = NULL, .cols = NULL) {
+
+  # Check user inputs & read history files (if required)
+  if (inherits(.history[[1]], "data.frame")) {
+    check_names(.history[[1]], "cell_now")
+  } else {
+    .history <-
+      .history |>
+      lapply(arrow::read_parquet)
+  }
+  .pf_path_pivot_checks(.obs, .cols)
+
+  # Define time steps
+  timestep <- NULL
+  for (i in seq_len(length(.history))) {
+    .history[[i]][, timestep := i]
+  }
+
+  # Define particle coordinates
+  p <-
+    .history |>
+    rbindlist() |>
+    dplyr::rename(cell_id = .data$cell_now) |>
+    mutate(cell_xy = terra::xyFromCell(.bathy, .data$cell_id),
+           cell_x = .data$cell_xy[, 1],
+           cell_y = .data$cell_xy[, 2],
+           cell_z = terra::extract(.bathy, .data$cell_id)) |>
+    select("timestep", "cell_id", "cell_x", "cell_y", "cell_z") |>
+    as.data.table()
+
+  # Add columns from `.obs` by matching by timestep (from `pf_path_pivot()`)
+  if (!is.null(.obs)) {
+    for (col in .cols) {
+      p[, (col) := .obs[[col]][match(p$timestep, .obs$timestep)]]
+      if (any(is.na(p[[col]]))) {
+        warn("There are NAs in the {col} column in the output.",
+             .envir = environment())
+      }
+    }
+  }
+
+  # Return data.table
+  p
+
+}
+
+
 #' @title PF: path reconstruction
 #' @description This function implements the path-reconstruction algorithm.
 #' @param .history Particle samples from the particle filter, provided either as:
