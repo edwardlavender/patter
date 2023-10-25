@@ -115,6 +115,8 @@ The essential difference between \code{\link[=pf_forward_1]{pf_forward_1()}} and
 \examples{
 #### Set up examples
 # Use pre-prepared datasets (see also `?acs()`)
+# * Note that the default grid is low resolution
+# * The grid should be resampled for real analyses to higher resolution
 moorings  <- dat_moorings
 obs       <- dat_obs()
 gebco     <- dat_gebco()
@@ -156,14 +158,21 @@ out_pff <- pf_forward_2(obs,
                         .update_ac = update_ac,
                         .save_history = TRUE)
 # Extract coordinates & validate implementation of depth-error model
-#
-# TO DO
-#
+out_pfxy <- pf_coords(out_pff$history, gebco,
+                      .obs = obs, .cols = c("depth_shallow", "depth_deep"))
+stopifnot(all(out_pfxy$depth >= out_pfxy$depth_shallow - 25 &
+                out_pfxy$depth <= out_pfxy$depth_shallow + 25))
 
 #### Example (3): Implement the ACDCPF algorithm
-#
-# TO DO
-#
+# Note that this algorithm may fail to converge on this low resolution grid
+out_pff <- pf_forward_2(obs,
+                        .bathy = gebco,
+                        .moorings = moorings,
+                        .detection_overlaps = overlaps,
+                        .detection_kernels = kernels,
+                        .update_ac = update_ac,
+                        .kick = pf_kick,
+                        .save_history = TRUE)
 
 #### Example (4): Write history to file
 # See `pf_forward_1()`

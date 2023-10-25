@@ -9,7 +9,7 @@ pf_coords(.history, .bathy, .obs = NULL, .cols = NULL)
 \arguments{
 \item{.history}{Particle samples from the particle filter, provided either as:
 \itemize{
-\item A \code{list} of \code{\link{data.table}}s that define cell samples; i.e., the \code{history} element of a \code{\linkS4class{pf}} object. This must contain columns that define cell samples at each time step (\code{cell_now}).
+\item A \code{list} of \code{\link{data.table}}s that define cell samples; i.e., the \code{history} element of a \code{\linkS4class{pf}} object. This must contain a column that defines accepted cell samples at each time step (\code{cell_now}).
 \item An ordered list of file paths (from \code{\link[=pf_setup_files]{pf_setup_files()}}) that define the directories in which particle samples were written from the forward simulation (as parquet files).
 }}
 
