@@ -259,16 +259,20 @@ pf_forward_2 <- function(.obs,
     }
 
     #### Sample/re-sample particles given weight
+    # Check weights
     cat_to_cf("... ... (Re-)sampling particles...")
     if (collapse::allv(pnow$weight, 0)) {
       msg("There are no particles with positive weights at timestep {t}. `history` returned up to this point.",
           .envir = environment())
       return(history)
     }
+    # Drop NAs
+    pnow <- pnow[!is.na(pnow$weight), ]
+    # Implement re-sampling
     pnow <- pnow[sample.int(.N, size = .n, replace = TRUE, prob = weight), ]
     pnow[, weight := NULL]
-    pnow_record <- pnow |> select("cell_past", "cell_now")
     # Save particles
+    pnow_record <- pnow |> select("cell_past", "cell_now") |> as.data.table()
     if (.save_history) {
       history[[t]] <- pnow_record
     }
