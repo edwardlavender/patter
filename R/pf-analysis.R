@@ -413,7 +413,6 @@ pf_dens <- function(.xpf,
       # Renormalise (may be required if marks are provided)
       mutate(mark = .data$mark / sum(.data$mark)) |>
       as.data.frame()
-    return(.coord)
     stopifnot(all.equal(1, sum(.coord$mark)))
     nrw_1 <- nrow(.coord)
     if (nrw_0 != nrw_1) {
