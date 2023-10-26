@@ -21,7 +21,7 @@ acs_setup_obs(
 
 \item{.mobility}{A constant that defines the maximum (Euclidean) distance the individual could move in \code{.step}.}
 
-\item{.detection_range}{A constant that defines the detection range (required for \code{\link[=pf_forward_2]{pf_forward_2()}} implementations). A constant value across all receivers and time steps is assumed. If this is unsuitable, a manual definition of the \code{\link{buffer_future_incl_gamma}} column (see Value) is currently required.}
+\item{.detection_range}{A constant that defines the detection range (required for \code{\link[=pf_forward_2]{pf_forward_2()}} implementations). A constant value across all receivers and time steps is assumed. If this is unsuitable, a manual definition of the \code{buffer_future_incl_gamma} column (see Value) is currently required.}
 }
 \value{
 The function returns a \code{\link{data.table}} with the following columns:

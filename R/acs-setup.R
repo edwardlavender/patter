@@ -4,7 +4,7 @@
 #' @param .archival (optional) A [`data.table`] that defines depth (m) observations (see [`dat_archival`] for an example) for the same individual. At a minimum, this must contain a `timestamp` column (as in `.acoustics`) and a `depth` column (a positive-valued `numeric` vector that defines the individual's depth (m) below the surface at each time step).
 #' @param .step An character, passed to [`lubridate::period()`], [`lubridate::round_date()`] and [`seq()`] that defines the duration between sequential time steps (e.g., `"2 mins"`). If `.archival` is supplied, `.step` should be the duration between sequential depth observations.
 #' @param .mobility A constant that defines the maximum (Euclidean) distance the individual could move in `.step`.
-#' @param .detection_range A constant that defines the detection range (required for [`pf_forward_2()`] implementations). A constant value across all receivers and time steps is assumed. If this is unsuitable, a manual definition of the [`buffer_future_incl_gamma`] column (see Value) is currently required.
+#' @param .detection_range A constant that defines the detection range (required for [`pf_forward_2()`] implementations). A constant value across all receivers and time steps is assumed. If this is unsuitable, a manual definition of the `buffer_future_incl_gamma` column (see Value) is currently required.
 #'
 #' @details This function implements the following routines:
 #' * Acoustic time series are rounded to the nearest `.step`;
@@ -146,8 +146,9 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility, .detec
   # * In acs(), kernels are buffered, so we do not require the gamma parameter
   # * In pf_forward_2(), we calculate distances between particles & receivers so the gamma parameter is required
   if (!is.null(.detection_range)) {
+    buffer_future <- NULL
     buffer_future_incl_gamma <- NULL
-    out[, buffer_future_incl_gamma := .detection_range]
+    out[, buffer_future_incl_gamma := buffer_future + .detection_range]
   }
   # Tidy
   out |>

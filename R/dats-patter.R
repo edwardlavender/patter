@@ -33,7 +33,7 @@
 dat_obs <- function() {
   path <- system.file("extdata", "dat_obs.rds",
                       package = "patter", mustWork = TRUE)
-  data <- readRDS(path)
+  readRDS(path)
 }
 
 #' @rdname datasets-algorithms
@@ -43,8 +43,7 @@ dat_containers <- function() {
   path <- system.file("extdata", "dat_containers.rds",
                       package = "patter", mustWork = TRUE)
   data <- readRDS(path)
-  data <- lapply(data, unwrap_elm)
-  data
+  lapply(data, unwrap_elm)
 }
 
 #' @rdname datasets-algorithms
