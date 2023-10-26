@@ -34,6 +34,9 @@ pf_coords <- function(.history, .bathy, .obs = NULL, .cols = NULL) {
       .history |>
       lapply(arrow::read_parquet)
   }
+  if (missing(.bathy)) {
+    abort("`.bathy` is required for `pf_coords()`.")
+  }
   .pf_path_pivot_checks(.obs, .cols)
 
   # Define time steps
@@ -291,7 +294,7 @@ pf_pou <-
 #' @title PF: map point density
 #' @description This function creates a smoothed density map (e.g., of particle samples).
 #' @param .xpf A [`SpatRaster`] that defines the grid for density estimation and, if `.coord = NULL`, the points (and associated weights) that are smoothed. The coordinate reference system of `.xpf` must be planar and specified.
-#' @param .coord (optional) A two-column `matrix` of x and y planar coordinates. Coordinates are assumed to have equal weight (see Details).
+#' @param .coord (optional) A `matrix` or `data.frame` with x and y coordinates, in columns named `x` and `y` or `cell_x` and `cell_y`. `x` and `y` columns are used preferentially. Coordinates must be planar. Coordinates are assumed to have equal weight (see Details).
 #' @param .plot A `logical` variable that defines whether or not to plot the output.
 #' @param .use_tryCatch A `logical` variable that controls error handling:
 #' * If `.use_tryCatch = FALSE`, if density estimation fails with an error, the function fails with the same error.
@@ -328,6 +331,7 @@ pf_dens <- function(.xpf,
   check_inherits(.xpf, "SpatRaster")
   # Check dots (`at` and `se` are not currently supported)
   check_dots_allowed(c("at", "se"))
+  check_dots_for_missing_period(formals(), list(...))
 
   #### Set up messages
   cat_to_cf <- cat_helper(.verbose = .verbose, .txt = .txt)
@@ -364,23 +368,31 @@ pf_dens <- function(.xpf,
     cat_to_cf("... ... Using `.xpf`...")
     .coord <- terra::as.data.frame(.xpf, xy = TRUE)
     colnames(.coord) <- c("x", "y", "mark")
+    .coord <- .coord[which(!is.na(.coord$mark) & .coord$mark != 0), ]
     marks <- .coord[, 3]
   } else {
     # (B) Define coordinates & weights from `.coord` input
     cat_to_cf("... ... Using `.coord`...")
     if (inherits(.coord, "matrix")) {
-      .coord <- as.data.frame(.coord[, 1:2])
-      colnames(.coord) <- c("x", "y")
+      .coord <- as.data.frame(.coord)
     }
     check_inherits(.coord, "data.frame")
-    if (ncol(.coord) < 2L) {
-      abort("`.coord` should contain x and y coordinates.")
+    contains_xy      <- all(c("x", "y") %in% colnames(.coord))
+    contains_cell_xy <- all(c("cell_x", "cell_y") %in% colnames(.coord))
+    if (contains_xy) {
+      if (contains_cell_xy) {
+        warn("`.coord` contains both (`x`, `y`) and (`cell_x`, `cell_y`) coordinates: (`x`, `y`) coordinates used.")
+      }
+      .coord <- .coord[, c("x", "y")]
+    } else {
+      if (contains_cell_xy) {
+        .coord <- .coord[, c("cell_x", "cell_y")]
+        colnames(.coord) <- c("x", "y")
+      } else {
+        abort("`.coord` should contain `x` and `y` (or `cell_x` and `cell_y` coordinates).")
+      }
     }
-    if (ncol(.coord) > 2L) {
-      warn("The first two columns in `.coord` have been taken as x and y coordinates.")
-      .coord <- .coord[, 1:2, drop = FALSE]
-    }
-    check_names(.coord, req = c("x", "y"))
+
     # Drop duplicate coordinates & adjust marks (weights) accordingly
     # ... This assumes that coordinates that are uniquely defined on `.coord`
     # ... are uniquely defined on .xpf (see definition of weights below).
@@ -403,12 +415,13 @@ pf_dens <- function(.xpf,
     marks <- .coord$mark
     rim <- terra::rasterize(x = as.matrix(.coord[, c("x", "y"), drop = FALSE]),
                             y = .xpf,
-                            values = .coord$mark)
+                            values = marks)
     rim <- as.im.SpatRaster(rim)
   }
   cat_to_cf("... ... Defining `ppp` object...")
   rppp <- spatstat.geom::ppp(x = .coord$x, y = .coord$y,
                              window = rwin, marks = marks)
+  # return(rppp)
 
   #### Estimate density surface
   # Get intensity (expected number of points PER UNIT AREA)

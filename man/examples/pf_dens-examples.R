@@ -7,14 +7,19 @@ require(spatstat.explore)
 # Define grid
 gebco   <- dat_gebco()
 
-#### Example (1): Smooth a SpatRaster (i.e., probability-of-use)
+#### Example (1): Smooth a POU SpatRaster
 # Estimate POU on a grid based on pre-prepared particle samples
 out_pfb <- dat_pfb()
 pou     <- pf_pou(.history = out_pfb$history, .bathy = gebco)
 # Smooth POU
-dens    <- pf_dens(pou)
+dens_1    <- pf_dens(pou)
 
-#### Example (2): Smooth coordinates
+#### Example (2): Smooth particle coordinates
+# This approach is equivalent to Example (1) & the outputs are identical
+dens_2 <- pf_dens(gebco, .coord = pf_coords(out_pfb$history, gebco))
+stopifnot(all.equal(dens_1, dens_2))
+
+#### Example (2): Smooth coordinates from other algorithms
 # Define coordinates to smooth (e.g., based on COA algorithm)
 out_coa <-
   # Define acoustic data for an example individual
@@ -29,7 +34,7 @@ out_coa <-
   select(x = "coa_x", y = "coa_y") |>
   as.data.frame()
 # Smooth centres of activity
-dens <- pf_dens(gebco, .coord = out_coa)
+dens_3 <- pf_dens(gebco, .coord = out_coa)
 graphics::points(out_coa)
 
 #### Example (3): Control smoothing parameters via `spatstat.explore::density.ppp()`
