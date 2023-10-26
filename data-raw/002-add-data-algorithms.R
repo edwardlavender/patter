@@ -29,7 +29,11 @@ devtools::load_all()
 #### Define input datasets
 acoustics <- dat_acoustics[individual_id == 25, ]
 archival <- dat_archival[individual_id == 25, ]
-obs <- acs_setup_obs(acoustics, archival, "2 mins", 500)
+obs <- acs_setup_obs(acoustics,
+                     archival,
+                     .step = "2 mins",
+                     .mobility = 500,
+                     .detection_range = dat_moorings$receiver_range[1])
 obs <- obs[1:50, ]
 gebco <- dat_gebco()
 
