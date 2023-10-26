@@ -294,7 +294,7 @@ pf_pou <-
 #' @title PF: map point density
 #' @description This function creates a smoothed density map (e.g., of particle samples).
 #' @param .xpf A [`SpatRaster`] that defines the grid for density estimation and, if `.coord = NULL`, the points (and associated weights) that are smoothed. The coordinate reference system of `.xpf` must be planar and specified.
-#' @param .coord (optional) A `matrix` or `data.frame` with x and y coordinates, in columns named `x` and `y` or `cell_x` and `cell_y`. `x` and `y` columns are used preferentially. Coordinates must be planar. Coordinates are assumed to have equal weight (see Details).
+#' @param .coord (optional) A `matrix` or `data.frame` with x and y coordinates, in columns named `x` and `y` or `cell_x` and `cell_y`. `x` and `y` columns are used preferentially. Coordinates must be planar. A `mark` column can be included with coordinate weights; otherwise, equal weights are assumed (see Details). Other columns are ignored.
 #' @param .plot A `logical` variable that defines whether or not to plot the output.
 #' @param .use_tryCatch A `logical` variable that controls error handling:
 #' * If `.use_tryCatch = FALSE`, if density estimation fails with an error, the function fails with the same error.
@@ -304,7 +304,7 @@ pf_pou <-
 #'
 #' @details This function smooths (a) a [`SpatRaster`] or (b) a set of inputted coordinates:
 #' * If `.coords` is `NULL`, `.xpf` cell coordinates are used for density estimation and cell values are used as weights.
-#' * If coordinates are supplied, coordinates are re-expressed on `.xpf` and then used for density estimation. Equal weights are assumed, unless there are duplicate coordinates in which case weights are defined in line with the relative frequency of coordinate pairs.
+#' * If coordinates are supplied, coordinates are re-expressed on `.xpf` and then used for density estimation. Equal weights are assumed unless specified. If there are duplicated coordinates, weights are updated in line with the relative frequency of coordinate pairs.
 #'
 #' Coordinates and associated weights are smoothed via [`spatstat.explore::density.ppp()`] into an image. Smoothing parameters such as bandwidth can be controlled via `...` arguments which are passed directly to this function. The output is translated into a gridded probability density surface (on the geometry defined by `.xpf`).
 #'
@@ -379,6 +379,7 @@ pf_dens <- function(.xpf,
     check_inherits(.coord, "data.frame")
     contains_xy      <- all(c("x", "y") %in% colnames(.coord))
     contains_cell_xy <- all(c("cell_x", "cell_y") %in% colnames(.coord))
+    marks <- .coord$mark
     if (contains_xy) {
       if (contains_cell_xy) {
         warn("`.coord` contains both (`x`, `y`) and (`cell_x`, `cell_y`) coordinates: (`x`, `y`) coordinates used.")
@@ -392,24 +393,31 @@ pf_dens <- function(.xpf,
         abort("`.coord` should contain `x` and `y` (or `cell_x` and `cell_y` coordinates).")
       }
     }
-
+    if (!is.null(marks)) {
+      cat_to_cf("... ... ... Using `.coord$mark` for marks...")
+      .coord$mark <- marks
+    } else {
+      .coord$mark <- rep(1/nrow(.coord), nrow(.coord))
+    }
     # Drop duplicate coordinates & adjust marks (weights) accordingly
     # ... This assumes that coordinates that are uniquely defined on `.coord`
     # ... are uniquely defined on .xpf (see definition of weights below).
     nrw_0 <- nrow(.coord)
     .coord <-
       .coord |>
-      mutate(cell = terra::cellFromXY(.xpf, cbind(.data$x, .data$y)),
-             mark = rep(1/nrow(.coord), nrow(.coord))) |>
+      mutate(cell = terra::cellFromXY(.xpf, cbind(.data$x, .data$y))) |>
       group_by(.data$cell) |>
       mutate(mark = sum(.data$mark)) |>
       slice(1L) |>
       ungroup() |>
+      # Renormalise (may be required if marks are provided)
+      mutate(mark = .data$mark / sum(.data$mark)) |>
       as.data.frame()
+    return(.coord)
     stopifnot(all.equal(1, sum(.coord$mark)))
     nrw_1 <- nrow(.coord)
     if (nrw_0 != nrw_1) {
-      warn("`coords` contains duplicate coordinates on `.xpf` that have been processed.")
+      warn("`.coords` contains duplicate coordinates on `.xpf` that have been processed.")
     }
     # Define marks/weights
     marks <- .coord$mark

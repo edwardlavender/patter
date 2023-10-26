@@ -17,7 +17,7 @@ pf_dens(
 \arguments{
 \item{.xpf}{A \code{\link{SpatRaster}} that defines the grid for density estimation and, if \code{.coord = NULL}, the points (and associated weights) that are smoothed. The coordinate reference system of \code{.xpf} must be planar and specified.}
 
-\item{.coord}{(optional) A \code{matrix} or \code{data.frame} with x and y coordinates, in columns named \code{x} and \code{y} or \code{cell_x} and \code{cell_y}. \code{x} and \code{y} columns are used preferentially. Coordinates must be planar. Coordinates are assumed to have equal weight (see Details).}
+\item{.coord}{(optional) A \code{matrix} or \code{data.frame} with x and y coordinates, in columns named \code{x} and \code{y} or \code{cell_x} and \code{cell_y}. \code{x} and \code{y} columns are used preferentially. Coordinates must be planar. A \code{mark} column can be included with coordinate weights; otherwise, equal weights are assumed (see Details). Other columns are ignored.}
 
 \item{.plot}{A \code{logical} variable that defines whether or not to plot the output.}
 
@@ -41,7 +41,7 @@ This function creates a smoothed density map (e.g., of particle samples).
 This function smooths (a) a \code{\link{SpatRaster}} or (b) a set of inputted coordinates:
 \itemize{
 \item If \code{.coords} is \code{NULL}, \code{.xpf} cell coordinates are used for density estimation and cell values are used as weights.
-\item If coordinates are supplied, coordinates are re-expressed on \code{.xpf} and then used for density estimation. Equal weights are assumed, unless there are duplicate coordinates in which case weights are defined in line with the relative frequency of coordinate pairs.
+\item If coordinates are supplied, coordinates are re-expressed on \code{.xpf} and then used for density estimation. Equal weights are assumed unless specified. If there are duplicated coordinates, weights are updated in line with the relative frequency of coordinate pairs.
 }
 
 Coordinates and associated weights are smoothed via \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} into an image. Smoothing parameters such as bandwidth can be controlled via \code{...} arguments which are passed directly to this function. The output is translated into a gridded probability density surface (on the geometry defined by \code{.xpf}).
