@@ -29,8 +29,12 @@ pf_forward_2(
 \item \code{timestep}--an \code{integer} that defines the time step;
 \item Columns required by the AC algorithm, if implemented; i.e.:
 \itemize{
+\item \code{date}---a \code{character} column that defines the date;
+\item \code{detection}---an \code{integer} column that uniquely defines each detection;
+\item \code{detection_id}---an \code{integer} column that distinguishes the time steps at which detections were (1) or were not (0) recorded;
 \item \code{receiver_id}---a \code{list} column that defines the receiver(s) that recorded detections at each time step;
 \item \code{receiver_id_next}---a \code{list} column that define receiver(s) that recorded the next detection(s);
+\item \code{buffer_future_incl_gamma}---a numeric column that defines the maximum distance of the individual from \code{receiver_id_next};
 }
 \item Columns required by \code{.update_ac};
 \item Columns required by \code{.kick};

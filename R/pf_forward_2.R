@@ -4,8 +4,12 @@
 #' @param .obs A [`data.table`] that defines the time series of observations for a selected individual (e.g., from [`acs_setup_obs()`]). At a minimum, this must contain the following columns:
 #' * `timestep`--an `integer` that defines the time step;
 #' * Columns required by the AC algorithm, if implemented; i.e.:
+#'      * `date`---a `character` column that defines the date;
+#'      * `detection`---an `integer` column that uniquely defines each detection;
+#'      * `detection_id`---an `integer` column that distinguishes the time steps at which detections were (1) or were not (0) recorded;
 #'      * `receiver_id`---a `list` column that defines the receiver(s) that recorded detections at each time step;
 #'      * `receiver_id_next`---a `list` column that define receiver(s) that recorded the next detection(s);
+#'      * `buffer_future_incl_gamma`---a numeric column that defines the maximum distance of the individual from `receiver_id_next`;
 #' * Columns required by `.update_ac`;
 #' * Columns required by `.kick`;
 #'
@@ -111,14 +115,20 @@ pf_forward_2 <- function(.obs,
   }
   # Define AC algorithm fields
   if (!is.null(.moorings)) {
-    # {Rfast} is required for .acs_filter_by_container()
+    # Check AC* inputs are defined as required
+    # * {Rfast} is required for .acs_filter_by_container()
     rlang::check_installed("Rfast")
+    # * Check inputs
+    check_names(.obs, c("date", "detection_id", "detection",
+                        "receiver_id", "receiver_id_next",
+                        "buffer_future_incl_gamma"))
     # Identify coordinate columns
     if (.lonlat) {
       coords <- c("receiver_lon", "receiver_lat")
     } else {
       coords <- c("receiver_easting", "receiver_northing")
     }
+    check_names(.moorings, req = c("receiver_id", coords))
     # Coerce coordinates onto grid
     xy <-
       .moorings |>
@@ -215,7 +225,7 @@ pf_forward_2 <- function(.obs,
         pnow <- .acs_filter_by_container(.particles = pnow,
                                          .moorings = .moorings,
                                          .receivers = .obs$receiver_id_next[t][[1]],
-                                         .threshold = .obs$buffer_future[t])
+                                         .threshold = .obs$buffer_future_incl_gamma[t])
         fail <- .pf_check_rows(pnow, .filter = "AC dynamics", .t = t)
         if (fail) {
           return(history)

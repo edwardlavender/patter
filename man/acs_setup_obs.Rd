@@ -4,7 +4,13 @@
 \alias{acs_setup_obs}
 \title{AC* set up: set up movement datasets}
 \usage{
-acs_setup_obs(.acoustics, .archival = NULL, .step, .mobility)
+acs_setup_obs(
+  .acoustics,
+  .archival = NULL,
+  .step,
+  .mobility,
+  .detection_range = NULL
+)
 }
 \arguments{
 \item{.acoustics}{A \code{\link{data.table}} that defines passive acoustic telemetry detections (see \code{\link{dat_acoustics}} for an example) for a single individual. At a minimum, this must contain a \code{timestamp} column (an ordered, \code{POSIXct} vector that defines the times of detections) and \code{receiver_id} (an \code{integer} vector that defines the receiver(s) that recorded detections).}
@@ -13,7 +19,9 @@ acs_setup_obs(.acoustics, .archival = NULL, .step, .mobility)
 
 \item{.step}{An character, passed to \code{\link[lubridate:period]{lubridate::period()}}, \code{\link[lubridate:round_date]{lubridate::round_date()}} and \code{\link[=seq]{seq()}} that defines the duration between sequential time steps (e.g., \code{"2 mins"}). If \code{.archival} is supplied, \code{.step} should be the duration between sequential depth observations.}
 
-\item{.mobility}{A number that defines the maximum (Euclidean) distance the individual could move in \code{.step}.}
+\item{.mobility}{A constant that defines the maximum (Euclidean) distance the individual could move in \code{.step}.}
+
+\item{.detection_range}{A constant that defines the detection range (required for \code{\link[=pf_forward_2]{pf_forward_2()}} implementations). A constant value across all receivers and time steps is assumed. If this is unsuitable, a manual definition of the \code{\link{buffer_future_incl_gamma}} column (see Value) is currently required.}
 }
 \value{
 The function returns a \code{\link{data.table}} with the following columns:
@@ -26,7 +34,8 @@ The function returns a \code{\link{data.table}} with the following columns:
 \item \code{receiver_id}---a \code{list} that defines the receiver(s) that recorded detection(s) at each time step;
 \item \code{receiver_id_next}---a \code{list} that defines the receiver(s) that recorded the next detection(s);
 \item \code{buffer_past}---a \code{double} that controls container growth from the past to the present;
-\item \code{buffer_future}---a \code{double} that controls container shrinkage from the future to the present;
+\item \code{buffer_future}---a \code{double} that controls container shrinkage from the future to the present for \code{\link[=acs]{acs()}};
+\item \code{buffer_future_incl_gamma}---if \code{.detection_range} is provided, \code{buffer_future_incl_gamma} is a \code{double} (\code{buffer_future} + \code{.detection_range}) that controls container shrinkage for \code{\link[=pf_forward_2]{pf_forward_2()}};
 \item \code{depth}---if \code{.archival} is provided, \code{depth} is a number that defines the individual's depth (m) at each time step;
 }
 }

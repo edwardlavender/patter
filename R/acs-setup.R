@@ -3,7 +3,8 @@
 #' @param .acoustics A [`data.table`] that defines passive acoustic telemetry detections (see [`dat_acoustics`] for an example) for a single individual. At a minimum, this must contain a `timestamp` column (an ordered, `POSIXct` vector that defines the times of detections) and `receiver_id` (an `integer` vector that defines the receiver(s) that recorded detections).
 #' @param .archival (optional) A [`data.table`] that defines depth (m) observations (see [`dat_archival`] for an example) for the same individual. At a minimum, this must contain a `timestamp` column (as in `.acoustics`) and a `depth` column (a positive-valued `numeric` vector that defines the individual's depth (m) below the surface at each time step).
 #' @param .step An character, passed to [`lubridate::period()`], [`lubridate::round_date()`] and [`seq()`] that defines the duration between sequential time steps (e.g., `"2 mins"`). If `.archival` is supplied, `.step` should be the duration between sequential depth observations.
-#' @param .mobility A number that defines the maximum (Euclidean) distance the individual could move in `.step`.
+#' @param .mobility A constant that defines the maximum (Euclidean) distance the individual could move in `.step`.
+#' @param .detection_range A constant that defines the detection range (required for [`pf_forward_2()`] implementations). A constant value across all receivers and time steps is assumed. If this is unsuitable, a manual definition of the [`buffer_future_incl_gamma`] column (see Value) is currently required.
 #'
 #' @details This function implements the following routines:
 #' * Acoustic time series are rounded to the nearest `.step`;
@@ -22,7 +23,8 @@
 #' * `receiver_id`---a `list` that defines the receiver(s) that recorded detection(s) at each time step;
 #' * `receiver_id_next`---a `list` that defines the receiver(s) that recorded the next detection(s);
 #' * `buffer_past`---a `double` that controls container growth from the past to the present;
-#' * `buffer_future`---a `double` that controls container shrinkage from the future to the present;
+#' * `buffer_future`---a `double` that controls container shrinkage from the future to the present for [`acs()`];
+#' * `buffer_future_incl_gamma`---if `.detection_range` is provided, `buffer_future_incl_gamma` is a `double` (`buffer_future` + `.detection_range`) that controls container shrinkage for [`pf_forward_2()`];
 #' * `depth`---if `.archival` is provided, `depth` is a number that defines the individual's depth (m) at each time step;
 #'
 #' @examples
@@ -49,7 +51,7 @@
 #' @author Edward Lavender
 #' @export
 
-acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
+acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility, .detection_range = NULL) {
 
   #### Check user inputs
   .acoustics <- check_acoustics(.acoustics)
@@ -121,7 +123,8 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
   }
 
   #### Tidy outputs & return
-  out |>
+  out <-
+    out |>
     lazy_dt(immutable = TRUE) |>
     mutate(date = as.character(as.Date(.data$timestamp)),
            detection_id = as.integer(data.table::nafill(.data$detection_id, type = "locf"))) |>
@@ -137,13 +140,23 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility) {
     arrange(.data$timestamp) |>
     mutate(timestep = as.integer(dplyr::row_number()),
            receiver_id_next = .acs_setup_obs_receiver_id_next(.data$receiver_id)
-           ) |>
-    # Tidy
+    ) |>
+    as.data.table()
+  # Add buffer_future_incl_gamma column, if applicable
+  # * In acs(), kernels are buffered, so we do not require the gamma parameter
+  # * In pf_forward_2(), we calculate distances between particles & receivers so the gamma parameter is required
+  if (!is.null(.detection_range)) {
+    buffer_future_incl_gamma <- NULL
+    out[, buffer_future_incl_gamma := .detection_range]
+  }
+  # Tidy
+  out |>
     select("timestep",
            "timestamp", "date",
            "detection_id", "detection", "receiver_id", "receiver_id_next",
            "buffer_past", "buffer_future",
-           dplyr::any_of("depth")) |>
+           dplyr::any_of(c("buffer_future_incl_gamma", "depth"))
+           ) |>
     as.data.table()
 
 }
