@@ -34,7 +34,7 @@ Building on its [predecessor](https://github.com/edwardlavender/flapper), [`patt
 * **Faster**, with revised internal routines that exploit faster packages and substantive, new algorithm parameterisations; 
 * **Better tested**, with comprehensive unit tests; 
 
-At the time of writing (October 2023),[ `patter`](https://github.com/edwardlavender/patter) principally provides the functions required to implement the [`flapper`](https://github.com/edwardlavender/flapper) family of algorithms, which represent a subset of the capacity provided by [`flapper`](https://github.com/edwardlavender/flapper). Further developments will be driven by user requirements. Please get in touch if you would like to see additional functionality brought into [`patter`](https://github.com/edwardlavender/patter). 
+At the time of writing (October 2023), [`patter`](https://github.com/edwardlavender/patter) principally provides the functions required to implement the [`flapper`](https://github.com/edwardlavender/flapper) family of algorithms, which represent a subset of the capacity provided by [`flapper`](https://github.com/edwardlavender/flapper). Further developments will be driven by user requirements. Please get in touch if you would like to see additional functionality brought into [`patter`](https://github.com/edwardlavender/patter). 
 
 # Installation 
 

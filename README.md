@@ -45,8 +45,8 @@ to be:
   packages and substantive, new algorithm parameterisations;
 - **Better tested**, with comprehensive unit tests;
 
-At the time of writing (October
-2023),[`patter`](https://github.com/edwardlavender/patter) principally
+At the time of writing (October 2023),
+[`patter`](https://github.com/edwardlavender/patter) principally
 provides the functions required to implement the
 [`flapper`](https://github.com/edwardlavender/flapper) family of
 algorithms, which represent a subset of the capacity provided by
