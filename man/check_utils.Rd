@@ -3,6 +3,7 @@
 \name{check_utils}
 \alias{check_utils}
 \alias{check_dir}
+\alias{check_contents_ext}
 \alias{check_inherits}
 \alias{check_names}
 \alias{check_named_list}
@@ -14,6 +15,8 @@
 \title{Utility checks}
 \usage{
 check_dir(input)
+
+check_contents_ext(input, ext, ...)
 
 check_inherits(input, class)
 
