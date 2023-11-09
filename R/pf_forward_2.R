@@ -282,7 +282,11 @@ pf_forward_2 <- function(.obs,
     pnow <- pnow[sample.int(.N, size = .n, replace = TRUE, prob = weight), ]
     pnow[, weight := NULL]
     # Save particles
-    pnow_record <- pnow |> select("cell_past", "cell_now") |> as.data.table()
+    pnow_record <-
+      pnow |>
+      mutate(timestep = t) |>
+      select("timestep", "cell_past", "cell_now") |>
+      as.data.table()
     if (.save_history) {
       history[[t]] <- pnow_record
     }

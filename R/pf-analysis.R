@@ -26,29 +26,18 @@
 
 pf_coords <- function(.history, .bathy, .obs = NULL, .cols = NULL) {
 
-  # Check user inputs & read history files (if required)
-  if (inherits(.history[[1]], "data.frame")) {
-    check_names(.history[[1]], "cell_now")
-  } else {
-    .history <-
-      .history |>
-      lapply(arrow::read_parquet)
-  }
+  # Check user inputs
+  # * `.history` is checked via .pf_history_dt()
+  # * Check remaining inputs
   if (missing(.bathy)) {
     abort("`.bathy` is required for `pf_coords()`.")
   }
   .pf_path_pivot_checks(.obs, .cols)
 
-  # Define time steps
-  timestep <- NULL
-  for (i in seq_len(length(.history))) {
-    .history[[i]][, timestep := i]
-  }
-
   # Define particle coordinates
   p <-
     .history |>
-    rbindlist() |>
+    .pf_history_dt() |>
     dplyr::rename(cell_id = .data$cell_now) |>
     mutate(cell_xy = terra::xyFromCell(.bathy, .data$cell_id),
            cell_x = .data$cell_xy[, 1],
@@ -136,7 +125,8 @@ pf_path <- function(.history,
   }
   .history[[1]] <-
     .history[[1]] |>
-    select(x0 = "cell_past", x1 = "cell_now")
+    select(x0 = "cell_past", x1 = "cell_now") |>
+    as.data.table()
 
   # Define chain text
   cat_to_cf("... Defining chain text...")
@@ -144,7 +134,7 @@ pf_path <- function(.history,
 
   # Implement chain
   cat_to_cf("... Evaluating chain text...")
-  .pb <- progress::progress_bar$new(total = length(.history))
+  .pb <- progress::progress_bar$new(total = length(.history) - 1)
   .pb$tick(0)
   paths <- eval(parse(text = txt))
   paths$x0 <- NULL
@@ -172,7 +162,6 @@ pf_path <- function(.history,
 #'
 #' @details
 #' This function uses the fast [`collapse::pivot()`] function.
-#'
 #'
 #' @return The function returns a [`data.table`] with at least three columns:
 #' * `path_id`---An `integer` that defines each path (row in `.mat`);

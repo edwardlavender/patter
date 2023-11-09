@@ -119,8 +119,11 @@ pf_forward <- function(.obs, .record, .kick, ..., .bathy, .lonlat = FALSE, .n = 
       pnow <- pnow[sample.int(.N, size = .n, replace = TRUE, prob = weight), ]
     }
     # Save particles
-    pnow_record <- pnow |> select("cell_past", "cell_now") |> as.data.table()
-    # pnow_record <- pnow |> select("x{t - 1}" = cell_past, "x{t}" = cell_now)
+    pnow_record <-
+      pnow |>
+      mutate(timestep = t) |>
+      select("timestep", "cell_past", "cell_now") |>
+      as.data.table()
     if (.save_history) {
       history[[t]] <- pnow_record
     }

@@ -111,7 +111,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
                        .save_history = TRUE)
   expect_equal(length(out_pff), 9L)
   check_inherits(out_pff[[1]], "data.table")
-  expect_equal(colnames(out_pff[[1]]), c("cell_past", "cell_now"))
+  expect_equal(colnames(out_pff[[1]]), c("timestep", "cell_past", "cell_now"))
 
   #### Implement pf_forward with `.save_history = FALSE` to confirm particles are dropped
   out_pff <- pf_forward(.obs = obs,
@@ -143,7 +143,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
       # Confirm output classes & names
       check_inherits(out_pff$history, "list")
       check_inherits(out_pff$history[[1]], "data.table")
-      expect_equal(colnames(out_pff$history[[1]]), c("cell_past", "cell_now"))
+      expect_equal(colnames(out_pff$history[[1]]), c("timestep", "cell_past", "cell_now"))
       # Confirm record & parquet files match
       lapply(seq_len(nrow(obs)), function(i) {
         expect_equal(out_pff$history[[i]],
@@ -171,8 +171,12 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   for (t in seq_len(nrow(obs) - 1)) {
     # Define particle pair (current and proposal locations)
     # print(t)
-    pair <- dplyr::right_join(out_pff$history[[t]],
-                              out_pff$history[[t + 1]],
+    pair <- dplyr::right_join(out_pff$history[[t]] |>
+                                select("cell_past", "cell_now") |>
+                                as.data.table(),
+                              out_pff$history[[t + 1]] |>
+                                select("cell_past", "cell_now") |>
+                                as.data.table(),
                               by = c("cell_now" = "cell_past"),
                               relationship = "many-to-many")
     colnames(pair) <- c("cell_past", "cell_now", "cell_next")
@@ -224,7 +228,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
       expect_equal(length(out_pfb$history), nrow(obs))
       # Validate output columns
       lapply(out_pfb$history,
-             \(d) expect_equal(colnames(d), c("cell_past", "cell_now"))) |>
+             \(d) expect_equal(colnames(d), c("timestep", "cell_past", "cell_now"))) |>
         invisible()
       out_pfb
     })
