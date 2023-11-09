@@ -2,10 +2,18 @@
 % Please edit documentation in R/pf-analysis.R
 \name{pf_dens}
 \alias{pf_dens}
+\alias{as.im.SpatRaster}
+\alias{as.owin.SpatRaster}
 \title{PF: map point density}
 \usage{
+as.im.SpatRaster(.xpf)
+
+as.owin.SpatRaster(.xpf, .im = NULL)
+
 pf_dens(
   .xpf,
+  .im = NULL,
+  .owin = NULL,
   .coord = NULL,
   .plot = TRUE,
   .use_tryCatch = TRUE,
@@ -15,9 +23,11 @@ pf_dens(
 )
 }
 \arguments{
-\item{.xpf}{A \code{\link{SpatRaster}} that defines the grid for density estimation and, if \code{.coord = NULL}, the points (and associated weights) that are smoothed. The coordinate reference system of \code{.xpf} must be planar and specified.}
+\item{.xpf}{A \code{\link{SpatRaster}} that defines the grid for density estimation and, if \code{.coord = NULL}, the points (and associated weights) that are smoothed. Weights must sum to one. The coordinate reference system of \code{.xpf} must be planar and specified.}
 
-\item{.coord}{(optional) A \code{matrix} or \code{data.frame} with x and y coordinates, in columns named \code{x} and \code{y} or \code{cell_x} and \code{cell_y}. \code{x} and \code{y} columns are used preferentially. Coordinates must be planar. A \code{mark} column can be included with coordinate weights; otherwise, equal weights are assumed (see Details). Other columns are ignored.}
+\item{.im, .owin}{A pixel image representation of \code{.xpf} (see \code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}} and \code{\link[spatstat.geom:im]{spatstat.geom::im()}}) and an observation window (see \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}} and \code{\link[spatstat.geom:owin]{spatstat.geom::owin()}}). These objects are typically computed automatically, but this option can be over-ridden in iterative applications for improved speed (especially with high-resolution grids). However, if \code{.coord} is supplied, \code{.im} is necessarily (re)-defined internally (see Details).}
+
+\item{.coord}{(optional) A \code{\link{matrix}}, \code{\link{data.frame}} or \code{\link{data.table}} with x and y coordinates, in columns named \code{x} and \code{y} or \code{cell_x} and \code{cell_y}. \code{x} and \code{y} columns are used preferentially. Coordinates must be planar.  A \code{timestep} column can also be included if there are multiple possible locations at each time step. A \code{mark} column can be included with coordinate weights; otherwise, equal weights are assumed (see Details). Other columns are ignored.}
 
 \item{.plot}{A \code{logical} variable that defines whether or not to plot the output.}
 
@@ -35,14 +45,18 @@ pf_dens(
 The function returns a normalised \code{\link{SpatRaster}} (or \code{NULL} if \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} fails and \code{.use_tryCatch = TRUE}).
 }
 \description{
-This function creates a smoothed density map (e.g., of particle samples).
+\code{\link[=pf_dens]{pf_dens()}} creates a smoothed density map (e.g., of particle samples).
 }
 \details{
-This function smooths (a) a \code{\link{SpatRaster}} or (b) a set of inputted coordinates:
+\code{\link[=pf_dens]{pf_dens()}} smooths (a) a \code{\link{SpatRaster}} or (b) a set of inputted coordinates:
 \itemize{
 \item If \code{.coords} is \code{NULL}, \code{.xpf} cell coordinates are used for density estimation and cell values are used as weights.
-\item If coordinates are supplied, coordinates are re-expressed on \code{.xpf} and then used for density estimation. Equal weights are assumed unless specified. If there are duplicated coordinates, weights are updated in line with the relative frequency of coordinate pairs.
+\item If coordinates are supplied, coordinates are re-expressed on \code{.xpf} and then used for density estimation. Equal weights are assumed unless specified. Default or supplied weights are normalised to sum to one at each time step. The total weight of each location within time steps is calculated and then these weights are aggregated by location across the whole time series and renomalised. See the internal \code{\link[=.pf_weights]{.pf_weights()}} function for full details.
 }
+
+Cell coordinates are converted to a \code{\link[spatstat.geom:ppp]{spatstat.geom::ppp()}} object, which is passed, alongside the observation window (\code{.owin}) and an image of the weights to \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} for the estimation. Weights must sum to one.
+
+\code{\link{as.im.SpatRaster}} and \code{\link{as.owin.SpatRaster}} are helper functions that convert a \code{\link{SpatRaster}} to a pixel image and an observation window (see \code{\link[spatstat.geom:owin]{spatstat.geom::owin()}}). The former is based on \code{maptools::as.im.RasterLayer()}. The latter either defines a rectangular window, if there are no NAs on \code{.xpf}, or converts \code{.xpf} directly to an \code{owin} object. Gridded observation windows, especially if high resolution, considerably slow down density estimation.
 
 Coordinates and associated weights are smoothed via \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} into an image. Smoothing parameters such as bandwidth can be controlled via \code{...} arguments which are passed directly to this function. The output is translated into a gridded probability density surface (on the geometry defined by \code{.xpf}).
 }

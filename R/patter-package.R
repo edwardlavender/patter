@@ -123,6 +123,7 @@
 #' @importFrom dplyr slice
 #' @importFrom dplyr arrange
 #' @importFrom dplyr select
+#' @importFrom dplyr rename
 #' @importFrom dplyr n
 #' @importFrom dplyr row_number
 #'

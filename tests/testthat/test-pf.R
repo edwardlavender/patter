@@ -254,14 +254,12 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   #### Calculate POU
   pou_manual <-
     out_pfb$history |>
-    rbindlist() |>
-    count(cell_now) |>
-    mutate(pr = n / sum(n)) |>
-    arrange(cell_now) |>
-    select(cell = cell_now, pr)
-  # The normalising constant should be <= n_particles * nrow(obs)
-  # (since there are some dead ends)
-  expect_true(sum(pou_manual$n) <= (n_particles * nrow(obs)))
+    .pf_history_dt() |>
+    rename(cell_id = cell_now) |>
+    .pf_weights() |>
+    select(cell_id, mark) |>
+    arrange(cell_id) |>
+    as.data.table()
 
   #### Validate POU SpatRaster using pou_manual
   # * Validate when a list of data.tables is past
@@ -272,8 +270,8 @@ test_that("pf_*() functions work using example flapper skate datasets", {
       map |>
       as.data.frame(cells = TRUE, na.rm = TRUE) |>
       filter(layer > 0) |>
-      select(cell, pr = layer) |>
-      arrange(cell) |>
+      select(cell_id = cell, mark = layer) |>
+      arrange(cell_id) |>
       as.data.table()
     expect_equal(pou_manual, pou_from_raster)
   }) |> invisible()
@@ -282,7 +280,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   blah.txt <- file.path(pfb_folder, "blah.txt")
   file.create(blah.txt)
   pf_pou(pfb_folder, gebco) |>
-    expect_error("`.history` contains non parquet files.", fixed = TRUE)
+    expect_error(glue::glue("The directory '{pfb_folder}' contains files with unexpected extensions."), fixed = TRUE)
   unlink(blah.txt)
 
 

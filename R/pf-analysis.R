@@ -245,32 +245,18 @@ pf_pou <-
     #### Check user inputs
     check_inherits(.history, c("character", "list"))
 
-    #### Tabulate cell frequencies
-    # Prepare samples from parquet files
-    if (inherits(.history, "character")) {
-      check_dir(.history)
-      if (!all((list.files(.history) |> tools::file_ext()) == "parquet")) {
-        abort("`.history` contains non parquet files.")
-      }
-      samples <-
-        arrow::open_dataset(.history, format = "parquet") # |> arrow::to_duckdb()
-    } else {
-      # Prepare samples from pf_*() list
-      check_names(.history[[1]], req = "cell_now")
-      samples <- .history |> rbindlist()
-    }
-    # Calculate POU from samples
+    #### Calculate cell weights
     pou <-
-      samples |>
-      dplyr::select(cell = "cell_now") |>
-      dplyr::count(.data$cell) |>
+      .history |>
+      .pf_history_dt(.collect = FALSE) |>
+      dplyr::rename(cell_id = "cell_now") |>
       dplyr::collect() |>
-      dplyr::mutate(pr = .data$n / sum(.data$n))
+     .pf_weights()
 
     #### Build SpatRaster
     map <- terra::setValues(.bathy, 0)
     map <- terra::mask(map, .bathy)
-    map[pou$cell] <- pou$pr
+    map[pou$cell_id] <- pou$mark
     if (.plot) {
       terra::plot(map, ...)
     }
@@ -281,9 +267,10 @@ pf_pou <-
   }
 
 #' @title PF: map point density
-#' @description This function creates a smoothed density map (e.g., of particle samples).
-#' @param .xpf A [`SpatRaster`] that defines the grid for density estimation and, if `.coord = NULL`, the points (and associated weights) that are smoothed. The coordinate reference system of `.xpf` must be planar and specified.
-#' @param .coord (optional) A `matrix` or `data.frame` with x and y coordinates, in columns named `x` and `y` or `cell_x` and `cell_y`. `x` and `y` columns are used preferentially. Coordinates must be planar. A `mark` column can be included with coordinate weights; otherwise, equal weights are assumed (see Details). Other columns are ignored.
+#' @description [`pf_dens()`] creates a smoothed density map (e.g., of particle samples).
+#' @param .xpf A [`SpatRaster`] that defines the grid for density estimation and, if `.coord = NULL`, the points (and associated weights) that are smoothed. Weights must sum to one. The coordinate reference system of `.xpf` must be planar and specified.
+#' @param .im,.owin A pixel image representation of `.xpf` (see [`as.im.SpatRaster()`] and [`spatstat.geom::im()`]) and an observation window (see [`as.owin.SpatRaster()`] and [`spatstat.geom::owin()`]). These objects are typically computed automatically, but this option can be over-ridden in iterative applications for improved speed (especially with high-resolution grids). However, if `.coord` is supplied, `.im` is necessarily (re)-defined internally (see Details).
+#' @param .coord (optional) A [`matrix`], [`data.frame`] or [`data.table`] with x and y coordinates, in columns named `x` and `y` or `cell_x` and `cell_y`. `x` and `y` columns are used preferentially. Coordinates must be planar.  A `timestep` column can also be included if there are multiple possible locations at each time step. A `mark` column can be included with coordinate weights; otherwise, equal weights are assumed (see Details). Other columns are ignored.
 #' @param .plot A `logical` variable that defines whether or not to plot the output.
 #' @param .use_tryCatch A `logical` variable that controls error handling:
 #' * If `.use_tryCatch = FALSE`, if density estimation fails with an error, the function fails with the same error.
@@ -291,9 +278,15 @@ pf_pou <-
 #' @param .verbose,.txt Controls on function prompts and messages (see [`acs()`]).
 #' @param ... Arguments passed to [`spatstat.explore::density.ppp()`], such as `sigma` (i.e., the bandwidth).
 #'
-#' @details This function smooths (a) a [`SpatRaster`] or (b) a set of inputted coordinates:
+#' @details
+#'
+#' [`pf_dens()`] smooths (a) a [`SpatRaster`] or (b) a set of inputted coordinates:
 #' * If `.coords` is `NULL`, `.xpf` cell coordinates are used for density estimation and cell values are used as weights.
-#' * If coordinates are supplied, coordinates are re-expressed on `.xpf` and then used for density estimation. Equal weights are assumed unless specified. If there are duplicated coordinates, weights are updated in line with the relative frequency of coordinate pairs.
+#' * If coordinates are supplied, coordinates are re-expressed on `.xpf` and then used for density estimation. Equal weights are assumed unless specified. Default or supplied weights are normalised to sum to one at each time step. The total weight of each location within time steps is calculated and then these weights are aggregated by location across the whole time series and renomalised. See the internal [`.pf_weights()`] function for full details.
+#'
+#' Cell coordinates are converted to a [`spatstat.geom::ppp()`] object, which is passed, alongside the observation window (`.owin`) and an image of the weights to [`spatstat.explore::density.ppp()`] for the estimation. Weights must sum to one.
+#'
+#' [`as.im.SpatRaster`] and [`as.owin.SpatRaster`] are helper functions that convert a [`SpatRaster`] to a pixel image and an observation window (see [`spatstat.geom::owin()`]). The former is based on `maptools::as.im.RasterLayer()`. The latter either defines a rectangular window, if there are no NAs on `.xpf`, or converts `.xpf` directly to an `owin` object. Gridded observation windows, especially if high resolution, considerably slow down density estimation.
 #'
 #' Coordinates and associated weights are smoothed via [`spatstat.explore::density.ppp()`] into an image. Smoothing parameters such as bandwidth can be controlled via `...` arguments which are passed directly to this function. The output is translated into a gridded probability density surface (on the geometry defined by `.xpf`).
 #'
@@ -302,9 +295,58 @@ pf_pou <-
 #' @example man/examples/pf_dens-examples.R
 #'
 #' @author Edward Lavender
+#' @name pf_dens
+
+#' @rdname pf_dens
+#' @export
+
+as.im.SpatRaster <- function(.xpf) {
+  # Check user inputs
+  rlang::check_installed("spatstat.geom")
+  if (!terra::hasValues(.xpf))
+    abort("The SpatRaster is empty.")
+  if (terra::is.rotated(.xpf)) {
+    abort("The SpatRaster is rotated.")
+  }
+  # Coerce SpatRaster
+  rs <- terra::res(.xpf)
+  # Define xmin and ymin (shifted to the cell centre)
+  # orig <- sp::bbox(.xpf)[, 1] + 0.5 * rs
+  orig <- terra::ext(.xpf)[c(1, 3)] + 0.5 * rs
+  dm <- dim(.xpf)[2:1]
+  xx <- unname(orig[1] + cumsum(c(0, rep(rs[1], dm[1] - 1))))
+  yy <- unname(orig[2] + cumsum(c(0, rep(rs[2], dm[2] - 1))))
+  val <- terra::values(.xpf)
+  dim(val) <- dm
+  val <- spatstat.geom::transmat(val, from = list(x = "-i", y = "j"), to = "spatstat")
+  spatstat.geom::im(val, xcol = xx, yrow = yy)
+}
+
+#' @rdname pf_dens
+#' @export
+
+as.owin.SpatRaster <- function(.xpf, .im = NULL) {
+  if (terra::global(.xpf, function(x) any(is.na(x)))[1, 1]) {
+    # Define the window based on rim if there are NAs
+    msg("Observation window is gridded.")
+    if (is.null(.im)) {
+      .im <- as.im.SpatRaster(.im)
+    }
+    rwin <- spatstat.geom::as.owin(.im)
+  } else {
+    # Define the window based on the extent otherwise (for improved speed)
+    message("Observation window is rectangular.")
+    ext  <- terra::ext(.xpf)
+    rwin <- spatstat.geom::as.owin(W = c(xmin = ext[1], xmax = ext[2], ymin = ext[3], ymax = ext[4]))
+  }
+  rwin
+}
+
+#' @rdname pf_dens
 #' @export
 
 pf_dens <- function(.xpf,
+                    .im = NULL, .owin = NULL,
                     .coord = NULL,
                     .plot = TRUE,
                     .use_tryCatch = TRUE,
@@ -331,98 +373,88 @@ pf_dens <- function(.xpf,
   # spatstat assumes planar coordinates
   cat_to_cf("... Processing `.xpf`...")
   crs <- terra::crs(.xpf)
-  if (is.na(terra::crs(.xpf))) {
+  if (is.na(crs)) {
     abort("`terra::crs(.xpf)` must be specified (and should be planar).")
   }
   terra::crs(.xpf) <- NA
-  # Set up window
-  cat_to_cf("... Converting `.xpf` to an `im` object...")
-  rim  <- as.im.SpatRaster(.xpf)
-  cat_to_cf("... Defining the window...")
-  if (terra::global(.xpf, function(x) any(is.na(x)))[1, 1]) {
-    # Define the window based on rim if there are NAs
-    cat_to_cf("... ... Using `.xpf`...")
-    rwin <- spatstat.geom::as.owin(rim)
-  } else {
-    # Define the window based on the extent otherwise (for improved speed)
-    cat_to_cf("... ... Using `.xpf` extent only...")
-    ext  <- terra::ext(.xpf)
-    rwin <- spatstat.geom::as.owin(W = c(xmin = ext[1], xmax = ext[2], ymin = ext[3], ymax = ext[4]))
+  # Define pixel image & window
+  # * The pixel image represents the study area
+  # * We need this to define the observation window, which must be based on .xpf
+  # * If `.coord` is NULL, we will also use the pixel image for the estimation
+  # * But if `.coord` is supplied, we need to redefine the image used for estimation
+  if (is.null(.im)) {
+    .im <- as.im.SpatRaster(.xpf)
+  }
+  if (is.null(.owin)) {
+    .owin <- as.owin.SpatRaster(.xpf, .im = .im)
   }
 
   #### Get ppp
   cat_to_cf("... Building `ppp` object...")
-  # (A) Define coordinates & weights from the SpatRaster
+
+  ## (A) Define coordinates & weights from the SpatRaster (e.g., POU grid)
   if (is.null(.coord)) {
     cat_to_cf("... ... Using `.xpf`...")
     .coord <- terra::as.data.frame(.xpf, xy = TRUE)
     colnames(.coord) <- c("x", "y", "mark")
     .coord <- .coord[which(!is.na(.coord$mark) & .coord$mark != 0), ]
     marks <- .coord[, 3]
-  } else {
-    # (B) Define coordinates & weights from `.coord` input
-    cat_to_cf("... ... Using `.coord`...")
-    if (inherits(.coord, "matrix")) {
-      .coord <- as.data.frame(.coord)
+    if (!all.equal(sum(marks), 1)) {
+      abort("Weights on `.xpf` should sum to one.")
     }
-    check_inherits(.coord, "data.frame")
+  } else {
+
+    ## (B) Define coordinates & weights from `.coord` input
+    # i) Define coordinates data.table with x and y columns
+    cat_to_cf("... ... Using `.coord`...")
+    if (inherits(.coord, "matrix") |
+        inherits(.coord, "data.frame") & !inherits(.coord, "data.table")) {
+      .coord <- as.data.table(.coord)
+    }
+    check_inherits(.coord, "data.table")
     contains_xy      <- all(c("x", "y") %in% colnames(.coord))
     contains_cell_xy <- all(c("cell_x", "cell_y") %in% colnames(.coord))
-    marks <- .coord$mark
     if (contains_xy) {
       if (contains_cell_xy) {
-        warn("`.coord` contains both (`x`, `y`) and (`cell_x`, `cell_y`) coordinates: (`x`, `y`) coordinates used.")
+        msg("`.coord` contains both (`x`, `y`) and (`cell_x`, `cell_y`) coordinates: (`x`, `y`) coordinates used.")
+        cell_x <- cell_y <- NULL
+        .coord[, cell_x := NULL]
+        .coord[, cell_y := NULL]
       }
-      .coord <- .coord[, c("x", "y")]
     } else {
       if (contains_cell_xy) {
-        .coord <- .coord[, c("cell_x", "cell_y")]
-        colnames(.coord) <- c("x", "y")
+        .coord <-
+          .coord |>
+          rename(x = "cell_x", y = "cell_y") |>
+          as.data.table()
       } else {
-        abort("`.coord` should contain `x` and `y` (or `cell_x` and `cell_y` coordinates).")
+        abort("`.coord` should contain `x` and `y` (or `cell_x` and `cell_y`) coordinates.")
       }
     }
-    if (!is.null(marks)) {
-      cat_to_cf("... ... ... Using `.coord$mark` for marks...")
-      .coord$mark <- marks
-    } else {
-      .coord$mark <- rep(1/nrow(.coord), nrow(.coord))
+    # ii) Define cell IDs (if un-supplied) for .pf_weights()
+    if (is.null(.coord$cell_id)) {
+      cell_id <- NULL
+      .coord[, cell_id := terra::cellFromXY(.xpf, cbind(.coord$x, .coord$y))]
     }
-    # Drop duplicate coordinates & adjust marks (weights) accordingly
-    # ... This assumes that coordinates that are uniquely defined on `.coord`
-    # ... are uniquely defined on .xpf (see definition of weights below).
-    nrw_0 <- nrow(.coord)
-    .coord <-
-      .coord |>
-      mutate(cell = terra::cellFromXY(.xpf, cbind(.data$x, .data$y))) |>
-      group_by(.data$cell) |>
-      mutate(mark = sum(.data$mark)) |>
-      slice(1L) |>
-      ungroup() |>
-      # Renormalise (may be required if marks are provided)
-      mutate(mark = .data$mark / sum(.data$mark)) |>
-      as.data.frame()
-    stopifnot(all.equal(1, sum(.coord$mark)))
-    nrw_1 <- nrow(.coord)
-    if (nrw_0 != nrw_1) {
-      warn("`.coords` contains duplicate coordinates on `.xpf` that have been processed.")
-    }
-    # Define marks/weights
+    # iii) Define `.coord` with weights for each cell_id
+    .coord <- .pf_weights(.coord)
+    # iv) Define weights on raster image
     marks <- .coord$mark
-    rim <- terra::rasterize(x = as.matrix(.coord[, c("x", "y"), drop = FALSE]),
+    .im <- terra::rasterize(x = as.matrix(.coord[, c("x", "y"), drop = FALSE]),
                             y = .xpf,
                             values = marks)
-    rim <- as.im.SpatRaster(rim)
+    .im <- as.im.SpatRaster(.im)
   }
+
+  ## Build ppp object
   cat_to_cf("... ... Defining `ppp` object...")
   rppp <- spatstat.geom::ppp(x = .coord$x, y = .coord$y,
-                             window = rwin, marks = marks)
-  # return(rppp)
+                             window = .owin, marks = marks)
 
   #### Estimate density surface
   # Get intensity (expected number of points PER UNIT AREA)
   cat_to_cf("... Estimating density surface...")
-  dens <- tryCatch(spatstat.explore::density.ppp(rppp, weights = rim,
+  dens <- tryCatch(spatstat.explore::density.ppp(rppp, weights = .im,
                                                  at = "pixels", se = FALSE, ...),
                    error = function(e) e)
   if (inherits(dens, "error")) {
@@ -435,11 +467,13 @@ pf_dens <- function(.xpf,
   }
   # Translate intensity into expected number of points PER PIXEL
   cat_to_cf("... Scaling density surface...")
+  terra::crs(.xpf) <- crs
   dens <- terra::rast(dens)
   terra::crs(dens) <- crs
   dens <- dens * terra::cellSize(dens, unit = "m")
   # Translate expect counts into proportion of points per pixel
   dens <- dens/terra::global(dens, "sum", na.rm = TRUE)[1, 1]
+  dens <- terra::mask(dens, .xpf)
   stopifnot(all.equal(1, terra::global(dens, "sum", na.rm = TRUE)[1, 1]))
 
   #### Plot density

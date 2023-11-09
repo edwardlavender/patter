@@ -22,7 +22,8 @@ check_contents_ext <- function(input, ext, ...) {
   f    <- list.files(input, ...)
   fext <- unique(tools::file_ext(f))
   if (!all(fext %in% ext)) {
-    abort("The directory '{input}' contains files with unexpected extensions.")
+    abort("The directory '{input}' contains files with unexpected extensions.",
+          .envir = environment())
   }
   invisible(input)
 }
