@@ -106,7 +106,7 @@
 #' * For information on [`patter`]'s predecessor, see \url{https://github.com/edwardlavender/flapper}.
 #' * For further information on  [`patter`], see \url{https://github.com/edwardlavender/patter}.
 #' * For feature requests and bug reports, see \url{https://github.com/edwardlavender/patter/issues}.
-#' * For support, contact [edward.lavender@eawag.ch](mailto:[edward.lavender@eawag.ch).
+#' * For support, contact [edward.lavender@eawag.ch](mailto:edward.lavender@eawag.ch).
 #'
 #' @references Lavender, E. et al. (2023). An integrative modelling framework for passive acoustic telemetry. Methods in Ecology and Evolution. \url{https://doi.org/10.1111/2041-210X.14193}.
 #'
