@@ -18,6 +18,19 @@ check_dir <- function(input) {
 #' @rdname check_utils
 #' @keywords internal
 
+check_contents_ext <- function(input, ext, ...) {
+  f    <- list.files(input, ...)
+  fext <- unique(tools::file_ext(f))
+  if (!all(fext %in% ext)) {
+    abort("The directory '{input}' contains files with unexpected extensions.")
+  }
+  invisible(input)
+}
+
+
+#' @rdname check_utils
+#' @keywords internal
+
 check_inherits <- function(input, class) {
   if (!inherits(input, class)) {
     abort("`{deparse(substitute(input))}` must be a {class}.",
