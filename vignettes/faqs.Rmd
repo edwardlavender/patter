@@ -1,0 +1,52 @@
+---
+title: "FAQs"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    number_sections: yes
+vignette: >
+  %\VignetteIndexEntry{FAQs}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+This vignette addresses frequently asked questions (FAQs) for practitioners seeking to apply the `flapper` algorithms using [`patter`](https://github.com/edwardlavender/patter/). See also the `flapper_algorithms_faqs` vignette in [`patter`](https://github.com/edwardlavender/patter/)'s predecessor [`flapper`](https://github.com/edwardlavender/flapper/) package. To submit a new question, go to https://github.com/edwardlavender/flapper/issues or contact edward.lavender@eawag.ch. 
+
+# Abbreviations
+
+* **PF**--- particle filtering;
+
+# Algorithm implementation
+
+## How can I account for swimming distances in PF? 
+
+In PF, particles are 'kicked' into new locations using a movement model. Under the default options, at each time step, a turning angle and a Euclidean step length are sampled from probability distributions and used to 'kick' particles into new, proposal locations. This approach is fast and widely applicable, but potentially problematic in systems with (1) highly mobile species, (2) elongated barriers and/or (3) complex bathymetry. If you need to include swimming distances in the reconstruction of movements, there are four main options: 
+
+* **Simulation.** PF implementations based on Euclidean distances are fast and desirable where possible. Consider your study area and the reconstruction of movements. How much time do individuals spend near coastline and how many 'problematic' peninsulas or islands do you have? If individuals spend most of their time away from coastline, Euclidean distances may be a good approximation of swimming distances, even though they have the potential to differ. You can use the `flapper::lcp_comp()` function to evaluate this. Simulations can also be used to evaluate the extent to which a Euclidean-distances approximation is sufficient: in your study system, simulate the movement trajectory of an individual, detections and associated observations; implement the algorithm(s) using Euclidean distances; and assess performance.
+
+* **Model-based approximation.** Model-based approximation of swimming distances is a computationally efficient option (Lavender et al., 2023). Use the `flapper::lcp_comp()` function to evaluate the relationship between Euclidean and swimming distances. In the forward simulation, you can simulate Euclidean step lengths as usual and then use a regression model to downsize simulated distances into approximate swimming distances with which to 'kick' particles. The same approach can be used on the backwards pass. This approach can work well for benthic species, but may be less accurate in places with movement barriers (e.g., peninsulas) where the relationship between Euclidean and swimming distances can be more variable.
+
+* **Temporal resolution.** Using `flapper::lcp_comp()` as a guide, consider adjusting the temporal resolution of the analysis. Animals can move less far in shorter time steps and at shorter distances Euclidean and swimming distances become more similar. Some internal function improvements are required if the required temporal resolution is smaller than the acoustic transmission frequency. Please get in touch if this is the case for you. 
+
+* **Use custom kicks.** In `pf_forward_*()`, you can adjust the movement model to suit your requirements (and computational resources). 
+
+    * **Kick over the grid.** One option is to simulate, at each time step, particle movement over a grid (cell by cell) from the starting point to an ending point, according to a movement model and while keeping track of the travelled distance. At each time step, this approach requires multiple steps and is computationally expensive. 
+    
+    * **Kick over the grid approximately.** It is possible to speed up the above option by approximation: simulate a travel distance; kick particles along a Euclidean transect; discretise the transect; calculate distances along the transect; and select the position along the transect that is closest to the simulated distance (dropping any transects that cover land). To ensure this approximation is sufficiently accurate, this approach should only be used for high-resolution grids. 
+    
+    * **Sample from the grid.** Another option is to replace the simulation of step lengths with grid calculations. In this approach you calculate the shortest distances around each particle to surrounding locations (perhaps within a buffer defined by mobility) and then use the movement model to translate those distances into a probability surface, from which you sample future locations. This approach was described by Lavender et al. (2023). It is the 'gold standard' option but extremely expensive, especially if mobility and grid resolution are high. 
+
+All of these options can be implemented in [`patter`](https://github.com/edwardlavender/patter/) but you need to be able to write a `.kick` function. Please submit a [feature request](https://github.com/edwardlavender/flapper/issues) if you would like this process made easier. 
+
+# References
+
+Lavender, E. _et al._ (2023). A semi-stochastic modelling framework for passive acoustic telemetry. Methods in Ecology and Evolution. https://doi.org/10.1111/2041-210X.14193 
