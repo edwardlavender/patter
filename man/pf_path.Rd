@@ -25,7 +25,7 @@ pf_path(
 
 \item{.obs, .cols}{(optional) If \code{.return = "long"}, \code{.obs} and \code{.cols} are a \code{\link{data.table}} and a \code{character} vector of column names in \code{.obs} to match onto the output (see \code{\link[=pf_path_pivot]{pf_path_pivot()}}).}
 
-\item{.verbose, .txt}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
+\item{.verbose, .txt}{Arguments to monitor function progress (see \code{\link[=pf_forward_1]{pf_forward_1()}}).}
 
 \item{.return}{A \code{character} that defines the return format:
 \itemize{
@@ -49,10 +49,9 @@ The path reconstruction algorithm 'chains' sequential particle samples into move
 \examples{
 #### Workflow
 # A. Define input datasets (see ?`acs_setup_obs()`)
-# B. Implement AC-branch algorithm (see ?`acs()` or ?`dc()`)
-# C. Implement forward simulation (see ?`pf_forward()`)
-# D. Implement backwards pass (see ?`pf_backward()`)
-# E. Implement `pf_path()`, `pf_pou()` etc.
+# B. Implement forward simulation (see ?`acs()`, ?`dc()` and ?`pf_forward_*()`)
+# C. Implement backwards pass (see ?`pf_backward()`)
+# D. Implement `pf_path()`, `pf_pou()` etc.
 
 #### Set up examples using pre-defined datasets
 # Define required datasets (e.g., observations, bathymetry grid)
@@ -115,7 +114,7 @@ str(p6)
 }
 \seealso{
 \itemize{
-\item \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward]{pf_backward()}} implement particle filtering.
+\item \code{\link[=pf_forward_*]{pf_forward_*()}} and \code{\link[=pf_backward]{pf_backward()}} implement particle filtering (and backwards sampling).
 \item \code{\link[=pf_pou]{pf_pou()}} maps probability-of-use from particle samples.
 \item \code{\link[=pf_path]{pf_path()}} builds movement paths from particle samples and \code{\link[=pf_path_pivot]{pf_path_pivot()}} converts wide-format paths into long-format.
 }

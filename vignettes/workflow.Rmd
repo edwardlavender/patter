@@ -188,7 +188,7 @@ The output format matches that for `dc()`.
 The particle filter builds movement into the AC-branch algorithms. This comprises (1) a forward simulation of possible locations and (b) a backward pass that refines simulated trajectories. The forward simulation is implemented via `pf_forward()`. This requires the observations `data.table`, the AC-branch `SpatRaster`s and a movement model that 'kicks' the particles sampled at each time step into new (proposal) locations. For brevity, here we use a template movement model specified by `pf_kick()`. 
 
 ```{r}
-out_pff <- pf_forward(.obs = obs,
+out_pff <- pf_forward_1(.obs = obs,
                       .record = out_acs$record,
                       .n = 1000L,
                       .kick = pf_kick,
@@ -216,8 +216,6 @@ par(pp)
 ```{r}
 out_pfb <- pf_backward(out_pff$history, .save_history = TRUE, .verbose = FALSE)
 ```
-
-The structure of the output matches that for `pf_forward()`. 
 
 # Outputs
 

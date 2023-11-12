@@ -51,13 +51,13 @@ out_ac <-
       .detection_kernels = kernels,
       .save_record = TRUE)
 
-# Implement pf_forward()
-out_pff <- pf_forward(.obs = obs,
-                     .record = out_ac$record,
-                     .n = 1e3,
-                     .kick = pf_kick,
-                     .bathy = gebco,
-                     .save_history = TRUE)
+# Implement pf_forward_1()
+out_pff <- pf_forward_1(.obs = obs,
+                        .record = out_ac$record,
+                        .n = 1e3,
+                        .kick = pf_kick,
+                        .bathy = gebco,
+                        .save_history = TRUE)
 
 # Implement pf_backward()
 out_pfb <- pf_backward(out_pff$history, .save_history = TRUE)

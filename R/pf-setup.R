@@ -1,5 +1,5 @@
 #' @title PF set up: list files for PF
-#' @description This function creates an ordered `list` of files for PF, either from an AC* algorithm (i.e., [`acs()`] or [`dc()`]) for the forward simulation ([`pf_forward()`]), or from the forward simulation ([`pf_forward()`]) for the backward pass ([`pf_backward()`]).
+#' @description This function creates an ordered `list` of files for PF, either from an AC* algorithm (i.e., [`acs()`] or [`dc()`]) for the forward simulation ([`pf_forward_1()`]), or from the forward simulation ([`pf_forward_*()`]) for the backward pass ([`pf_backward()`]).
 #'
 #' @param .root A string that defines the directory in which files are located.
 #' @param ... Additional arguments passed to [`list.files()`], such as `pattern`, excluding `full.names`.
@@ -20,17 +20,17 @@
 #'       .detection_kernels = dat_kernels(),
 #'       .write_record = list(filename = ac_folder, overwrite = TRUE))
 #'
-#' # List files for pf_forward()
+#' # List files for pf_forward_*()
 #' files <- pf_setup_files(ac_folder)
 #'
-#' # Quick implementation of pf_forward()
+#' # Quick implementation of pf_forward_1()
 #' pff_folder <- file.path(con, "patter", "pf", "forward")
 #' dir.create(pff_folder, recursive = TRUE)
-#' out_pff <- pf_forward(obs,
-#'                       .record = files,
-#'                       .kick = pf_kick,
-#'                       .bathy = gebco,
-#'                       .write_history = list(sink = pff_folder))
+#' out_pff <- pf_forward_1(obs,
+#'                         .record = files,
+#'                         .kick = pf_kick,
+#'                         .bathy = gebco,
+#'                         .write_history = list(sink = pff_folder))
 #'
 #' # List files for pf_backward()
 #' files <- pf_setup_files(pff_folder)
@@ -61,7 +61,7 @@ pf_setup_files <- function(.root, ...) {
     abort("Multiple file types (extensions) identified in `.root`. Do you need to pass `pattern` to `list.files()`?")
   }
   if (!all(exts %in% c("tif", "parquet"))) {
-    abort("Either .tif files (for `pf_forward()` or .parquet files (for `pf_backward()` are expected.")
+    abort("Either .tif files (for `pf_forward_*()` or .parquet files (for `pf_backward()` are expected.")
   }
   bsname <- basename(files)
   ext <- exts[1]

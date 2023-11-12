@@ -1,10 +1,10 @@
 #' @title PF: template movement models
-#' @description These functions are example movement models, of the kind required by `.kick` in [`pf_forward()`].
-#' @param .particles A [`data.table`], from [`pf_forward()`], that defines the current particle samples:
+#' @description These functions are example movement models, of the kind required by `.kick` in [`pf_forward_*()`].
+#' @param .particles A [`data.table`], from [`pf_forward_*()`], that defines the current particle samples:
 #' * `cell_now` is an integer vector of cell IDs;
 #' * `x_now` is a numerical vector of `x` coordinates;
 #' * `y_now` is a numerical vector of `y` coordinates;
-#' @param .obs,.t,.bathy (optional) The `.obs` [`data.table`], an integer that indexes `.obs` and the `.bathy` [`SpatRaster`] (see [`pf_forward()`]). These inputs are unused in this template movement model but supported within [`pf_forward()`].
+#' @param .obs,.t,.bathy (optional) The `.obs` [`data.table`], an integer that indexes `.obs` and the `.bathy` [`SpatRaster`] (see [`pf_forward_1()`]). These inputs are unused in this template movement model but supported within [`pf_forward_*()`].
 #' @param .sim_length,.sim_angle,... Functions and additional arguments that simulate step lengths and turning angles. The first argument of each function should be the number of step lengths/turning angles to simulate (defined internally).
 #' @param .lonlat A logical variable that defines whether or not coordinates are longitudes/latitudes.
 #'

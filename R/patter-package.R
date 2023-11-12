@@ -25,7 +25,7 @@
 #' * [`dat_overlaps()`] for an example output from [`acs_setup_detection_overlaps()`];
 #' * [`dat_kernels()`] for an example output from [`acs_setup_detection_kernels()`];
 #' * [`dat_ac()`] for an example output from [`acs()`];
-#' * [`dat_pff()`] for an example output from [`pf_forward()`];
+#' * [`dat_pff()`] for an example output from [`pf_forward_1()`];
 #' * [`dat_pfb()`] for an example output from [`pf_backward()`];
 #' * [`dat_pfp()`] for an example output from [`pf_path()`];
 #'
@@ -77,7 +77,7 @@
 #'
 #' * [`pf_setup_files()`] to set up files;
 #' * [`pf_kick()`] for an example movement model;
-#' * [`pf_forward()`] to implement the forward simulation;
+#' * [`pf_forward_1()`] or [`pf_forward_2()`] to implement the forward simulation;
 #' * [`pf_backward()`] to implement the backward pass;
 #' * [`pf_pou()`] to map probability-of-use;
 #' * [`pf_path()`] (and [`pf_path_pivot()`]) to reconstruct movement paths;

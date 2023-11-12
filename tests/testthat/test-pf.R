@@ -62,7 +62,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
 
   #########################
   #########################
-  #### Test pf_forward()
+  #### Test pf_forward_1()
 
   #### Set inputs
   n_particles <- 1e3
@@ -72,72 +72,72 @@ test_that("pf_*() functions work using example flapper skate datasets", {
 
   ##### Validate checks on user inputs
   ## Validate `.save_history` and/or `.write_history` are specified
-  pf_forward(.obs = obs,
-             .record = out_ac$record,
-             .n = n_particles,
-             .kick = pf_kick,
-             .bathy = gebco) |>
+  pf_forward_1(.obs = obs,
+               .record = out_ac$record,
+               .n = n_particles,
+               .kick = pf_kick,
+               .bathy = gebco) |>
     expect_error("`.save_history = FALSE` and `.write_history = NULL`. There is nothing to do.",
                  fixed = TRUE)
   ## Validate `.verbose` & `.txt` align
-  pf_forward(.obs = obs,
-             .record = out_ac$record,
-             .n = n_particles,
-             .kick = pf_kick,
-             .bathy = gebco,
-             .save_history = TRUE,
-             .verbose = FALSE, .txt = tempdir()) |>
+  pf_forward_1(.obs = obs,
+               .record = out_ac$record,
+               .n = n_particles,
+               .kick = pf_kick,
+               .bathy = gebco,
+               .save_history = TRUE,
+               .verbose = FALSE, .txt = tempdir()) |>
     expect_warning("Input to `.txt` ignored since `.verbose = FALSE`",
-                 fixed = TRUE)
+                   fixed = TRUE)
   ## Validate the function handles time steps without any possible locations
   # Imagine there are no possible locations at time step 10
   out_ac_tmp <- out_ac
   out_ac_tmp$record[[10]][] <- 0
   # Confirm message
-  pf_forward(.obs = obs,
-             .record = out_ac_tmp$record,
-             .n = n_particles,
-             .kick = pf_kick,
-             .bathy = gebco,
-             .save_history = TRUE) |>
+  pf_forward_1(.obs = obs,
+               .record = out_ac_tmp$record,
+               .n = n_particles,
+               .kick = pf_kick,
+               .bathy = gebco,
+               .save_history = TRUE) |>
     expect_message("There are no particles with positive weights at timestep 10. `history` returned up to this point.",
                    fixed = TRUE)
   # Confirm output comprises particle samples up to time step 10
-  out_pff <- pf_forward(.obs = obs,
-                       .record = out_ac_tmp$record,
-                       .n = n_particles,
-                       .kick = pf_kick,
-                       .bathy = gebco,
-                       .save_history = TRUE)
+  out_pff <- pf_forward_1(.obs = obs,
+                          .record = out_ac_tmp$record,
+                          .n = n_particles,
+                          .kick = pf_kick,
+                          .bathy = gebco,
+                          .save_history = TRUE)
   expect_equal(length(out_pff), 9L)
   check_inherits(out_pff[[1]], "data.table")
   expect_equal(colnames(out_pff[[1]]), c("timestep", "cell_past", "cell_now"))
 
-  #### Implement pf_forward with `.save_history = FALSE` to confirm particles are dropped
-  out_pff <- pf_forward(.obs = obs,
-                       .record = out_ac$record,
-                       .n = n_particles,
-                       .kick = pf_kick,
-                       .bathy = gebco,
-                       .save_history = FALSE,
-                       .write_history = list(sink = pff_folder))
+  #### Implement `pf_forward_1()` with `.save_history = FALSE` to confirm particles are dropped
+  out_pff <- pf_forward_1(.obs = obs,
+                          .record = out_ac$record,
+                          .n = n_particles,
+                          .kick = pf_kick,
+                          .bathy = gebco,
+                          .save_history = FALSE,
+                          .write_history = list(sink = pff_folder))
   check_inherits(out_pff$history, "list")
   expect_length(out_pff$history, 0L)
 
-  #### Implement pf_forward() using out_ac$record or SpatRasters from file & validate outputs are equal
+  #### Implement pf_forward_1() using out_ac$record or SpatRasters from file & validate outputs are equal
   out_pff_by_record <-
     lapply(list(out_ac$record, pf_setup_files(ac_folder)), \(record) {
       # Implement pf
       set.seed(seed)
       log.txt <- tempfile(fileext = ".txt")
-      out_pff <- pf_forward(.obs = obs,
-                 .record = record,
-                 .n = n_particles,
-                 .kick = pf_kick,
-                 .bathy = gebco,
-                 .save_history = TRUE,
-                 .write_history = list(sink = pff_folder),
-                 .txt = log.txt)
+      out_pff <- pf_forward_1(.obs = obs,
+                              .record = record,
+                              .n = n_particles,
+                              .kick = pf_kick,
+                              .bathy = gebco,
+                              .save_history = TRUE,
+                              .write_history = list(sink = pff_folder),
+                              .txt = log.txt)
       # Confirm log.txt created properly
       expect_true(file.exists(log.txt))
       # Confirm output classes & names
@@ -147,7 +147,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
       # Confirm record & parquet files match
       lapply(seq_len(nrow(obs)), function(i) {
         expect_equal(out_pff$history[[i]],
-                  arrow::read_parquet(file.path(pff_folder, paste0(i, ".parquet"))))
+                     arrow::read_parquet(file.path(pff_folder, paste0(i, ".parquet"))))
       }) |> invisible()
       out_pff
     })
@@ -199,17 +199,17 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   #### Validate usual user input checks
   pf_backward(out_pff$history) |>
     expect_error("`.save_history = FALSE` and `.write_history = NULL`. There is nothing to do.")
-   pf_backward(out_pff$history, .save_history = TRUE,
-               .verbose = FALSE, .txt = tempfile()) |>
-     expect_warning("Input to `.txt` ignored since `.verbose = FALSE`.", fixed = TRUE)
+  pf_backward(out_pff$history, .save_history = TRUE,
+              .verbose = FALSE, .txt = tempfile()) |>
+    expect_warning("Input to `.txt` ignored since `.verbose = FALSE`.", fixed = TRUE)
 
-   #### Validate implementation with `.save_history = FALSE`
-   pfb_folder <- file.path(tempdir(), "pf", "backward")
-   dir.create(pfb_folder, recursive = TRUE)
-   out_pfb <- pf_backward(out_pff$history,
-                          .save_history = FALSE,
-                          .write_history = list(sink = pfb_folder))
-   lapply(out_pfb$history, is.na) |> unlist() |> all() |> expect_true()
+  #### Validate implementation with `.save_history = FALSE`
+  pfb_folder <- file.path(tempdir(), "pf", "backward")
+  dir.create(pfb_folder, recursive = TRUE)
+  out_pfb <- pf_backward(out_pff$history,
+                         .save_history = FALSE,
+                         .write_history = list(sink = pfb_folder))
+  lapply(out_pfb$history, is.na) |> unlist() |> all() |> expect_true()
 
   #### Implement pf_backward() from out_pff$history and parquet files
   log.txt <- tempfile(fileext = ".txt")
@@ -312,13 +312,13 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   #### Build path from particle samples and parquet files
   out_pfp_by_history <-
     lapply(list(out_pfb$history, pf_setup_files(pfb_folder)), \(h) {
-    log.txt <- tempfile(fileext = ".txt")
-    out_pfp <- pf_path(h, .txt = log.txt)
-    expect_true(file.exists(log.txt))
-    expect_true(length(readLines(log.txt)) > 0L)
-    unlink(log.txt)
-    out_pfp
-  })
+      log.txt <- tempfile(fileext = ".txt")
+      out_pfp <- pf_path(h, .txt = log.txt)
+      expect_true(file.exists(log.txt))
+      expect_true(length(readLines(log.txt)) > 0L)
+      unlink(log.txt)
+      out_pfp
+    })
   expect_equal(out_pfp_by_history[[1]],
                out_pfp_by_history[[2]])
   out_pfp <- out_pfp_by_history[[1]]
@@ -395,12 +395,12 @@ test_that("pf_path_pivot() works", {
   p <-
     expect_equal(
       pf_path_pivot(paths, .obs = obs, .cols = "value"),
-        lapply(seq_len(nrow(paths)), function(i) {
-          data.table(path_id = rep(i, ncol(paths)),
-                     timestep = seq_len(ncol(paths)),
-                     cell_id = unlist(paths[i, ]),
-                     value = c(1, 2, 3, 4, NA_real_))
-        }) |> rbindlist()
+      lapply(seq_len(nrow(paths)), function(i) {
+        data.table(path_id = rep(i, ncol(paths)),
+                   timestep = seq_len(ncol(paths)),
+                   cell_id = unlist(paths[i, ]),
+                   value = c(1, 2, 3, 4, NA_real_))
+      }) |> rbindlist()
     ) |>
     expect_warning("There are NAs in the value column in the output.",
                    fixed = TRUE)

@@ -31,10 +31,9 @@ Probability-of-use is the proportion of samples of each unique cell (out of the 
 \examples{
 #### Workflow
 # A. Define input datasets (see ?`acs_setup_obs()`)
-# B. Implement AC-branch algorithm (see ?`acs()` or ?`dc()`)
-# C. Implement forward simulation (see ?`pf_forward()`)
-# D. Implement backwards pass (see ?`pf_backward()`)
-# E. Implement `pf_path()`, `pf_pou()` etc.
+# B. Implement forward simulation (see ?`acs()`, ?`dc()` and ?`pf_forward_*()`)
+# C. Implement backwards pass (see ?`pf_backward()`)
+# D. Implement `pf_path()`, `pf_pou()` etc.
 
 #### Set up examples using pre-defined datasets
 # Define required datasets (e.g., observations, bathymetry grid)

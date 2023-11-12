@@ -22,7 +22,7 @@
 #' * `...`---Any additional arguments passed to the function;
 #' @param .save_record,.save_cumulative Logical inputs that control options for saving outputs in memory.
 #' * `.save_record` defines whether or not to save the record of the possible locations of the individual at each time step in the `record` element of the output. This is only sensible for relatively short time series (use `.write_record`, below, otherwise).
-#' * `.save_cumulative` defines whether or not to save a cumulative (probability-of-use) map, derived from the normalised summation of each element in `record` in the `map` element of the output. In general, this is not necessary since AC* outputs are refined by particle filtering (see [`pf_forward()`]) before mapping.
+#' * `.save_cumulative` defines whether or not to save a cumulative (probability-of-use) map, derived from the normalised summation of each element in `record` in the `map` element of the output. In general, this is not necessary since AC* outputs are refined by particle filtering (see [`pf_forward_1()`]) before mapping.
 #' @param .write_record A named list, passed to [`terra::writeRaster`], to save the `record` [`SpatRaster`]s to file at each time step. The `filename` argument should define the directory in which to write files. Files are named by `.obs$timestep` (i.e., `1.tif`, `2.tif`, ..., `N.tif`). This is typically desirable but considerably reduces speed.
 #' @param .progress A logical variable that defines whether or not to implement a progress bar (via [`progress::progress_bar()`]).
 #' @param .prompt A logical variable that defines whether or not a user prompt is required between time steps. If provided, the function plots the possible locations of the individual at each time step. This is useful for diagnostics.
@@ -63,7 +63,7 @@
 #' 3. [`acs_setup_detection_kernels()`] to define detection probability kernels;
 #' 4. [`acs()`] to implement the AC algorithm;
 #'
-#' AC-branch algorithms (i.e., [`acs()`], [`dc()`]) are typically followed by particle filtering to reconstruct movement paths and refine maps of space use (see [`pf_forward()`] and associated `pf_*()` functions).
+#' AC-branch algorithms (i.e., [`acs()`], [`dc()`]) are typically followed by particle filtering to reconstruct movement paths and refine maps of space use (see [`pf_forward_1()`] and associated `pf_*()` functions).
 #'
 #' @source This function evolved from the `.acs()`, `.acs_pl()`, [`ac`](https://edwardlavender.github.io/flapper/reference/ac.html) and [`acdc`](https://edwardlavender.github.io/flapper/reference/acdc.html) functions in the [`flapper`](https://github.com/edwardlavender/flapper) package. Key developments include:
 #' * Implementation of the algorithm over a single timeline;

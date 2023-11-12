@@ -48,14 +48,14 @@
 #'
 #' The function must return a numeric vector of weights (one for each particle). The weights from the AC* algorithm (if applicable) and the functions in `.update_ac` are combined internally and used to (re-)sample particles.
 #'
-#' @param .kick,... A function, and associated inputs, used to 'kick' particles into new (proposal) locations (see [`pf_forward()`]).
+#' @param .kick,... A function, and associated inputs, used to 'kick' particles into new (proposal) locations (see [`pf_forward_1()`]).
 #' @param .n An `integer` that defines the number of particle samples at each time step.
-#' @param .save_history,.write_history Arguments to save particle samples in memory or to file (see [`pf_forward()`]).
-#' @param .progress,.verbose,.txt Controls of function prompts and messages (see [`pf_forward()`]).
+#' @param .save_history,.write_history Arguments to save particle samples in memory or to file (see [`pf_forward_1()`]).
+#' @param .progress,.verbose,.txt Controls of function prompts and messages (see [`pf_forward_1()`]).
 #'
 #' @details
 #' The forward simulation is implemented as follows:
-#' 1. At each time step, at quadrature points (`t = 1`) or proposal locations (`t > 1`), weights are calculated according to the AC* algorithm (if specified) and/or models for ancillary data as specified in `.update_ac`. Unlike [`pf_forward()`], weights are calculated at particle locations rather than across `.bathy` as a whole. Weights are calculated in four steps:
+#' 1. At each time step, at quadrature points (`t = 1`) or proposal locations (`t > 1`), weights are calculated according to the AC* algorithm (if specified) and/or models for ancillary data as specified in `.update_ac`. Unlike [`pf_forward_1()`], weights are calculated at particle locations rather than across `.bathy` as a whole. Weights are calculated in four steps:
 #'
 #'    * Land filter. Quadrature points/particles on land (in `NA` cells on `.bathy`) are dropped.
 #'    * (optional) Container filter. Particle proposals that are incompatible with AC dynamics are dropped.
@@ -99,8 +99,8 @@ pf_forward_2 <- function(.obs,
 
   #### Set up messages
   cat_to_cf <- cat_helper(.verbose = .verbose, .txt = .txt)
-  cat_to_cf(paste0("patter::pf_forward() called (@ ", t_onset, ")..."))
-  on.exit(cat_to_cf(paste0("patter::pf_forward() call ended (@ ", Sys.time(), ").")), add = TRUE)
+  cat_to_cf(paste0("patter::pf_forward_2() called (@ ", t_onset, ")..."))
+  on.exit(cat_to_cf(paste0("patter::pf_forward_2() call ended (@ ", Sys.time(), ").")), add = TRUE)
 
   #### Set up loop
   cat_to_cf("... Setting up simulation...")

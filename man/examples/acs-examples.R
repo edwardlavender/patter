@@ -5,7 +5,7 @@
 # * ?`acs_setup_detection_overlaps()`
 # * ?`acs_setup_detection_kernels()`
 # B. Implement AC* algorithm(s)
-# C. Proceed with particle filtering (?`pf_forward()`)
+# C. Proceed with particle filtering (?`pf_forward_1()`)
 
 #### Set up examples using pre-defined datasets for speed
 obs <- dat_obs()
@@ -170,5 +170,5 @@ out_acdc <-
       .verbose = FALSE)
 
 #### Example (7): AC* algorithms are typically followed by particle filtering
-# See ?`pf_forward()` and associated pf_*() functions
+# See ?`pf_forward_1()` and associated pf_*() functions
 # ... to produce movement paths & refined maps of space use

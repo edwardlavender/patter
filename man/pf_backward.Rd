@@ -20,11 +20,11 @@ pf_backward(
 \item An ordered list of file paths (from \code{\link[=pf_setup_files]{pf_setup_files()}}) that define the directories in which particle samples were written from the forward simulation (as parquet files).
 }}
 
-\item{.save_history}{A logical variable that defines whether or not to save updated particle samples in memory (see \code{\link[=pf_forward]{pf_forward()}}).}
+\item{.save_history}{A logical variable that defines whether or not to save updated particle samples in memory (see \code{\link[=pf_forward_1]{pf_forward_1()}}).}
 
-\item{.write_history}{A named list, passed to \code{\link[arrow:write_parquet]{arrow::write_parquet()}}, to write updated particle samples to file (see \code{\link[=pf_forward]{pf_forward()}}).}
+\item{.write_history}{A named list, passed to \code{\link[arrow:write_parquet]{arrow::write_parquet()}}, to write updated particle samples to file (see \code{\link[=pf_forward_1]{pf_forward_1()}}).}
 
-\item{.progress, .verbose, .txt}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
+\item{.progress, .verbose, .txt}{Arguments to monitor function progress (see \code{\link[=pf_forward_1]{pf_forward_1()}}).}
 }
 \value{
 The function returns a \code{\linkS4class{pf}} object.
@@ -42,17 +42,17 @@ At the time of writing, this function only removes 'dead ends' from particle sam
 obs <- dat_obs()
 # B. Implement AC-branch algorithm (see ?`acs()` or ?`dc()`)
 out_ac <- dat_ac()
-# C. Implement forward simulation (see ?`pf_forward()`)
+# C. Implement forward simulation (see ?`pf_forward_*()`)
 con <- tempdir()
 pff_folder <- file.path(tempdir(), "patter", "pf", "forward")
 dir.create(pff_folder, recursive = TRUE)
-out_pff <- pf_forward(.obs = obs,
-                      .record = out_ac$record,
-                      .n = 1e3,
-                      .kick = pf_kick,
-                      .bathy = gebco,
-                      .save_history = TRUE,
-                      .write_history = list(sink = pff_folder))
+out_pff <- pf_forward_1(.obs = obs,
+                        .record = out_ac$record,
+                        .n = 1e3,
+                        .kick = pf_kick,
+                        .bathy = gebco,
+                        .save_history = TRUE,
+                        .write_history = list(sink = pff_folder))
 
 #### Example (1): Implement backward simulation from `pf` object
 out_pfb <- pf_backward(out_pff$history, .save_history = TRUE)
@@ -61,7 +61,7 @@ out_pfb <- pf_backward(out_pff$history, .save_history = TRUE)
 out_pfb <- pf_backward(pf_setup_files(pff_folder),
                        .save_history = TRUE)
 
-#### Example (3): Write history to file (as in `pf_forward()`)
+#### Example (3): Write history to file (as in `pf_forward_*()`)
 pfb_folder <- file.path(con, "patter", "pf", "backward")
 dir.create(pfb_folder, recursive = TRUE)
 out_pfb <- pf_backward(pf_setup_files(pff_folder),
@@ -88,7 +88,7 @@ out_pfb <- pf_backward(pf_setup_files(pff_folder),
 unlink(file.path(con, "patter"), recursive = TRUE)
 }
 \seealso{
-\code{\link[=pf_forward]{pf_forward()}} implements the forward simulation.
+\code{\link[=pf_forward_*]{pf_forward_*()}} implements the forward simulation.
 }
 \author{
 Edward Lavender

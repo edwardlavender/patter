@@ -15,7 +15,7 @@ pf_setup_files(.root, ...)
 The function returns an ordered \code{list} of file paths.
 }
 \description{
-This function creates an ordered \code{list} of files for PF, either from an AC* algorithm (i.e., \code{\link[=acs]{acs()}} or \code{\link[=dc]{dc()}}) for the forward simulation (\code{\link[=pf_forward]{pf_forward()}}), or from the forward simulation (\code{\link[=pf_forward]{pf_forward()}}) for the backward pass (\code{\link[=pf_backward]{pf_backward()}}).
+This function creates an ordered \code{list} of files for PF, either from an AC* algorithm (i.e., \code{\link[=acs]{acs()}} or \code{\link[=dc]{dc()}}) for the forward simulation (\code{\link[=pf_forward_1]{pf_forward_1()}}), or from the forward simulation (\code{\link[=pf_forward_*]{pf_forward_*()}}) for the backward pass (\code{\link[=pf_backward]{pf_backward()}}).
 }
 \examples{
 # Quick implementation of AC algorithm
@@ -31,17 +31,17 @@ out_ac <-
       .detection_kernels = dat_kernels(),
       .write_record = list(filename = ac_folder, overwrite = TRUE))
 
-# List files for pf_forward()
+# List files for pf_forward_*()
 files <- pf_setup_files(ac_folder)
 
-# Quick implementation of pf_forward()
+# Quick implementation of pf_forward_1()
 pff_folder <- file.path(con, "patter", "pf", "forward")
 dir.create(pff_folder, recursive = TRUE)
-out_pff <- pf_forward(obs,
-                      .record = files,
-                      .kick = pf_kick,
-                      .bathy = gebco,
-                      .write_history = list(sink = pff_folder))
+out_pff <- pf_forward_1(obs,
+                        .record = files,
+                        .kick = pf_kick,
+                        .bathy = gebco,
+                        .write_history = list(sink = pff_folder))
 
 # List files for pf_backward()
 files <- pf_setup_files(pff_folder)

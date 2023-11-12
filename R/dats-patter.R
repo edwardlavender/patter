@@ -8,7 +8,7 @@
 #' * [`dat_overlaps()`] reads an example output from [`acs_setup_detection_overlaps()`];
 #' * [`dat_kernels()`] reads an example output from [`acs_setup_detection_kernels()`];
 #' * [`dat_ac()`] reads an example output from [`acs()`];
-#' * [`dat_pff()`] reads an example output from [`pf_forward()`];
+#' * [`dat_pff()`] reads an example output from [`pf_forward_1()`];
 #' * [`dat_pfb()`] reads an example output from [`pf_backward()`];
 #' * [`dat_pfp()`] reads an example output from [`pf_path()`];
 #'

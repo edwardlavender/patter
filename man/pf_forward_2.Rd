@@ -84,13 +84,13 @@ If un-supplied, quadrature points are sampled from within acoustic containers us
 
 The function must return a numeric vector of weights (one for each particle). The weights from the AC* algorithm (if applicable) and the functions in \code{.update_ac} are combined internally and used to (re-)sample particles.}
 
-\item{.kick, ...}{A function, and associated inputs, used to 'kick' particles into new (proposal) locations (see \code{\link[=pf_forward]{pf_forward()}}).}
+\item{.kick, ...}{A function, and associated inputs, used to 'kick' particles into new (proposal) locations (see \code{\link[=pf_forward_1]{pf_forward_1()}}).}
 
 \item{.n}{An \code{integer} that defines the number of particle samples at each time step.}
 
-\item{.save_history, .write_history}{Arguments to save particle samples in memory or to file (see \code{\link[=pf_forward]{pf_forward()}}).}
+\item{.save_history, .write_history}{Arguments to save particle samples in memory or to file (see \code{\link[=pf_forward_1]{pf_forward_1()}}).}
 
-\item{.progress, .verbose, .txt}{Controls of function prompts and messages (see \code{\link[=pf_forward]{pf_forward()}}).}
+\item{.progress, .verbose, .txt}{Controls of function prompts and messages (see \code{\link[=pf_forward_1]{pf_forward_1()}}).}
 }
 \value{
 The function returns a \code{\link{pf}} object.
@@ -101,7 +101,7 @@ This function simulates the possible locations of an animal forwards in time. Th
 \details{
 The forward simulation is implemented as follows:
 \enumerate{
-\item At each time step, at quadrature points (\code{t = 1}) or proposal locations (\code{t > 1}), weights are calculated according to the AC* algorithm (if specified) and/or models for ancillary data as specified in \code{.update_ac}. Unlike \code{\link[=pf_forward]{pf_forward()}}, weights are calculated at particle locations rather than across \code{.bathy} as a whole. Weights are calculated in four steps:
+\item At each time step, at quadrature points (\code{t = 1}) or proposal locations (\code{t > 1}), weights are calculated according to the AC* algorithm (if specified) and/or models for ancillary data as specified in \code{.update_ac}. Unlike \code{\link[=pf_forward_1]{pf_forward_1()}}, weights are calculated at particle locations rather than across \code{.bathy} as a whole. Weights are calculated in four steps:
 \itemize{
 \item Land filter. Quadrature points/particles on land (in \code{NA} cells on \code{.bathy}) are dropped.
 \item (optional) Container filter. Particle proposals that are incompatible with AC dynamics are dropped.

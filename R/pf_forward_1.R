@@ -1,6 +1,6 @@
 #' @title PF: run the forward simulation
 #' @description This function implements forward simulation of possible locations.
-#' @param .obs A [`data.table`] that defines the time series of observations (see [`acs()`]). For [`pf_forward()`], at a minimum, this must contain the following column(s):
+#' @param .obs A [`data.table`] that defines the time series of observations (see [`acs()`]). For [`pf_forward_1()`], at a minimum, this must contain the following column(s):
 #' * `timestep`---an `integer` that defines the time step;
 #' * Any columns required by `.kick` (see below);
 #' @param .record A list of [`SpatRaster`]s, or a character vector of file paths to [`SpatRaster`]s (see [`pf_setup_files()`]), that define the set of possible locations of the individual according to the data (i.e., an AC* algorithm).
@@ -10,7 +10,7 @@
 #' * (optional) `.t`---the `timestep` (used to index `.obs`);
 #' * (optional) `.bathy`---a [`SpatRaster`] that defines the bathymetry;
 #' * (optional) `.lonlat`---a `logical` variable that define whether or not particle samples are longitude/latitude or planar coordinates;
-#' * (optional) `...`---additional arguments, passed via [`pf_forward()`], if required;
+#' * (optional) `...`---additional arguments, passed via [`pf_forward_1()`], if required;
 #'
 #' See [`pf_kick()`] for a template random walk movement model. In this function, `...` are passed to [`sim_length()`] and [`sim_angle_rw()`].
 #' @param .n An `integer` that defines the number of particle samples at each time step.
@@ -32,7 +32,7 @@
 #' @author Edward Lavender
 #' @export
 
-pf_forward <- function(.obs, .record, .kick, ..., .bathy, .lonlat = FALSE, .n = 100L,
+pf_forward_1 <- function(.obs, .record, .kick, ..., .bathy, .lonlat = FALSE, .n = 100L,
                        .save_history = FALSE, .write_history = NULL, .progress = TRUE,
                        .prompt = FALSE, .verbose = TRUE, .txt = "") {
 
@@ -47,8 +47,8 @@ pf_forward <- function(.obs, .record, .kick, ..., .bathy, .lonlat = FALSE, .n = 
 
   #### Set up messages
   cat_to_cf <- cat_helper(.verbose = .verbose, .txt = .txt)
-  cat_to_cf(paste0("patter::pf_forward() called (@ ", t_onset, ")..."))
-  on.exit(cat_to_cf(paste0("patter::pf_forward() call ended (@ ", Sys.time(), ").")), add = TRUE)
+  cat_to_cf(paste0("patter::pf_forward_1() called (@ ", t_onset, ")..."))
+  on.exit(cat_to_cf(paste0("patter::pf_forward_1() call ended (@ ", Sys.time(), ").")), add = TRUE)
 
   #### Set up loop
   history <- list()

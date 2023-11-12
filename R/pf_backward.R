@@ -3,9 +3,9 @@
 #' @param .history Particle samples from the forward simulation, provided either as:
 #' * A `list` of [`data.table`]s that define cell samples; i.e., the `history` element of a [`pf-class`] object. This must contain columns that define cell samples at each time step (`cell_now`) alongside previous samples (`cell_past`).
 #' * An ordered list of file paths (from [`pf_setup_files()`]) that define the directories in which particle samples were written from the forward simulation (as parquet files).
-#' @param .save_history A logical variable that defines whether or not to save updated particle samples in memory (see [`pf_forward()`]).
-#' @param .write_history A named list, passed to [`arrow::write_parquet()`], to write updated particle samples to file (see [`pf_forward()`]).
-#' @param .progress,.verbose,.txt Arguments to monitor function progress (see [`pf_forward()`]).
+#' @param .save_history A logical variable that defines whether or not to save updated particle samples in memory (see [`pf_forward_1()`]).
+#' @param .write_history A named list, passed to [`arrow::write_parquet()`], to write updated particle samples to file (see [`pf_forward_1()`]).
+#' @param .progress,.verbose,.txt Arguments to monitor function progress (see [`pf_forward_1()`]).
 #'
 #' @details At the time of writing, this function only removes 'dead ends' from particle samples. Backwards smoothing is not currently implemented.
 #'
@@ -13,7 +13,7 @@
 #'
 #' @return The function returns a [`pf-class`] object.
 #'
-#' @seealso [`pf_forward()`] implements the forward simulation.
+#' @seealso [`pf_forward_*()`] implements the forward simulation.
 #' @author Edward Lavender
 #' @export
 
@@ -28,7 +28,7 @@ pf_backward <- function(.history, .save_history = FALSE, .write_history = NULL,
   }
   write_history_folder <- .pf_check_write_history(.write_history)
 
-  #### Set up messages (modified from pf_forward())
+  #### Set up messages (modified from pf_forward_1())
   cat_to_cf <- cat_helper(.verbose = .verbose, .txt = .txt)
   cat_to_cf(paste0("patter::pf_backward() called (@ ", t_onset, ")..."))
   on.exit(cat_to_cf(paste0("patter::pf_backward() call ended (@ ", Sys.time(), ").")), add = TRUE)
@@ -93,7 +93,7 @@ pf_backward <- function(.history, .save_history = FALSE, .write_history = NULL,
 
   }
 
-  #### Return outputs (modified from pf_forward())
+  #### Return outputs (modified from pf_forward_1())
   if (!.save_history) {
     .history <- list()
   }

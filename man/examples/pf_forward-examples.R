@@ -16,66 +16,66 @@ out_ac <-
       .save_record = TRUE,
       .write_record = list(filename = ac_folder, overwrite = TRUE))
 
-#### Example (1): Implement pf_forward() with default options
-out_pff <- pf_forward(.obs = obs,
-                      .record = out_ac$record,
-                      .n = 1e3,
-                      .kick = pf_kick,
-                      .bathy = gebco,
-                      .save_history = TRUE)
+#### Example (1): Implement pf_forward_1() with default options
+out_pff <- pf_forward_1(.obs = obs,
+                        .record = out_ac$record,
+                        .n = 1e3,
+                        .kick = pf_kick,
+                        .bathy = gebco,
+                        .save_history = TRUE)
 # The function returns a named list:
 summary(out_pff)
 
 #### Example (2): Pass a list of SpatRasters to `.record`
 files <- pf_setup_files(ac_folder)
-out_pff <- pf_forward(.obs = obs,
-                      .record = files,
-                      .n = 1e3,
-                      .kick = pf_kick,
-                      .bathy = gebco,
-                      .save_history = TRUE)
+out_pff <- pf_forward_1(.obs = obs,
+                        .record = files,
+                        .n = 1e3,
+                        .kick = pf_kick,
+                        .bathy = gebco,
+                        .save_history = TRUE)
 
 #### Example (3): Write history to file (similar to `acs()`)
 pff_folder <- file.path(con, "patter", "pf", "forward")
 dir.create(pff_folder, recursive = TRUE)
-pf_forward(.obs = obs,
-           .record = out_ac$record,
-           .n = 1e3,
-           .kick = pf_kick,
-           .bathy = gebco,
-           .save_history = TRUE,
-           .write_history = list(sink = pff_folder))
+pf_forward_1(.obs = obs,
+             .record = out_ac$record,
+             .n = 1e3,
+             .kick = pf_kick,
+             .bathy = gebco,
+             .save_history = TRUE,
+             .write_history = list(sink = pff_folder))
 utils::head(pf_setup_files(pff_folder))
 
 #### Example (4): Customise verbose options (as in acs())
 # Suppress progress bar
-out_pff <- pf_forward(.obs = obs,
-                      .record = out_ac$record,
-                      .n = 1e3,
-                      .kick = pf_kick,
-                      .bathy = gebco,
-                      .save_history = TRUE,
-                      .progress = FALSE)
-# Use prompt = TRUE for debugging
-if (interactive()) {
-  out_pff <- pf_forward(.obs = obs,
+out_pff <- pf_forward_1(.obs = obs,
                         .record = out_ac$record,
                         .n = 1e3,
                         .kick = pf_kick,
                         .bathy = gebco,
                         .save_history = TRUE,
-                        .prompt = TRUE)
+                        .progress = FALSE)
+# Use prompt = TRUE for debugging
+if (interactive()) {
+  out_pff <- pf_forward_1(.obs = obs,
+                          .record = out_ac$record,
+                          .n = 1e3,
+                          .kick = pf_kick,
+                          .bathy = gebco,
+                          .save_history = TRUE,
+                          .prompt = TRUE)
 }
 # Use `.txt` to write messages to file
 log.txt <- tempfile(fileext = ".txt")
 out_pff <-
-  pf_forward(.obs = obs,
-             .record = out_ac$record,
-             .n = 1e3,
-             .kick = pf_kick,
-             .bathy = gebco,
-             .txt = log.txt,
-             .save_history = TRUE)
+  pf_forward_1(.obs = obs,
+               .record = out_ac$record,
+               .n = 1e3,
+               .kick = pf_kick,
+               .bathy = gebco,
+               .txt = log.txt,
+               .save_history = TRUE)
 readLines(log.txt) |> utils::head()
 
 #### Example (5): Customise movement model
@@ -86,7 +86,7 @@ readLines(log.txt) |> utils::head()
 # * Use spatio-temporal movement model
 
 #### Example (6): Implement the backward pass
-# `pf_forward()` should be followed by `pf_backward()`
+# `pf_forward_1()` should be followed by `pf_backward()`
 
 # Clean up
 unlink(file.path(con, "patter"), recursive = TRUE)

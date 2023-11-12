@@ -16,14 +16,14 @@ pf_kick(
 )
 }
 \arguments{
-\item{.particles}{A \code{\link{data.table}}, from \code{\link[=pf_forward]{pf_forward()}}, that defines the current particle samples:
+\item{.particles}{A \code{\link{data.table}}, from \code{\link[=pf_forward_*]{pf_forward_*()}}, that defines the current particle samples:
 \itemize{
 \item \code{cell_now} is an integer vector of cell IDs;
 \item \code{x_now} is a numerical vector of \code{x} coordinates;
 \item \code{y_now} is a numerical vector of \code{y} coordinates;
 }}
 
-\item{.obs, .t, .bathy}{(optional) The \code{.obs} \code{\link{data.table}}, an integer that indexes \code{.obs} and the \code{.bathy} \code{\link{SpatRaster}} (see \code{\link[=pf_forward]{pf_forward()}}). These inputs are unused in this template movement model but supported within \code{\link[=pf_forward]{pf_forward()}}.}
+\item{.obs, .t, .bathy}{(optional) The \code{.obs} \code{\link{data.table}}, an integer that indexes \code{.obs} and the \code{.bathy} \code{\link{SpatRaster}} (see \code{\link[=pf_forward_1]{pf_forward_1()}}). These inputs are unused in this template movement model but supported within \code{\link[=pf_forward_*]{pf_forward_*()}}.}
 
 \item{.sim_length, .sim_angle, ...}{Functions and additional arguments that simulate step lengths and turning angles. The first argument of each function should be the number of step lengths/turning angles to simulate (defined internally).}
 
@@ -37,7 +37,7 @@ The function returns a \code{\link{data.table}}, as supplied, with two additiona
 }
 }
 \description{
-These functions are example movement models, of the kind required by \code{.kick} in \code{\link[=pf_forward]{pf_forward()}}.
+These functions are example movement models, of the kind required by \code{.kick} in \code{\link[=pf_forward_*]{pf_forward_*()}}.
 }
 \details{
 This template movement model is a biased random walk. Step lengths are simulated from a truncated Gamma distribution via \code{\link[=sim_length]{sim_length()}}. Turning angles are simulated from a wrapped normal distribution via \code{\link[=sim_angle_rw]{sim_angle_rw()}}.
