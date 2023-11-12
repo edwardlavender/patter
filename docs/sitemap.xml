@@ -13,6 +13,9 @@
     <loc>/LICENSE.html</loc>
   </url>
   <url>
+    <loc>/articles/faqs.html</loc>
+  </url>
+  <url>
     <loc>/articles/index.html</loc>
   </url>
   <url>
@@ -28,6 +31,9 @@
     <loc>/news/index.html</loc>
   </url>
   <url>
+    <loc>/reference/ac_filter.html</loc>
+  </url>
+  <url>
     <loc>/reference/acb-class.html</loc>
   </url>
   <url>
@@ -38,6 +44,12 @@
   </url>
   <url>
     <loc>/reference/acs_check.html</loc>
+  </url>
+  <url>
+    <loc>/reference/acs_container.html</loc>
+  </url>
+  <url>
+    <loc>/reference/acs_given_detection.html</loc>
   </url>
   <url>
     <loc>/reference/acs_setup_detection_containers.html</loc>
@@ -71,6 +83,9 @@
   </url>
   <url>
     <loc>/reference/coa_check.html</loc>
+  </url>
+  <url>
+    <loc>/reference/colProds.matrix.html</loc>
   </url>
   <url>
     <loc>/reference/compact.html</loc>
@@ -109,10 +124,22 @@
     <loc>/reference/dist_along_path.html</loc>
   </url>
   <url>
+    <loc>/reference/dist_btw_cells.html</loc>
+  </url>
+  <url>
     <loc>/reference/dot-acs_absences.html</loc>
   </url>
   <url>
     <loc>/reference/dot-acs_given_detection.html</loc>
+  </url>
+  <url>
+    <loc>/reference/dot-acs_setup_obs_receiver_id_next.html</loc>
+  </url>
+  <url>
+    <loc>/reference/dot-pf_history_dt.html</loc>
+  </url>
+  <url>
+    <loc>/reference/dot-pf_weights.html</loc>
   </url>
   <url>
     <loc>/reference/geomean.html</loc>
@@ -142,7 +169,22 @@
     <loc>/reference/pf_check.html</loc>
   </url>
   <url>
+    <loc>/reference/pf_coords.html</loc>
+  </url>
+  <url>
+    <loc>/reference/pf_dens.html</loc>
+  </url>
+  <url>
     <loc>/reference/pf_forward.html</loc>
+  </url>
+  <url>
+    <loc>/reference/pf_forward_-times.html</loc>
+  </url>
+  <url>
+    <loc>/reference/pf_forward_1.html</loc>
+  </url>
+  <url>
+    <loc>/reference/pf_forward_2.html</loc>
   </url>
   <url>
     <loc>/reference/pf_kick.html</loc>
@@ -188,6 +230,12 @@
   </url>
   <url>
     <loc>/reference/sim_path_walk.html</loc>
+  </url>
+  <url>
+    <loc>/reference/skill.html</loc>
+  </url>
+  <url>
+    <loc>/reference/spatIntersect.html</loc>
   </url>
   <url>
     <loc>/reference/unwrap_elm.html</loc>

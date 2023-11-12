@@ -32,6 +32,9 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/faqs.html">FAQs</a>
+    </li>
+    <li>
       <a href="../articles/workflow.html">A re-implementation of the `flapper` algorithms</a>
     </li>
   </ul></li>
@@ -185,7 +188,7 @@ Using these inputs, the function must return a <code>SpatRaster</code> that defi
 <span class="r-in"><span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu">acs_setup_detection_kernels</span><span class="op">(</span><span class="va">m</span>, <span class="va">s</span>,</span></span>
 <span class="r-in"><span>                                 .calc_detection_pr <span class="op">=</span> <span class="va">acs_setup_detection_pr</span>,</span></span>
 <span class="r-in"><span>                                 .bathy <span class="op">=</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs_setup_detection_kernels() called (@ 2023-10-13 16:46:41)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs_setup_detection_kernels() called (@ 2023-11-12 16:30:17.134933)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up function... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting receiver-specific kernels (for detection)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting receiver-specific inverse kernels... </span>
@@ -201,7 +204,7 @@ Using these inputs, the function must return a <code>SpatRaster</code> that defi
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... ... Extract detection probability kernels for active receivers... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Process detection probability kernels ... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... patter::acs_setup_detection_kernels() call completed (@ 2023-10-13 16:46:41) after ~0 minutes. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... patter::acs_setup_detection_kernels() call completed (@ 2023-11-12 16:30:17.207318) after ~0 minutes. </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Examine list elements</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">k</span><span class="op">)</span></span></span>

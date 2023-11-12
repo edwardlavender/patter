@@ -32,6 +32,9 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/faqs.html">FAQs</a>
+    </li>
+    <li>
       <a href="../articles/workflow.html">A re-implementation of the `flapper` algorithms</a>
     </li>
   </ul></li>
@@ -54,7 +57,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>PF: path reconstruction</h1>
-    <small class="dont-index">Source: <a href="https://github.com/edwardlavender/patter/blob/HEAD/R/pf_path.R" class="external-link"><code>R/pf_path.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/edwardlavender/patter/blob/HEAD/R/pf-analysis.R" class="external-link"><code>R/pf-analysis.R</code></a></small>
     <div class="hidden name"><code>pf_path.Rd</code></div>
     </div>
 
@@ -91,7 +94,7 @@
 
 
 <dt>.verbose, .txt</dt>
-<dd><p>Arguments to monitor function progress (see <code><a href="pf_forward.html">pf_forward()</a></code>).</p></dd>
+<dd><p>Arguments to monitor function progress (see <code><a href="pf_forward_1.html">pf_forward_1()</a></code>).</p></dd>
 
 
 <dt>.return</dt>
@@ -115,7 +118,7 @@
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index">
-<ul><li><p><code><a href="pf_forward.html">pf_forward()</a></code> and <code><a href="pf_backward.html">pf_backward()</a></code> implement particle filtering.</p></li>
+<ul><li><p><code><a href="pf_forward_-times.html">pf_forward_*()</a></code> and <code><a href="pf_backward.html">pf_backward()</a></code> implement particle filtering (and backwards sampling).</p></li>
 <li><p><code><a href="pf_pou.html">pf_pou()</a></code> maps probability-of-use from particle samples.</p></li>
 <li><p><code>pf_path()</code> builds movement paths from particle samples and <code><a href="pf_path_pivot.html">pf_path_pivot()</a></code> converts wide-format paths into long-format.</p></li>
 </ul></div>
@@ -129,10 +132,9 @@
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#### Workflow</span></span></span>
 <span class="r-in"><span><span class="co"># A. Define input datasets (see ?`acs_setup_obs()`)</span></span></span>
-<span class="r-in"><span><span class="co"># B. Implement AC-branch algorithm (see ?`acs()` or ?`dc()`)</span></span></span>
-<span class="r-in"><span><span class="co"># C. Implement forward simulation (see ?`pf_forward()`)</span></span></span>
-<span class="r-in"><span><span class="co"># D. Implement backwards pass (see ?`pf_backward()`)</span></span></span>
-<span class="r-in"><span><span class="co"># E. Implement `pf_path()`, `pf_pou()` etc.</span></span></span>
+<span class="r-in"><span><span class="co"># B. Implement forward simulation (see ?`acs()`, ?`dc()` and ?`pf_forward_*()`)</span></span></span>
+<span class="r-in"><span><span class="co"># C. Implement backwards pass (see ?`pf_backward()`)</span></span></span>
+<span class="r-in"><span><span class="co"># D. Implement `pf_path()`, `pf_pou()` etc.</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Set up examples using pre-defined datasets</span></span></span>
 <span class="r-in"><span><span class="co"># Define required datasets (e.g., observations, bathymetry grid)</span></span></span>
@@ -147,230 +149,230 @@
 <span class="r-in"><span><span class="va">out_pfb</span> <span class="op">&lt;-</span> <span class="fu"><a href="pf_backward.html">pf_backward</a></span><span class="op">(</span><span class="va">dat_pff</span><span class="op">$</span><span class="va">history</span>,</span></span>
 <span class="r-in"><span>                       .save_history <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>                       .write_history <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sink <span class="op">=</span> <span class="va">pfb_folder</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_backward() called (@ 2023-10-13 16:47:17)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_backward() called (@ 2023-11-12 16:31:03.298331)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 50: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[50]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 49: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[48]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 1000 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 24 dead ends (976 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 976 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 44 dead ends (956 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 956 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[49]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 48: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[47]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 976 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 31 dead ends (969 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 969 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 956 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 45 dead ends (955 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 955 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[48]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 47: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[46]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 969 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 35 dead ends (965 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 965 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 955 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 41 dead ends (959 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 959 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[47]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 46: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[45]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 965 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 50 dead ends (950 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 950 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 959 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 49 dead ends (951 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 951 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[46]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 45: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[44]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 950 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 63 dead ends (937 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 937 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 951 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 66 dead ends (934 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 934 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[45]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 44: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[43]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 937 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 104 dead ends (896 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 896 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 934 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 96 dead ends (904 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 904 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[44]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 43: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[42]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 896 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 29 dead ends (971 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 971 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 904 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 21 dead ends (979 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 979 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[43]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 42: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[41]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 971 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 44 dead ends (956 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 956 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 979 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 63 dead ends (937 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 937 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[42]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 41: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[40]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 956 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 40 dead ends (960 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 960 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 937 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 58 dead ends (942 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 942 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[41]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 40: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[39]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 960 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 59 dead ends (941 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 941 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 942 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 46 dead ends (954 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 954 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[40]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 39: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[38]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 941 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 66 dead ends (934 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 934 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 954 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 52 dead ends (948 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 948 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[39]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 38: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[37]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 934 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 34 dead ends (966 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 966 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 948 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 50 dead ends (950 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 950 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[38]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 37: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[36]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 966 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 50 dead ends (950 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 950 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 950 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 38 dead ends (962 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 962 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[37]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 36: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[35]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 950 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 50 dead ends (950 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 950 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 962 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 72 dead ends (928 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 928 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[36]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 35: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[34]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 950 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 78 dead ends (922 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 922 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 928 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 53 dead ends (947 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 947 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[35]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 34: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[33]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 922 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 91 dead ends (909 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 909 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 947 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 69 dead ends (931 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 931 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[34]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 33: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[32]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 909 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 147 dead ends (853 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 853 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 931 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 142 dead ends (858 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 858 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[33]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 32: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[31]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 853 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 593 dead ends (407 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 407 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 858 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 624 dead ends (376 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 376 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[32]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 31: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[30]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 407 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 576 dead ends (424 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 424 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 376 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 677 dead ends (323 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 323 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[31]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 30: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[29]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 424 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 399 dead ends (601 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 601 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 323 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 578 dead ends (422 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 422 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[30]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 29: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[28]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 601 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 261 dead ends (739 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 739 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 422 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 416 dead ends (584 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 584 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[29]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 28: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[27]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 739 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 156 dead ends (844 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 844 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 584 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 260 dead ends (740 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 740 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[28]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 27: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[26]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 844 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 110 dead ends (890 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 890 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 740 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 175 dead ends (825 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 825 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[27]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 26: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[25]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 890 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 116 dead ends (884 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 884 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 825 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 126 dead ends (874 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 874 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[26]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 25: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[24]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 884 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 64 dead ends (936 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 936 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 874 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 78 dead ends (922 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 922 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[25]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 24: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[23]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 936 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 90 dead ends (910 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 910 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 922 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 101 dead ends (899 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 899 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[24]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 23: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[22]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 910 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 84 dead ends (916 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 916 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 899 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 61 dead ends (939 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 939 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[23]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 22: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[21]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 916 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 58 dead ends (942 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 942 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 939 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 55 dead ends (945 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 945 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[22]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 21: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[20]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 942 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 213 dead ends (787 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 787 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 945 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 232 dead ends (768 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 768 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[21]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 20: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[19]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 787 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 106 dead ends (894 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 894 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 768 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 65 dead ends (935 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 935 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[20]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 19: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[18]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 894 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 34 dead ends (966 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 966 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 935 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 32 dead ends (968 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 968 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[19]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 18: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[17]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 966 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 968 rows in `.history[[t]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 44 dead ends (956 remain)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 956 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[18]]`... </span>
@@ -378,83 +380,83 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[16]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 956 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 46 dead ends (954 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 954 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 35 dead ends (965 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 965 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[17]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 16: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[15]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 954 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 33 dead ends (967 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 967 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 965 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 48 dead ends (952 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 952 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[16]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 15: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[14]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 967 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 37 dead ends (963 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 963 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 952 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 34 dead ends (966 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 966 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[15]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 14: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[13]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 963 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 37 dead ends (963 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 963 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 966 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 38 dead ends (962 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 962 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[14]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 13: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[12]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 963 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 44 dead ends (956 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 956 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 962 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 33 dead ends (967 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 967 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[13]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 12: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[11]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 956 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 38 dead ends (962 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 962 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 967 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 34 dead ends (966 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 966 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[12]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 11: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[10]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 962 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 54 dead ends (946 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 946 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 966 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 57 dead ends (943 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 943 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[11]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 10: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[9]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 946 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 63 dead ends (937 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 937 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 943 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 77 dead ends (923 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 923 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[10]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 9: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[8]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 937 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 66 dead ends (934 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 934 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 923 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 58 dead ends (942 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 942 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[9]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 8: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[7]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 934 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 94 dead ends (906 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 906 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 942 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 90 dead ends (910 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 910 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[8]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 7: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[6]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 906 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 47 dead ends (953 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 953 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 910 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 14 dead ends (986 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 986 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[7]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 6: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[5]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 953 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 986 rows in `.history[[t]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 65 dead ends (935 remain)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 935 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[6]]`... </span>
@@ -462,72 +464,72 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[4]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 935 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 64 dead ends (936 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 936 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 93 dead ends (907 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 907 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[5]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 4: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[3]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 936 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 16 dead ends (984 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 984 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 907 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 24 dead ends (976 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 976 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[4]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 3: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[2]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 984 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 37 dead ends (963 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 963 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 976 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 36 dead ends (964 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 964 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[3]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 2: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 963 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 104 dead ends (896 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 896 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 964 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 123 dead ends (877 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 877 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[2]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 1: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[1]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_backward() call ended (@ 2023-10-13 16:47:17). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_backward() call ended (@ 2023-11-12 16:31:03.394392). </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (1): Implement pf_path() from `pf` object</span></span></span>
 <span class="r-in"><span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu">pf_path</span><span class="op">(</span><span class="va">out_pfb</span><span class="op">$</span><span class="va">history</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_path() called (@ 2023-10-13 16:47:17)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_path() called (@ 2023-11-12 16:31:03.39509)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing history[[1]]... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Evaluating chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Reorientating matrix via pf_path_pivot()... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_path() call ended (@ 2023-10-13 16:47:17). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_path() call ended (@ 2023-11-12 16:31:03.455841). </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (2): Implement pf_path from parquet files</span></span></span>
 <span class="r-in"><span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu">pf_path</span><span class="op">(</span><span class="fu"><a href="pf_setup_files.html">pf_setup_files</a></span><span class="op">(</span><span class="va">pfb_folder</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_path() called (@ 2023-10-13 16:47:17)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_path() called (@ 2023-11-12 16:31:03.456291)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing history[[1]]... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Evaluating chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Reorientating matrix via pf_path_pivot()... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_path() call ended (@ 2023-10-13 16:47:17). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_path() call ended (@ 2023-11-12 16:31:03.596849). </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (3): Include cell coordinates/obs columns</span></span></span>
 <span class="r-in"><span><span class="va">p3</span> <span class="op">&lt;-</span> <span class="fu">pf_path</span><span class="op">(</span><span class="va">out_pfb</span><span class="op">$</span><span class="va">history</span>, <span class="va">gebco</span>, <span class="va">obs</span>, .cols <span class="op">=</span> <span class="st">"depth"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_path() called (@ 2023-10-13 16:47:17)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_path() called (@ 2023-11-12 16:31:03.599587)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing history[[1]]... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Evaluating chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Reorientating matrix via pf_path_pivot()... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_path() call ended (@ 2023-10-13 16:47:17). </span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">p3</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    path_id timestep cell_id   cell_x  cell_y   cell_z depth</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:       1        1   37567 709142.1 6253307 80.03239 73.78</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:       1        2   37948 709242.1 6253107 58.17422 73.32</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:       1        3   37760 709442.1 6253207 49.72233 73.32</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:       1        4   37951 709542.1 6253107 43.58479 73.32</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:       1        5   37759 709342.1 6253207 56.53801 73.55</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:       1        6   37378 709242.1 6253407 75.20494 68.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_path() call ended (@ 2023-11-12 16:31:03.666349). </span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">p3</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    path_id timestep cell_id   cell_x  cell_y    cell_z depth</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:       1        1   37950 709442.1 6253107  47.79129 73.78</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:       1        2   37570 709442.1 6253307  51.65337 73.32</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:       1        3   37757 709142.1 6253207  73.27666 73.32</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:       1        4   37376 709042.1 6253407  99.90396 73.32</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:       1        5   37756 709042.1 6253207  83.21526 73.55</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:       1        6   37564 708842.1 6253307 113.02628 68.70</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (4): Control messages</span></span></span>
 <span class="r-in"><span><span class="co"># Suppress messages</span></span></span>
@@ -536,13 +538,13 @@
 <span class="r-in"><span><span class="va">log.txt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".txt"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">p4</span> <span class="op">&lt;-</span> <span class="fu">pf_path</span><span class="op">(</span><span class="va">out_pfb</span><span class="op">$</span><span class="va">history</span>, .txt <span class="op">=</span> <span class="va">log.txt</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="va">log.txt</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "patter::pf_path() called (@ 2023-10-13 16:47:17)... "  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2] "... Setting up... "                                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "... Processing history[[1]]... "                       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4] "... Defining chain text... "                           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [5] "... Evaluating chain text... "                         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [6] "... Reorientating matrix via pf_path_pivot()... "      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [7] "patter::pf_path() call ended (@ 2023-10-13 16:47:17). "</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "patter::pf_path() called (@ 2023-11-12 16:31:03.743111)... "  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2] "... Setting up... "                                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "... Processing history[[1]]... "                              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4] "... Defining chain text... "                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5] "... Evaluating chain text... "                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [6] "... Reorientating matrix via pf_path_pivot()... "             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [7] "patter::pf_path() call ended (@ 2023-11-12 16:31:03.802381). "</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (5): Examine outputs</span></span></span>
 <span class="r-in"><span><span class="co"># Load packages</span></span></span>
@@ -558,7 +560,7 @@
 <span class="r-in"><span>    dist <span class="op">=</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/distance.html" class="external-link">distance</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">cell_x</span>, <span class="va">cell_y</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                           lonlat <span class="op">=</span> <span class="cn">FALSE</span>, sequential <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">p5</span><span class="op">$</span><span class="va">dist</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 447.2136</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 424.2641</span>
 <span class="r-in"><span><span class="co"># Visualise example path</span></span></span>
 <span class="r-in"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gebco</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">path_1</span> <span class="op">&lt;-</span> <span class="va">p5</span><span class="op">[</span><span class="va">p5</span><span class="op">$</span><span class="va">path_id</span> <span class="op">==</span> <span class="fl">1</span>, <span class="op">]</span></span></span>
@@ -570,64 +572,64 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (6): Change output format</span></span></span>
 <span class="r-in"><span><span class="va">p6</span> <span class="op">&lt;-</span> <span class="fu">pf_path</span><span class="op">(</span><span class="va">out_pfb</span><span class="op">$</span><span class="va">history</span>, .return <span class="op">=</span> <span class="st">"wide"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_path() called (@ 2023-10-13 16:47:18)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_path() called (@ 2023-11-12 16:31:04.722337)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing history[[1]]... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Evaluating chain text... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_path() call ended (@ 2023-10-13 16:47:18). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_path() call ended (@ 2023-11-12 16:31:04.779525). </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">p6</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Classes ‘data.table’ and 'data.frame':	1000 obs. of  50 variables:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x1 : int  37567 37567 37756 37756 37756 37756 37756 37756 37756 37567 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x2 : int  37948 37948 37567 37567 37567 37567 37567 37567 37567 37948 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x3 : int  37760 37760 37948 37948 37948 37948 37948 37948 37948 37760 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x4 : int  37951 37951 38139 38139 38139 38139 38139 38139 38139 37951 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x5 : int  37759 37759 37757 37757 37757 37757 37757 37757 37757 37759 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x6 : int  37378 37378 38138 38138 38138 38138 38138 38138 38138 37378 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x7 : int  37185 37185 37378 37378 37378 37378 37378 37378 37378 37185 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x8 : int  37377 37377 37948 37948 37948 37948 37948 37948 37948 37377 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x9 : int  37757 37757 37756 37756 37756 37756 37756 37756 37756 37757 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x10: int  37376 37376 37947 37947 37947 37947 37947 37947 37947 37376 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x11: int  36995 36995 37758 37758 37758 37758 37758 37758 37758 36995 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x12: int  37376 37376 38138 38138 38138 38138 38138 38138 38138 37376 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x13: int  37566 37566 37757 37757 37757 37757 37757 37757 37757 37566 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x14: int  37948 37948 37949 37949 37949 37949 37949 37949 37949 37948 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x15: int  37378 37378 38330 38330 38330 37947 38330 38330 38330 37378 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x16: int  37376 37376 38519 38519 38519 38139 38519 38519 38519 37376 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x17: int  37378 37378 37948 37948 37948 38329 37948 37948 37948 37378 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x18: int  37567 37567 38139 38139 38139 38710 38139 38139 38139 37567 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x19: int  37564 37564 38331 38331 38331 38332 38331 38331 38331 37564 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x20: int  37372 37372 38520 38520 38520 38711 38520 38520 38520 37372 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x21: int  37184 37184 38901 38901 38901 38141 38901 38901 38901 37184 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x22: int  36997 36997 38519 38519 38519 38711 38519 38519 38519 36997 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x23: int  36615 36615 39089 39089 39089 39091 39089 39089 39089 36615 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x24: int  37184 37184 39471 39471 39471 39280 39471 39471 39471 37184 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x25: int  36613 36613 39468 39468 39468 39092 39468 39468 39468 36613 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x26: int  36611 36611 39280 39280 39280 39282 39280 39280 39280 36611 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x27: int  36234 36234 39471 39471 39471 39663 39471 39471 39471 36234 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x28: int  36232 36232 39090 39090 39090 39471 39090 39090 39090 36232 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x29: int  36802 36802 38899 38899 38899 39662 38899 38899 38899 36802 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x30: int  36990 36990 39088 39088 39088 39091 39088 39088 39088 36990 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x31: int  37371 37371 38705 39086 39086 38899 38705 39086 38705 37371 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x32: int  37753 37753 38327 38898 38898 38707 38327 38898 38327 37753 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x33: int  37566 37566 38138 38706 38706 38325 38138 38706 38138 37566 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x34: int  38325 38325 38136 38327 38327 37944 38136 38327 38136 38325 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x35: int  38704 38704 38133 38325 38325 37943 38133 38325 38133 38704 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x36: int  38512 38512 38513 38704 38704 38322 38513 38704 38513 38512 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x37: int  38704 38704 38701 38895 38895 37942 38701 38895 38701 38704 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x38: int  38324 38324 38321 38893 38893 37943 38321 38893 38321 38324 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x39: int  38705 38705 38513 38700 38700 38133 38513 38700 38513 38705 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x40: int  38895 38895 38705 39082 39082 38321 38705 39082 38705 38895 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x41: int  38703 38703 38892 38512 38512 38322 38892 38512 38892 38703 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x42: int  39083 39083 38514 38701 38701 38512 39274 38701 39274 39083 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x43: int  39463 39463 38133 38509 38509 38699 39275 38509 39275 39463 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x44: int  39084 39084 38322 39081 39081 38700 38893 39081 38893 39084 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x45: int  38704 38704 38701 38702 38702 38889 39081 38702 39081 38704 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x46: int  38892 38892 38322 38511 38511 38510 38702 38511 38702 38892 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x47: int  39082 38512 38514 38321 38321 38699 38895 38321 38895 39084 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x48: int  39083 38704 38321 38514 38132 39081 38133 38132 38133 38893 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x49: int  38894 38893 38510 38706 38513 38703 38511 38513 38322 38512 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x50: int  39086 38321 39081 39085 39082 38321 38130 38893 38131 38891 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x1 : int  37950 37950 37950 37950 37950 37950 37950 37950 37950 37950 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x2 : int  37570 37570 37570 37570 37570 37570 37570 37570 37570 37570 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x3 : int  37757 37757 37757 37757 37757 37757 37757 37757 37757 37757 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x4 : int  37376 37376 37376 37376 37376 37376 37376 37376 37376 37376 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x5 : int  37756 37756 37756 37756 37756 37756 37756 37756 37756 37756 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x6 : int  37564 37564 37564 37564 37564 37564 37564 37564 37564 37564 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x7 : int  37562 37562 37562 37562 37562 37562 37562 37562 37562 37562 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x8 : int  37755 37755 37755 37755 37755 37755 37755 37755 37755 37755 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x9 : int  37946 37946 37946 37946 37946 37946 37946 37946 37946 37946 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x10: int  37758 37758 37758 37758 37758 37758 37758 37758 37758 37758 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x11: int  38327 38327 38327 38327 38327 38327 38327 38327 38327 38327 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x12: int  37949 37949 37949 37949 37949 37949 37949 37949 37949 37949 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x13: int  37758 37758 37758 37758 37758 37758 37758 37758 37758 37758 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x14: int  38139 38139 38139 38139 38139 38139 38139 38139 38139 38139 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x15: int  37949 37949 37949 37949 37949 37949 37949 37949 37949 37949 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x16: int  37761 37761 37761 37761 37761 37761 37761 37761 37761 37761 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x17: int  37569 37569 37569 37569 37569 37569 37569 37569 37569 37569 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x18: int  37187 37187 37187 37187 37187 37187 37187 37187 37187 37187 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x19: int  37379 37379 37379 37379 37379 37379 37379 37379 37379 37379 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x20: int  37186 37186 37186 37186 37186 37186 37186 37186 37186 37186 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x21: int  36997 36997 36997 37565 36997 36997 36997 36997 37565 37565 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x22: int  37377 37377 37377 37183 37377 37377 37377 37377 37183 37183 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x23: int  37185 37185 36806 36990 36806 36806 36806 36806 36990 36990 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x24: int  36994 36994 36423 37182 36423 36423 36423 36423 37182 37182 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x25: int  36615 36615 36424 37369 36424 36424 36424 36424 37369 37369 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x26: int  36423 36423 36043 36799 36043 36043 36043 36043 36799 36799 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x27: int  36232 36232 36044 36991 36044 36044 36044 36044 36991 36991 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x28: int  36611 36611 36615 36993 36615 36615 36615 36615 36993 36993 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x29: int  36803 36803 36423 36991 36423 36423 36423 36423 36991 36991 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x30: int  36614 36614 36804 37371 36804 36804 36804 36804 37371 37371 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x31: int  36994 36994 37187 37751 37187 37187 37187 37187 37751 37751 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x32: int  37372 37372 37565 37752 37565 37565 37565 37565 37752 37752 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x33: int  37374 37374 37377 37944 37377 37377 37377 37377 37944 37944 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x34: int  37944 37944 37945 38515 37945 37945 37945 37945 38515 38515 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x35: int  38322 38322 38133 38512 38133 38133 38133 38133 38512 38512 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x36: int  38702 38702 38513 37942 38513 38513 38513 38513 37942 37942 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x37: int  38703 38703 38704 38322 38704 38704 38892 38704 38322 38322 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x38: int  39084 39084 38513 38705 38513 38513 38514 38513 38705 38705 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x39: int  38892 38892 38891 39084 38891 38891 38894 38891 39084 39084 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x40: int  38701 38701 38702 38704 38702 38702 38896 38702 38704 38704 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x41: int  39082 39082 38324 39083 38324 38324 38517 38324 39083 39083 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x42: int  39080 39080 38511 39271 38511 38511 38897 38511 39271 39271 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x43: int  39272 39272 38130 39083 38130 38130 39089 38130 39459 39083 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x44: int  38893 38893 38131 39274 38131 38131 39087 38131 39082 39274 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x45: int  38511 38511 38321 38704 38321 38321 38705 38321 38700 38704 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x46: int  38132 38132 38891 38511 38891 38891 38513 38891 38512 38511 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x47: int  38513 38513 39082 38131 39082 39082 38893 39082 39084 38131 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x48: int  38321 38321 38700 38322 38700 38700 38703 38700 38514 38322 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x49: int  38700 38700 38892 37943 38892 38892 38323 38702 38703 38510 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x50: int  38891 38130 38514 37562 39081 38512 38702 38703 38323 38889 ...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </span>
 </code></pre></div>
     </div>

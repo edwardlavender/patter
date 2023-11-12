@@ -32,6 +32,9 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/faqs.html">FAQs</a>
+    </li>
+    <li>
       <a href="../articles/workflow.html">A re-implementation of the `flapper` algorithms</a>
     </li>
   </ul></li>
@@ -125,7 +128,7 @@
 
 <dt>.save_record, .save_cumulative</dt>
 <dd><p>Logical inputs that control options for saving outputs in memory.</p><ul><li><p><code>.save_record</code> defines whether or not to save the record of the possible locations of the individual at each time step in the <code>record</code> element of the output. This is only sensible for relatively short time series (use <code>.write_record</code>, below, otherwise).</p></li>
-<li><p><code>.save_cumulative</code> defines whether or not to save a cumulative (probability-of-use) map, derived from the normalised summation of each element in <code>record</code> in the <code>map</code> element of the output. In general, this is not necessary since AC* outputs are refined by particle filtering (see <code><a href="pf_forward.html">pf_forward()</a></code>) before mapping.</p></li>
+<li><p><code>.save_cumulative</code> defines whether or not to save a cumulative (probability-of-use) map, derived from the normalised summation of each element in <code>record</code> in the <code>map</code> element of the output. In general, this is not necessary since AC* outputs are refined by particle filtering (see <code><a href="pf_forward_1.html">pf_forward_1()</a></code>) before mapping.</p></li>
 </ul></dd>
 
 
@@ -184,7 +187,7 @@
 <li><p><code><a href="acs_setup_detection_containers.html">acs_setup_detection_containers()</a></code> and <code><a href="acs_setup_detection_overlaps.html">acs_setup_detection_overlaps()</a></code> to identify receiver overlaps (used in detection probability calculations);</p></li>
 <li><p><code><a href="acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code> to define detection probability kernels;</p></li>
 <li><p><code>acs()</code> to implement the AC algorithm;</p></li>
-</ol><p>AC-branch algorithms (i.e., <code>acs()</code>, <code><a href="dc.html">dc()</a></code>) are typically followed by particle filtering to reconstruct movement paths and refine maps of space use (see <code><a href="pf_forward.html">pf_forward()</a></code> and associated <code>pf_*()</code> functions).</p></div>
+</ol><p>AC-branch algorithms (i.e., <code>acs()</code>, <code><a href="dc.html">dc()</a></code>) are typically followed by particle filtering to reconstruct movement paths and refine maps of space use (see <code><a href="pf_forward_1.html">pf_forward_1()</a></code> and associated <code>pf_*()</code> functions).</p></div>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -200,7 +203,7 @@
 <span class="r-in"><span><span class="co"># * ?`acs_setup_detection_overlaps()`</span></span></span>
 <span class="r-in"><span><span class="co"># * ?`acs_setup_detection_kernels()`</span></span></span>
 <span class="r-in"><span><span class="co"># B. Implement AC* algorithm(s)</span></span></span>
-<span class="r-in"><span><span class="co"># C. Proceed with particle filtering (?`pf_forward()`)</span></span></span>
+<span class="r-in"><span><span class="co"># C. Proceed with particle filtering (?`pf_forward_1()`)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Set up examples using pre-defined datasets for speed</span></span></span>
 <span class="r-in"><span><span class="va">obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_obs</a></span><span class="op">(</span><span class="op">)</span></span></span>
@@ -216,7 +219,7 @@
 <span class="r-in"><span>      .bathy <span class="op">=</span> <span class="va">gebco</span>,</span></span>
 <span class="r-in"><span>      .detection_kernels <span class="op">=</span> <span class="va">kernels</span>,</span></span>
 <span class="r-in"><span>      .save_record <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs() called (@ 2023-10-13 16:46:29)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs() called (@ 2023-11-12 16:30:05.353149)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 1: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Detection 1: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Defining location given data... </span>
@@ -671,7 +674,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Defining present... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Updating record ... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Moving on... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs() call ended (@ 2023-10-13 16:46:30). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs() call ended (@ 2023-11-12 16:30:05.995746). </span>
 <span class="r-in"><span><span class="co"># The function returns an `acb-class` object</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">out_ac</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "list" "acb" </span>
@@ -695,7 +698,7 @@
 <span class="r-in"><span>      .detection_kernels <span class="op">=</span> <span class="va">kernels</span>,</span></span>
 <span class="r-in"><span>      .save_record <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>      .save_cumulative <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs() called (@ 2023-10-13 16:46:30)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs() called (@ 2023-11-12 16:30:06.076828)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 1: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Detection 1: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Defining location given data... </span>
@@ -1150,7 +1153,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Defining present... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Updating record ... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Moving on... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs() call ended (@ 2023-10-13 16:46:31). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs() call ended (@ 2023-11-12 16:30:06.850257). </span>
 <span class="r-in"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">out_ac</span><span class="op">$</span><span class="va">map</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="acs-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -1162,7 +1165,7 @@
 <span class="r-in"><span>      .detection_kernels <span class="op">=</span> <span class="va">kernels</span>,</span></span>
 <span class="r-in"><span>      .save_record <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>      .save_cumulative <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs() called (@ 2023-10-13 16:46:31)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs() called (@ 2023-11-12 16:30:06.872738)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 1: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Detection 1: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Defining location given data... </span>
@@ -1617,7 +1620,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Defining present... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Updating record ... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Moving on... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs() call ended (@ 2023-10-13 16:46:32). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs() call ended (@ 2023-11-12 16:30:07.685621). </span>
 <span class="r-in"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">out_ac</span><span class="op">$</span><span class="va">map</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="acs-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -1631,7 +1634,7 @@
 <span class="r-in"><span>      .detection_overlaps <span class="op">=</span> <span class="va">overlaps</span>,</span></span>
 <span class="r-in"><span>      .detection_kernels <span class="op">=</span> <span class="va">kernels</span>,</span></span>
 <span class="r-in"><span>      .write_record <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="va">path</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs() called (@ 2023-10-13 16:46:32)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs() called (@ 2023-11-12 16:30:07.710962)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 1: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Detection 1: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Defining location given data... </span>
@@ -2086,7 +2089,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Defining present... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Updating record ... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Moving on... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs() call ended (@ 2023-10-13 16:46:33). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs() call ended (@ 2023-11-12 16:30:08.729842). </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Customise verbose options</span></span></span>
 <span class="r-in"><span><span class="co"># Suppress progress bar</span></span></span>
@@ -2097,7 +2100,7 @@
 <span class="r-in"><span>      .detection_kernels <span class="op">=</span> <span class="va">kernels</span>,</span></span>
 <span class="r-in"><span>      .progress <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>      .save_record <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs() called (@ 2023-10-13 16:46:33)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs() called (@ 2023-11-12 16:30:08.730712)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 1: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Detection 1: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Defining location given data... </span>
@@ -2552,7 +2555,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Defining present... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Updating record ... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Moving on... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs() call ended (@ 2023-10-13 16:46:33). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs() call ended (@ 2023-11-12 16:30:09.48664). </span>
 <span class="r-in"><span><span class="co"># Use prompt = TRUE for debugging</span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="co"># This produces a map of possible locations at each time step</span></span></span>
@@ -2580,12 +2583,12 @@
 <span class="r-in"><span>      .save_record <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>      .txt <span class="op">=</span> <span class="va">log.txt</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="va">log.txt</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "patter::acs() called (@ 2023-10-13 16:46:33)... "</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2] "... Time step 1: "                               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "... ... Detection 1: "                           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4] "... ... * Defining location given data... "      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [5] "... ... * Defining location given future... "    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [6] "... ... - Defining future kernel... "            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "patter::acs() called (@ 2023-11-12 16:30:09.488725)... "</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2] "... Time step 1: "                                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "... ... Detection 1: "                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4] "... ... * Defining location given data... "             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5] "... ... * Defining location given future... "           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [6] "... ... - Defining future kernel... "                   </span>
 <span class="r-in"><span><span class="co"># Suppress messages</span></span></span>
 <span class="r-in"><span><span class="co"># * This is not recommended</span></span></span>
 <span class="r-in"><span><span class="va">out_ac</span> <span class="op">&lt;-</span></span></span>
@@ -2663,7 +2666,7 @@
 <span class="r-in"><span>      .verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (7): AC* algorithms are typically followed by particle filtering</span></span></span>
-<span class="r-in"><span><span class="co"># See ?`pf_forward()` and associated pf_*() functions</span></span></span>
+<span class="r-in"><span><span class="co"># See ?`pf_forward_1()` and associated pf_*() functions</span></span></span>
 <span class="r-in"><span><span class="co"># ... to produce movement paths &amp; refined maps of space use</span></span></span>
 </code></pre></div>
     </div>

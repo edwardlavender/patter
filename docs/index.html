@@ -50,6 +50,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="articles/faqs.html">FAQs</a>
+    </li>
+    <li>
       <a href="articles/workflow.html">A re-implementation of the `flapper` algorithms</a>
     </li>
   </ul>
@@ -103,7 +106,7 @@
 <li>
 <strong>Better tested</strong>, with comprehensive unit tests;</li>
 </ul>
-<p>At the time of writing (October 2023),<a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a> principally provides the functions required to implement the <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a> family of algorithms, which represent a subset of the capacity provided by <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a>. Further developments will be driven by user requirements. Please get in touch if you would like to see additional functionality brought into <a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a>.</p>
+<p>At the time of writing (October 2023), <a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a> principally provides the functions required to implement the <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a> family of algorithms, which represent a subset of the capacity provided by <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a>. Further developments will be driven by user requirements. Please get in touch if you would like to see additional functionality brought into <a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a>.</p>
 </div>
 <div class="section level1">
 <h1 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -118,10 +121,12 @@
 <div class="section level1">
 <h1 id="vignettes">Vignettes<a class="anchor" aria-label="anchor" href="#vignettes"></a>
 </h1>
-<p>For an introduction to [<code>patter</code>], use:</p>
+<p>For an introduction to <a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a>, use:</p>
 <ul>
 <li>
-<code><a href="articles/workflow.html">vignette("workflow", package = "patter")</a></code> for an overview of the analytical workflow</li>
+<code><a href="articles/workflow.html">vignette("workflow", package = "patter")</a></code> for an overview of the analytical workflow;</li>
+<li>
+<code><a href="articles/faqs.html">vignette("faqs", package = "patter")</a></code> for FAQs;</li>
 </ul>
 <p>For a full list of all functions, see <code><a href="https://rdrr.io/pkg/patter/man" class="external-link">help(package = 'patter')</a></code>.</p>
 </div>
@@ -142,7 +147,7 @@
 <p>For example algorithm outputs <code>datasets-algorithms</code>, see:</p>
 <ul>
 <li>
-<code><a href="reference/datasets-algorithms.html">dat_obs()</a></code> for an example input dataset from <code><a href="reference/acs_setup_obs.html">acs_setup_obs()</a></code>;</li>
+<code><a href="reference/datasets-algorithms.html">dat_obs()</a></code> for an example output dataset from <code><a href="reference/acs_setup_obs.html">acs_setup_obs()</a></code>;</li>
 <li>
 <code><a href="reference/datasets-algorithms.html">dat_containers()</a></code> for an example output from <code><a href="reference/acs_setup_detection_containers.html">acs_setup_detection_containers()</a></code>;</li>
 <li>
@@ -152,7 +157,7 @@
 <li>
 <code><a href="reference/datasets-algorithms.html">dat_ac()</a></code> for an example output from <code><a href="reference/acs.html">acs()</a></code>;</li>
 <li>
-<code><a href="reference/datasets-algorithms.html">dat_pff()</a></code> for an example output from <code><a href="reference/pf_forward.html">pf_forward()</a></code>;</li>
+<code><a href="reference/datasets-algorithms.html">dat_pff()</a></code> for an example output from <code>pf_forward_*()</code>;</li>
 <li>
 <code><a href="reference/datasets-algorithms.html">dat_pfb()</a></code> for an example output from <code><a href="reference/pf_backward.html">pf_backward()</a></code>;</li>
 <li>
@@ -182,6 +187,19 @@
 <code><a href="reference/sim_detections.html">calc_detection_pr_logistic()</a></code> and <code><a href="reference/sim_detections.html">calc_detection_pr()</a></code>, which represent example detection probability models;</li>
 </ul>
 </li>
+</ul>
+<p>To evaluate model skill in reconstructing simulated patterns, see <code>skill_()</code> functions, specifically:</p>
+<ul>
+<li>
+<code><a href="reference/skill.html">skill_mb()</a></code> to calculate mean bias;</li>
+<li>
+<code><a href="reference/skill.html">skill_me()</a></code> to calculate mean error;</li>
+<li>
+<code><a href="reference/skill.html">skill_rmse()</a></code> to calculate root mean squared error;</li>
+<li>
+<code><a href="reference/skill.html">skill_R()</a></code> to calculate Spearman’s rank correlation coefficient;</li>
+<li>
+<code><a href="reference/skill.html">skill_d()</a></code> to calculate the index of agreement;</li>
 </ul>
 </div>
 <div class="section level1">
@@ -222,6 +240,8 @@
 <li>
 <code><a href="reference/acs_setup_detection_overlaps.html">acs_setup_detection_overlaps()</a></code> to set up detection overlaps;</li>
 <li>
+<code><a href="reference/acs_setup_detection_pr.html">acs_setup_detection_pr()</a></code> to define a detection probability model;</li>
+<li>
 <code><a href="reference/acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code> to set up detection kernels;</li>
 <li>
 <code><a href="reference/acs.html">acs()</a></code> to implement the algorithm(s);</li>
@@ -233,13 +253,17 @@
 <li>
 <code><a href="reference/pf_kick.html">pf_kick()</a></code> for an example movement model;</li>
 <li>
-<code><a href="reference/pf_forward.html">pf_forward()</a></code> to implement the forward simulation;</li>
+<code>pf_forward_*()</code> to implement the forward simulation; namely: * <code><a href="reference/pf_forward_1.html">pf_forward_1()</a></code> for the original (two-step) implementation; * <code><a href="reference/pf_forward_2.html">pf_forward_2()</a></code> for an integrated implementation;</li>
 <li>
-<code><a href="reference/pf_backward.html">pf_backward()</a></code> to implement the backward path’</li>
+<code><a href="reference/pf_backward.html">pf_backward()</a></code> to implement the backward pass;</li>
+<li>
+<code><a href="reference/pf_coords.html">pf_coords()</a></code> to collate particle coordinates;</li>
+<li>
+<code><a href="reference/pf_path.html">pf_path()</a></code> (and <code><a href="reference/pf_path_pivot.html">pf_path_pivot()</a></code>) to reconstruct movement paths;</li>
 <li>
 <code><a href="reference/pf_pou.html">pf_pou()</a></code> to map probability-of-use;</li>
 <li>
-<code><a href="reference/pf_path.html">pf_path()</a></code> (and <code><a href="reference/pf_path_pivot.html">pf_path_pivot()</a></code>) to reconstruct movement paths;</li>
+<code><a href="reference/pf_dens.html">pf_dens()</a></code> to create smooth maps;</li>
 </ul>
 <p>For home ranges, use:</p>
 <ul>
@@ -256,20 +280,41 @@
 <div class="section level1">
 <h1 id="miscellaneous-helpers">Miscellaneous helpers<a class="anchor" aria-label="anchor" href="#miscellaneous-helpers"></a>
 </h1>
-<p>The following convenience functions are also made available to users of <a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a>. See:</p>
+<p>The following convenience functions are also made available to users of <a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a>:</p>
+<ul>
+<li>Operational statistics. See:
 <ul>
 <li>
-<code><a href="reference/cl.html">cl_lapply()</a></code> and associated <code>cl_*()</code> for parallelisation;</li>
-<li>
-<code><a href="reference/degrees.html">degrees()</a></code> to create circular angles;</li>
+<code><a href="reference/make_matrix_receivers.html">make_matrix_receivers()</a></code> to matricise receiver deployment time series;</li>
+</ul>
+</li>
+<li>Distance calculations. See:
+<ul>
 <li>
 <code><a href="reference/dist_along_path.html">dist_along_path()</a></code> to calculate distances along a movement path;</li>
 <li>
-<code><a href="reference/make_matrix_receivers.html">make_matrix_receivers()</a></code> to matricise receiver deployment time series;</li>
+<code><a href="reference/dist_btw_cells.html">dist_btw_cells()</a></code> to calculate distances between cells on a <code>SpatRaster</code>;</li>
+<li>
+<code><a href="reference/degrees.html">degrees()</a></code> to create circular angles;</li>
+</ul>
+</li>
+<li>
+<code>terra</code> helpers. See:
+<ul>
+<li>
+<code><a href="reference/rast_template.html">rast_template()</a></code> to create a template <code>SpatRaster</code>;</li>
 <li>
 <code><a href="reference/normalise.html">normalise()</a></code> to normalise a <code>SpatRaster</code>;</li>
 <li>
-<code><a href="reference/rast_template.html">rast_template()</a></code> to create a template <code>SpatRaster</code>;</li>
+<code>as.im.SpatRaster</code> and <code>as.owin.SpatRaster</code> for interfaces to <code>spatstat</code> function(s);</li>
+</ul>
+</li>
+<li>Parallelisation. See:
+<ul>
+<li>
+<code><a href="reference/cl.html">cl_lapply()</a></code> and associated <code>cl_*() functions for parallelisation routines</code>;</li>
+</ul>
+</li>
 </ul>
 </div>
 <div class="section level1">

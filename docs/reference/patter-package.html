@@ -32,6 +32,9 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/faqs.html">FAQs</a>
+    </li>
+    <li>
       <a href="../articles/workflow.html">A re-implementation of the `flapper` algorithms</a>
     </li>
   </ul></li>
@@ -66,7 +69,8 @@
     <div id="vignettes">
     <h2>Vignettes</h2>
     <p>For an introduction to <code>patter</code>, use:</p><ul><li><p><code><a href="../articles/workflow.html">vignette("workflow", package = "patter")</a></code> for an overview of the analytical workflow;</p></li>
-</ul><p>For a full list of all functions, see <code><a href="https://rdrr.io/pkg/patter/man" class="external-link">help(package = 'patter')</a></code>.</p>
+<li><p><code><a href="../articles/faqs.html">vignette("faqs", package = "patter")</a></code> for FAQs;</p></li>
+</ul><p>For a full list of all functions, see <code><a href="https://rdrr.io/pkg/patter/man" class="external-link">help(package = "patter")</a></code>.</p>
     </div>
     <div id="datasets">
     <h2>Datasets</h2>
@@ -74,12 +78,12 @@
 <li><p><code><a href="datasets-mefs.html">dat_acoustics</a></code> for acoustic time series;</p></li>
 <li><p><code><a href="datasets-mefs.html">dat_archival</a></code> for archival (depth) time series;</p></li>
 <li><p><code><a href="datasets-mefs.html">dat_gebco()</a></code> for a bathymetry grid;</p></li>
-</ul><p>For example algorithm outputs (<code><a href="datasets-algorithms.html">datasets-algorithms</a></code>), see:</p><ul><li><p><code><a href="datasets-algorithms.html">dat_obs()</a></code> for an example input dataset from <code><a href="acs_setup_obs.html">acs_setup_obs()</a></code>;</p></li>
+</ul><p>For example algorithm outputs (<code><a href="datasets-algorithms.html">datasets-algorithms</a></code>), see:</p><ul><li><p><code><a href="datasets-algorithms.html">dat_obs()</a></code> for an example output dataset from <code><a href="acs_setup_obs.html">acs_setup_obs()</a></code>;</p></li>
 <li><p><code><a href="datasets-algorithms.html">dat_containers()</a></code> for an example output from <code><a href="acs_setup_detection_containers.html">acs_setup_detection_containers()</a></code>;</p></li>
 <li><p><code><a href="datasets-algorithms.html">dat_overlaps()</a></code> for an example output from <code><a href="acs_setup_detection_overlaps.html">acs_setup_detection_overlaps()</a></code>;</p></li>
 <li><p><code><a href="datasets-algorithms.html">dat_kernels()</a></code> for an example output from <code><a href="acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code>;</p></li>
 <li><p><code><a href="datasets-algorithms.html">dat_ac()</a></code> for an example output from <code><a href="acs.html">acs()</a></code>;</p></li>
-<li><p><code><a href="datasets-algorithms.html">dat_pff()</a></code> for an example output from <code><a href="pf_forward.html">pf_forward()</a></code>;</p></li>
+<li><p><code><a href="datasets-algorithms.html">dat_pff()</a></code> for an example output from <code><a href="pf_forward_1.html">pf_forward_1()</a></code>;</p></li>
 <li><p><code><a href="datasets-algorithms.html">dat_pfb()</a></code> for an example output from <code><a href="pf_backward.html">pf_backward()</a></code>;</p></li>
 <li><p><code><a href="datasets-algorithms.html">dat_pfp()</a></code> for an example output from <code><a href="pf_path.html">pf_path()</a></code>;</p></li>
 </ul></div>
@@ -91,6 +95,11 @@
 </ul></li>
 <li><p><code><a href="sim_detections.html">sim_detections()</a></code> to simulate detections at receivers, with the help of:</p><ul><li><p><code><a href="sim_detections.html">calc_detection_pr_logistic()</a></code> and <code><a href="sim_detections.html">calc_detection_pr()</a></code>, which represent example detection probability models;</p></li>
 </ul></li>
+</ul><p>To evaluate model skill in reconstructing simulated patterns, see <code>skill_()</code> functions, specifically:</p><ul><li><p><code><a href="skill.html">skill_mb()</a></code> to calculate mean bias;</p></li>
+<li><p><code><a href="skill.html">skill_me()</a></code> to calculate mean error;</p></li>
+<li><p><code><a href="skill.html">skill_rmse()</a></code> to calculate root mean squared error;</p></li>
+<li><p><code><a href="skill.html">skill_R()</a></code> to calculate Spearman's rank correlation coefficient;</p></li>
+<li><p><code><a href="skill.html">skill_d()</a></code> to calculate the index of agreement;</p></li>
 </ul></div>
     <div id="data-preparation">
     <h2>Data preparation</h2>
@@ -110,14 +119,19 @@
 </ul><p>To implement the acoustic-centroid* (AC*) algorithm(s) (e.g., AC and ACDC), use:</p><ul><li><p><code><a href="acs_setup_obs.html">acs_setup_obs()</a></code> to set up observations;</p></li>
 <li><p><code><a href="acs_setup_detection_containers.html">acs_setup_detection_containers()</a></code> to set up detection containers;</p></li>
 <li><p><code><a href="acs_setup_detection_overlaps.html">acs_setup_detection_overlaps()</a></code> to set up detection overlaps;</p></li>
+<li><p><code><a href="acs_setup_detection_pr.html">acs_setup_detection_pr()</a></code> to define a detection probability model;</p></li>
 <li><p><code><a href="acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code> to set up detection kernels;</p></li>
 <li><p><code><a href="acs.html">acs()</a></code> to implement the algorithm(s);</p></li>
 </ul><p>To implement particle filtering (PF), use:</p><ul><li><p><code><a href="pf_setup_files.html">pf_setup_files()</a></code> to set up files;</p></li>
 <li><p><code><a href="pf_kick.html">pf_kick()</a></code> for an example movement model;</p></li>
-<li><p><code><a href="pf_forward.html">pf_forward()</a></code> to implement the forward simulation;</p></li>
+<li><p><code><a href="pf_forward_-times.html">pf_forward_*()</a></code> functions to implement the forward simulation; namely:</p><ul><li><p><code><a href="pf_forward_1.html">pf_forward_1()</a></code> for the original (two-step) implementation;</p></li>
+<li><p><code><a href="pf_forward_2.html">pf_forward_2()</a></code> for an integrated implementation;</p></li>
+</ul></li>
 <li><p><code><a href="pf_backward.html">pf_backward()</a></code> to implement the backward pass;</p></li>
-<li><p><code><a href="pf_pou.html">pf_pou()</a></code> to map probability-of-use;</p></li>
+<li><p><code><a href="pf_coords.html">pf_coords()</a></code> to collate particle coordinates;</p></li>
 <li><p><code><a href="pf_path.html">pf_path()</a></code> (and <code><a href="pf_path_pivot.html">pf_path_pivot()</a></code>) to reconstruct movement paths;</p></li>
+<li><p><code><a href="pf_pou.html">pf_pou()</a></code> to map probability-of-use;</p></li>
+<li><p><code><a href="pf_dens.html">pf_dens()</a></code> to create smooth maps;</p></li>
 </ul><p>For home ranges, use:</p><ul><li><p><code><a href="get_hr.html">get_hr_prop()</a></code> for a custom range;</p></li>
 <li><p><code><a href="get_hr.html">get_hr_core()</a></code> for the 'core' range;</p></li>
 <li><p><code><a href="get_hr.html">get_hr_home()</a></code> for the 'home' range;</p></li>
@@ -125,12 +139,18 @@
 </ul></div>
     <div id="miscellaneous-helpers">
     <h2>Miscellaneous helpers</h2>
-    <p>The following convenience functions are also made available to users of <a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a>. See:</p><ul><li><p><code><a href="cl.html">cl_lapply()</a></code> and associated <code>cl_*()</code> for parallelisation;</p></li>
+    <p>The following convenience functions are also made available to users of <a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a>:</p><ul><li><p>Operational statistics. See:</p><ul><li><p><code><a href="make_matrix_receivers.html">make_matrix_receivers()</a></code> to matricise receiver deployment time series;</p></li>
+</ul></li>
+<li><p>Distance calculations. See:</p><ul><li><p><code><a href="dist_along_path.html">dist_along_path()</a></code> to calculate distances along a movement path;</p></li>
+<li><p><code><a href="dist_btw_cells.html">dist_btw_cells()</a></code> to calculate distances between cells on a <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code>;</p></li>
 <li><p><code><a href="degrees.html">degrees()</a></code> to create circular angles;</p></li>
-<li><p><code><a href="dist_along_path.html">dist_along_path()</a></code> to calculate distances along a movement path;</p></li>
-<li><p><code><a href="make_matrix_receivers.html">make_matrix_receivers()</a></code> to matricise receiver deployment time series;</p></li>
+</ul></li>
+<li><p><code>terra</code> helpers. See:</p><ul><li><p><code><a href="rast_template.html">rast_template()</a></code> to create a template <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code>;</p></li>
 <li><p><code><a href="normalise.html">normalise()</a></code> to normalise a <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code>;</p></li>
-<li><p><code><a href="rast_template.html">rast_template()</a></code> to create a template <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code>;</p></li>
+<li><p><code><a href="pf_dens.html">as.im.SpatRaster</a></code> and <code><a href="pf_dens.html">as.owin.SpatRaster</a></code> for interfaces to <code>spatstat</code> function(s);</p></li>
+</ul></li>
+<li><p>Parallelisation. See:</p><ul><li><p><code><a href="cl.html">cl_lapply()</a></code> and associated <code>cl_*() functions for parallelisation routines</code>;</p></li>
+</ul></li>
 </ul></div>
     <div id="references">
     <h2>References</h2>
@@ -143,7 +163,7 @@
 <li><p>For information on <code>patter</code>'s predecessor, see <a href="https://github.com/edwardlavender/flapper" class="external-link">https://github.com/edwardlavender/flapper</a>.</p></li>
 <li><p>For further information on  <code>patter</code>, see <a href="https://github.com/edwardlavender/patter" class="external-link">https://github.com/edwardlavender/patter</a>.</p></li>
 <li><p>For feature requests and bug reports, see <a href="https://github.com/edwardlavender/patter/issues" class="external-link">https://github.com/edwardlavender/patter/issues</a>.</p></li>
-<li><p>For support, contact <a href="mailto:%5Bedward.lavender@eawag.ch">edward.lavender@eawag.ch</a>.</p></li>
+<li><p>For support, contact <a href="mailto:edward.lavender@eawag.ch">edward.lavender@eawag.ch</a>.</p></li>
 </ul></div>
     </div>
     <div id="author">
