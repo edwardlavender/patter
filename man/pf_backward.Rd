@@ -50,7 +50,6 @@ out_pff <- pf_forward_1(.obs = obs,
                         .record = out_ac$record,
                         .n = 1e3,
                         .kick = pf_kick,
-                        .bathy = gebco,
                         .save_history = TRUE,
                         .write_history = list(sink = pff_folder))
 
