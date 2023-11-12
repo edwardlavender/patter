@@ -2,7 +2,7 @@
 % Please edit documentation in R/dists.R
 \name{dist_along_path}
 \alias{dist_along_path}
-\title{Calculate serial distances}
+\title{Distances: along a path}
 \usage{
 dist_along_path(.xy, .lonlat = FALSE)
 }
