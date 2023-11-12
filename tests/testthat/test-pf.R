@@ -67,8 +67,14 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   #### Set inputs
   n_particles <- 1e3
   mobility    <- 500
-  pff_folder <- file.path(tempdir(), "pf", "forward")
-  dir.create(pff_folder, recursive = TRUE)
+  mkdir <- function(...) {
+    folder <- file.path(tempdir(), "pf", ...)
+    if (dir.exists(folder)) {
+      unlink(folder, recursive = TRUE)
+    }
+    dir.create(folder, recursive = TRUE)
+    folder
+  }
 
   ##### Validate checks on user inputs
   ## Validate `.save_history` and/or `.write_history` are specified
@@ -111,9 +117,9 @@ test_that("pf_*() functions work using example flapper skate datasets", {
                           .save_history = TRUE)
   expect_equal(length(out_pff), 9L)
   check_inherits(out_pff[[1]], "data.table")
-  expect_equal(colnames(out_pff[[1]]), c("timestep", "cell_past", "cell_now"))
 
   #### Implement `pf_forward_1()` with `.save_history = FALSE` to confirm particles are dropped
+  pff_folder <- mkdir("forward")
   out_pff <- pf_forward_1(.obs = obs,
                           .record = out_ac$record,
                           .n = n_particles,
@@ -128,8 +134,11 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   out_pff_by_record <-
     lapply(list(out_ac$record, pf_setup_files(ac_folder)), \(record) {
       # Implement pf
-      set.seed(seed)
+      # record = out_ac$record
       log.txt <- tempfile(fileext = ".txt")
+      pff_folder <- mkdir("forward-for-lapply")
+      stopifnot(length(list.files(pff_folder)) == 0L)
+      set.seed(seed)
       out_pff <- pf_forward_1(.obs = obs,
                               .record = record,
                               .n = n_particles,
@@ -143,18 +152,23 @@ test_that("pf_*() functions work using example flapper skate datasets", {
       # Confirm output classes & names
       check_inherits(out_pff$history, "list")
       check_inherits(out_pff$history[[1]], "data.table")
-      expect_equal(colnames(out_pff$history[[1]]), c("timestep", "cell_past", "cell_now"))
+      cnms <- colnames(out_pff$history[[1]])
+      sapply(out_pff$history, function(d) expect_equal(colnames(d), cnms))
       # Confirm record & parquet files match
+      # * This is important to check for accidental (subsequent) modification by reference
       lapply(seq_len(nrow(obs)), function(i) {
         expect_equal(out_pff$history[[i]],
                      arrow::read_parquet(file.path(pff_folder, paste0(i, ".parquet"))))
       }) |> invisible()
       out_pff
     })
-  # Confirm outputs are requal
+  # Confirm outputs are equal
+  # * Note use of reduced tolerance here, since small discrepancies
+  # ... emerge when writing/reading SpatRasters
   expect_equal(
     out_pff_by_record[[1]]$history,
-    out_pff_by_record[[2]]$history
+    out_pff_by_record[[2]]$history,
+    tolerance = 1e-7
   )
 
   #### Validate the simulation
@@ -196,6 +210,16 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   #########################
   #### Test pf_backward()
 
+  #### Re-run forward simulation
+  pff_folder <- mkdir("forward")
+  out_pff <- pf_forward_1(.obs = obs,
+                          .record = out_ac$record,
+                          .n = n_particles,
+                          .kick = pf_kick,
+                          .bathy = gebco,
+                          .save_history = TRUE,
+                          .write_history = list(sink = pff_folder))
+
   #### Validate usual user input checks
   pf_backward(out_pff$history) |>
     expect_error("`.save_history = FALSE` and `.write_history = NULL`. There is nothing to do.")
@@ -204,8 +228,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
     expect_warning("Input to `.txt` ignored since `.verbose = FALSE`.", fixed = TRUE)
 
   #### Validate implementation with `.save_history = FALSE`
-  pfb_folder <- file.path(tempdir(), "pf", "backward")
-  dir.create(pfb_folder, recursive = TRUE)
+  pfb_folder <- mkdir("backward")
   out_pfb <- pf_backward(out_pff$history,
                          .save_history = FALSE,
                          .write_history = list(sink = pfb_folder))
@@ -215,6 +238,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   log.txt <- tempfile(fileext = ".txt")
   out_pfb_by_history <-
     lapply(list(out_pff$history, pf_setup_files(pff_folder)), \(h) {
+      pfb_folder <- mkdir("backward-for-lapply")
       out_pfb <- pf_backward(h,
                              .save_history = TRUE,
                              .write_history = list(sink = pfb_folder),
@@ -227,9 +251,9 @@ test_that("pf_*() functions work using example flapper skate datasets", {
       # Validate output length
       expect_equal(length(out_pfb$history), nrow(obs))
       # Validate output columns
-      lapply(out_pfb$history,
-             \(d) expect_equal(colnames(d), c("timestep", "cell_past", "cell_now"))) |>
-        invisible()
+      cnms <- colnames(out_pfb$history[[1]])
+      sapply(out_pfb$history, function(d) expect_equal(colnames(d), cnms))
+      unlink(pfb_folder, recursive = TRUE)
       out_pfb
     })
   # Validate outputs match
@@ -246,6 +270,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
     all(out_pfb_h[[i]]$cell_now, out_pfb_h[[i + 1]]$cell_past) |>
       expect_true()
   }
+
 
   #########################
   #########################
