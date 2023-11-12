@@ -14,8 +14,7 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>", 
-  fig.width = 6, 
-  fig.height = 6, 
+  out.width = "95%", 
   fig.align = "center"
 )
 ```
@@ -23,6 +22,9 @@ knitr::opts_chunk$set(
 # Introduction 
 
 The `patter` package is a re-implementation of the 'flapper' algorithms for passive acoustic telemetry (Lavender et al., 2023). These algorithms reconstruct movement paths and emergent patterns of space use from detections at receivers (and ancillary datasets) in passive acoustic telemetry systems (Lavender et al., 2023). This introductory vignette outlines the basic workflow for their implementation via `patter`. Its purpose is simply to illustrate how functions fit together. For full details and additional functionality, see the package/function documentation. 
+
+<img src="workflow.png" width="100%" />
+**Figure 1. The workflow for `patter`.** This comprises four main steps: data preparation, forward filtering, backward sampling and analysis. In data preparation, we prepare the data for analysis and pre-compute necessary algorithm inputs. In forward filtering, we simulate possible locations of an individual, given the data and a movement model, moving forwards in time. This step involves the implementation of an AC-branch algorithm, that defines the set of possible locations of an individual given the data, and a PF-branch algorithm, that refines the set of possible locations given a movement model. In backwards sampling, we further refine the set of simulated locations. We can then analyse reconstructed movement paths and patterns of space use. 
 
 # Set up 
 
@@ -35,9 +37,9 @@ library(dtplyr)
 library(dplyr, warn.conflicts = FALSE)
 ```
 
-# Collate data 
+# Preparation
 
-Step 1 is to collate the data. In this vignette, we use a small sample of acoustic and archival (depth) time series from flapper skate (_Dipturus intermedius_) to reconstruct movement paths and patterns of space use. 
+Step 1 is to prepare the data and algorithm inputs. In this vignette, we use a small sample of acoustic and archival (depth) time series from flapper skate (_Dipturus intermedius_) to reconstruct movement paths and patterns of space use over a low-resolution grid. See the `sim_*()` functions to simulate data instead.
 
 ```{r}
 # Set seed
@@ -71,9 +73,14 @@ head(archival)
 We prepare the data for the algorithms via `acs_setup_obs()`. 
 
 ```{r}
-obs <- acs_setup_obs(acoustics, archival, .step = "2 mins", .mobility = 500)
+obs <- acs_setup_obs(acoustics, archival, 
+                     .step = "2 mins", 
+                     .mobility = 500, 
+                     .detection_range = moorings$receiver_range[1])
 head(obs)
 ```
+
+Additional algorithm inputs are prepared below.
 
 # AC-branch algorithms 
 
@@ -122,7 +129,7 @@ out_dc <- dc(.obs = obs,
 We can examine the possible locations of the individual at each time step using the `record` `SpatRaster`s in `out_dc`:
 
 ```{r}
-pp <- par(mfrow = c(1, 2))
+pp <- par(mfrow = c(2, 1))
 terra::plot(out_dc$record[[1]], main = obs$timestep[1])
 terra::plot(out_dc$record[[2]], main = obs$timestep[2])
 par(pp)
@@ -185,7 +192,11 @@ The output format matches that for `dc()`.
 
 ## Forward simulation
 
-The particle filter builds movement into the AC-branch algorithms. This comprises (1) a forward simulation of possible locations and (b) a backward pass that refines simulated trajectories. The forward simulation is implemented via `pf_forward()`. This requires the observations `data.table`, the AC-branch `SpatRaster`s and a movement model that 'kicks' the particles sampled at each time step into new (proposal) locations. For brevity, here we use a template movement model specified by `pf_kick()`. 
+The particle filter builds movement into the AC-branch algorithms. This comprises (1) a forward simulation of possible locations and (b) a backward pass that refines simulated trajectories. The forward simulation is implemented via `pf_forward_1()` or `pf_forward_2()`.
+
+### `pf_forward_1()`
+
+`pf_forward_1()` is the original implementation. This requires the observations `data.table`, the AC-branch `SpatRaster`s and a movement model that 'kicks' the particles sampled at each time step into new (proposal) locations. For brevity, here we use a template movement model specified by `pf_kick()`. 
 
 ```{r}
 out_pff <- pf_forward_1(.obs = obs,
@@ -207,6 +218,26 @@ lapply(1:6, \(i) {
   points(xy, col = "red")
 }) |> invisible()
 par(pp)
+```
+
+### `pf_forward_2()`
+
+Alternatively, we use `pf_forward_2()` for the forward simulation. Unlike `pf_forward_1()`, this function integrates AC* dynamics at particle locations alongside the movement model on-the-fly, which is typically much cheaper. This is now the recommended approach. 
+
+```{r}
+out_pff <- pf_forward_2(.obs = obs,
+                        .bathy = gebco, 
+                        .moorings = moorings, 
+                        .detection_overlaps = overlaps, 
+                        .detection_kernels = kernels, 
+                        .update_ac = function(.particles, .bathy, .obs, .t, ...) {
+                          .particles$bathy <- terra::extract(.bathy, as.matrix(.particles[, c("x_now", "y_now")]))
+                          (.particles$bathy  >= .obs$depth_shallow[.t] & .particles$bathy <= .obs$depth_deep[.t]) + 0
+                        },
+                        .kick = pf_kick,
+                        .n = 1000L,
+                        .save_history = TRUE,
+                        .verbose = FALSE)
 ```
 
 ## Backward pass
