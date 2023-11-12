@@ -3,12 +3,13 @@
 #' @param .obs A [`data.table`] that defines the time series of observations (see [`acs()`]). For [`pf_forward_1()`], at a minimum, this must contain the following column(s):
 #' * `timestep`---an `integer` that defines the time step;
 #' * Any columns required by `.kick` (see below);
+#' @param .bathy (optional) A [`SpatRaster`] over the region of interest, optionally used by `.kick()`.
 #' @param .record A list of [`SpatRaster`]s, or a character vector of file paths to [`SpatRaster`]s (see [`pf_setup_files()`]), that define the set of possible locations of the individual according to the data (i.e., an AC* algorithm).
-#' @param .kick,...,.bathy,.lonlat A function, and associated inputs, used to 'kick' particles into new (proposal) locations. `.kick` must support the following inputs:
+#' @param .kick,.lonlat,... A function, and associated inputs, used to 'kick' particles into new (proposal) locations. `.kick` must support the following inputs:
 #' * `.particles`---a [`data.table`] that defines the `cell` IDs and associated coordinates (`x_now` and `y_now`) of current particle samples;
 #' * (optional) `.obs`---the `.obs` [`data.table`];
 #' * (optional) `.t`---the `timestep` (used to index `.obs`);
-#' * (optional) `.bathy`---a [`SpatRaster`] that defines the bathymetry;
+#' * (optional) `.bathy`---the bathymetry [`SpatRaster`];
 #' * (optional) `.lonlat`---a `logical` variable that define whether or not particle samples are longitude/latitude or planar coordinates;
 #' * (optional) `...`---additional arguments, passed via [`pf_forward_1()`], if required;
 #'
@@ -32,9 +33,13 @@
 #' @author Edward Lavender
 #' @export
 
-pf_forward_1 <- function(.obs, .record, .kick, ..., .bathy, .lonlat = FALSE, .n = 100L,
-                       .save_history = FALSE, .write_history = NULL, .progress = TRUE,
-                       .prompt = FALSE, .verbose = TRUE, .txt = "") {
+pf_forward_1 <- function(.obs,
+                         .bathy,
+                         .record, .kick, ...,  .lonlat = FALSE,
+                         .n = 100L,
+                         .save_history = FALSE, .write_history = NULL,
+                         .progress = TRUE,
+                         .prompt = FALSE, .verbose = TRUE, .txt = "") {
 
   #### Check user inputs
   t_onset <- Sys.time()
@@ -59,10 +64,7 @@ pf_forward_1 <- function(.obs, .record, .kick, ..., .bathy, .lonlat = FALSE, .n 
   }
   # Global variables
   pnext <- NULL
-  cell <- x <- y <-
-    cell_past <- cell_now <- cell_next <-
-    x_now <- y_now <- x_next <- y_next <-
-    weight <- NULL
+  weight <- x_next <- y_next <- NULL
   # Progress
   timestep_final <- max(.obs$timestep)
   if (.progress) {
@@ -90,11 +92,15 @@ pf_forward_1 <- function(.obs, .record, .kick, ..., .bathy, .lonlat = FALSE, .n 
       pnow <-
         .record[[t]] |>
         terra::spatSample(size = .n, method = "weights", replace = TRUE,
-                          cells = TRUE, xy = TRUE, as.df = FALSE) |>
+                          cells = TRUE, xy = TRUE, values = TRUE, as.df = FALSE) |>
         lazy_dt() |>
-        mutate(cell_past = NA_integer_,
-               cell_now = as.integer(cell)) |>
-        select(cell_past, cell_now, x_now = x, y_now = y) |>
+        mutate(timestep = 1L,
+               cell_past = NA_integer_,
+               cell_now = as.integer(.data$cell)) |>
+        select("timestep",
+               "cell_past", "cell_now",
+               x_now = "x", y_now = "y",
+               weight = "lyr.1") |>
         as.data.table()
     }
 
@@ -102,9 +108,7 @@ pf_forward_1 <- function(.obs, .record, .kick, ..., .bathy, .lonlat = FALSE, .n 
     if (t > 1) {
       # Define weights
       cat_to_cf(paste0("... ... Extracting particle weights..."))
-      pnow[, weight := terra::extract(.record[[t]],
-                                      pnow[, c("x_now", "y_now")],
-                                      ID = FALSE, layer = 1, raw = TRUE)[, 1]]
+      pnow[, weight := terra::extract(.record[[t]], pnow$cell_now, raw = TRUE)[, 1]]
       # Resample from pnow with replacement
       # * Locations into which we have jumped that are more likely are sampled more often
       # * Use data.table & sample.int directly as dplyr::slice_sample()
@@ -119,16 +123,13 @@ pf_forward_1 <- function(.obs, .record, .kick, ..., .bathy, .lonlat = FALSE, .n 
       pnow <- pnow[sample.int(.N, size = .n, replace = TRUE, prob = weight), ]
     }
     # Save particles
-    pnow_record <-
-      pnow |>
-      mutate(timestep = t) |>
-      select("timestep", "cell_past", "cell_now") |>
-      as.data.table()
+    # * Create a snapshot here to avoid further modification by reference of history[[t]]
+    snapshot <- data.table::copy(pnow)
     if (.save_history) {
-      history[[t]] <- pnow_record
+      history[[t]] <- snapshot
     }
     if (!is.null(.write_history)) {
-      .write_history$x    <- pnow_record
+      .write_history$x    <- snapshot
       .write_history$sink <- file.path(write_history_folder, paste0(t, ".parquet"))
       do.call(arrow::write_parquet, .write_history)
     }
@@ -136,18 +137,26 @@ pf_forward_1 <- function(.obs, .record, .kick, ..., .bathy, .lonlat = FALSE, .n 
     #### Kick particles into new (proposal) locations
     if (t < timestep_final) {
       cat_to_cf(paste0("... ... Kicking particles into new locations..."))
-      pnext <- .kick(.particles = pnow, .obs = .obs, .t = t, .bathy = .bathy, .lonlat = .lonlat, ...)
-      pnext[, cell_next := as.integer(terra::cellFromXY(.record[[t]], pnext[, c("x_next", "y_next")]))]
+      pnext <-
+        pnow |>
+        # Kick particles:
+        .kick(.obs = .obs, .t = t, .bathy = .bathy, .lonlat = .lonlat, ...) |>
+        # Coerce particle coordinates onto grid (for pf_backward()):
+        mutate(cell_next = as.integer(terra::cellFromXY(.record[[t]], cbind(.data$x_next, .data$y_next))),
+               xy = terra::xyFromCell(.record[[t]], .data$cell_next),
+               x_next = .data$xy[, 1],
+               y_next = .data$xy[, 2]) |>
+        as.data.table()
     }
 
     #### Visualise particle samples & proposal locations
     if (.prompt) {
       cat_to_cf(paste0("... ... Visualising current & proposal locations..."))
-      print(utils::head(pnow_record))
+      print(utils::head(pnext))
       terra::plot(.record[[t]], main = t)
       if (t < timestep_final) {
-        graphics::arrows(x0 = pnow$x_now, y0 = pnow$y_now,
-                         x1 = pnow$x_next, y1 = pnow$y_next,
+        graphics::arrows(x0 = pnext$x_now, y0 = pnext$y_now,
+                         x1 = pnext$x_next, y1 = pnext$y_next,
                          length = 0.02)
       }
       readline("Press [Enter] to continue...")
@@ -159,8 +168,10 @@ pf_forward_1 <- function(.obs, .record, .kick, ..., .bathy, .lonlat = FALSE, .n 
       # `pnext` becomes `pnow`
       pnow <-
         pnext |>
-        lazy_dt(immutable = FALSE) |>
-        select(cell_past = "cell_now", cell_now = "cell_next", x_now = "x_next", y_now = "y_next") |>
+        mutate(timestep = t + 1) |>
+        select("timestep",
+               cell_past = "cell_now", cell_now = "cell_next",
+               x_now = "x_next", y_now = "y_next") |>
         as.data.table()
       # clean up .record[[t]] for speed
       .record[[t]] <- NA

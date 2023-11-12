@@ -6,10 +6,10 @@
 \usage{
 pf_forward_1(
   .obs,
+  .bathy,
   .record,
   .kick,
   ...,
-  .bathy,
   .lonlat = FALSE,
   .n = 100L,
   .save_history = FALSE,
@@ -27,14 +27,16 @@ pf_forward_1(
 \item Any columns required by \code{.kick} (see below);
 }}
 
+\item{.bathy}{(optional) A \code{\link{SpatRaster}} over the region of interest, optionally used by \code{.kick()}.}
+
 \item{.record}{A list of \code{\link{SpatRaster}}s, or a character vector of file paths to \code{\link{SpatRaster}}s (see \code{\link[=pf_setup_files]{pf_setup_files()}}), that define the set of possible locations of the individual according to the data (i.e., an AC* algorithm).}
 
-\item{.kick, ..., .bathy, .lonlat}{A function, and associated inputs, used to 'kick' particles into new (proposal) locations. \code{.kick} must support the following inputs:
+\item{.kick, .lonlat, ...}{A function, and associated inputs, used to 'kick' particles into new (proposal) locations. \code{.kick} must support the following inputs:
 \itemize{
 \item \code{.particles}---a \code{\link{data.table}} that defines the \code{cell} IDs and associated coordinates (\code{x_now} and \code{y_now}) of current particle samples;
 \item (optional) \code{.obs}---the \code{.obs} \code{\link{data.table}};
 \item (optional) \code{.t}---the \code{timestep} (used to index \code{.obs});
-\item (optional) \code{.bathy}---a \code{\link{SpatRaster}} that defines the bathymetry;
+\item (optional) \code{.bathy}---the bathymetry \code{\link{SpatRaster}};
 \item (optional) \code{.lonlat}---a \code{logical} variable that define whether or not particle samples are longitude/latitude or planar coordinates;
 \item (optional) \code{...}---additional arguments, passed via \code{\link[=pf_forward_1]{pf_forward_1()}}, if required;
 }

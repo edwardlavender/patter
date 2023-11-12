@@ -150,7 +150,7 @@ pf_forward_2 <- function(.obs,
   pos_detection <- which(!sapply(.obs$receiver_id, is.null))
   pos_detection_end <- pos_detection[length(pos_detection)]
   # Global variables
-  weight <- cell_next <- NULL
+  weight <- x_next <- y_next <- NULL
   # Monitor progress
   cat_to_cf("... ... Initiating simulation...")
   if (.progress) {
@@ -195,9 +195,10 @@ pf_forward_2 <- function(.obs,
       # Tidy `pnow`
       pnow <-
         pnow |>
-        mutate(cell_past = NA_integer_,
+        mutate(timestep = 1L,
+               cell_past = NA_integer_,
                cell_now = as.integer(.data$cell_now)) |>
-        select("cell_past", "cell_now", "x_now", "y_now") |>
+        select("timestep", "cell_past", "cell_now", "x_now", "y_now") |>
         as.data.table()
     }
 
@@ -280,18 +281,13 @@ pf_forward_2 <- function(.obs,
     pnow <- pnow[!is.na(pnow$weight), ]
     # Implement re-sampling
     pnow <- pnow[sample.int(.N, size = .n, replace = TRUE, prob = weight), ]
-    pnow[, weight := NULL]
     # Save particles
-    pnow_record <-
-      pnow |>
-      mutate(timestep = t) |>
-      select("timestep", "cell_past", "cell_now") |>
-      as.data.table()
+    snapshot <- data.table::copy(pnow)
     if (.save_history) {
-      history[[t]] <- pnow_record
+      history[[t]] <- snapshot
     }
     if (!is.null(.write_history)) {
-      .write_history$x    <- pnow_record
+      .write_history$x    <- snapshot
       .write_history$sink <- file.path(write_history_folder, paste0(t, ".parquet"))
       do.call(arrow::write_parquet, .write_history)
     }
@@ -300,8 +296,14 @@ pf_forward_2 <- function(.obs,
     cat_to_cf("... ... Kicking particles into proposal location(s)...")
     if (t < timestep_final) {
       cat_to_cf(paste0("... ... Kicking particles into new locations..."))
-      pnext <- .kick(.particles = pnow, .obs = .obs, .t = t, .bathy = .bathy, .lonlat = .lonlat, ...)
-      pnext[, cell_next := as.integer(terra::cellFromXY(.bathy, pnext[, c("x_next", "y_next")]))]
+      pnext <-
+        pnow |>
+        .kick(.obs = .obs, .t = t, .bathy = .bathy, .lonlat = .lonlat, ...) |>
+        mutate(cell_next = as.integer(terra::cellFromXY(.bathy, cbind(.data$x_next, .data$y_next))),
+               xy = terra::xyFromCell(.bathy, .data$cell_next),
+               x_next = .data$xy[, 1],
+               y_next = .data$xy[, 2]) |>
+        as.data.table()
     }
 
     #### Move loop on
@@ -310,8 +312,10 @@ pf_forward_2 <- function(.obs,
       # `pnext` becomes `pnow`
       pnow <-
         pnext |>
-        lazy_dt(immutable = FALSE) |>
-        select(cell_past = "cell_now", cell_now = "cell_next", x_now = "x_next", y_now = "y_next") |>
+        mutate(timestep = t + 1) |>
+        select("timestep",
+               cell_past = "cell_now", cell_now = "cell_next",
+               x_now = "x_next", y_now = "y_next") |>
         as.data.table()
     }
 
