@@ -28,7 +28,7 @@ pf_backward <- function(.history, .save_history = FALSE, .write_history = NULL,
   }
   write_history_folder <- .pf_check_write_history(.write_history)
 
-  #### Set up messages (modied from pf_forward())
+  #### Set up messages (modified from pf_forward())
   cat_to_cf <- cat_helper(.verbose = .verbose, .txt = .txt)
   cat_to_cf(paste0("patter::pf_backward() called (@ ", t_onset, ")..."))
   on.exit(cat_to_cf(paste0("patter::pf_backward() call ended (@ ", Sys.time(), ").")), add = TRUE)
