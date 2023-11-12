@@ -15,7 +15,7 @@ dist_along_path <- function(.xy, .lonlat = FALSE) {
 #' @description This function calculates distances between cells on a [`SpatRaster`]
 #' @param .bathy A [`SpatRaster`].
 #' @param .from,.to Integer vectors that define cell IDs.
-#' @param .lonlat A `logical` variable that defines whether or not the [`.bathy`] is in longitude/latitude format.
+#' @param .lonlat A `logical` variable that defines whether or not the `.bathy` is in longitude/latitude format.
 #' @param ... Arguments passed to  [`terra::distance()`]
 #' @export
 

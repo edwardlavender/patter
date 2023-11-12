@@ -11,7 +11,7 @@ dist_btw_cells(.bathy, .from, .to, .lonlat = FALSE, ...)
 
 \item{.from, .to}{Integer vectors that define cell IDs.}
 
-\item{.lonlat}{A \code{logical} variable that defines whether or not the \code{\link{.bathy}} is in longitude/latitude format.}
+\item{.lonlat}{A \code{logical} variable that defines whether or not the \code{.bathy} is in longitude/latitude format.}
 
 \item{...}{Arguments passed to  \code{\link[terra:distance]{terra::distance()}}}
 }
