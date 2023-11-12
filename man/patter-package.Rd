@@ -12,9 +12,10 @@
 For an introduction to \code{\link{patter}}, use:
 \itemize{
 \item \code{vignette("workflow", package = "patter")} for an overview of the analytical workflow;
+\item \code{vignette("faqs", package = "patter")} for FAQs;
 }
 
-For a full list of all functions, see \code{help(package = 'patter')}.
+For a full list of all functions, see \code{help(package = "patter")}.
 }
 
 \section{Datasets}{
@@ -28,7 +29,7 @@ For example datasets from the Movement Ecology of Flapper Skate project (\code{\
 
 For example algorithm outputs (\code{\link{datasets-algorithms}}), see:
 \itemize{
-\item \code{\link[=dat_obs]{dat_obs()}} for an example input dataset from \code{\link[=acs_setup_obs]{acs_setup_obs()}};
+\item \code{\link[=dat_obs]{dat_obs()}} for an example output dataset from \code{\link[=acs_setup_obs]{acs_setup_obs()}};
 \item \code{\link[=dat_containers]{dat_containers()}} for an example output from \code{\link[=acs_setup_detection_containers]{acs_setup_detection_containers()}};
 \item \code{\link[=dat_overlaps]{dat_overlaps()}} for an example output from \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}};
 \item \code{\link[=dat_kernels]{dat_kernels()}} for an example output from \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}};
@@ -52,6 +53,15 @@ To simulate passive acoustic telemetry data, see:
 \itemize{
 \item \code{\link[=calc_detection_pr_logistic]{calc_detection_pr_logistic()}} and \code{\link[=calc_detection_pr]{calc_detection_pr()}}, which represent example detection probability models;
 }
+}
+
+To evaluate model skill in reconstructing simulated patterns, see \code{skill_()} functions, specifically:
+\itemize{
+\item \code{\link[=skill_mb]{skill_mb()}} to calculate mean bias;
+\item \code{\link[=skill_me]{skill_me()}} to calculate mean error;
+\item \code{\link[=skill_rmse]{skill_rmse()}} to calculate root mean squared error;
+\item \code{\link[=skill_R]{skill_R()}} to calculate Spearman's rank correlation coefficient;
+\item \code{\link[=skill_d]{skill_d()}} to calculate the index of agreement;
 }
 }
 
@@ -87,6 +97,7 @@ To implement the acoustic-centroid* (AC*) algorithm(s) (e.g., AC and ACDC), use:
 \item \code{\link[=acs_setup_obs]{acs_setup_obs()}} to set up observations;
 \item \code{\link[=acs_setup_detection_containers]{acs_setup_detection_containers()}} to set up detection containers;
 \item \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}} to set up detection overlaps;
+\item \code{\link[=acs_setup_detection_pr]{acs_setup_detection_pr()}} to define a detection probability model;
 \item \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}} to set up detection kernels;
 \item \code{\link[=acs]{acs()}} to implement the algorithm(s);
 }
@@ -95,10 +106,16 @@ To implement particle filtering (PF), use:
 \itemize{
 \item \code{\link[=pf_setup_files]{pf_setup_files()}} to set up files;
 \item \code{\link[=pf_kick]{pf_kick()}} for an example movement model;
-\item \code{\link[=pf_forward_1]{pf_forward_1()}} or \code{\link[=pf_forward_2]{pf_forward_2()}} to implement the forward simulation;
+\item \code{\link[=pf_forward_*]{pf_forward_*()}} functions to implement the forward simulation; namely:
+\itemize{
+\item \code{\link[=pf_forward_1]{pf_forward_1()}} for the original (two-step) implementation;
+\item \code{\link[=pf_forward_2]{pf_forward_2()}} for an integrated implementation;
+}
 \item \code{\link[=pf_backward]{pf_backward()}} to implement the backward pass;
-\item \code{\link[=pf_pou]{pf_pou()}} to map probability-of-use;
+\item \code{\link[=pf_coords]{pf_coords()}} to collate particle coordinates;
 \item \code{\link[=pf_path]{pf_path()}} (and \code{\link[=pf_path_pivot]{pf_path_pivot()}}) to reconstruct movement paths;
+\item \code{\link[=pf_pou]{pf_pou()}} to map probability-of-use;
+\item \code{\link[=pf_dens]{pf_dens()}} to create smooth maps;
 }
 
 For home ranges, use:
@@ -111,14 +128,28 @@ For home ranges, use:
 }
 
 \section{Miscellaneous helpers}{
-The following convenience functions are also made available to users of \href{https://github.com/edwardlavender/patter}{\code{patter}}. See:
+The following convenience functions are also made available to users of \href{https://github.com/edwardlavender/patter}{\code{patter}}:
 \itemize{
-\item \code{\link[=cl_lapply]{cl_lapply()}} and associated \verb{cl_*()} for parallelisation;
-\item \code{\link[=degrees]{degrees()}} to create circular angles;
-\item \code{\link[=dist_along_path]{dist_along_path()}} to calculate distances along a movement path;
+\item Operational statistics. See:
+\itemize{
 \item \code{\link[=make_matrix_receivers]{make_matrix_receivers()}} to matricise receiver deployment time series;
-\item \code{\link[=normalise]{normalise()}} to normalise a \code{\link{SpatRaster}};
+}
+\item Distance calculations. See:
+\itemize{
+\item \code{\link[=dist_along_path]{dist_along_path()}} to calculate distances along a movement path;
+\item \code{\link[=dist_btw_cells]{dist_btw_cells()}} to calculate distances between cells on a \code{\link{SpatRaster}};
+\item \code{\link[=degrees]{degrees()}} to create circular angles;
+}
+\item \code{terra} helpers. See:
+\itemize{
 \item \code{\link[=rast_template]{rast_template()}} to create a template \code{\link{SpatRaster}};
+\item \code{\link[=normalise]{normalise()}} to normalise a \code{\link{SpatRaster}};
+\item \code{\link{as.im.SpatRaster}} and \code{\link{as.owin.SpatRaster}} for interfaces to \code{spatstat} function(s);
+}
+\item Parallelisation. See:
+\itemize{
+\item \code{\link[=cl_lapply]{cl_lapply()}} and associated \verb{cl_*() functions for parallelisation routines};
+}
 }
 }
 

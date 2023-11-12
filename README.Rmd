@@ -50,9 +50,10 @@ The `dependencies = TRUE` argument ensures that suggested packages are also inst
 
 # Vignettes
 
-For an introduction to [`patter`], use:
+For an introduction to [`patter`](https://github.com/edwardlavender/patter), use:
 
-* `vignette("workflow", package = "patter")` for an overview of the analytical workflow
+* `vignette("workflow", package = "patter")` for an overview of the analytical workflow;
+* `vignette("faqs", package = "patter")` for FAQs;
 
 For a full list of all functions, see `help(package = 'patter')`.
 
@@ -67,7 +68,7 @@ For example datasets from the Movement Ecology of Flapper Skate project (`datase
 
 For example algorithm outputs `datasets-algorithms`, see:
 
-* `dat_obs()` for an example input dataset from `acs_setup_obs()`;
+* `dat_obs()` for an example output dataset from `acs_setup_obs()`;
 * `dat_containers()` for an example output from `acs_setup_detection_containers()`;
 * `dat_overlaps()` for an example output from `acs_setup_detection_overlaps()`;
 * `dat_kernels()` for an example output from `acs_setup_detection_kernels()`;
@@ -86,6 +87,14 @@ To simulate passive acoustic telemetry data, see:
    * `rwn()`, `sim_angle_rw()` and `sim_angle_crw()` to simulate turning angles;
 * `sim_detections()` to simulate detections at receivers, with the help of:
    * `calc_detection_pr_logistic()` and `calc_detection_pr()`, which represent example detection probability models;
+
+To evaluate model skill in reconstructing simulated patterns, see `skill_()` functions, specifically:
+
+* `skill_mb()` to calculate mean bias;
+* `skill_me()` to calculate mean error;
+* `skill_rmse()` to calculate root mean squared error;
+* `skill_R()` to calculate Spearman's rank correlation coefficient;
+* `skill_d()` to calculate the index of agreement;
 
 # Data preparation
 
@@ -117,6 +126,7 @@ To implement the acoustic-centroid* (AC*) algorithm(s) (e.g., AC and ACDC), use:
 * `acs_setup_obs()` to set up observations;
 * `acs_setup_detection_containers()` to set up detection containers;
 * `acs_setup_detection_overlaps()` to set up detection overlaps;
+* `acs_setup_detection_pr()` to define a detection probability model;
 * `acs_setup_detection_kernels()` to set up detection kernels;
 * `acs()` to implement the algorithm(s);
  
@@ -124,10 +134,14 @@ To implement particle filtering (PF), use:
  
 * `pf_setup_files()` to set up the record;
 * `pf_kick()` for an example movement model;
-* `pf_forward_*()` (`pf_forward_1()` or `pf_forward_2()`) to implement the forward simulation;
-* `pf_backward()` to implement the backward path'
-* `pf_pou()` to map probability-of-use;
+* `pf_forward_*()` to implement the forward simulation; namely:
+      * `pf_forward_1()` for the original (two-step) implementation;
+      * `pf_forward_2()` for an integrated implementation;
+* `pf_backward()` to implement the backward pass;
+* `pf_coords()` to collate particle coordinates;
 * `pf_path()` (and `pf_path_pivot()`) to reconstruct movement paths;
+* `pf_pou()` to map probability-of-use;
+* `pf_dens()` to create smooth maps;
  
 For home ranges, use:
 
@@ -138,14 +152,23 @@ For home ranges, use:
  
 # Miscellaneous helpers
 
-The following convenience functions are also made available to users of [`patter`](https://github.com/edwardlavender/patter). See:
+The following convenience functions are also made available to users of [`patter`](https://github.com/edwardlavender/patter):
 
-* `cl_lapply()` and associated `cl_*()` for parallelisation;
-* `degrees()` to create circular angles;
-* `dist_along_path()` to calculate distances along a movement path;
-* `make_matrix_receivers()` to matricise receiver deployment time series;
-* `normalise()` to normalise a `SpatRaster`;
-* `rast_template()` to create a template `SpatRaster`;
+* Operational statistics. See:
+    * `make_matrix_receivers()` to matricise receiver deployment time series;
+
+* Distance calculations. See:
+    * `dist_along_path()` to calculate distances along a movement path;
+    * `dist_btw_cells()` to calculate distances between cells on a `SpatRaster`;
+    * `degrees()` to create circular angles;
+
+* `terra` helpers. See:
+    * `rast_template()` to create a template `SpatRaster`;
+    * `normalise()` to normalise a `SpatRaster`;
+    * `as.im.SpatRaster` and `as.owin.SpatRaster` for interfaces to `spatstat` function(s);
+
+* Parallelisation. See:
+    * `cl_lapply()` and associated `cl_*() functions for parallelisation routines`;
  
 # Disclaimer and troubleshooting 
 
