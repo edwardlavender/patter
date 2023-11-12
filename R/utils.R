@@ -82,9 +82,9 @@ cat_helper <- function(.verbose, .txt) {
 }
 
 #' @title Compact a list
-#' @description Remove all \code{NULL} entries from a list.
+#' @description Remove all `NULL` entries from a list.
 #' @param l A list.
-#' @source This function is derived from the \code{plyr::compact()} function. The function is defined separately in \code{\link[flapper]{flapper}} to reduce reliance on non-default packages.
+#' @source This function is derived from the `plyr::compact()` function. The function is defined separately in [`patter`] to reduce reliance on non-default packages.
 #' @keywords internal
 
 compact <- function(l) l[which(!sapply(l, is.null))]

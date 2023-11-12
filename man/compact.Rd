@@ -4,7 +4,7 @@
 \alias{compact}
 \title{Compact a list}
 \source{
-This function is derived from the \code{plyr::compact()} function. The function is defined separately in \code{\link[flapper]{flapper}} to reduce reliance on non-default packages.
+This function is derived from the \code{plyr::compact()} function. The function is defined separately in \code{\link{patter}} to reduce reliance on non-default packages.
 }
 \usage{
 compact(l)
