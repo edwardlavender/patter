@@ -137,6 +137,7 @@
 
 #' @importFrom rlang .data
 #'
+#' @importFrom dplyr tbl
 #' @importFrom dplyr mutate
 #' @importFrom dplyr filter
 #' @importFrom dplyr summarise
@@ -148,6 +149,8 @@
 #' @importFrom dplyr rename
 #' @importFrom dplyr n
 #' @importFrom dplyr row_number
+#' @importFrom dplyr any_of
+#' @importFrom dplyr left_join
 #'
 #' @importFrom dtplyr lazy_dt
 #'
