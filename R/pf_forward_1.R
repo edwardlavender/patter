@@ -168,7 +168,7 @@ pf_forward_1 <- function(.obs,
       # `pnext` becomes `pnow`
       pnow <-
         pnext |>
-        mutate(timestep = t + 1) |>
+        mutate(timestep = as.integer(t + 1)) |>
         select("timestep",
                cell_past = "cell_now", cell_now = "cell_next",
                x_now = "x_next", y_now = "y_next") |>
