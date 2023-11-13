@@ -18,6 +18,20 @@ check_dir <- function(input) {
 #' @rdname check_utils
 #' @keywords internal
 
+check_dir_is_empty <- function(input) {
+  if (!is.null(input)) {
+    check_dir(input)
+    if (length(list.files(input) != 0L)) {
+      abort("The directory '{input}' is not empty.",
+            .envir = environment())
+    }
+  }
+  invisible(input)
+}
+
+#' @rdname check_utils
+#' @keywords internal
+
 check_contents_ext <- function(input, ext, ...) {
   f    <- list.files(input, ...)
   fext <- unique(tools::file_ext(f))
