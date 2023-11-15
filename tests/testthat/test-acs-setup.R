@@ -70,29 +70,19 @@ test_that("acs_setup_detection_overlaps() work", {
   #### Identify detection overlaps
   out <- acs_setup_detection_overlaps(m, s)
 
-  # Validate detection overlaps
-  # Check list contents
-  expect_true(all(names(out) == c("list_by_receiver", "list_by_date")))
-  expect_true(is.null(out$list_by_receiver[[1]]))
-  expect_true(is.null(out$list_by_receiver[[2]]))
-  expect_true(!is.null(out$list_by_receiver[[3]]))
-  expect_true(!is.null(out$list_by_receiver[[4]]))
-  expect_true(!is.null(out$list_by_receiver[[5]]))
+  #### Validate detection overlaps
+  # Validate detection overlaps[[1]] and [[2]] are blank
+  expect_true(is.null(out[[1]]))
+  expect_true(is.null(out[[2]]))
   # Validate receiver 3 overlaps with receiver 4 (except on servicing date)
-  expect_true(all(out$list_by_receiver[[3]]$receiver_id == 3))
-  expect_true(all(out$list_by_receiver[[3]]$`4` == c(0, 1, 1, 1, 1)))
-  expect_true(all(out$list_by_receiver[[3]]$`5` == 0))
-  # Validate receiver 3 overlaps with receiver 4 (except on servicing date for receiver 3)
-  expect_true(all(out$list_by_receiver[[4]]$receiver_id == 4))
-  expect_true(all(out$list_by_receiver[[4]]$`3` == c(0, 1, 1, 1, 1)))
-  expect_true(all(out$list_by_receiver[[4]]$`5` == 0))
-  # Validate time series in out$list_by_date
-  expect_true(all(as.Date(names(out$list_by_date)) == seq(min(m$receiver_start), max(m$receiver_end), "days")))
-  is.null(out$list_by_date[[1]])
-  lapply(c("2016-01-02", "2016-01-03", "2016-01-04", "2016-01-5"), function(date) {
-    expect_true(all(out$list_by_date[[date]] == c("3", "4")))
-  }) |> invisible()
+  expect_equal(out[[3]],
+               list("2016-01-02" = 4, "2016-01-03" = 4, "2016-01-04" = 4, "2016-01-05" = 4))
 
+  # Validate receiver 4 overlaps with receiver 3 (except on servicing date for receiver 3)
+  expect_equal(out[[4]],
+               list("2016-01-02" = 3, "2016-01-03" = 3, "2016-01-04" = 3, "2016-01-05" = 3))
+  # Validate receiver 5 doesn't overlap with any receivers
+  expect_true(is.null(out[[5]]))
 })
 
 test_that("acs_setup_detection_pr() works", {
@@ -102,7 +92,6 @@ test_that("acs_setup_detection_pr() works", {
                calc_detection_pr_logistic(0))
 
 })
-
 
 test_that("acs_setup_detection_kernels() works", {
 
