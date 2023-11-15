@@ -1,7 +1,6 @@
 #### Workflow
 # A. Define input datasets & objects
 # * ?`acs_setup_obs()`
-# * ?`acs_setup_detection_containers()`
 # * ?`acs_setup_detection_overlaps()`
 # * ?`acs_setup_detection_kernels()`
 # B. Implement AC* algorithm(s)

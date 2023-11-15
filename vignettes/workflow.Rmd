@@ -156,10 +156,8 @@ The AC* algorithms (e.g., AC, ACDC) are implemented via `acs()`. To implement th
 * Detection kernels, which describe how detection probability is distributed around receivers;
 
 ```{r}
-# Define detection containers
-containers <- acs_setup_detection_containers(gebco, moorings)
 # Define detection overlaps from detection containers 
-overlaps   <- acs_setup_detection_overlaps(containers, moorings)
+overlaps   <- acs_setup_detection_overlaps(moorings)
 # Define detection kernels 
 kernels    <- acs_setup_detection_kernels(moorings, 
                                           .calc_detection_pr = acs_setup_detection_pr, 

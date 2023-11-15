@@ -30,7 +30,6 @@ For example datasets from the Movement Ecology of Flapper Skate project (\code{\
 For example algorithm outputs (\code{\link{datasets-algorithms}}), see:
 \itemize{
 \item \code{\link[=dat_obs]{dat_obs()}} for an example output dataset from \code{\link[=acs_setup_obs]{acs_setup_obs()}};
-\item \code{\link[=dat_containers]{dat_containers()}} for an example output from \code{\link[=acs_setup_detection_containers]{acs_setup_detection_containers()}};
 \item \code{\link[=dat_overlaps]{dat_overlaps()}} for an example output from \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}};
 \item \code{\link[=dat_kernels]{dat_kernels()}} for an example output from \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}};
 \item \code{\link[=dat_ac]{dat_ac()}} for an example output from \code{\link[=acs]{acs()}};
@@ -95,7 +94,6 @@ To implement the depth-contour (DC) algorithm, use:
 To implement the acoustic-centroid* (AC*) algorithm(s) (e.g., AC and ACDC), use:
 \itemize{
 \item \code{\link[=acs_setup_obs]{acs_setup_obs()}} to set up observations;
-\item \code{\link[=acs_setup_detection_containers]{acs_setup_detection_containers()}} to set up detection containers;
 \item \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}} to set up detection overlaps;
 \item \code{\link[=acs_setup_detection_pr]{acs_setup_detection_pr()}} to define a detection probability model;
 \item \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}} to set up detection kernels;

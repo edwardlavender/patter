@@ -37,7 +37,6 @@ These functions load example outputs from key \code{\link{patter}} functions. Th
 \details{
 \itemize{
 \item \code{\link[=dat_obs]{dat_obs()}} reads an example input dataset from \code{\link[=acs_setup_obs]{acs_setup_obs()}};
-\item \code{\link[=dat_containers]{dat_containers()}} reads an example output from \code{\link[=acs_setup_detection_containers]{acs_setup_detection_containers()}};
 \item \code{\link[=dat_overlaps]{dat_overlaps()}} reads an example output from \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}};
 \item \code{\link[=dat_kernels]{dat_kernels()}} reads an example output from \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}};
 \item \code{\link[=dat_ac]{dat_ac()}} reads an example output from \code{\link[=acs]{acs()}};

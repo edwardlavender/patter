@@ -103,8 +103,6 @@ For example datasets from the Movement Ecology of Flapper Skate project
 For example algorithm outputs `datasets-algorithms`, see:
 
 - `dat_obs()` for an example output dataset from `acs_setup_obs()`;
-- `dat_containers()` for an example output from
-  `acs_setup_detection_containers()`;
 - `dat_overlaps()` for an example output from
   `acs_setup_detection_overlaps()`;
 - `dat_kernels()` for an example output from
@@ -176,7 +174,6 @@ To implement the acoustic-centroid\* (AC\*) algorithm(s) (e.g., AC and
 ACDC), use:
 
 - `acs_setup_obs()` to set up observations;
-- `acs_setup_detection_containers()` to set up detection containers;
 - `acs_setup_detection_overlaps()` to set up detection overlaps;
 - `acs_setup_detection_pr()` to define a detection probability model;
 - `acs_setup_detection_kernels()` to set up detection kernels;

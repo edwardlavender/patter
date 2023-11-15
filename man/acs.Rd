@@ -45,7 +45,7 @@ acs(
 
 Other columns can be included as necessary for \code{.update_ac} (see below).}
 
-\item{.bathy}{A \code{\link{SpatRaster}} that defines the grid over which the algorithms are implemented. This layer should be the same as that used to define \code{.detection_overlaps} (via \code{\link[=acs_setup_detection_containers]{acs_setup_detection_containers()}} and \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}}) and \code{.detection_kernels} (via \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}).}
+\item{.bathy}{A \code{\link{SpatRaster}} that defines the grid over which the algorithms are implemented. This layer should be the same as that used to define \code{.detection_kernels} (via \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}).}
 
 \item{.detection_overlaps}{(optional) A named \code{list} of detection container overlaps, defined over \code{.bathy}, from \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}}. If un-supplied, it is silently assumed that receiver detection containers do not overlap. If supplied, receiver overlaps are taken into account in detection probability calculations.}
 
@@ -89,7 +89,7 @@ For a full description of the AC* algorithms, see the resources linked in 'Sourc
 \section{Tips}{
 \itemize{
 \item \strong{Datasets}. It is good practice to ensure that the datasets that underpin the AC* algorithms (e.g., acoustic data, receiver servicing dates, archival data, receiver locations), as used in \verb{acs_setup_*} functions are aligned (i.e., defined for the same individual, the same receiver(s) and the same time frame). Use a consistent bathymetry grid in all functions. We have tested functions using a bathymetry grid with a Universal Transverse Mercator Projection. We believe other projections should work, providing the units of variables are comparable, but this is untested.
-\item \strong{False detections.}. The usual data processing considerations for passive acoustic telemetry data apply with the AC* algorithms. Of particular importance is to check for false detections and to check whether, given the assumed detection range(s) (see \code{\link[=acs_setup_detection_containers]{acs_setup_detection_containers()}}) and mobility parameter (see \code{\link[=acs_setup_obs]{acs_setup_obs()}}), the individual could have moved have between sequential receivers within the available time. It is worth checking this before implementing \code{\link[=acs]{acs()}} because this check only requires you to consider sequential detections (and should take seconds), while \code{\link[=acs]{acs()}} may consider may intermediate time steps (depending on the implementation) and generally requires longer computation times. See the following functions as a starting point:
+\item \strong{False detections.}. The usual data processing considerations for passive acoustic telemetry data apply with the AC* algorithms. Of particular importance is to check for false detections and to check whether, given the assumed detection range(s) and mobility parameter (see \code{\link[=acs_setup_obs]{acs_setup_obs()}}), the individual could have moved have between sequential receivers within the available time. It is worth checking this before implementing \code{\link[=acs]{acs()}} because this check only requires you to consider sequential detections (and should take seconds), while \code{\link[=acs]{acs()}} may consider may intermediate time steps (depending on the implementation) and generally requires longer computation times. See the following functions as a starting point:
 \itemize{
 \item \href{https://rdrr.io/github/ocean-tracking-network/glatos/man/false_detections.html}{\code{false_detections}} in the \href{https://github.com/ocean-tracking-network/glatos}{\code{glatos}} package;
 \item \href{https://edwardlavender.github.io/flapper/reference/process_false_detections_sf.html}{\code{process_false_detections_sf}} in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package;
@@ -116,7 +116,6 @@ Please submit a \href{https://github.com/edwardlavender/patter/issues}{feature r
 #### Workflow
 # A. Define input datasets & objects
 # * ?`acs_setup_obs()`
-# * ?`acs_setup_detection_containers()`
 # * ?`acs_setup_detection_overlaps()`
 # * ?`acs_setup_detection_kernels()`
 # B. Implement AC* algorithm(s)
@@ -294,7 +293,7 @@ AC-branch algorithms in \code{\link{patter}} include the AC* algorithm (\verb{[a
 This function is part of a series of functions designed to implement the AC* algorithms. See:
 \enumerate{
 \item \code{\link[=acs_setup_obs]{acs_setup_obs()}} to set up observations;
-\item \code{\link[=acs_setup_detection_containers]{acs_setup_detection_containers()}} and \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}} to identify receiver overlaps (used in detection probability calculations);
+\item \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}} to identify receiver overlaps (used in detection probability calculations);
 \item \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}} to define detection probability kernels;
 \item \code{\link[=acs]{acs()}} to implement the AC algorithm;
 }

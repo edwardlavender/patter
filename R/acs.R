@@ -11,7 +11,7 @@
 #' * `buffer_future`---a `double` that controls container shrinkage from the future to the present;
 #'
 #' Other columns can be included as necessary for `.update_ac` (see below).
-#' @param .bathy A [`SpatRaster`] that defines the grid over which the algorithms are implemented. This layer should be the same as that used to define `.detection_overlaps` (via [`acs_setup_detection_containers()`] and [`acs_setup_detection_overlaps()`]) and `.detection_kernels` (via [`acs_setup_detection_kernels()`]).
+#' @param .bathy A [`SpatRaster`] that defines the grid over which the algorithms are implemented. This layer should be the same as that used to define `.detection_kernels` (via [`acs_setup_detection_kernels()`]).
 #' @param .detection_overlaps (optional) A named `list` of detection container overlaps, defined over `.bathy`, from [`acs_setup_detection_overlaps()`]. If un-supplied, it is silently assumed that receiver detection containers do not overlap. If supplied, receiver overlaps are taken into account in detection probability calculations.
 #' @param .detection_kernels A named `list` of detection probability kernels, defined over `.bathy`, from [`acs_setup_detection_kernels()`].
 #' @param .update_ac,... (optional) A function and additional arguments used to update the [`SpatRaster`] that defines the possible locations of the individual given the data (according to the AC algorithm) at each time step. For example, if you have depth observations, you could use a depth-error model to define a probability surface that describes the possible locations of the individual at each time step and combine this, via `.update_ac`, with the surface from the AC algorithm. Information from other variables can be integrated in the same way. The function must accept five arguments in the following order (even if they are unused):
@@ -36,7 +36,7 @@
 #'
 #' # Tips
 #' * **Datasets**. It is good practice to ensure that the datasets that underpin the AC* algorithms (e.g., acoustic data, receiver servicing dates, archival data, receiver locations), as used in `acs_setup_*` functions are aligned (i.e., defined for the same individual, the same receiver(s) and the same time frame). Use a consistent bathymetry grid in all functions. We have tested functions using a bathymetry grid with a Universal Transverse Mercator Projection. We believe other projections should work, providing the units of variables are comparable, but this is untested.
-#' * **False detections.**. The usual data processing considerations for passive acoustic telemetry data apply with the AC* algorithms. Of particular importance is to check for false detections and to check whether, given the assumed detection range(s) (see [`acs_setup_detection_containers()`]) and mobility parameter (see [`acs_setup_obs()`]), the individual could have moved have between sequential receivers within the available time. It is worth checking this before implementing [`acs()`] because this check only requires you to consider sequential detections (and should take seconds), while [`acs()`] may consider may intermediate time steps (depending on the implementation) and generally requires longer computation times. See the following functions as a starting point:
+#' * **False detections.**. The usual data processing considerations for passive acoustic telemetry data apply with the AC* algorithms. Of particular importance is to check for false detections and to check whether, given the assumed detection range(s) and mobility parameter (see [`acs_setup_obs()`]), the individual could have moved have between sequential receivers within the available time. It is worth checking this before implementing [`acs()`] because this check only requires you to consider sequential detections (and should take seconds), while [`acs()`] may consider may intermediate time steps (depending on the implementation) and generally requires longer computation times. See the following functions as a starting point:
 #'    * [`false_detections`](https://rdrr.io/github/ocean-tracking-network/glatos/man/false_detections.html) in the [`glatos`](https://github.com/ocean-tracking-network/glatos) package;
 #'    * [`process_false_detections_sf`](https://edwardlavender.github.io/flapper/reference/process_false_detections_sf.html) in the [`flapper`](https://github.com/edwardlavender/flapper) package;
 #'    * [`get_detection_overlaps`](https://edwardlavender.github.io/flapper/reference/get_detection_overlaps.html) in the [`flapper`](https://github.com/edwardlavender/flapper) package;
@@ -59,7 +59,7 @@
 #'
 #' This function is part of a series of functions designed to implement the AC* algorithms. See:
 #' 1. [`acs_setup_obs()`] to set up observations;
-#' 2. [`acs_setup_detection_containers()`] and [`acs_setup_detection_overlaps()`] to identify receiver overlaps (used in detection probability calculations);
+#' 2. [`acs_setup_detection_overlaps()`] to identify receiver overlaps (used in detection probability calculations);
 #' 3. [`acs_setup_detection_kernels()`] to define detection probability kernels;
 #' 4. [`acs()`] to implement the AC algorithm;
 #'

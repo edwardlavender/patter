@@ -4,7 +4,6 @@
 #'
 #' @details
 #' * [`dat_obs()`] reads an example input dataset from [`acs_setup_obs()`];
-#' * [`dat_containers()`] reads an example output from [`acs_setup_detection_containers()`];
 #' * [`dat_overlaps()`] reads an example output from [`acs_setup_detection_overlaps()`];
 #' * [`dat_kernels()`] reads an example output from [`acs_setup_detection_kernels()`];
 #' * [`dat_ac()`] reads an example output from [`acs()`];
