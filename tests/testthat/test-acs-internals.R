@@ -117,6 +117,7 @@ test_that(".acs_absences() and .acs_given_detection_SpatRaster() works", {
   # Detections both 3 and 4, or at 5, are always isolated
   dates <- c("2016-01-02", "2016-01-03", "2016-01-04", "2016-01-05")
   sapply(dates, function(date) {
+    # date <- dates[1]
     .acs_absences(date, c(3, 4), overlaps) |> expect_null()
     .acs_absences(date, 5, overlaps) |> expect_null()
   })

@@ -148,6 +148,11 @@
       }) |>
       unlist() |>
       unique()
+    # Define the set of overlapping receivers that did not record detections
+    absences <- absences[!(absences %in% .detections)]
+    if (length(absences) == 0L) {
+      absences <- NULL
+    }
   }
   absences
 }
