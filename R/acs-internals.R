@@ -41,8 +41,7 @@
 
 .acs_check_detection_overlaps <- function(.detection_overlaps) {
   if (!is.null(.detection_overlaps)) {
-    check_named_list(.detection_overlaps)
-    check_names(.detection_overlaps, c("list_by_receiver", "list_by_date"))
+    check_inherits(.detection_overlaps, "list")
   }
 }
 
@@ -142,21 +141,13 @@
 .acs_absences <- function(.date, .detections, .overlaps){
   absences <- NULL
   if (!is.null(.overlaps)) {
-    # Define overlapping receivers
+    # Define overlapping receivers (i.e., those with detection 'absences')
     absences <-
       lapply(.detections, function(r) {
-        ov <- .overlaps$list_by_receiver[[r]]
-        ov <- ov[rownames(ov) == .date, 3:ncol(ov)]
-        colnames(ov)[ov == 1]
+        .overlaps[[r]][[.date]]
       }) |>
       unlist() |>
-      as.integer() |>
       unique()
-    # Define the set of overlapping receivers that did not record detections
-    absences <- absences[!(absences %in% .detections)]
-    if (length(absences) == 0L) {
-      absences <- NULL
-    }
   }
   absences
 }
