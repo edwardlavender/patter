@@ -23,7 +23,7 @@ coa <- function(.acoustics, .delta_t, .split = NULL, .lonlat = NULL,
   #### Check user inputs
   .acoustics <- .coa_check_acoustics(.acoustics, .split)
   if (is.null(.lonlat)) {
-    .lonlat <- .coa_check_lonlat(.acoustics)
+    .lonlat <- .is_lonlat(.acoustics)
   }
   if (.lonlat) {
     rlang::check_installed("geosphere")

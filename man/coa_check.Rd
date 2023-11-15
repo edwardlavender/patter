@@ -3,12 +3,9 @@
 \name{coa_check}
 \alias{coa_check}
 \alias{.coa_check_acoustics}
-\alias{.coa_check_lonlat}
 \title{COA internals}
 \usage{
 .coa_check_acoustics(.acoustics, .split)
-
-.coa_check_lonlat(.acoustics)
 }
 \description{
 COA internals

@@ -8,7 +8,7 @@
 \alias{check_archival}
 \title{Check input datasets}
 \usage{
-check_moorings(.moorings, .class = "data.table")
+check_moorings(.moorings, .class = "data.table", .lonlat = NULL)
 
 check_services(.services, .moorings)
 
