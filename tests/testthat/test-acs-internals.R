@@ -97,8 +97,7 @@ test_that(".acs_absences() and .acs_given_detection_SpatRaster() works", {
   }
 
   #### Define overlaps & kernels
-  containers <- acs_setup_detection_containers(gebco, m)
-  overlaps <- acs_setup_detection_overlaps(containers, m, s)
+  overlaps <- acs_setup_detection_overlaps(m, s)
   kernels <- acs_setup_detection_kernels(m, s, acs_setup_detection_pr, gebco)
 
   #### Test .acs_absences()

@@ -49,7 +49,7 @@ test_that("acs_setup_obs() works", {
 })
 
 
-test_that("acs_setup_detection_containers() and acs_setup_detection_overlaps() work", {
+test_that("acs_setup_detection_overlaps() work", {
 
   #### Define example 'moorings' dataset
   # receivers 3 and 4 overlap in space but receiver 5 is further afield
@@ -67,25 +67,8 @@ test_that("acs_setup_detection_containers() and acs_setup_detection_overlaps() w
   terra::plot(gebco)
   points(m$receiver_easting, m$receiver_northing)
 
-  #### Define detection containers
-  containers <- acs_setup_detection_containers(gebco, m)
-
-  #### Validate detection containers
-  # Check list length & contents
-  expect_true(length(containers) == 5)
-  expect_true(is.null(containers[[1]]))
-  expect_true(is.null(containers[[2]]))
-  expect_true(!is.null(containers[[3]]))
-  expect_true(!is.null(containers[[4]]))
-  expect_true(!is.null(containers[[5]]))
-  # Validate expected values
-  rxy <-  data.frame(m$receiver_easting, m$receiver_northing)
-  expect_true(all(terra::extract(containers[[3]], rxy)$layer == c(1, 1, 0)))
-  expect_true(all(terra::extract(containers[[4]], rxy)$layer == c(1, 1, 0)))
-  expect_true(all(terra::extract(containers[[5]], rxy)$layer == c(0, 0, 1)))
-
   #### Identify detection overlaps
-  out <- acs_setup_detection_overlaps(containers, m, s)
+  out <- acs_setup_detection_overlaps(m, s)
 
   # Validate detection overlaps
   # Check list contents
