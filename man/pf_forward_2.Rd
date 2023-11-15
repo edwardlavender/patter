@@ -68,7 +68,7 @@ If un-supplied, quadrature points are sampled from within acoustic containers us
 \item \code{receiver_id}---an \code{integer} vector of receiver IDs;
 \item \code{receiver_easting} and \code{receiver_northing} (if \code{.lonlat = FALSE}) or \code{receiver_lon} and \code{receiver_lat} (if\code{.lonlat = FALSE}) ---\code{numeric} vectors that define receiver coordinates;
 }
-\item \code{detection_overlaps} is a named \code{list} of detection container overlaps (see \code{\link[=acs]{acs()}}).
+\item \code{detection_overlaps} is a \code{list} of detection container overlaps (see \code{\link[=acs]{acs()}}).
 \item \code{detection_kernels} is a named \code{list} of detection kernels (see \code{\link[=acs]{acs()}}).
 }
 

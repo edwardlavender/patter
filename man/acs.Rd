@@ -47,7 +47,7 @@ Other columns can be included as necessary for \code{.update_ac} (see below).}
 
 \item{.bathy}{A \code{\link{SpatRaster}} that defines the grid over which the algorithms are implemented. This layer should be the same as that used to define \code{.detection_kernels} (via \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}).}
 
-\item{.detection_overlaps}{(optional) A named \code{list} of detection container overlaps, defined over \code{.bathy}, from \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}}. If un-supplied, it is silently assumed that receiver detection containers do not overlap. If supplied, receiver overlaps are taken into account in detection probability calculations.}
+\item{.detection_overlaps}{(optional) A \code{list} of detection container overlaps, defined over \code{.bathy}, from \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}}. If un-supplied, it is silently assumed that receiver detection containers do not overlap. If supplied, receiver overlaps are taken into account in detection probability calculations.}
 
 \item{.detection_kernels}{A named \code{list} of detection probability kernels, defined over \code{.bathy}, from \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}.}
 
