@@ -57,7 +57,7 @@ you would like to see additional functionality brought into
 
 # Installation
 
-This package requires `R` version ≥ 4.0. You can check your current
+This package requires `R` version ≥ 4.1. You can check your current
 version with `R.version.string`. Subsequent installation steps (may)
 require the `devtools` and `pkgbuild` packages, which can be installed
 with `install.packages(c("devtools", "pkgbuild"))`. On Windows, package
@@ -183,9 +183,9 @@ To implement particle filtering (PF), use:
 
 - `pf_setup_files()` to set up the record;
 - `pf_kick()` for an example movement model;
-- `pf_forward_*()` to implement the forward simulation; namely: \*
-  `pf_forward_1()` for the original (two-step) implementation; \*
-  `pf_forward_2()` for an integrated implementation;
+- `pf_forward_*()` to implement the forward simulation; namely:
+  - `pf_forward_1()` for the original (two-step) implementation;
+  - `pf_forward_2()` for an integrated implementation;
 - `pf_backward()` to implement the backward pass;
 - `pf_coords()` to collate particle coordinates;
 - `pf_path()` (and `pf_path_pivot()`) to reconstruct movement paths;
