@@ -258,6 +258,7 @@ acs_setup_detection_overlaps <- function(.moorings, .services = NULL) {
     pbapply::pblapply(seq_len(max(.moorings$receiver_id)), function(i) {
 
       # Define data for relevant receiver
+      # print(i)
       r          <- i
       rc         <- as.character(r)
       r_pairs    <- pairs_ls[[rc]]
@@ -270,7 +271,9 @@ acs_setup_detection_overlaps <- function(.moorings, .services = NULL) {
       active <- seq(min(r_moorings$receiver_start), max(r_moorings$receiver_end), by = "days")
       if (!is.null(.services)) {
         r_services <- services_ls[[rc]]
-        active <- active[!(active %within% r_services$int)]
+        if (!is.null(r_services)) {
+          active <- active[!(active %within% r_services$int)]
+        }
       }
 
       # For each date, identify overlapping receivers
@@ -285,10 +288,21 @@ acs_setup_detection_overlaps <- function(.moorings, .services = NULL) {
       # Account for servicing dates of overlapping receivers
       # * Dates must _not_ be within servicing intervals of other receivers
       if (!is.null(.services)) {
+        # Add service intervals
         overlaps <-
           overlaps |>
-          mutate(r2_service = .services$int[match(.data$r2, .services$receiver_id)]) |>
-          filter(!(date %within% r2_service)) |>
+          mutate(r2_service = .services$int[match(.data$r2, .services$receiver_id)],
+                 r2_service_na = .data$r2_service@start) |>
+          as.data.frame()
+        # Identify positions with service intervals (pos_1) that overlap with service dates (to drop)
+        pos_1 <- which(!is.na(overlaps$r2_service_na))
+        pos_2 <- which(overlaps$date[pos_1] %within% overlaps$r2_service[pos_1])
+        pos <- pos_1[pos_2]
+        # Filter out dates that are within servicing intervals
+        if (length(pos) > 0L) {
+          overlaps <- overlaps[-pos, ]
+        }
+        overlaps |>
           select("r1", "date", "r2") |>
           as.data.table()
       }
