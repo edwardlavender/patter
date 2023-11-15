@@ -151,6 +151,9 @@
 #' @importFrom dplyr row_number
 #' @importFrom dplyr any_of
 #' @importFrom dplyr left_join
+#' @importFrom dplyr count
+#' @importFrom dplyr pull
+#' @importFrom dplyr collect
 #'
 #' @importFrom dtplyr lazy_dt
 #'

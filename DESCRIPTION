@@ -11,13 +11,15 @@ Imports:
     data.table, dplyr, dtplyr, rlang, 
     glue, lubridate,
     pbapply, progress, 
+    circular, truncdist,
     terra
 Suggests: 
-    circular, extraDistr, truncdist, 
+    extraDistr, 
     geosphere, spatialEco, 
     spatstat.geom, spatstat.explore,
     purrr, stringr,
-    Rfast, zoo,
+    sparklyr, Rfast, zoo,
+    qs,
     knitr, rmarkdown,
     testthat (>= 3.0.0)
 Depends: R (>= 4.0)
