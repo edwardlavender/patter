@@ -2,7 +2,6 @@
 
 export(.acs_check_present)
 export(acs)
-export(acs_setup_detection_containers)
 export(acs_setup_detection_kernels)
 export(acs_setup_detection_overlaps)
 export(acs_setup_detection_pr)

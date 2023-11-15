@@ -162,82 +162,15 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility, .detec
 
 }
 
-
-#' @title AC* set up: define detection containers
-#' @description This function defines receiver detection containers.
-#' @param .bathy A [`SpatRaster`] that defines the grid over which the AC algorithms are implemented. `NA`s in this layer are used to mask detection containers.
-#' @param .moorings A [`data.table`] that defines receiver locations and associated information (see [`dat_moorings`] for an example). At a minimum, this must contain `receiver_id`, `receiver_easting`, `receiver_northing` and `receiver_range` columns that define unique receiver deployments, receiver locations and (receiver-specific) detection ranges. Receiver IDs should be an `integer` vector.
-#'
-#' @details Receiver detection containers are the regions within which an individual must be located, given a detection at a receiver. This function defines detection containers simply as a circular buffer (of distance `.moorings$receiver_range`) around receivers, masked by `.bathy` (e.g., land). Receiver detection containers are used to determine receiver overlaps (via [`acs_setup_detection_overlaps()`]), which are used in the AC* algorithms in detection probability calculations.
-#'
-#' @return The function returns a named `list`, with one element for each integer from `1:max(moorings$receiver_id)`. Any list elements that do not correspond to receivers contain a `NULL` element. List elements that correspond to receivers contain a [`SpatRaster`] that defines the detection container around that receiver.
-#'
-#' @examples
-#' #### Example (1): Use constant receiver detection ranges
-#' # Define grid
-#' grid <- dat_gebco()
-#' terra::plot(grid)
-#' # Define receiver detection ranges
-#' dat_moorings$receiver_range
-#' # Define detection containers
-#' containers <- acs_setup_detection_containers(grid, dat_moorings)
-#' # Visualise an example container
-#' terra::plot(containers[[dat_moorings$receiver_id[1]]])
-#' points(dat_moorings$receiver_easting[1], dat_moorings$receiver_northing[1])
-#'
-#' #### Example (2): Use receiver-specific detection ranges
-#' dat_moorings$receiver_range[1] <- 100
-#' dat_moorings$receiver_range[2] <- 1000
-#' containers <- acs_setup_detection_containers(grid, dat_moorings)
-#' terra::plot(containers[[dat_moorings$receiver_id[1]]], col = "red")
-#' terra::lines(terra::as.polygons(containers[[dat_moorings$receiver_id[2]]]), col = "blue")
-#'
-#' @source This function is based on the [`acs_setup_containers`](https://edwardlavender.github.io/flapper/reference/acs_setup_containers.html) function in the [`flapper`](https://github.com/edwardlavender/flapper) package.
-#'
-#' @author Edward Lavender
-#' @export
-
-acs_setup_detection_containers <- function(.bathy, .moorings) {
-
-  #### Check user inputs
-  # * moorings should required columns (receiver_id, receiver_easting, receiver_northing, receiver_range)
-  # * moorings$receiver_id should be an integer from 1 to n
-  check_moorings(.moorings, .class = "data.frame")
-  check_names(input = .moorings,
-              req = c("receiver_id", "receiver_range",
-                      "receiver_easting", "receiver_northing"))
-
-  #### Build containers
-  rs <- seq_len(max(.moorings$receiver_id))
-  containers <-
-    pbapply::pblapply(rs, function(id) {
-      out <- NULL
-      bool <- .moorings$receiver_id == id
-      if (any(bool)) {
-        d <- .moorings[which(bool), ]
-        g   <- terra::setValues(.bathy, NA)
-        rxy <- matrix(c(d$receiver_easting, d$receiver_northing), ncol = 2)
-        g[terra::cellFromXY(g, rxy)] <- 1
-        # terra::plot(g)
-        out <- terra::buffer(g, d$receiver_range)
-        out <- (terra::mask(out, .bathy)) + 0
-        # terra::plot(out)
-      }
-      out
-    })
-  names(containers) <- rs
-  containers
-}
-
-
 #' @title AC* set up: define detection container overlaps
 #' @description This function identifies receivers with overlapping detection containers in space and time for the AC* algorithms.
 #'
-#' @param .containers A named `list` of `SpatRaster`s that represent receiver detection containers, from [`acs_setup_detection_containers()`].
 #' @param .moorings A [`data.table`] that defines receiver deployments and associated information (see [`dat_moorings`] for an example). At a minimum, this must contain the following columns:
 #' * `receiver_id`---an `integer` vector of receiver IDs;
+#' * `receiver_easting` and `receiver_northing` or `receiver_lon` and `receiver_lat`---doubles that define receiver coordinates on a planar coordinate reference system or in longitude/latitude;
 #' * `receiver_start`---a `Date` vector that defines receiver deployment dates;
 #' * `receiver_end`---a `Date` vector that defines receiver retrieval dates;
+#' * `receiver_range`---a double that defines the detection range (m) for each receiver;
 #' @param .services (optional) A [`data.table`] that defines receiver IDs and servicing `Date`s (times during the deployment period of a receiver when it was not active due to servicing) (see [`make_matrix_receivers()`]). If provided, this must contain the following columns:
 #' * `receiver_id`---an `integer` vector of receiver IDs;
 #' * `service_start`---a `Date` vector that defines receiver servicing start dates;
@@ -245,166 +178,132 @@ acs_setup_detection_containers <- function(.bathy, .moorings) {
 #'
 #' @details In the AC* algorithms, at the moment of detection, the set of possible locations depends on the receiver(s) at which an individual is, and is not, detected. The outputs of this function are used to restrict the probability calculations to the set of receivers that overlap with the receiver(s) at which an individual is detected for improved efficiency.
 #'
-#' @return The function returns a named `list` with two elements:
-#' * **`overlap_by_receiver`** is `list`, with one element for all integers from `1:max(.moorings$receiver_id)`. Any elements that do not correspond to receivers contain a `NULL` element. List elements that correspond to receivers contain a `data.frame` that defines, for each day over the deployment period (defined in `timestamp`) of that receiver (defined in `receiver_id`), whether (1) or not (0) that receiver overlapped in space with every other receiver (defined in the remaining columns by their receiver IDs).
-#' * **`overlap_by_date`** is a named `list`, with one element for each `Date` from the start until the end of the study `(min(.moorings$receiver_start_date):max(.moorings$receiver_end_date))`, that records an integer vector of all receivers with overlapping containers on that date. In this vector, each receiver overlaps with at least one other receiver (but not every receiver will necessarily overlap with every other receiver).
+#' At the time of writing (November 2023), the function permits receiver ranges to differ between receivers, but assumes they are constant in time.
+#'
+#' @return The function returns a nested `list`, with one element for all integers from `1:max(.moorings$receiver_id)`. Any elements that do not correspond to receivers contain a `NULL` element. List elements that correspond to receivers contain a `NULL` or a `list` that defines, for each deployment date with overlapping receiver(s), a vector of overlapping receiver(s).
 #'
 #' @examples
 #' #### Example (1): Basic implementation
-#' # Define detection containers
-#' # containers <- acs_setup_detection_containers(dat_gebco(), dat_moorings)
-#' # (For speed, we use a pre-computed dataset):
-#' containers <- dat_containers()
-#' # Identify receiver overlaps
-#' overlaps <- acs_setup_detection_overlaps(containers, dat_moorings)
+#' overlaps <- acs_setup_detection_overlaps(dat_moorings)
 #' summary(overlaps)
 #'
-#' @source This function is based on the [`get_detection_containers_overlaps`](https://edwardlavender.github.io/flapper/reference/get_detection_containers_overlap.html) function in the [`flapper`](https://github.com/edwardlavender/flapper) package.
+#' @source This function supersedes the [`get_detection_containers_overlaps`](https://edwardlavender.github.io/flapper/reference/get_detection_containers_overlap.html) function in the [`flapper`](https://github.com/edwardlavender/flapper) package.
 #'
 #' @author Edward Lavender
 #' @export
 
-acs_setup_detection_overlaps <- function(.containers, .moorings, .services = NULL) {
+acs_setup_detection_overlaps <- function(.moorings, .services = NULL) {
 
   #### Check user inputs
-  .moorings <- check_moorings(.moorings)
+  lonlat    <- .is_lonlat(.moorings)
+  .moorings <- check_moorings(.moorings, .lonlat = lonlat)
   check_inherits(.moorings$receiver_start, "Date")
   check_inherits(.moorings$receiver_end, "Date")
+  check_names(.moorings, "receiver_range")
   if (!is.null(.services)) {
     .services <- check_services(.services, .moorings)
     check_inherits(.services$service_start, "Date")
     check_inherits(.services$service_end, "Date")
   }
 
-  #### Define receiver activity status matrix
-  # This defines whether or not each receiver was active on each date (0, 1)
-  # We'll start from this point because it accounts for receiver activity status (including servicing).
-  # We'll then update this, for each receiver, to define whether or not, if that receiver was active on a given date
-  # ... which other receivers (if any) it overlapped in space (and time) with.
-  rs_active_mat <- make_matrix_receivers(
-    .moorings = .moorings,
-    .services = .services,
-    .delta_t = "days",
-    .as_POSIXct = NULL
-  )
+  #### Define receiver pairs
+  receivers <- unique(.moorings$receiver_id)
+  pairs <-
+    expand.grid(r1 = receivers, r2 = receivers) |>
+    filter(.data$r1 != .data$r2) |>
+    as.data.frame()
 
-  #### Define a list, with one dataframe element per receiver, that defines, for each time step, the overlapping receivers (0, 1)
-  list_by_receiver <- pbapply::pblapply(seq_len(length(.containers)), function(i) {
+  #### Define receivers overlapping in deployment period & time
+  # Note that lubridate::interval() only works with data.frame() (not data.table())
+  .moorings     <- as.data.frame(.moorings)
+  .moorings$int <- lubridate::interval(.moorings$receiver_start, .moorings$receiver_end)
+  ind_1 <- match(pairs$r1, .moorings$receiver_id)
+  ind_2 <- match(pairs$r2, .moorings$receiver_id)
+  pairs <-
+    pairs |>
+    mutate(
+      # Identify deployment periods
+      receiver_start = .moorings$receiver_start[ind_1],
+      receiver_end = .moorings$receiver_end[ind_1],
+      int_1 = lubridate::interval(.data$receiver_start,
+                                  .data$receiver_end),
+      int_2 = lubridate::interval(.moorings$receiver_start[ind_2],
+                                  .moorings$receiver_end[ind_2]),
+      # Calculate distances between receivers
+      rng_1 = .moorings$receiver_range[ind_1],
+      rng_2 = .moorings$receiver_range[ind_2],
+      dist = terra::distance(cbind(.moorings$receiver_x[ind_1],
+                                   .moorings$receiver_y[ind_1]),
+                             cbind(.moorings$receiver_x[ind_2],
+                                   .moorings$receiver_y[ind_2]),
+                             lonlat = lonlat, pairwise = TRUE)
+    ) |>
+    # Identify receivers that overlap (at least partially) in time & space
+    filter(lubridate::int_overlaps(.data$int_1, .data$int_2)) |>
+    filter(dist <= (.data$rng_1 + .data$rng_2)) |>
+    arrange(.data$r1, .data$r2) |>
+    as.data.frame()
 
-    #### Collect container and receiver status information
-    r1      <- names(.containers)[[i]]
-    cont_r1 <- .containers[[i]]
-    if (is.null(cont_r1)) return(NULL)
-    # Define moorings & receiver status matrix
-    m    <- .moorings[.moorings$receiver_id == r1, , drop = FALSE]
-    info <- rs_active_mat
-    info <- info[as.Date(rownames(info)) %within% lubridate::interval(m$receiver_start, m$receiver_end), , drop = FALSE]
+  #### Build overlaps list
+  # Define data lists for quick access
+  moorings_ls <- split(.moorings, .moorings$receiver_id)
+  pairs_ls    <- split(pairs, pairs$r1)
+  if (!is.null(.services)) {
+    .services     <- as.data.frame(.services)
+    .services$int <- lubridate::interval(.services$service_start, .services$service_end)
+    services_ls   <- split(.services, .services$receiver_id)
+  }
+  # Build list
+  out <-
+    pbapply::pblapply(seq_len(max(.moorings$receiver_id)), function(i) {
 
-    #### Convert receiver 'active' index (0, 1) to 'overlapping' index
-    # ... A) Check for overlapping receivers
-    # ... B) If there are overlapping receivers,
-    # ... ... then we force all dates when the receiver of interest was not active to take 0 (no receivers could overlap with it then)
-    # ... ... and we force all receivers that didn't overlap in space to 0
-    # ... C) If there are no overlapping receivers, the whole matrix just gets forced to 0
-
-    ## (A) Get an index of the receivers that intersected with the current receiver (in space)
-    cont_r1 <- terra::mask(cont_r1, cont_r1 != 1, maskvalue = TRUE, updatevalue = NA)
-    int <- lapply(seq_len(length(.containers)), function(j) {
-      r2      <- names(.containers)[j]
-      cont_r2 <- .containers[[j]]
-      .int     <- data.frame(receiver_id = r2, overlap = 0)
-      if (!is.null(cont_r2) && r1 != r2) {
-        cont_r2 <- terra::mask(cont_r2, cont_r2 != 1, maskvalue = TRUE, updatevalue = NA)
-        # terra::plot(check)
-        cont_int <- terra::intersect(cont_r1, cont_r2)
-        # terra::plot(.int)
-        .int$overlap <- as.integer(terra::global(cont_int, "max", na.rm = TRUE))
+      # Define data for relevant receiver
+      r          <- i
+      rc         <- as.character(r)
+      r_pairs    <- pairs_ls[[rc]]
+      if (is.null(r_pairs)) {
+        return(NULL)
       }
-      .int
-    }) |> dplyr::bind_rows()
+      r_moorings <- moorings_ls[[rc]]
 
-    ## (B) If there are any overlapping receivers,
-    if (any(int$overlap == 1)) {
+      # Define active dates
+      active <- seq(min(r_moorings$receiver_start), max(r_moorings$receiver_end), by = "days")
+      if (!is.null(.services)) {
+        r_services <- services_ls[[rc]]
+        active <- active[!(active %within% r_services$int)]
+      }
 
-      ## Process 'overlap' when the receiver was not active
-      # ... Any time there is a '0' for activity status of the current receiver (e.g., due to servicing),
-      # ... there can be no overlap with that receiver
-      # ... so we will set a '0' to all other receivers
-      # ... some of which may have been active on that date
-      # ... Note the implementation of this step before the step below, when all rows for the receiver
-      # ... of interest are (inadvertently) set to 0.
-      info[which(info[, as.character(r1)] == 0), ] <- 0
+      # For each date, identify overlapping receivers
+      # * Dates must be _within_ active deployment intervals of other receivers
+      overlaps <-
+        expand.grid(r1 = r, date = active, r2 = r_pairs$r2) |>
+        mutate(r2_active = .moorings$int[match(.data$r2, .moorings$receiver_id)]) |>
+        filter(date %within% r2_active) |>
+        select("r1", "date", "r2") |>
+        as.data.frame()
 
-      ## Process 'overlap' for overlapping/non-overlapping receivers
-      # For overlapping receivers, we'll leave these as defined in the activity matrix
-      # ... (if active, then they overlap;
-      # ... if not active, e.g., due to a servicing event for that receiver, then they can't overlap).
-      # ... For the non-overlapping receivers, we'll force '0' for the overlap (even if they were active).
-      # Get receiver IDs
-      overlapping_receivers <- int$receiver_id[int$overlap == 1]
-      # For all non-overlapping receivers, set '0' for overlap
-      # ... Note that this will include the receiver of interest
-      # ... But that doesn't matter because we'll drop that column anyway
-      info[, !(colnames(info) %in% overlapping_receivers)] <- 0
+      # Account for servicing dates of overlapping receivers
+      # * Dates must _not_ be within servicing intervals of other receivers
+      if (!is.null(.services)) {
+        overlaps <-
+          overlaps |>
+          mutate(r2_service = .services$int[match(.data$r2, .services$receiver_id)]) |>
+          filter(!(date %within% r2_service)) |>
+          select("r1", "date", "r2") |>
+          as.data.table()
+      }
 
-      ## (C) If there aren't any spatially overlapping receivers, then the whole matrix just takes on 0
-    } else {
-      info[] <- 0
-    }
+      # Return a list of overlaps
+      # * This has one element for each date when there was >= 1 overlapping receiver
+      # * Each element contains a vector of the overlapping receiver(s) on that date
+      split(overlaps$r2, overlaps$date)
 
-    #### Process dataframe
-    rnms <- rownames(info)
-    info <- data.frame(info)
-    colnames(info) <- colnames(rs_active_mat)
-    info[, as.character(r1)] <- NULL
-    cnms             <- colnames(info)
-    info$timestamp   <- as.Date(rnms)
-    info$receiver_id <- r1
-    info[, c("timestamp", "receiver_id", cnms)]
-  })
-  names(list_by_receiver) <- names(.containers)
-  list_by_receiver        <- compact(list_by_receiver)
-
-  #### On each date, get the vector of overlapping receivers
-  # Note that not every receiver in this list will necessarily overlap with every other receiver though.
-  lbd <- lapply(list_by_receiver, function(d) {
-    d |>
-      as.data.table() |>
-      data.table::melt(id.vars = c("timestamp", "receiver_id"),
-                       measure.vars = names(d)[3:ncol(d)],
-                       variable.name = "receiver_id_2",
-                       variable.factor = FALSE) |>
-      arrange(.data$timestamp) |>
-      mutate(receiver_id_2 = as.integer(.data$receiver_id_2)) |>
-      as.data.table()
-  })
-  lbd <- dplyr::bind_rows(lbd) |> dplyr::filter(.data$value == 1)
-  lbd <- lapply(split(lbd, lbd$timestamp), function(d) unique(c(d$receiver_id[1], d$receiver_id_2)))
-
-  ##### Process outputs
-  # For the list_by_receiver, we will have one element for each receiver from 1:max(.moorings$receiver_id)
-  # ... (for each indexing)
-  list_by_receiver <- lapply(as.integer(1:max(.moorings$receiver_id)), function(i) {
-    if (i %in% .moorings$receiver_id) {
-      return(list_by_receiver[[as.character(i)]])
-    } else {
-      return(NULL)
-    }
-  })
-  # For the list_by_date (lbd), we will have one element for each date from the start to the end of the array
-  days <- as.character(seq(min(.moorings$receiver_start), max(.moorings$receiver_end), "days"))
-  list_by_date <- lapply(days, function(day) {
-    lbd[[day]]
-  })
-  names(list_by_date) <- days
+    })
 
   #### Return outputs
-  out <- list()
-  out$list_by_receiver <- list_by_receiver
-  out$list_by_date <- list_by_date
   out
-}
 
+}
 
 #' @title AC* set up: calculate detection probability around a receiver
 #' @description This function is an example detection probability function, of the kind required by [`acs_setup_detection_kernels()`].
