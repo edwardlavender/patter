@@ -124,7 +124,6 @@ Please submit a \href{https://github.com/edwardlavender/patter/issues}{feature r
 #### Set up examples using pre-defined datasets for speed
 obs <- dat_obs()
 gebco      <- dat_gebco()
-containers <- dat_containers()
 overlaps   <- dat_overlaps()
 kernels    <- dat_kernels()
 

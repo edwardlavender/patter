@@ -3,7 +3,6 @@
 \name{datasets-algorithms}
 \alias{datasets-algorithms}
 \alias{dat_obs}
-\alias{dat_containers}
 \alias{dat_overlaps}
 \alias{dat_kernels}
 \alias{dat_ac}
@@ -16,8 +15,6 @@ For full details on the algorithm parameters used to generate these datasets, se
 }
 \usage{
 dat_obs()
-
-dat_containers()
 
 dat_overlaps()
 
@@ -47,7 +44,6 @@ These functions load example outputs from key \code{\link{patter}} functions. Th
 }
 \examples{
 dat_obs() |> summary()
-dat_containers() |> summary()
 dat_overlaps() |> summary()
 dat_kernels() |> summary()
 dat_ac() |> summary()

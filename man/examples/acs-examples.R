@@ -9,7 +9,6 @@
 #### Set up examples using pre-defined datasets for speed
 obs <- dat_obs()
 gebco      <- dat_gebco()
-containers <- dat_containers()
 overlaps   <- dat_overlaps()
 kernels    <- dat_kernels()
 

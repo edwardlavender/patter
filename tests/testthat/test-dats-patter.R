@@ -10,9 +10,6 @@ test_that("Algorithm datasets can be loaded", {
   x <- dat_obs()
   x |> check_inherits("data.table")
 
-  x <- dat_containers()
-  x[[4]] |> terra::plot()
-
   x <- dat_overlaps()
   x |> check_inherits("list")
 

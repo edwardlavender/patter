@@ -13,7 +13,6 @@
 #'
 #' @examples
 #' dat_obs() |> summary()
-#' dat_containers() |> summary()
 #' dat_overlaps() |> summary()
 #' dat_kernels() |> summary()
 #' dat_ac() |> summary()
@@ -33,16 +32,6 @@ dat_obs <- function() {
   path <- system.file("extdata", "dat_obs.rds",
                       package = "patter", mustWork = TRUE)
   readRDS(path)
-}
-
-#' @rdname datasets-algorithms
-#' @export
-
-dat_containers <- function() {
-  path <- system.file("extdata", "dat_containers.rds",
-                      package = "patter", mustWork = TRUE)
-  data <- readRDS(path)
-  lapply(data, unwrap_elm)
 }
 
 #' @rdname datasets-algorithms
