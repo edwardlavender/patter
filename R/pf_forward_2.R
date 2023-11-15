@@ -35,7 +35,7 @@
 #' * `moorings` is a [`data.table`] that defines receiver deployments. This must contain the following columns:
 #'    * `receiver_id`---an `integer` vector of receiver IDs;
 #'    * `receiver_easting` and `receiver_northing` (if `.lonlat = FALSE`) or `receiver_lon` and `receiver_lat` (if`.lonlat = FALSE`) ---`numeric` vectors that define receiver coordinates;
-#' * `detection_overlaps` is a named `list` of detection container overlaps (see [`acs()`]).
+#' * `detection_overlaps` is a `list` of detection container overlaps (see [`acs()`]).
 #' * `detection_kernels` is a named `list` of detection kernels (see [`acs()`]).
 #'
 #'  `.moorings`, `.detection_overlaps` and `.detection_gaps` can be `NULL` if the AC algorithm is not implemented.
