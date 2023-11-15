@@ -240,7 +240,7 @@ acs_setup_detection_overlaps <- function(.moorings, .services = NULL) {
     ) |>
     # Identify receivers that overlap (at least partially) in time & space
     filter(lubridate::int_overlaps(.data$int_1, .data$int_2)) |>
-    filter(dist <= (.data$rng_1 + .data$rng_2)) |>
+    filter(.data$dist <= (.data$rng_1 + .data$rng_2)) |>
     arrange(.data$r1, .data$r2) |>
     as.data.frame()
 
@@ -281,7 +281,7 @@ acs_setup_detection_overlaps <- function(.moorings, .services = NULL) {
       overlaps <-
         expand.grid(r1 = r, date = active, r2 = r_pairs$r2) |>
         mutate(r2_active = .moorings$int[match(.data$r2, .moorings$receiver_id)]) |>
-        filter(date %within% r2_active) |>
+        filter(date %within% .data$r2_active) |>
         select("r1", "date", "r2") |>
         as.data.frame()
 
