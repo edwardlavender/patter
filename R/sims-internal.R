@@ -2,7 +2,7 @@
 #' @description Internal functions that support the simulation of movement paths.
 #' * [`.sim_path_flux()`] simulates the movement path(s) from flux parameters that are generated dynamically at each time step. This is supported by the following helpers:
 #'    * [`.flux_template()`] defines a list of [`data.table`] objects in which the simulated 'flux' parameters (e.g., step lengths and turning angles) for each step are stored;
-#'    * [`.step_using_flux()`] and [`step()`] are functions which, given current location(s), calculate new locations, based on step lengths and turning angles;
+#'    * [`.step_using_flux()`] and [`.step()`] are functions which, given current location(s), calculate new locations, based on step lengths and turning angles;
 #'    * [`.step_iter()`] is an internal wrapper for [`.step()`] that validates proposal steps into new locations;
 #'    * [`.sim_path_pivot()`] and [`.flux_pivot()`] reorientate simulated paths/flux values;
 #'
