@@ -56,6 +56,9 @@ pf_setup_files <- function(.root, ...) {
   check_dots_allowed("full.names", ...)
   check_dots_for_missing_period(formals(), list(...))
   files <- list.files(.root, full.names = TRUE, ...)
+  if (length(files) == 0L) {
+    abort("No files identified in `.root`.")
+  }
   exts  <- tools::file_ext(files)
   if (length(unique(exts)) != 1L) {
     abort("Multiple file types (extensions) identified in `.root`. Do you need to pass `pattern` to `list.files()`?")
