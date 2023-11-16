@@ -142,6 +142,8 @@
   # * Use dplyr::left_join() instead of data.table::merge()
   # * Use dplyr::distinct() without names to avoid error ('Can't convert a call to a string.')
   cat_to_cf("... Identifying cell pairs...")
+
+  cat_to_cf("... ... Identifying 'previous' cells...")
   previous <-
     sc |>
     tbl("pf") |>
@@ -151,16 +153,19 @@
     dplyr::distinct() |>
     ungroup()
 
+  cat_to_cf("... ... Identifying 'current' cells...")
   current <-
     previous |>
     mutate(timestep = .data$timestep - 1) |>
     filter(.data$timestep != 0)
 
+  cat_to_cf("... ... Updating 'previous' cells...")
   previous <-
     previous |>
     filter(.data$timestep != max(.data$timestep)) |>
     select("timestep", cell_past = "cell_now", x_past = "x_now", y_past = "y_now")
 
+  cat_to_cf("... ... Implementing join...")
   pairs <-
     current |>
     left_join(previous, by = "timestep") |>
