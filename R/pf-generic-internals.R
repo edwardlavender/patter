@@ -127,6 +127,7 @@ NULL
     if (.collect) {
       out <-
         out |>
+        arrange(.data$timestep) |>
         dplyr::collect()
     }
     return(out)
