@@ -227,59 +227,23 @@
 }
 
 #' @title AC* helper: define AC* container(s)
-#' @description These functions define AC* containers in [`pf_forward_2()`].
+#' @description This function defines the first AC* container in [`pf_forward_2()`].
 #' @param .obs The `.obs` [`data.table`].
-#' @param .moorings A [`data.table`] that defines receiver locations.
-#' @param .coords A character vector that defines the name of the columns in `.moorings` that define receiver coordinates.
-#' @param .receivers An `integer` vector of receivers for which to define containers, used to subset `.moorings`.
-#' @param .bathy The bathymetry [`SpatRaster`].
-#' @param .buffer A `numeric` value that defines the container radius.
+#' @param .detection_kernels A [`list`] of detection kernels.
 #'
 #' @details
 #'
 #' In [`acs()`], acoustic containers are defined using [`terra::buffer()`].
 #'
-#' These functions are used in [`pf_forward_2()`].
-#' * [`.acs_container()`] defines the acoustic container around a particular set of receivers.
+#' This functions are used in [`pf_forward_2()`].
 #' * [.acs_container_1()] defines the acoustic container at the first time step, which is the intersection between the container(s) around the receivers that recorded the first detection (if applicable) and the container(s) around the receivers that recorded the next detection.
 #'
-#' @return The function returns an [`sf::sf`] object (the acoustic container).
+#' @return The function returns a [`SpatRaster`] (the acoustic container).
 #'
 #' @author Edward Lavender
-#' @name acs_container
-
-#' @rdname acs_container
 #' @keywords internal
 
-.acs_container <- function(.moorings,
-                           .coords = c("receiver_x", "receiver_y"),
-                           .receivers,
-                           .bathy,
-                           .buffer) {
-  # Define receiver locations
-  xy <-
-    .moorings |>
-    filter(.data$receiver_id %in% .receivers) |>
-    select(dplyr::all_of(.coords)) |>
-    as.matrix()
-  cells <- terra::cellFromXY(.bathy, xy)
-
-  # Define buffer(s)
-  bufs <- lapply(cells, function(cell) {
-    buf <- terra::setValues(.bathy, NA)
-    buf[cell] <- 1
-    terra::buffer(buf, .buffer)
-  })
-
-  # Define the intersection between buffer(s)
-  # * This defines the possible locations of the individual
-  spatIntersect(bufs)
-}
-
-#' @rdname acs_container
-#' @keywords internal
-
-.acs_container_1 <- function(.obs, .moorings, .bathy) {
+.acs_container_1 <- function(.obs, .detection_kernels) {
 
   #### Define starting surface based on AC algorithm & extensions
   # * If the first time step is a detection, we will account for the current & next buffer
@@ -298,10 +262,9 @@
     # Define buffer around receiver(s)
     # * I.e., the detection container for the current time step
     detection_container <-
-      .acs_container(.moorings = .moorings,
-                     .receivers = receivers_current,
-                     .bathy = .bathy,
-                     .buffer = .obs$buffer_past[pos_current])
+      .detection_kernels$receiver_specific_kernels[receivers_current] |>
+      lapply(function(x) terra::classify(x, cbind(0, NA))) |>
+      spatIntersect( .value = NULL, .fun = function(x) x > 0)
   }
 
   # (B) Define possible locations given future
@@ -311,10 +274,15 @@
   pos_next <- ifelse(start_with_detection, yes = pos_detections[2], no = pos_detections[1])
   receivers_next <- .obs$receiver_id[[pos_next]]
   future_container <-
-    .acs_container(.moorings = .moorings,
-                   .receivers = receivers_next,
-                   .bathy = .bathy,
-                   .buffer = .obs$buffer_past[pos_current])
+    lapply(receivers_next, function(r) {
+      # * Define detection detection container for selected receiver
+      # * Buffer detection container by obs$buffer_future
+      # * This assumes a constant detection range across all receivers_next
+      .detection_kernels$receiver_specific_kernels[[r]] |>
+        terra::classify(cbind(0, NA)) |>
+        terra::buffer(obs$buffer_future[1])
+    }) |>
+    spatIntersect(.value = 1)
 
   # (C) Define container accounting for detection & future
   if (start_with_detection) {
