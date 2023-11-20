@@ -24,7 +24,6 @@
   previous <-
     dt |>
     select("timestep", "cell_now", "x_now", "y_now") |>
-    filter(!is.na(.data$cell_now)) |>
     group_by(.data$timestep) |>
     dplyr::distinct() |>
     ungroup() |>
@@ -148,7 +147,6 @@
     sc |>
     tbl("pf") |>
     select("timestep", "cell_now", "x_now", "y_now") |>
-    filter(!is.na(.data$cell_now)) |>
     group_by(.data$timestep) |>
     dplyr::distinct() |>
     ungroup()
