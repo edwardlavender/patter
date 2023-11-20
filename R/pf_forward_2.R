@@ -171,7 +171,7 @@ pf_forward_2 <- function(.obs,
         if (!is.null(.moorings)) {
           # Define container for possible locations
           cat_to_cf("... ... ... Building acoustic container(s)...")
-          container <- .acs_container_1(.obs, .moorings, .bathy = .bathy)
+          container <- .acs_container_1(.obs, .detection_kernels = .detection_kernels)
           # Define 'quadrature points' at which to approximate the probability surface across the container
           cat_to_cf("... ... ... Sampling quadature points...")
           pnow <-
