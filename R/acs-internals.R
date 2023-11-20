@@ -264,7 +264,7 @@
     detection_container <-
       .detection_kernels$receiver_specific_kernels[receivers_current] |>
       lapply(function(x) terra::classify(x, cbind(0, NA))) |>
-      spatIntersect( .value = NULL, .fun = function(x) x > 0)
+      spatIntersect( .value = NULL, .fun = function(x) all(x > 0))
   }
 
   # (B) Define possible locations given future
@@ -276,17 +276,18 @@
   future_container <-
     lapply(receivers_next, function(r) {
       # * Define detection detection container for selected receiver
-      # * Buffer detection container by obs$buffer_future
+      # * Buffer detection container by .obs$buffer_future
       # * This assumes a constant detection range across all receivers_next
       .detection_kernels$receiver_specific_kernels[[r]] |>
         terra::classify(cbind(0, NA)) |>
-        terra::buffer(obs$buffer_future[1])
+        terra::buffer(.obs$buffer_future[1])
     }) |>
     spatIntersect(.value = 1)
 
   # (C) Define container accounting for detection & future
   if (start_with_detection) {
-    container <- spatIntersect(list(detection_container, future_container))
+    container <- spatIntersect(list(detection_container, future_container),
+                               .value = NULL, .fun = function(x) all(x > 0))
   } else {
     container <- future_container
   }
