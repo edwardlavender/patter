@@ -181,74 +181,79 @@ out_pfb <-
 
 #### Example (3): Pre-compute step densities without bring data fully into memory
 
-## i) Assemble data using {sparklyr} & calculate densities in memory
-# Compute densities
-densities <- pf_backward_dens(pff_folder,
-                              .step_dens = step_dens, lonlat = FALSE, pairwise = TRUE,
-                              .in_memory = FALSE, .collect = Inf)
-# Implement pf_backward_dens() as shown above (in serial or parallel)
-out_pfb <-
-  pf_backward_p(history,
-                .step_dens = step_dens_lookup, .density = densities,
-                .save_history = TRUE)
+if (FALSE) {
 
-## ii) Assemble data using {sparklyr} & calculate densities iteratively
+  ## i) Assemble data using {sparklyr} & calculate densities in memory
+  # Compute densities
+  densities <- pf_backward_dens(pff_folder,
+                                .step_dens = step_dens, lonlat = FALSE, pairwise = TRUE,
+                                .in_memory = FALSE, .collect = Inf)
+  # Implement pf_backward_dens() as shown above (in serial or parallel)
+  out_pfb <-
+    pf_backward_p(history,
+                  .step_dens = step_dens_lookup, .density = densities,
+                  .save_history = TRUE)
 
-# Compute densities
-pfb_folder <- mktempdir("patter", "pf", "backward", "pre-calcs")
-pf_backward_dens(pff_folder,
-                 .step_dens = step_dens, lonlat = FALSE, pairwise = TRUE,
-                 .in_memory = FALSE,
-                 .collect = 0L,
-                 .store = pfb_folder)
+  ## ii) Assemble data using {sparklyr} & calculate densities iteratively
 
-# We population {pfb_folder}/density/ with one file for each cell
-# (which is a list of density estimates)
-list.files(pfb_folder)
-dens <-
-  file.path(pfb_folder, "density") |>
-  list.files(full.names = TRUE, recursive = TRUE)
-qs::qread(dens[1])
-
-# (optional) Trial parallelisation for density computation
-if (.Platform$OS.type == "unix") {
+  # Compute densities
+  pfb_folder <- mktempdir("patter", "pf", "backward", "pre-calcs")
   pf_backward_dens(pff_folder,
                    .step_dens = step_dens, lonlat = FALSE, pairwise = TRUE,
                    .in_memory = FALSE,
                    .collect = 0L,
+                   .store = pfb_folder)
+
+  # We population {pfb_folder}/density/ with one file for each cell
+  # (which is a list of density estimates)
+  list.files(pfb_folder)
+  dens <-
+    file.path(pfb_folder, "density") |>
+    list.files(full.names = TRUE, recursive = TRUE)
+  qs::qread(dens[1])
+
+  # (optional) Trial parallelisation for density computation
+  if (.Platform$OS.type == "unix") {
+    pf_backward_dens(pff_folder,
+                     .step_dens = step_dens, lonlat = FALSE, pairwise = TRUE,
+                     .in_memory = FALSE,
+                     .collect = 0L,
+                     .store = mktempdir("patter", "pf", "backward", "pre-calcs"),
+                     .cl = 2L)
+  }
+  pf_backward_dens(pff_folder,
+                   .step_dens = patter::step_dens, lonlat = FALSE, pairwise = TRUE,
+                   .in_memory = FALSE,
+                   .collect = 0L,
                    .store = mktempdir("patter", "pf", "backward", "pre-calcs"),
-                   .cl = 2L)
-}
-pf_backward_dens(pff_folder,
-                 .step_dens = patter::step_dens, lonlat = FALSE, pairwise = TRUE,
-                 .in_memory = FALSE,
-                 .collect = 0L,
-                 .store = mktempdir("patter", "pf", "backward", "pre-calcs"),
-                 .cl = parallel::makeCluster(2L))
+                   .cl = parallel::makeCluster(2L))
 
-# Implement `pf_backward()` using `step_dens_read()`
-out_pfb <-
-  pf_backward_p(history,
-                .step_dens = step_dens_read,
-                .density = file.path(pfb_folder, "density"),
-                .save_history = TRUE)
-
-# Implement `pf_backward()` using `step_dens_read()` in parallel
-if (.Platform$OS.type == "unix") {
+  # Implement `pf_backward()` using `step_dens_read()`
   out_pfb <-
     pf_backward_p(history,
                   .step_dens = step_dens_read,
                   .density = file.path(pfb_folder, "density"),
+                  .save_history = TRUE)
+
+  # Implement `pf_backward()` using `step_dens_read()` in parallel
+  if (.Platform$OS.type == "unix") {
+    out_pfb <-
+      pf_backward_p(history,
+                    .step_dens = step_dens_read,
+                    .density = file.path(pfb_folder, "density"),
+                    .save_history = TRUE,
+                    .cl = 2L)
+  }
+  out_pfb <-
+    pf_backward_p(history,
+                  .step_dens = patter::step_dens_read,
+                  .density = file.path(pfb_folder, "density"),
                   .save_history = TRUE,
-                  .cl = 2L)
+                  .cl = parallel::makeCluster(2L),
+                  .varlist = "pfb_folder")
+
 }
-out_pfb <-
-  pf_backward_p(history,
-                .step_dens = patter::step_dens_read,
-                .density = file.path(pfb_folder, "density"),
-                .save_history = TRUE,
-                .cl = parallel::makeCluster(2L),
-                .varlist = "pfb_folder")
+
 }
 \seealso{
 \itemize{
