@@ -258,7 +258,7 @@ test_that("sim_path_walk() works", {
     all(p |>
           group_by(path_id) |>
           summarise(n = n()) |>
-          dplyr::pull(n) == 100))
+          pull(n) == 100))
 
   #### Test modification of step length model
   # Modify mobility parameter
@@ -431,7 +431,7 @@ test_that("sim_detections() works", {
   out |>
     group_by(array_id) |>
     summarise(test = all(1:3 %in% path_id) & all(path_id %in% 1:3)) |>
-    dplyr::pull(test) |>
+    pull(test) |>
     all() |>
     expect_true()
   # Validate path time steps/coordinates are correctly represented

@@ -78,6 +78,6 @@ pf_setup_files <- function(.root, ...) {
     lazy_dt(immutable = TRUE) |>
     mutate(name = as.integer(.data$name)) |>
     arrange(.data$name) |>
-    dplyr::pull(.data$file) |>
+    pull(.data$file) |>
     as.list()
 }

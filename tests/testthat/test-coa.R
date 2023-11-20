@@ -39,7 +39,7 @@ test_that("coa() works", {
           .d <-
             .d |>
             group_by(receiver_id) |>
-            mutate(n = dplyr::n()) |>
+            mutate(n = n()) |>
             slice(1L) |>
             ungroup()
           # Calculate COAs over all receivers

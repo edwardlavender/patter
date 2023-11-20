@@ -176,14 +176,14 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   for (t in seq_len(nrow(obs) - 1)) {
     # Define particle pair (current and proposal locations)
     # print(t)
-    pair <- dplyr::right_join(out_pff$history[[t]] |>
-                                select("cell_past", "cell_now") |>
-                                as.data.table(),
-                              out_pff$history[[t + 1]] |>
-                                select("cell_past", "cell_now") |>
-                                as.data.table(),
-                              by = c("cell_now" = "cell_past"),
-                              relationship = "many-to-many")
+    pair <- right_join(out_pff$history[[t]] |>
+                         select("cell_past", "cell_now") |>
+                         as.data.table(),
+                       out_pff$history[[t + 1]] |>
+                         select("cell_past", "cell_now") |>
+                         as.data.table(),
+                       by = c("cell_now" = "cell_past"),
+                       relationship = "many-to-many")
     colnames(pair) <- c("cell_past", "cell_now", "cell_next")
     # Define cell coordinates
     xy_now  <- terra::xyFromCell(gebco, pair$cell_now)

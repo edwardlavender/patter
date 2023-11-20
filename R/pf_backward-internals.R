@@ -25,7 +25,7 @@
     dt |>
     select("timestep", "cell_now", "x_now", "y_now") |>
     group_by(.data$timestep) |>
-    dplyr::distinct() |>
+    distinct() |>
     ungroup() |>
     as.data.table()
 
@@ -56,7 +56,7 @@
     current |>
     merge(previous, by = "timestep", allow.cartesian = TRUE) |>
     select(!"timestep") |>
-    dplyr::distinct(.data$cell_now, .data$cell_past, .keep_all = TRUE) |>
+    distinct(.data$cell_now, .data$cell_past, .keep_all = TRUE) |>
     as.data.table()
 
   # Calculate densities between cell pairs
@@ -148,7 +148,7 @@
     tbl("pf") |>
     select("timestep", "cell_now", "x_now", "y_now") |>
     group_by(.data$timestep) |>
-    dplyr::distinct() |>
+    distinct() |>
     ungroup()
 
   cat_to_cf("... ... Identifying 'current' cells...")
@@ -168,7 +168,7 @@
     current |>
     left_join(previous, by = "timestep") |>
     select(!"timestep") |>
-    dplyr::distinct()
+    distinct()
 
   #### Optionally bring pairs into memory
   in_mem <- FALSE

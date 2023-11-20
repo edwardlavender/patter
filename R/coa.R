@@ -51,7 +51,7 @@ coa <- function(.acoustics, .delta_t, .split = NULL, .lonlat = NULL,
     mutate(bin = as.POSIXct(cut(.data$timestamp, .delta_t), tz = tz)) |>
     ungroup() |>
     group_by(.data$split, .data$bin, .data$receiver_id) |>
-    mutate(n = dplyr::n()) |>
+    mutate(n = n()) |>
     slice(1L) |>
     ungroup() |>
     as.data.table()
@@ -70,7 +70,7 @@ coa <- function(.acoustics, .delta_t, .split = NULL, .lonlat = NULL,
     out <-
       .acoustics |>
       group_by(.data$split, .data$bin) |>
-      dplyr::summarise(
+      summarise(
         coa_xy = geomean(xy = as.matrix(cbind(x = .data$receiver_lon,
                                               y = .data$receiver_lat),
                                         ncol = 2),

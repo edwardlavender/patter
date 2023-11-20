@@ -87,7 +87,7 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility, .detec
     ungroup() |>
     arrange(timestamp) |>
     # Add additional columns
-    mutate(detection_id = as.integer(dplyr::row_number())) |>
+    mutate(detection_id = as.integer(row_number())) |>
     as.data.table()
 
   #### Align time series
@@ -130,7 +130,7 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility, .detec
            detection_id = as.integer(data.table::nafill(.data$detection_id, type = "locf"))) |>
     group_by(.data$detection_id) |>
     # Define buffers
-    mutate(step_forwards = dplyr::row_number(),
+    mutate(step_forwards = row_number(),
            step_backwards = rev(.data$step_forwards),
            # We buffer the past by mobility
            buffer_past = .mobility,
@@ -138,7 +138,7 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility, .detec
            buffer_future = .mobility * .data$step_backwards) |>
     ungroup() |>
     arrange(.data$timestamp) |>
-    mutate(timestep = as.integer(dplyr::row_number()),
+    mutate(timestep = as.integer(row_number()),
            receiver_id_next = .acs_setup_obs_receiver_id_next(.data$receiver_id)
     ) |>
     as.data.table()
@@ -156,7 +156,7 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility, .detec
            "timestamp", "date",
            "detection_id", "detection", "receiver_id", "receiver_id_next",
            "buffer_past", "buffer_future",
-           dplyr::any_of(c("buffer_future_incl_gamma", "depth"))
+           any_of(c("buffer_future_incl_gamma", "depth"))
            ) |>
     as.data.table()
 
@@ -562,7 +562,7 @@ acs_setup_detection_kernels <-
       array_start_date = as.Date(rownames(rs_mat_cp))
     )
     array_design$array_end_date <-
-      dplyr::lead(array_design$array_start_date) - 1
+      lead(array_design$array_start_date) - 1
     array_design$array_end_date[nrow(array_design)] <-
       max(.moorings$receiver_end)
     array_design$array_interval <-

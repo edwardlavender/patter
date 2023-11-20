@@ -132,7 +132,7 @@ pf_forward_2 <- function(.obs,
     # Coerce coordinates onto grid
     xy <-
       .moorings |>
-      select(dplyr::all_of(coords)) |>
+      select(all_of(coords)) |>
       as.matrix()
     xy <- terra::xyFromCell(.bathy, terra::cellFromXY(.bathy, xy))
     .moorings$receiver_x <- xy[, 1]

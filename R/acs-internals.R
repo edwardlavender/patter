@@ -114,7 +114,7 @@
   dt$receiver_id[sapply(dt$receiver_id, is.null)] <- list(NA_integer_)
   out <-
     dt |>
-    mutate(receiver_id_next = dplyr::lead(.data$receiver_id),
+    mutate(receiver_id_next = lead(.data$receiver_id),
            receiver_id_next = zoo::na.locf(.data$receiver_id_next,
                                            fromLast = TRUE,
                                            na.rm = FALSE)) |>

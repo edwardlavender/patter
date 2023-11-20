@@ -54,7 +54,7 @@ test_that(".pf_path_join() works", {
   # Test joining d1 and d2
   j1a <- .pf_path_join(d1, d2, .t = 2, .pb = pb)
   j2a <-
-    dplyr::right_join(d1, d2, by = c("x1" = "cell_past")) |>
+    right_join(d1, d2, by = c("x1" = "cell_past")) |>
     select(x0, x1, x2 = cell_now)
   expect_equal(j1a, j2a)
 
@@ -64,7 +64,7 @@ test_that(".pf_path_join() works", {
     .pf_path_join(d3, .t = 3)
 
   j2b <-
-    dplyr::right_join(j2a, d3, by = c("x2" = "cell_past")) |>
+    right_join(j2a, d3, by = c("x2" = "cell_past")) |>
     select(x0, x1, x2, x3 = cell_now)
   expect_equal(j1b, j2b)
 

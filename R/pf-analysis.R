@@ -38,7 +38,7 @@ pf_coords <- function(.history, .bathy, .obs = NULL, .cols = NULL) {
   p <-
     .history |>
     .pf_history_dt() |>
-    dplyr::rename(cell_id = .data$cell_now) |>
+    rename(cell_id = .data$cell_now) |>
     mutate(cell_xy = terra::xyFromCell(.bathy, .data$cell_id),
            cell_x = .data$cell_xy[, 1],
            cell_y = .data$cell_xy[, 2],
@@ -249,8 +249,8 @@ pf_pou <-
     pou <-
       .history |>
       .pf_history_dt(.collect = FALSE) |>
-      dplyr::rename(cell_id = "cell_now") |>
-      dplyr::collect() |>
+      rename(cell_id = "cell_now") |>
+      collect() |>
      .pf_weights()
 
     #### Build SpatRaster

@@ -82,7 +82,7 @@ sim_array <- function(.bathy = rast_template(), .lonlat = FALSE,
                           na.rm = TRUE, xy = TRUE, cells = TRUE, values = FALSE, ...) |>
         as.data.table() |>
         mutate(array_id = i,
-               receiver_id = as.integer(dplyr::row_number())) |>
+               receiver_id = as.integer(row_number())) |>
         select("array_id", "receiver_id", "x", "y") |>
         as.data.table()
       # Add optional columns
@@ -119,12 +119,12 @@ sim_array <- function(.bathy = rast_template(), .lonlat = FALSE,
   if (.lonlat) {
     arrays <-
       arrays |>
-      dplyr::rename(receiver_lon = "x", receiver_lat = "y") |>
+      rename(receiver_lon = "x", receiver_lat = "y") |>
       as.data.table()
   } else {
     arrays <-
       arrays |>
-      dplyr::rename(receiver_easting = "x", receiver_northing = "y") |>
+      rename(receiver_easting = "x", receiver_northing = "y") |>
       as.data.table()
   }
   arrays
@@ -210,8 +210,8 @@ sim_path_walk <- function(.bathy = rast_template(), .lonlat = FALSE,
     if (.col == 1L) {
       prior_length <- prior_angle <- NULL
     } else {
-      prior_length <- .fv$length[.row, .col - 1, with = FALSE] |> dplyr::pull()
-      prior_angle  <- .fv$angle[.row, .col - 1, with = FALSE] |> dplyr::pull()
+      prior_length <- .fv$length[.row, .col - 1, with = FALSE] |> pull()
+      prior_angle  <- .fv$angle[.row, .col - 1, with = FALSE] |> pull()
     }
     .fv$length[.row, (.col) := .sim_length(.n = n, .prior = prior_length, .t = .col, ...)]
     .fv$angle[.row, (.col) := .sim_angle(.n = n, .prior = prior_angle, .t = .col, ...)]
@@ -233,9 +233,9 @@ sim_path_walk <- function(.bathy = rast_template(), .lonlat = FALSE,
   # Update data.table with flux parameters & tidy
   out |>
     merge(length, by = c("path_id", "timestep")) |>
-    dplyr::rename(length = "value") |>
+    rename(length = "value") |>
     merge(angle, by = c("path_id", "timestep")) |>
-    dplyr::rename(angle = "value") |>
+    rename(angle = "value") |>
     as.data.table() |>
     # Select column order
     select("path_id", "timestep",

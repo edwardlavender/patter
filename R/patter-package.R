@@ -141,17 +141,23 @@
 #' @importFrom dplyr summarise
 #' @importFrom dplyr group_by
 #' @importFrom dplyr ungroup
+#' @importFrom dplyr distinct
 #' @importFrom dplyr slice
 #' @importFrom dplyr arrange
 #' @importFrom dplyr select
+#' @importFrom dplyr any_of
+#' @importFrom dplyr all_of
 #' @importFrom dplyr rename
 #' @importFrom dplyr n
 #' @importFrom dplyr row_number
-#' @importFrom dplyr any_of
 #' @importFrom dplyr left_join
+#' @importFrom dplyr right_join
 #' @importFrom dplyr count
 #' @importFrom dplyr pull
 #' @importFrom dplyr collect
+
+#' @importFrom dplyr lead
+
 #'
 #' @importFrom dtplyr lazy_dt
 #'

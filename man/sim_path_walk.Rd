@@ -187,7 +187,7 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
                      .sim_angle = sim_angle_crw, .rho = 0.9,
                      .one_page = FALSE)
   # The correlation between sequential angles is close to the simulated value:
-  adt <- data.table(a0 = p$angle, a1 = dplyr::lead(p$angle)) |> na.omit()
+  adt <- data.table(a0 = p$angle, a1 = lead(p$angle)) |> na.omit()
   cor.circular(degrees(adt$a0), degrees(adt$a1))
 
   #### Example (9): Use custom step/length or turning angle models

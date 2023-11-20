@@ -266,7 +266,7 @@ NULL
   if (!is.null(.return)) {
     out <-
       out |>
-      select(dplyr::all_of(.return)) |>
+      select(all_of(.return)) |>
       as.data.table()
   }
   if (nrow(out) == 0L) {
