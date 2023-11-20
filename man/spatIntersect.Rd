@@ -4,12 +4,14 @@
 \alias{spatIntersect}
 \title{Intersect \code{SpatRaster}s in a list}
 \usage{
-spatIntersect(.x, .value = 1)
+spatIntersect(.x, .value = 1, .fun = NULL)
 }
 \arguments{
 \item{.x}{A list.}
 
 \item{.value}{A number that defines the value.}
+
+\item{.fun}{A function.}
 }
 \description{
 This function identifies the cells on a \code{SpatRaster}s where all \code{SpatRaster} layers in a \code{list} have the same value.

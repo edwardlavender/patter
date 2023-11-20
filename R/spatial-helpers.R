@@ -71,15 +71,23 @@ rast_template <- function(.xmin = 0, .xmax = 1000,
 #' @description This function identifies the cells on a `SpatRaster`s where all `SpatRaster` layers in a `list` have the same value.
 #' @param .x A list.
 #' @param .value A number that defines the value.
+#' @param .fun A function.
 #' @keywords internal
 
-spatIntersect <- function(.x, .value = 1) {
+spatIntersect <- function(.x, .value = 1, .fun = NULL) {
   check_inherits(.x, "list")
+  if (!is.null(.value) & !is.null(.fun)) {
+    abort("Either `.value` or `.fun` should be supplied.")
+  }
   if (length(.x) == 1) {
     return(.x[[1]])
   }
   .x <- terra::rast(.x)
-  terra::app(.x, function(x) all(x == .value))
+  if (!is.null(.value)) {
+    terra::app(.x, function(x) all(x == .value))
+  } else {
+    terra::app(.x, .fun)
+  }
 }
 
 #' @title Normalise a [`SpatRaster`]
