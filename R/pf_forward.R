@@ -8,14 +8,26 @@
 #'
 #' * **Integrated implementation.** In the integrated implementation, AC-branch and PF-branch algorithms are implemented via [`pf_forward_2()`]. In this approach, AC-branch calculations are only implemented at particle locations, which is much more efficient. **This is generally the recommended approach.**
 #'
-#'
 #' @seealso
-#' * [`acs()`] and [`dc()`] implement AC-branch algorithms;
-#' * [`pf_forward_1()`] and [`pf_forward_2()`] implement the forward simulation;
-#' * [`pf_backward()`] implements the backward pass;
-#' * [`pf_path()`] reconstructs movement paths;
-#' * [`pf_map_pou()`] and [`pf_map_dens()`] generate maps of space use;
-#' * [`pf_setup_files()`], [`pf_kick()`] and [`pf_coords()`] are helper functions;
+#' * The PF (forward simulation) is implemented by [`pf_forward_*()`]:
+#'     * [`pf_forward_1()`] refines AC-branch algorithm ([`acs()`] and [`dc()`]) outputs using PF;
+#'     * [`pf_forward_2()`] is an integrated implementation that couples AC- and PF-branch algorithms internally;
+#'
+#' * PF is supported by:
+#'     * Setup helpers, namely [`pf_setup_files()`];
+#'     * Template movement models, namely [`pf_kick()`];
+#'
+#' * The backward pass is implemented by [`pf_backward()`];
+#'
+#' * Movement paths are built from PF outputs via `pf_path()` functions:
+#'     * [`pf_path()`] reconstructs paths;
+#'     * [`pf_path_pivot()`] supports path reconstruction;
+#'
+#' * To reconstruct maps of space use, see:
+#'     * [`pf_coords()`] to extract particle coordinates;
+#'     * [`pf_map_pou()`] for probability-of-use maps;
+#'     * [`pf_map_dens()`] for smooth utilisation distributions;
+#'     * [`get_hr()`] for home range estimates;
 #'
 #' @name pf_forward_*
 

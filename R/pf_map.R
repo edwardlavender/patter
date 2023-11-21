@@ -21,6 +21,14 @@
 #' p <- dat_pfb()
 #' pf_coords(p$history, dat_gebco())
 #'
+#' @seealso
+#' * [`acs()`] and [`dc()`] implement AC-branch algorithms;
+#' * [`pf_forward_1()`] and [`pf_forward_2()`] implement the forward simulation;
+#' * [`pf_backward()`] implements the backward pass;
+#' * [`pf_path()`] reconstructs movement paths;
+#' * [`pf_map_pou()`] and [`pf_map_dens()`] generate maps of space use;
+#' * [`pf_setup_files()`], [`pf_kick()`] and [`pf_coords()`] are helper functions;
+#'
 #' @author Edward Lavender
 #' @export
 
@@ -73,6 +81,15 @@ pf_coords <- function(.history, .bathy, .obs = NULL, .cols = NULL) {
 #' @details Probability-of-use is the proportion of samples of each unique cell (out of the total number of samples across all time steps).
 #' @return The function returns a [`SpatRaster`] (utilisation distribution) in which cell values define probability-of-use.
 #' @example man/examples/pf_map_pou-examples.R
+#'
+#' @seealso
+#' * [`acs()`] and [`dc()`] implement AC-branch algorithms;
+#' * [`pf_forward_1()`] and [`pf_forward_2()`] implement the forward simulation;
+#' * [`pf_backward()`] implements the backward pass;
+#' * [`pf_path()`] reconstructs movement paths;
+#' * [`pf_map_pou()`] and [`pf_map_dens()`] generate maps of space use;
+#' * [`pf_setup_files()`], [`pf_kick()`] and [`pf_coords()`] are helper functions;
+#'
 #' @author Edward Lavender
 #' @export
 
@@ -130,6 +147,14 @@ pf_map_pou <-
 #' @return The function returns a normalised [`SpatRaster`] (or `NULL` if [`spatstat.explore::density.ppp()`] fails and `.use_tryCatch = TRUE`).
 #'
 #' @example man/examples/pf_map_dens-examples.R
+#'
+#' @seealso
+#' * [`acs()`] and [`dc()`] implement AC-branch algorithms;
+#' * [`pf_forward_1()`] and [`pf_forward_2()`] implement the forward simulation;
+#' * [`pf_backward()`] implements the backward pass;
+#' * [`pf_path()`] reconstructs movement paths;
+#' * [`pf_map_pou()`] and [`pf_map_dens()`] generate maps of space use;
+#' * [`pf_setup_files()`], [`pf_kick()`] and [`pf_coords()`] are helper functions;
 #'
 #' @author Edward Lavender
 #' @name pf_map_dens

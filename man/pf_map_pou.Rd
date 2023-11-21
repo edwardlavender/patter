@@ -66,6 +66,16 @@ get_hr_core(pou, .add = TRUE, lwd = 0.75)
 # Clean up
 unlink(pfb_folder, recursive = TRUE)
 }
+\seealso{
+\itemize{
+\item \code{\link[=acs]{acs()}} and \code{\link[=dc]{dc()}} implement AC-branch algorithms;
+\item \code{\link[=pf_forward_1]{pf_forward_1()}} and \code{\link[=pf_forward_2]{pf_forward_2()}} implement the forward simulation;
+\item \code{\link[=pf_backward]{pf_backward()}} implements the backward pass;
+\item \code{\link[=pf_path]{pf_path()}} reconstructs movement paths;
+\item \code{\link[=pf_map_pou]{pf_map_pou()}} and \code{\link[=pf_map_dens]{pf_map_dens()}} generate maps of space use;
+\item \code{\link[=pf_setup_files]{pf_setup_files()}}, \code{\link[=pf_kick]{pf_kick()}} and \code{\link[=pf_coords]{pf_coords()}} are helper functions;
+}
+}
 \author{
 Edward Lavender
 }
