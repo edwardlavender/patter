@@ -210,6 +210,14 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
 
 }
 }
+\seealso{
+\itemize{
+\item \code{\link[=sim_array]{sim_array()}} simulates acoustic array(s);
+\item \code{\link[=sim_path_walk]{sim_path_walk()}} simulates movement path(s) via a walk model;
+\item [\code{sim_detections()} simulates detection(s) at receivers;
+\item \code{\link{skill}} functions compared simulated and reconstructed patterns to evaluate model skill;
+}
+}
 \author{
 Edward Lavender
 }

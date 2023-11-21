@@ -46,6 +46,11 @@
 #' sim_array(.n_array = 5L, .plot = TRUE, .one_page = TRUE)
 #' sim_array(.n_array = 5L, .plot = TRUE, .one_page = FALSE)
 #'
+#' @seealso
+#' * [`sim_array()`] simulates acoustic array(s);
+#' * [`sim_path_walk()`] simulates movement path(s) via a walk model;
+#' * [`sim_detections()` simulates detection(s) at receivers;
+#' * [`skill`] functions compared simulated and reconstructed patterns to evaluate model skill;
 #' @author Edward Lavender
 #' @export
 
@@ -184,6 +189,12 @@ sim_array <- function(.bathy = rast_template(), .lonlat = FALSE,
 #' * `x`,`y`---`numeric` vectors that define simulated x and y coordinates;
 #' * `length`,`angle`---`numeric` vectors that define simulated step lengths and angles (for the movement from timestep `t` to time step `t + 1`);
 #' @example man/examples/sim_path_walk-examples.R
+#'
+#' @seealso
+#' * [`sim_array()`] simulates acoustic array(s);
+#' * [`sim_path_walk()`] simulates movement path(s) via a walk model;
+#' * [`sim_detections()` simulates detection(s) at receivers;
+#' * [`skill`] functions compared simulated and reconstructed patterns to evaluate model skill;
 #'
 #' @author Edward Lavender
 #' @name sim_path_walk
@@ -344,6 +355,12 @@ sim_angle_crw <- function(.n = 1,
 #'
 #' @example man/examples/sim_detections-examples.R
 #'
+#' @seealso
+#' * [`sim_array()`] simulates acoustic array(s);
+#' * [`sim_path_walk()`] simulates movement path(s) via a walk model;
+#' * [`sim_detections()` simulates detection(s) at receivers;
+#' * [`skill`] functions compared simulated and reconstructed patterns to evaluate model skill;
+#'
 #' @author Edward Lavender
 #' @name sim_detections
 NULL
@@ -429,7 +446,6 @@ sim_detections <- function(.paths, .arrays,
     as.data.table()
 
 }
-
 
 #' @rdname sim_detections
 #' @export
