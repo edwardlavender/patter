@@ -27,6 +27,11 @@
 #' map <- get_hr_home(r, .add = TRUE, border = "blue")
 #' map <- get_hr_core(r, .add = TRUE, border = "orange")
 #' map <- get_hr_prop(r, .prop = 0.2, .add = TRUE, border = "red")
+#'
+#' @seealso
+#' * For modelling algorithms in [`patter`], see [`acs()`], [`dc()`], [`pf_forward_1()`] and [`pf_forward_2()`];
+#' * For mapping utilisation distributions, see [`pf_map_pou()`] and [`pf_map_dens()`];
+#'
 #' @author Edward Lavender
 #' @name get_hr
 NULL
