@@ -68,6 +68,12 @@ coa(acc, .delta_t = "6 hours", .split = "individual_id")
 coa(acc, .delta_t = "8 hours", .split = "individual_id", .lonlat = FALSE)
 coa(acc, .delta_t = "8 hours", .split = "individual_id", .lonlat = TRUE)
 }
+\seealso{
+\itemize{
+\item For other modelling algorithms in \code{\link{patter}}, see \code{\link[=acs]{acs()}}, \code{\link[=dc]{dc()}}, \code{\link[=pf_forward_1]{pf_forward_1()}} and \code{\link[=pf_forward_2]{pf_forward_2()}};
+\item For mapping utilisation distributions, see \code{\link[=pf_map_dens]{pf_map_dens()}};
+}
+}
 \author{
 Edward Lavender
 }

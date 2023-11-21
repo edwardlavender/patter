@@ -13,6 +13,10 @@
 #'
 #' @details COAs are calculated as a weighted mean of the locations of receivers at which individuals are detected over consecutive time intervals, weighted by the frequency of detections at each of those receivers.
 #'
+#' @seealso
+#' * For other modelling algorithms in [`patter`], see [`acs()`], [`dc()`], [`pf_forward_1()`] and [`pf_forward_2()`];
+#' * For mapping utilisation distributions, see [`pf_map_dens()`];
+#'
 #' @example man/examples/coa-examples.R
 #' @author Edward Lavender
 #' @export
