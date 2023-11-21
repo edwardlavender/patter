@@ -3,14 +3,18 @@
 \name{sim_helpers}
 \alias{sim_helpers}
 \alias{rtruncgamma}
+\alias{dtruncgamma}
 \alias{rwn}
 \alias{rlen}
 \alias{rangrw}
 \alias{rangcrw}
 \alias{cstep}
+\alias{dstep}
 \title{Simulation helpers}
 \usage{
 rtruncgamma(.n = 1, .shape = 15, .scale = 15, .mobility = 500, ...)
+
+dtruncgamma(.x = 1, .shape = 15, .scale = 15, .mobility = 500, ...)
 
 rwn(.n = 1, .mu = 0, .rho = 0, .sd = 1, ...)
 
@@ -27,6 +31,8 @@ cstep(
   .length = rtruncgamma(nrow(.xy_now)),
   .angle = rwn(nrow(.xy_now))
 )
+
+dstep(.data_now, .data_past, ...)
 }
 \arguments{
 \item{.n, .x, .shape, .scale, .mobility}{Arguments for \code{\link[=rtruncgamma]{rtruncgamma()}} and \code{\link[=dtruncgamma]{dtruncgamma()}}:
@@ -52,11 +58,17 @@ cstep(
 
 \item{.xy_now, .xy_next, .lonlat, .length, .angle}{Arguments for \code{\link[=cstep]{cstep()}}.
 \itemize{
-\item \code{\link{.xy_now}}
-\item \code{\link{.xy_next}}
-\item \code{\link{.lonlat}}
-\item \code{\link{.length}}
-\item \code{\link{.angle}}
+\item \code{.xy_now} is a two-column matrix of x and y coordinates;
+\item (optional) \code{.xy_next} is a blank two-column matrix that is updated with future coordinates;
+\item \code{.lonlat} is a \code{logical} variable that defines whether or not coordinates are in longitude/latitude;
+\item \code{.length} is \code{numeric} vector of step lengths;
+\item \code{.angle} is a \code{numeric} vector of turning angles;
+}}
+
+\item{.data_now, .data_past}{Arguments for \code{\link[=dstep]{dstep()}}.
+\itemize{
+\item \code{.data_now} is a \code{\link{data.table}} with coordinates in \code{x_now} and \code{y_now} columns;
+\item \code{.data_past} is a \code{\link{data.table}} as above;
 }}
 }
 \description{
@@ -93,8 +105,8 @@ These convenience functions support the generation of animal movement paths and 
 
 The following wrapper functions are provided in the form required by front-end functions (e.g., \code{\link[=sim_path_walk]{sim_path_walk()}}, \code{\link[=pf_kick]{pf_kick()}} and \code{\link[=pf_backward_p]{pf_backward_p()}}):
 \itemize{
-\item \code{\link[=rlen]{rlen()}} and \code{\link[=dlen]{dlen()}} are wrappers for \code{\link[=rtruncgamma]{rtruncgamma()}} and \code{\link[=dtruncgamma]{dtruncgamma()}}.
-\item \code{\link[=rangrw]{rangrw()}}, \code{\link[=rangcrw]{rangcrw()}} are wrappers for \code{\link[=rwn]{rwn()}} for random walks and correlated random walks. The corresponding functions \code{\link[=dangrw]{dangrw()}} and \code{\link[=dangcrw]{dangcrw()}} are not currently implemented.
+\item \code{\link[=rlen]{rlen()}} is a wrapper for \code{\link[=rtruncgamma]{rtruncgamma()}}. The corresponding function \code{dlen} is not currently implemented.
+\item \code{\link[=rangrw]{rangrw()}}, \code{\link[=rangcrw]{rangcrw()}} are wrappers for \code{\link[=rwn]{rwn()}} for random walks and correlated random walks. The corresponding functions \code{dangrw()} and \code{dangcrw()} are not currently implemented.
 }
 }
 

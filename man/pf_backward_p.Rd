@@ -2,23 +2,17 @@
 % Please edit documentation in R/pf_backward_p.R
 \name{pf_backward_p}
 \alias{pf_backward_p}
-\alias{dtruncgamma}
-\alias{step_dens}
-\alias{step_dens_lookup}
-\alias{step_dens_read}
+\alias{dstep_lookup}
+\alias{dstep_read}
 \title{PF: run the backward pass}
 \usage{
-dtruncgamma(.x = 1, .shape = 15, .scale = 15, .mobility = 500, ...)
+dstep_lookup(.data_now, .data_past, .density)
 
-step_dens(.data_now, .data_past, ...)
-
-step_dens_lookup(.data_now, .data_past, .density)
-
-step_dens_read(.data_now, .data_past, .density)
+dstep_read(.data_now, .data_past, .density)
 
 pf_backward_p(
   .history,
-  .step_dens,
+  .dens_step = dstep,
   ...,
   .save_history = FALSE,
   .write_history = NULL,
@@ -30,15 +24,13 @@ pf_backward_p(
 )
 }
 \arguments{
-\item{.x, .shape, .scale, .mobility}{Arguments for \code{\link[=dtruncgamma]{dtruncgamma()}} (see \code{\link[=rtruncgamma]{rtruncgamma()}}).}
-
-\item{.data_now, .data_past, .density}{Arguments for \verb{step_dens*} functions.
+\item{.data_now, .data_past, .density}{Arguments for \verb{.dens_step*} functions.
 \itemize{
-\item \code{.data_now} and \code{.data_past} are \code{\link{data.table}}s (see \code{.step_dens}), below;
+\item \code{.data_now} and \code{.data_past} are \code{\link{data.table}}s (see \code{.dens_step}), below;
 \item \code{.density} is either:
 \itemize{
-\item A \code{list} that contains movement densities (for \code{\link[=step_dens_lookup]{step_dens_lookup()}}) from \code{\link[=pf_backward_dens]{pf_backward_dens()}};
-\item A \code{character} string that defines the directory to \code{parquet} files containing movement densities (for \code{\link[=step_dens_read]{step_dens_read()}}) from \code{\link[=pf_backward_dens]{pf_backward_dens()}};
+\item A \code{list} that contains movement densities (for \code{\link[=dstep_lookup]{dstep_lookup()}}) from \code{\link[=pf_backward_dens]{pf_backward_dens()}};
+\item A \code{character} string that defines the directory to \code{parquet} files containing movement densities (for \code{\link[=dstep_read]{dstep_read()}}) from \code{\link[=pf_backward_dens]{pf_backward_dens()}};
 }
 }}
 
@@ -48,7 +40,7 @@ pf_backward_p(
 \item An ordered list of file paths (from \code{\link[=pf_setup_files]{pf_setup_files()}}) that define the directories in which particle samples were written from the forward simulation (as parquet files).
 }}
 
-\item{.step_dens, ...}{A function, and associated inputs, used to calculate the probability density of movements between particle samples. \code{.step_dens} must accept the following arguments:
+\item{.dens_step, ...}{A function, and associated inputs, used to calculate the probability density of movements between particle samples. \code{.dens_step} must accept the following arguments:
 \itemize{
 \item \code{.data_now}---a one-row \code{\link{data.table}} that defines the current particle sample (as in \code{.history}).
 \item \code{.data_past}---a multi-row \code{\link{data.table}} that defines all particle samples for the previous time step (as in \code{.history}).
@@ -57,9 +49,9 @@ pf_backward_p(
 
 Three helper functions are provided:
 \itemize{
-\item \code{\link[=step_dens]{step_dens()}} calculates distances between current and past particle samples (via \code{\link[terra:distance]{terra::distance()}}) and translates these into probability densities (via \code{\link[=dtruncgamma]{dtruncgamma()}}). Arguments passed via \code{...} are passed to both \code{\link[terra:distance]{terra::distance()}} (which requires a \code{lonlat} input) and \code{\link[=dtruncgamma]{dtruncgamma()}}.
-\item \code{\link[=step_dens_lookup]{step_dens_lookup()}} looks up pre-calculated density values from an object in memory (from XXX);
-\item \code{\link[=step_dens_read]{step_dens_read()}} reads selected pre-calculated density values (from XXX) into memory. This requires the \code{qs} package but, for speed, performs no checks as to whether it is available.
+\item \code{\link[=dstep]{dstep()}} calculates distances between current and past particle samples (via \code{\link[terra:distance]{terra::distance()}}) and translates these into probability densities (via \code{\link[=dtruncgamma]{dtruncgamma()}}). Arguments passed via \code{...} are passed to both \code{\link[terra:distance]{terra::distance()}} (which requires a \code{lonlat} input) and \code{\link[=dtruncgamma]{dtruncgamma()}}.
+\item \code{\link[=dstep_lookup]{dstep_lookup()}} looks up pre-calculated density values from an object in memory (from XXX);
+\item \code{\link[=dstep_read]{dstep_read()}} reads selected pre-calculated density values (from XXX) into memory. This requires the \code{qs} package but, for speed, performs no checks as to whether it is available.
 }}
 
 \item{.save_history}{A logical variable that defines whether or not to save updated particle samples in memory (see \code{\link[=pf_forward_1]{pf_forward_1()}}).}
@@ -94,7 +86,7 @@ In outline, the backward pass (backward sampling) proceeds as follows:
 \item Identify the final particle samples;
 \item For each particle:
 \itemize{
-\item Calculate the probability density of movements from that particle to all particles at the previous time step via a \verb{step_dens*} function.
+\item Calculate the probability density of movements from that particle to all particles at the previous time step via a \code{.dens_step} function.
 \item In practice, this typically requires calculating the distances between particle samples and translating these into densities using the movement model;
 }
 \item Sample a selected particle at the previous time step, in line with the probability densities linking each pair of particles;
@@ -131,7 +123,7 @@ gebco <- dat_gebco()
 #### Example (1): A. Implementation with default options
 out_pfb <-
   pf_backward_p(history,
-                .step_dens = step_dens, lonlat = FALSE,
+                .dens_step = dstep, lonlat = FALSE,
                 .save_history = TRUE)
 
 #### Example (1): B. Parallelise default implementation
@@ -139,27 +131,27 @@ out_pfb <-
 if (.Platform$OS.type == "unix") {
   out_pfb <-
     pf_backward_p(history,
-                  .step_dens = step_dens, lonlat = FALSE,
+                  .dens_step = dstep, lonlat = FALSE,
                   .save_history = TRUE,
                   .cl = 2L)
 }
 # Use socket cluster
 out_pfb <-
   pf_backward_p(history,
-                .step_dens = patter::step_dens, lonlat = FALSE,
+                .dens_step = patter::dstep, lonlat = FALSE,
                 .save_history = TRUE,
                 .cl = parallel::makeCluster(2L),
                 )
 
 #### Example (2): A. Pre-compute step densities in memory
-# Pre-compute densities using default step_dens() function
+# Pre-compute densities using default dstep() function
 densities <- pf_backward_dens(history,
-                              .step_dens = step_dens, lonlat = FALSE, pairwise = TRUE,
+                              .dens_step = dstep, lonlat = FALSE, pairwise = TRUE,
                               .in_memory = TRUE)
 # Use pre-computed densities in algorithm
 out_pfb <-
   pf_backward_p(history,
-                .step_dens = step_dens_lookup, .density = densities,
+                .dens_step = dstep_lookup, .density = densities,
                 .save_history = TRUE)
 
 #### Example (2): B. Parallelise algorithm
@@ -167,14 +159,14 @@ out_pfb <-
 if (.Platform$OS.type == "unix") {
 out_pfb <-
   pf_backward_p(history,
-                .step_dens = step_dens_lookup, .density = densities,
+                .dens_step = dstep_lookup, .density = densities,
                 .save_history = TRUE,
                 .cl = 2L)
 }
 # Use socket cluster
 out_pfb <-
   pf_backward_p(history,
-                .step_dens = patter::step_dens_lookup, .density = densities,
+                .dens_step = patter::dstep_lookup, .density = densities,
                 .save_history = TRUE,
                 .cl = parallel::makeCluster(2L),
                 .varlist = "densities")
@@ -186,12 +178,12 @@ if (FALSE) {
   ## i) Assemble data using {sparklyr} & calculate densities in memory
   # Compute densities
   densities <- pf_backward_dens(pff_folder,
-                                .step_dens = step_dens, lonlat = FALSE, pairwise = TRUE,
+                                .dens_step = dstep, lonlat = FALSE, pairwise = TRUE,
                                 .in_memory = FALSE, .collect = Inf)
   # Implement pf_backward_dens() as shown above (in serial or parallel)
   out_pfb <-
     pf_backward_p(history,
-                  .step_dens = step_dens_lookup, .density = densities,
+                  .dens_step = dstep_lookup, .density = densities,
                   .save_history = TRUE)
 
   ## ii) Assemble data using {sparklyr} & calculate densities iteratively
@@ -199,7 +191,7 @@ if (FALSE) {
   # Compute densities
   pfb_folder <- mktempdir("patter", "pf", "backward", "pre-calcs")
   pf_backward_dens(pff_folder,
-                   .step_dens = step_dens, lonlat = FALSE, pairwise = TRUE,
+                   .dens_step = dstep, lonlat = FALSE, pairwise = TRUE,
                    .in_memory = FALSE,
                    .collect = 0L,
                    .store = pfb_folder)
@@ -215,38 +207,38 @@ if (FALSE) {
   # (optional) Trial parallelisation for density computation
   if (.Platform$OS.type == "unix") {
     pf_backward_dens(pff_folder,
-                     .step_dens = step_dens, lonlat = FALSE, pairwise = TRUE,
+                     .dens_step = dstep, lonlat = FALSE, pairwise = TRUE,
                      .in_memory = FALSE,
                      .collect = 0L,
                      .store = mktempdir("patter", "pf", "backward", "pre-calcs"),
                      .cl = 2L)
   }
   pf_backward_dens(pff_folder,
-                   .step_dens = patter::step_dens, lonlat = FALSE, pairwise = TRUE,
+                   .dens_step = patter::dstep, lonlat = FALSE, pairwise = TRUE,
                    .in_memory = FALSE,
                    .collect = 0L,
                    .store = mktempdir("patter", "pf", "backward", "pre-calcs"),
                    .cl = parallel::makeCluster(2L))
 
-  # Implement `pf_backward()` using `step_dens_read()`
+  # Implement `pf_backward()` using `dstep_read()`
   out_pfb <-
     pf_backward_p(history,
-                  .step_dens = step_dens_read,
+                  .dens_step = dstep_read,
                   .density = file.path(pfb_folder, "density"),
                   .save_history = TRUE)
 
-  # Implement `pf_backward()` using `step_dens_read()` in parallel
+  # Implement `pf_backward()` using `dstep_read()` in parallel
   if (.Platform$OS.type == "unix") {
     out_pfb <-
       pf_backward_p(history,
-                    .step_dens = step_dens_read,
+                    .dens_step = dstep_read,
                     .density = file.path(pfb_folder, "density"),
                     .save_history = TRUE,
                     .cl = 2L)
   }
   out_pfb <-
     pf_backward_p(history,
-                  .step_dens = patter::step_dens_read,
+                  .dens_step = patter::dstep_read,
                   .density = file.path(pfb_folder, "density"),
                   .save_history = TRUE,
                   .cl = parallel::makeCluster(2L),
@@ -257,12 +249,29 @@ if (FALSE) {
 }
 \seealso{
 \itemize{
-\item \code{\link[=acs]{acs()}} and \code{\link[=dc]{dc()}} implement AC-branch algorithms;
-\item \code{\link[=pf_forward_1]{pf_forward_1()}} and \code{\link[=pf_forward_2]{pf_forward_2()}} implement the forward simulation;
-\item \code{\link[=pf_backward]{pf_backward()}} implements the backward pass;
-\item \code{\link[=pf_path]{pf_path()}} reconstructs movement paths;
-\item \code{\link[=pf_map_pou]{pf_map_pou()}} and \code{\link[=pf_map_dens]{pf_map_dens()}} generate maps of space use;
-\item \code{\link[=pf_setup_files]{pf_setup_files()}}, \code{\link[=pf_kick]{pf_kick()}} and \code{\link[=pf_coords]{pf_coords()}} are helper functions;
+\item The PF (forward simulation) is implemented by \code{\link[=pf_forward_*]{pf_forward_*()}}:
+\itemize{
+\item \code{\link[=pf_forward_1]{pf_forward_1()}} refines AC-branch algorithm (\code{\link[=acs]{acs()}} and \code{\link[=dc]{dc()}}) outputs using PF;
+\item \code{\link[=pf_forward_2]{pf_forward_2()}} is an integrated implementation that couples AC- and PF-branch algorithms internally;
+}
+\item PF is supported by:
+\itemize{
+\item Setup helpers, namely \code{\link[=pf_setup_files]{pf_setup_files()}};
+\item Template movement models, namely \code{\link[=pf_kick]{pf_kick()}};
+}
+\item The backward pass is implemented by \code{\link[=pf_backward]{pf_backward()}};
+\item Movement paths are built from PF outputs via \code{pf_path()} functions:
+\itemize{
+\item \code{\link[=pf_path]{pf_path()}} reconstructs paths;
+\item \code{\link[=pf_path_pivot]{pf_path_pivot()}} supports path reconstruction;
+}
+\item To reconstruct maps of space use, see:
+\itemize{
+\item \code{\link[=pf_coords]{pf_coords()}} to extract particle coordinates;
+\item \code{\link[=pf_map_pou]{pf_map_pou()}} for probability-of-use maps;
+\item \code{\link[=pf_map_dens]{pf_map_dens()}} for smooth utilisation distributions;
+\item \code{\link[=get_hr]{get_hr()}} for home range estimates;
+}
 }
 }
 \author{

@@ -67,12 +67,12 @@ These functions facilitate the simulation of animal movement paths.
 \itemize{
 \item The default \code{\link[=.flux_template]{.flux_template()}} function generates a list with place holders for simulated step lengths and turning angles.
 }
-\item The \code{.flux} argument is a function that is used to simulate the new values of any flux parameters at each time step and update (by reference) the flux template (i.e., \code{.flux_vals}). This must accept \code{.fv}, \code{.row} and \code{.col} arguments, as implemented in \code{\link[=.step_iter]{.step_iter()}}.
+\item The \code{.flux} argument is a function that is used to simulate the new values of any flux parameters at each time step and update (by reference) the flux template (i.e., \code{.flux_vals}). This must accept \code{.fv}, \code{.row} and \code{.col} arguments, as implemented in \code{\link[=.cstep_iter]{.cstep_iter()}}.
 \item \code{.move} is a function that defines new proposal locations based on the simulated flux values.
 \itemize{
 \item For example, \code{\link[=.cstep_using_flux]{.cstep_using_flux()}}, which wraps \code{\link[=cstep]{cstep()}}, defines proposal locations based on simulated step lengths and turning angles.
 }
-\item Internally, \code{.move} is wrapped within \code{\link[=cstep_iter]{cstep_iter()}} and implemented iteratively to ensure that simulated location(s) at each time step are valid (in non NA cells on \code{.bathy}).
+\item Internally, \code{.move} is wrapped within \code{\link[=.cstep_iter]{.cstep_iter()}} and implemented iteratively to ensure that simulated location(s) at each time step are valid (in non NA cells on \code{.bathy}).
 }
 }
 \author{

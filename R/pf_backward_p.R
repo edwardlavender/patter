@@ -9,13 +9,13 @@
 #'
 #' If `.in_memory = FALSE`, this must be a character string that defines the directory within which parquet files are stored.
 #'
-#' @param .step_dens,... A function, and associated arguments, to calculate the density of movements between locations (see [`pf_backward()`] and [`step_dens()`]). This must accept the arguments described in [`pf_backward()`]:
+#' @param .dens_step,... A function, and associated arguments, to calculate the density of movements between locations (see [`pf_backward()`] and [`dstep()`]). This must accept the arguments described in [`pf_backward()`]:
 #' * `.data_now`---a [`data.table`] of particle locations;
 #' * `.data_past`---a [`data.table`] of paired particle locations;
 #' * (optional) `...`---additional arguments;
 #'
 #' However, note that the exact form of `.data_now` and `.data_past` differ depending on the implementation (see Details):
-#' * For implementation options (1) and (2A), densities are calculated between all cell pairs (i.e., two multi-row [`data.table`]s), by default via [`step_dens()`]. Internally, this uses [`terra::distance()`] so you must specify `lonlat` and `pairwise = TRUE`.
+#' * For implementation options (1) and (2A), densities are calculated between all cell pairs (i.e., two multi-row [`data.table`]s), by default via [`dstep()`]. Internally, this uses [`terra::distance()`] so you must specify `lonlat` and `pairwise = TRUE`.
 #' * For implementation option (2B) `.data_now` is a single row (as described in [`pf_backward()`]). Under the default implementation, `lonlat` is required but `pairwise` is optional.
 #'
 #' For custom functions, note that coordinates are stored in each [`data.table`] in `x_now` and `y_now` columns. Other columns are dropped, with some exceptions.
@@ -33,16 +33,16 @@
 #' 1. Identify cells. The first step is to identify set of unique locations (grid cells) sampled (by the forward filter) at each time step.
 #' 2. Identify transitions. The second step is to reconstruct the set of possible transitions between cells at each time step. This requires a cross-join operation (at each time step, each (unique) cell is paired against all (unique) cells from the previous time step). This is memory intensive and can be optionally implemented using `sparklyr` (see below).
 #' 3. Identify distinct transitions. The third step is to identify the set of unique cell combinations for which probability densities are required. This is hopefully considerably fewer less than the total number of transitions.
-#' 4. Calculate densities. The fourth step is to calculate densities (e.g., via [`step_dens()`]).
-#' 5. Return outputs. The final step is to return densities in a format that can be efficiently accessed in [`pf_backward()`] (e.g., via [`step_dens_lookup()`] or [`step_dens_read()`]).
+#' 4. Calculate densities. The fourth step is to calculate densities (e.g., via [`dstep()`]).
+#' 5. Return outputs. The final step is to return densities in a format that can be efficiently accessed in [`pf_backward()`] (e.g., via [`dstep_lookup()`] or [`dstep_read()`]).
 #'
 #' There are three implementation options:
-#' 1. `.in_memory` is `TRUE`. Under this option, steps 1--5 are implemented in memory. A `list` is returned that can be accessed in [`pf_backward()`] via [`step_dens_lookup()`].
+#' 1. `.in_memory` is `TRUE`. Under this option, steps 1--5 are implemented in memory. A `list` is returned that can be accessed in [`pf_backward()`] via [`dstep_lookup()`].
 #' 2. `.in_memory` is `FALSE`. Under this option, steps 1--5 are implemented without bringing the data (fully) into memory. Steps 1--3 are achieved using `sparklyr`. The function establishes a connection to Spark, implements 1--3 using Spark, and counts the resultant number of unique transitions for which densities are required (`n`). What happens next depends on whether or not `n <= .collect`:
-#'     * (A) `n <= .collect`. If `n < .collect`, data are brought into memory for steps 4--5. A `list` is returned that can be accessed in [`pf_backward()`] via [`step_dens_lookup()`].
+#'     * (A) `n <= .collect`. If `n < .collect`, data are brought into memory for steps 4--5. A `list` is returned that can be accessed in [`pf_backward()`] via [`dstep_lookup()`].
 #'     * (B) `n > .collect`. If `n > .collect`, steps 4--5 are implemented in batches:
 #'          * For each grid cell, a parquet file is written to `{.store}/pairs/{cell}.parquet` with the coordinates of cell pairs;
-#'          * Parquet files are iteratively read into memory, density calculations are implemented and, for each grid cell, a `list` of densities to paired cells is written to `{.store}/density/{cell}.qs`. This step can be optionally parallelised. Limited experimentation suggested that this approach is faster than a full Spark implementation. The resultant files can be accessed in [`pf_backward()`] via [`step_dens_read()`]. The function itself returns `invisible(NULL)`.
+#'          * Parquet files are iteratively read into memory, density calculations are implemented and, for each grid cell, a `list` of densities to paired cells is written to `{.store}/density/{cell}.qs`. This step can be optionally parallelised. Limited experimentation suggested that this approach is faster than a full Spark implementation. The resultant files can be accessed in [`pf_backward()`] via [`dstep_read()`]. The function itself returns `invisible(NULL)`.
 #'
 #'
 #' @return The function returns:
@@ -65,18 +65,18 @@
 #' @rdname pf_backward_dens
 #' @export
 
-pf_backward_dens <- function(.history, .step_dens, ...,
+pf_backward_dens <- function(.history, .dens_step, ...,
                              .in_memory = TRUE,
                              .collect = 1e9, .store = NULL,
                              .cl = NULL, .varlist = NULL,
                              .verbose = TRUE, .txt = "") {
   if (.in_memory) {
     .pf_backward_dens_mem(.history = .history,
-                          .step_dens = .step_dens, ...,
+                          .dens_step = .dens_step, ...,
                           .verbose = .verbose, .txt = .txt)
   } else {
     .pf_backward_dens_spark(.history = .history,
-                            .step_dens = .step_dens, ...,
+                            .dens_step = .dens_step, ...,
                             .collect = .collect, .store = .store,
                             .verbose = .verbose, .txt = .txt,
                             .cl = .cl, .varlist = .varlist)
@@ -86,25 +86,24 @@ pf_backward_dens <- function(.history, .step_dens, ...,
 #' @title PF: run the backward pass
 #' @description These functions implement backwards sampling of particle samples.
 #'
-#' @param .x,.shape,.scale,.mobility Arguments for [`dtruncgamma()`] (see [`rtruncgamma()`]).
-#' @param .data_now,.data_past,.density Arguments for `step_dens*` functions.
-#'  * `.data_now` and `.data_past` are [`data.table`]s (see `.step_dens`), below;
+#' @param .data_now,.data_past,.density Arguments for `.dens_step*` functions.
+#'  * `.data_now` and `.data_past` are [`data.table`]s (see `.dens_step`), below;
 #'  * `.density` is either:
-#'      * A `list` that contains movement densities (for [`step_dens_lookup()`]) from [`pf_backward_dens()`];
-#'      * A `character` string that defines the directory to `parquet` files containing movement densities (for [`step_dens_read()`]) from [`pf_backward_dens()`];
+#'      * A `list` that contains movement densities (for [`dstep_lookup()`]) from [`pf_backward_dens()`];
+#'      * A `character` string that defines the directory to `parquet` files containing movement densities (for [`dstep_read()`]) from [`pf_backward_dens()`];
 #'
 #' @param .history Particle samples from the forward simulation, provided either as:
 #' * A `list` of [`data.table`]s that define cell samples; i.e., the `history` element of a [`pf-class`] object.
 #' * An ordered list of file paths (from [`pf_setup_files()`]) that define the directories in which particle samples were written from the forward simulation (as parquet files).
-#' @param .step_dens,... A function, and associated inputs, used to calculate the probability density of movements between particle samples. `.step_dens` must accept the following arguments:
+#' @param .dens_step,... A function, and associated inputs, used to calculate the probability density of movements between particle samples. `.dens_step` must accept the following arguments:
 #'    * `.data_now`---a one-row [`data.table`] that defines the current particle sample (as in `.history`).
 #'    * `.data_past`---a multi-row [`data.table`] that defines all particle samples for the previous time step (as in `.history`).
 #'    * (optional) `...`---additional arguments passed from [`pf_backward_p()`].
 #'
 #' Three helper functions are provided:
-#' * [`step_dens()`] calculates distances between current and past particle samples (via [`terra::distance()`]) and translates these into probability densities (via [`dtruncgamma()`]). Arguments passed via `...` are passed to both [`terra::distance()`] (which requires a `lonlat` input) and [`dtruncgamma()`].
-#' * [`step_dens_lookup()`] looks up pre-calculated density values from an object in memory (from XXX);
-#' * [`step_dens_read()`] reads selected pre-calculated density values (from XXX) into memory. This requires the `qs` package but, for speed, performs no checks as to whether it is available.
+#' * [`dstep()`] calculates distances between current and past particle samples (via [`terra::distance()`]) and translates these into probability densities (via [`dtruncgamma()`]). Arguments passed via `...` are passed to both [`terra::distance()`] (which requires a `lonlat` input) and [`dtruncgamma()`].
+#' * [`dstep_lookup()`] looks up pre-calculated density values from an object in memory (from XXX);
+#' * [`dstep_read()`] reads selected pre-calculated density values (from XXX) into memory. This requires the `qs` package but, for speed, performs no checks as to whether it is available.
 #'
 #' @param .save_history A logical variable that defines whether or not to save updated particle samples in memory (see [`pf_forward_1()`]).
 #' @param .write_history A named list, passed to [`arrow::write_parquet()`], to write updated particle samples to file (see [`pf_forward_1()`]).
@@ -127,7 +126,7 @@ pf_backward_dens <- function(.history, .step_dens, ...,
 #' In outline, the backward pass (backward sampling) proceeds as follows:
 #' * Identify the final particle samples;
 #' * For each particle:
-#'      * Calculate the probability density of movements from that particle to all particles at the previous time step via a `step_dens*` function.
+#'      * Calculate the probability density of movements from that particle to all particles at the previous time step via a `.dens_step` function.
 #'      * In practice, this typically requires calculating the distances between particle samples and translating these into densities using the movement model;
 #' * Sample a selected particle at the previous time step, in line with the probability densities linking each pair of particles;
 #' * Repeat this process until the start of the time series;
@@ -140,12 +139,25 @@ pf_backward_dens <- function(.history, .step_dens, ...,
 #' @return The function returns a [`pf_path-class`] object.
 #'
 #' @seealso
-#' * [`acs()`] and [`dc()`] implement AC-branch algorithms;
-#' * [`pf_forward_1()`] and [`pf_forward_2()`] implement the forward simulation;
-#' * [`pf_backward()`] implements the backward pass;
-#' * [`pf_path()`] reconstructs movement paths;
-#' * [`pf_map_pou()`] and [`pf_map_dens()`] generate maps of space use;
-#' * [`pf_setup_files()`], [`pf_kick()`] and [`pf_coords()`] are helper functions;
+#' * The PF (forward simulation) is implemented by [`pf_forward_*()`]:
+#'     * [`pf_forward_1()`] refines AC-branch algorithm ([`acs()`] and [`dc()`]) outputs using PF;
+#'     * [`pf_forward_2()`] is an integrated implementation that couples AC- and PF-branch algorithms internally;
+#'
+#' * PF is supported by:
+#'     * Setup helpers, namely [`pf_setup_files()`];
+#'     * Template movement models, namely [`pf_kick()`];
+#'
+#' * The backward pass is implemented by [`pf_backward()`];
+#'
+#' * Movement paths are built from PF outputs via `pf_path()` functions:
+#'     * [`pf_path()`] reconstructs paths;
+#'     * [`pf_path_pivot()`] supports path reconstruction;
+#'
+#' * To reconstruct maps of space use, see:
+#'     * [`pf_coords()`] to extract particle coordinates;
+#'     * [`pf_map_pou()`] for probability-of-use maps;
+#'     * [`pf_map_dens()`] for smooth utilisation distributions;
+#'     * [`get_hr()`] for home range estimates;
 #'
 #' @author Edward Lavender
 #' @name pf_backward_p
@@ -153,36 +165,14 @@ pf_backward_dens <- function(.history, .step_dens, ...,
 #' @rdname pf_backward_p
 #' @export
 
-dtruncgamma <- function(.x = 1, .shape = 15, .scale = 15, .mobility = 500, ...) {
-  truncdist::dtrunc(.x, "gamma", a = 0, b = .mobility,
-                    shape = .shape, scale = .scale)
-}
-
-#' @rdname pf_backward_p
-#' @export
-
-step_dens <- function(.data_now, .data_past, ...) {
-  # Calculate step length between selected location and all previous locations
-  rlen <- terra::distance(cbind(.data_now$x_now, .data_now$y_now),
-                          cbind(.data_past$x_now, .data_past$y_now),
-                          ...)
-  # Calculate turning angle
-  # (optional)
-  # Translate step lengths and turning angles into movement Prs
-  dtruncgamma(.x = rlen, ...)
-}
-
-#' @rdname pf_backward_p
-#' @export
-
-step_dens_lookup <- function(.data_now, .data_past, .density) {
+dstep_lookup <- function(.data_now, .data_past, .density) {
   rbindlist(.density[[as.character(.data_now$cell_now)]][as.character(.data_past$cell_now)])$density
 }
 
 #' @rdname pf_backward_p
 #' @export
 
-step_dens_read <- function(.data_now, .data_past, .density) {
+dstep_read <- function(.data_now, .data_past, .density) {
   # Read densities for movements from .data_now$cell_now
   dens <- qs::qread(file.path(.density, as.character(.data_now$cell_now), "density.qs"))
   # Extract densities for cell_now to .data_past$cell_now
@@ -193,7 +183,7 @@ step_dens_read <- function(.data_now, .data_past, .density) {
 #' @export
 
 pf_backward_p <- function(.history,
-                          .step_dens, ...,
+                          .dens_step = dstep, ...,
                           .save_history = FALSE, .write_history = NULL,
                           .cl = NULL, .varlist = NULL,
                           .progress = TRUE, .verbose = TRUE, .txt = ""
@@ -259,7 +249,7 @@ pf_backward_p <- function(.history,
           .history[[t - 1]] <- arrow::read_parquet(.history[[t - 1]])
         }
         # Calculate step densities
-        dens <- .step_dens(.data_now = path[[t]],
+        dens <- .dens_step(.data_now = path[[t]],
                            .data_past = .history[[t - 1]], ...)
         # Sample a previous location
         index <- sample.int(n_particle, size = 1, prob = dens)

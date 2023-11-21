@@ -6,7 +6,7 @@
 #' @rdname pf_backward_internals
 #' @keywords internal
 
-.pf_backward_dens_mem <- function(.history, .step_dens, ...,
+.pf_backward_dens_mem <- function(.history, .dens_step, ...,
                                   .verbose, .txt) {
 
   # Set up messages
@@ -62,7 +62,7 @@
   # Calculate densities between cell pairs
   cat_to_cf("... Calculating densities..")
     pairs |>
-    .pf_backward_dens_calc(.step_dens = .step_dens, ...) |>
+    .pf_backward_dens_calc(.dens_step = .dens_step, ...) |>
     .pf_backward_dens_nest()
 
 }
@@ -70,7 +70,7 @@
 #' @rdname pf_backward_internals
 #' @keywords internal
 
-.pf_backward_dens_calc <- function(.pairs, .step_dens, ..., .slice_now = FALSE) {
+.pf_backward_dens_calc <- function(.pairs, .dens_step, ..., .slice_now = FALSE) {
   # Get 'current' location(s)
   now  <-
     .pairs |>
@@ -90,7 +90,7 @@
   # Calculate densities
   # * The cell_past column is required for pf_setup_dens_spark() option 2B
   .pairs |>
-    mutate(density = .step_dens(.data_now = now, .data_past = past, ...)) |>
+    mutate(density = .dens_step(.data_now = now, .data_past = past, ...)) |>
     select(any_of("cell_now"), "cell_past", "density") |>
     as.data.table()
 }
@@ -108,7 +108,7 @@
 #' @rdname pf_backward_internals
 #' @keywords internal
 
-.pf_backward_dens_spark <- function(.history, .step_dens, ...,
+.pf_backward_dens_spark <- function(.history, .dens_step, ...,
                                     .collect = 1e9, .store = NULL,
                                     .cl, .varlist,
                                     .verbose, .txt) {
@@ -185,7 +185,7 @@
     cat_to_cf("... Calculating densities...")
     return(
       pairs |>
-        .pf_backward_dens_calc(.step_dens = .step_dens, ...) |>
+        .pf_backward_dens_calc(.dens_step = .dens_step, ...) |>
         .pf_backward_dens_nest()
     )
 
@@ -235,7 +235,7 @@
               .cl = .cl, .varlist = .varlist,
               .fun = function(i) {
       dens       <- .pf_backward_dens_calc(.pairs = arrow::read_parquet(input[i]),
-                                           .step_dens = .step_dens, ...,
+                                           .dens_step = .dens_step, ...,
                                            .slice_now = TRUE)
       out        <- as.list(dens$density)
       names(out) <- as.character(dens$cell_past)

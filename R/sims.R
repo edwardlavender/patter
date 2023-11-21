@@ -25,11 +25,15 @@
 #' * `...`---additional arguments, if needed;
 #'
 #' @param .xy_now,.xy_next,.lonlat,.length,.angle Arguments for [`cstep()`].
-#' * [`.xy_now`]
-#' * [`.xy_next`]
-#' * [`.lonlat`]
-#' * [`.length`]
-#' * [`.angle`]
+#' * `.xy_now` is a two-column matrix of x and y coordinates;
+#' * (optional) `.xy_next` is a blank two-column matrix that is updated with future coordinates;
+#' * `.lonlat` is a `logical` variable that defines whether or not coordinates are in longitude/latitude;
+#' * `.length` is `numeric` vector of step lengths;
+#' * `.angle` is a `numeric` vector of turning angles;
+#'
+#' @param .data_now,.data_past Arguments for [`dstep()`].
+#' * `.data_now` is a [`data.table`] with coordinates in `x_now` and `y_now` columns;
+#' * `.data_past` is a [`data.table`] as above;
 #'
 #' @param ... Arguments passed to/from functions.
 #'
@@ -53,8 +57,8 @@
 #'
 #' The following wrapper functions are provided in the form required by front-end functions (e.g., [`sim_path_walk()`], [`pf_kick()`] and [`pf_backward_p()`]):
 #'
-#' * [`rlen()`] and [`dlen()`] are wrappers for [`rtruncgamma()`] and [`dtruncgamma()`].
-#' * [`rangrw()`], [`rangcrw()`] are wrappers for [`rwn()`] for random walks and correlated random walks. The corresponding functions [`dangrw()`] and [`dangcrw()`] are not currently implemented.
+#' * [`rlen()`] is a wrapper for [`rtruncgamma()`]. The corresponding function `dlen` is not currently implemented.
+#' * [`rangrw()`], [`rangcrw()`] are wrappers for [`rwn()`] for random walks and correlated random walks. The corresponding functions `dangrw()` and `dangcrw()` are not currently implemented.
 #'
 #' ## Extensions
 #'
@@ -74,6 +78,14 @@
 
 rtruncgamma <- function(.n = 1, .shape = 15, .scale = 15, .mobility = 500, ...) {
   truncdist::rtrunc(.n, "gamma", a = 0, b = .mobility,
+                    shape = .shape, scale = .scale)
+}
+
+#' @rdname sim_helpers
+#' @export
+
+dtruncgamma <- function(.x = 1, .shape = 15, .scale = 15, .mobility = 500, ...) {
+  truncdist::dtrunc(.x, "gamma", a = 0, b = .mobility,
                     shape = .shape, scale = .scale)
 }
 
@@ -136,6 +148,20 @@ cstep <- function(.xy_now,
     .xy_next[, 2] <- .xy_now[, 2] + .length * sin(.angle)
   }
   .xy_next
+}
+
+#' @rdname sim_helpers
+#' @export
+
+dstep <- function(.data_now, .data_past, ...) {
+  # Calculate step length between selected location and all previous locations
+  rlen <- terra::distance(cbind(.data_now$x_now, .data_now$y_now),
+                          cbind(.data_past$x_now, .data_past$y_now),
+                          ...)
+  # Calculate turning angle
+  # (optional)
+  # Translate step lengths and turning angles into movement Prs
+  dtruncgamma(.x = rlen, ...)
 }
 
 #' @title Simulate an acoustic array

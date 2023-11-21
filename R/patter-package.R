@@ -36,7 +36,7 @@
 #' * [`sim_array()`] to simulate an acoustic array;
 #' * [`sim_path_walk()`] to simulate a movement path from a walk model, with the help of:
 #'    * [`rtruncgamma()`] and [`rlen()`] to simulate step lengths;
-#'    * [`rwn()`], [`rangrq()`] and [`rangcrw()`] to simulate turning angles;
+#'    * [`rwn()`], [`rangrw()`] and [`rangcrw()`] to simulate turning angles;
 #' * [`sim_detections()`] to simulate detections at receivers, with the help of:
 #'    * [`calc_detection_pr_logistic()`] and [`calc_detection_pr()`], which represent example detection probability models;
 #'

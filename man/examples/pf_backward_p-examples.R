@@ -23,7 +23,7 @@ gebco <- dat_gebco()
 #### Example (1): A. Implementation with default options
 out_pfb <-
   pf_backward_p(history,
-                .step_dens = step_dens, lonlat = FALSE,
+                .dens_step = dstep, lonlat = FALSE,
                 .save_history = TRUE)
 
 #### Example (1): B. Parallelise default implementation
@@ -31,27 +31,27 @@ out_pfb <-
 if (.Platform$OS.type == "unix") {
   out_pfb <-
     pf_backward_p(history,
-                  .step_dens = step_dens, lonlat = FALSE,
+                  .dens_step = dstep, lonlat = FALSE,
                   .save_history = TRUE,
                   .cl = 2L)
 }
 # Use socket cluster
 out_pfb <-
   pf_backward_p(history,
-                .step_dens = patter::step_dens, lonlat = FALSE,
+                .dens_step = patter::dstep, lonlat = FALSE,
                 .save_history = TRUE,
                 .cl = parallel::makeCluster(2L),
                 )
 
 #### Example (2): A. Pre-compute step densities in memory
-# Pre-compute densities using default step_dens() function
+# Pre-compute densities using default dstep() function
 densities <- pf_backward_dens(history,
-                              .step_dens = step_dens, lonlat = FALSE, pairwise = TRUE,
+                              .dens_step = dstep, lonlat = FALSE, pairwise = TRUE,
                               .in_memory = TRUE)
 # Use pre-computed densities in algorithm
 out_pfb <-
   pf_backward_p(history,
-                .step_dens = step_dens_lookup, .density = densities,
+                .dens_step = dstep_lookup, .density = densities,
                 .save_history = TRUE)
 
 #### Example (2): B. Parallelise algorithm
@@ -59,14 +59,14 @@ out_pfb <-
 if (.Platform$OS.type == "unix") {
 out_pfb <-
   pf_backward_p(history,
-                .step_dens = step_dens_lookup, .density = densities,
+                .dens_step = dstep_lookup, .density = densities,
                 .save_history = TRUE,
                 .cl = 2L)
 }
 # Use socket cluster
 out_pfb <-
   pf_backward_p(history,
-                .step_dens = patter::step_dens_lookup, .density = densities,
+                .dens_step = patter::dstep_lookup, .density = densities,
                 .save_history = TRUE,
                 .cl = parallel::makeCluster(2L),
                 .varlist = "densities")
@@ -78,12 +78,12 @@ if (FALSE) {
   ## i) Assemble data using {sparklyr} & calculate densities in memory
   # Compute densities
   densities <- pf_backward_dens(pff_folder,
-                                .step_dens = step_dens, lonlat = FALSE, pairwise = TRUE,
+                                .dens_step = dstep, lonlat = FALSE, pairwise = TRUE,
                                 .in_memory = FALSE, .collect = Inf)
   # Implement pf_backward_dens() as shown above (in serial or parallel)
   out_pfb <-
     pf_backward_p(history,
-                  .step_dens = step_dens_lookup, .density = densities,
+                  .dens_step = dstep_lookup, .density = densities,
                   .save_history = TRUE)
 
   ## ii) Assemble data using {sparklyr} & calculate densities iteratively
@@ -91,7 +91,7 @@ if (FALSE) {
   # Compute densities
   pfb_folder <- mktempdir("patter", "pf", "backward", "pre-calcs")
   pf_backward_dens(pff_folder,
-                   .step_dens = step_dens, lonlat = FALSE, pairwise = TRUE,
+                   .dens_step = dstep, lonlat = FALSE, pairwise = TRUE,
                    .in_memory = FALSE,
                    .collect = 0L,
                    .store = pfb_folder)
@@ -107,38 +107,38 @@ if (FALSE) {
   # (optional) Trial parallelisation for density computation
   if (.Platform$OS.type == "unix") {
     pf_backward_dens(pff_folder,
-                     .step_dens = step_dens, lonlat = FALSE, pairwise = TRUE,
+                     .dens_step = dstep, lonlat = FALSE, pairwise = TRUE,
                      .in_memory = FALSE,
                      .collect = 0L,
                      .store = mktempdir("patter", "pf", "backward", "pre-calcs"),
                      .cl = 2L)
   }
   pf_backward_dens(pff_folder,
-                   .step_dens = patter::step_dens, lonlat = FALSE, pairwise = TRUE,
+                   .dens_step = patter::dstep, lonlat = FALSE, pairwise = TRUE,
                    .in_memory = FALSE,
                    .collect = 0L,
                    .store = mktempdir("patter", "pf", "backward", "pre-calcs"),
                    .cl = parallel::makeCluster(2L))
 
-  # Implement `pf_backward()` using `step_dens_read()`
+  # Implement `pf_backward()` using `dstep_read()`
   out_pfb <-
     pf_backward_p(history,
-                  .step_dens = step_dens_read,
+                  .dens_step = dstep_read,
                   .density = file.path(pfb_folder, "density"),
                   .save_history = TRUE)
 
-  # Implement `pf_backward()` using `step_dens_read()` in parallel
+  # Implement `pf_backward()` using `dstep_read()` in parallel
   if (.Platform$OS.type == "unix") {
     out_pfb <-
       pf_backward_p(history,
-                    .step_dens = step_dens_read,
+                    .dens_step = dstep_read,
                     .density = file.path(pfb_folder, "density"),
                     .save_history = TRUE,
                     .cl = 2L)
   }
   out_pfb <-
     pf_backward_p(history,
-                  .step_dens = patter::step_dens_read,
+                  .dens_step = patter::dstep_read,
                   .density = file.path(pfb_folder, "density"),
                   .save_history = TRUE,
                   .cl = parallel::makeCluster(2L),

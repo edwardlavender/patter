@@ -16,10 +16,10 @@
 #'
 #' * To implement this approach, a 'flux template' must be provided (to the `.flux_vals` argument), which is a list of [`data.table`]s that will hold the 'flux' parameters for each time step and can be updated by reference.
 #'    * The default [`.flux_template()`] function generates a list with place holders for simulated step lengths and turning angles.
-#' * The `.flux` argument is a function that is used to simulate the new values of any flux parameters at each time step and update (by reference) the flux template (i.e., `.flux_vals`). This must accept `.fv`, `.row` and `.col` arguments, as implemented in [`.step_iter()`].
+#' * The `.flux` argument is a function that is used to simulate the new values of any flux parameters at each time step and update (by reference) the flux template (i.e., `.flux_vals`). This must accept `.fv`, `.row` and `.col` arguments, as implemented in [`.cstep_iter()`].
 #' * `.move` is a function that defines new proposal locations based on the simulated flux values.
 #'    * For example, [`.cstep_using_flux()`], which wraps [`cstep()`], defines proposal locations based on simulated step lengths and turning angles.
-#' * Internally, `.move` is wrapped within [`cstep_iter()`] and implemented iteratively to ensure that simulated location(s) at each time step are valid (in non NA cells on `.bathy`).
+#' * Internally, `.move` is wrapped within [`.cstep_iter()`] and implemented iteratively to ensure that simulated location(s) at each time step are valid (in non NA cells on `.bathy`).
 #'
 #' @author Edward Lavender
 #' @name sim_path_flux
@@ -113,11 +113,6 @@ NULL
   cstep(.xy_now = .xy_now, .xy_next = .xy_next, .lonlat = .lonlat,
         .length = .fv$length[[.t]], .angle = .fv$angle[[.t]])
 }
-
-#' @rdname sim_path_flux
-#' @keywords internal
-
-
 
 #' @rdname sim_path_flux
 #' @keywords internal

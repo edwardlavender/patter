@@ -8,15 +8,15 @@
 \alias{.pf_backward_dens_spark}
 \title{PF: Internal functions for backwards pass}
 \usage{
-.pf_backward_dens_mem(.history, .step_dens, ..., .verbose, .txt)
+.pf_backward_dens_mem(.history, .dens_step, ..., .verbose, .txt)
 
-.pf_backward_dens_calc(.pairs, .step_dens, ..., .slice_now = FALSE)
+.pf_backward_dens_calc(.pairs, .dens_step, ..., .slice_now = FALSE)
 
 .pf_backward_dens_nest(.pairs)
 
 .pf_backward_dens_spark(
   .history,
-  .step_dens,
+  .dens_step,
   ...,
   .collect = 1e+09,
   .store = NULL,
