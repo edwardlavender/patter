@@ -98,20 +98,20 @@ test_that("sim_path_*() helper functions work", {
   flux_vals$angle[, V2 := 20]
   flux_vals$angle[, V3 := 30]
 
-  # Test .step() function uses flux values to update starting locations correctly
+  # Test cstep() function uses flux values to update starting locations correctly
   xy_now <- matrix(c(1, 2,
                      3, 4), ncol = 2)
   expect_equal(
-    .step(xy_now, xy_now, .length = flux_vals$length$V1, .angle = flux_vals$angle$V1),
+    cstep(xy_now, xy_now, .length = flux_vals$length$V1, .angle = flux_vals$angle$V1),
     cbind(
       xy_now[, 1] + flux_vals$length$V1 * cos(flux_vals$angle$V1),
       xy_now[, 2] + flux_vals$length$V1 * sin(flux_vals$angle$V1)
     )
   )
 
-  # Test .step_using_flux() wrapper works
+  # Test .cstep_using_flux() wrapper works
   expect_equal(
-    .step_using_flux(xy_now, xy_now, .lonlat = FALSE,
+    .cstep_using_flux(xy_now, xy_now, .lonlat = FALSE,
                      .fv = flux_vals, .t = 1),
     cbind(
       xy_now[, 1] + flux_vals$length$V1 * cos(flux_vals$angle$V1),
@@ -119,7 +119,7 @@ test_that("sim_path_*() helper functions work", {
     )
   )
   expect_equal(
-    .step_using_flux(xy_now, xy_now, .lonlat = FALSE,
+    .cstep_using_flux(xy_now, xy_now, .lonlat = FALSE,
                      .fv = flux_vals, .t = 2),
     cbind(
       xy_now[, 1] + flux_vals$length$V2 * cos(flux_vals$angle$V2),
@@ -127,7 +127,7 @@ test_that("sim_path_*() helper functions work", {
     )
   )
 
-  #### Test .step_iter() iterative approach
+  #### Test .cstep_iter() iterative approach
   # * Tested separately since flux_vals are updated by reference
 
   #### Test data re-orientation functions
@@ -151,7 +151,7 @@ test_that("sim_path_*() helper functions work", {
 
 })
 
-test_that(".step_iter() works", {
+test_that(".cstep_iter() works", {
 
   #### Define starting locations
   # * We will define two points far from land & one point on land
@@ -176,26 +176,26 @@ test_that(".step_iter() works", {
     .fv$angle[.row, (colnames(.fv$length)[.col]) := rangrw(length(.row))]
   }
 
-  # Implement .step_iter() for the first two points
+  # Implement .cstep_iter() for the first two points
   # * This should work
   # * We expect the flux function to print 1,2 once
   set.seed(1)
   p <- 1:2
-  .step_iter(.xy_now = pts[p, ], .lonlat = FALSE,
+  .cstep_iter(.xy_now = pts[p, ], .lonlat = FALSE,
              .flux = flux, .fv = .flux_template(.n_step = 2, .n_path = length(p)),
              .t = 1,
-             .move = .step_using_flux,
+             .move = .cstep_using_flux,
              .bathy = dat_gebco())
 
-  # Implement .step_iter() for all points
+  # Implement .cstep_iter() for all points
   # * We expect the flux function print 1,2 once then 3 for 99 times
   # * Then the function will fail
   set.seed(1)
   p <- 1:3
-  .step_iter(.xy_now = pts[p, ], .lonlat = FALSE,
+  .cstep_iter(.xy_now = pts[p, ], .lonlat = FALSE,
              .flux = flux, .fv = .flux_template(.n_step = 2, .n_path = length(p)),
              .t = 1,
-             .move = .step_using_flux,
+             .move = .cstep_using_flux,
              .bathy = dat_gebco()) |>
     expect_error("Failed to generate 1/3 path(s) (33.33 %) at time 1.",
                  fixed = TRUE)

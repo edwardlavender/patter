@@ -2,8 +2,8 @@
 #' @description Internal functions that support the simulation of movement paths.
 #' * [`.sim_path_flux()`] simulates the movement path(s) from flux parameters that are generated dynamically at each time step. This is supported by the following helpers:
 #'    * [`.flux_template()`] defines a list of [`data.table`] objects in which the simulated 'flux' parameters (e.g., step lengths and turning angles) for each step are stored;
-#'    * [`.step_using_flux()`] and [`.step()`] are functions which, given current location(s), calculate new locations, based on step lengths and turning angles;
-#'    * [`.step_iter()`] is an internal wrapper for [`.step()`] that validates proposal steps into new locations;
+#'    * [`.cstep_using_flux()`] and [`cstep()`] are functions which, given current location(s), calculate new locations, based on step lengths and turning angles;
+#'    * [`.cstep_iter()`] is an internal wrapper for [`cstep()`] that validates proposal steps into new locations;
 #'    * [`.sim_path_pivot()`] and [`.flux_pivot()`] reorientate simulated paths/flux values;
 #'
 #' @details
@@ -18,8 +18,8 @@
 #'    * The default [`.flux_template()`] function generates a list with place holders for simulated step lengths and turning angles.
 #' * The `.flux` argument is a function that is used to simulate the new values of any flux parameters at each time step and update (by reference) the flux template (i.e., `.flux_vals`). This must accept `.fv`, `.row` and `.col` arguments, as implemented in [`.step_iter()`].
 #' * `.move` is a function that defines new proposal locations based on the simulated flux values.
-#'    * For example, [`.step_using_flux()`], which wraps [`.step()`], defines proposal locations based on simulated step lengths and turning angles.
-#' * Internally, `.move` is wrapped within [`.step_iter()`] and implemented iteratively to ensure that simulated location(s) at each time step are valid (in non NA cells on `.bathy`).
+#'    * For example, [`.cstep_using_flux()`], which wraps [`cstep()`], defines proposal locations based on simulated step lengths and turning angles.
+#' * Internally, `.move` is wrapped within [`cstep_iter()`] and implemented iteratively to ensure that simulated location(s) at each time step are valid (in non NA cells on `.bathy`).
 #'
 #' @author Edward Lavender
 #' @name sim_path_flux
@@ -32,7 +32,7 @@ NULL
                           .origin = NULL,
                           .n_step = 10L,
                           .flux, .flux_vals = .flux_template(.n_step, .n_path),
-                          .move = .step_using_flux,
+                          .move = .cstep_using_flux,
                           .n_path = 1L,
                           .plot = TRUE, .one_page = FALSE) {
 
@@ -60,12 +60,12 @@ NULL
   pb$tick(0)
   for (t in seq_len(.n_step - 1)) {
     pb$tick()
-    mat[, lookup[[t + 1]]] <- .step_iter(.xy_now = mat[, lookup[[t]], drop = FALSE],
-                                        .xy_next = mat[, lookup[[t + 1]], drop = FALSE],
-                                        .lonlat = .lonlat,
-                                        .flux = .flux, .fv = .flux_vals,
-                                        .move = .move, .t = t,
-                                        .bathy = .bathy)
+    mat[, lookup[[t + 1]]] <- .cstep_iter(.xy_now = mat[, lookup[[t]], drop = FALSE],
+                                          .xy_next = mat[, lookup[[t + 1]], drop = FALSE],
+                                          .lonlat = .lonlat,
+                                          .flux = .flux, .fv = .flux_vals,
+                                          .move = .move, .t = t,
+                                          .bathy = .bathy)
   }
 
   #### Pivot path(s) into long format
@@ -109,37 +109,25 @@ NULL
 #' @rdname sim_path_flux
 #' @keywords internal
 
-.step_using_flux <- function(.xy_now, .xy_next, .lonlat, .fv, .t) {
-  .step(.xy_now = .xy_now, .xy_next = .xy_next, .lonlat = .lonlat,
+.cstep_using_flux <- function(.xy_now, .xy_next, .lonlat, .fv, .t) {
+  cstep(.xy_now = .xy_now, .xy_next = .xy_next, .lonlat = .lonlat,
         .length = .fv$length[[.t]], .angle = .fv$angle[[.t]])
 }
 
 #' @rdname sim_path_flux
 #' @keywords internal
 
-.step <- function(.xy_now,
-                  .xy_next = matrix(NA, nrow = nrow(.xy_now), ncol = 2L),
-                  .lonlat = FALSE,
-                  .length = rtruncgamma(nrow(.xy_now)),
-                  .angle = rwn(nrow(.xy_now))) {
-  if (.lonlat) {
-    .xy_next <- geosphere::destPoint(p = .xy_now, b = .angle, d = .length)
-  } else {
-    .xy_next[, 1] <- .xy_now[, 1] + .length * cos(.angle)
-    .xy_next[, 2] <- .xy_now[, 2] + .length * sin(.angle)
-  }
-  .xy_next
-}
+
 
 #' @rdname sim_path_flux
 #' @keywords internal
 
-.step_iter <- function(.xy_now,
-                       .xy_next = matrix(NA, nrow = nrow(.xy_now), ncol = ncol(.xy_now)),
-                       .lonlat,
-                      .flux, .fv, .t,
-                      .move,
-                      .bathy) {
+.cstep_iter <- function(.xy_now,
+                        .xy_next = matrix(NA, nrow = nrow(.xy_now), ncol = ncol(.xy_now)),
+                        .lonlat,
+                        .flux, .fv, .t,
+                        .move,
+                        .bathy) {
   counter <- 0
   run     <- TRUE
   while (run && counter < 100) {

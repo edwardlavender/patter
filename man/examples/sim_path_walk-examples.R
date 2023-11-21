@@ -39,7 +39,7 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
                      .shape = 5, .mobility = 100)
   p
 
-  #### Example (6): Modify .step_length() model
+  #### Example (6): Modify `.sim_length` model
   # Use time-varying step lengths dependent upon some behavioural state
   b <- data.table(x = c(0, 0, 1, 1, 1, 1, 1))
   hist(rtruncgamma(.n = 1e3, .shape = 5, .scale = 5))

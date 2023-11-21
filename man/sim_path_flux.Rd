@@ -4,9 +4,8 @@
 \alias{sim_path_flux}
 \alias{.sim_path_flux}
 \alias{.flux_template}
-\alias{.step_using_flux}
-\alias{.step}
-\alias{.step_iter}
+\alias{.cstep_using_flux}
+\alias{.cstep_iter}
 \alias{.sim_path_pivot}
 \alias{.flux_pivot}
 \title{Simulate movement paths}
@@ -18,7 +17,7 @@
   .n_step = 10L,
   .flux,
   .flux_vals = .flux_template(.n_step, .n_path),
-  .move = .step_using_flux,
+  .move = .cstep_using_flux,
   .n_path = 1L,
   .plot = TRUE,
   .one_page = FALSE
@@ -26,17 +25,9 @@
 
 .flux_template(.n_step, .n_path)
 
-.step_using_flux(.xy_now, .xy_next, .lonlat, .fv, .t)
+.cstep_using_flux(.xy_now, .xy_next, .lonlat, .fv, .t)
 
-.step(
-  .xy_now,
-  .xy_next = matrix(NA, nrow = nrow(.xy_now), ncol = 2L),
-  .lonlat = FALSE,
-  .length = rtruncgamma(nrow(.xy_now)),
-  .angle = rwn(nrow(.xy_now))
-)
-
-.step_iter(
+.cstep_iter(
   .xy_now,
   .xy_next = matrix(NA, nrow = nrow(.xy_now), ncol = ncol(.xy_now)),
   .lonlat,
@@ -57,8 +48,8 @@ Internal functions that support the simulation of movement paths.
 \item \code{\link[=.sim_path_flux]{.sim_path_flux()}} simulates the movement path(s) from flux parameters that are generated dynamically at each time step. This is supported by the following helpers:
 \itemize{
 \item \code{\link[=.flux_template]{.flux_template()}} defines a list of \code{\link{data.table}} objects in which the simulated 'flux' parameters (e.g., step lengths and turning angles) for each step are stored;
-\item \code{\link[=.step_using_flux]{.step_using_flux()}} and \code{\link[=.step]{.step()}} are functions which, given current location(s), calculate new locations, based on step lengths and turning angles;
-\item \code{\link[=.step_iter]{.step_iter()}} is an internal wrapper for \code{\link[=.step]{.step()}} that validates proposal steps into new locations;
+\item \code{\link[=.cstep_using_flux]{.cstep_using_flux()}} and \code{\link[=cstep]{cstep()}} are functions which, given current location(s), calculate new locations, based on step lengths and turning angles;
+\item \code{\link[=.cstep_iter]{.cstep_iter()}} is an internal wrapper for \code{\link[=cstep]{cstep()}} that validates proposal steps into new locations;
 \item \code{\link[=.sim_path_pivot]{.sim_path_pivot()}} and \code{\link[=.flux_pivot]{.flux_pivot()}} reorientate simulated paths/flux values;
 }
 }
@@ -79,9 +70,9 @@ These functions facilitate the simulation of animal movement paths.
 \item The \code{.flux} argument is a function that is used to simulate the new values of any flux parameters at each time step and update (by reference) the flux template (i.e., \code{.flux_vals}). This must accept \code{.fv}, \code{.row} and \code{.col} arguments, as implemented in \code{\link[=.step_iter]{.step_iter()}}.
 \item \code{.move} is a function that defines new proposal locations based on the simulated flux values.
 \itemize{
-\item For example, \code{\link[=.step_using_flux]{.step_using_flux()}}, which wraps \code{\link[=.step]{.step()}}, defines proposal locations based on simulated step lengths and turning angles.
+\item For example, \code{\link[=.cstep_using_flux]{.cstep_using_flux()}}, which wraps \code{\link[=cstep]{cstep()}}, defines proposal locations based on simulated step lengths and turning angles.
 }
-\item Internally, \code{.move} is wrapped within \code{\link[=.step_iter]{.step_iter()}} and implemented iteratively to ensure that simulated location(s) at each time step are valid (in non NA cells on \code{.bathy}).
+\item Internally, \code{.move} is wrapped within \code{\link[=cstep_iter]{cstep_iter()}} and implemented iteratively to ensure that simulated location(s) at each time step are valid (in non NA cells on \code{.bathy}).
 }
 }
 \author{

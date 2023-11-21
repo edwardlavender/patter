@@ -18,11 +18,18 @@
 #'
 #' @param .mu,.rho,.sd Arguments for [`rwn()`] for the simulation of turning angles, passed to the `mu`, `rho` and `sd` arguments of [`circular::rwrappednormal()`].
 #'
-#' @param .prior,.t Arguments required for [`rlen()`], [`rangrw()`] and [`rangcrw()`], as used in top-level functions (e.g, [`sim_path_walk()`]):
+#' @param .prior,.t Arguments for [`rlen()`], [`rangrw()`] and [`rangcrw()`], as used in top-level functions (e.g, [`sim_path_walk()`]):
 #' * `.n`---an `integer` that defines the number of simulated outcome(s);
 #' * `.prior`---a `numeric` vector that defines the simulated value(s) from the previous time step;
 #' * `.t`---an `integer` that defines the time step;
 #' * `...`---additional arguments, if needed;
+#'
+#' @param .xy_now,.xy_next,.lonlat,.length,.angle Arguments for [`cstep()`].
+#' * [`.xy_now`]
+#' * [`.xy_next`]
+#' * [`.lonlat`]
+#' * [`.length`]
+#' * [`.angle`]
 #'
 #' @param ... Arguments passed to/from functions.
 #'
@@ -40,7 +47,7 @@
 #' ### Turning angles
 #'
 #' * [`rwn()`] simulates turning angle(s) from a wrapped normal distribution.
-#' * `dwn()` is not currently.
+#' * `dwn()` is not currently implemented.
 #'
 #' ## Wrappers
 #'
@@ -114,6 +121,22 @@ rangcrw <- function(.n = 1,
   rwn(.n = .n, .mu = .mu, ...)
 }
 
+#' @rdname sim_helpers
+#' @export
+
+cstep <- function(.xy_now,
+                  .xy_next = matrix(NA, nrow = nrow(.xy_now), ncol = 2L),
+                  .lonlat = FALSE,
+                  .length = rtruncgamma(nrow(.xy_now)),
+                  .angle = rwn(nrow(.xy_now))) {
+  if (.lonlat) {
+    .xy_next <- geosphere::destPoint(p = .xy_now, b = .angle, d = .length)
+  } else {
+    .xy_next[, 1] <- .xy_now[, 1] + .length * cos(.angle)
+    .xy_next[, 2] <- .xy_now[, 2] + .length * sin(.angle)
+  }
+  .xy_next
+}
 
 #' @title Simulate an acoustic array
 #' @description This function simulates acoustic receivers on a grid.
@@ -342,7 +365,7 @@ sim_path_walk <- function(.bathy = spatTemplate(), .lonlat = FALSE,
                         .lonlat = .lonlat,
                         .origin = .origin,
                         .n_step = .n_step,
-                        .move = .step_using_flux,
+                        .move = .cstep_using_flux,
                         .flux = .flux,
                         .flux_vals = .flux_template(.n_step, .n_path),
                         .n_path = .n_path,

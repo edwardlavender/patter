@@ -87,7 +87,7 @@ pf_kick <- function(.particles,
   rang <- .sim_angle(n, ...)
   # Kick each particle into new proposal locations
   x_now <- y_now <- NULL
-  xy_next <- .step(.xy_now = as.matrix(.particles[, list(x_now, y_now)]),
+  xy_next <- cstep(.xy_now = as.matrix(.particles[, list(x_now, y_now)]),
                    .lonlat = .lonlat,
                    .length = rlen,
                    .angle = rang)

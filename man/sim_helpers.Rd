@@ -7,6 +7,7 @@
 \alias{rlen}
 \alias{rangrw}
 \alias{rangcrw}
+\alias{cstep}
 \title{Simulation helpers}
 \usage{
 rtruncgamma(.n = 1, .shape = 15, .scale = 15, .mobility = 500, ...)
@@ -18,6 +19,14 @@ rlen(.n = 1, .prior = NULL, .t = NULL, ...)
 rangrw(.n = 1, .prior = NULL, .t = NULL, ...)
 
 rangcrw(.n = 1, .prior = NULL, .t = NULL, ...)
+
+cstep(
+  .xy_now,
+  .xy_next = matrix(NA, nrow = nrow(.xy_now), ncol = 2L),
+  .lonlat = FALSE,
+  .length = rtruncgamma(nrow(.xy_now)),
+  .angle = rwn(nrow(.xy_now))
+)
 }
 \arguments{
 \item{.n, .x, .shape, .scale, .mobility}{Arguments for \code{\link[=rtruncgamma]{rtruncgamma()}} and \code{\link[=dtruncgamma]{dtruncgamma()}}:
@@ -33,12 +42,21 @@ rangcrw(.n = 1, .prior = NULL, .t = NULL, ...)
 
 \item{.mu, .rho, .sd}{Arguments for \code{\link[=rwn]{rwn()}} for the simulation of turning angles, passed to the \code{mu}, \code{rho} and \code{sd} arguments of \code{\link[circular:wrappednormal]{circular::rwrappednormal()}}.}
 
-\item{.prior, .t}{Arguments required for \code{\link[=rlen]{rlen()}}, \code{\link[=rangrw]{rangrw()}} and \code{\link[=rangcrw]{rangcrw()}}, as used in top-level functions (e.g, \code{\link[=sim_path_walk]{sim_path_walk()}}):
+\item{.prior, .t}{Arguments for \code{\link[=rlen]{rlen()}}, \code{\link[=rangrw]{rangrw()}} and \code{\link[=rangcrw]{rangcrw()}}, as used in top-level functions (e.g, \code{\link[=sim_path_walk]{sim_path_walk()}}):
 \itemize{
 \item \code{.n}---an \code{integer} that defines the number of simulated outcome(s);
 \item \code{.prior}---a \code{numeric} vector that defines the simulated value(s) from the previous time step;
 \item \code{.t}---an \code{integer} that defines the time step;
 \item \code{...}---additional arguments, if needed;
+}}
+
+\item{.xy_now, .xy_next, .lonlat, .length, .angle}{Arguments for \code{\link[=cstep]{cstep()}}.
+\itemize{
+\item \code{\link{.xy_now}}
+\item \code{\link{.xy_next}}
+\item \code{\link{.lonlat}}
+\item \code{\link{.length}}
+\item \code{\link{.angle}}
 }}
 }
 \description{
@@ -65,7 +83,7 @@ These convenience functions support the generation of animal movement paths and 
 \subsection{Turning angles}{
 \itemize{
 \item \code{\link[=rwn]{rwn()}} simulates turning angle(s) from a wrapped normal distribution.
-\item \code{dwn()} is not currently.
+\item \code{dwn()} is not currently implemented.
 }
 }
 
