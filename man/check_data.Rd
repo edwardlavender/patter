@@ -6,7 +6,7 @@
 \alias{check_services}
 \alias{check_acoustics}
 \alias{check_archival}
-\title{Check input datasets}
+\title{Utilities: check data}
 \usage{
 check_moorings(.moorings, .class = "data.table", .lonlat = NULL)
 

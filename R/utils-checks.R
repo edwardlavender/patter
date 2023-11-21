@@ -1,4 +1,4 @@
-#' @title Utility checks
+#' @title Utilities: check functions
 #' @description These functions check user inputs.
 #' @author Edward Lavender
 #' @name check_utils

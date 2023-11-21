@@ -13,7 +13,7 @@
 \alias{check_dots_for_missing_period}
 \alias{check_new_colnames}
 \alias{check_verbose_and_log}
-\title{Utility checks}
+\title{Utilities: check functions}
 \usage{
 check_dir(input)
 

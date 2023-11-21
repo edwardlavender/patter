@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{compact}
 \alias{compact}
-\title{Compact a list}
+\title{Utilities: compact a list}
 \source{
 This function is derived from the \code{plyr::compact()} function. The function is defined separately in \code{\link{patter}} to reduce reliance on non-default packages.
 }

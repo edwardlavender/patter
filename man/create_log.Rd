@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{create_log}
 \alias{create_log}
-\title{Create a log file}
+\title{Utilities: create a log file}
 \usage{
 create_log(.file, .verbose)
 }

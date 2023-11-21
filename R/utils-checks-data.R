@@ -1,4 +1,4 @@
-#' @title Check input datasets
+#' @title Utilities: check data
 #' @description These functions check input datasets.
 #' @param .moorings,.services,.acoustics,.archival User inputs. `NULL` inputs are allowed for `.services` and `.archival`.
 #' @return The functions invisibly return the inputted object if all checks are passed, with the following adjustments:

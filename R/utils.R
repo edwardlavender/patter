@@ -1,4 +1,4 @@
-#' @title Signal messages, warnings or errors
+#' @title Utilities: signal messages, warnings or errors
 #' @description These functions are wrappers for [`message()`], [`warning()`] and [`stop()`].
 #' @param ... Arguments passed to [`glue::glue()`].
 #' @details
@@ -33,7 +33,7 @@ abort <- function(...) {
 }
 
 
-#' @title Create a log file
+#' @title Utilities: create a log file
 #' @description This function creates a .txt file (`.file`) via [`file.create`].
 #' @param .file A character path to a file. `NULL` and `""` are permitted.
 #' @param .verbose A logical variable that defines whether or not to act on `.file`.
@@ -81,7 +81,7 @@ cat_helper <- function(.verbose, .txt) {
   }
 }
 
-#' @title Compact a list
+#' @title Utilities: compact a list
 #' @description Remove all `NULL` entries from a list.
 #' @param l A list.
 #' @source This function is derived from the `plyr::compact()` function. The function is defined separately in [`patter`] to reduce reliance on non-default packages.
@@ -89,7 +89,7 @@ cat_helper <- function(.verbose, .txt) {
 
 compact <- function(l) l[which(!sapply(l, is.null))]
 
-#' @title Calculate column products
+#' @title Utilities: calculate column products
 #' @description This function calculates column products for each row in a [`matrix`].
 #' @param .data A [`matrix`].
 #' @param .cols A vector that defines the columns in `.data` to multiply.
@@ -104,7 +104,7 @@ colProds.matrix <- function(.data, .cols = seq_len(ncol(.data))) {
   eval(parse(text = paste0(".data[, ", .cols, "]", collapse = " * ")))
 }
 
-#' @title Make a temporary directory
+#' @title Utilities: make a temporary directory
 #' @description This function wipes and (re)-creates a temporary directory.
 #' @param ... Arguments passed to [`file.path`].
 #' @author Edward Lavender

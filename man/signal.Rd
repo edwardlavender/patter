@@ -5,7 +5,7 @@
 \alias{msg}
 \alias{warn}
 \alias{abort}
-\title{Signal messages, warnings or errors}
+\title{Utilities: signal messages, warnings or errors}
 \usage{
 msg(...)
 

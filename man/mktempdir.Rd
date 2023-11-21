@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{mktempdir}
 \alias{mktempdir}
-\title{Make a temporary directory}
+\title{Utilities: make a temporary directory}
 \usage{
 mktempdir(...)
 }

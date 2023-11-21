@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{colProds.matrix}
 \alias{colProds.matrix}
-\title{Calculate column products}
+\title{Utilities: calculate column products}
 \usage{
 colProds.matrix(.data, .cols = seq_len(ncol(.data)))
 }
