@@ -64,8 +64,8 @@ out_pfb <- pf_backward(out_pff$history, .save_history = TRUE)
 # Implement pf_path()
 out_pfp <- pf_path(out_pfb$history, .bathy = gebco)
 
-# Implement pf_pou()
-out_pou <- pf_pou(out_pfb$history, .bathy = gebco)
+# Implement pf_map_pou()
+out_pou <- pf_map_pou(out_pfb$history, .bathy = gebco)
 out_pou <- terra::wrap(out_pou)
 
 

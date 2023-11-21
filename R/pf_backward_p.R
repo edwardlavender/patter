@@ -57,7 +57,7 @@
 #' * [`pf_forward_1()`] and [`pf_forward_2()`] implement the forward simulation;
 #' * [`pf_backward()`] implements the backward pass;
 #' * [`pf_path()`] reconstructs movement paths;
-#' * [`pf_pou()`] and [`pf_dens()`] generate maps of space use;
+#' * [`pf_map_pou()`] and [`pf_map_dens()`] generate maps of space use;
 #' * [`pf_setup_files()`], [`pf_kick()`] and [`pf_coords()`] are helper functions;
 #' @author Edward Lavender
 #' @name pf_backward_dens
@@ -144,7 +144,7 @@ pf_backward_dens <- function(.history, .step_dens, ...,
 #' * [`pf_forward_1()`] and [`pf_forward_2()`] implement the forward simulation;
 #' * [`pf_backward()`] implements the backward pass;
 #' * [`pf_path()`] reconstructs movement paths;
-#' * [`pf_pou()`] and [`pf_dens()`] generate maps of space use;
+#' * [`pf_map_pou()`] and [`pf_map_dens()`] generate maps of space use;
 #' * [`pf_setup_files()`], [`pf_kick()`] and [`pf_coords()`] are helper functions;
 #'
 #' @author Edward Lavender

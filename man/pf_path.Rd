@@ -51,7 +51,7 @@ The path reconstruction algorithm 'chains' sequential particle samples into move
 # A. Define input datasets (see ?`acs_setup_obs()`)
 # B. Implement forward simulation (see ?`acs()`, ?`dc()` and ?`pf_forward_*()`)
 # C. Implement backwards pass (see ?`pf_backward()`)
-# D. Implement `pf_path()`, `pf_pou()` etc.
+# D. Implement `pf_path()`, `pf_map_pou()` etc.
 
 #### Set up examples using pre-defined datasets
 # Define required datasets (e.g., observations, bathymetry grid)
@@ -115,7 +115,7 @@ str(p6)
 \seealso{
 \itemize{
 \item \code{\link[=pf_forward_*]{pf_forward_*()}} and \code{\link[=pf_backward]{pf_backward()}} implement particle filtering (and backwards sampling).
-\item \code{\link[=pf_pou]{pf_pou()}} maps probability-of-use from particle samples.
+\item \code{\link[=pf_map_pou]{pf_map_pou()}} maps probability-of-use from particle samples.
 \item \code{\link[=pf_path]{pf_path()}} builds movement paths from particle samples and \code{\link[=pf_path_pivot]{pf_path_pivot()}} converts wide-format paths into long-format.
 }
 }

@@ -90,8 +90,8 @@
 #' * [`pf_backward()`] to implement the backward pass;
 #' * [`pf_coords()`] to collate particle coordinates;
 #' * [`pf_path()`] (and [`pf_path_pivot()`]) to reconstruct movement paths;
-#' * [`pf_pou()`] to map probability-of-use;
-#' * [`pf_dens()`] to create smooth maps;
+#' * [`pf_map_pou()`] to map probability-of-use;
+#' * [`pf_map_dens()`] to create smooth maps;
 #'
 #' For home ranges, use:
 #'

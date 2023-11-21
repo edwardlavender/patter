@@ -62,7 +62,6 @@ pf_coords <- function(.history, .bathy, .obs = NULL, .cols = NULL) {
 
 }
 
-
 #' @title PF: path reconstruction
 #' @description This function implements the path-reconstruction algorithm.
 #' @param .history Particle samples from the particle filter, provided either as:
@@ -85,7 +84,7 @@ pf_coords <- function(.history, .bathy, .obs = NULL, .cols = NULL) {
 #'
 #' @seealso
 #' * [`pf_forward_*()`] and [`pf_backward()`] implement particle filtering (and backwards sampling).
-#' * [`pf_pou()`] maps probability-of-use from particle samples.
+#' * [`pf_map_pou()`] maps probability-of-use from particle samples.
 #' * [`pf_path()`] builds movement paths from particle samples and [`pf_path_pivot()`] converts wide-format paths into long-format.
 #' @author Edward Lavender
 #' @export
@@ -235,11 +234,11 @@ pf_path_pivot <- function(.mat, .bathy = NULL,
 #' @param ... If `.plot = TRUE`, `...` is a place holder for additional arguments passed to [`terra::plot()`].
 #' @details Probability-of-use is the proportion of samples of each unique cell (out of the total number of samples across all time steps).
 #' @return The function returns a [`SpatRaster`] (utilisation distribution) in which cell values define probability-of-use.
-#' @example man/examples/pf-pou-examples.R
+#' @example man/examples/pf_map_pou-examples.R
 #' @author Edward Lavender
 #' @export
 
-pf_pou <-
+pf_map_pou <-
   function(.history, .bathy, .plot = TRUE, ...) {
 
     #### Check user inputs
@@ -251,7 +250,7 @@ pf_pou <-
       .pf_history_dt(.collect = FALSE) |>
       rename(cell_id = "cell_now") |>
       collect() |>
-     .pf_weights()
+     .pf_map_weights()
 
     #### Build SpatRaster
     map <- terra::setValues(.bathy, 0)
@@ -267,7 +266,7 @@ pf_pou <-
   }
 
 #' @title PF: map point density
-#' @description [`pf_dens()`] creates a smoothed density map (e.g., of particle samples).
+#' @description [`pf_map_dens()`] creates a smoothed density map (e.g., of particle samples).
 #' @param .xpf A [`SpatRaster`] that defines the grid for density estimation and, if `.coord = NULL`, the points (and associated weights) that are smoothed. Weights must sum to one. The coordinate reference system of `.xpf` must be planar and specified.
 #' @param .im,.owin A pixel image representation of `.xpf` (see [`as.im.SpatRaster()`] and [`spatstat.geom::im()`]) and an observation window (see [`as.owin.SpatRaster()`] and [`spatstat.geom::owin()`]). These objects may be computed automatically from `.xpf`, but this option can be over-ridden. For faster results, use a rectangular or polygon observation window. If `.coord` is supplied, `.im` is necessarily (re)-defined internally (see Details).
 #' @param .coord (optional) A [`matrix`], [`data.frame`] or [`data.table`] with x and y coordinates, in columns named `x` and `y` or `cell_x` and `cell_y`. `x` and `y` columns are used preferentially. Coordinates must be planar.  A `timestep` column can also be included if there are multiple possible locations at each time step. A `mark` column can be included with coordinate weights; otherwise, equal weights are assumed (see Details). Other columns are ignored.
@@ -280,9 +279,9 @@ pf_pou <-
 #'
 #' @details
 #'
-#' [`pf_dens()`] smooths (a) a [`SpatRaster`] or (b) a set of inputted coordinates:
+#' [`pf_map_dens()`] smooths (a) a [`SpatRaster`] or (b) a set of inputted coordinates:
 #' * If `.coords` is `NULL`, `.xpf` cell coordinates are used for density estimation and cell values are used as weights.
-#' * If coordinates are supplied, coordinates are re-expressed on `.xpf` and then used for density estimation. Equal weights are assumed unless specified. Default or supplied weights are normalised to sum to one at each time step. The total weight of each location within time steps is calculated and then these weights are aggregated by location across the whole time series and renomalised. See the internal [`.pf_weights()`] function for full details.
+#' * If coordinates are supplied, coordinates are re-expressed on `.xpf` and then used for density estimation. Equal weights are assumed unless specified. Default or supplied weights are normalised to sum to one at each time step. The total weight of each location within time steps is calculated and then these weights are aggregated by location across the whole time series and renomalised. See the internal [`.pf_map_weights()`] function for full details.
 #'
 #' Cell coordinates are converted to a [`spatstat.geom::ppp()`] object, which is passed, alongside the observation window (`.owin`) and an image of the weights to [`spatstat.explore::density.ppp()`] for the estimation. Weights must sum to one.
 #'
@@ -292,12 +291,12 @@ pf_pou <-
 #'
 #' @return The function returns a normalised [`SpatRaster`] (or `NULL` if [`spatstat.explore::density.ppp()`] fails and `.use_tryCatch = TRUE`).
 #'
-#' @example man/examples/pf_dens-examples.R
+#' @example man/examples/pf_map_dens-examples.R
 #'
 #' @author Edward Lavender
-#' @name pf_dens
+#' @name pf_map_dens
 
-#' @rdname pf_dens
+#' @rdname pf_map_dens
 #' @export
 
 as.im.SpatRaster <- function(.xpf) {
@@ -322,7 +321,7 @@ as.im.SpatRaster <- function(.xpf) {
   spatstat.geom::im(val, xcol = xx, yrow = yy)
 }
 
-#' @rdname pf_dens
+#' @rdname pf_map_dens
 #' @export
 
 as.owin.SpatRaster <- function(.xpf, .im = NULL) {
@@ -342,10 +341,10 @@ as.owin.SpatRaster <- function(.xpf, .im = NULL) {
   rwin
 }
 
-#' @rdname pf_dens
+#' @rdname pf_map_dens
 #' @export
 
-pf_dens <- function(.xpf,
+pf_map_dens <- function(.xpf,
                     .im = NULL, .owin = NULL,
                     .coord = NULL,
                     .plot = TRUE,
@@ -366,8 +365,8 @@ pf_dens <- function(.xpf,
 
   #### Set up messages
   cat_to_cf <- cat_helper(.verbose = .verbose, .txt = .txt)
-  cat_to_cf(paste0("patter::pf_dens() called (@ ", t_onset, ")..."))
-  on.exit(cat_to_cf(paste0("patter::pf_dens() call ended (@ ", Sys.time(), ").")), add = TRUE)
+  cat_to_cf(paste0("patter::pf_map_dens() called (@ ", t_onset, ")..."))
+  on.exit(cat_to_cf(paste0("patter::pf_map_dens() call ended (@ ", Sys.time(), ").")), add = TRUE)
 
   #### Process SpatRaster
   # spatstat assumes planar coordinates
@@ -431,13 +430,13 @@ pf_dens <- function(.xpf,
         abort("`.coord` should contain `x` and `y` (or `cell_x` and `cell_y`) coordinates.")
       }
     }
-    # ii) Define cell IDs (if un-supplied) for .pf_weights()
+    # ii) Define cell IDs (if un-supplied) for .pf_map_weights()
     if (is.null(.coord$cell_id)) {
       cell_id <- NULL
       .coord[, cell_id := terra::cellFromXY(.xpf, cbind(.coord$x, .coord$y))]
     }
     # iii) Define `.coord` with weights for each cell_id
-    .coord <- .pf_weights(.coord)
+    .coord <- .pf_map_weights(.coord)
     # iv) Define weights on raster image
     marks <- .coord$mark
     .im <- terra::rasterize(x = as.matrix(.coord[, c("x", "y"), drop = FALSE]),

@@ -2,7 +2,7 @@
 # A. Define input datasets (see ?`acs_setup_obs()`)
 # B. Implement forward simulation (see ?`acs()`, ?`dc()` and ?`pf_forward_*()`)
 # C. Implement backwards pass (see ?`pf_backward()`)
-# D. Implement `pf_path()`, `pf_pou()` etc.
+# D. Implement `pf_path()`, `pf_map_pou()` etc.
 
 #### Set up examples using pre-defined datasets
 # Define required datasets (e.g., observations, bathymetry grid)

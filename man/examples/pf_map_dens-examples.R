@@ -10,13 +10,13 @@ gebco   <- dat_gebco()
 #### Example (1): Smooth a POU SpatRaster
 # Estimate POU on a grid based on pre-prepared particle samples
 out_pfb <- dat_pfb()
-pou     <- pf_pou(.history = out_pfb$history, .bathy = gebco)
+pou     <- pf_map_pou(.history = out_pfb$history, .bathy = gebco)
 # Smooth POU
-dens_1    <- pf_dens(pou)
+dens_1    <- pf_map_dens(pou)
 
 #### Example (2): Smooth particle coordinates
 # This approach is equivalent to Example (1) & the outputs are identical
-dens_2 <- pf_dens(gebco, .coord = pf_coords(out_pfb$history, gebco))
+dens_2 <- pf_map_dens(gebco, .coord = pf_coords(out_pfb$history, gebco))
 stopifnot(all.equal(dens_1, dens_2))
 
 #### Example (2): Smooth coordinates from other algorithms
@@ -34,15 +34,15 @@ out_coa <-
   select(x = "coa_x", y = "coa_y") |>
   as.data.frame()
 # Smooth centres of activity
-dens_3 <- pf_dens(gebco, .coord = out_coa)
+dens_3 <- pf_map_dens(gebco, .coord = out_coa)
 graphics::points(out_coa)
 
 #### Example (3): Control smoothing parameters via `spatstat.explore::density.ppp()`
 # E.g. use fixed bandwidth:
-pf_dens(pou, sigma = 5)
-pf_dens(pou, sigma = 100)
+pf_map_dens(pou, sigma = 5)
+pf_map_dens(pou, sigma = 100)
 # E.g., perform automatic bandwidth selection using cross validation:
-pf_dens(pou, sigma = bw.diggle)
-pf_dens(pou, sigma = bw.scott)
-# pf_dens(pou, sigma = bw.CvL)  # ~12 s (slow)
-# pf_dens(pou, sigma = bw.ppl)  # ~14 s (slow)
+pf_map_dens(pou, sigma = bw.diggle)
+pf_map_dens(pou, sigma = bw.scott)
+# pf_map_dens(pou, sigma = bw.CvL)  # ~12 s (slow)
+# pf_map_dens(pou, sigma = bw.ppl)  # ~14 s (slow)

@@ -272,7 +272,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
     out_pfb$history |>
     .pf_history_dt() |>
     rename(cell_id = cell_now) |>
-    .pf_weights() |>
+    .pf_map_weights() |>
     select(cell_id, mark) |>
     arrange(cell_id) |>
     as.data.table()
@@ -281,7 +281,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
   # * Validate when a list of data.tables is past
   # * Validate when the directory is passed
   lapply(list(out_pfb$history, pfb_folder), function(h) {
-    map <- pf_pou(h, gebco)
+    map <- pf_map_pou(h, gebco)
     pou_from_raster <-
       map |>
       as.data.frame(cells = TRUE, na.rm = TRUE) |>
@@ -292,10 +292,10 @@ test_that("pf_*() functions work using example flapper skate datasets", {
     expect_equal(pou_manual, pou_from_raster)
   }) |> invisible()
 
-  #### Validate pf_pou()
+  #### Validate pf_map_pou()
   blah.txt <- file.path(pfb_folder, "blah.txt")
   file.create(blah.txt)
-  pf_pou(pfb_folder, gebco) |>
+  pf_map_pou(pfb_folder, gebco) |>
     expect_error(glue::glue("The directory '{pfb_folder}' contains files with unexpected extensions."), fixed = TRUE)
   unlink(blah.txt)
 

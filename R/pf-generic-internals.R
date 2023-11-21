@@ -187,14 +187,14 @@ NULL
   }
 
 #' @title PF: Calculate location weights
-#' @description This function calculates location weights in [`pf_pou()`] and [`pf_dens()`].
+#' @description This function calculates location weights in [`pf_map_pou()`] and [`pf_map_dens()`].
 #' @param .pxy A [`data.table`] that contains locations. This should include a `cell_id` column and may include a `timestep` column.
 #' @details This function can be used to calculate weights for any set of coordinates (grid cells), including but not exclusively from particle filtering.
 #' @return The function returns a [`data.table`].
 #' @author Edward Lavender
 #' @keywords internal
 
-.pf_weights <- function(.pxy) {
+.pf_map_weights <- function(.pxy) {
 
   # Check user inputs
   check_inherits(.pxy, "data.table")
@@ -228,7 +228,7 @@ NULL
   # Calculate the total weight of each location within time steps
   .pxy <-
     .pxy |>
-    # Drop NA or zero weights (required for `pf_dens()`)
+    # Drop NA or zero weights (required for `pf_map_dens()`)
     filter(!is.na(.data$mark)) |>
     filter(.data$mark != 0) |>
     # Implement aggregation

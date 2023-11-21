@@ -112,8 +112,8 @@ To implement particle filtering (PF), use:
 \item \code{\link[=pf_backward]{pf_backward()}} to implement the backward pass;
 \item \code{\link[=pf_coords]{pf_coords()}} to collate particle coordinates;
 \item \code{\link[=pf_path]{pf_path()}} (and \code{\link[=pf_path_pivot]{pf_path_pivot()}}) to reconstruct movement paths;
-\item \code{\link[=pf_pou]{pf_pou()}} to map probability-of-use;
-\item \code{\link[=pf_dens]{pf_dens()}} to create smooth maps;
+\item \code{\link[=pf_map_pou]{pf_map_pou()}} to map probability-of-use;
+\item \code{\link[=pf_map_dens]{pf_map_dens()}} to create smooth maps;
 }
 
 For home ranges, use:
