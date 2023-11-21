@@ -40,7 +40,7 @@ spatTemplate <- function(.xmin = 0, .xmax = 1000,
 #' @author Edward Lavender
 #' @export
 
-rastNormalise <- function(x) {
+spatNormalise <- function(x) {
   x / as.numeric(terra::global(x, "sum", na.rm = TRUE))
 }
 
