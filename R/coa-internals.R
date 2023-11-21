@@ -13,7 +13,7 @@
   check_inherits(.acoustics, "data.table")
   # Check names
   # * receiver_easting/receiver_northing or receiver_lon/receiver_lat
-  # ... are automatically checked via .coa_check_lonlat()
+  # ... are automatically checked via .is_lonlat()
   check_names(.acoustics, c("timestamp", "receiver_id", .split))
   .acoustics
 }
