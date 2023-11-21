@@ -97,6 +97,9 @@ utils::str(mat_days)
 utils::str(mat_hours)
 
 }
+\seealso{
+This function is used internally in \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}.
+}
 \author{
 Edward Lavender
 }

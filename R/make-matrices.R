@@ -73,6 +73,9 @@
 #' utils::str(mat_hours)
 #'
 #' @source This function is based on the [`make_matrix_receivers`](https://edwardlavender.github.io/flapper/reference/make_matrix_receivers.html) function in the [`flapper`](https://github.com/edwardlavender/flapper) package.
+#'
+#' @seealso This function is used internally in [`acs_setup_detection_kernels()`].
+#'
 #' @author Edward Lavender
 #' @export
 
