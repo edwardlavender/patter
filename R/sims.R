@@ -1,3 +1,52 @@
+#' @title Simulation helpers
+#' @description These convenience functions support the generation of animal movement paths and observations in _de novo_ simulations (`sim_*()` functions) and simulation-based reconstructions of movement paths ([`pf_forward_*()`] and [`pf_backward_*()`]).
+#'
+#' * `r*()` functions simulate random variates;
+#' * `c*()` functions calculate outcomes from random-variate inputs;
+#' * `d*()` functions return densities;
+#'
+#' `r*()` and `c*()` functions are used in _de novo_ simulations (via `sim_*()` functions such as [`sim_path_walk()`]) and the forward simulation-based reconstruction of movement paths (via [`pf_kick()`] in [`pf_forward_*()`]).
+#'
+#' `d*()` functions are used in the simulation-based reconstruction of movement paths as part of the backward sampler via [`pf_backward_p()`].
+#'
+#' @details
+#'
+#' # Movement
+#'
+#' ## Core functions
+#'
+#' ### Step lengths
+#'
+#' * [`rtruncgamma()`] simulates step length(s) from a truncated gamma distribution with a `.mobility` parameter.
+#' * [`dtruncgamma()`] returns the densit(ies) of specified step length(s).
+#'
+#' ### Turning angles
+#'
+#' * [`rwn()`] simulates turning angle(s) from a wrapped normal distribution.
+#' * [`dwn()`] returns the densit(ies) of specified angle(s).
+#'
+#' ## Wrappers
+#'
+#' The following wrapper functions are provided in the form required by front-end functions (e.g., [`sim_path_walk()`], [`pf_kick()`] and [`pf_backward_p()`]):
+#'
+#' * [`rlen()`] and [`dlen()`] are wrappers for [`rtruncgamma()`] and [`dtruncgamma()`].
+#' * [`rangrw()`], [`rangcrw()`], [`dangrw()`] and [`dangcrw()`] are wrappers for [`rwn()`] and [`dwn()`] for random walks and correlated random walks.
+#'
+#' ## Extensions
+#'
+#' * [`cstep()`] steps from previous location(s) into future location(s), given simulated step length(s) and turning angle(s).
+#' * [`dstep()`] returns the density of steps between two locations.
+#'
+#' @seealso
+#' * `sim_*` functions implement _de novo_ simulation of movements and observations;
+#' * [`pf_forward_*()`] implements forward simulation-based reconstruction of movement paths;
+#' * [`pf_backward()`] implements backward simulation-based reconstruction of movement paths;
+#'
+#' @author Edward Lavender
+#' @name sim_helpers
+
+NULL
+
 #' @title Simulate an acoustic array
 #' @description This function simulates acoustic receivers on a grid.
 #' @param .bathy A [`SpatRaster`] that defines the region of interest.
