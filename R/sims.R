@@ -1,5 +1,5 @@
 #' @title Simulation helpers
-#' @description These convenience functions support the generation of animal movement paths and observations in _de novo_ simulations (`sim_*()` functions) and simulation-based reconstructions of movement paths ([`pf_forward_*()`] and [`pf_backward_*()`]).
+#' @description These convenience functions support the generation of animal movement paths and observations in _de novo_ simulations (`sim_*()` functions) and simulation-based reconstructions of movement paths ([`pf_forward_*()`] and [`pf_backward_p()`]).
 #'
 #' * `r*()` functions simulate random variates;
 #' * `c*()` functions calculate outcomes from random-variate inputs;
@@ -8,6 +8,23 @@
 #' `r*()` and `c*()` functions are used in _de novo_ simulations (via `sim_*()` functions such as [`sim_path_walk()`]) and the forward simulation-based reconstruction of movement paths (via [`pf_kick()`] in [`pf_forward_*()`]).
 #'
 #' `d*()` functions are used in the simulation-based reconstruction of movement paths as part of the backward sampler via [`pf_backward_p()`].
+#'
+#' @param .n,.x,.shape,.scale,.mobility Arguments for [`rtruncgamma()`] and [`dtruncgamma()`]:
+#' * `.n` is an `integer` that defines the number of simulated outcome(s);
+#' * `.x` is a `numeric` vector that defines step length(s);
+#' * `.shape` is a `numeric` value that defines the shape parameter of a Gamma distribution (see [`stats::rgamma()`]).
+#' * `.scale` is a `numeric` value that defines the scale parameter of a Gamma distribution (see [`stats::rgamma()`]).
+#' * `.mobility` is a `numeric` value that defines the maximum length (see [`truncdist::rtrunc()`]).
+#'
+#' @param .mu,.rho,.sd Arguments for [`rwn()`] for the simulation of turning angles, passed to the `mu`, `rho` and `sd` arguments of [`circular::rwrappednormal()`].
+#'
+#' @param .prior,.t Arguments required for [`rlen()`], [`rangrw()`] and [`rangcrw()`], as used in top-level functions (e.g, [`sim_path_walk()`]):
+#' * `.n`---an `integer` that defines the number of simulated outcome(s);
+#' * `.prior`---a `numeric` vector that defines the simulated value(s) from the previous time step;
+#' * `.t`---an `integer` that defines the time step;
+#' * `...`---additional arguments, if needed;
+#'
+#' @param ... Arguments passed to/from functions.
 #'
 #' @details
 #'
@@ -23,19 +40,19 @@
 #' ### Turning angles
 #'
 #' * [`rwn()`] simulates turning angle(s) from a wrapped normal distribution.
-#' * [`dwn()`] returns the densit(ies) of specified angle(s).
+#' * `dwn()` is not currently.
 #'
 #' ## Wrappers
 #'
 #' The following wrapper functions are provided in the form required by front-end functions (e.g., [`sim_path_walk()`], [`pf_kick()`] and [`pf_backward_p()`]):
 #'
 #' * [`rlen()`] and [`dlen()`] are wrappers for [`rtruncgamma()`] and [`dtruncgamma()`].
-#' * [`rangrw()`], [`rangcrw()`], [`dangrw()`] and [`dangcrw()`] are wrappers for [`rwn()`] and [`dwn()`] for random walks and correlated random walks.
+#' * [`rangrw()`], [`rangcrw()`] are wrappers for [`rwn()`] for random walks and correlated random walks. The corresponding functions [`dangrw()`] and [`dangcrw()`] are not currently implemented.
 #'
 #' ## Extensions
 #'
 #' * [`cstep()`] steps from previous location(s) into future location(s), given simulated step length(s) and turning angle(s).
-#' * [`dstep()`] returns the density of steps between two locations.
+#' * [`dstep()`] returns the density of steps between two locations. This is only suitable for random walks (it wraps [`dtruncgamma()`] but corresponding functions for turning angles are not yet implemented).
 #'
 #' @seealso
 #' * `sim_*` functions implement _de novo_ simulation of movements and observations;
@@ -45,7 +62,58 @@
 #' @author Edward Lavender
 #' @name sim_helpers
 
-NULL
+#' @rdname sim_helpers
+#' @export
+
+rtruncgamma <- function(.n = 1, .shape = 15, .scale = 15, .mobility = 500, ...) {
+  truncdist::rtrunc(.n, "gamma", a = 0, b = .mobility,
+                    shape = .shape, scale = .scale)
+}
+
+#' @rdname sim_helpers
+#' @export
+
+rwn <- function(.n = 1, .mu = 0, .rho = 0, .sd = 1, ...) {
+  as.numeric(
+    circular::rwrappednormal(
+      n = .n,
+      mu = degrees(.mu),
+      rho = .rho,
+      sd = .sd,
+      control.circular = list(units = "degrees")
+    )
+  )
+}
+
+#' @rdname sim_helpers
+#' @export
+
+rlen <- function(.n = 1,
+                 .prior = NULL, .t = NULL, ...) {
+  rtruncgamma(.n = .n, ...)
+}
+
+#' @rdname sim_helpers
+#' @export
+
+rangrw <- function(.n = 1,
+                   .prior = NULL, .t = NULL, ...) {
+  rwn(.n = .n, ...)
+}
+
+#' @rdname sim_helpers
+#' @export
+
+rangcrw <- function(.n = 1,
+                    .prior = NULL, .t = NULL, ...) {
+  if (is.null(.prior)) {
+    .mu <- 0
+  } else {
+    .mu <- .prior
+  }
+  rwn(.n = .n, .mu = .mu, ...)
+}
+
 
 #' @title Simulate an acoustic array
 #' @description This function simulates acoustic receivers on a grid.
@@ -98,7 +166,7 @@ NULL
 #' @seealso
 #' * [`sim_array()`] simulates acoustic array(s);
 #' * [`sim_path_walk()`] simulates movement path(s) via a walk model;
-#' * [`sim_detections()` simulates detection(s) at receivers;
+#' * [`sim_detections()`] simulates detection(s) at receivers;
 #' * [`skill`] functions compared simulated and reconstructed patterns to evaluate model skill;
 #' @author Edward Lavender
 #' @export
@@ -185,44 +253,37 @@ sim_array <- function(.bathy = spatTemplate(), .lonlat = FALSE,
 }
 
 #' @title Simulate movement paths
-#' @description These functions facilitate the simulation of discrete-time animal movement paths from walk models (e.g., random walks, biased random walks, correlated random walks).
+#' @description [`sim_path_walk()`] facilitates the simulation of discrete-time animal movement paths from walk models (e.g., random walks, biased random walks, correlated random walks).
 #'
 #' @param .bathy A [`SpatRaster`] that defines the region within which movements are simulated. Movements are simulated in continuous space but restricted within the boundaries defined by `.bathy` and non-NA regions.
 #' @param .lonlat A `logical` variable that defines whether or not `.bathy` uses longitude/latitude coordinates.
 #' @param .origin (optional) A one-row, two-column matrix that defines the origin. If unsupplied, `.origin` is sampled at random from `.bathy`. One origin is used for all simulated paths (see `.n_path`).
 #' @param .n_step An `integer` that defines the number of time steps.
-#' @param .sim_length,.sim_angle,... Functions and accompanying arguments that simulate step lengths and turning angles. Simulated step lengths should be in map units (e.g., metres) if `.lonlat = FALSE` or metres if `.lonlat = TRUE`. Turning angles should be in degrees. The functions must accept four named arguments, even if unused:
+#' @param .sim_length,.sim_angle,... Functions and accompanying arguments that simulate step lengths and turning angle. Simulated step lengths should be in map units (e.g., metres) if `.lonlat = FALSE` or metres if `.lonlat = TRUE`. Turning angles should be in degrees. The functions must accept four named arguments, even if unused:
 #' * `.n`---an `integer` that defines the number of simulated outcome(s);
 #' * `.prior`---a `numeric` vector that defines the simulated value(s) from the previous time step;
 #' * `.t`---an `integer` that defines the time step;
 #' * `...`---additional arguments, if needed;
 #'
-#' If `.prior` is used, the function should be able to handle the first time step (when `.prior` is set to `NULL`). See [`sim_angle_crw()`] (below) for an example.
+#' If `.prior` is used, the function should be able to handle the first time step (when `.prior` is set to `NULL`). See [`rangcrw()`] (below) for an example.
 #'
 #' Note that `...` is passed down from [`sim_path_walk()`] to both `.sim_length` and `.sim_angle` so care is required to ensure that `...` parameters are handled correctly).
 #'
 #' The following template functions are provided:
-#' * [`sim_length()`] is an example `.sim_length` function that simulates step lengths from a truncated Gamma distribution (via [`rtruncgamma()`]);
-#' * [`sim_angle_rw()`] is an example `.sim_angle` function that simulates uncorrelated turning angles from a wrapped normal distribution (via [`rwn()`]);
-#' * [`sim_angle_crw()`] is an example `.sim_angle` function that can simulate correlated turning angles (via [`rwn()`]);
+#' * [`rlen()`] is an example `.sim_length` function that simulates step lengths from a truncated Gamma distribution (via [`rtruncgamma()`]);
+#' * [`rangrw()`] is an example `.sim_angle` function that simulates uncorrelated turning angles from a wrapped normal distribution (via [`rwn()`]);
+#' * [`rangcrw()`] is an example `.sim_angle` function that can simulate correlated turning angles (via [`rwn()`]);
 #'
 #' @param .n_path An `integer` that defines the number of paths to simulate.
 #' @param .plot,.one_page Plot options.
 #' * `.plot` is a `logical` variable that defined whether or not to plot `.bathy` and simulated path(s). Each path is plotted on a separate plot.
 #' * `.one_page` is a logical variable that defines whether or not to produce all plots on a single page.
 #'
-#' @param .n,.prior,.t Arguments required for `.sim_length` and `.sim_step` functions (defined above).
-#' @param .shape,.scale,.mobility Arguments for [`rtruncgamma()`] for the simulation of step lengths:
-#' * `.shape` is a `numeric` value that defines the shape parameter of a Gamma distribution (see [`stats::rgamma()`]).
-#' * `.scale` is a `numeric` value that defines the scale parameter of a Gamma distribution (see [`stats::rgamma()`]).
-#' * `.mobility` is a `numeric` value that defines the maximum length (see [`truncdist::rtrunc()`]).
-#' @param .mu,.rho,.sd Arguments for [`rwn`] for the simulation of turning angles, passed to the `mu`, `rho` and `sd` arguments of [`circular::rwrappednormal()`].
-#'
 #' @details
 #'
 #' The following convenience functions are provided:
 #' * [`rtruncgamma()`] and [`rwn()`] simulate step lengths (from a truncated Gamma distribution) and turning angles (from a wrapped normal distribution);
-#' * [`sim_length()`], [`sim_angle_rw()`] and [`sim_angle_crw()`] are wrappers in the form required by [`sim_path_walk()`];
+#' * [`rlen()`], [`rangrw()`] and [`rangcrw()`] are wrappers in the form required by [`sim_path_walk()`];
 #' * [`sim_path_walk()`] simulates the movement path(s);
 #'
 #' Within [`sim_path_walk()`], at each time step, if `.lonlat = FALSE`, current locations (x, y) are updated via `x + length * cos(angle)` and `y + length * sin(angle)`.
@@ -242,7 +303,7 @@ sim_array <- function(.bathy = spatTemplate(), .lonlat = FALSE,
 #' @seealso
 #' * [`sim_array()`] simulates acoustic array(s);
 #' * [`sim_path_walk()`] simulates movement path(s) via a walk model;
-#' * [`sim_detections()` simulates detection(s) at receivers;
+#' * [`sim_detections()`] simulates detection(s) at receivers;
 #' * [`skill`] functions compared simulated and reconstructed patterns to evaluate model skill;
 #'
 #' @author Edward Lavender
@@ -255,7 +316,7 @@ NULL
 sim_path_walk <- function(.bathy = spatTemplate(), .lonlat = FALSE,
                           .origin = NULL,
                           .n_step = 10L,
-                          .sim_length = sim_length, .sim_angle = sim_angle_rw, ...,
+                          .sim_length = rlen, .sim_angle = rangrw, ...,
                           .n_path = 1L,
                           .plot = TRUE, .one_page = FALSE) {
   # Check user inputs
@@ -306,59 +367,6 @@ sim_path_walk <- function(.bathy = spatTemplate(), .lonlat = FALSE,
     as.data.table()
 }
 
-#' @rdname sim_path_walk
-#' @export
-
-rtruncgamma <- function(.n = 1, .shape = 15, .scale = 15, .mobility = 500, ...) {
-  truncdist::rtrunc(.n, "gamma", a = 0, b = .mobility,
-                    shape = .shape, scale = .scale)
-}
-
-#' @rdname sim_path_walk
-#' @export
-
-rwn <- function(.n = 1, .mu = 0, .rho = 0, .sd = 1, ...) {
-  as.numeric(
-    circular::rwrappednormal(
-      n = .n,
-      mu = degrees(.mu),
-      rho = .rho,
-      sd = .sd,
-      control.circular = list(units = "degrees")
-    )
-  )
-}
-
-#' @rdname sim_path_walk
-#' @export
-
-sim_length <- function(.n = 1,
-                       .prior = NULL, .t = NULL, ...) {
-  rtruncgamma(.n = .n, ...)
-}
-
-#' @rdname sim_path_walk
-#' @export
-
-sim_angle_rw <- function(.n = 1,
-                         .prior = NULL, .t = NULL, ...) {
-  rwn(.n = .n, ...)
-}
-
-#' @rdname sim_path_walk
-#' @export
-
-sim_angle_crw <- function(.n = 1,
-                          .prior = NULL, .t = NULL, ...) {
-  if (is.null(.prior)) {
-    .mu <- 0
-  } else {
-    .mu <- .prior
-  }
-  rwn(.n = .n, .mu = .mu, ...)
-}
-
-
 #' @title Simulate detections at receivers
 #' @description These functions facilitate the simulation of detections, arising from animal movement path(s), at passive acoustic telemetry receiver(s).
 #'
@@ -407,7 +415,7 @@ sim_angle_crw <- function(.n = 1,
 #' @seealso
 #' * [`sim_array()`] simulates acoustic array(s);
 #' * [`sim_path_walk()`] simulates movement path(s) via a walk model;
-#' * [`sim_detections()` simulates detection(s) at receivers;
+#' * [`sim_detections()`] simulates detection(s) at receivers;
 #' * [`skill`] functions compared simulated and reconstructed patterns to evaluate model skill;
 #'
 #' @author Edward Lavender

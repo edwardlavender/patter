@@ -2,9 +2,47 @@
 % Please edit documentation in R/sims.R
 \name{sim_helpers}
 \alias{sim_helpers}
-\title{Simulation helpers \code{d}, \code{r}, \code{c}}
+\alias{rtruncgamma}
+\alias{rwn}
+\alias{rlen}
+\alias{rangrw}
+\alias{rangcrw}
+\title{Simulation helpers}
+\usage{
+rtruncgamma(.n = 1, .shape = 15, .scale = 15, .mobility = 500, ...)
+
+rwn(.n = 1, .mu = 0, .rho = 0, .sd = 1, ...)
+
+rlen(.n = 1, .prior = NULL, .t = NULL, ...)
+
+rangrw(.n = 1, .prior = NULL, .t = NULL, ...)
+
+rangcrw(.n = 1, .prior = NULL, .t = NULL, ...)
+}
+\arguments{
+\item{.n, .x, .shape, .scale, .mobility}{Arguments for \code{\link[=rtruncgamma]{rtruncgamma()}} and \code{\link[=dtruncgamma]{dtruncgamma()}}:
+\itemize{
+\item \code{.n} is an \code{integer} that defines the number of simulated outcome(s);
+\item \code{.x} is a \code{numeric} vector that defines step length(s);
+\item \code{.shape} is a \code{numeric} value that defines the shape parameter of a Gamma distribution (see \code{\link[stats:GammaDist]{stats::rgamma()}}).
+\item \code{.scale} is a \code{numeric} value that defines the scale parameter of a Gamma distribution (see \code{\link[stats:GammaDist]{stats::rgamma()}}).
+\item \code{.mobility} is a \code{numeric} value that defines the maximum length (see \code{\link[truncdist:rtrunc]{truncdist::rtrunc()}}).
+}}
+
+\item{...}{Arguments passed to/from functions.}
+
+\item{.mu, .rho, .sd}{Arguments for \code{\link[=rwn]{rwn()}} for the simulation of turning angles, passed to the \code{mu}, \code{rho} and \code{sd} arguments of \code{\link[circular:wrappednormal]{circular::rwrappednormal()}}.}
+
+\item{.prior, .t}{Arguments required for \code{\link[=rlen]{rlen()}}, \code{\link[=rangrw]{rangrw()}} and \code{\link[=rangcrw]{rangcrw()}}, as used in top-level functions (e.g, \code{\link[=sim_path_walk]{sim_path_walk()}}):
+\itemize{
+\item \code{.n}---an \code{integer} that defines the number of simulated outcome(s);
+\item \code{.prior}---a \code{numeric} vector that defines the simulated value(s) from the previous time step;
+\item \code{.t}---an \code{integer} that defines the time step;
+\item \code{...}---additional arguments, if needed;
+}}
+}
 \description{
-These functions support the generation of animal movement paths and observations in \emph{de novo} simulations (\verb{sim_*()} functions) and simulation-based reconstructions of movement paths (\code{\link[=pf_forward_*]{pf_forward_*()}} and \code{\link[=pf_backward_*]{pf_backward_*()}}).
+These convenience functions support the generation of animal movement paths and observations in \emph{de novo} simulations (\verb{sim_*()} functions) and simulation-based reconstructions of movement paths (\code{\link[=pf_forward_*]{pf_forward_*()}} and \code{\link[=pf_backward_p]{pf_backward_p()}}).
 \itemize{
 \item \verb{r*()} functions simulate random variates;
 \item \verb{c*()} functions calculate outcomes from random-variate inputs;
@@ -27,7 +65,7 @@ These functions support the generation of animal movement paths and observations
 \subsection{Turning angles}{
 \itemize{
 \item \code{\link[=rwn]{rwn()}} simulates turning angle(s) from a wrapped normal distribution.
-\item \code{\link[=dwn]{dwn()}} returns the densit(ies) of specified angle(s).
+\item \code{dwn()} is not currently.
 }
 }
 
@@ -38,14 +76,14 @@ These functions support the generation of animal movement paths and observations
 The following wrapper functions are provided in the form required by front-end functions (e.g., \code{\link[=sim_path_walk]{sim_path_walk()}}, \code{\link[=pf_kick]{pf_kick()}} and \code{\link[=pf_backward_p]{pf_backward_p()}}):
 \itemize{
 \item \code{\link[=rlen]{rlen()}} and \code{\link[=dlen]{dlen()}} are wrappers for \code{\link[=rtruncgamma]{rtruncgamma()}} and \code{\link[=dtruncgamma]{dtruncgamma()}}.
-\item \code{\link[=rangrw]{rangrw()}}, \code{\link[=rangcrw]{rangcrw()}}, \code{\link[=dangrw]{dangrw()}} and \code{\link[=dangcrw]{dangcrw()}} are wrappers for \code{\link[=rwn]{rwn()}} and \code{\link[=dwn]{dwn()}} for random walks and correlated random walks.
+\item \code{\link[=rangrw]{rangrw()}}, \code{\link[=rangcrw]{rangcrw()}} are wrappers for \code{\link[=rwn]{rwn()}} for random walks and correlated random walks. The corresponding functions \code{\link[=dangrw]{dangrw()}} and \code{\link[=dangcrw]{dangcrw()}} are not currently implemented.
 }
 }
 
 \subsection{Extensions}{
 \itemize{
 \item \code{\link[=cstep]{cstep()}} steps from previous location(s) into future location(s), given simulated step length(s) and turning angle(s).
-\item \code{\link[=dstep]{dstep()}} returns the density of steps between two locations.
+\item \code{\link[=dstep]{dstep()}} returns the density of steps between two locations. This is only suitable for random walks (it wraps \code{\link[=dtruncgamma]{dtruncgamma()}} but corresponding functions for turning angles are not yet implemented).
 }
 }
 }

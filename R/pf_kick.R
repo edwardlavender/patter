@@ -8,7 +8,7 @@
 #' @param .sim_length,.sim_angle,... Functions and additional arguments that simulate step lengths and turning angles. The first argument of each function should be the number of step lengths/turning angles to simulate (defined internally).
 #' @param .lonlat A logical variable that defines whether or not coordinates are longitudes/latitudes.
 #'
-#' @details This template movement model is a biased random walk. Step lengths are simulated from a truncated Gamma distribution via [`sim_length()`]. Turning angles are simulated from a wrapped normal distribution via [`sim_angle_rw()`].
+#' @details This template movement model is a biased random walk. Step lengths are simulated from a truncated Gamma distribution via [`rlen()`]. Turning angles are simulated from a wrapped normal distribution via [`rangrw()`].
 #'
 #' # Warning
 #'
@@ -78,8 +78,8 @@ pf_kick <- function(.particles,
                     .obs = NULL,
                     .t = NULL,
                     .bathy = NULL,
-                    .sim_length = sim_length,
-                    .sim_angle = sim_angle_rw,
+                    .sim_length = rlen,
+                    .sim_angle = rangrw,
                     .lonlat = FALSE, ...) {
   # Simulate step length & turning angle
   n    <- nrow(.particles)

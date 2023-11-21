@@ -13,7 +13,7 @@
 #' * (optional) `.lonlat`---a `logical` variable that define whether or not particle samples are longitude/latitude or planar coordinates;
 #' * (optional) `...`---additional arguments, passed via [`pf_forward_1()`], if required;
 #'
-#' See [`pf_kick()`] for a template random walk movement model. In this function, `...` are passed to [`sim_length()`] and [`sim_angle_rw()`].
+#' See [`pf_kick()`] for a template random walk movement model. In this function, `...` are passed to [`rlen()`] and [`rangrw()`].
 #' @param .n An `integer` that defines the number of particle samples at each time step.
 #' @param .save_history A logical variable that defines whether or not to save particle samples in the `history` element of the output. This is only sensible for small-scale applications (i.e., short time series and few particles).
 #' @param .write_history A named list, passed to [`arrow::write_parquet()`], to save particle samples to file at each time step. The `sink` argument should be the directory in which to write files. Files are named by `.obs$timestep` (i.e., `1.parquet`, `2.parquet`, ..., `N.parquet`).

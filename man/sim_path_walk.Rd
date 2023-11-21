@@ -2,11 +2,6 @@
 % Please edit documentation in R/sims.R
 \name{sim_path_walk}
 \alias{sim_path_walk}
-\alias{rtruncgamma}
-\alias{rwn}
-\alias{sim_length}
-\alias{sim_angle_rw}
-\alias{sim_angle_crw}
 \title{Simulate movement paths}
 \usage{
 sim_path_walk(
@@ -14,23 +9,13 @@ sim_path_walk(
   .lonlat = FALSE,
   .origin = NULL,
   .n_step = 10L,
-  .sim_length = sim_length,
-  .sim_angle = sim_angle_rw,
+  .sim_length = rlen,
+  .sim_angle = rangrw,
   ...,
   .n_path = 1L,
   .plot = TRUE,
   .one_page = FALSE
 )
-
-rtruncgamma(.n = 1, .shape = 15, .scale = 15, .mobility = 500, ...)
-
-rwn(.n = 1, .mu = 0, .rho = 0, .sd = 1, ...)
-
-sim_length(.n = 1, .prior = NULL, .t = NULL, ...)
-
-sim_angle_rw(.n = 1, .prior = NULL, .t = NULL, ...)
-
-sim_angle_crw(.n = 1, .prior = NULL, .t = NULL, ...)
 }
 \arguments{
 \item{.bathy}{A \code{\link{SpatRaster}} that defines the region within which movements are simulated. Movements are simulated in continuous space but restricted within the boundaries defined by \code{.bathy} and non-NA regions.}
@@ -41,7 +26,7 @@ sim_angle_crw(.n = 1, .prior = NULL, .t = NULL, ...)
 
 \item{.n_step}{An \code{integer} that defines the number of time steps.}
 
-\item{.sim_length, .sim_angle, ...}{Functions and accompanying arguments that simulate step lengths and turning angles. Simulated step lengths should be in map units (e.g., metres) if \code{.lonlat = FALSE} or metres if \code{.lonlat = TRUE}. Turning angles should be in degrees. The functions must accept four named arguments, even if unused:
+\item{.sim_length, .sim_angle, ...}{Functions and accompanying arguments that simulate step lengths and turning angle. Simulated step lengths should be in map units (e.g., metres) if \code{.lonlat = FALSE} or metres if \code{.lonlat = TRUE}. Turning angles should be in degrees. The functions must accept four named arguments, even if unused:
 \itemize{
 \item \code{.n}---an \code{integer} that defines the number of simulated outcome(s);
 \item \code{.prior}---a \code{numeric} vector that defines the simulated value(s) from the previous time step;
@@ -49,15 +34,15 @@ sim_angle_crw(.n = 1, .prior = NULL, .t = NULL, ...)
 \item \code{...}---additional arguments, if needed;
 }
 
-If \code{.prior} is used, the function should be able to handle the first time step (when \code{.prior} is set to \code{NULL}). See \code{\link[=sim_angle_crw]{sim_angle_crw()}} (below) for an example.
+If \code{.prior} is used, the function should be able to handle the first time step (when \code{.prior} is set to \code{NULL}). See \code{\link[=rangcrw]{rangcrw()}} (below) for an example.
 
 Note that \code{...} is passed down from \code{\link[=sim_path_walk]{sim_path_walk()}} to both \code{.sim_length} and \code{.sim_angle} so care is required to ensure that \code{...} parameters are handled correctly).
 
 The following template functions are provided:
 \itemize{
-\item \code{\link[=sim_length]{sim_length()}} is an example \code{.sim_length} function that simulates step lengths from a truncated Gamma distribution (via \code{\link[=rtruncgamma]{rtruncgamma()}});
-\item \code{\link[=sim_angle_rw]{sim_angle_rw()}} is an example \code{.sim_angle} function that simulates uncorrelated turning angles from a wrapped normal distribution (via \code{\link[=rwn]{rwn()}});
-\item \code{\link[=sim_angle_crw]{sim_angle_crw()}} is an example \code{.sim_angle} function that can simulate correlated turning angles (via \code{\link[=rwn]{rwn()}});
+\item \code{\link[=rlen]{rlen()}} is an example \code{.sim_length} function that simulates step lengths from a truncated Gamma distribution (via \code{\link[=rtruncgamma]{rtruncgamma()}});
+\item \code{\link[=rangrw]{rangrw()}} is an example \code{.sim_angle} function that simulates uncorrelated turning angles from a wrapped normal distribution (via \code{\link[=rwn]{rwn()}});
+\item \code{\link[=rangcrw]{rangcrw()}} is an example \code{.sim_angle} function that can simulate correlated turning angles (via \code{\link[=rwn]{rwn()}});
 }}
 
 \item{.n_path}{An \code{integer} that defines the number of paths to simulate.}
@@ -67,17 +52,6 @@ The following template functions are provided:
 \item \code{.plot} is a \code{logical} variable that defined whether or not to plot \code{.bathy} and simulated path(s). Each path is plotted on a separate plot.
 \item \code{.one_page} is a logical variable that defines whether or not to produce all plots on a single page.
 }}
-
-\item{.n, .prior, .t}{Arguments required for \code{.sim_length} and \code{.sim_step} functions (defined above).}
-
-\item{.shape, .scale, .mobility}{Arguments for \code{\link[=rtruncgamma]{rtruncgamma()}} for the simulation of step lengths:
-\itemize{
-\item \code{.shape} is a \code{numeric} value that defines the shape parameter of a Gamma distribution (see \code{\link[stats:GammaDist]{stats::rgamma()}}).
-\item \code{.scale} is a \code{numeric} value that defines the scale parameter of a Gamma distribution (see \code{\link[stats:GammaDist]{stats::rgamma()}}).
-\item \code{.mobility} is a \code{numeric} value that defines the maximum length (see \code{\link[truncdist:rtrunc]{truncdist::rtrunc()}}).
-}}
-
-\item{.mu, .rho, .sd}{Arguments for \code{\link{rwn}} for the simulation of turning angles, passed to the \code{mu}, \code{rho} and \code{sd} arguments of \code{\link[circular:wrappednormal]{circular::rwrappednormal()}}.}
 }
 \value{
 \code{\link[=sim_path_walk]{sim_path_walk()}} returns a \code{\link{data.table}} with 10 columns:
@@ -90,13 +64,13 @@ The following template functions are provided:
 }
 }
 \description{
-These functions facilitate the simulation of discrete-time animal movement paths from walk models (e.g., random walks, biased random walks, correlated random walks).
+\code{\link[=sim_path_walk]{sim_path_walk()}} facilitates the simulation of discrete-time animal movement paths from walk models (e.g., random walks, biased random walks, correlated random walks).
 }
 \details{
 The following convenience functions are provided:
 \itemize{
 \item \code{\link[=rtruncgamma]{rtruncgamma()}} and \code{\link[=rwn]{rwn()}} simulate step lengths (from a truncated Gamma distribution) and turning angles (from a wrapped normal distribution);
-\item \code{\link[=sim_length]{sim_length()}}, \code{\link[=sim_angle_rw]{sim_angle_rw()}} and \code{\link[=sim_angle_crw]{sim_angle_crw()}} are wrappers in the form required by \code{\link[=sim_path_walk]{sim_path_walk()}};
+\item \code{\link[=rlen]{rlen()}}, \code{\link[=rangrw]{rangrw()}} and \code{\link[=rangcrw]{rangcrw()}} are wrappers in the form required by \code{\link[=sim_path_walk]{sim_path_walk()}};
 \item \code{\link[=sim_path_walk]{sim_path_walk()}} simulates the movement path(s);
 }
 
@@ -168,7 +142,7 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
   p
 
   #### Example (7): Update model for turning angles
-  # Use biased random walk by modifying the .mu parameter in sim_angle_rw()
+  # Use biased random walk by modifying the .mu parameter in rangrw()
   # E.g., To simulate movement north in a straight line, we use .mu = -99
   # (accounting for the longitude of natural origin = -9 in dat_gebco())
   # and .rho = 1:
@@ -176,7 +150,7 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = 10L,
-                     .sim_angle = sim_angle_rw, .mu = -(90 + 9), .rho = 1,
+                     .sim_angle = rangrw, .mu = -(90 + 9), .rho = 1,
                      .one_page = FALSE)
   p
 
@@ -184,7 +158,7 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = 1000L, .n_path = 1L,
-                     .sim_angle = sim_angle_crw, .rho = 0.9,
+                     .sim_angle = rangcrw, .rho = 0.9,
                      .one_page = FALSE)
   # The correlation between sequential angles is close to the simulated value:
   adt <- data.table(a0 = p$angle, a1 = lead(p$angle)) |> na.omit()
@@ -214,7 +188,7 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
 \itemize{
 \item \code{\link[=sim_array]{sim_array()}} simulates acoustic array(s);
 \item \code{\link[=sim_path_walk]{sim_path_walk()}} simulates movement path(s) via a walk model;
-\item [\code{sim_detections()} simulates detection(s) at receivers;
+\item \code{\link[=sim_detections]{sim_detections()}} simulates detection(s) at receivers;
 \item \code{\link{skill}} functions compared simulated and reconstructed patterns to evaluate model skill;
 }
 }

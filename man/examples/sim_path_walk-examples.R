@@ -59,7 +59,7 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
   p
 
   #### Example (7): Update model for turning angles
-  # Use biased random walk by modifying the .mu parameter in sim_angle_rw()
+  # Use biased random walk by modifying the .mu parameter in rangrw()
   # E.g., To simulate movement north in a straight line, we use .mu = -99
   # (accounting for the longitude of natural origin = -9 in dat_gebco())
   # and .rho = 1:
@@ -67,7 +67,7 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = 10L,
-                     .sim_angle = sim_angle_rw, .mu = -(90 + 9), .rho = 1,
+                     .sim_angle = rangrw, .mu = -(90 + 9), .rho = 1,
                      .one_page = FALSE)
   p
 
@@ -75,7 +75,7 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = 1000L, .n_path = 1L,
-                     .sim_angle = sim_angle_crw, .rho = 0.9,
+                     .sim_angle = rangcrw, .rho = 0.9,
                      .one_page = FALSE)
   # The correlation between sequential angles is close to the simulated value:
   adt <- data.table(a0 = p$angle, a1 = lead(p$angle)) |> na.omit()

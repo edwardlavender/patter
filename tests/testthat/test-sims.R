@@ -57,27 +57,27 @@ test_that("sim_path_*() helper functions work", {
   x <- rwn(.n = 1e5, .mu = 0, .rho = 1)
   expect_true(all(x == 0))
 
-  # Test sim_length()
+  # Test rlen()
   set.seed(1)
-  a <- sim_length(.n = 10)
+  a <- rlen(.n = 10)
   set.seed(1)
   b <- rtruncgamma(.n = 10)
   expect_equal(a, b)
 
-  # Test sim_angle_rw()
+  # Test rangrw()
   set.seed(1)
-  a <- sim_angle_rw(.n = 10)
+  a <- rangrw(.n = 10)
   set.seed(1)
   b <- rwn(.n = 10)
   expect_equal(a, b)
 
-  # Test sim_angle_crw()
-  sim_angle_crw(.n = 1, .prior = 1, .rho = 1) |> expect_equal(1)
-  sim_angle_crw(.n = 1, .prior = 10, .rho = 1) |> expect_equal(10)
+  # Test rangcrw()
+  rangcrw(.n = 1, .prior = 1, .rho = 1) |> expect_equal(1)
+  rangcrw(.n = 1, .prior = 10, .rho = 1) |> expect_equal(10)
 
-  # Test sim_angle_crw() returns correct correlation (with some error)
-  a1 <- sim_angle_crw(.n = 1e6)
-  a2 <- sim_angle_crw(.n = 1e6, .prior = a1, .rho = 0.999)
+  # Test rangcrw() returns correct correlation (with some error)
+  a1 <- rangcrw(.n = 1e6)
+  a2 <- rangcrw(.n = 1e6, .prior = a1, .rho = 0.999)
   rho <- circular::cor.circular(degrees(a1), degrees(a2))
   expect_true(all.equal(0.999, rho, tolerance = 0.01))
 
@@ -172,8 +172,8 @@ test_that(".step_iter() works", {
   # * the flux() function is as follows:
   flux <- function(.fv, .row, .col) {
     print(.row)
-    .fv$length[.row, (colnames(.fv$length)[.col]) := sim_length(length(.row))]
-    .fv$angle[.row, (colnames(.fv$length)[.col]) := sim_angle_rw(length(.row))]
+    .fv$length[.row, (colnames(.fv$length)[.col]) := rlen(length(.row))]
+    .fv$angle[.row, (colnames(.fv$length)[.col]) := rangrw(length(.row))]
   }
 
   # Implement .step_iter() for the first two points
@@ -270,7 +270,7 @@ test_that("sim_path_walk() works", {
   # Use time-varying step lengths dependent upon some behavioural state
   b <- data.table(timestep = 1:7,
                   x = c(0, 0, 1, 1, 1, 1, 1))
-  sim_length <- function(.n = 1,
+  rlen_t <- function(.n = 1,
                          .prior = NULL, .t = NULL, .state, ...) {
     if (.state$x[.t] == 0L) {
       rtruncgamma(.n = .n, .shape = 5, .scale = 5, .mobility = 50)
@@ -281,7 +281,7 @@ test_that("sim_path_walk() works", {
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = nrow(b) + 1,
-                     .sim_length = sim_length, .state = b)
+                     .sim_length = rlen_t, .state = b)
   expect_true(all(p$length[1:2] < 50))
   expect_true(all(p$length[3:7] < 500))
 
@@ -290,7 +290,7 @@ test_that("sim_path_walk() works", {
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = 10L,
-                     .sim_angle = sim_angle_rw, .mu = -(90 + 9), .rho = 1,
+                     .sim_angle = rangrw, .mu = -(90 + 9), .rho = 1,
                      .one_page = FALSE)
   sapply(na.omit(p$angle), \(a) {
     expect_equal(a, -99)
@@ -299,7 +299,7 @@ test_that("sim_path_walk() works", {
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = 1000L,
-                     .sim_angle = sim_angle_crw, .rho = 0.8,
+                     .sim_angle = rangcrw, .rho = 0.8,
                      .one_page = FALSE)
   angle <- p$angle |> na.omit()
   expect_equal(

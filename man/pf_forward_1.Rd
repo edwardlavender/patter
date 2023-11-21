@@ -41,7 +41,7 @@ pf_forward_1(
 \item (optional) \code{...}---additional arguments, passed via \code{\link[=pf_forward_1]{pf_forward_1()}}, if required;
 }
 
-See \code{\link[=pf_kick]{pf_kick()}} for a template random walk movement model. In this function, \code{...} are passed to \code{\link[=sim_length]{sim_length()}} and \code{\link[=sim_angle_rw]{sim_angle_rw()}}.}
+See \code{\link[=pf_kick]{pf_kick()}} for a template random walk movement model. In this function, \code{...} are passed to \code{\link[=rlen]{rlen()}} and \code{\link[=rangrw]{rangrw()}}.}
 
 \item{.n}{An \code{integer} that defines the number of particle samples at each time step.}
 

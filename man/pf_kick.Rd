@@ -9,8 +9,8 @@ pf_kick(
   .obs = NULL,
   .t = NULL,
   .bathy = NULL,
-  .sim_length = sim_length,
-  .sim_angle = sim_angle_rw,
+  .sim_length = rlen,
+  .sim_angle = rangrw,
   .lonlat = FALSE,
   ...
 )
@@ -40,7 +40,7 @@ The function returns a \code{\link{data.table}}, as supplied, with two additiona
 These functions are example movement models, of the kind required by \code{.kick} in \code{\link[=pf_forward_*]{pf_forward_*()}}.
 }
 \details{
-This template movement model is a biased random walk. Step lengths are simulated from a truncated Gamma distribution via \code{\link[=sim_length]{sim_length()}}. Turning angles are simulated from a wrapped normal distribution via \code{\link[=sim_angle_rw]{sim_angle_rw()}}.
+This template movement model is a biased random walk. Step lengths are simulated from a truncated Gamma distribution via \code{\link[=rlen]{rlen()}}. Turning angles are simulated from a wrapped normal distribution via \code{\link[=rangrw]{rangrw()}}.
 }
 \section{Warning}{
 \itemize{
