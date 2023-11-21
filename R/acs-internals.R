@@ -1,4 +1,4 @@
-#' @title AC* helper: internal checks
+#' @title AC* checks
 #' @description These are internal check functions.
 #' @author Edward Lavender
 #' @name acs_check
