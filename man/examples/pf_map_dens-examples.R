@@ -19,7 +19,7 @@ dens_1    <- pf_map_dens(pou)
 dens_2 <- pf_map_dens(gebco, .coord = pf_coords(out_pfb$history, gebco))
 stopifnot(all.equal(dens_1, dens_2))
 
-#### Example (2): Smooth coordinates from other algorithms
+#### Example (3): Smooth coordinates from other algorithms
 # Define coordinates to smooth (e.g., based on COA algorithm)
 out_coa <-
   # Define acoustic data for an example individual
@@ -37,7 +37,7 @@ out_coa <-
 dens_3 <- pf_map_dens(gebco, .coord = out_coa)
 graphics::points(out_coa)
 
-#### Example (3): Control smoothing parameters via `spatstat.explore::density.ppp()`
+#### Example (4): Control smoothing parameters via `spatstat.explore::density.ppp()`
 # E.g. use fixed bandwidth:
 pf_map_dens(pou, sigma = 5)
 pf_map_dens(pou, sigma = 100)
