@@ -35,9 +35,9 @@ test_that(".is_lonlat() works", {
 
 })
 
-test_that("rast_template() works", {
+test_that("spatTemplate() works", {
   # Test default options
-  r <- rast_template()
+  r <- spatTemplate()
   expect_equal(dim(r), c(100, 100, 1))
   expect_equal(terra::res(r), c(10, 10))
   expect_equal(
@@ -45,7 +45,7 @@ test_that("rast_template() works", {
     c(xmin = 0, xmax = 1000, ymin = 0, ymax = 1000)
   )
   # Test updated options
-  r <- rast_template(.xmin = 0, .xmax = 100,
+  r <- spatTemplate(.xmin = 0, .xmax = 100,
                      .ymin = 0, .ymax = 100,
                      .res = 1)
   expect_equal(dim(r), c(100, 100, 1))
@@ -56,10 +56,10 @@ test_that("rast_template() works", {
   )
 })
 
-test_that("normalise() works", {
-  r <- rast_template(.value = 10)
+test_that("spatNormalise() works", {
+  r <- spatTemplate(.value = 10)
   expect_equal(1,
-               terra::global(normalise(r), "sum")[, 1])
+               terra::global(spatNormalise(r), "sum")[, 1])
 
 })
 

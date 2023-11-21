@@ -28,7 +28,7 @@ NULL
 #' @rdname sim_path_flux
 #' @keywords internal
 
-.sim_path_flux <- function(.bathy = rast_template(), .lonlat = FALSE,
+.sim_path_flux <- function(.bathy = spatTemplate(), .lonlat = FALSE,
                           .origin = NULL,
                           .n_step = 10L,
                           .flux, .flux_vals = .flux_template(.n_step, .n_path),

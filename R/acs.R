@@ -205,7 +205,7 @@ acs <- function(.obs,
     }
     present <- terra::mask(present, .bathy)
     # Renormalise
-    present <- normalise(present)
+    present <- spatNormalise(present)
     .acs_check_present(present, t)
 
     if (.prompt) {
@@ -264,7 +264,7 @@ acs <- function(.obs,
   #### Renormalise cumulative map
   # (This is the same as dividing by the number of time steps)
   if (.save_cumulative) {
-    cumulative <- normalise(cumulative)
+    cumulative <- spatNormalise(cumulative)
   }
 
   #### Define output list

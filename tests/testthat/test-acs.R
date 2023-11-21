@@ -142,7 +142,7 @@ test_that("acs() works", {
     } else {
       present <- given_data * given_past
     }
-    present <- normalise(present)
+    present <- spatNormalise(present)
     if (p) terra::plot(present)
 
     #### Validate match
@@ -191,7 +191,7 @@ test_that("acs() works", {
   map <-
     do.call(c, out_ac$record) |>
     terra::app("sum", na.rm = TRUE) |>
-    normalise()
+    spatNormalise()
   names(out_ac$map) <- names(map) <- "map"
   terra::all.equal(out_ac$map, map) |> expect_true()
   if (FALSE) {

@@ -5,7 +5,7 @@
 \title{Simulate an acoustic array}
 \usage{
 sim_array(
-  .bathy = rast_template(),
+  .bathy = spatTemplate(),
   .lonlat = FALSE,
   .arrangement = "random",
   .n_receiver = 10L,

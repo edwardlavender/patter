@@ -142,7 +142,7 @@ We can also create a cumulative map:
 out_dc$record |>
   terra::rast() |> 
   terra::app("sum") |> 
-  normalise() |> 
+  spatNormalise() |> 
   terra::plot()
 ```
 
@@ -176,7 +176,7 @@ out_acs <- acs(obs,
                .detection_kernels = kernels, 
                .update_ac = function(.spat, .bathy, .obs, .t, ...) {
                  .spat *
-                   normalise(
+                   spatNormalise(
                    (.bathy >= .obs$depth_shallow[.t] &
                      .bathy <= .obs$depth_deep[.t]) + 0
                    )

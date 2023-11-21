@@ -113,8 +113,8 @@
 #'    * [`degrees()`] to create circular angles;
 #'
 #' * `terra` helpers. See:
-#'    * [`rast_template()`] to create a template [`SpatRaster`];
-#'    * [`normalise()`] to normalise a [`SpatRaster`];
+#'    * [`spatTemplate()`] to create a template [`SpatRaster`];
+#'    * [`spatNormalise()`] to normalise a [`SpatRaster`];
 #'    * [`as.im.SpatRaster`] and [`as.owin.SpatRaster`] for interfaces to `spatstat` function(s);
 #'
 #' * Parallelisation. See:

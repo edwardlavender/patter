@@ -15,7 +15,7 @@
 #'
 #' @examples
 #' # Define template SpatRasters
-#' mod <- obs <- rast_template(.res = 1)
+#' mod <- obs <- spatTemplate(.res = 1)
 #' n <- terra::ncell(mod)
 #' mod[] <- runif(n)
 #' obs[] <- mod[] + rnorm(n)

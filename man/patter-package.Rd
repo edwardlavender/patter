@@ -140,8 +140,8 @@ The following convenience functions are also made available to users of \href{ht
 }
 \item \code{terra} helpers. See:
 \itemize{
-\item \code{\link[=rast_template]{rast_template()}} to create a template \code{\link{SpatRaster}};
-\item \code{\link[=normalise]{normalise()}} to normalise a \code{\link{SpatRaster}};
+\item \code{\link[=spatTemplate]{spatTemplate()}} to create a template \code{\link{SpatRaster}};
+\item \code{\link[=spatNormalise]{spatNormalise()}} to normalise a \code{\link{SpatRaster}};
 \item \code{\link{as.im.SpatRaster}} and \code{\link{as.owin.SpatRaster}} for interfaces to \code{spatstat} function(s);
 }
 \item Parallelisation. See:

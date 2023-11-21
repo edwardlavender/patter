@@ -10,7 +10,7 @@
 \title{Simulate movement paths}
 \usage{
 sim_path_walk(
-  .bathy = rast_template(),
+  .bathy = spatTemplate(),
   .lonlat = FALSE,
   .origin = NULL,
   .n_step = 10L,

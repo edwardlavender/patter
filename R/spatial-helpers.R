@@ -8,14 +8,14 @@
 #' @param ... Additional arguments passed to [`SpatRaster`].
 #' @return The function returns a [`SpatRaster`].
 #' @examples
-#' r <- rast_template()
+#' r <- spatTemplate()
 #' terra::plot(r)
-#' r <- rast_template(.value = 1)
+#' r <- spatTemplate(.value = 1)
 #' terra::plot(r)
 #' @author Edward Lavender
 #' @export
 
-rast_template <- function(.xmin = 0, .xmax = 1000,
+spatTemplate <- function(.xmin = 0, .xmax = 1000,
                           .ymin = 0, .ymax = 1000,
                           .res = c(10, 10),
                           .crs = "+proj=utm +zone=1 +datum=WGS84",
@@ -40,7 +40,7 @@ rast_template <- function(.xmin = 0, .xmax = 1000,
 #' @author Edward Lavender
 #' @export
 
-normalise <- function(x) {
+rastNormalise <- function(x) {
   x / as.numeric(terra::global(x, "sum", na.rm = TRUE))
 }
 

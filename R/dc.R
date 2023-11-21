@@ -27,7 +27,7 @@ dc_setup_model <- function(.obs, .t, .bathy,
     .bathy <- terra::unwrap(.bathy)
   }
   map <- (.bathy >= .obs$depth_shallow[.t] & .bathy <= .obs$depth_deep[.t]) + 0
-  normalise(map)
+  spatNormalise(map)
 }
 
 #' @title DC: the depth-contour algorithm

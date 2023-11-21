@@ -45,7 +45,7 @@ test_that("pf_*() functions work using example flapper skate datasets", {
         .detection_overlaps = overlaps,
         .detection_kernels = kernels,
         .update_ac = function(.spat, .bathy, .obs, .t, ...) {
-          .spat * normalise((.bathy >= .obs$depth_shallow[.t] & .bathy <= .obs$depth_deep[.t]) + 0)
+          .spat * spatNormalise((.bathy >= .obs$depth_shallow[.t] & .bathy <= .obs$depth_deep[.t]) + 0)
         },
         .save_record = TRUE,
         .write_record = list(filename = ac_folder, overwrite = TRUE))

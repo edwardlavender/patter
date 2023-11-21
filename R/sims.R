@@ -54,7 +54,7 @@
 #' @author Edward Lavender
 #' @export
 
-sim_array <- function(.bathy = rast_template(), .lonlat = FALSE,
+sim_array <- function(.bathy = spatTemplate(), .lonlat = FALSE,
                       .arrangement = "random", .n_receiver = 10L, ...,
                       .receiver_start = NULL, .receiver_end = NULL, .receiver_range = NULL,
                       .n_array = 1L,
@@ -203,7 +203,7 @@ NULL
 #' @rdname sim_path_walk
 #' @export
 
-sim_path_walk <- function(.bathy = rast_template(), .lonlat = FALSE,
+sim_path_walk <- function(.bathy = spatTemplate(), .lonlat = FALSE,
                           .origin = NULL,
                           .n_step = 10L,
                           .sim_length = sim_length, .sim_angle = sim_angle_rw, ...,
