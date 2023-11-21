@@ -34,7 +34,6 @@
   is_lonlat
 }
 
-
 #' @title Spatial helper: create a template [`SpatRaster`]
 #' @description This function creates a template [`SpatRaster`].
 #' @param .xmin,.xmax,.ymin,.ymax Numbers that define the [`SpatRaster`] limits.
@@ -67,7 +66,7 @@ rast_template <- function(.xmin = 0, .xmax = 1000,
   r
 }
 
-#' @title Intersect `SpatRaster`s in a list
+#' @title Spatial helper: intersect `SpatRaster`s in a list
 #' @description This function identifies the cells on a `SpatRaster`s where all `SpatRaster` layers in a `list` have the same value.
 #' @param .x A list.
 #' @param .value A number that defines the value.
@@ -90,7 +89,7 @@ spatIntersect <- function(.x, .value = 1, .fun = NULL) {
   }
 }
 
-#' @title Normalise a [`SpatRaster`]
+#' @title Spatial helper: normalise a [`SpatRaster`]
 #' @description This function normalises a [`SpatRaster`].
 #' @param x A [`SpatRaster`].
 #' @details
@@ -104,7 +103,21 @@ normalise <- function(x) {
   x / as.numeric(terra::global(x, "sum", na.rm = TRUE))
 }
 
-#' @title Calculate the centre of mass of weighted coordinates
+#' @title Spatial helper: create circular angle in degrees
+#' @description This function is a wrapper for `circular::circular(x, units = "degrees")`.
+#' @param .x A numeric vector of angles (in degrees).
+#' @return The function returns a [`circular::circular`] object.
+#' @examples
+#' degrees(10)
+#' degrees(c(10, 20))
+#' @author Edward Lavender
+#' @export
+
+degrees <- function(.x) {
+  circular::circular(x = .x, units = "degrees")
+}
+
+#' @title Spatial helper: calculate the centre of mass of weighted coordinates
 #' @description This is a wrapper for `geosphere::geomean()` that handles one-row matrices.
 #' @param xy,w Arguments passed to `geosphere::geomean()`.
 #' @details This function uses the internal code of `geosphere::geomean()` without the checks of the `.pointsToMatrix()` function.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/spatial-helpers.R
 \name{geomean}
 \alias{geomean}
-\title{Calculate the centre of mass of weighted coordinates}
+\title{Spatial helper: calculate the centre of mass of weighted coordinates}
 \usage{
 geomean(xy, w = NULL)
 }

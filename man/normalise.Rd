@@ -2,7 +2,7 @@
 % Please edit documentation in R/spatial-helpers.R
 \name{normalise}
 \alias{normalise}
-\title{Normalise a \code{\link{SpatRaster}}}
+\title{Spatial helper: normalise a \code{\link{SpatRaster}}}
 \usage{
 normalise(x)
 }

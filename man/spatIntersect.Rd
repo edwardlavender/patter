@@ -2,7 +2,7 @@
 % Please edit documentation in R/spatial-helpers.R
 \name{spatIntersect}
 \alias{spatIntersect}
-\title{Intersect \code{SpatRaster}s in a list}
+\title{Spatial helper: intersect \code{SpatRaster}s in a list}
 \usage{
 spatIntersect(.x, .value = 1, .fun = NULL)
 }
