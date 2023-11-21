@@ -51,6 +51,13 @@ map <- get_hr_full(r, .add = TRUE, lwd = 5)
 map <- get_hr_home(r, .add = TRUE, border = "blue")
 map <- get_hr_core(r, .add = TRUE, border = "orange")
 map <- get_hr_prop(r, .prop = 0.2, .add = TRUE, border = "red")
+
+}
+\seealso{
+\itemize{
+\item For modelling algorithms in \code{\link{patter}}, see \code{\link[=acs]{acs()}}, \code{\link[=dc]{dc()}}, \code{\link[=pf_forward_1]{pf_forward_1()}} and \code{\link[=pf_forward_2]{pf_forward_2()}};
+\item For mapping utilisation distributions, see \code{\link[=pf_map_pou]{pf_map_pou()}} and \code{\link[=pf_map_dens]{pf_map_dens()}};
+}
 }
 \author{
 Edward Lavender
