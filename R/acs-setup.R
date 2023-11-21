@@ -45,8 +45,25 @@
 #' utils::head(obs)
 #'
 #' @seealso
+#' AC-branch algorithms in [`patter`] include the AC* algorithm ([`acs()`]) and the DC algorithm ([`dc()`]).
 #'
-#' See the [`process_receiver_ids`](https://edwardlavender.github.io/flapper/reference/process_receiver_id.html) function in the in the [`flapper`](https://edwardlavender.github.io/flapper/reference/process_receiver_id.html) package to define receiver deployments using an integer vector.
+#' To implement the AC* algorithm, use:
+#'   1. [`acs_setup_obs()`] to set up observations;
+#'   2. [`acs_setup_detection_overlaps()`] to identify receiver overlaps (used in detection probability calculations);
+#'   3. [`acs_setup_detection_kernels()`] and [`acs_setup_detection_pr()`] to define detection probability kernels;
+#'   4. [`acs()`] to implement the AC algorithm;
+#'
+#' To implement the DC algorithm, use:
+#'   1. [`dc()`] to implement the algorithm;
+#'
+#' AC-branch algorithms return an [`acb-class`] object.
+#'
+#' AC-branch algorithms are typically followed by particle filtering to reconstruct movement paths and refine maps of space use (see `pf_*()` functions).
+#'   1. To begin, see [`pf_forward_1()`];
+#'   2. To implement AC- and PF-branch algorithms simultaneously, see [`pf_forward_2()`];
+#'
+#' For [`acs_setup_obs()`] specifically:
+#'  * [`process_receiver_ids`](https://edwardlavender.github.io/flapper/reference/process_receiver_id.html) in the [`flapper`](https://edwardlavender.github.io/flapper/reference/process_receiver_id.html) package can be used to define receiver deployments using an integer vector.
 #'
 #' @author Edward Lavender
 #' @export
@@ -188,6 +205,24 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility, .detec
 #' summary(overlaps)
 #'
 #' @source This function supersedes the [`get_detection_containers_overlaps`](https://edwardlavender.github.io/flapper/reference/get_detection_containers_overlap.html) function in the [`flapper`](https://github.com/edwardlavender/flapper) package.
+#'
+#' @seealso
+#' AC-branch algorithms in [`patter`] include the AC* algorithm ([`acs()`]) and the DC algorithm ([`dc()`]).
+#'
+#' To implement the AC* algorithm, use:
+#'   1. [`acs_setup_obs()`] to set up observations;
+#'   2. [`acs_setup_detection_overlaps()`] to identify receiver overlaps (used in detection probability calculations);
+#'   3. [`acs_setup_detection_kernels()`] and [`acs_setup_detection_pr()`] to define detection probability kernels;
+#'   4. [`acs()`] to implement the AC algorithm;
+#'
+#' To implement the DC algorithm, use:
+#'   1. [`dc()`] to implement the algorithm;
+#'
+#' AC-branch algorithms return an [`acb-class`] object.
+#'
+#' AC-branch algorithms are typically followed by particle filtering to reconstruct movement paths and refine maps of space use (see `pf_*()` functions).
+#'   1. To begin, see [`pf_forward_1()`];
+#'   2. To implement AC- and PF-branch algorithms simultaneously, see [`pf_forward_2()`];
 #'
 #' @author Edward Lavender
 #' @export
@@ -341,6 +376,24 @@ acs_setup_detection_overlaps <- function(.moorings, .services = NULL) {
 #' terra::plot(p)
 #' points(m$receiver_easting, m$receiver_northing, pch = ".")
 #'
+#' @seealso
+#' AC-branch algorithms in [`patter`] include the AC* algorithm ([`acs()`]) and the DC algorithm ([`dc()`]).
+#'
+#' To implement the AC* algorithm, use:
+#'   1. [`acs_setup_obs()`] to set up observations;
+#'   2. [`acs_setup_detection_overlaps()`] to identify receiver overlaps (used in detection probability calculations);
+#'   3. [`acs_setup_detection_kernels()`] and [`acs_setup_detection_pr()`] to define detection probability kernels;
+#'   4. [`acs()`] to implement the AC algorithm;
+#'
+#' To implement the DC algorithm, use:
+#'   1. [`dc()`] to implement the algorithm;
+#'
+#' AC-branch algorithms return an [`acb-class`] object.
+#'
+#' AC-branch algorithms are typically followed by particle filtering to reconstruct movement paths and refine maps of space use (see `pf_*()` functions).
+#'   1. To begin, see [`pf_forward_1()`];
+#'   2. To implement AC- and PF-branch algorithms simultaneously, see [`pf_forward_2()`];
+#'
 #' @author Edward Lavender
 #' @export
 
@@ -479,6 +532,24 @@ acs_setup_detection_pr <- function(.data,
 #' par(pp)
 #'
 #' @source This function is based on the [`acs_setup_detection_kernels`](https://edwardlavender.github.io/flapper/reference/acs_setup_detection_kernels.html) function in the [`flapper`](https://github.com/edwardlavender/flapper) package, where the role of detection kernels in the AC* algorithms is described extensively (see Details).
+#'
+#' @seealso
+#' AC-branch algorithms in [`patter`] include the AC* algorithm ([`acs()`]) and the DC algorithm ([`dc()`]).
+#'
+#' To implement the AC* algorithm, use:
+#'   1. [`acs_setup_obs()`] to set up observations;
+#'   2. [`acs_setup_detection_overlaps()`] to identify receiver overlaps (used in detection probability calculations);
+#'   3. [`acs_setup_detection_kernels()`] and [`acs_setup_detection_pr()`] to define detection probability kernels;
+#'   4. [`acs()`] to implement the AC algorithm;
+#'
+#' To implement the DC algorithm, use:
+#'   1. [`dc()`] to implement the algorithm;
+#'
+#' AC-branch algorithms return an [`acb-class`] object.
+#'
+#' AC-branch algorithms are typically followed by particle filtering to reconstruct movement paths and refine maps of space use (see `pf_*()` functions).
+#'   1. To begin, see [`pf_forward_1()`];
+#'   2. To implement AC- and PF-branch algorithms simultaneously, see [`pf_forward_2()`];
 #'
 #' @author Edward Lavender
 #' @export

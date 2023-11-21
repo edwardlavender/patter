@@ -14,6 +14,24 @@
 #'
 #' To write/read an [`acb-class`] object from file, the `record` [`SpatRaster`]s need to be wrapped/unwrapped (via [`terra::wrap()`] and [`terra::unwrap()`]). Helper functions may be added to do this in future, if requested.
 #'
+#' @seealso
+#' AC-branch algorithms in [`patter`] include the AC* algorithm ([`acs()`]) and the DC algorithm ([`dc()`]).
+#'
+#' To implement the AC* algorithm, use:
+#'   1. [`acs_setup_obs()`] to set up observations;
+#'   2. [`acs_setup_detection_overlaps()`] to identify receiver overlaps (used in detection probability calculations);
+#'   3. [`acs_setup_detection_kernels()`] and [`acs_setup_detection_pr()`] to define detection probability kernels;
+#'   4. [`acs()`] to implement the AC algorithm;
+#'
+#' To implement the DC algorithm, use:
+#'   1. [`dc()`] to implement the algorithm;
+#'
+#' AC-branch algorithms return an [`acb-class`] object.
+#'
+#' AC-branch algorithms are typically followed by particle filtering to reconstruct movement paths and refine maps of space use (see `pf_*()` functions).
+#'   1. To begin, see [`pf_forward_1()`];
+#'   2. To implement AC- and PF-branch algorithms simultaneously, see [`pf_forward_2()`];
+#'
 #' @author Edward Lavender
 #' @docType package
 #' @name acb-class

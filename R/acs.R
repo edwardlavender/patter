@@ -55,15 +55,22 @@
 #' @example man/examples/acs-examples.R
 #'
 #' @seealso
-#' AC-branch algorithms in [`patter`] include the AC* algorithm (`[acs()`]) and the DC algorithm ([`dc()`]).
+#' AC-branch algorithms in [`patter`] include the AC* algorithm ([`acs()`]) and the DC algorithm ([`dc()`]).
 #'
-#' This function is part of a series of functions designed to implement the AC* algorithms. See:
-#' 1. [`acs_setup_obs()`] to set up observations;
-#' 2. [`acs_setup_detection_overlaps()`] to identify receiver overlaps (used in detection probability calculations);
-#' 3. [`acs_setup_detection_kernels()`] to define detection probability kernels;
-#' 4. [`acs()`] to implement the AC algorithm;
+#' To implement the AC* algorithm, use:
+#'   1. [`acs_setup_obs()`] to set up observations;
+#'   2. [`acs_setup_detection_overlaps()`] to identify receiver overlaps (used in detection probability calculations);
+#'   3. [`acs_setup_detection_kernels()`] and [`acs_setup_detection_pr()`] to define detection probability kernels;
+#'   4. [`acs()`] to implement the AC algorithm;
 #'
-#' AC-branch algorithms (i.e., [`acs()`], [`dc()`]) are typically followed by particle filtering to reconstruct movement paths and refine maps of space use (see [`pf_forward_1()`] and associated `pf_*()` functions).
+#' To implement the DC algorithm, use:
+#'   1. [`dc()`] to implement the algorithm;
+#'
+#' AC-branch algorithms return an [`acb-class`] object.
+#'
+#' AC-branch algorithms are typically followed by particle filtering to reconstruct movement paths and refine maps of space use (see `pf_*()` functions).
+#'   1. To begin, see [`pf_forward_1()`];
+#'   2. To implement AC- and PF-branch algorithms simultaneously, see [`pf_forward_2()`];
 #'
 #' @source This function evolved from the `.acs()`, `.acs_pl()`, [`ac`](https://edwardlavender.github.io/flapper/reference/ac.html) and [`acdc`](https://edwardlavender.github.io/flapper/reference/acdc.html) functions in the [`flapper`](https://github.com/edwardlavender/flapper) package. Key developments include:
 #' * Implementation of the algorithm over a single timeline;

@@ -22,6 +22,30 @@ An \code{\linkS4class{acb}} object is a S3 class that defines the named \code{li
 
 To write/read an \code{\linkS4class{acb}} object from file, the \code{record} \code{\link{SpatRaster}}s need to be wrapped/unwrapped (via \code{\link[terra:wrap]{terra::wrap()}} and \code{\link[terra:wrap]{terra::unwrap()}}). Helper functions may be added to do this in future, if requested.
 }
+\seealso{
+AC-branch algorithms in \code{\link{patter}} include the AC* algorithm (\code{\link[=acs]{acs()}}) and the DC algorithm (\code{\link[=dc]{dc()}}).
+
+To implement the AC* algorithm, use:
+\enumerate{
+\item \code{\link[=acs_setup_obs]{acs_setup_obs()}} to set up observations;
+\item \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}} to identify receiver overlaps (used in detection probability calculations);
+\item \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}} and \code{\link[=acs_setup_detection_pr]{acs_setup_detection_pr()}} to define detection probability kernels;
+\item \code{\link[=acs]{acs()}} to implement the AC algorithm;
+}
+
+To implement the DC algorithm, use:
+\enumerate{
+\item \code{\link[=dc]{dc()}} to implement the algorithm;
+}
+
+AC-branch algorithms return an \code{\linkS4class{acb}} object.
+
+AC-branch algorithms are typically followed by particle filtering to reconstruct movement paths and refine maps of space use (see \verb{pf_*()} functions).
+\enumerate{
+\item To begin, see \code{\link[=pf_forward_1]{pf_forward_1()}};
+\item To implement AC- and PF-branch algorithms simultaneously, see \code{\link[=pf_forward_2]{pf_forward_2()}};
+}
+}
 \author{
 Edward Lavender
 }

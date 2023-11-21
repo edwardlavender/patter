@@ -154,6 +154,30 @@ lapply(k$bkg_inv_surface_by_design, \(bkg) {
 par(pp)
 
 }
+\seealso{
+AC-branch algorithms in \code{\link{patter}} include the AC* algorithm (\code{\link[=acs]{acs()}}) and the DC algorithm (\code{\link[=dc]{dc()}}).
+
+To implement the AC* algorithm, use:
+\enumerate{
+\item \code{\link[=acs_setup_obs]{acs_setup_obs()}} to set up observations;
+\item \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}} to identify receiver overlaps (used in detection probability calculations);
+\item \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}} and \code{\link[=acs_setup_detection_pr]{acs_setup_detection_pr()}} to define detection probability kernels;
+\item \code{\link[=acs]{acs()}} to implement the AC algorithm;
+}
+
+To implement the DC algorithm, use:
+\enumerate{
+\item \code{\link[=dc]{dc()}} to implement the algorithm;
+}
+
+AC-branch algorithms return an \code{\linkS4class{acb}} object.
+
+AC-branch algorithms are typically followed by particle filtering to reconstruct movement paths and refine maps of space use (see \verb{pf_*()} functions).
+\enumerate{
+\item To begin, see \code{\link[=pf_forward_1]{pf_forward_1()}};
+\item To implement AC- and PF-branch algorithms simultaneously, see \code{\link[=pf_forward_2]{pf_forward_2()}};
+}
+}
 \author{
 Edward Lavender
 }
