@@ -8,7 +8,7 @@
 \alias{.acs_check_detection_kernels}
 \alias{.acs_check_write_record}
 \alias{.acs_check_present}
-\title{AC* helper: internal checks}
+\title{AC* checks}
 \usage{
 .acs_check_obs(.obs)
 

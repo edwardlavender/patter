@@ -13,8 +13,15 @@ dist_btw_cells(.bathy, .from, .to, .lonlat = FALSE, ...)
 
 \item{.lonlat}{A \code{logical} variable that defines whether or not the \code{.bathy} is in longitude/latitude format.}
 
-\item{...}{Arguments passed to  \code{\link[terra:distance]{terra::distance()}}}
+\item{...}{Arguments passed to  \code{\link[terra:distance]{terra::distance()}}.}
 }
 \description{
 This function calculates distances between cells on a \code{\link{SpatRaster}}
+}
+\seealso{
+\itemize{
+\item \verb{dist_*} functions in \href{https://github.com/edwardlavender/flapper}{\code{flapper}};
+\item \code{\link[=dist_along_path]{dist_along_path()}} calculates distances along a path;
+\item \code{\link[=dist_btw_cells]{dist_btw_cells()}} calculates distances between \code{\link{SpatRaster}} cells;
+}
 }
