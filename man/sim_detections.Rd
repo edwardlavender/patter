@@ -15,7 +15,8 @@ sim_detections(
   ...,
   .sim_obs = stats::rbinom,
   .type = c("pairwise", "combinations"),
-  .return = c("array_id", "path_id", "timestep", "receiver_id", "dist", "pr")
+  .return = c("array_id", "path_id", "timestep", "timestamp", "receiver_id", "dist",
+    "pr")
 )
 
 calc_detection_pr(.data, ...)

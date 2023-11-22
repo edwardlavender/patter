@@ -43,7 +43,7 @@ test_that("check_*() functions work", {
   check_acoustics(acc)
   # Fail on column names
   check_acoustics(data.table(blah = as.POSIXct("2016-01-01", tz = "UTC"), receiver_id = "A")) |>
-    expect_error("Argument '.acoustics' does not contain all required names. One or more of the following name(s) are missing: 'timestamp'.", fixed = TRUE)
+    expect_error("'.acoustics' does not contain all required names. One or more of the following name(s) are missing: 'timestamp'.", fixed = TRUE)
   # Fail on column types
   check_acoustics(data.table(timestamp = as.POSIXct("2016-01-01", tz = "UTC"), receiver_id = "A"))  |>
     expect_error("`.acoustics$receiver_id` must be a integer.", fixed = TRUE)
@@ -67,7 +67,7 @@ test_that("check_*() functions work", {
   check_archival(as.data.frame(arc))
   # Fail on column names
   check_archival(data.table(blah = as.POSIXct("2016-01-01", tz = "UTC"), depth = 1)) |>
-    expect_error("Argument '.archival' does not contain all required names. One or more of the following name(s) are missing: 'timestamp'.", fixed = TRUE)
+    expect_error("'.archival' does not contain all required names. One or more of the following name(s) are missing: 'timestamp'.", fixed = TRUE)
   # Fail on column types
   check_archival(data.table(timestamp = as.Date("2016-01-01", tz = "UTC"), depth = 1)) |>
     expect_error("`.archival$timestamp` must be a POSIXct.", fixed = TRUE)

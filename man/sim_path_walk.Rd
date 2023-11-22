@@ -9,6 +9,7 @@ sim_path_walk(
   .lonlat = FALSE,
   .origin = NULL,
   .n_step = 10L,
+  .timestamp = NULL,
   .sim_length = rlen,
   .sim_angle = rangrw,
   ...,
@@ -25,6 +26,8 @@ sim_path_walk(
 \item{.origin}{(optional) A one-row, two-column matrix that defines the origin. If unsupplied, \code{.origin} is sampled at random from \code{.bathy}. One origin is used for all simulated paths (see \code{.n_path}).}
 
 \item{.n_step}{An \code{integer} that defines the number of time steps.}
+
+\item{.timestamp}{(optional) A vector of time stamps, one for each time step, for inclusion in the output \code{\link{data.table}} as a \code{timestamp} column.}
 
 \item{.sim_length, .sim_angle, ...}{Functions and accompanying arguments that simulate step lengths and turning angle. Simulated step lengths should be in map units (e.g., metres) if \code{.lonlat = FALSE} or metres if \code{.lonlat = TRUE}. Turning angles should be in degrees. The functions must accept four named arguments, even if unused:
 \itemize{

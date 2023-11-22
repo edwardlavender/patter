@@ -308,6 +308,7 @@ sim_array <- function(.bathy = spatTemplate(), .lonlat = FALSE,
 #' @param .lonlat A `logical` variable that defines whether or not `.bathy` uses longitude/latitude coordinates.
 #' @param .origin (optional) A one-row, two-column matrix that defines the origin. If unsupplied, `.origin` is sampled at random from `.bathy`. One origin is used for all simulated paths (see `.n_path`).
 #' @param .n_step An `integer` that defines the number of time steps.
+#' @param .timestamp (optional) A vector of time stamps, one for each time step, for inclusion in the output [`data.table`] as a `timestamp` column.
 #' @param .sim_length,.sim_angle,... Functions and accompanying arguments that simulate step lengths and turning angle. Simulated step lengths should be in map units (e.g., metres) if `.lonlat = FALSE` or metres if `.lonlat = TRUE`. Turning angles should be in degrees. The functions must accept four named arguments, even if unused:
 #' * `.n`---an `integer` that defines the number of simulated outcome(s);
 #' * `.prior`---a `numeric` vector that defines the simulated value(s) from the previous time step;
@@ -364,7 +365,7 @@ NULL
 
 sim_path_walk <- function(.bathy = spatTemplate(), .lonlat = FALSE,
                           .origin = NULL,
-                          .n_step = 10L,
+                          .n_step = 10L, .timestamp = NULL,
                           .sim_length = rlen, .sim_angle = rangrw, ...,
                           .n_path = 1L,
                           .plot = TRUE, .one_page = FALSE) {
@@ -401,14 +402,20 @@ sim_path_walk <- function(.bathy = spatTemplate(), .lonlat = FALSE,
   length <- .flux_pivot(params$length, .n_step = .n_step, .n_path = .n_path)
   angle  <- .flux_pivot(params$angle, .n_step = .n_step, .n_path = .n_path)
   # Update data.table with flux parameters & tidy
-  out |>
+  out <-
+    out |>
     merge(length, by = c("path_id", "timestep")) |>
     rename(length = "value") |>
     merge(angle, by = c("path_id", "timestep")) |>
     rename(angle = "value") |>
-    as.data.table() |>
-    # Select column order
-    select("path_id", "timestep",
+    as.data.table()
+  if (!is.null(.timestamp)) {
+    timestamp <- NULL
+    out[, timestamp := .timestamp[out$timestep]]
+  }
+  # Select column order
+  out |>
+    select("path_id", "timestep", any_of("timestamp"),
            "length", "angle",
            "x", "y",
            "cell_x", "cell_y", "cell_z", "cell_id",
@@ -480,7 +487,7 @@ sim_detections <- function(.paths, .arrays,
                            .sim_obs = stats::rbinom,
                            .type = c("pairwise", "combinations"),
                            .return = c("array_id", "path_id",
-                                       "timestep", "receiver_id",
+                                       "timestep", "timestamp", "receiver_id",
                                        "dist", "pr")
 ) {
 

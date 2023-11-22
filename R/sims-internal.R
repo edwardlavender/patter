@@ -198,7 +198,7 @@ NULL
                             .calc_detection_pr = calc_detection_pr, ...,
                             .sim_obs = stats::rbinom,
                             .return = c("array_id", "path_id",
-                                        "timestep", "receiver_id",
+                                        "timestep", "timestamp", "receiver_id",
                                         "dist", "pr")
                             ){
 
@@ -247,9 +247,13 @@ NULL
     arrange(.data$timestep, .data$receiver_id) |>
     as.data.table()
   if (!is.null(.return)) {
+    check_names(arg = "The output data.table",
+                input = out,
+                req = .return,
+                error = warn)
     out <-
       out |>
-      select(all_of(.return)) |>
+      select(any_of(.return)) |>
       as.data.table()
   }
   if (nrow(out) == 0L) {

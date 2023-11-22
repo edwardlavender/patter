@@ -14,8 +14,10 @@ test_that("check_*() utility functions work", {
   check_names(iris, req = c("Species", "Sepal.Width"))
   check_names(iris, req = c("Species", "blah"), type = any)
   check_names(iris, req = c("Species", "blah"), type = all) |>
-    expect_error("Argument 'iris' does not contain all required names. One or more of the following name(s) are missing: 'blah'.",
+    expect_error("'iris' does not contain all required names. One or more of the following name(s) are missing: 'blah'.",
                  fixed = TRUE)
+  check_names(iris, req = c("Species", "blah"), type = all, error = warn) |>
+    expect_warning("'iris' does not contain all required names. One or more of the following name(s) are missing: 'blah'.", fixed = TRUE)
 
   #### check_named_list()
   check_named_list(list(a = 1))

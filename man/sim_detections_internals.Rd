@@ -14,7 +14,8 @@
   .calc_detection_pr = calc_detection_pr,
   ...,
   .sim_obs = stats::rbinom,
-  .return = c("array_id", "path_id", "timestep", "receiver_id", "dist", "pr")
+  .return = c("array_id", "path_id", "timestep", "timestamp", "receiver_id", "dist",
+    "pr")
 )
 
 .sim_detections_call(.path, .array, .args)

@@ -57,18 +57,18 @@ check_inherits <- function(input, class) {
 #' @rdname check_utils
 #' @keywords internal
 
-check_names <- function(input, req, extract_names = names, type = all,
+check_names <- function(input, req, extract_names = names, type = all, error = abort,
                         arg = deparse(substitute(input))) {
   input_names <- extract_names(input)
   if (!type(req %in% input_names)) {
     req_names_missing <- req[which(!(req %in% input_names))]
-    msg <- paste0(
-      "Argument '", arg, "' does not contain ", deparse(substitute(type)),
+    msg <- paste0("'",
+      arg, "' does not contain ", deparse(substitute(type)),
       " required names. One or more of the following name(s) are missing: ",
       paste0("'", req_names_missing, collapse = "', "),
       "'."
     )
-    stop(msg, call. = FALSE)
+    error(msg)
   }
   invisible(input)
 }
