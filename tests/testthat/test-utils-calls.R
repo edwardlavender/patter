@@ -10,15 +10,15 @@ test_that("call_*() functions work", {
     call_start(.time = t_onset)
   }
   expect_identical(f(),
-                   paste0("`patter::f()` called @ ", str_time(t_onset), "..."))
+                   paste0("`patter::f()` called @ ", call_time(t_onset), "..."))
 
   # Test call_end()
   t_end <- Sys.time()
-  f <- function() {
+  g <- function() {
     call_end(.time = t_end)
   }
-  expect_identical(f(),
-                   paste0("`patter::f()` call ended @ ", str_time(t_end), "..."))
+  expect_identical(g(),
+                   paste0("`patter::g()` call ended @ ", call_time(t_end), "..."))
 
   # Test call_duration()
   t1 <- as.POSIXct("2016-01-01")
