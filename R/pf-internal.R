@@ -7,6 +7,26 @@ NULL
 #' @rdname pf_check
 #' @keywords internal
 
+# Collate .pf_checks() for pf_forward_2()
+.pf_checks <- function(inputs = match.call()[-1L], defaults = formals(), dots = list(...)) {
+  .pf_check_obs(inputs$.obs)
+  if (!is.null(inputs$.moorings)) {
+    rlang::check_installed("Rfast")
+    check_names(inputs$.obs, c("date", "detection_id", "detection",
+                               "receiver_id", "receiver_id_next",
+                               "buffer_future_incl_gamma"))
+  }
+  if (!inputs$.save_history && is.null(inputs$.write_history)) {
+    abort("`.save_history = FALSE` and `.write_history = NULL`. There is nothing to do.")
+  }
+  .pf_check_write_history(formals$.write_history)
+  check_dots_for_missing_period(formals, dots)
+}
+
+
+#' @rdname pf_check
+#' @keywords internal
+
 .pf_check_obs <- function(.obs) {
   if (inherits(.obs, "data.frame") & !inherits(.obs, "data.table")) {
     .obs <- as.data.table(.obs)

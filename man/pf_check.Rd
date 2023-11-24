@@ -2,12 +2,15 @@
 % Please edit documentation in R/pf-internal.R
 \name{pf_check}
 \alias{pf_check}
+\alias{.pf_checks}
 \alias{.pf_check_obs}
 \alias{.pf_check_write_history}
 \alias{.pf_check_rows}
 \alias{.pf_path_pivot_checks}
 \title{PF helper: internal checks}
 \usage{
+.pf_checks(inputs = match.call()[-1L], defaults = formals(), dots = list(...))
+
 .pf_check_obs(.obs)
 
 .pf_check_write_history(.write_history, .element = "sink")
