@@ -10,12 +10,23 @@ NULL
 #' @rdname check_data
 #' @keywords internal
 
-check_moorings <- function(.moorings, .class = "data.table", .lonlat = NULL) {
+check_moorings <- function(.moorings,
+                           .class = "data.table",
+                           .lonlat = NULL,
+                           .bathy = NULL) {
+
+  #### Check class
   check_inherits(.moorings, .class)
+
+  #### Check names
   check_names(
     input = .moorings, req = c("receiver_id", "receiver_start", "receiver_end"),
     extract_names = colnames, type = all
   )
+
+  #### Check receiver IDs
+  # * Numeric/integer
+  # * Duplicates
   if (inherits(.moorings$receiver_id, "numeric")) {
     .moorings$receiver_id <- as.integer(.moorings$receiver_id)
   }
@@ -26,19 +37,44 @@ check_moorings <- function(.moorings, .class = "data.table", .lonlat = NULL) {
   if (any(duplicated(.moorings$receiver_id))) {
     abort("Argument '.moorings$receiver_id' contains duplicate elements.")
   }
+
+  #### (optional) Define coordinate columns (receiver_x, receiver_y)
   if (!is.null(.lonlat)) {
     if (.lonlat) {
+      coords <- c("receiver_lon", "receiver_lat")
       .moorings$receiver_x <- .moorings$receiver_lon
       .moorings$receiver_y <- .moorings$receiver_lat
     } else {
-      .moorings$receiver_x <- .moorings$receiver_easting
       .moorings$receiver_y <- .moorings$receiver_northing
+      coords <- c("receiver_easting", "receiver_northing")
+      .moorings$receiver_x <- .moorings$receiver_easting
     }
   }
+  check_names(.moorings, req = coords)
+
+  #### (optional) Coerce coordinates onto grid
+  if (is.null(.bathy)) {
+    xy <-
+      .moorings |>
+      select(all_of(coords)) |>
+      as.matrix()
+    xy <- terra::xyFromCell(.bathy, terra::cellFromXY(.bathy, xy))
+    .moorings$receiver_x <- xy[, 1]
+    .moorings$receiver_y <- xy[, 2]
+    if (!identical(.moorings[["receiver_x"]], .moorings[[coords[1]]]) |
+        !identical(.moorings[["receiver_y"]], .moorings[[coords[2]]])) {
+      warn("`.moorings` coordinates coerced onto `.bathy` grid.")
+    }
+  }
+
+  #### Check NAs
   if (any(is.na(.moorings))) {
     warn("`.moorings` contains NAs and some functions may fail unexpectedly.")
   }
+
+  #### Return outputs
   invisible(.moorings)
+
 }
 
 #' @rdname check_data

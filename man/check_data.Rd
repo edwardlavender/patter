@@ -8,7 +8,7 @@
 \alias{check_archival}
 \title{Utilities: check data}
 \usage{
-check_moorings(.moorings, .class = "data.table", .lonlat = NULL)
+check_moorings(.moorings, .class = "data.table", .lonlat = NULL, .bathy = NULL)
 
 check_services(.services, .moorings)
 
