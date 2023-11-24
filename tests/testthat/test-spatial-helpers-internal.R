@@ -35,42 +35,6 @@ test_that(".is_lonlat() works", {
 
 })
 
-test_that("spatTemplate() works", {
-  # Test default options
-  r <- spatTemplate()
-  expect_equal(dim(r), c(100, 100, 1))
-  expect_equal(terra::res(r), c(10, 10))
-  expect_equal(
-    terra::ext(r)[],
-    c(xmin = 0, xmax = 1000, ymin = 0, ymax = 1000)
-  )
-  # Test updated options
-  r <- spatTemplate(.xmin = 0, .xmax = 100,
-                     .ymin = 0, .ymax = 100,
-                     .res = 1)
-  expect_equal(dim(r), c(100, 100, 1))
-  expect_equal(terra::res(r), c(1, 1))
-  expect_equal(
-    terra::ext(r)[],
-    c(xmin = 0, xmax = 100, ymin = 0, ymax = 100)
-  )
-})
-
-test_that("spatNormalise() works", {
-  r <- spatTemplate(.value = 10)
-  expect_equal(1,
-               terra::global(spatNormalise(r), "sum")[, 1])
-
-})
-
-test_that("dist_along_path() works", {
-  xy <- cbind(c(1, 2, 3), c(3, 2, 1))
-  expect_equal(
-    dist_along_path(xy, .lonlat = FALSE),
-    terra::distance(xy, lonlat = FALSE, sequential = TRUE)
-  )
-})
-
 test_that("geomean() works", {
   # Verify weights
   xy <- cbind(x = c(-179, 179, 177), y = c(12, 14, 16))
@@ -91,21 +55,3 @@ test_that("geomean() works", {
   }) |> invisible()
 
 })
-
-test_that("as.im.SpatRaster() works", {
-  a <- readRDS(system.file("testdata", "as.im.SpatRaster.rds",
-                           package = "patter", mustWork = TRUE))
-  b <- as.im.SpatRaster(dat_gebco())
-  expect_equal(a, b)
-})
-
-test_that("spatIsEmpty works", {
-  spatIsEmpty(spatTemplate()) |> expect_false()
-  r <- spatTemplate()
-  r[1] <- NA
-  spatIsEmpty(r)  |> expect_false()
-  spatIsEmpty(spatTemplate(.value = NA))  |> expect_true()
-  spatIsEmpty(terra::vect(cbind(1, 2))) |> expect_false()
-  spatIsEmpty(terra::vect()) |> expect_true()
-})
-

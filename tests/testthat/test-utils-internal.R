@@ -1,3 +1,13 @@
+test_that("msg(), warn() and abort() work", {
+  m <- function(.x) msg("{.x}", .envir = environment())
+  w <- function(.x) warn("{.x}", .envir = environment())
+  e <- function(.x) abort("{.x}", .envir = environment())
+  x <- "hello world"
+  m(x) |> expect_message("hello world", fixed = TRUE)
+  w(x) |> expect_warning("hello world", fixed = TRUE)
+  e(x) |> expect_error("hello world", fixed = TRUE)
+})
+
 test_that("create_log() works", {
 
   create_log(.file = "some-folder", .verbose = TRUE) |>
@@ -20,18 +30,6 @@ test_that("create_log() works", {
 
 })
 
-
 test_that("compact() works", {
   expect_equal(compact(list(a = 1, NULL)), list(a = 1))
-})
-
-
-test_that("msg(), warn() and abort() work", {
-  m <- function(.x) msg("{.x}", .envir = environment())
-  w <- function(.x) warn("{.x}", .envir = environment())
-  e <- function(.x) abort("{.x}", .envir = environment())
-  x <- "hello world"
-  m(x) |> expect_message("hello world", fixed = TRUE)
-  w(x) |> expect_warning("hello world", fixed = TRUE)
-  e(x) |> expect_error("hello world", fixed = TRUE)
 })
