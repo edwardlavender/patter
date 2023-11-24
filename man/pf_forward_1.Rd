@@ -2,7 +2,8 @@
 % Please edit documentation in R/pf_forward_1.R
 \name{pf_forward_1}
 \alias{pf_forward_1}
-\title{PF: run the forward simulation}
+\title{PF: run the forward simulation
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#superseded}{\figure{lifecycle-superseded.svg}{options: alt='[Superseded]'}}}{\strong{[Superseded]}}}
 \usage{
 pf_forward_1(
   .obs,
@@ -58,6 +59,8 @@ The function returns a \code{\linkS4class{pf}} object.
 }
 \description{
 This function implements forward simulation of possible locations.
+
+This function is no longer being actively developed. \code{\link[=acs]{acs()}}/\code{\link[=dc]{dc()}} plus \code{\link[=pf_forward_1]{pf_forward_1()}} will remain available, but \code{\link[=pf_forward_2]{pf_forward_2()}} is faster, more advanced and recommended.
 }
 \details{
 The forward simulation is implemented as follows:

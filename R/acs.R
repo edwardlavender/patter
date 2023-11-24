@@ -1,5 +1,10 @@
 #' @title AC* algorithms
+#' `r lifecycle::badge("superseded")`
+#'
 #' @description This function implements the acoustic-container (AC) algorithm and its extensions (e.g., the acoustic-container depth-contour (ACDC) algorithm).
+#'
+#' This function is no longer being actively developed. [`acs()`]/[`dc()`] plus [`pf_forward_1()`] will remain available, but [`pf_forward_2()`] is faster, more advanced and recommended.
+#'
 #' @param .obs A [`data.table`] with observations, typically from [`acs_setup_obs()`]. At a minimum, `.obs` is expected to contain the following columns:
 #' * `timestep`---an `integer` that defines the time step;
 #' * `timestamp`---a regular sequences of `POSIXct` time stamps;

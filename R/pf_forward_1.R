@@ -1,5 +1,10 @@
 #' @title PF: run the forward simulation
+#' `r lifecycle::badge("superseded")`
+#'
 #' @description This function implements forward simulation of possible locations.
+#'
+#' This function is no longer being actively developed. [`acs()`]/[`dc()`] plus [`pf_forward_1()`] will remain available, but [`pf_forward_2()`] is faster, more advanced and recommended.
+#'
 #' @param .obs A [`data.table`] that defines the time series of observations (see [`acs()`]). For [`pf_forward_1()`], at a minimum, this must contain the following column(s):
 #' * `timestep`---an `integer` that defines the time step;
 #' * Any columns required by `.kick` (see below);

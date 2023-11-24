@@ -2,7 +2,8 @@
 % Please edit documentation in R/acs.R
 \name{acs}
 \alias{acs}
-\title{AC* algorithms}
+\title{AC* algorithms
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#superseded}{\figure{lifecycle-superseded.svg}{options: alt='[Superseded]'}}}{\strong{[Superseded]}}}
 \source{
 This function evolved from the \code{.acs()}, \code{.acs_pl()}, \href{https://edwardlavender.github.io/flapper/reference/ac.html}{\code{ac}} and \href{https://edwardlavender.github.io/flapper/reference/acdc.html}{\code{acdc}} functions in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package. Key developments include:
 \itemize{
@@ -81,6 +82,8 @@ The function returns an AC-branch (\code{\linkS4class{acb}}) object.
 }
 \description{
 This function implements the acoustic-container (AC) algorithm and its extensions (e.g., the acoustic-container depth-contour (ACDC) algorithm).
+
+This function is no longer being actively developed. \code{\link[=acs]{acs()}}/\code{\link[=dc]{dc()}} plus \code{\link[=pf_forward_1]{pf_forward_1()}} will remain available, but \code{\link[=pf_forward_2]{pf_forward_2()}} is faster, more advanced and recommended.
 }
 \section{Background}{
 For a full description of the AC* algorithms, see the resources linked in 'Source' below.

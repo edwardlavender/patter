@@ -133,6 +133,8 @@
 #' @keywords internal
 "_PACKAGE"
 
+#' @importFrom lifecycle deprecated
+#'
 #' @importFrom rlang .data
 #'
 #' @importFrom dplyr tbl
@@ -155,9 +157,7 @@
 #' @importFrom dplyr count
 #' @importFrom dplyr pull
 #' @importFrom dplyr collect
-
 #' @importFrom dplyr lead
-
 #'
 #' @importFrom dtplyr lazy_dt
 #'
