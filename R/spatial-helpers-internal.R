@@ -34,29 +34,6 @@
   is_lonlat
 }
 
-#' @title Spatial helper: intersect `SpatRaster`s in a list
-#' @description This function identifies the cells on a `SpatRaster`s where all `SpatRaster` layers in a `list` have the same value.
-#' @param .x A list.
-#' @param .value A number that defines the value.
-#' @param .fun A function.
-#' @keywords internal
-
-spatIntersect <- function(.x, .value = 1, .fun = NULL) {
-  check_inherits(.x, "list")
-  if (!is.null(.value) & !is.null(.fun)) {
-    abort("Either `.value` or `.fun` should be supplied.")
-  }
-  if (length(.x) == 1) {
-    return(.x[[1]])
-  }
-  .x <- terra::rast(.x)
-  if (!is.null(.value)) {
-    terra::app(.x, function(x) all(x == .value))
-  } else {
-    terra::app(.x, .fun)
-  }
-}
-
 #' @title Spatial helper: calculate the centre of mass of weighted coordinates
 #' @description This is a wrapper for `geosphere::geomean()` that handles one-row matrices.
 #' @param xy,w Arguments passed to `geosphere::geomean()`.
@@ -93,4 +70,77 @@ geomean <- function(xy, w = NULL) {
     y <- atan2(Sy, Cy)
     cbind(x, y) * 180/pi
   }
+}
+
+#' @title Spatial helper: `spat*` functions
+#' @name spat
+
+#' @rdname spat
+#' @keywords internal
+
+spatContainsNA <- function(.x) {
+  if (is.null(.x)) {
+    bool <- FALSE
+  } else {
+    bool <- terra::global(.x, function(x) any(is.na(x)))[1, 1]
+  }
+  bool
+}
+
+#' @rdname spat
+#' @keywords internal
+
+spatDT <- function(.x, .bathy = .x, .weights = FALSE) {
+  # Reclassify zero to NA if .x values are weights
+  if (.weights) {
+    .x <- .x |> terra::classify(cbind(0, NA))
+  }
+  # Get data.table
+  .x |>
+    terra::as.data.frame(cells = FALSE, xy = TRUE, na.rm = TRUE) |>
+    mutate(cell_id = as.integer(terra::cellFromXY(.bathy, cbind(.data$x, .data$y)))) |>
+    select("cell_now", cell_x = "x", cell_y = "y") |>
+    as.data.table()
+}
+
+#' @rdname spat
+#' @keywords internal
+
+spatIntersect <- function(.x, .value = 1, .fun = NULL) {
+  check_inherits(.x, "list")
+  check_inherits(.x[[1]], c("SpatRaster", "SpatVector"))
+  if (!is.null(.value) & !is.null(.fun)) {
+    abort("Either `.value` or `.fun` should be supplied.")
+  }
+  if (length(.x) == 1) {
+    return(.x[[1]])
+  }
+  if (inherits(.x[[1]], "SpatRaster")) {
+    return(spatIntersect.SpatRaster(.x = .x, .value = .value, .fun = .fun))
+  } else if (inherits(.x[[1]], "SpatVector")) {
+    return(spatIntersect.SpatVector(.x = .x))
+  }
+}
+
+#' @rdname spat
+#' @keywords internal
+
+spatIntersect.SpatRaster <- function(.x, .value, .fun) {
+  .x <- terra::rast(.x)
+  if (!is.null(.value)) {
+    terra::app(.x, function(x) all(x == .value))
+  } else {
+    terra::app(.x, .fun)
+  }
+}
+
+#' @rdname spat
+#' @keywords internal
+
+spatIntersect.SpatVector <- function(.x) {
+  int <- .x[[1]]
+  for (i in 2:length(.x)) {
+    int <- terra::intersect(int, .x[[2]])
+  }
+  int
 }
