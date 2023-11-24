@@ -53,7 +53,7 @@ check_moorings <- function(.moorings,
   check_names(.moorings, req = coords)
 
   #### (optional) Coerce coordinates onto grid
-  if (is.null(.bathy)) {
+  if (!is.null(.bathy)) {
     xy <-
       .moorings |>
       select(all_of(coords)) |>
