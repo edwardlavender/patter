@@ -90,16 +90,25 @@ spatContainsNA <- function(.x) {
 #' @rdname spat
 #' @keywords internal
 
-spatDT <- function(.x, .bathy = .x, .weights = FALSE) {
-  # Reclassify zero to NA if .x values are weights
-  if (.weights) {
-    .x <- .x |> terra::classify(cbind(0, NA))
+spatCellCoordsDT <- function(.x, .spatcell = .x) {
+  check_inherits(.x, c("SpatRaster", "SpatVector"))
+  if (inherits(.x, "SpatRaster")) {
+    # Extract cell coordinates in .x (using cell IDs from .spatcell)
+    dt <-
+      .x |>
+      terra::as.data.frame(cells = FALSE, xy = TRUE, na.rm = TRUE) |>
+      mutate(cell = terra::cellFromXY(.spatcell, cbind(.data$x, .data$y)))
+  } else if (inherits(.x, "SpatVector")) {
+    # Extract cell coordinates in .x
+    names(.spatcell) <- "layer"
+    dt <-
+      .spatcell |>
+      terra::extract(.x, cells = TRUE, ID = FALSE, xy = TRUE) |>
+      filter(!is.na(.data$layer))
   }
-  # Get data.table
-  .x |>
-    terra::as.data.frame(cells = FALSE, xy = TRUE, na.rm = TRUE) |>
-    mutate(cell_id = as.integer(terra::cellFromXY(.bathy, cbind(.data$x, .data$y)))) |>
-    select("cell_now", cell_x = "x", cell_y = "y") |>
+  dt |>
+    mutate(cell = as.integer(.data$cell)) |>
+    select(cell_id = "cell", cell_x = "x", cell_y = "y") |>
     as.data.table()
 }
 
@@ -143,4 +152,15 @@ spatIntersect.SpatVector <- function(.x) {
     int <- terra::intersect(int, .x[[2]])
   }
   int
+}
+
+#' @rdname spat
+#' @keywords internal
+
+spatIsEmpty <- function(.x) {
+  if (inherits(.x, "SpatRaster")) {
+    is.na(terra::global(.x, "min", na.rm = TRUE)[1, 1])
+  } else {
+    length(.x) == 0
+  }
 }

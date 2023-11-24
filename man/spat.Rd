@@ -3,21 +3,24 @@
 \name{spat}
 \alias{spat}
 \alias{spatContainsNA}
-\alias{spatDT}
+\alias{spatCellCoordsDT}
 \alias{spatIntersect}
 \alias{spatIntersect.SpatRaster}
 \alias{spatIntersect.SpatVector}
+\alias{spatIsEmpty}
 \title{Spatial helper: \verb{spat*} functions}
 \usage{
 spatContainsNA(.x)
 
-spatDT(.x, .bathy = .x, .weights = FALSE)
+spatCellCoordsDT(.x, .spatcell = .x)
 
 spatIntersect(.x, .value = 1, .fun = NULL)
 
 spatIntersect.SpatRaster(.x, .value, .fun)
 
 spatIntersect.SpatVector(.x)
+
+spatIsEmpty(.x)
 }
 \description{
 Spatial helper: \verb{spat*} functions
