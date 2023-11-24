@@ -67,6 +67,9 @@
     <loc>/reference/acs_setup_obs.html</loc>
   </url>
   <url>
+    <loc>/reference/call_.html</loc>
+  </url>
+  <url>
     <loc>/reference/cat_helper.html</loc>
   </url>
   <url>
@@ -136,7 +139,13 @@
     <loc>/reference/dot-acs_setup_obs_receiver_id_next.html</loc>
   </url>
   <url>
+    <loc>/reference/dot-is_lonlat.html</loc>
+  </url>
+  <url>
     <loc>/reference/dot-pf_history_dt.html</loc>
+  </url>
+  <url>
+    <loc>/reference/dot-pf_map_weights.html</loc>
   </url>
   <url>
     <loc>/reference/dot-pf_weights.html</loc>
@@ -154,6 +163,9 @@
     <loc>/reference/make_matrix_receivers.html</loc>
   </url>
   <url>
+    <loc>/reference/mktempdir.html</loc>
+  </url>
+  <url>
     <loc>/reference/normalise.html</loc>
   </url>
   <url>
@@ -164,6 +176,15 @@
   </url>
   <url>
     <loc>/reference/pf_backward.html</loc>
+  </url>
+  <url>
+    <loc>/reference/pf_backward_dens.html</loc>
+  </url>
+  <url>
+    <loc>/reference/pf_backward_internals.html</loc>
+  </url>
+  <url>
+    <loc>/reference/pf_backward_p.html</loc>
   </url>
   <url>
     <loc>/reference/pf_check.html</loc>
@@ -188,6 +209,12 @@
   </url>
   <url>
     <loc>/reference/pf_kick.html</loc>
+  </url>
+  <url>
+    <loc>/reference/pf_map_dens.html</loc>
+  </url>
+  <url>
+    <loc>/reference/pf_map_pou.html</loc>
   </url>
   <url>
     <loc>/reference/pf_path.html</loc>
@@ -226,6 +253,9 @@
     <loc>/reference/sim_detections_internals.html</loc>
   </url>
   <url>
+    <loc>/reference/sim_helpers.html</loc>
+  </url>
+  <url>
     <loc>/reference/sim_path_flux.html</loc>
   </url>
   <url>
@@ -235,7 +265,16 @@
     <loc>/reference/skill.html</loc>
   </url>
   <url>
+    <loc>/reference/spat.html</loc>
+  </url>
+  <url>
     <loc>/reference/spatIntersect.html</loc>
+  </url>
+  <url>
+    <loc>/reference/spatNormalise.html</loc>
+  </url>
+  <url>
+    <loc>/reference/spatTemplate.html</loc>
   </url>
   <url>
     <loc>/reference/unwrap_elm.html</loc>

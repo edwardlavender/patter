@@ -85,6 +85,26 @@
 
 <p>The function returns an ordered <code>list</code> of file paths.</p>
     </div>
+    <div id="see-also">
+    <h2>See also</h2>
+    <div class="dont-index">
+<ul><li><p>The PF (forward simulation) is implemented by <code><a href="pf_forward_-times.html">pf_forward_*()</a></code>:</p><ul><li><p><code><a href="pf_forward_1.html">pf_forward_1()</a></code> refines AC-branch algorithm (<code><a href="acs.html">acs()</a></code> and <code><a href="dc.html">dc()</a></code>) outputs using PF;</p></li>
+<li><p><code><a href="pf_forward_2.html">pf_forward_2()</a></code> is an integrated implementation that couples AC- and PF-branch algorithms internally;</p></li>
+</ul></li>
+<li><p>PF is supported by:</p><ul><li><p>Setup helpers, namely <code>pf_setup_files()</code>;</p></li>
+<li><p>Template movement models, namely <code><a href="pf_kick.html">pf_kick()</a></code>;</p></li>
+</ul></li>
+<li><p>The backward pass is implemented by <code><a href="pf_backward.html">pf_backward()</a></code>;</p></li>
+<li><p>Movement paths are built from PF outputs via <code><a href="pf_path.html">pf_path()</a></code> functions:</p><ul><li><p><code><a href="pf_path.html">pf_path()</a></code> reconstructs paths;</p></li>
+<li><p><code><a href="pf_path_pivot.html">pf_path_pivot()</a></code> supports path reconstruction;</p></li>
+</ul></li>
+<li><p>To reconstruct maps of space use, see:</p><ul><li><p><code><a href="pf_coords.html">pf_coords()</a></code> to extract particle coordinates;</p></li>
+<li><p><code><a href="pf_map_pou.html">pf_map_pou()</a></code> for probability-of-use maps;</p></li>
+<li><p><code><a href="pf_map_dens.html">pf_map_dens()</a></code> for smooth utilisation distributions;</p></li>
+<li><p><code><a href="get_hr.html">get_hr()</a></code> for home range estimates;</p></li>
+</ul></li>
+</ul></div>
+    </div>
     <div id="author">
     <h2>Author</h2>
     <p>Edward Lavender</p>
@@ -104,7 +124,7 @@
 <span class="r-in"><span>      .detection_overlaps <span class="op">=</span> <span class="fu"><a href="datasets-algorithms.html">dat_overlaps</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>      .detection_kernels <span class="op">=</span> <span class="fu"><a href="datasets-algorithms.html">dat_kernels</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>      .write_record <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="va">ac_folder</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs() called (@ 2023-11-12 16:31:06.751129)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs() called (@ 2023-11-24 20:46:55.160022)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 1: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Detection 1: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Defining location given data... </span>
@@ -195,7 +215,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Defining present... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Updating record ... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Moving on... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs() call ended (@ 2023-11-12 16:31:07.319652). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs() call ended (@ 2023-11-24 20:46:55.609948). </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># List files for pf_forward_*()</span></span></span>
 <span class="r-in"><span><span class="va">files</span> <span class="op">&lt;-</span> <span class="fu">pf_setup_files</span><span class="op">(</span><span class="va">ac_folder</span><span class="op">)</span></span></span>
@@ -208,7 +228,7 @@
 <span class="r-in"><span>                        .kick <span class="op">=</span> <span class="va">pf_kick</span>,</span></span>
 <span class="r-in"><span>                        .bathy <span class="op">=</span> <span class="va">gebco</span>,</span></span>
 <span class="r-in"><span>                        .write_history <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sink <span class="op">=</span> <span class="va">pff_folder</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_forward_1() called (@ 2023-11-12 16:31:07.325075)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_forward_1() called (@ 2023-11-24 20:46:55.615143)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 1: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Reading record... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Sampling starting particles... </span>
@@ -266,7 +286,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Reading record... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Extracting particle weights... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Resampling particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_forward_1() call ended (@ 2023-11-12 16:31:07.418897). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_forward_1() call ended (@ 2023-11-24 20:46:55.697462). </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># List files for pf_backward()</span></span></span>
 <span class="r-in"><span><span class="va">files</span> <span class="op">&lt;-</span> <span class="fu">pf_setup_files</span><span class="op">(</span><span class="va">pff_folder</span><span class="op">)</span></span></span>
@@ -274,9 +294,11 @@
 <span class="r-in"><span><span class="co"># Quick implementation of pf_backward()</span></span></span>
 <span class="r-in"><span><span class="va">pfb_folder</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">con</span>, <span class="st">"patter"</span>, <span class="st">"pf"</span>, <span class="st">"backward"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">pfb_folder</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward' already exists</span>
 <span class="r-in"><span><span class="va">out_pfb</span> <span class="op">&lt;-</span> <span class="fu"><a href="pf_backward.html">pf_backward</a></span><span class="op">(</span><span class="va">files</span>,</span></span>
 <span class="r-in"><span>                       .write_history <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sink <span class="op">=</span> <span class="va">pfb_folder</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_backward() called (@ 2023-11-12 16:31:07.423581)... </span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`.write_history$sink` ('/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward') is not an empty directory.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_backward() called (@ 2023-11-24 20:46:55.7019)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 10: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Reading `.history[[10]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Reading `.history[[9]]`... </span>
@@ -286,100 +308,220 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[8]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 100 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 18 dead ends (82 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 82 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 14 dead ends (86 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 86 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[9]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 8: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Reading `.history[[7]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[7]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 82 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 51 dead ends (49 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 49 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 86 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 39 dead ends (61 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 61 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[8]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 7: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Reading `.history[[6]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[6]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 49 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 46 dead ends (54 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 54 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 61 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 27 dead ends (73 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 73 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[7]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 6: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Reading `.history[[5]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[5]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 54 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 26 dead ends (74 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 74 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 73 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 21 dead ends (79 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 79 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[6]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 5: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Reading `.history[[4]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[4]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 74 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 47 dead ends (53 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 53 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 79 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 41 dead ends (59 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 59 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[5]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 4: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Reading `.history[[3]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[3]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 53 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 42 dead ends (58 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 58 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 59 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 39 dead ends (61 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 61 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[4]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 3: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Reading `.history[[2]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[2]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 58 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 32 dead ends (68 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 68 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 61 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 29 dead ends (71 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 71 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[3]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 2: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Reading `.history[[1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Cleaning `.history[[1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 68 rows in `.history[[t]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 51 dead ends (49 remain)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 49 rows in `.history[[t - 1]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Input: 71 rows in `.history[[t]]`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Filtering 42 dead ends (58 remain)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Output: 58 rows in `.history[[t - 1]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[2]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 1: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[1]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_backward() call ended (@ 2023-11-12 16:31:07.468016). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_backward() call ended (@ 2023-11-24 20:46:55.736344). </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># List files from pf_backward()</span></span></span>
 <span class="r-in"><span><span class="fu">pf_setup_files</span><span class="op">(</span><span class="va">pfb_folder</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpNVUN6P/patter/pf/backward/1.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/1.parquet"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpNVUN6P/patter/pf/backward/2.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/2.parquet"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[3]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpNVUN6P/patter/pf/backward/3.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/3.parquet"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[4]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpNVUN6P/patter/pf/backward/4.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/4.parquet"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[5]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpNVUN6P/patter/pf/backward/5.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/5.parquet"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[6]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpNVUN6P/patter/pf/backward/6.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/6.parquet"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[7]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpNVUN6P/patter/pf/backward/7.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/7.parquet"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[8]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpNVUN6P/patter/pf/backward/8.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/8.parquet"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[9]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpNVUN6P/patter/pf/backward/9.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/9.parquet"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[10]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpNVUN6P/patter/pf/backward/10.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/10.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[11]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/11.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[12]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/12.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[13]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/13.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[14]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/14.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[15]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/15.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[16]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/16.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[17]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/17.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[18]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/18.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[19]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/19.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[20]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/20.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[21]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/21.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[22]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/22.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[23]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/23.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[24]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/24.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[25]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/25.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[26]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/26.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[27]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/27.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[28]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/28.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[29]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/29.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[30]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/30.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[31]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/31.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[32]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/32.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[33]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/33.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[34]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/34.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[35]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/35.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[36]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/36.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[37]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/37.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[38]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/38.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[39]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/39.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[40]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/40.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[41]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/41.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[42]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/42.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[43]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/43.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[44]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/44.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[45]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/45.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[46]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/46.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[47]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/47.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[48]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/48.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[49]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/49.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [[50]]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpT0Pq16/patter/pf/backward/50.parquet"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Clean up</span></span></span>

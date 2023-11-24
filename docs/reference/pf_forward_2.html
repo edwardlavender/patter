@@ -127,7 +127,7 @@
 <dd><p>(optional) AC* arguments. These arguments are used to implement the AC* algorithm on the fly.</p><ul><li><p><code>moorings</code> is a <code><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines receiver deployments. This must contain the following columns:</p><ul><li><p><code>receiver_id</code>---an <code>integer</code> vector of receiver IDs;</p></li>
 <li><p><code>receiver_easting</code> and <code>receiver_northing</code> (if <code>.lonlat = FALSE</code>) or <code>receiver_lon</code> and <code>receiver_lat</code> (if<code>.lonlat = FALSE</code>) ---<code>numeric</code> vectors that define receiver coordinates;</p></li>
 </ul></li>
-<li><p><code>detection_overlaps</code> is a named <code>list</code> of detection container overlaps (see <code><a href="acs.html">acs()</a></code>).</p></li>
+<li><p><code>detection_overlaps</code> is a <code>list</code> of detection container overlaps (see <code><a href="acs.html">acs()</a></code>).</p></li>
 <li><p><code>detection_kernels</code> is a named <code>list</code> of detection kernels (see <code><a href="acs.html">acs()</a></code>).</p></li>
 </ul><p><code>.moorings</code>, <code>.detection_overlaps</code> and <code>.detection_gaps</code> can be <code>NULL</code> if the AC algorithm is not implemented.</p></dd>
 
@@ -175,6 +175,26 @@
 <li><p>Steps 1-4 are repeated until the end of the time series.</p></li>
 </ol><p>The essential difference between <code><a href="pf_forward_1.html">pf_forward_1()</a></code> and <code>pf_forward_2()</code>  is that former is part of a coupled workflow in which (a) an AC* algorithm is used to calculate weights across the entire grid and (b) the weights are provided as an argument to <code><a href="pf_forward_1.html">pf_forward_1()</a></code> which simulates movement trajectories, whereas the is an integrated implementation in which  weights are calculated on the fly. In both cases, AC* weights are defined based on pre-computed <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code>s (namely <code>.detection_kernels</code>) and movements are represented across the same grid.</p>
     </div>
+    <div id="see-also">
+    <h2>See also</h2>
+    <div class="dont-index">
+<ul><li><p>The PF (forward simulation) is implemented by <code><a href="pf_forward_-times.html">pf_forward_*()</a></code>:</p><ul><li><p><code><a href="pf_forward_1.html">pf_forward_1()</a></code> refines AC-branch algorithm (<code><a href="acs.html">acs()</a></code> and <code><a href="dc.html">dc()</a></code>) outputs using PF;</p></li>
+<li><p><code>pf_forward_2()</code> is an integrated implementation that couples AC- and PF-branch algorithms internally;</p></li>
+</ul></li>
+<li><p>PF is supported by:</p><ul><li><p>Setup helpers, namely <code><a href="pf_setup_files.html">pf_setup_files()</a></code>;</p></li>
+<li><p>Template movement models, namely <code><a href="pf_kick.html">pf_kick()</a></code>;</p></li>
+</ul></li>
+<li><p>The backward pass is implemented by <code><a href="pf_backward.html">pf_backward()</a></code>;</p></li>
+<li><p>Movement paths are built from PF outputs via <code><a href="pf_path.html">pf_path()</a></code> functions:</p><ul><li><p><code><a href="pf_path.html">pf_path()</a></code> reconstructs paths;</p></li>
+<li><p><code><a href="pf_path_pivot.html">pf_path_pivot()</a></code> supports path reconstruction;</p></li>
+</ul></li>
+<li><p>To reconstruct maps of space use, see:</p><ul><li><p><code><a href="pf_coords.html">pf_coords()</a></code> to extract particle coordinates;</p></li>
+<li><p><code><a href="pf_map_pou.html">pf_map_pou()</a></code> for probability-of-use maps;</p></li>
+<li><p><code><a href="pf_map_dens.html">pf_map_dens()</a></code> for smooth utilisation distributions;</p></li>
+<li><p><code><a href="get_hr.html">get_hr()</a></code> for home range estimates;</p></li>
+</ul></li>
+</ul></div>
+    </div>
     <div id="author">
     <h2>Author</h2>
     <p>Edward Lavender</p>
@@ -203,7 +223,7 @@
 <span class="r-in"><span>                        .detection_kernels <span class="op">=</span> <span class="va">kernels</span>,</span></span>
 <span class="r-in"><span>                        .kick <span class="op">=</span> <span class="va">pf_kick</span>,</span></span>
 <span class="r-in"><span>                        .save_history <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_forward_2() called (@ 2023-11-12 16:31:01.147156)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_forward_2() called (@ 2023-11-24 20:46:45.640059)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up simulation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Defining filter(s)... </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`.moorings` coordinates coerced onto `.bathy` grid.</span>
@@ -632,7 +652,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Defining location given data... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... (Re-)sampling particles... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Kicking particles into proposal location(s)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_forward_2() call ended (@ 2023-11-12 16:31:01.704063). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_forward_2() call ended (@ 2023-11-24 20:46:46.179255). </span>
 <span class="r-in"><span><span class="co"># The function returns a list as `pf_forward_1()`:</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">out_pff</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         Length Class  Mode</span>
@@ -659,7 +679,7 @@
 <span class="r-in"><span>                        .kick <span class="op">=</span> <span class="va">pf_kick</span>,</span></span>
 <span class="r-in"><span>                        .update_ac <span class="op">=</span> <span class="va">update_ac</span>,</span></span>
 <span class="r-in"><span>                        .save_history <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_forward_2() called (@ 2023-11-12 16:31:01.706153)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_forward_2() called (@ 2023-11-24 20:46:46.181395)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up simulation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Defining filter(s)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Defining time indicators... </span>
@@ -1014,7 +1034,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Calculating weights... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... (Re-)sampling particles... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Kicking particles into proposal location(s)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_forward_2() call ended (@ 2023-11-12 16:31:02.103627). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_forward_2() call ended (@ 2023-11-24 20:46:46.498653). </span>
 <span class="r-in"><span><span class="co"># Extract coordinates &amp; validate implementation of depth-error model</span></span></span>
 <span class="r-in"><span><span class="va">out_pfxy</span> <span class="op">&lt;-</span> <span class="fu"><a href="pf_coords.html">pf_coords</a></span><span class="op">(</span><span class="va">out_pff</span><span class="op">$</span><span class="va">history</span>, <span class="va">gebco</span>,</span></span>
 <span class="r-in"><span>                      .obs <span class="op">=</span> <span class="va">obs</span>, .cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"depth_shallow"</span>, <span class="st">"depth_deep"</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -1031,7 +1051,7 @@
 <span class="r-in"><span>                        .update_ac <span class="op">=</span> <span class="va">update_ac</span>,</span></span>
 <span class="r-in"><span>                        .kick <span class="op">=</span> <span class="va">pf_kick</span>,</span></span>
 <span class="r-in"><span>                        .save_history <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_forward_2() called (@ 2023-11-12 16:31:02.109327)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_forward_2() called (@ 2023-11-24 20:46:46.506069)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up simulation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Defining filter(s)... </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`.moorings` coordinates coerced onto `.bathy` grid.</span>
@@ -1460,7 +1480,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... * Defining location given data... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... (Re-)sampling particles... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Kicking particles into proposal location(s)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_forward_2() call ended (@ 2023-11-12 16:31:02.6809). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_forward_2() call ended (@ 2023-11-24 20:46:47.012471). </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (4): Write history to file</span></span></span>
 <span class="r-in"><span><span class="co"># See `pf_forward_1()`</span></span></span>

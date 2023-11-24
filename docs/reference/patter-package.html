@@ -79,7 +79,6 @@
 <li><p><code><a href="datasets-mefs.html">dat_archival</a></code> for archival (depth) time series;</p></li>
 <li><p><code><a href="datasets-mefs.html">dat_gebco()</a></code> for a bathymetry grid;</p></li>
 </ul><p>For example algorithm outputs (<code><a href="datasets-algorithms.html">datasets-algorithms</a></code>), see:</p><ul><li><p><code><a href="datasets-algorithms.html">dat_obs()</a></code> for an example output dataset from <code><a href="acs_setup_obs.html">acs_setup_obs()</a></code>;</p></li>
-<li><p><code><a href="datasets-algorithms.html">dat_containers()</a></code> for an example output from <code><a href="acs_setup_detection_containers.html">acs_setup_detection_containers()</a></code>;</p></li>
 <li><p><code><a href="datasets-algorithms.html">dat_overlaps()</a></code> for an example output from <code><a href="acs_setup_detection_overlaps.html">acs_setup_detection_overlaps()</a></code>;</p></li>
 <li><p><code><a href="datasets-algorithms.html">dat_kernels()</a></code> for an example output from <code><a href="acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code>;</p></li>
 <li><p><code><a href="datasets-algorithms.html">dat_ac()</a></code> for an example output from <code><a href="acs.html">acs()</a></code>;</p></li>
@@ -90,8 +89,8 @@
     <div id="simulation">
     <h2>Simulation</h2>
     <p>To simulate passive acoustic telemetry data, see:</p><ul><li><p><code><a href="sim_array.html">sim_array()</a></code> to simulate an acoustic array;</p></li>
-<li><p><code><a href="sim_path_walk.html">sim_path_walk()</a></code> to simulate a movement path from a walk model, with the help of:</p><ul><li><p><code><a href="sim_path_walk.html">rtruncgamma()</a></code> and <code><a href="sim_path_walk.html">sim_length()</a></code> to simulate step lengths;</p></li>
-<li><p><code><a href="sim_path_walk.html">rwn()</a></code>, <code><a href="sim_path_walk.html">sim_angle_rw()</a></code> and <code><a href="sim_path_walk.html">sim_angle_crw()</a></code> to simulate turning angles;</p></li>
+<li><p><code><a href="sim_path_walk.html">sim_path_walk()</a></code> to simulate a movement path from a walk model, with the help of:</p><ul><li><p><code><a href="sim_helpers.html">rtruncgamma()</a></code> and <code><a href="sim_helpers.html">rlen()</a></code> to simulate step lengths;</p></li>
+<li><p><code><a href="sim_helpers.html">rwn()</a></code>, <code><a href="sim_helpers.html">rangrw()</a></code> and <code><a href="sim_helpers.html">rangcrw()</a></code> to simulate turning angles;</p></li>
 </ul></li>
 <li><p><code><a href="sim_detections.html">sim_detections()</a></code> to simulate detections at receivers, with the help of:</p><ul><li><p><code><a href="sim_detections.html">calc_detection_pr_logistic()</a></code> and <code><a href="sim_detections.html">calc_detection_pr()</a></code>, which represent example detection probability models;</p></li>
 </ul></li>
@@ -117,7 +116,6 @@
 </ul><p>To implement the depth-contour (DC) algorithm, use:</p><ul><li><p><code><a href="dc_setup_model.html">dc_setup_model()</a></code> for an example DC model;</p></li>
 <li><p><code><a href="dc.html">dc()</a></code> to implement the algorithm;</p></li>
 </ul><p>To implement the acoustic-centroid* (AC*) algorithm(s) (e.g., AC and ACDC), use:</p><ul><li><p><code><a href="acs_setup_obs.html">acs_setup_obs()</a></code> to set up observations;</p></li>
-<li><p><code><a href="acs_setup_detection_containers.html">acs_setup_detection_containers()</a></code> to set up detection containers;</p></li>
 <li><p><code><a href="acs_setup_detection_overlaps.html">acs_setup_detection_overlaps()</a></code> to set up detection overlaps;</p></li>
 <li><p><code><a href="acs_setup_detection_pr.html">acs_setup_detection_pr()</a></code> to define a detection probability model;</p></li>
 <li><p><code><a href="acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code> to set up detection kernels;</p></li>
@@ -130,8 +128,8 @@
 <li><p><code><a href="pf_backward.html">pf_backward()</a></code> to implement the backward pass;</p></li>
 <li><p><code><a href="pf_coords.html">pf_coords()</a></code> to collate particle coordinates;</p></li>
 <li><p><code><a href="pf_path.html">pf_path()</a></code> (and <code><a href="pf_path_pivot.html">pf_path_pivot()</a></code>) to reconstruct movement paths;</p></li>
-<li><p><code><a href="pf_pou.html">pf_pou()</a></code> to map probability-of-use;</p></li>
-<li><p><code><a href="pf_dens.html">pf_dens()</a></code> to create smooth maps;</p></li>
+<li><p><code><a href="pf_map_pou.html">pf_map_pou()</a></code> to map probability-of-use;</p></li>
+<li><p><code><a href="pf_map_dens.html">pf_map_dens()</a></code> to create smooth maps;</p></li>
 </ul><p>For home ranges, use:</p><ul><li><p><code><a href="get_hr.html">get_hr_prop()</a></code> for a custom range;</p></li>
 <li><p><code><a href="get_hr.html">get_hr_core()</a></code> for the 'core' range;</p></li>
 <li><p><code><a href="get_hr.html">get_hr_home()</a></code> for the 'home' range;</p></li>
@@ -145,9 +143,9 @@
 <li><p><code><a href="dist_btw_cells.html">dist_btw_cells()</a></code> to calculate distances between cells on a <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code>;</p></li>
 <li><p><code><a href="degrees.html">degrees()</a></code> to create circular angles;</p></li>
 </ul></li>
-<li><p><code>terra</code> helpers. See:</p><ul><li><p><code><a href="rast_template.html">rast_template()</a></code> to create a template <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code>;</p></li>
-<li><p><code><a href="normalise.html">normalise()</a></code> to normalise a <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code>;</p></li>
-<li><p><code><a href="pf_dens.html">as.im.SpatRaster</a></code> and <code><a href="pf_dens.html">as.owin.SpatRaster</a></code> for interfaces to <code>spatstat</code> function(s);</p></li>
+<li><p><code>terra</code> helpers. See:</p><ul><li><p><code><a href="spatTemplate.html">spatTemplate()</a></code> to create a template <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code>;</p></li>
+<li><p><code><a href="spatNormalise.html">spatNormalise()</a></code> to normalise a <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code>;</p></li>
+<li><p><code><a href="pf_map_dens.html">as.im.SpatRaster</a></code> and <code><a href="pf_map_dens.html">as.owin.SpatRaster</a></code> for interfaces to <code>spatstat</code> function(s);</p></li>
 </ul></li>
 <li><p>Parallelisation. See:</p><ul><li><p><code><a href="cl.html">cl_lapply()</a></code> and associated <code>cl_*() functions for parallelisation routines</code>;</p></li>
 </ul></li>

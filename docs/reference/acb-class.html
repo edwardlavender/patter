@@ -76,6 +76,19 @@
 </ul></li>
 </ul><p>To write/read an <code>acb</code> object from file, the <code>record</code> <code>SpatRaster</code>s need to be wrapped/unwrapped (via <code><a href="https://rdrr.io/pkg/terra/man/wrap.html" class="external-link">terra::wrap()</a></code> and <code><a href="https://rdrr.io/pkg/terra/man/wrap.html" class="external-link">terra::unwrap()</a></code>). Helper functions may be added to do this in future, if requested.</p>
     </div>
+    <div id="see-also">
+    <h2>See also</h2>
+    <div class="dont-index"><p>AC-branch algorithms in <code><a href="patter-package.html">patter</a></code> include the AC* algorithm (<code><a href="acs.html">acs()</a></code>) and the DC algorithm (<code><a href="dc.html">dc()</a></code>).</p>
+<p>To implement the AC* algorithm, use:</p><ol><li><p><code><a href="acs_setup_obs.html">acs_setup_obs()</a></code> to set up observations;</p></li>
+<li><p><code><a href="acs_setup_detection_overlaps.html">acs_setup_detection_overlaps()</a></code> to identify receiver overlaps (used in detection probability calculations);</p></li>
+<li><p><code><a href="acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code> and <code><a href="acs_setup_detection_pr.html">acs_setup_detection_pr()</a></code> to define detection probability kernels;</p></li>
+<li><p><code><a href="acs.html">acs()</a></code> to implement the AC algorithm;</p></li>
+</ol><p>To implement the DC algorithm, use:</p><ol><li><p><code><a href="dc.html">dc()</a></code> to implement the algorithm;</p></li>
+</ol><p>AC-branch algorithms return an <code>acb</code> object.</p>
+<p>AC-branch algorithms are typically followed by particle filtering to reconstruct movement paths and refine maps of space use (see <code>pf_*()</code> functions).</p><ol><li><p>To begin, see <code><a href="pf_forward_1.html">pf_forward_1()</a></code>;</p></li>
+<li><p>To implement AC- and PF-branch algorithms simultaneously, see <code><a href="pf_forward_2.html">pf_forward_2()</a></code>;</p></li>
+</ol></div>
+    </div>
     <div id="author">
     <h2>Author</h2>
     <p>Edward Lavender</p>

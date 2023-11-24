@@ -66,23 +66,21 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">acs_setup_detection_overlaps</span><span class="op">(</span><span class="va">.containers</span>, <span class="va">.moorings</span>, .services <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">acs_setup_detection_overlaps</span><span class="op">(</span><span class="va">.moorings</span>, .services <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="source">
     <h2>Source</h2>
-    <p>This function is based on the <a href="https://edwardlavender.github.io/flapper/reference/get_detection_containers_overlap.html" class="external-link"><code>get_detection_containers_overlaps</code></a> function in the <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a> package.</p>
+    <p>This function supersedes the <a href="https://edwardlavender.github.io/flapper/reference/get_detection_containers_overlap.html" class="external-link"><code>get_detection_containers_overlaps</code></a> function in the <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a> package.</p>
     </div>
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>.containers</dt>
-<dd><p>A named <code>list</code> of <code>SpatRaster</code>s that represent receiver detection containers, from <code><a href="acs_setup_detection_containers.html">acs_setup_detection_containers()</a></code>.</p></dd>
-
-
-<dt>.moorings</dt>
+    <dl><dt>.moorings</dt>
 <dd><p>A <code><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines receiver deployments and associated information (see <code><a href="datasets-mefs.html">dat_moorings</a></code> for an example). At a minimum, this must contain the following columns:</p><ul><li><p><code>receiver_id</code>---an <code>integer</code> vector of receiver IDs;</p></li>
+<li><p><code>receiver_easting</code> and <code>receiver_northing</code> or <code>receiver_lon</code> and <code>receiver_lat</code>---doubles that define receiver coordinates on a planar coordinate reference system or in longitude/latitude;</p></li>
 <li><p><code>receiver_start</code>---a <code>Date</code> vector that defines receiver deployment dates;</p></li>
 <li><p><code>receiver_end</code>---a <code>Date</code> vector that defines receiver retrieval dates;</p></li>
+<li><p><code>receiver_range</code>---a double that defines the detection range (m) for each receiver;</p></li>
 </ul></dd>
 
 
@@ -97,12 +95,25 @@
     <h2>Value</h2>
     
 
-<p>The function returns a named <code>list</code> with two elements:</p><ul><li><p><strong><code>overlap_by_receiver</code></strong> is <code>list</code>, with one element for all integers from <code>1:max(.moorings$receiver_id)</code>. Any elements that do not correspond to receivers contain a <code>NULL</code> element. List elements that correspond to receivers contain a <code>data.frame</code> that defines, for each day over the deployment period (defined in <code>timestamp</code>) of that receiver (defined in <code>receiver_id</code>), whether (1) or not (0) that receiver overlapped in space with every other receiver (defined in the remaining columns by their receiver IDs).</p></li>
-<li><p><strong><code>overlap_by_date</code></strong> is a named <code>list</code>, with one element for each <code>Date</code> from the start until the end of the study <code>(min(.moorings$receiver_start_date):max(.moorings$receiver_end_date))</code>, that records an integer vector of all receivers with overlapping containers on that date. In this vector, each receiver overlaps with at least one other receiver (but not every receiver will necessarily overlap with every other receiver).</p></li>
-</ul></div>
+<p>The function returns a nested <code>list</code>, with one element for all integers from <code>1:max(.moorings$receiver_id)</code>. Any elements that do not correspond to receivers contain a <code>NULL</code> element. List elements that correspond to receivers contain a <code>NULL</code> or a <code>list</code> that defines, for each deployment date with overlapping receiver(s), a vector of overlapping receiver(s).</p>
+    </div>
     <div id="details">
     <h2>Details</h2>
     <p>In the AC* algorithms, at the moment of detection, the set of possible locations depends on the receiver(s) at which an individual is, and is not, detected. The outputs of this function are used to restrict the probability calculations to the set of receivers that overlap with the receiver(s) at which an individual is detected for improved efficiency.</p>
+<p>At the time of writing (November 2023), the function permits receiver ranges to differ between receivers, but assumes they are constant in time.</p>
+    </div>
+    <div id="see-also">
+    <h2>See also</h2>
+    <div class="dont-index"><p>AC-branch algorithms in <code><a href="patter-package.html">patter</a></code> include the AC* algorithm (<code><a href="acs.html">acs()</a></code>) and the DC algorithm (<code><a href="dc.html">dc()</a></code>).</p>
+<p>To implement the AC* algorithm, use:</p><ol><li><p><code><a href="acs_setup_obs.html">acs_setup_obs()</a></code> to set up observations;</p></li>
+<li><p><code>acs_setup_detection_overlaps()</code> to identify receiver overlaps (used in detection probability calculations);</p></li>
+<li><p><code><a href="acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code> and <code><a href="acs_setup_detection_pr.html">acs_setup_detection_pr()</a></code> to define detection probability kernels;</p></li>
+<li><p><code><a href="acs.html">acs()</a></code> to implement the AC algorithm;</p></li>
+</ol><p>To implement the DC algorithm, use:</p><ol><li><p><code><a href="dc.html">dc()</a></code> to implement the algorithm;</p></li>
+</ol><p>AC-branch algorithms return an <code><a href="acb-class.html">acb</a></code> object.</p>
+<p>AC-branch algorithms are typically followed by particle filtering to reconstruct movement paths and refine maps of space use (see <code>pf_*()</code> functions).</p><ol><li><p>To begin, see <code><a href="pf_forward_1.html">pf_forward_1()</a></code>;</p></li>
+<li><p>To implement AC- and PF-branch algorithms simultaneously, see <code><a href="pf_forward_2.html">pf_forward_2()</a></code>;</p></li>
+</ol></div>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -112,16 +123,67 @@
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#### Example (1): Basic implementation</span></span></span>
-<span class="r-in"><span><span class="co"># Define detection containers</span></span></span>
-<span class="r-in"><span><span class="co"># containers &lt;- acs_setup_detection_containers(dat_gebco(), dat_moorings)</span></span></span>
-<span class="r-in"><span><span class="co"># (For speed, we use a pre-computed dataset):</span></span></span>
-<span class="r-in"><span><span class="va">containers</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_containers</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># Identify receiver overlaps</span></span></span>
-<span class="r-in"><span><span class="va">overlaps</span> <span class="op">&lt;-</span> <span class="fu">acs_setup_detection_overlaps</span><span class="op">(</span><span class="va">containers</span>, <span class="va">dat_moorings</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">overlaps</span> <span class="op">&lt;-</span> <span class="fu">acs_setup_detection_overlaps</span><span class="op">(</span><span class="va">dat_moorings</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>UTM coordinates used (both UTM and lon/lat coordinates detected).</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">overlaps</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  Length Class  Mode</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> list_by_receiver  57    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> list_by_date     508    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       Length Class  Mode</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,]   0    -none- NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,]   0    -none- NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,] 225    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,] 371    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,]   0    -none- NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,]   0    -none- NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,] 109    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,]   0    -none- NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,] 225    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10,]   0    -none- NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11,]   0    -none- NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [12,] 371    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13,]   0    -none- NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [14,] 371    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15,]   0    -none- NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16,]   0    -none- NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [17,]   0    -none- NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [18,] 261    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19,]   0    -none- NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [20,] 370    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [21,] 427    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [22,]   0    -none- NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [23,] 206    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [24,] 261    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25,]   0    -none- NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [26,] 230    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [27,]   0    -none- NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [28,]   0    -none- NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [29,]   0    -none- NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [30,] 245    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [31,] 262    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [32,]   0    -none- NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [33,] 144    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [34,]   0    -none- NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [35,] 116    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [36,]   0    -none- NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [37,] 115    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [38,] 116    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [39,]   0    -none- NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [40,] 109    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [41,] 165    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [42,]   0    -none- NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [43,] 165    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [44,]  79    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [45,] 165    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [46,] 165    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [47,] 165    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [48,] 165    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [49,] 165    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [50,] 165    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [51,] 165    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [52,]  77    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [53,]  77    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [54,]  77    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [55,]  75    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [56,]  75    -none- list</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [57,]  75    -none- list</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

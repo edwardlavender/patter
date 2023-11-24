@@ -132,7 +132,7 @@ individuals spend near coastline and how many ‘problematic’ peninsulas
 or islands do you have? If individuals spend most of their time away
 from coastline, Euclidean distances may be a good approximation of
 swimming distances, even though they have the potential to differ. You
-can use the <code>flapper::lcp_comp()</code> function to evaluate this.
+can use the <code><a href="https://edwardlavender.github.io/flapper/reference/lcp_comp.html" class="external-link">flapper::lcp_comp()</a></code> function to evaluate this.
 Simulations can also be used to evaluate the extent to which a
 Euclidean-distances approximation is sufficient: in your study system,
 simulate the movement trajectory of an individual, detections and
@@ -140,7 +140,7 @@ associated observations; implement the algorithm(s) using Euclidean
 distances; and assess performance.</p></li>
 <li><p><strong>Model-based approximation.</strong> Model-based
 approximation of swimming distances is a computationally efficient
-option (Lavender et al., 2023). Use the <code>flapper::lcp_comp()</code>
+option (Lavender et al., 2023). Use the <code><a href="https://edwardlavender.github.io/flapper/reference/lcp_comp.html" class="external-link">flapper::lcp_comp()</a></code>
 function to evaluate the relationship between Euclidean and swimming
 distances. In the forward simulation, you can simulate Euclidean step
 lengths as usual and then use a regression model to downsize simulated
@@ -150,7 +150,7 @@ approach can work well for benthic species, but may be less accurate in
 places with movement barriers (e.g., peninsulas) where the relationship
 between Euclidean and swimming distances can be more variable.</p></li>
 <li><p><strong>Temporal resolution.</strong> Using
-<code>flapper::lcp_comp()</code> as a guide, consider adjusting the
+<code><a href="https://edwardlavender.github.io/flapper/reference/lcp_comp.html" class="external-link">flapper::lcp_comp()</a></code> as a guide, consider adjusting the
 temporal resolution of the analysis. Animals can move less far in
 shorter time steps and at shorter distances Euclidean and swimming
 distances become more similar. Some internal function improvements are

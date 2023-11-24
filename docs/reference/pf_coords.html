@@ -57,7 +57,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>PF: particle coordinates</h1>
-    <small class="dont-index">Source: <a href="https://github.com/edwardlavender/patter/blob/HEAD/R/pf-analysis.R" class="external-link"><code>R/pf-analysis.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/edwardlavender/patter/blob/HEAD/R/pf_map.R" class="external-link"><code>R/pf_map.R</code></a></small>
     <div class="hidden name"><code>pf_coords.Rd</code></div>
     </div>
 
@@ -98,6 +98,26 @@
     <h2>Details</h2>
     <p>This function is not memory safe.</p>
     </div>
+    <div id="see-also">
+    <h2>See also</h2>
+    <div class="dont-index">
+<ul><li><p>The PF (forward simulation) is implemented by <code><a href="pf_forward_-times.html">pf_forward_*()</a></code>:</p><ul><li><p><code><a href="pf_forward_1.html">pf_forward_1()</a></code> refines AC-branch algorithm (<code><a href="acs.html">acs()</a></code> and <code><a href="dc.html">dc()</a></code>) outputs using PF;</p></li>
+<li><p><code><a href="pf_forward_2.html">pf_forward_2()</a></code> is an integrated implementation that couples AC- and PF-branch algorithms internally;</p></li>
+</ul></li>
+<li><p>PF is supported by:</p><ul><li><p>Setup helpers, namely <code><a href="pf_setup_files.html">pf_setup_files()</a></code>;</p></li>
+<li><p>Template movement models, namely <code><a href="pf_kick.html">pf_kick()</a></code>;</p></li>
+</ul></li>
+<li><p>The backward pass is implemented by <code><a href="pf_backward.html">pf_backward()</a></code>;</p></li>
+<li><p>Movement paths are built from PF outputs via <code><a href="pf_path.html">pf_path()</a></code> functions:</p><ul><li><p><code><a href="pf_path.html">pf_path()</a></code> reconstructs paths;</p></li>
+<li><p><code><a href="pf_path_pivot.html">pf_path_pivot()</a></code> supports path reconstruction;</p></li>
+</ul></li>
+<li><p>To reconstruct maps of space use, see:</p><ul><li><p><code>pf_coords()</code> to extract particle coordinates;</p></li>
+<li><p><code><a href="pf_map_pou.html">pf_map_pou()</a></code> for probability-of-use maps;</p></li>
+<li><p><code><a href="pf_map_dens.html">pf_map_dens()</a></code> for smooth utilisation distributions;</p></li>
+<li><p><code><a href="get_hr.html">get_hr()</a></code> for home range estimates;</p></li>
+</ul></li>
+</ul></div>
+    </div>
     <div id="author">
     <h2>Author</h2>
     <p>Edward Lavender</p>
@@ -108,17 +128,17 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_pfb</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">pf_coords</span><span class="op">(</span><span class="va">p</span><span class="op">$</span><span class="va">history</span>, <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        timestep cell_id   cell_x  cell_y    cell_z</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     1:        1   37759 709342.1 6253207  56.53801</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     2:        1   37189 709342.1 6253507  73.44244</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     3:        1   37379 709342.1 6253407  65.31673</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     4:        1   37186 709042.1 6253507 108.30474</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     5:        1   36997 709142.1 6253607 105.22495</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     1:        1   37376 709042.1 6253407  99.90396</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     2:        1   37757 709142.1 6253207  73.27666</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     3:        1   37568 709242.1 6253307  68.53316</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     4:        1   39089 709342.1 6252507  40.22162</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     5:        1   37564 708842.1 6253307 113.02628</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    ---                                            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44608:       50   37752 708642.1 6253207 119.76311</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44609:       50   39273 708742.1 6252407  46.82224</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44610:       50   39085 708942.1 6252507  46.85584</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44611:       50   38321 708542.1 6252907  99.42202</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44612:       50   39083 708742.1 6252507  53.04935</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 44408:       50   38702 708642.1 6252707  74.05189</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 44409:       50   38890 708442.1 6252607  74.70188</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 44410:       50   38703 708742.1 6252707  68.56325</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 44411:       50   38135 708942.1 6253007  74.56544</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 44412:       50   38701 708542.1 6252707  79.41030</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

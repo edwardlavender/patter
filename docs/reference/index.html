@@ -70,11 +70,8 @@
       </tr><tr><td>
           <p><code><a href="acs.html">acs()</a></code> </p>
         </td>
-        <td><p>AC* algorithms</p></td>
-      </tr><tr><td>
-          <p><code><a href="acs_setup_detection_containers.html">acs_setup_detection_containers()</a></code> </p>
-        </td>
-        <td><p>AC* set up: define detection containers</p></td>
+        <td><p>AC* algorithms
+<a href="https://lifecycle.r-lib.org/articles/stages.html#superseded" class="external-link"><img src="figures/lifecycle-superseded.svg" alt="[Superseded]"></a></p></td>
       </tr><tr><td>
           <p><code><a href="acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code> </p>
         </td>
@@ -100,7 +97,7 @@
         </td>
         <td><p>The centres of activity (COA) algorithm</p></td>
       </tr><tr><td>
-          <p><code><a href="datasets-algorithms.html">dat_obs()</a></code> <code><a href="datasets-algorithms.html">dat_containers()</a></code> <code><a href="datasets-algorithms.html">dat_overlaps()</a></code> <code><a href="datasets-algorithms.html">dat_kernels()</a></code> <code><a href="datasets-algorithms.html">dat_ac()</a></code> <code><a href="datasets-algorithms.html">dat_pff()</a></code> <code><a href="datasets-algorithms.html">dat_pfb()</a></code> <code><a href="datasets-algorithms.html">dat_pfp()</a></code> </p>
+          <p><code><a href="datasets-algorithms.html">dat_obs()</a></code> <code><a href="datasets-algorithms.html">dat_overlaps()</a></code> <code><a href="datasets-algorithms.html">dat_kernels()</a></code> <code><a href="datasets-algorithms.html">dat_ac()</a></code> <code><a href="datasets-algorithms.html">dat_pff()</a></code> <code><a href="datasets-algorithms.html">dat_pfb()</a></code> <code><a href="datasets-algorithms.html">dat_pfp()</a></code> </p>
         </td>
         <td><p>Datasets: example algorithm outputs</p></td>
       </tr><tr><td>
@@ -118,7 +115,7 @@
       </tr><tr><td>
           <p><code><a href="degrees.html">degrees()</a></code> </p>
         </td>
-        <td><p>Create circular angle in degrees</p></td>
+        <td><p>Spatial helper: create circular angle in degrees</p></td>
       </tr><tr><td>
           <p><code><a href="dist_along_path.html">dist_along_path()</a></code> </p>
         </td>
@@ -136,9 +133,9 @@
         </td>
         <td><p>Matricise receiver deployment time series</p></td>
       </tr><tr><td>
-          <p><code><a href="normalise.html">normalise()</a></code> </p>
+          <p><code><a href="mktempdir.html">mktempdir()</a></code> </p>
         </td>
-        <td><p>Normalise a <code>SpatRaster</code></p></td>
+        <td><p>Utilities: make a temporary directory</p></td>
       </tr><tr><td>
           <p><code><a href="pf-class.html">pf-class</a></code> </p>
         </td>
@@ -148,13 +145,17 @@
         </td>
         <td><p>PF: run the backward pass</p></td>
       </tr><tr><td>
+          <p><code><a href="pf_backward_dens.html">pf_backward_dens()</a></code> </p>
+        </td>
+        <td><p>PF: pre-calculate densities for the backward pass</p></td>
+      </tr><tr><td>
+          <p><code><a href="pf_backward_p.html">dstep_lookup()</a></code> <code><a href="pf_backward_p.html">dstep_read()</a></code> <code><a href="pf_backward_p.html">pf_backward_p()</a></code> </p>
+        </td>
+        <td><p>PF: run the backward pass</p></td>
+      </tr><tr><td>
           <p><code><a href="pf_coords.html">pf_coords()</a></code> </p>
         </td>
         <td><p>PF: particle coordinates</p></td>
-      </tr><tr><td>
-          <p><code><a href="pf_dens.html">as.im.SpatRaster()</a></code> <code><a href="pf_dens.html">as.owin.SpatRaster()</a></code> <code><a href="pf_dens.html">pf_dens()</a></code> </p>
-        </td>
-        <td><p>PF: map point density</p></td>
       </tr><tr><td>
           <p><code><a href="pf_forward_-times.html">pf_forward_*</a></code> </p>
         </td>
@@ -162,7 +163,8 @@
       </tr><tr><td>
           <p><code><a href="pf_forward_1.html">pf_forward_1()</a></code> </p>
         </td>
-        <td><p>PF: run the forward simulation</p></td>
+        <td><p>PF: run the forward simulation
+<a href="https://lifecycle.r-lib.org/articles/stages.html#superseded" class="external-link"><img src="figures/lifecycle-superseded.svg" alt="[Superseded]"></a></p></td>
       </tr><tr><td>
           <p><code><a href="pf_forward_2.html">pf_forward_2()</a></code> </p>
         </td>
@@ -172,6 +174,14 @@
         </td>
         <td><p>PF: template movement models</p></td>
       </tr><tr><td>
+          <p><code><a href="pf_map_dens.html">as.im.SpatRaster()</a></code> <code><a href="pf_map_dens.html">as.owin.SpatRaster()</a></code> <code><a href="pf_map_dens.html">pf_map_dens()</a></code> </p>
+        </td>
+        <td><p>PF: map point density</p></td>
+      </tr><tr><td>
+          <p><code><a href="pf_map_pou.html">pf_map_pou()</a></code> </p>
+        </td>
+        <td><p>PF: map probability-of-use</p></td>
+      </tr><tr><td>
           <p><code><a href="pf_path.html">pf_path()</a></code> </p>
         </td>
         <td><p>PF: path reconstruction</p></td>
@@ -180,17 +190,9 @@
         </td>
         <td><p>PF: pivot path matrices</p></td>
       </tr><tr><td>
-          <p><code><a href="pf_pou.html">pf_pou()</a></code> </p>
-        </td>
-        <td><p>PF: map probability-of-use</p></td>
-      </tr><tr><td>
           <p><code><a href="pf_setup_files.html">pf_setup_files()</a></code> </p>
         </td>
         <td><p>PF set up: list files for PF</p></td>
-      </tr><tr><td>
-          <p><code><a href="rast_template.html">rast_template()</a></code> </p>
-        </td>
-        <td><p>Spatial helper: create a template <code>SpatRaster</code></p></td>
       </tr><tr><td>
           <p><code><a href="sim_array.html">sim_array()</a></code> </p>
         </td>
@@ -200,13 +202,25 @@
         </td>
         <td><p>Simulate detections at receivers</p></td>
       </tr><tr><td>
-          <p><code><a href="sim_path_walk.html">sim_path_walk()</a></code> <code><a href="sim_path_walk.html">rtruncgamma()</a></code> <code><a href="sim_path_walk.html">rwn()</a></code> <code><a href="sim_path_walk.html">sim_length()</a></code> <code><a href="sim_path_walk.html">sim_angle_rw()</a></code> <code><a href="sim_path_walk.html">sim_angle_crw()</a></code> </p>
+          <p><code><a href="sim_helpers.html">rtruncgamma()</a></code> <code><a href="sim_helpers.html">dtruncgamma()</a></code> <code><a href="sim_helpers.html">rwn()</a></code> <code><a href="sim_helpers.html">rlen()</a></code> <code><a href="sim_helpers.html">rangrw()</a></code> <code><a href="sim_helpers.html">rangcrw()</a></code> <code><a href="sim_helpers.html">cstep()</a></code> <code><a href="sim_helpers.html">dstep()</a></code> </p>
+        </td>
+        <td><p>Simulation helpers</p></td>
+      </tr><tr><td>
+          <p><code><a href="sim_path_walk.html">sim_path_walk()</a></code> </p>
         </td>
         <td><p>Simulate movement paths</p></td>
       </tr><tr><td>
           <p><code><a href="skill.html">skill_mb()</a></code> <code><a href="skill.html">skill_me()</a></code> <code><a href="skill.html">skill_rmse()</a></code> <code><a href="skill.html">skill_R()</a></code> <code><a href="skill.html">skill_d()</a></code> </p>
         </td>
         <td><p>Evaluate method skill</p></td>
+      </tr><tr><td>
+          <p><code><a href="spatNormalise.html">spatNormalise()</a></code> </p>
+        </td>
+        <td><p>Spatial helper: normalise a <code>SpatRaster</code></p></td>
+      </tr><tr><td>
+          <p><code><a href="spatTemplate.html">spatTemplate()</a></code> </p>
+        </td>
+        <td><p>Spatial helper: create a template <code>SpatRaster</code></p></td>
       </tr></tbody></table></div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

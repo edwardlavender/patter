@@ -71,8 +71,8 @@
 <span>  .obs <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  .t <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  .bathy <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  .sim_length <span class="op">=</span> <span class="va">sim_length</span>,</span>
-<span>  .sim_angle <span class="op">=</span> <span class="va">sim_angle_rw</span>,</span>
+<span>  .sim_length <span class="op">=</span> <span class="va">rlen</span>,</span>
+<span>  .sim_angle <span class="op">=</span> <span class="va">rangrw</span>,</span>
 <span>  .lonlat <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -108,7 +108,7 @@
 </ul></div>
     <div id="details">
     <h2>Details</h2>
-    <p>This template movement model is a biased random walk. Step lengths are simulated from a truncated Gamma distribution via <code><a href="sim_path_walk.html">sim_length()</a></code>. Turning angles are simulated from a wrapped normal distribution via <code><a href="sim_path_walk.html">sim_angle_rw()</a></code>.</p>
+    <p>This template movement model is a biased random walk. Step lengths are simulated from a truncated Gamma distribution via <code><a href="sim_helpers.html">rlen()</a></code>. Turning angles are simulated from a wrapped normal distribution via <code><a href="sim_helpers.html">rangrw()</a></code>.</p>
     </div>
     <div id="warning">
     <h2>Warning</h2>
@@ -116,6 +116,26 @@
 <ul><li><p>These function are used to streamline examples and do not represent a generically suitable model.</p></li>
 <li><p>The functions do not check user inputs.</p></li>
 </ul></div>
+    <div id="see-also">
+    <h2>See also</h2>
+    <div class="dont-index">
+<ul><li><p>The PF (forward simulation) is implemented by <code><a href="pf_forward_-times.html">pf_forward_*()</a></code>:</p><ul><li><p><code><a href="pf_forward_1.html">pf_forward_1()</a></code> refines AC-branch algorithm (<code><a href="acs.html">acs()</a></code> and <code><a href="dc.html">dc()</a></code>) outputs using PF;</p></li>
+<li><p><code><a href="pf_forward_2.html">pf_forward_2()</a></code> is an integrated implementation that couples AC- and PF-branch algorithms internally;</p></li>
+</ul></li>
+<li><p>PF is supported by:</p><ul><li><p>Setup helpers, namely <code><a href="pf_setup_files.html">pf_setup_files()</a></code>;</p></li>
+<li><p>Template movement models, namely <code>pf_kick()</code>;</p></li>
+</ul></li>
+<li><p>The backward pass is implemented by <code><a href="pf_backward.html">pf_backward()</a></code>;</p></li>
+<li><p>Movement paths are built from PF outputs via <code><a href="pf_path.html">pf_path()</a></code> functions:</p><ul><li><p><code><a href="pf_path.html">pf_path()</a></code> reconstructs paths;</p></li>
+<li><p><code><a href="pf_path_pivot.html">pf_path_pivot()</a></code> supports path reconstruction;</p></li>
+</ul></li>
+<li><p>To reconstruct maps of space use, see:</p><ul><li><p><code><a href="pf_coords.html">pf_coords()</a></code> to extract particle coordinates;</p></li>
+<li><p><code><a href="pf_map_pou.html">pf_map_pou()</a></code> for probability-of-use maps;</p></li>
+<li><p><code><a href="pf_map_dens.html">pf_map_dens()</a></code> for smooth utilisation distributions;</p></li>
+<li><p><code><a href="get_hr.html">get_hr()</a></code> for home range estimates;</p></li>
+</ul></li>
+</ul></div>
+    </div>
     <div id="author">
     <h2>Author</h2>
     <p>Edward Lavender</p>

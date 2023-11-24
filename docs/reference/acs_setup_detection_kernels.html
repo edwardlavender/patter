@@ -132,6 +132,19 @@ Using these inputs, the function must return a <code>SpatRaster</code> that defi
     <h2>Details</h2>
     <p>This function permits receiver-specific detection kernels.</p>
     </div>
+    <div id="see-also">
+    <h2>See also</h2>
+    <div class="dont-index"><p>AC-branch algorithms in <code><a href="patter-package.html">patter</a></code> include the AC* algorithm (<code><a href="acs.html">acs()</a></code>) and the DC algorithm (<code><a href="dc.html">dc()</a></code>).</p>
+<p>To implement the AC* algorithm, use:</p><ol><li><p><code><a href="acs_setup_obs.html">acs_setup_obs()</a></code> to set up observations;</p></li>
+<li><p><code><a href="acs_setup_detection_overlaps.html">acs_setup_detection_overlaps()</a></code> to identify receiver overlaps (used in detection probability calculations);</p></li>
+<li><p><code>acs_setup_detection_kernels()</code> and <code><a href="acs_setup_detection_pr.html">acs_setup_detection_pr()</a></code> to define detection probability kernels;</p></li>
+<li><p><code><a href="acs.html">acs()</a></code> to implement the AC algorithm;</p></li>
+</ol><p>To implement the DC algorithm, use:</p><ol><li><p><code><a href="dc.html">dc()</a></code> to implement the algorithm;</p></li>
+</ol><p>AC-branch algorithms return an <code><a href="acb-class.html">acb</a></code> object.</p>
+<p>AC-branch algorithms are typically followed by particle filtering to reconstruct movement paths and refine maps of space use (see <code>pf_*()</code> functions).</p><ol><li><p>To begin, see <code><a href="pf_forward_1.html">pf_forward_1()</a></code>;</p></li>
+<li><p>To implement AC- and PF-branch algorithms simultaneously, see <code><a href="pf_forward_2.html">pf_forward_2()</a></code>;</p></li>
+</ol></div>
+    </div>
     <div id="author">
     <h2>Author</h2>
     <p>Edward Lavender</p>
@@ -188,7 +201,7 @@ Using these inputs, the function must return a <code>SpatRaster</code> that defi
 <span class="r-in"><span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu">acs_setup_detection_kernels</span><span class="op">(</span><span class="va">m</span>, <span class="va">s</span>,</span></span>
 <span class="r-in"><span>                                 .calc_detection_pr <span class="op">=</span> <span class="va">acs_setup_detection_pr</span>,</span></span>
 <span class="r-in"><span>                                 .bathy <span class="op">=</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs_setup_detection_kernels() called (@ 2023-11-12 16:30:17.134933)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs_setup_detection_kernels() called (@ 2023-11-24 20:46:08.150713)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up function... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting receiver-specific kernels (for detection)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting receiver-specific inverse kernels... </span>
@@ -204,7 +217,7 @@ Using these inputs, the function must return a <code>SpatRaster</code> that defi
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... ... Extract detection probability kernels for active receivers... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Process detection probability kernels ... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... patter::acs_setup_detection_kernels() call completed (@ 2023-11-12 16:30:17.207318) after ~0 minutes. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... patter::acs_setup_detection_kernels() call completed (@ 2023-11-24 20:46:08.243563) after ~0 minutes. </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Examine list elements</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">k</span><span class="op">)</span></span></span>

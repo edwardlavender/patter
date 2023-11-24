@@ -111,7 +111,7 @@
 <div class="section level1">
 <h1 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h1>
-<p>This package requires <code>R</code> version ≥ 4.0. You can check your current version with <code>R.version.string</code>. Subsequent installation steps (may) require the <code>devtools</code> and <code>pkgbuild</code> packages, which can be installed with <code>install.packages(c("devtools", "pkgbuild"))</code>. On Windows, package building requires <code>Rtools</code>. You can check whether <code>Rtools</code> is installed with <code><a href="https://pkgbuild.r-lib.org/reference/has_rtools.html" class="external-link">pkgbuild::has_rtools()</a></code>. If <code>Rtools</code> is not installed, it is necessary to download and install the appropriate version of <code>Rtools</code> before proceeding by following the instructions <a href="https://cran.r-project.org/bin/windows/Rtools/" class="external-link">here</a>. Once you are set up, you can install <a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a> via:</p>
+<p>This package requires <code>R</code> version ≥ 4.1. You can check your current version with <code>R.version.string</code>. Subsequent installation steps (may) require the <code>devtools</code> and <code>pkgbuild</code> packages, which can be installed with <code>install.packages(c("devtools", "pkgbuild"))</code>. On Windows, package building requires <code>Rtools</code>. You can check whether <code>Rtools</code> is installed with <code><a href="https://pkgbuild.r-lib.org/reference/has_rtools.html" class="external-link">pkgbuild::has_rtools()</a></code>. If <code>Rtools</code> is not installed, it is necessary to download and install the appropriate version of <code>Rtools</code> before proceeding by following the instructions <a href="https://cran.r-project.org/bin/windows/Rtools/" class="external-link">here</a>. Once you are set up, you can install <a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a> via:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"edwardlavender/patter"</span>, </span>
 <span>                         dependencies <span class="op">=</span> <span class="cn">TRUE</span>, </span>
@@ -149,8 +149,6 @@
 <li>
 <code><a href="reference/datasets-algorithms.html">dat_obs()</a></code> for an example output dataset from <code><a href="reference/acs_setup_obs.html">acs_setup_obs()</a></code>;</li>
 <li>
-<code><a href="reference/datasets-algorithms.html">dat_containers()</a></code> for an example output from <code><a href="reference/acs_setup_detection_containers.html">acs_setup_detection_containers()</a></code>;</li>
-<li>
 <code><a href="reference/datasets-algorithms.html">dat_overlaps()</a></code> for an example output from <code><a href="reference/acs_setup_detection_overlaps.html">acs_setup_detection_overlaps()</a></code>;</li>
 <li>
 <code><a href="reference/datasets-algorithms.html">dat_kernels()</a></code> for an example output from <code><a href="reference/acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code>;</li>
@@ -175,9 +173,9 @@
 <code><a href="reference/sim_path_walk.html">sim_path_walk()</a></code> to simulate a movement path from a walk model, with the help of:
 <ul>
 <li>
-<code><a href="reference/sim_path_walk.html">rtruncgamma()</a></code> and <code><a href="reference/sim_path_walk.html">sim_length()</a></code> to simulate step lengths;</li>
+<code><a href="reference/sim_helpers.html">rtruncgamma()</a></code> and <code>sim_length()</code> to simulate step lengths;</li>
 <li>
-<code><a href="reference/sim_path_walk.html">rwn()</a></code>, <code><a href="reference/sim_path_walk.html">sim_angle_rw()</a></code> and <code><a href="reference/sim_path_walk.html">sim_angle_crw()</a></code> to simulate turning angles;</li>
+<code><a href="reference/sim_helpers.html">rwn()</a></code>, <code>sim_angle_rw()</code> and <code>sim_angle_crw()</code> to simulate turning angles;</li>
 </ul>
 </li>
 <li>
@@ -236,8 +234,6 @@
 <li>
 <code><a href="reference/acs_setup_obs.html">acs_setup_obs()</a></code> to set up observations;</li>
 <li>
-<code><a href="reference/acs_setup_detection_containers.html">acs_setup_detection_containers()</a></code> to set up detection containers;</li>
-<li>
 <code><a href="reference/acs_setup_detection_overlaps.html">acs_setup_detection_overlaps()</a></code> to set up detection overlaps;</li>
 <li>
 <code><a href="reference/acs_setup_detection_pr.html">acs_setup_detection_pr()</a></code> to define a detection probability model;</li>
@@ -253,7 +249,14 @@
 <li>
 <code><a href="reference/pf_kick.html">pf_kick()</a></code> for an example movement model;</li>
 <li>
-<code>pf_forward_*()</code> to implement the forward simulation; namely: * <code><a href="reference/pf_forward_1.html">pf_forward_1()</a></code> for the original (two-step) implementation; * <code><a href="reference/pf_forward_2.html">pf_forward_2()</a></code> for an integrated implementation;</li>
+<code>pf_forward_*()</code> to implement the forward simulation; namely:
+<ul>
+<li>
+<code><a href="reference/pf_forward_1.html">pf_forward_1()</a></code> for the original (two-step) implementation;</li>
+<li>
+<code><a href="reference/pf_forward_2.html">pf_forward_2()</a></code> for an integrated implementation;</li>
+</ul>
+</li>
 <li>
 <code><a href="reference/pf_backward.html">pf_backward()</a></code> to implement the backward pass;</li>
 <li>
@@ -261,9 +264,9 @@
 <li>
 <code><a href="reference/pf_path.html">pf_path()</a></code> (and <code><a href="reference/pf_path_pivot.html">pf_path_pivot()</a></code>) to reconstruct movement paths;</li>
 <li>
-<code><a href="reference/pf_pou.html">pf_pou()</a></code> to map probability-of-use;</li>
+<code><a href="reference/pf_map_pou.html">pf_map_pou()</a></code> to map probability-of-use;</li>
 <li>
-<code><a href="reference/pf_dens.html">pf_dens()</a></code> to create smooth maps;</li>
+<code><a href="reference/pf_map_dens.html">pf_map_dens()</a></code> to create smooth maps;</li>
 </ul>
 <p>For home ranges, use:</p>
 <ul>
@@ -302,9 +305,9 @@
 <code>terra</code> helpers. See:
 <ul>
 <li>
-<code><a href="reference/rast_template.html">rast_template()</a></code> to create a template <code>SpatRaster</code>;</li>
+<code>rast_template()</code> to create a template <code>SpatRaster</code>;</li>
 <li>
-<code><a href="reference/normalise.html">normalise()</a></code> to normalise a <code>SpatRaster</code>;</li>
+<code>normalise()</code> to normalise a <code>SpatRaster</code>;</li>
 <li>
 <code>as.im.SpatRaster</code> and <code>as.owin.SpatRaster</code> for interfaces to <code>spatstat</code> function(s);</li>
 </ul>

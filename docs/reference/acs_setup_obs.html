@@ -124,7 +124,17 @@
 </ul></div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index"><p>See the <a href="https://edwardlavender.github.io/flapper/reference/process_receiver_id.html" class="external-link"><code>process_receiver_ids</code></a> function in the in the <a href="https://edwardlavender.github.io/flapper/reference/process_receiver_id.html" class="external-link"><code>flapper</code></a> package to define receiver deployments using an integer vector.</p></div>
+    <div class="dont-index"><p>AC-branch algorithms in <code><a href="patter-package.html">patter</a></code> include the AC* algorithm (<code><a href="acs.html">acs()</a></code>) and the DC algorithm (<code><a href="dc.html">dc()</a></code>).</p>
+<p>To implement the AC* algorithm, use:</p><ol><li><p><code>acs_setup_obs()</code> to set up observations;</p></li>
+<li><p><code><a href="acs_setup_detection_overlaps.html">acs_setup_detection_overlaps()</a></code> to identify receiver overlaps (used in detection probability calculations);</p></li>
+<li><p><code><a href="acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code> and <code><a href="acs_setup_detection_pr.html">acs_setup_detection_pr()</a></code> to define detection probability kernels;</p></li>
+<li><p><code><a href="acs.html">acs()</a></code> to implement the AC algorithm;</p></li>
+</ol><p>To implement the DC algorithm, use:</p><ol><li><p><code><a href="dc.html">dc()</a></code> to implement the algorithm;</p></li>
+</ol><p>AC-branch algorithms return an <code><a href="acb-class.html">acb</a></code> object.</p>
+<p>AC-branch algorithms are typically followed by particle filtering to reconstruct movement paths and refine maps of space use (see <code>pf_*()</code> functions).</p><ol><li><p>To begin, see <code><a href="pf_forward_1.html">pf_forward_1()</a></code>;</p></li>
+<li><p>To implement AC- and PF-branch algorithms simultaneously, see <code><a href="pf_forward_2.html">pf_forward_2()</a></code>;</p></li>
+</ol><p>For <code>acs_setup_obs()</code> specifically:</p><ul><li><p><a href="https://edwardlavender.github.io/flapper/reference/process_receiver_id.html" class="external-link"><code>process_receiver_ids</code></a> in the <a href="https://edwardlavender.github.io/flapper/reference/process_receiver_id.html" class="external-link"><code>flapper</code></a> package can be used to define receiver deployments using an integer vector.</p></li>
+</ul></div>
     </div>
     <div id="author">
     <h2>Author</h2>

@@ -74,12 +74,21 @@ Integrated implementation. In the integrated implementation, AC-branch and PF-br
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index">
-<ul><li><p><code><a href="acs.html">acs()</a></code> and <code><a href="dc.html">dc()</a></code> implement AC-branch algorithms;</p></li>
-<li><p><code><a href="pf_forward_1.html">pf_forward_1()</a></code> and <code><a href="pf_forward_2.html">pf_forward_2()</a></code> implement the forward simulation;</p></li>
-<li><p><code><a href="pf_backward.html">pf_backward()</a></code> implements the backward pass;</p></li>
-<li><p><code><a href="pf_path.html">pf_path()</a></code> reconstructs movement paths;</p></li>
-<li><p><code><a href="pf_pou.html">pf_pou()</a></code> and <code><a href="pf_dens.html">pf_dens()</a></code> generate maps of space use;</p></li>
-<li><p><code><a href="pf_setup_files.html">pf_setup_files()</a></code>, <code><a href="pf_kick.html">pf_kick()</a></code> and <code><a href="pf_coords.html">pf_coords()</a></code> are helper functions;</p></li>
+<ul><li><p>The PF (forward simulation) is implemented by <code>pf_forward_*()</code>:</p><ul><li><p><code><a href="pf_forward_1.html">pf_forward_1()</a></code> refines AC-branch algorithm (<code><a href="acs.html">acs()</a></code> and <code><a href="dc.html">dc()</a></code>) outputs using PF;</p></li>
+<li><p><code><a href="pf_forward_2.html">pf_forward_2()</a></code> is an integrated implementation that couples AC- and PF-branch algorithms internally;</p></li>
+</ul></li>
+<li><p>PF is supported by:</p><ul><li><p>Setup helpers, namely <code><a href="pf_setup_files.html">pf_setup_files()</a></code>;</p></li>
+<li><p>Template movement models, namely <code><a href="pf_kick.html">pf_kick()</a></code>;</p></li>
+</ul></li>
+<li><p>The backward pass is implemented by <code><a href="pf_backward.html">pf_backward()</a></code>;</p></li>
+<li><p>Movement paths are built from PF outputs via <code><a href="pf_path.html">pf_path()</a></code> functions:</p><ul><li><p><code><a href="pf_path.html">pf_path()</a></code> reconstructs paths;</p></li>
+<li><p><code><a href="pf_path_pivot.html">pf_path_pivot()</a></code> supports path reconstruction;</p></li>
+</ul></li>
+<li><p>To reconstruct maps of space use, see:</p><ul><li><p><code><a href="pf_coords.html">pf_coords()</a></code> to extract particle coordinates;</p></li>
+<li><p><code><a href="pf_map_pou.html">pf_map_pou()</a></code> for probability-of-use maps;</p></li>
+<li><p><code><a href="pf_map_dens.html">pf_map_dens()</a></code> for smooth utilisation distributions;</p></li>
+<li><p><code><a href="get_hr.html">get_hr()</a></code> for home range estimates;</p></li>
+</ul></li>
 </ul></div>
     </div>
 

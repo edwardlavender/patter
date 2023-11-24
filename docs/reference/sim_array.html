@@ -67,7 +67,7 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sim_array</span><span class="op">(</span></span>
-<span>  .bathy <span class="op">=</span> <span class="fu"><a href="rast_template.html">rast_template</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  .bathy <span class="op">=</span> <span class="fu"><a href="spatTemplate.html">spatTemplate</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  .lonlat <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  .arrangement <span class="op">=</span> <span class="st">"random"</span>,</span>
 <span>  .n_receiver <span class="op">=</span> <span class="fl">10L</span>,</span>
@@ -136,6 +136,15 @@
     <div id="details">
     <h2>Details</h2>
     <p>Receiver locations are simulated using <code><a href="https://rdrr.io/pkg/terra/man/sample.html" class="external-link">terra::spatSample()</a></code>.</p>
+    </div>
+    <div id="see-also">
+    <h2>See also</h2>
+    <div class="dont-index">
+<ul><li><p><code>sim_array()</code> simulates acoustic array(s);</p></li>
+<li><p><code><a href="sim_path_walk.html">sim_path_walk()</a></code> simulates movement path(s) via a walk model;</p></li>
+<li><p><code><a href="sim_detections.html">sim_detections()</a></code> simulates detection(s) at receivers;</p></li>
+<li><p><code><a href="skill.html">skill</a></code> functions compared simulated and reconstructed patterns to evaluate model skill;</p></li>
+</ul></div>
     </div>
     <div id="author">
     <h2>Author</h2>
