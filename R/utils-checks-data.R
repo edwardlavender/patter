@@ -40,6 +40,8 @@ check_moorings <- function(.moorings,
 
   #### (optional) Define coordinate columns (receiver_x, receiver_y)
   if (!is.null(.lonlat)) {
+
+    # Define coordinate columns
     if (.lonlat) {
       coords <- c("receiver_lon", "receiver_lat")
       .moorings$receiver_x <- .moorings$receiver_lon
@@ -49,21 +51,21 @@ check_moorings <- function(.moorings,
       coords <- c("receiver_easting", "receiver_northing")
       .moorings$receiver_x <- .moorings$receiver_easting
     }
-  }
-  check_names(.moorings, req = coords)
+    check_names(.moorings, req = coords)
 
-  #### (optional) Coerce coordinates onto grid
-  if (!is.null(.bathy)) {
-    xy <-
-      .moorings |>
-      select(all_of(coords)) |>
-      as.matrix()
-    xy <- terra::xyFromCell(.bathy, terra::cellFromXY(.bathy, xy))
-    .moorings$receiver_x <- xy[, 1]
-    .moorings$receiver_y <- xy[, 2]
-    if (!identical(.moorings[["receiver_x"]], .moorings[[coords[1]]]) |
-        !identical(.moorings[["receiver_y"]], .moorings[[coords[2]]])) {
-      warn("`.moorings` coordinates coerced onto `.bathy` grid.")
+   # (optional) Coerce coordinates onto grid
+    if (!is.null(.bathy)) {
+      xy <-
+        .moorings |>
+        select(all_of(coords)) |>
+        as.matrix()
+      xy <- terra::xyFromCell(.bathy, terra::cellFromXY(.bathy, xy))
+      .moorings$receiver_x <- xy[, 1]
+      .moorings$receiver_y <- xy[, 2]
+      if (!identical(.moorings[["receiver_x"]], .moorings[[coords[1]]]) |
+          !identical(.moorings[["receiver_y"]], .moorings[[coords[2]]])) {
+        warn("`.moorings` coordinates coerced onto `.bathy` grid.")
+      }
     }
   }
 
