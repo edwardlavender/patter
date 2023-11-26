@@ -9,27 +9,35 @@ License: MIT + file LICENSE
 Imports:
     arrow,
     collapse,
+    circular,
     data.table,
     dplyr,
     dtplyr,
-    rlang,
     glue,
+    lifecycle,
     lubridate,
     pbapply,
     progress,
-    circular,
-    truncdist,
+    rlang,
     terra,
-    lifecycle
+    truncdist
 Suggests: 
+    extactextractr,
     extraDistr, 
-    geosphere, spatialEco, 
-    spatstat.geom, spatstat.explore,
-    purrr, stringr,
-    sparklyr, Rfast, zoo,
+    geosphere, 
+    knitr,
+    purrr, 
+    Rfast,
+    rmarkdown,
+    spatialEco, 
+    spatstat.explore,
+    spatstat.geom, 
+    sf, 
+    sparklyr,
+    stringr,
+    testthat (>= 3.0.0), 
     qs,
-    knitr, rmarkdown,
-    testthat (>= 3.0.0)
+    zoo
 Depends: R (>= 4.1)
 Config/testthat/edition: 3
 URL: https://github.com/edwardlavender/patter/
