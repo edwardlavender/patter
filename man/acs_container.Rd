@@ -28,7 +28,7 @@
 \arguments{
 \item{.detection_kernels}{A \code{\link{list}} of detection kernels.}
 
-\item{.moorings}{The \code{.moorings} \code{\link{.data.table}}, including \code{receiver_x} and \code{receiver_y} columns.}
+\item{.moorings}{The \code{.moorings} \code{\link{data.table}}, including \code{receiver_x} and \code{receiver_y} columns.}
 
 \item{.obs}{The \code{.obs} \code{\link{data.table}}.}
 }

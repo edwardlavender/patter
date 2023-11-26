@@ -1,0 +1,40 @@
+#' @title PF: calculate particle diagnostics
+#' @name pf_diag
+
+#' @rdname pf_diag
+#' @keywords internal
+
+.pf_diag_any <- function(.particles) {
+  nrow(.particles) != 0L
+}
+
+#' @rdname pf_diag
+#' @keywords internal
+
+.pf_diag_ess <- function(.likelihood) {
+  1 / sum(.likelihood ^ 2)
+}
+
+#' @rdname pf_diag
+#' @keywords internal
+
+.pf_diag_unique <- function(.cells) {
+  length(collapse::funique(.cells))
+}
+
+#' @rdname pf_diag
+#' @keywords internal
+
+.pf_diag <- function(.particles, .t, .label) {
+  out <- data.table(timestep = .t,
+                    component = .label,
+                    n = nrow(.particles),
+                    n_u = NA_real_,
+                    ess = NA_real_)
+  if (out$n > 0) {
+    n_u <- ess <- NULL
+    out[, n_u := .pf_diag_unique(.particles$cell_now)]
+    out[, ess := .pf_diag_ess(.particles$lik)]
+  }
+  out
+}

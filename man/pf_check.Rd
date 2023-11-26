@@ -9,7 +9,7 @@
 \alias{.pf_path_pivot_checks}
 \title{PF helper: internal checks}
 \usage{
-.pf_checks(inputs = match.call()[-1L], defaults = formals(), dots = list(...))
+.pf_checks(inputs = match.call()[-1L], defaults = formals(), dots)
 
 .pf_check_obs(.obs)
 

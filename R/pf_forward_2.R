@@ -233,7 +233,7 @@ pf_forward_2 <- function(.obs,
     ## (1) (optional) Eliminate particles in inhospitable locations (e.g., on land)
     # (We eliminate particles here to improve speed in subsequent calculations)
     if (is_land) {
-      pnow <- .acs_filter_by_land(pnow, .bathy)
+      pnow <- acs_filter_land(pnow, .bathy)
       fail <- .pf_check_rows(pnow, .filter = "AC mask (e.g., land)", .t = t)
       if (fail) {
         return(history)
@@ -244,10 +244,10 @@ pf_forward_2 <- function(.obs,
     # A. Eliminate particles that are incompatible with container dynamics
     if (!is.null(.moorings)) {
       if (t > 1 && t < pos_detection_end) {
-        pnow <- .acs_filter_by_container(.particles = pnow,
-                                         .moorings = .moorings,
-                                         .receivers = .obs$receiver_id_next[t][[1]],
-                                         .threshold = .obs$buffer_future_incl_gamma[t])
+        pnow <- acs_filter_container(.particles = pnow,
+                                     .moorings = .moorings,
+                                     .receivers = .obs$receiver_id_next[t][[1]],
+                                     .threshold = .obs$buffer_future_incl_gamma[t])
         fail <- .pf_check_rows(pnow, .filter = "AC dynamics", .t = t)
         if (fail) {
           return(history)

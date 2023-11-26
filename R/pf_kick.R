@@ -1,3 +1,5 @@
+# TO DO: DEPRECATE
+
 #' @title PF: template movement models
 #' @description These functions are example movement models, of the kind required by `.kick` in [`pf_forward_*()`].
 #' @param .particles A [`data.table`], from [`pf_forward_*()`], that defines the current particle samples:

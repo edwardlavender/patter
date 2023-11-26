@@ -8,7 +8,7 @@ NULL
 #' @keywords internal
 
 # Collate .pf_checks() for pf_forward_2()
-.pf_checks <- function(inputs = match.call()[-1L], defaults = formals(), dots = list(...)) {
+.pf_checks <- function(inputs = match.call()[-1L], defaults = formals(), dots) {
   .pf_check_obs(inputs$.obs)
   if (!is.null(inputs$.moorings)) {
     rlang::check_installed("Rfast")

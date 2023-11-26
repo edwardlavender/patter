@@ -2,7 +2,7 @@
 #' @description [`.acs_container_1()`] defines the first AC* container in [`pf_forward_2()`].
 #' @param .obs The `.obs` [`data.table`].
 #' @param .detection_kernels A [`list`] of detection kernels.
-#' @param .moorings The `.moorings` [`.data.table`], including `receiver_x` and `receiver_y` columns.
+#' @param .moorings The `.moorings` [`data.table`], including `receiver_x` and `receiver_y` columns.
 #'
 #' @details
 #'
