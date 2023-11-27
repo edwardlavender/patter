@@ -25,7 +25,8 @@ pf_lik(
   .moorings,
   .detection_overlaps,
   .detection_kernels,
-  .update_ac
+  .update_ac,
+  .trial = NA_integer_
 )
 }
 \arguments{

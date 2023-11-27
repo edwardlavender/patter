@@ -25,9 +25,10 @@
 #' @rdname pf_diag
 #' @keywords internal
 
-.pf_diag <- function(.particles, .t, .label) {
+.pf_diag <- function(.particles, .t, .trial = NA_integer_, .label) {
   out <- data.table(timestep = .t,
                     component = .label,
+                    trial = .trial,
                     n = nrow(.particles),
                     n_u = NA_real_,
                     ess = NA_real_)
