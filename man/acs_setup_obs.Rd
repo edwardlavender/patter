@@ -33,6 +33,7 @@ The function returns a \code{\link{data.table}} with the following columns:
 \item \code{detection}---an \code{integer} that distinguishes the time steps at which detections were (1) or were not (0) recorded;
 \item \code{receiver_id}---a \code{list} that defines the receiver(s) that recorded detection(s) at each time step;
 \item \code{receiver_id_next}---a \code{list} that defines the receiver(s) that recorded the next detection(s);
+\item \code{mobility}---a \code{double} that defines \code{.mobility};
 \item \code{buffer_past}---a \code{double} that controls container growth from the past to the present;
 \item \code{buffer_future}---a \code{double} that controls container shrinkage from the future to the present for \code{\link[=acs]{acs()}};
 \item \code{buffer_future_incl_gamma}---if \code{.detection_range} is provided, \code{buffer_future_incl_gamma} is a \code{double} (\code{buffer_future} + \code{.detection_range}) that controls container shrinkage for \code{\link[=pf_forward_2]{pf_forward_2()}};

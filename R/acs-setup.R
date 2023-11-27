@@ -22,6 +22,7 @@
 #' * `detection`---an `integer` that distinguishes the time steps at which detections were (1) or were not (0) recorded;
 #' * `receiver_id`---a `list` that defines the receiver(s) that recorded detection(s) at each time step;
 #' * `receiver_id_next`---a `list` that defines the receiver(s) that recorded the next detection(s);
+#' * `mobility`---a `double` that defines `.mobility`;
 #' * `buffer_past`---a `double` that controls container growth from the past to the present;
 #' * `buffer_future`---a `double` that controls container shrinkage from the future to the present for [`acs()`];
 #' * `buffer_future_incl_gamma`---if `.detection_range` is provided, `buffer_future_incl_gamma` is a `double` (`buffer_future` + `.detection_range`) that controls container shrinkage for [`pf_forward_2()`];
@@ -68,7 +69,10 @@
 #' @author Edward Lavender
 #' @export
 
-acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility, .detection_range = NULL) {
+acs_setup_obs <- function(.acoustics, .archival = NULL,
+                          .step,
+                          .mobility,
+                          .detection_range = NULL) {
 
   #### Check user inputs
   .acoustics <- check_acoustics(.acoustics)
@@ -156,7 +160,8 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility, .detec
     ungroup() |>
     arrange(.data$timestamp) |>
     mutate(timestep = as.integer(row_number()),
-           receiver_id_next = .acs_setup_obs_receiver_id_next(.data$receiver_id)
+           receiver_id_next = .acs_setup_obs_receiver_id_next(.data$receiver_id),
+           mobility = .mobility
     ) |>
     as.data.table()
   # Add buffer_future_incl_gamma column, if applicable
@@ -172,7 +177,7 @@ acs_setup_obs <- function(.acoustics, .archival = NULL, .step, .mobility, .detec
     select("timestep",
            "timestamp", "date",
            "detection_id", "detection", "receiver_id", "receiver_id_next",
-           "buffer_past", "buffer_future",
+           "mobility", "buffer_past", "buffer_future",
            any_of(c("buffer_future_incl_gamma", "depth"))
            ) |>
     as.data.table()
