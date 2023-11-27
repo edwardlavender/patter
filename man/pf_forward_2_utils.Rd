@@ -5,9 +5,13 @@
 \alias{.pf_dirs}
 \alias{.pf_write}
 \alias{.pf_startup}
-\alias{pf_start_t}
+\alias{.pf_start_t}
 \alias{.pf_next}
-\alias{pf_ppast}
+\alias{.pf_ppast}
+\alias{.pf_trial_sampler}
+\alias{.pf_revert}
+\alias{.pf_continue}
+\alias{.pf_outputs}
 \title{PF helper: internal utilities}
 \usage{
 .pf_dirs(.write_opts)
@@ -26,11 +30,19 @@
   .write_opts
 )
 
-pf_start_t(.rerun, .rerun_from)
+.pf_start_t(.rerun, .rerun_from)
 
 .pf_next(.particles)
 
-pf_ppast(.particles, .history, .t)
+.pf_ppast(.particles, .history, .t)
+
+.pf_trial_sampler(diagnostics, .trial_crit)
+
+.pf_revert(.t, .trial_revert_steps)
+
+.pf_continue(.particles, .t, .crit, .trial_revert_crit)
+
+.pf_outputs(.start, .startup, .history, .diagnostics, .convergence)
 }
 \description{
 PF helper: internal utilities

@@ -50,8 +50,8 @@
   #### Use .rerun, if specified
   if (!is.null(.rerun)) {
     startup <- .rerun$internal$startup
-    startup$history     <- .rerun$history
-    startup$diagnostics <- .rerun$diagnostics
+    startup$output$history     <- .rerun$history
+    startup$output$diagnostics <- .rerun$diagnostics
     return(startup)
   }
 
@@ -64,11 +64,14 @@
   folder_history     <- folders[[".history"]]
   folder_diagnostics <- folders[["diagnostics"]]
 
-  #### Prepare algorithm inputs
+  #### Prepare controls
   # Prepare land filter
   is_land <- spatContainsNA(.bathy)
-  # Prepare AC filter
-  # * Check moorings & coerce onto grid
+  # Prepare revert count
+  revert_count <- 0L
+
+  #### Prepare data
+  # Check moorings & coerce onto grid
   if (!is.null(.moorings)) {
     .moorings <- check_moorings(.moorings, .lonlat = .lonlat, .bathy = .bathy)
   }
@@ -100,7 +103,8 @@
       .moorings = .moorings
     ),
     control = list(
-      is_land = is_land
+      is_land = is_land,
+      revert_count = revert_count
     ),
     wrapper = list(.pf_lik_abbr = .pf_lik_abbr,
                    .pf_write_abbr = .pf_write_abbr)
@@ -110,12 +114,12 @@
 #' @rdname pf_forward_2_utils
 #' @keywords internal
 
-# Define the starting time step
-pf_start_t <- function(.rerun, .rerun_from) {
+# Define the starting time step for the loop
+.pf_start_t <- function(.rerun, .rerun_from) {
   if (is.null(.rerun)) {
-    t <- 1L
+    t <- 2L
   } else {
-    t <- max(c(1L, .rerun_from))
+    t <- max(c(2L, .rerun_from))
   }
   t
 }
@@ -140,11 +144,72 @@ pf_start_t <- function(.rerun, .rerun_from) {
 
 # Define particles for the previous time step
 # * This is necessary for the first step in pf_forward_2()
-pf_ppast <- function(.particles, .history, .t) {
+.pf_ppast <- function(.particles, .history, .t) {
   if (.t == 1L) {
     ppast <- .pf_next(.particles)
   } else {
     # TO DO: read .history[[.t - 1L]] here
     ppast <- copy(.history[[.t - 1L]])
   }
+}
+
+#' @rdname pf_forward_2_utils
+#' @keywords internal
+
+.pf_trial_sampler <- function(diagnostics, .trial_crit) {
+  opt_1 <- length(diagnostics) == 0L
+  if (opt_1) {
+    return(TRUE)
+  }
+  pos <- length(diagnostics[["kick"]])
+  crit <- diagnostics[[pos]]$n_u
+  crit < .trial_crit
+}
+
+#' @rdname pf_forward_2_utils
+#' @keywords internal
+
+# Revert to an earlier time step
+.pf_revert <- function(.t, .trial_revert_steps) {
+  max(c(2L, .t - .trial_revert_steps))
+}
+
+#' @rdname pf_forward_2_utils
+#' @keywords internal
+
+.pf_continue <- function(.particles, .t, .crit, .trial_revert_crit) {
+
+  # Outcome (A): convergence failure
+  # * If there are no particles, return warning + FALSE
+  if (nrow(.particles) == 0L) {
+    warn("Convergence error: there are no particles with positive weights at time step {.t}. Returning outputs up to time step {.t}.",
+         .envir = environment())
+    return(FALSE)
+  }
+
+  # Outcome (B): convergence warning
+  # * If the number of particles is less than the required threshold (but above zero)
+  # * ... we throw a warning, but continue
+  if (.crit < .trial_revert_crit) {
+    warn("Convergence warning: insufficient particles ({.crit} < {.trial_revert_crit} [`.trial_revert_crit`] particles) at timestep {.t}.",
+         .envir = environment())
+  }
+
+  # Option (C): success (continue)
+  TRUE
+
+}
+
+#' @rdname pf_forward_2_utils
+#' @keywords internal
+
+.pf_outputs <- function(.start, .startup, .history, .diagnostics, .convergence) {
+  time <- call_duration(.start)
+  out  <- list(history = .history,
+               diagnostics = .diagnostics,
+               internal = list(startup = .startup),
+               convergence = .convergence,
+               time = time)
+  class(out) <- c(class(out), "pf")
+  out
 }

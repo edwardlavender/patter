@@ -39,3 +39,17 @@
   }
   out
 }
+
+#' @rdname pf_diag
+#' @keywords internal
+
+.pf_diag_bind <- function(.diag) {
+  if (length(.diag) == 0L) {
+    .diag <- NULL
+  } else {
+    .diag <-
+      .diag |>
+      purrr::flatten() |>
+      rbindlist()
+  }
+}

@@ -100,6 +100,7 @@ pf_rpropose_reachable <- function(.particles, .obs, .t, .bathy, ...) {
   choices <-
     choices |>
     rbindlist() |>
+    filter(!is.na(.data$value)) |>
     select("cell_past", cell_now = "cell",
            x_now = "x", y_now = "y",
            bathy = "value") |>
