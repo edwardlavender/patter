@@ -14,7 +14,7 @@
 
 .pf_diag_unique(.cells)
 
-.pf_diag(.particles, .t, .label)
+.pf_diag(.particles, .t, .trial = NA_integer_, .label)
 }
 \description{
 PF: calculate particle diagnostics

@@ -105,11 +105,12 @@ pf_lik <- function(.particles, .obs, .t, .bathy,
                    .is_land,
                    .moorings,
                    .detection_overlaps, .detection_kernels,
-                   .update_ac
+                   .update_ac, .trial = NA_integer_
 ) {
 
   #### Set up
   diagnostics <- list()
+  diagnostics <- .pf_diag(.particles, .t, .trial = .trial, .label = "base")
   lik <- NULL
   .particles[, lik := 1]
 
@@ -118,7 +119,7 @@ pf_lik <- function(.particles, .obs, .t, .bathy,
   if (.is_land) {
     .particles <- acs_filter_land(.particles, .bathy)
     diagnostics[["acs_filter_land"]] <-
-      .pf_diag(.particles, .t = .t, .label = "acs_filter_land")
+      .pf_diag(.particles, .t = .t, .trial = .trial, .label = "acs_filter_land")
   }
 
   #### (2) AC* likelihood
@@ -132,7 +133,7 @@ pf_lik <- function(.particles, .obs, .t, .bathy,
                                          .receivers = .obs$receiver_id_next[.t][[1]],
                                          .threshold = .obs$buffer_future_incl_gamma[.t])
       diagnostics[["acs_filter_container"]] <-
-        .pf_diag(.particles, .t = .t, .label = "acs_filter_container")
+        .pf_diag(.particles, .t = .t, .trial = .trial, .label = "acs_filter_container")
     }
 
     ## (B) Likelihood
@@ -142,7 +143,7 @@ pf_lik <- function(.particles, .obs, .t, .bathy,
                               .detection_overlaps,
                               .detection_kernels)
       diagnostics[["pf_lik_ac"]] <-
-        .pf_diag(.particles, .t = .t, .label = "pf_lik_ac")
+        .pf_diag(.particles, .t = .t, .trial = .trial,.label = "pf_lik_ac")
 
     }
   }
