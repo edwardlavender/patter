@@ -95,3 +95,11 @@ spatIsEmpty <- function(.x) {
     length(.x) == 0
   }
 }
+
+#' @rdname spat
+#' @keywords internal
+
+# Coerce coordinates onto a grid
+spatXyOnGrid <- function(.x, .xy) {
+  terra::xyFromCell(.x, terra::cellFromXY(.x, .xy))
+}

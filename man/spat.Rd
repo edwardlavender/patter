@@ -8,6 +8,7 @@
 \alias{spatIntersect.SpatRaster}
 \alias{spatIntersect.SpatVector}
 \alias{spatIsEmpty}
+\alias{spatXyOnGrid}
 \title{Spatial helper: \verb{spat*} functions}
 \usage{
 spatContainsNA(.x)
@@ -21,6 +22,8 @@ spatIntersect.SpatRaster(.x, .value, .fun)
 spatIntersect.SpatVector(.x)
 
 spatIsEmpty(.x)
+
+spatXyOnGrid(.x, .xy)
 }
 \description{
 Internal \code{terra} helpers for \href{s}{\code{SpatRaster}} and \href{s}{\code{SpatVector}}.
