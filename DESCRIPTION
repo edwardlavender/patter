@@ -22,7 +22,7 @@ Imports:
     terra,
     truncdist
 Suggests: 
-    extactextractr,
+    exactextractr,
     extraDistr, 
     geosphere, 
     knitr,
