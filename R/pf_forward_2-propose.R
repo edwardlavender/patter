@@ -6,7 +6,7 @@
 #' @rdname pf_propose
 #' @export
 
-.pf_rpropose_origin <- function(.obs, .origin, .grid = FALSE,
+pf_rpropose_origin <- function(.obs, .origin, .grid = FALSE,
                                 .detection_kernels, .moorings,
                                 .bathy) {
 
@@ -41,26 +41,29 @@
 #' @export
 
 pf_rpropose_kick <- function(.particles,
-                    .obs = NULL,
-                    .t = NULL,
-                    .bathy = NULL,
-                    .sim_length = rlen,
-                    .sim_angle = rangrw,
-                    .lonlat = FALSE, ...) {
+                             .obs = NULL,
+                             .t = NULL,
+                             .bathy = NULL,
+                             .sim_length = rlen,
+                             .sim_angle = rangrw,
+                             .lonlat = FALSE, ...) {
   # Simulate step length & turning angle
   n    <- nrow(.particles)
   rlen <- .sim_length(n, ...)
   rang <- .sim_angle(n, ...)
-  # Kick each particle into new proposal locations
-  x_now <- y_now <- NULL
-  xy_next <- cstep(.xy_now = as.matrix(.particles[, list(x_now, y_now)]),
+  # Kick each particle from previous location into new proposal locations
+  x_past <- y_past <- NULL
+  xy_next <- cstep(.xy_now = as.matrix(.particles[, list(x_past, y_past)]),
                    .lonlat = .lonlat,
                    .length = rlen,
                    .angle = rang)
   # Update data.table
-  x_next <- y_next <- NULL
-  .particles[, x_next := xy_next[, 1]]
-  .particles[, y_next := xy_next[, 2]]
+  cell_now <- NULL
+  .particles[, cell_now := terra::cellFromXY(.bathy, xy_next)]
+  xy_next <- terra::xyFromCell(.bathy, .particles$cell_now)
+  x_now <- y_now <- NULL
+  .particles[, x_now := xy_next[, 1]]
+  .particles[, y_now := xy_next[, 2]]
   .particles
 }
 

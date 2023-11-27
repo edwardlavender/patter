@@ -2,12 +2,12 @@
 % Please edit documentation in R/pf_forward_2-propose.R
 \name{pf_propose}
 \alias{pf_propose}
-\alias{.pf_rpropose_origin}
+\alias{pf_rpropose_origin}
 \alias{pf_rpropose_kick}
 \alias{pf_rpropose_reachable}
 \title{PF: proposal functions}
 \usage{
-.pf_rpropose_origin(
+pf_rpropose_origin(
   .obs,
   .origin,
   .grid = FALSE,
