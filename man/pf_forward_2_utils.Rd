@@ -2,15 +2,19 @@
 % Please edit documentation in R/pf_forward_2-utils-internal.R
 \name{pf_forward_2_utils}
 \alias{pf_forward_2_utils}
-\alias{.pf_utils_dirs}
-\alias{.pf_util_startup}
-\alias{.pf_util_write}
-\alias{pf_util_next}
+\alias{.pf_dirs}
+\alias{.pf_write}
+\alias{.pf_startup}
+\alias{pf_start_t}
+\alias{.pf_next}
+\alias{pf_ppast}
 \title{PF helper: internal utilities}
 \usage{
-.pf_utils_dirs(.write_opts)
+.pf_dirs(.write_opts)
 
-.pf_util_startup(
+.pf_write(.particles, .diagnostics, .psink, .dsink, .write)
+
+.pf_startup(
   .rerun,
   .obs,
   .lonlat,
@@ -22,9 +26,11 @@
   .write_opts
 )
 
-.pf_util_write(.particles, .diagnostics, .psink, .dsink, .write)
+pf_start_t(.rerun, .rerun_from)
 
-pf_util_next(.particles)
+.pf_next(.particles)
+
+pf_ppast(.particles, .history, .t)
 }
 \description{
 PF helper: internal utilities

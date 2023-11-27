@@ -5,7 +5,8 @@
 #' @rdname pf_forward_2_utils
 #' @keywords internal
 
-.pf_utils_dirs <- function(.write_opts) {
+# Define directories for output files
+.pf_dirs <- function(.write_opts) {
   if (is.null(.write_opts)) {
     return(NULL)
   }
@@ -27,9 +28,24 @@
 #' @rdname pf_forward_2_utils
 #' @keywords internal
 
-.pf_util_startup <- function(.rerun, .obs, .lonlat, .bathy, .moorings,
-                             .detection_overlaps, .detection_kernels, .update_ac,
-                             .write_opts) {
+# Write files (particles, diagnostics) to output directories
+.pf_write <- function(.particles, .diagnostics,
+                      .psink, .dsink, .write) {
+  if (.write) {
+    file <- paste0(t, ".parquet")
+    arrow::write_parquet(.particles,
+                         sink = file.path(.psink, file))
+    arrow::write_parquet(.diagnostics,
+                         sink = file.path(.dsink, file))
+  }
+}
+
+#' @rdname pf_forward_2_utils
+#' @keywords internal
+
+.pf_startup <- function(.rerun, .obs, .lonlat, .bathy, .moorings,
+                        .detection_overlaps, .detection_kernels, .update_ac,
+                        .write_opts) {
 
   #### Use .rerun, if specified
   if (!is.null(.rerun)) {
@@ -44,7 +60,7 @@
   history     <- list()
   diagnostics <- list()
   # directories to write outputs (may be NULL)
-  folders            <- .pf_utils_dirs(.write_opts)
+  folders            <- .pf_dirs(.write_opts)
   folder_history     <- folders[[".history"]]
   folder_diagnostics <- folders[["diagnostics"]]
 
@@ -58,13 +74,18 @@
   }
 
   #### Define wrapper functions
-  pf_lik_w <- function(.particles, .t, .trial = NA_integer_) {
+  .pf_lik_abbr <- function(.particles, .t, .trial = NA_integer_) {
     pf_lik(.particles = .particles, .obs = .obs, .t = .t, .bathy = .bathy,
            .is_land = is_land,
            .moorings = .moorings,
            .detection_overlaps = .detection_overlaps, .detection_kernels = .detection_kernels,
            .update_ac = .update_ac,
            .trial = .trial)
+  }
+  .pf_write_abbr <- function(.particles, .diagnostics) {
+    .pf_write(.particles = .particles, .diagnostics = diagnostics,
+                   .psink = folder_history, .dsink = folder_diagnostics,
+                   .write = !is.null(.write_opts))
   }
 
   #### Collate outputs
@@ -81,30 +102,31 @@
     control = list(
       is_land = is_land
     ),
-    wrapper = list(pf_lik = pf_lik_w)
+    wrapper = list(.pf_lik_abbr = .pf_lik_abbr,
+                   .pf_write_abbr = .pf_write_abbr)
   )
 }
 
 #' @rdname pf_forward_2_utils
 #' @keywords internal
 
-.pf_util_write <- function(.particles, .diagnostics,
-                           .psink, .dsink, .write) {
-  if (.write) {
-    file <- paste0(t, ".parquet")
-    arrow::write_parquet(.particles,
-                         sink = file.path(.psink, file))
-    arrow::write_parquet(.diagnostics,
-                         sink = file.path(.dsink, file))
+# Define the starting time step
+pf_start_t <- function(.rerun, .rerun_from) {
+  if (is.null(.rerun)) {
+    t <- 1L
+  } else {
+    t <- max(c(1L, .rerun_from))
   }
+  t
 }
 
 #' @rdname pf_forward_2_utils
 #' @keywords internal
 
-pf_util_next <- function(.particles) {
-  # Current cells become past cells for next time step
+# Move loop on so that current cells become past cells @ next time step
+.pf_next <- function(.particles) {
   .particles |>
+    lazy_dt() |>
     mutate(timestep = .data$timestep + 1L) |>
     select("timestep",
            cell_past = "cell_now",
@@ -113,3 +135,16 @@ pf_util_next <- function(.particles) {
     as.data.table()
 }
 
+#' @rdname pf_forward_2_utils
+#' @keywords internal
+
+# Define particles for the previous time step
+# * This is necessary for the first step in pf_forward_2()
+pf_ppast <- function(.particles, .history, .t) {
+  if (.t == 1L) {
+    ppast <- .pf_next(.particles)
+  } else {
+    # TO DO: read .history[[.t - 1L]] here
+    ppast <- copy(.history[[.t - 1L]])
+  }
+}

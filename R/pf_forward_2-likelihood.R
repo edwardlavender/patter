@@ -79,7 +79,9 @@ pf_lik_ac <- function(.particles, .obs, .t, .detection_overlaps, .detection_kern
   }
 
   #### Return particles
-  .particles
+  .particles |>
+    filter(.data$lik > 0) |>
+    as.data.table()
 
 }
 
@@ -96,6 +98,9 @@ pf_lik_update <- function(.particles, .obs, .t, .bathy, .update_ac) {
                                .bathy = .bathy)
   }
   .particles[, lik := colProds.matrix(lik)]
+  .particles |>
+    filter(.data$lik > 0) |>
+    as.data.table()
 }
 
 #' @rdname pf_lik
@@ -109,9 +114,11 @@ pf_lik <- function(.particles, .obs, .t, .bathy,
 ) {
 
   #### Set up
+  # Define baseline diagnostics
   diagnostics <- list()
-  diagnostics <- .pf_diag(.particles, .t, .trial = .trial, .label = "base")
-  lik <- NULL
+  diagnostics[["base"]] <- .pf_diag(.particles, .t, .trial = .trial, .label = "base")
+  # Define global variables
+  weight <- lik <- NULL
   .particles[, lik := 1]
 
   #### Land filter
@@ -159,6 +166,7 @@ pf_lik <- function(.particles, .obs, .t, .bathy,
   }
 
   ## Return outputs
+  .particles[, weight := lik]
   attr(.particles, "diagnostics") <- diagnostics
   .particles
 

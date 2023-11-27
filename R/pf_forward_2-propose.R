@@ -75,13 +75,13 @@ pf_rpropose_reachable <- function(.particles, .obs, .t, .bathy, ...) {
   # Isolate unique particles
   .particles <-
     .particles |>
-    # select("cell_now", "x_now", "y_now") |>
-    distinct(.data$cell_now, .keep_all = TRUE)
+    # select("cell_past", "x_past", "y_past") |>
+    distinct(.data$cell_past, .keep_all = TRUE)
 
   # Define reachable zone(s) (given .mobility)
   zone <-
     .particles |>
-    select("x_now", "y_now") |>
+    select("x_past", "y_past") |>
     as.matrix() |>
     terra::vect(type = "point") |>
     terra::buffer(width = .obs$mobility[.t], quadsegs = 1e3)
@@ -95,19 +95,17 @@ pf_rpropose_reachable <- function(.particles, .obs, .t, .bathy, ...) {
                                  include_cell = TRUE,
                                  include_xy = TRUE)
   for (i in seq_len(length(choices))) {
-    choices[[i]]$id <- .particles$cell_now[i]
-  }
-  if (length(zone) > 1L) {
-    choices <- rbindlist(choices)
+    choices[[i]]$cell_past <- .particles$cell_past[i]
   }
   choices <-
     choices |>
-    select(cell_now = "id",
-           x_next = "x", y_next = "y",
+    rbindlist() |>
+    select("cell_past", cell_now = "cell",
+           x_now = "x", y_now = "y",
            bathy = "value") |>
     as.data.table()
 
   # Return 'proposal' (possible) cells (given .mobility only)
   # * In downstream functions, we filter & weight these
-  merge(.particles, choices, by = "cell_now")
+  merge(.particles, choices, by = "cell_past")
 }
