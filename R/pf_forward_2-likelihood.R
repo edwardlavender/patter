@@ -58,6 +58,7 @@ acs_filter_container <- function(.particles, .moorings, .receivers, .threshold) 
 pf_lik_ac <- function(.particles, .obs, .t, .detection_overlaps, .detection_kernels) {
 
   #### Calculate likelihood _given detection_
+  lik <- NULL
   if (.obs$detection[.t] == 1) {
     # (1) Calculate AC weights _given_detection_ at current time step
     # Identify receiver(s) that recorded detections at the selected time step
@@ -65,11 +66,11 @@ pf_lik_ac <- function(.particles, .obs, .t, .detection_overlaps, .detection_kern
     # Identify remaining (active) receivers which did not record a detection (if any)
     absences_current <- .acs_absences(.obs$date[.t], detections_current, .detection_overlaps)
     # Calculate weights
-    .particles[, likelihood := .acs_given_detection_particles(detections_current, absences_current, .detection_kernels, .particles)]
+    .particles[, lik := .acs_given_detection_particles(detections_current, absences_current, .detection_kernels, .particles)]
 
     #### Calculate likelihood _given non-detection_ at current time step
   } else {
-    .particles[, likelihood :=
+    .particles[, lik :=
                  terra::extract(
                    .detection_kernels$bkg_inv_surface_by_design[[.detection_kernels$array_design_by_date[[.obs$date[t]]]]],
                    .particles$cell_now
