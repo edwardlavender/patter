@@ -46,14 +46,19 @@ spatCellCoordsDT <- function(.x, .spatcell = .x) {
 
 # Intersect SpatRaster/Spatvectors in a list
 spatIntersect <- function(.x, .value = 1, .fun = NULL) {
+  # Check inputs
   check_inherits(.x, "list")
   check_inherits(.x[[1]], c("SpatRaster", "SpatVector"))
   if (!is.null(.value) & !is.null(.fun)) {
     abort("Either `.value` or `.fun` should be supplied.")
   }
+  # Permit (but drop) NULL elements in `.x`
+  .x <- compact(.x)
+  # Handle one-length lists quickly
   if (length(.x) == 1) {
     return(.x[[1]])
   }
+  # Intersect Spat* objects
   if (inherits(.x[[1]], "SpatRaster")) {
     return(spatIntersect.SpatRaster(.x = .x, .value = .value, .fun = .fun))
   } else if (inherits(.x[[1]], "SpatVector")) {
