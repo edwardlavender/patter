@@ -2,13 +2,13 @@
 % Please edit documentation in R/pf_forward_2-sample.R
 \name{pf_sample}
 \alias{pf_sample}
-\alias{.pf_sample_multinomial}
-\alias{.pf_sample_systematic}
+\alias{pf_sample_multinomial}
+\alias{pf_sample_systematic}
 \title{PF: sampling functions}
 \usage{
-.pf_sample_multinomial(.particles, .n)
+pf_sample_multinomial(.particles, .n)
 
-.pf_sample_systematic(.particles, .n)
+pf_sample_systematic(.particles, .n)
 }
 \description{
 PF: sampling functions

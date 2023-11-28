@@ -4,7 +4,7 @@
 #' @rdname pf_sample
 #' @export
 
-.pf_sample_multinomial <- function(.particles, .n) {
+pf_sample_multinomial <- function(.particles, .n) {
   stopifnot(rlang::has_name(.particles, "weight"))
   if (fnrow(.particles) > 0L) {
     .particles[sample.int(.N, size = .n, replace = TRUE, prob = .particles$weight), ]
@@ -16,7 +16,7 @@
 #' @rdname pf_sample
 #' @export
 
-.pf_sample_systematic <- function(.particles, .n) {
+pf_sample_systematic <- function(.particles, .n) {
   if (fnrow(.particles) > 0L) {
     # Cumulative sum of weights
     stopifnot(rlang::has_name(.particles, "weight"))
