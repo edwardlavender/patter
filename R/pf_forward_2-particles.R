@@ -39,13 +39,13 @@
 #' @keywords internal
 
 .pf_particles_origin <- function(.obs,
-                                .origin,
-                                .grid = FALSE,
-                                .detection_kernels, .moorings,
-                                .bathy,
-                                .pf_lik,
-                                .sample, .n,
-                                .trial_crit, .trial_count) {
+                                 .origin,
+                                 .grid = FALSE,
+                                 .detection_kernels, .moorings,
+                                 .bathy,
+                                 .pf_lik,
+                                 .sample, .n,
+                                 .trial_crit, .trial_count) {
   # Generate proposal location(s)
   diagnostics <- list()
   proposals <- pf_rpropose_origin(.obs = .obs, .origin = .origin, .grid = .grid,
@@ -78,7 +78,7 @@
   crit  <- 0
   count <- 1L
   # Implement iterative sampling
-  while (crit < .trial_crit & count < .trial_count) {
+  while (crit < .trial_crit & count <= .trial_count) {
     # Propose particles
     proposals <- .rpropose(.particles = .particles, .obs = .obs, .t = .t, .bathy = .bathy)
     # Calculate likelihood & weights (likelihood = weights)
@@ -128,7 +128,7 @@
   crit  <- diagnostics[["sampler-dens"]]$n_u
   pnow  <- proposals
   if (nrow(pnow) > 0L) {
-    while (crit < .trial_crit & count < .trial_count) {
+    while (crit < .trial_crit & count <= .trial_count) {
       pnow <- .sample(.particles = proposals, .n = .n)
       label <- paste0("sampler-sample-", count)
       diagnostics[[label]] <-
