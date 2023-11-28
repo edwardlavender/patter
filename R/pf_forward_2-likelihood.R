@@ -114,12 +114,12 @@ pf_lik <- function(.particles, .obs, .t, .bathy,
 ) {
 
   #### Set up
-  # Define baseline diagnostics
-  diagnostics <- list()
-  diagnostics[["base"]] <- .pf_diag(.particles, .t, .trial = .trial, .label = "base")
   # Define global variables
   lik <- dens <- weight <- NULL
   .particles[, lik := 1]
+  # Define baseline diagnostics
+  diagnostics <- list()
+  diagnostics[["base"]] <- .pf_diag(.particles, .t, .trial = .trial, .label = "base")
 
   #### Land filter
   # Eliminate particles in inhospitable locations (e.g., on land)
