@@ -11,47 +11,50 @@ test_that("call_*() functions work", {
   # No argument function
   t_onset <- Sys.time()
   f <- function() {
-    call_start(.time = t_onset)
+    call_start(.start = t_onset)
   }
   expect_identical(f(),
                    paste0("`patter::f()` called @ ", call_time(t_onset), "..."))
   # Multi-argument function
   f <- function(x, y, ...) {
-    call_start(.time = t_onset)
+    call_start(.start = t_onset)
   }
   expect_identical(f(x = 1, y = 2),
                    paste0("`patter::f()` called @ ", call_time(t_onset), "..."))
 
+  #### Test call_duration()
+  expect_equal(call_duration(t_onset, t_onset + 60),
+               "1 min(s)")
+  expect_equal(call_duration(t_onset, t_onset + 61),
+               "1.02 min(s)")
+
   #### Test call_end()
   # No argument function
-  t_end <- Sys.time()
+  t_end <- t_onset + 60
   g <- function() {
-    call_end(.time = t_end)
+    call_end(.start = t_onset, .end = t_end)
   }
-  expect_identical(g(),
-                   paste0("`patter::g()` call ended @ ", call_time(t_end), "..."))
+  msg <- paste0("`patter::g()` call ended @ ", call_time(t_end), " (duration: ~1 min(s)).")
+  expect_identical(g(), msg)
   # Multi-argument function
   g <- function(x = 1, y = 1) {
-    call_end(.time = t_end)
+    call_end(.start = t_onset, .end = t_end)
   }
-  expect_identical(g(),
-                   paste0("`patter::g()` call ended @ ", call_time(t_end), "..."))
-  expect_identical(g(x = 1),
-                   paste0("`patter::g()` call ended @ ", call_time(t_end), "..."))
-  expect_identical(g(x = 1, y = 2),
-                   paste0("`patter::g()` call ended @ ", call_time(t_end), "..."))
+  expect_identical(g(), msg)
+  expect_identical(g(x = 1), msg)
+  expect_identical(g(x = 1, y = 2), msg)
 
-  #### Test call_duration()
+  #### Test call_timings()
   t1 <- as.POSIXct("2016-01-01")
   t2 <- as.POSIXct("2016-02-01")
   expect_equal(
-    call_duration(t1, t2),
+    call_timings(t1, t2),
     list(start = t1,
          end = t2,
          duration = difftime(t2, t1))
   )
   expect_equal(
-    call_duration(t1, t2, units = "mins"),
+    call_timings(t1, t2, units = "mins"),
     list(start = t1,
          end = t2,
          duration = difftime(t2, t1, units = "mins"))

@@ -5,16 +5,16 @@
 \alias{call_time}
 \alias{call_start}
 \alias{call_end}
-\alias{call_duration}
+\alias{call_timings}
 \title{Utilities: function call properties}
 \usage{
 call_time(.time, form = "\%Y-\%m-\%d \%H:\%M:\%S")
 
-call_start(.fun = as.character(sys.call(-1L)), .time = Sys.time())
+call_start(.fun = as.character(sys.call(-1L)), .start = Sys.time())
 
-call_end(.fun = as.character(sys.call(-1L)), .time = Sys.time())
+call_end(.fun = as.character(sys.call(-1L)), .start, .end = Sys.time())
 
-call_duration(.start, .end = Sys.time(), ...)
+call_timings(.start, .end = Sys.time(), ...)
 }
 \description{
 These functions collate information related to function calls.

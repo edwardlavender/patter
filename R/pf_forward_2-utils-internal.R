@@ -204,7 +204,7 @@
 #' @keywords internal
 
 .pf_outputs <- function(.start, .startup, .history, .diagnostics, .convergence) {
-  time <- call_duration(.start)
+  time <- call_timings(.start)
   out  <- list(history = .history,
                diagnostics = .diagnostics,
                internal = list(startup = .startup),
