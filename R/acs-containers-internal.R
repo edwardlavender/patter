@@ -121,7 +121,8 @@
   pos_detections <- which(!sapply(.obs$receiver_id, is.null))
 
   # (A) Define possible locations given past (if applicable)
-  start_with_detection <- .obs$detection[pos_detections[1]] == 1L
+  start_with_detection <- .obs$detection[pos_detections[1]] == 1
+  detection_container <- NULL
   if (start_with_detection) {
     # Identify the receivers that recorded the 'current' detection
     pos_current       <- pos_detections[1]
@@ -140,23 +141,22 @@
   # Define the receivers at which the next detection was recorded
   # * If we start with a detection, we simply identify the next detection
   # * Otherwise, the next detection is effectively the first detection (see below)
-  pos_next <- ifelse(start_with_detection, yes = pos_detections[2], no = pos_detections[1])
-  receivers_next <- .obs$receiver_id[[pos_next]]
-  future_container <- .acs_container_future(receivers_next,
-                                            .detection_kernels = .detection_kernels,
-                                            .moorings = .moorings,
-                                            .buffer = .obs$buffer_future[1])
-  if (spatIsEmpty(future_container)) {
-    abort("Future container(s) at t = 1 do not intersect.")
+  future_container <- NULL
+  if (length(pos_detections) > 1L) {
+    pos_next <- ifelse(start_with_detection, yes = pos_detections[2], no = pos_detections[1])
+    receivers_next <- .obs$receiver_id[[pos_next]]
+    future_container <- .acs_container_future(receivers_next,
+                                              .detection_kernels = .detection_kernels,
+                                              .moorings = .moorings,
+                                              .buffer = .obs$buffer_future[1])
+    if (spatIsEmpty(future_container)) {
+      abort("Future container(s) at t = 1 do not intersect.")
+    }
   }
 
   # (C) Define container accounting for detection & future
-  if (start_with_detection) {
-    container <- spatIntersect(list(detection_container, future_container),
-                               .value = NULL, .fun = function(x) all(x > 0))
-  } else {
-    container <- future_container
-  }
+  container <- spatIntersect(list(detection_container, future_container),
+                             .value = NULL, .fun = function(x) all(x > 0))
   # For SpatRaster containers(0, 1), convert zero to NA for spatCellCoordsDT()
   if (inherits(container, "SpatRaster")) {
     container <- terra::classify(container, cbind(0, NA))
