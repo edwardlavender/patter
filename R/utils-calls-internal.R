@@ -13,7 +13,7 @@ call_time <- function(.time, form = "%Y-%m-%d %H:%M:%S") {
 #' @keywords internal
 
 call_start <- function(.fun = as.character(sys.call(-1L)), .time = Sys.time()) {
-  .fun  <- as.character(.fun)
+  .fun  <- .fun[1]
   .time <- call_time(.time)
   glue::glue("`patter::{.fun}()` called @ {.time}...",
              .envir = environment())
@@ -23,7 +23,7 @@ call_start <- function(.fun = as.character(sys.call(-1L)), .time = Sys.time()) {
 #' @keywords internal
 
 call_end <- function(.fun = as.character(sys.call(-1L)), .time = Sys.time()) {
-  .fun  <- as.character(.fun)
+  .fun  <- .fun[1]
   .time <- call_time(.time)
   glue::glue("`patter::{.fun}()` call ended @ {.time}...",
              .envir = environment())

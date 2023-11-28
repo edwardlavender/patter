@@ -36,7 +36,7 @@
 
 .pf_ppast(.particles, .history, .t)
 
-.pf_trial_sampler(diagnostics, .trial_crit)
+.pf_trial_sampler(.diagnostics, .trial_crit)
 
 .pf_revert(.t, .trial_revert_steps)
 

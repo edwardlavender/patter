@@ -72,7 +72,7 @@ pf_lik_ac <- function(.particles, .obs, .t, .detection_overlaps, .detection_kern
   } else {
     .particles[, lik :=
                  terra::extract(
-                   .detection_kernels$bkg_inv_surface_by_design[[.detection_kernels$array_design_by_date[[.obs$date[t]]]]],
+                   .detection_kernels$bkg_inv_surface_by_design[[.detection_kernels$array_design_by_date[[.obs$date[.t]]]]],
                    .particles$cell_now
                  )[, 1]
     ]
@@ -89,16 +89,16 @@ pf_lik_ac <- function(.particles, .obs, .t, .detection_overlaps, .detection_kern
 #' @keywords internal
 
 pf_lik_update <- function(.particles, .obs, .t, .bathy, .update_ac) {
-  lik <- matrix(NA, nrow(.particles), ncol = length(.update_ac) + 1)
-  lik[, 1] <- .particles$weight
+  mlik <- matrix(NA, nrow(.particles), ncol = length(.update_ac) + 1)
+  mlik[, 1] <- .particles$lik
   update_ac_index <- seq_len(length(.update_ac))
   for (i in update_ac_index) {
-    lik[, i + 1] <- .update_ac(.particles = .particles,
+    mlik[, i + 1] <- .update_ac(.particles = .particles,
                                .obs = .obs, .t = .t,
                                .bathy = .bathy)
   }
-  .particles[, lik := colProds.matrix(lik)]
   .particles |>
+    mutate(lik = colProds.matrix(mlik)) |>
     filter(.data$lik > 0) |>
     as.data.table()
 }
@@ -118,7 +118,7 @@ pf_lik <- function(.particles, .obs, .t, .bathy,
   diagnostics <- list()
   diagnostics[["base"]] <- .pf_diag(.particles, .t, .trial = .trial, .label = "base")
   # Define global variables
-  weight <- lik <- NULL
+  lik <- dens <- weight <- NULL
   .particles[, lik := 1]
 
   #### Land filter
@@ -166,6 +166,7 @@ pf_lik <- function(.particles, .obs, .t, .bathy,
   }
 
   ## Return outputs
+  .particles[, dens := NA_real_]
   .particles[, weight := lik]
   attr(.particles, "diagnostics") <- diagnostics
   .particles

@@ -47,9 +47,6 @@
   if (length(.diag) == 0L) {
     .diag <- NULL
   } else {
-    .diag <-
-      .diag |>
-      purrr::flatten() |>
-      rbindlist()
+    collapse::unlist2d(.diag, idcols = FALSE, DT = TRUE)
   }
 }

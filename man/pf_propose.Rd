@@ -5,6 +5,7 @@
 \alias{pf_rpropose_origin}
 \alias{pf_rpropose_kick}
 \alias{pf_rpropose_reachable}
+\alias{pf_dpropose}
 \title{PF: proposal functions}
 \usage{
 pf_rpropose_origin(
@@ -28,6 +29,8 @@ pf_rpropose_kick(
 )
 
 pf_rpropose_reachable(.particles, .obs, .t, .bathy, ...)
+
+pf_dpropose(.particles, .lonlat)
 }
 \description{
 TO DO

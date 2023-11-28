@@ -145,7 +145,7 @@
 # Define particles for the previous time step
 # * This is necessary for the first step in pf_forward_2()
 .pf_ppast <- function(.particles, .history, .t) {
-  if (.t == 1L) {
+  if (.t == 2L) {
     ppast <- .pf_next(.particles)
   } else {
     # TO DO: read .history[[.t - 1L]] here
@@ -156,13 +156,13 @@
 #' @rdname pf_forward_2_utils
 #' @keywords internal
 
-.pf_trial_sampler <- function(diagnostics, .trial_crit) {
-  opt_1 <- length(diagnostics) == 0L
+.pf_trial_sampler <- function(.diagnostics, .trial_crit) {
+  opt_1 <- length(.diagnostics) == 0L
   if (opt_1) {
     return(TRUE)
   }
-  pos <- length(diagnostics[["kick"]])
-  crit <- diagnostics[[pos]]$n_u
+  pos <- length(.diagnostics[["kick"]])
+  crit <- .diagnostics[["kick"]][[pos]]$n_u
   crit < .trial_crit
 }
 

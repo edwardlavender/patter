@@ -32,8 +32,12 @@ pf_rpropose_origin <- function(.obs, .origin, .grid = FALSE,
   .origin |>
     mutate(timestep = 1L,
            cell_past = NA_integer_,
+           x_past = NA_integer_,
+           y_past = NA_integer_,
            cell_now = as.integer(.data$cell_id)) |>
-    select("timestep", "cell_past", "cell_now", x_now = "cell_x", y_now = "cell_y") |>
+    select("timestep",
+           "cell_past", "x_past", "y_past",
+           "cell_now", x_now = "cell_x", y_now = "cell_y") |>
     as.data.table()
 }
 
@@ -109,4 +113,20 @@ pf_rpropose_reachable <- function(.particles, .obs, .t, .bathy, ...) {
   # Return 'proposal' (possible) cells (given .mobility only)
   # * In downstream functions, we filter & weight these
   merge(.particles, choices, by = "cell_past")
+}
+
+#' @rdname pf_propose
+#' @export
+
+pf_dpropose <- function(.particles, .lonlat) {
+  # Calculate densities
+  x_past <- y_past <- x_now <- y_now <- NULL
+  .particles[, dens := dstep(.data_now = .particles[, list(x_now = x_past, y_now = y_past)],
+                             .data_past = .particles[, list(x_now, y_now)],
+                             pairwise = TRUE,
+                             lonlat = .lonlat)]
+  # Isolate particles with positive densities
+  .particles |>
+    filter(dens > 0) |>
+    as.data.table()
 }

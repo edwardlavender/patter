@@ -137,7 +137,7 @@ compact <- function(l) l[which(!sapply(l, is.null))]
 #' @author Edward Lavender
 #' @keywords internal
 
-colProds.matrix <- function(.data, .cols = seq_len(ncol(.data))) {
+colProds.matrix <- function(.data, .cols = seq_col(.data)) {
   if (length(.cols) == 1L) {
     return(.data[, .cols])
   }

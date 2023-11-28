@@ -173,5 +173,9 @@
 #' @importFrom data.table .NGRP
 #' @importFrom data.table .SD
 #' @importFrom data.table copy
+#'
+#' @importFrom collapse fnrow
+#' @importFrom collapse seq_col
+#' @importFrom collapse seq_row
 
 NULL

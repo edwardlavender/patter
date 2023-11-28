@@ -4,7 +4,7 @@
 \alias{colProds.matrix}
 \title{Utilities: calculate column products}
 \usage{
-colProds.matrix(.data, .cols = seq_len(ncol(.data)))
+colProds.matrix(.data, .cols = seq_col(.data))
 }
 \arguments{
 \item{.data}{A \code{\link{matrix}}.}
