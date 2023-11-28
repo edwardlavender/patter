@@ -129,7 +129,7 @@
   pnow  <- proposals
   if (nrow(pnow) > 0L) {
     while (crit < .trial_crit & count < .trial_count) {
-      pnow <- .sample(.particles = proposals, .size = .n)
+      pnow <- .sample(.particles = proposals, .n = .n)
       label <- paste0("sampler-sample-", count)
       diagnostics[[label]] <-
         .pf_diag(pnow, .t = .t, .label = "sampler-sample", .trial = count)

@@ -161,8 +161,8 @@
   if (opt_1) {
     return(TRUE)
   }
-  pos <- length(.diagnostics[["kick"]])
-  crit <- .diagnostics[["kick"]][[pos]]$n_u
+  pos  <- fnrow(.diagnostics[["kick"]])
+  crit <- .diagnostics[["kick"]]$n_u[pos]
   crit < .trial_crit
 }
 
@@ -206,7 +206,7 @@
 .pf_outputs <- function(.start, .startup, .history, .diagnostics, .convergence) {
   time <- call_timings(.start)
   out  <- list(history = .history,
-               diagnostics = .diagnostics,
+               diagnostics = .pf_diag_bind(.diagnostics),
                internal = list(startup = .startup),
                convergence = .convergence,
                time = time)

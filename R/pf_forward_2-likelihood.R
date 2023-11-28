@@ -150,7 +150,7 @@ pf_lik <- function(.particles, .obs, .t, .bathy,
                               .detection_overlaps,
                               .detection_kernels)
       diagnostics[["pf_lik_ac"]] <-
-        .pf_diag(.particles, .t = .t, .trial = .trial,.label = "pf_lik_ac")
+        .pf_diag(.particles, .t = .t, .trial = .trial, .label = "pf_lik_ac")
 
     }
   }
@@ -162,7 +162,7 @@ pf_lik <- function(.particles, .obs, .t, .bathy,
                                 .bathy,
                                 .update_ac)
     diagnostics[["update_ac"]] <-
-      .pf_diag(.particles, .t = .t, .label = "update_ac")
+      .pf_diag(.particles, .t = .t, .trial = .trial, .label = "update_ac")
   }
 
   ## Return outputs

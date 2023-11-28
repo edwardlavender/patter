@@ -30,8 +30,8 @@
                     component = .label,
                     trial = .trial,
                     n = nrow(.particles),
-                    n_u = NA_real_,
-                    ess = NA_real_)
+                    n_u = 0L,
+                    ess = 0L)
   if (out$n > 0) {
     n_u <- ess <- NULL
     out[, n_u := .pf_diag_unique(.particles$cell_now)]
