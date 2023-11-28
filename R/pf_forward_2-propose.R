@@ -119,14 +119,20 @@ pf_rpropose_reachable <- function(.particles, .obs, .t, .bathy, ...) {
 #' @export
 
 pf_dpropose <- function(.particles, .lonlat) {
-  # Calculate densities
-  x_past <- y_past <- x_now <- y_now <- NULL
-  .particles[, dens := dstep(.data_now = .particles[, list(x_now = x_past, y_now = y_past)],
-                             .data_past = .particles[, list(x_now, y_now)],
-                             pairwise = TRUE,
-                             lonlat = .lonlat)]
-  # Isolate particles with positive densities
-  .particles |>
-    filter(dens > 0) |>
-    as.data.table()
+  # Handle empty data.tables
+  # * These result when all proposals have zero likelihood
+  if (fnrow(.particles) == 0L) {
+    return(.particles[, dens := numeric()])
+  } else {
+    # Calculate densities
+    x_past <- y_past <- x_now <- y_now <- NULL
+    .particles[, dens := dstep(.data_now = .particles[, list(x_now = x_past, y_now = y_past)],
+                               .data_past = .particles[, list(x_now, y_now)],
+                               pairwise = TRUE,
+                               lonlat = .lonlat)]
+    # Isolate particles with positive densities
+    .particles |>
+      filter(dens > 0) |>
+      as.data.table()
+  }
 }
