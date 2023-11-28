@@ -32,47 +32,6 @@ abort <- function(...) {
   stop(glue::glue(...), call. = FALSE)
 }
 
-#' @title Progress bar wrappers
-#'
-#' @examples
-#' \dontrun{
-#' # Define loop
-#' loop <- function(.progress) {
-#'   n <- 10L
-#'   pb <- pb_init(n, .progress)
-#'   for (i in seq_len(n)){
-#'     Sys.sleep(0.1)
-#'     pb_tick(pb, .progress)
-#'   }
-#' }
-#'
-#' # Show progress bar
-#' loop(.progress = TRUE)
-#'
-#' # Hide no progress bar
-#' loop(.progress = FALSE)
-#' }
-#' @name pb
-
-#' @rdname pb
-#' @keywords internal
-
-pb_init <- function(.n, .progress) {
-  pb <- NULL
-  if (.progress) {
-    pb <- progress::progress_bar$new(total = .n)
-    pb$tick(0)
-  }
-  pb
-}
-
-#' @rdname pb
-#' @keywords internal
-
-pb_tick <- function(.pb, .progress) {
-  if (.progress) .pb$tick()
-}
-
 #' @title Utilities: create a log file
 #' @description This function creates a .txt file (`.file`) via [`file.create`].
 #' @param .file A character path to a file. `NULL` and `""` are permitted.
