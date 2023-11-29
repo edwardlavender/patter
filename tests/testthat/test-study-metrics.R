@@ -1,7 +1,3 @@
-#########################
-#########################
-#### make_matrix_receivers()
-
 test_that("make_matrix_receivers() works", {
 
   #### Define inputs

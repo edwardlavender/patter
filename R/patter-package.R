@@ -178,5 +178,7 @@
 #' @importFrom collapse fnrow
 #' @importFrom collapse seq_col
 #' @importFrom collapse seq_row
+#'
+#' @importFrom lubridate `%within%`
 
 NULL

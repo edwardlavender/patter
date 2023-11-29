@@ -1,5 +1,4 @@
 #' @title Matricise receiver deployment time series
-#' @importFrom lubridate `%within%`
 #'
 #' @description This function creates a matrix that, for each time step (matrix row) in a sequence of user-defined times, defines whether or not each receiver (matrix column) was active. To implement the function, a [`data.table`] with receiver IDs and deployment start and end times must be supplied (via `.moorings`). Servicing dates can also be accounted for via a [`data.table`] with receiver IDs and servicing times (`.services`). The times for which to express whether or not each receiver was active are provided by optionally defining a `start` and `end` date (these can be taken from the range of deployment times in `.moorings` if unspecified) and the interval (`.delta_t`) between time steps.
 #'

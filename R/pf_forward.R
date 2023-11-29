@@ -11,7 +11,7 @@ pf_rerun <- function(.rerun, .revert = 25L) {
   max(c(1L, length(.rerun[["history"]]) - .revert))
 }
 
-pf_forward_2 <- function(.obs,
+pf_forward <- function(.obs,
                          .origin = NULL,
                          .bathy, .lonlat = FALSE,
                          .moorings = NULL,
