@@ -14,23 +14,3 @@ dist_along_path <- function(.xy, .lonlat = FALSE) {
                   lonlat = .lonlat,
                   sequential = TRUE)
 }
-
-#' @title Distances: between cells on a [`SpatRaster`]
-#' @description This function calculates distances between cells on a [`SpatRaster`]
-#' @param .bathy A [`SpatRaster`].
-#' @param .from,.to Integer vectors that define cell IDs.
-#' @param .lonlat A `logical` variable that defines whether or not the `.bathy` is in longitude/latitude format.
-#' @param ... Arguments passed to  [`terra::distance()`].
-#' @seealso
-#' * `dist_*` functions in [`flapper`](https://github.com/edwardlavender/flapper);
-#' * [`dist_along_path()`] calculates distances along a path;
-#' * [`dist_btw_cells()`] calculates distances between [`SpatRaster`] cells;
-#' @export
-
-dist_btw_cells <- function(.bathy,
-                           .from, .to,
-                           .lonlat = FALSE, ...) {
-  from <- terra::xyFromCell(.bathy, .from)
-  to   <- terra::xyFromCell(.bathy, .to)
-  terra::distance(from, to, .lonlat, ...)
-}
