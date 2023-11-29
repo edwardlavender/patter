@@ -1,0 +1,104 @@
+---
+title: "Methodology"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Methodology}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(patter)
+```
+
+# Introduction
+
+The `patter` package is a revised implementation of the 'flapper' algorithms for passive acoustic telemetry (Lavender et al., 2023). These algorithms integrate observations and movement in a process-based framework that accounts for all available information to reconstruct movement paths and emergent patterns of space use from detections at receivers (and/or ancillary datasets) (Lavender et al., 2023). This vignette outlines the methodology, providing an entry point to the literature and the package. See the `002-workflow` vignette to learn how to implement the methodology using `patter`.
+
+# The flapper algorithms
+
+In Lavender et al. (2023)'s original presentation, the flapper algorithms were introduced as an integrated framework comprised of two branches: an acoustic-container (AC) branch and a particle-filtering (PF) branch. AC-branch algorithms define the set of possible locations of an individual _given the data_. The AC algorithm handles the information from acoustic observations and the DC algorithm handles the information from depth observations (which are often collected alongside acoustic data). PF-branch algorithms refine AC-branch outputs _given a movement model_. In the predecessor [`flapper`](https://github.com/edwardlavender/flapper) package, AC-branch algorithms were implemented via `ac()`, `dc()` and `acdc()` and their outputs were refined through PF via `pf()` and `pf_simplify()`. 
+
+# Forward-filter backward-sampler
+
+In `patter`, we have streamlined, enhanced and formalised the original methodology. Our revised approach falls into the category of forward-filtering backward-sampling algorithms in the particle filtering literature. This comprises a forward simulation and a backward pass. In the forward simulation, we simulate the set of possible locations of an individual moving forwards in time, given the data and contingent upon the past. Each location sample is termed a 'particle'. In `patter`, this is achieved with a single function (`pf_forward()`) that integrates the AC- and PF-branch algorithms. The forward simulation is followed by a backward pass. In the original implementation, the backward pass was implemented by `pf_simplify()` and involved pruning 'dead ends' from the forward simulation. If you imagine the forward simulation like a growing fungal network between two points in space (representing the start and end of a time series), dead ends are the side branches of the (simulated) fungal network that fail to reach the end. The corresponding (and much improved) routine in `patter` is `pf_backward_killer()`. 
+
+There are two, related limitations with this approach. The first is that the removal of dead ends tends to bias particle samples, because early samples (which invariably sooner-or-later end up on a dead-end) are more likely to get killed than later samples. This is know as particle degeneracy. The second is that while particles are contingent upon the past (a marginal distribution), they do not embody information from the future (the joint distribution). In `patter`, a backward sampling algorithm mitigates these issue to reconstructs movement trajectories (see `pf_backward_sampler()`).
+
+# Forward simulation 
+
+## Overview 
+
+Consider a regular sequence of time steps, along which we have collected observations (at regular or irregular intervals). In the forward simulation, we run along the time series, collecting particle samples (locations that are compatible with the data and properties of movement) as we go. This works as follows:
+
+* **Proposals** At each time step, propose a series of candidate locations in which the individual could be located. In `patter`, there are two main ways of doing this: 
+    * **Stochastic kicks.** Given a previous location, we simulate travel distances and turning angles from a movement model and use these to 'kick' an individual into new locations. 
+    * **Deterministic sampling.** We define the set of reachable locations around a previous location. 
+* **Likelihood.** Calculate the likelihood of the data, given each proposal. The likelihoods of acoustic and archival data given each proposal are resolved by the AC and DC algorithms. For example, the AC algorithm calculates the likelihood of acoustic observations (the presence or absence of detections at each receiver), given a model of detection probability.
+* **Weights.** Translate likelihoods into sampling weights that encapsulate information given the data and a movement model. For stochastic kick proposals, sampling weights and likelihoods are identical because the proposal locations have been generated accounting for the movement model. For deterministic sampling, we need to combine likelihoods with the probability density of movements into reachable locations. 
+* **Sampling**. Sample `N` proposals, with replacement, in line with the weights. This process effectively kills off locations that are incompatible with the data and increases the frequency of more likely proposals. 
+
+This process continues until the end of the time series. The outcome is a set of particle samples (marginal distributions), one for each time step. 
+
+## Implementation 
+
+To implement the forward simulation in `patter`:
+
+
+
+
+* `pf_setup_obs()` is used to collate observations;
+* `acs_()` functions are used to prepare inputs for the AC* algorithms (if required);
+* `pf_forward()` implements the forward simulation;
+
+In `patter`, `acs_` and `pf_setup_` functions are used to define algorithm inputs and `pf_forward()` runs the forward simulation. Main arguments here:
+* `.rpropose` is a function that generates proposal locations (e.g., `pf_rpropose_kick()`);
+* `.likelihood` is a stack of likelihood functions;
+* `.sample` is a sampling function (e.g., `pf_sample_systematic()`);
+
+Most of the complexity in pf_forward() is about handling particle degeneracy and convergence. Particle degeneracy occurs when proposal locations are killed off
+diagnostics
+
+o	PF versus directed sampling 
+	In standard PF, we kick the particles into new locations & use a filtering step to remove degenerate particles
+	The benefit of this approach is that it is fast
+	But if you have stringent observational model(s), particle degeneracy (and convergence) become an issue 
+	In this directed sampling step, there is no filtering stage: we identify allowed cells & we sample from the set
+	It is valid to chop-and-change between these methods on the fly depending on the ESS
+	We can also use a rejuvenation step to reduce convergence issues, try resampling & jumping back in time n steps
+o	New method 1:
+	Define reachable cells using terra::vect()
+	Calculate three probabilities
+	Pr(AC) (usual)
+	Pr(DC) (usual)
+	Pr(move)
+	Multiple probabilities & use numerical normalisation (this enables us to sample from the distribution) 
+	Sample from the set of allowed cells (use systematic resampling?)
+o	Diagnostics list element 
+	Identify the cause of degeneracy
+	Number of unique particles at time t
+	Number/pc killed by each filter/model
+	Number of unique particles passed on
+
+
+# Backward sampling 
+
+to construct the joint distribution, we want to backwards sampler 
+
+This process continues until the end of the time series. 
+the outcome is a set of particle samples
+marginal distribution 
+to construct the joint distribution, we want to backwards sampler 
+
+# pf_backward_*() functions implement the backward sampler. 
+
+# Analysis 
+
+`pf_path()`, `pf_map_pou()`, `pf_map_dens()`
