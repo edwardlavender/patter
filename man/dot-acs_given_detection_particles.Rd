@@ -13,15 +13,13 @@
 
 \item{.kernels}{A \code{list} from \code{\link{acs_setup_detection_kernels}}.}
 
-\item{.particles}{For \code{\link{.acs_given_detection_particles}}, \code{.particles} is a \code{\link{data.table}} witha \code{cell_now} column that defines particle locations on the grid.}
-
-\item{.zero_to_na}{For \code{\link{.acs_given_detection_SpatRaster}}, \code{.zero_to_na} is a \code{logical} variable that defines whether or not to classify zeros as \code{NA}s. This should be \code{FALSE} for defining \code{given_data} in \code{\link[=acs]{acs()}}, but \code{TRUE} for defining \code{next_kernel} in \code{\link[=acs]{acs()}}, so that \code{next_kernel} is correctly buffered.}
+\item{.particles}{A \code{\link{data.table}} witha \code{cell_now} column that defines particle locations on the grid.}
 }
 \description{
-These function defines the relative plausibility possible locations of an individual given one or more detections, either across a \code{\link{SpatRaster}} (for \code{\link[=acs]{acs()}}) or for selected particle positions (for \code{\link[=pf_forward_2]{pf_forward_2()}}).
+These function defines the relative plausibility possible locations of an individual given one or more detections or for selected particle positions (for \code{\link[=pf_forward]{pf_forward()}}).
 }
 \details{
-In the AC* algorithms, at the moment of detection, the probability kernels that describe the possible locations of an individual given the data depend on both the receivers that record detections and those that did not (eqn S5 in Lavender et al., 2023). This function solves eqn S5. For computational efficiency, the equation is solved in a stepwise manor such that the number of necessary operations is kept to a minimum.
+In the AC* algorithms, at the moment of detection, likelihood of the acoustic data given a particle sample depends on depends on both the receivers that record detections and those that did not (eqn S5 in Lavender et al., 2023). This function solves eqn S5.
 }
 \section{Warning}{
 For speed, these functions performs no internal checks.

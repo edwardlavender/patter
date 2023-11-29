@@ -36,15 +36,10 @@
 The function returns a \code{\link{SpatRaster}} or a \code{\link{SpatVector}}.
 }
 \description{
-\code{\link[=.acs_container_1]{.acs_container_1()}} defines the first AC* container in \code{\link[=pf_forward_2]{pf_forward_2()}}.
+\code{\link[=.acs_container_1]{.acs_container_1()}} defines the first AC* container in \code{\link[=pf_forward]{pf_forward()}}.
 }
 \details{
-In \code{\link[=acs]{acs()}}, acoustic containers are defined using \code{\link[terra:buffer]{terra::buffer()}}.
-
-This functions are used in \code{\link[=pf_forward_2]{pf_forward_2()}}.
-\itemize{
-\item \code{\link[=.acs_container_1]{.acs_container_1()}} defines the acoustic container at the first time step, which is the intersection between the container(s) around the receivers that recorded the first detection (if applicable) and the container(s) around the receivers that recorded the next detection.
-}
+These functions are used in \code{\link[=pf_forward]{pf_forward()}}. \code{\link[=.acs_container_1]{.acs_container_1()}} defines the acoustic container at the first time step, which is the intersection between the container(s) around the receivers that recorded the first detection (if applicable) and the container(s) around the receivers that recorded the next detection.
 }
 \author{
 Edward Lavender

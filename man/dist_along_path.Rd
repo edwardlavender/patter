@@ -20,7 +20,5 @@ This function is a simple wrapper for \code{\link[terra:distance]{terra::distanc
 \seealso{
 \itemize{
 \item \verb{dist_*} functions in \href{https://github.com/edwardlavender/flapper}{\code{flapper}};
-\item \code{\link[=dist_along_path]{dist_along_path()}} calculates distances along a path;
-\item \code{\link[=dist_btw_cells]{dist_btw_cells()}} calculates distances between \code{\link{SpatRaster}} cells;
 }
 }

@@ -5,8 +5,6 @@
 #' @details This function is a simple wrapper for [`terra::distance()`].
 #' @seealso
 #' * `dist_*` functions in [`flapper`](https://github.com/edwardlavender/flapper);
-#' * [`dist_along_path()`] calculates distances along a path;
-#' * [`dist_btw_cells()`] calculates distances between [`SpatRaster`] cells;
 #' @export
 
 dist_along_path <- function(.xy, .lonlat = FALSE) {

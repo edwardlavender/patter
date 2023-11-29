@@ -37,34 +37,28 @@ obs <- acs_setup_obs(acoustics,
 obs <- obs[1:50, ]
 gebco <- dat_gebco()
 
-# Implement AC* algorithm
+#### Define likelihood components
 overlaps   <- acs_setup_detection_overlaps(dat_moorings)
 kernels <-
   acs_setup_detection_kernels(dat_moorings,
                               .calc_detection_pr = acs_setup_detection_pr,
                               .bathy = gebco)
-out_ac <-
-  acs(obs,
-      .bathy = gebco,
-      .detection_overlaps = overlaps,
-      .detection_kernels = kernels,
-      .save_record = TRUE)
 
-# Implement pf_forward_1()
-out_pff <- pf_forward_1(.obs = obs,
-                        .record = out_ac$record,
-                        .n = 1e3,
-                        .kick = pf_kick,
-                        .bathy = gebco,
-                        .save_history = TRUE)
+#### Implement pf_forward()
+out_pff <- pf_forward(obs,
+                      .bathy = gebco,
+                      .moorings = dat_moorings,
+                      .detection_overlaps = overlaps,
+                      .detection_kernels = kernels,
+                      .save_opts = TRUE)
 
-# Implement pf_backward()
+#### Implement pf_backward()
 out_pfb <- pf_backward(out_pff$history, .save_history = TRUE)
 
-# Implement pf_path()
+#### Implement pf_path()
 out_pfp <- pf_path(out_pfb$history, .bathy = gebco)
 
-# Implement pf_map_pou()
+#### Implement pf_map_pou()
 out_pou <- pf_map_pou(out_pfb$history, .bathy = gebco)
 out_pou <- terra::wrap(out_pou)
 
@@ -77,7 +71,6 @@ out_pou <- terra::wrap(out_pou)
 dat_obs        <- obs
 dat_overlaps   <- overlaps
 dat_kernels    <- kernels
-dat_ac         <- out_ac
 dat_pff        <- out_pff
 dat_pfb        <- out_pfb
 dat_pfp        <- out_pfp
@@ -99,15 +92,14 @@ dat_kernels$bkg_surface_by_design <-
   lapply(dat_kernels$bkg_surface_by_design, wrap_elm)
 dat_kernels$bkg_inv_surface_by_design <-
   lapply(dat_kernels$bkg_inv_surface_by_design, wrap_elm)
-dat_ac$record <- lapply(dat_ac$record, wrap_elm)
 
 #### Check dataset sizes
 datasets <-
   list(dat_obs = dat_obs,
        dat_overlaps = dat_overlaps,
        dat_kernels = dat_kernels,
-       dat_ac = dat_ac,
-       dat_pff = dat_pff, dat_pfb = dat_pfb,
+       dat_pff = dat_pff,
+       dat_pfb = dat_pfb,
        dat_pfp = dat_pfp)
 mb <- sapply(datasets, \(dataset) {
   # Save file
