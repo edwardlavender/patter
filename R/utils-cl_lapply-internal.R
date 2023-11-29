@@ -35,7 +35,7 @@ NULL
 
 
 #' @rdname cl
-#' @export
+#' @keywords internal
 
 cl_lapply <- function(.x, .fun, ...,
                       .cl = NULL, .varlist = NULL, .envir = .GlobalEnv,
@@ -73,7 +73,7 @@ cl_lapply <- function(.x, .fun, ...,
 }
 
 #' @rdname cl
-#' @export
+#' @keywords internal
 
 cl_check <- function(.cl = NULL, .varlist = NULL) {
   if (is.null(.cl)) {
@@ -94,7 +94,7 @@ cl_check <- function(.cl = NULL, .varlist = NULL) {
 }
 
 #' @rdname cl
-#' @export
+#' @keywords internal
 
 cl_cores <- function(.cl = NULL) {
   if (is.null(.cl)) {
@@ -106,7 +106,7 @@ cl_cores <- function(.cl = NULL) {
 }
 
 #' @rdname cl
-#' @export
+#' @keywords internal
 
 cl_chunks <- function(.cl = NULL, .length) {
   chunks <- cl_cores(.cl)
@@ -115,7 +115,7 @@ cl_chunks <- function(.cl = NULL, .length) {
 }
 
 #' @rdname cl
-#' @export
+#' @keywords internal
 
 cl_export <- function(.cl = NULL, .varlist = NULL, .envir = .GlobalEnv) {
   if (!is.null(.cl) && inherits(.cl, "cluster") && !is.null(.varlist)) {
@@ -125,7 +125,7 @@ cl_export <- function(.cl = NULL, .varlist = NULL, .envir = .GlobalEnv) {
 }
 
 #' @rdname cl
-#' @export
+#' @keywords internal
 
 cl_stop <- function(.cl = NULL) {
   if (!is.null(.cl) && inherits(.cl, "cluster")) {
