@@ -48,8 +48,12 @@
                         .write_opts) {
 
   #### Use .rerun, if specified
-  if (!is.null(.rerun)) {
+  if (length(.rerun) > 0L) {
+    # Pull startup values
     startup <- .rerun$internal$startup
+    # Increment manual iteration counter
+    startup$iter <- startup$iter + 1L
+    # Update history & diagnostics elements
     startup$output$history     <- .rerun$history
     startup$output$diagnostics <- .rerun$diagnostics
     return(startup)
@@ -65,6 +69,8 @@
   folder_diagnostics <- folders[["diagnostics"]]
 
   #### Prepare controls
+  # Number of manual iterations
+  iter <- 1L
   # Prepare land filter
   is_land <- spatContainsNA(.bathy)
   # Prepare revert count
@@ -104,7 +110,8 @@
     ),
     control = list(
       is_land = is_land,
-      revert_count = revert_count
+      revert_count = revert_count,
+      iter = iter,
     ),
     wrapper = list(.pf_lik_abbr = .pf_lik_abbr,
                    .pf_write_abbr = .pf_write_abbr)
@@ -203,8 +210,8 @@
 #' @rdname pf_forward_2_utils
 #' @keywords internal
 
-.pf_outputs <- function(.start, .startup, .history, .diagnostics, .convergence) {
-  time <- call_timings(.start)
+.pf_outputs <- function(.rerun, .start, .startup, .history, .diagnostics, .convergence) {
+  .rerun$time[[.startup$iter]] <- call_timings(.start = .start)
   out  <- list(history = .history,
                diagnostics = .pf_diag_bind(.diagnostics),
                internal = list(startup = .startup),
