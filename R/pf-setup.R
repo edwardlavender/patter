@@ -102,3 +102,11 @@ pf_setup_files <- function(.root, ...) {
     pull(.data$file) |>
     as.list()
 }
+
+#' @title PF: rerun
+#' @export
+
+pf_setup_rerun <- function(.rerun, .revert = 25L) {
+  # default `.revert` is bigger than `.trial_revert_steps`
+  max(c(1L, length(.rerun[["history"]]) - .revert))
+}

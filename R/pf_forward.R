@@ -6,11 +6,6 @@
 # * diagnostics retained always, even for failure timesteps
 # * other parameters should not change on rerun
 
-pf_rerun <- function(.rerun, .revert = 25L) {
-  # default `.revert` is bigger than `.trial_revert_steps`
-  max(c(1L, length(.rerun[["history"]]) - .revert))
-}
-
 pf_forward <- function(.obs,
                          .origin = NULL,
                          .bathy, .lonlat = FALSE,
@@ -32,7 +27,7 @@ pf_forward <- function(.obs,
                          .trial_revert_crit = 2L,
                          .trial_revert_steps = 10L,
                          .trial_revert = 2L,
-                         .rerun = list(), .rerun_from = pf_rerun(.rerun),
+                         .rerun = list(), .rerun_from = pf_setup_rerun(.rerun),
                          .save_opts = FALSE, .write_opts = NULL,
                          .progress = TRUE, .verbose = TRUE, .txt = "") {
 
