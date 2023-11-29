@@ -3,10 +3,11 @@
 \name{pf_forward_2_utils}
 \alias{pf_forward_2_utils}
 \alias{.pf_dirs}
-\alias{.pf_write}
+\alias{.pf_write_particles}
+\alias{.pf_write_diagnostics}
 \alias{.pf_startup}
 \alias{.pf_start_t}
-\alias{.pf_next}
+\alias{.pf_increment}
 \alias{.pf_ppast}
 \alias{.pf_trial_sampler}
 \alias{.pf_revert}
@@ -16,7 +17,9 @@
 \usage{
 .pf_dirs(.write_opts)
 
-.pf_write(.particles, .diagnostics, .psink, .dsink, .write)
+.pf_write_particles(.particles, .sink, .write)
+
+.pf_write_diagnostics(.diagnostics, .sink, .write)
 
 .pf_startup(
   .rerun,
@@ -32,9 +35,9 @@
 
 .pf_start_t(.rerun, .rerun_from)
 
-.pf_next(.particles)
+.pf_increment(.particles)
 
-.pf_ppast(.particles, .history, .t)
+.pf_ppast(.particles, .history, .sink, .t)
 
 .pf_trial_sampler(.diagnostics, .trial_crit)
 
@@ -42,7 +45,7 @@
 
 .pf_continue(.particles, .t, .crit, .trial_revert_crit)
 
-.pf_outputs(.start, .startup, .history, .diagnostics, .convergence)
+.pf_outputs(.rerun, .start, .startup, .history, .diagnostics, .convergence)
 }
 \description{
 PF helper: internal utilities

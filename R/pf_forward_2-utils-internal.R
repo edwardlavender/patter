@@ -28,15 +28,26 @@
 #' @rdname pf_forward_2_utils
 #' @keywords internal
 
-# Write files (particles, diagnostics) to output directories
-.pf_write <- function(.particles, .diagnostics,
-                      .psink, .dsink, .write) {
+# Write files (particles) to output directory
+.pf_write_particles <- function(.particles, .sink, .write) {
   if (.write) {
-    file <- paste0(t, ".parquet")
-    arrow::write_parquet(.particles,
-                         sink = file.path(.psink, file))
-    arrow::write_parquet(.diagnostics,
-                         sink = file.path(.dsink, file))
+    file <- paste0(.particles$timestep[1], ".parquet")
+    arrow::write_parquet(.particles, sink = file.path(.sink, file))
+  }
+}
+
+#' @rdname pf_forward_2_utils
+#' @keywords internal
+
+# Write files (diagnostics) to output directory
+.pf_write_diagnostics <- function(.diagnostics, .sink, .write) {
+  if (.write) {
+    file <- paste0(
+      paste0(.diagnostics$m_iter[1],
+             .diagnostics$i_iter[1],
+             .diagnostics$timestep[1], collapse = "-"),
+      ".parquet")
+    arrow::write_parquet(.diagnostics, sink = file.path(.sink, file))
   }
 }
 
@@ -48,11 +59,12 @@
                         .write_opts) {
 
   #### Use .rerun, if specified
+  # Currently, we assume that input arguments (e.g., .write_opts) are the same on reruns
   if (length(.rerun) > 0L) {
     # Pull startup values
     startup <- .rerun$internal$startup
     # Increment manual iteration counter
-    startup$iter <- startup$iter + 1L
+    startup$iter_m <- startup$iter_m + 1L
     # Update history & diagnostics elements
     startup$output$history     <- .rerun$history
     startup$output$diagnostics <- .rerun$diagnostics
@@ -62,7 +74,7 @@
   #### Define output containers
   # Lists to hold outputs
   history     <- list()
-  diagnostics <- list()
+  diagnostics <- list(NULL)
   # directories to write outputs (may be NULL)
   folders            <- .pf_dirs(.write_opts)
   folder_history     <- folders[[".history"]]
@@ -70,11 +82,11 @@
 
   #### Prepare controls
   # Number of manual iterations
-  iter <- 1L
+  iter_m <- 1L
+  # NUmber of internal iterations
+  iter_i <- 1L
   # Prepare land filter
   is_land <- spatContainsNA(.bathy)
-  # Prepare revert count
-  revert_count <- 0L
 
   #### Prepare data
   # Check moorings & coerce onto grid
@@ -91,10 +103,11 @@
            .update_ac = .update_ac,
            .trial = .trial)
   }
-  .pf_write_abbr <- function(.particles, .diagnostics) {
-    .pf_write(.particles = .particles, .diagnostics = diagnostics,
-                   .psink = folder_history, .dsink = folder_diagnostics,
-                   .write = !is.null(.write_opts))
+  .pf_write_particles_abbr <- function(.particles) {
+    .pf_write_particles(.particles = .particles, .sink = folder_history, .write = !is.null(.write_opts))
+  }
+  .pf_write_diagnostics_abbr <- function(.diagnostics) {
+    .pf_write_diagnostics(.diagnostics = .diagnostics, .sink = folder_diagnostics, !is.null(.write_opts))
   }
 
   #### Collate outputs
@@ -109,12 +122,13 @@
       .moorings = .moorings
     ),
     control = list(
-      is_land = is_land,
-      revert_count = revert_count,
-      iter = iter,
+      iter_m = iter_m,
+      iter_i = iter_i,
+      is_land = is_land
     ),
     wrapper = list(.pf_lik_abbr = .pf_lik_abbr,
-                   .pf_write_abbr = .pf_write_abbr)
+                   .pf_write_particles_abbr = .pf_write_particles_abbr,
+                   .pf_write_diagnostics_abbr = .pf_write_particles_abbr)
   )
 }
 
@@ -123,7 +137,7 @@
 
 # Define the starting time step for the loop
 .pf_start_t <- function(.rerun, .rerun_from) {
-  if (is.null(.rerun)) {
+  if (length(.rerun) == 0L) {
     t <- 2L
   } else {
     t <- max(c(2L, .rerun_from))
@@ -134,8 +148,8 @@
 #' @rdname pf_forward_2_utils
 #' @keywords internal
 
-# Move loop on so that current cells become past cells @ next time step
-.pf_next <- function(.particles) {
+# Increment loop: current cells become past cells @ next time step
+.pf_increment <- function(.particles) {
   .particles |>
     lazy_dt() |>
     mutate(timestep = .data$timestep + 1L) |>
@@ -150,14 +164,21 @@
 #' @keywords internal
 
 # Define particles for the previous time step
-# * This is necessary for the first step in pf_forward_2()
-.pf_ppast <- function(.particles, .history, .t) {
-  if (.t == 2L) {
-    ppast <- .pf_next(.particles)
-  } else {
-    # TO DO: read .history[[.t - 1L]] here
-    ppast <- copy(.history[[.t - 1L]])
+.pf_ppast <- function(.particles, .history, .sink, .t) {
+  # Define previous time step
+  tp <- .t - 1L
+  # Define particles
+  if (is.null(.particles)) {
+    # Extract .particles from .history list, if available
+    # (if `.save_opts` = TRUE)
+    .particles <- .history[[tp]]
+    # Read .particles from file, otherwise
+    if (is.null(.particles)) {
+      .particles <- arrow::read_parquet(file.path(.sink, paste0(tp, ".parquet")))
+    }
   }
+  # Modify particles (cell_now at t - 1 becomes cell_past at t)
+  .pf_increment(.particles)
 }
 
 #' @rdname pf_forward_2_utils
@@ -211,12 +232,12 @@
 #' @keywords internal
 
 .pf_outputs <- function(.rerun, .start, .startup, .history, .diagnostics, .convergence) {
-  .rerun$time[[.startup$iter]] <- call_timings(.start = .start)
+  .rerun$time[[.startup$control$iter_m]] <- call_timings(.start = .start)
   out  <- list(history = .history,
                diagnostics = .pf_diag_bind(.diagnostics),
                internal = list(startup = .startup),
                convergence = .convergence,
-               time = time)
+               time = .rerun$time)
   class(out) <- c(class(out), "pf")
   out
 }
