@@ -23,17 +23,10 @@ knitr::opts_chunk$set(
 
 # Introduction 
 
-The `patter` package is a revised implementation of the 'flapper' algorithms for passive acoustic telemetry (Lavender et al., 2023). These algorithms integrate observations and movement in a process-based framework that accounts for all available information to reconstruct movement paths and emergent patterns of space use from detections at receivers (and/or ancillary datasets) (Lavender et al., 2023). This introductory vignette outlines the basic workflow via `patter`. Its purpose is simply to illustrate how functions fit together. For full details and additional functionality, see the package/function documentation. 
+The `patter` package is a revised implementation of the 'flapper' algorithms for reconstructing movements and patterns of space use for tagged animals in passive acoustic telemetry systems (Lavender et al., 2023). For a introduction to the methodology, see the methodology vignette (type `vignette("001-methodology", package = "patter")`). This vignette outlines the basic workflow via `patter`. Its purpose is simply to illustrate how functions fit together. For full details and additional functionality, see the package/function documentation. 
 
 <img src="workflow.png" width="100%" />
 **Figure 1. The workflow for `patter`.** This comprises four main steps: data preparation, forward filtering, backward sampling and analysis. In data preparation, we prepare the data for analysis and pre-compute necessary algorithm inputs. In forward filtering, we simulate possible locations of an individual, given the data and a movement model, moving forwards in time. This step involves the implementation of an AC-branch algorithm, that defines the set of possible locations of an individual given the data, and a PF-branch algorithm, that refines the set of possible locations given a movement model. In backwards sampling, we further refine the set of simulated locations. We can then analyse reconstructed movement paths and patterns of space use. 
-
-# Tips
-
-Methodology
-`vignette("methodology", package = "patter")`
-
-prepare datasets, select one individual, one short time series e.g., one day 
 
 # Packages
 
@@ -50,7 +43,7 @@ library(dplyr, warn.conflicts = FALSE)
 
 ## Example data
 
-Step 1 is to prepare the data and algorithm inputs. In this vignette, we use a small sample of acoustic and archival (depth) time series from flapper skate (_Dipturus intermedius_) to reconstruct movement paths and patterns of space use over a low-resolution grid. See the `sim_*()` functions to simulate data instead.
+Step 1 is to prepare the data and algorithm inputs. In this vignette, we use a small sample of acoustic and archival (depth) time series from flapper skate (_Dipturus intermedius_) to reconstruct movement paths and patterns of space use over a low-resolution grid. See the `sim_*()` functions to simulate data instead. For real-world analyses, start with a short (e.g., one day) time series and a single individual to develop the workflow. 
 
 ```{r}
 # Set seed
@@ -83,23 +76,22 @@ head(archival)
 
 ## Prepare observations
 
-Two sources of observations. We collate them onto a single dataframe. We prepare the data for the algorithms via `pf_setup_obs()`. At the time of writing, to add additional obs, just add them after. 
+To implement the algorithms, we require a single time series, along which observations are recorded. The `pf_setup_obs()` is used for this purpose. At the time of writing, this accepts acoustic and, optionally, archival time series, in the format defined above. These data are matched onto a single, regular time series, with a resolution of `.step` units and additional columns are created as required for the analysis. 
 
 ```{r}
-obs <- acs_setup_obs(acoustics, archival, 
+obs <- acs_setup_obs(.acoustics = acoustics, 
+                     .archival = archival, 
                      .step = "2 mins", 
                      .mobility = 500, 
                      .detection_range = moorings$receiver_range[1])
 head(obs)
 ```
 
-## Prepare algorithm inputs
+## Prepare likelihood inputs
 
-### AC algorithm 
+`patter` reconstructs movement paths and patterns of space use, accounting for acoustic detections, ancillary datasets (such as archival data) and movement (see the `001-methodology` vignette). Observations are handled by AC-branch algorithm(s) and movement is handled by the particle filter (PF). All of this is embedded in `pf_forward()`, but we need to pre-compute some data layers for this function. 
 
-We will reconstruct movements accounting for acoustic data, archival data and movement. Observations are handled by AC-branch algorithms (acoustic-container and depth-contour algorithms). Movement is handled by the particle filter. All embedded within pf_forward(). 
-
-To handle acoustics, 
+To calculate the likelihood of the acoustic data (via the AC algorithm), we need to pre-compute:
 
 * Detection overlaps, which inform the distribution of detection probability;
 * Detection kernels, which describe how detection probability is distributed around receivers;
@@ -114,12 +106,11 @@ kernels    <- acs_setup_detection_kernels(moorings,
                                           .verbose = FALSE)
 ```
 
-## DC algorithm
+Using these inputs, `pf_forward()` handles likelihood calculations under the hood. 
 
-In the following example, we assign equal probability to all locations that lie between a lower and upper depth limit at each time step, based on the expected correspondence between the depth of the individual and the depth of the seabed (Lavender et al., 2023). The model includes a 'fudge' factor that accounts for the low resolution of the bathymetry data in this example. To handle depths, we need a depth-error model. 
+To incorporate ancillary (e.g., archival) data, we have to write a function for the likelihood ourselves. In this example, we assume that any depth observations for particles for which the bathymetric depth likes between a lower and upper depth limit are equally likely, whereas observations outside those limits are impossible (Lavender et al., 2023). To implement this model here, we have to include a 'fudge' factor to account for the low resolution of the bathymetry data.
 
 ```{r}
-
 # (A) Define a depth-error model
 fudge <- 10
 cde <- function(.depth) {
@@ -146,17 +137,18 @@ lines(obs$timestep[p], obs$depth_shallow[p] * -1, col = "lightblue")
 lines(obs$timestep[p], obs$depth_deep[p] * -1, col = "darkblue")
 ```
 
-Define model
+Now we can define a function for the likelihood of the depth data given particle samples:
 
 ```{r}
-dc <- function(.particles, .bathy, .obs, .t, ...) {
+lik_depth_given_particles <- function(.particles, .bathy, .obs, .t, ...) {
+  # Look up bathymetric depths, if required
   if (!rlang::has_name(.particles, "bathy")) {
     .particles$bathy <- terra::extract(.bathy, .particles$cell_now)
   }
+  # Calculate likelihood (0, 1)
   (.particles$bathy  >= .obs$depth_shallow[.t] & .particles$bathy <= .obs$depth_deep[.t]) + 0
 }
 ```
-
 
 # PF
 
@@ -166,30 +158,37 @@ The particle filter builds movement into the AC-branch algorithms. This comprise
 
 ### `pf_forward()`
 
-`pf_forward()` requires the observations `data.table`, the AC-branch `SpatRaster`s and a movement model that 'kicks' the particles sampled at each time step into new (proposal) locations. For brevity, here we use a template movement model specified by `pf_kick()`. this function integrates AC* dynamics at particle locations alongside the movement model on-the-fly
+`pf_forward()` requires the observations `data.table`, the AC-branch `SpatRaster`s and a movement model that 'kicks' the particles sampled at each time step into new (proposal) locations. For brevity, here we use a template movement model specified by `pf_rpropose_kick()`. this function integrates AC* dynamics at particle locations alongside the movement model on-the-fly
 
 ```{r}
 # Implement ACDCPF algorithm 
-out_pff <- pf_forward(obs,
-                        .bathy = gebco,
-                        .moorings = array,
-                        .detection_overlaps = overlaps,
-                        .detection_kernels = kernels,
-                        .update_ac = dc,
-                        .save_opts = TRUE,
-                        .progress = FALSE)
-
-# add other args explictly 
+out_pff <- pf_forward(
+  # Data 
+  obs,
+  .bathy = gebco,
+  # AC likelihood components 
+  .moorings = moorings,
+  .detection_overlaps = overlaps,
+  .detection_kernels = kernels,
+  # Depth likelihood components
+  .update_ac = lik_depth_given_particles,
+  # The movement model (using default parameters designed for flapper skate)
+  .rpropose = pf_rpropose_kick,
+  .dpropose = pf_dpropose,
+  # The sampler
+  .sample = pf_sample_multinomial, 
+  # Other settings
+  .save_opts = TRUE,
+  .verbose = FALSE,
+  .progress = FALSE)
 ```
-
-briefly explain outputs
 
 Particle samples are stored in the `history` element of the output. We can plot the first few samples as follows:
 
 ```{r}
 pp <- par(mfrow = c(2, 3))
 lapply(1:6, \(i) {
-  terra::plot(out_acs$record[[i]], main = obs$timestep[i])
+  terra::plot(gebco, main = obs$timestep[i])
   xy <- terra::xyFromCell(gebco, out_pff$history[[i]]$cell_now)
   points(xy, col = "red")
 }) |> invisible()
@@ -245,6 +244,4 @@ get_hr_home(pou, .add = TRUE)
 
 # References
 
-Lavender E, Biber S, Illian J, James M, Wright PJ, Thorburn J, Smout S (2023). An integrative modelling
-  framework for passive acoustic telemetry. _Methods in Ecology and Evolution_.
-  <https://doi.org/10.1111/2041-210X.14193>.
+Lavender. E. et al. (2023). An integrative modelling framework for passive acoustic telemetry. _Methods in Ecology and Evolution_. <https://doi.org/10.1111/2041-210X.14193>.
