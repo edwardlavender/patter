@@ -165,6 +165,7 @@
 #' @importFrom data.table as.data.table
 #' @importFrom data.table rbindlist
 #' @importFrom data.table :=
+#' @importFrom data.table setcolorder
 #' @importFrom data.table .BY
 #' @importFrom data.table .EACHI
 #' @importFrom data.table .GRP
