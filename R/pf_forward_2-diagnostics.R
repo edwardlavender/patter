@@ -50,3 +50,19 @@
     collapse::unlist2d(.diag, idcols = FALSE, DT = TRUE)
   }
 }
+
+#' @rdname pf_diag
+#' @keywords internal
+
+.pf_diag_collect <- function(.diagnostics, .iter_m, .iter_i) {
+  # Collect diagnostics from particle attributes
+  diagnostics <- .pf_diag_bind(.diagnostics)
+  # Define number of manual iterations
+  iter_m <- NULL
+  diagnostics[, iter_m := .iter_m]
+  # Define number of internal iterations
+  iter_i <- NULL
+  diagnostics[, iter_i := .iter_i]
+  setcolorder(diagnostics, c("iter_m", "iter_i", "timestep", "component", "trial", "n", "n_u", "ess"))
+  diagnostics
+}

@@ -7,6 +7,7 @@
 \alias{.pf_diag_unique}
 \alias{.pf_diag}
 \alias{.pf_diag_bind}
+\alias{.pf_diag_collect}
 \title{PF: calculate particle diagnostics}
 \usage{
 .pf_diag_any(.particles)
@@ -18,6 +19,8 @@
 .pf_diag(.particles, .t, .trial = NA_integer_, .label)
 
 .pf_diag_bind(.diag)
+
+.pf_diag_collect(.diagnostics, .iter_m, .iter_i)
 }
 \description{
 PF: calculate particle diagnostics
