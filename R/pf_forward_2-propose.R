@@ -122,6 +122,7 @@ pf_dpropose <- function(.particles, .lonlat) {
   # Handle empty data.tables
   # * These result when all proposals have zero likelihood
   if (fnrow(.particles) == 0L) {
+    dens <- NULL
     return(.particles[, dens := numeric()])
   } else {
     # Calculate densities
