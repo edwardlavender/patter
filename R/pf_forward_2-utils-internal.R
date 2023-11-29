@@ -64,17 +64,17 @@
     # Pull startup values
     startup <- .rerun$internal$startup
     # Increment manual iteration counter
-    startup$iter_m <- startup$iter_m + 1L
+    startup$control$iter_m <- startup$control$iter_m + 1L
     # Update history & diagnostics elements
     startup$output$history     <- .rerun$history
-    startup$output$diagnostics <- .rerun$diagnostics
+    startup$output$diagnostics <- list(.rerun$diagnostics)
     return(startup)
   }
 
   #### Define output containers
   # Lists to hold outputs
   history     <- list()
-  diagnostics <- list(NULL)
+  diagnostics <- list()
   # directories to write outputs (may be NULL)
   folders            <- .pf_dirs(.write_opts)
   folder_history     <- folders[[".history"]]
@@ -83,7 +83,7 @@
   #### Prepare controls
   # Number of manual iterations
   iter_m <- 1L
-  # NUmber of internal iterations
+  # Number of internal iterations
   iter_i <- 1L
   # Prepare land filter
   is_land <- spatContainsNA(.bathy)
