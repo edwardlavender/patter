@@ -108,7 +108,7 @@ pf_map_pou <-
     pou <-
       .history |>
       .pf_history_dt(.collect = FALSE) |>
-      rename(cell_id = "cell_now") |>
+      select("timestep", cell_id = "cell_now") |>
       collect() |>
      .pf_map_weights()
 
