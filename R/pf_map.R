@@ -82,7 +82,6 @@ pf_coords <- function(.history, .bathy, .obs = NULL, .cols = NULL) {
 #'
 #' * PF is supported by:
 #'     * Setup helpers, namely [`pf_setup_files()`];
-#'     * Template movement models, namely [`pf_kick()`];
 #'
 #' * The backward pass is implemented by [`pf_backward()`];
 #'
@@ -159,7 +158,6 @@ pf_map_pou <-
 #'
 #' * PF is supported by:
 #'     * Setup helpers, namely [`pf_setup_files()`];
-#'     * Template movement models, namely [`pf_kick()`];
 #'
 #' * The backward pass is implemented by [`pf_backward()`];
 #'

@@ -84,12 +84,6 @@ To implement the centre-of-activity algorithm use:
 \item \code{\link[=coa]{coa()}} to calculate centres of activity;
 }
 
-To implement the depth-contour (DC) algorithm, use:
-\itemize{
-\item \code{\link[=dc_setup_model]{dc_setup_model()}} for an example DC model;
-\item \code{\link[=dc]{dc()}} to implement the algorithm;
-}
-
 To implement the acoustic-centroid* (AC*) algorithm(s) (e.g., AC and ACDC), use:
 \itemize{
 \item \code{\link[=acs_setup_obs]{acs_setup_obs()}} to set up observations;
@@ -101,7 +95,6 @@ To implement the acoustic-centroid* (AC*) algorithm(s) (e.g., AC and ACDC), use:
 To implement particle filtering (PF), use:
 \itemize{
 \item \code{\link[=pf_setup_files]{pf_setup_files()}} to set up files;
-\item \code{\link[=pf_kick]{pf_kick()}} for an example movement model;
 \item \code{\link[=pf_forward]{pf_forward()}} to implement the forward simulation;
 \item \code{\link[=pf_backward]{pf_backward()}} to implement the backward pass;
 \item \code{\link[=pf_coords]{pf_coords()}} to collate particle coordinates;

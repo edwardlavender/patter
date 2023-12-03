@@ -57,7 +57,7 @@
 #' * [`pf_backward()`] implements the backward pass;
 #' * [`pf_path()`] reconstructs movement paths;
 #' * [`pf_map_pou()`] and [`pf_map_dens()`] generate maps of space use;
-#' * [`pf_setup_files()`], [`pf_kick()`] and [`pf_coords()`] are helper functions;
+#' * [`pf_setup_files()`] and [`pf_coords()`] are helper functions;
 #' @author Edward Lavender
 #' @name pf_backward_dens
 
@@ -142,7 +142,6 @@ pf_backward_dens <- function(.history, .dens_step, ...,
 #'
 #' * PF is supported by:
 #'     * Setup helpers, namely [`pf_setup_files()`];
-#'     * Template movement models, namely [`pf_kick()`];
 #'
 #' * The backward pass is implemented by [`pf_backward()`];
 #'

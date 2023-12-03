@@ -5,7 +5,7 @@
 #' * `c*()` functions calculate outcomes from random-variate inputs;
 #' * `d*()` functions return densities;
 #'
-#' `r*()` and `c*()` functions are used in _de novo_ simulations (via `sim_*()` functions such as [`sim_path_walk()`]) and the forward simulation-based reconstruction of movement paths (via [`pf_kick()`] in [`pf_forward()`]).
+#' `r*()` and `c*()` functions are used in _de novo_ simulations (via `sim_*()` functions such as [`sim_path_walk()`]) and the forward simulation-based reconstruction of movement paths (in [`pf_forward()`]).
 #'
 #' `d*()` functions are used in the simulation-based reconstruction of movement paths as part of the backward sampler via [`pf_backward_p()`].
 #'
@@ -55,7 +55,7 @@
 #'
 #' ## Wrappers
 #'
-#' The following wrapper functions are provided in the form required by front-end functions (e.g., [`sim_path_walk()`], [`pf_kick()`] and [`pf_backward_p()`]):
+#' The following wrapper functions are provided in the form required by front-end functions (e.g., [`sim_path_walk()`] and [`pf_backward_p()`]):
 #'
 #' * [`rlen()`] is a wrapper for [`rtruncgamma()`]. The corresponding function `dlen` is not currently implemented.
 #' * [`rangrw()`], [`rangcrw()`] are wrappers for [`rwn()`] for random walks and correlated random walks. The corresponding functions `dangrw()` and `dangcrw()` are not currently implemented.

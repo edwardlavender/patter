@@ -103,7 +103,6 @@ Note that the algorithm requires large numbers of calculations. Under default op
 \item PF is supported by:
 \itemize{
 \item Setup helpers, namely \code{\link[=pf_setup_files]{pf_setup_files()}};
-\item Template movement models, namely \code{\link[=pf_kick]{pf_kick()}};
 }
 \item The backward pass is implemented by \code{\link[=pf_backward]{pf_backward()}};
 \item Movement paths are built from PF outputs via \code{pf_path()} functions:

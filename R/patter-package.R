@@ -76,7 +76,6 @@
 #' To implement particle filtering (PF), use:
 #'
 #' * [`pf_setup_files()`] to set up files;
-#' * [`pf_kick()`] for an example movement model;
 #' * [`pf_forward()`] to implement the forward simulation;
 #' * [`pf_backward()`] to implement the backward pass;
 #' * [`pf_coords()`] to collate particle coordinates;
