@@ -19,6 +19,7 @@ This function creates an ordered \code{list} of files for \code{\link[=pf_backwa
 }
 \examples{
 # Quick implementation of pf_forward()
+con <- tempdir()
 pff_folder <- file.path(con, "patter", "pf", "forward")
 dir.create(pff_folder, recursive = TRUE)
 out_pff <- pf_forward(.obs = dat_obs(),

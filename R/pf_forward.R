@@ -79,15 +79,15 @@ pf_forward <- function(.obs,
                                  .sample = .sample, .n = .n,
                                  .trial_crit = .trial_origin_crit,
                                  .trial_count = .trial_origin)
+    diagnostics_1 <- .pf_diag_collect(.diagnostics = attr(pnow, "diagnostics"),
+                                      .iter_m = iter_m, .iter_i = iter_i)
     # Record accepted cells
     if (.save_opts) {
       history[[1L]]     <- copy(pnow)
-      diagnostics[[1L]] <-
-        .pf_diag_collect(.diagnostics = attr(pnow, "diagnostics"),
-                         .iter_m = iter_m, .iter_i = iter_i)
+      diagnostics[[1L]] <- diagnostics_1
     }
-    .pf_write_particles_abbr(history[[1L]])
-    .pf_write_diagnostics_abbr(diagnostics[[1L]])
+    .pf_write_particles_abbr(pnow)
+    .pf_write_diagnostics_abbr(diagnostics_1)
   }
 
   #### Initiate loop
