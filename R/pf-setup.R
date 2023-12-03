@@ -56,9 +56,6 @@ pf_setup_files <- function(.root, ...) {
   }
   bsname <- basename(files)
   ext <- exts[1]
-  if (!isTRUE(all.equal(paste0(sort(paste0(seq_len(length(files)), ".", ext))), bsname))) {
-    abort("Files do not match expected naming convention ('1.{ext}', '2.{ext}', ..., 'N.{ext}' where N is the number of files.)", .envir = environment())
-  }
   # Define ordered vector of files
   data.table(file = files,
              name = tools::file_path_sans_ext(bsname),
