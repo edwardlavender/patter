@@ -68,7 +68,7 @@
 #' @seealso
 #' * `sim_*` functions implement _de novo_ simulation of movements and observations;
 #' * [`pf_forward()`] implements forward simulation-based reconstruction of movement paths;
-#' * [`pf_backward()`] implements backward simulation-based reconstruction of movement paths;
+#' * [`pf_backward_sampler()`] implements backward simulation-based reconstruction of movement paths;
 #'
 #' @author Edward Lavender
 #' @name sim_helpers

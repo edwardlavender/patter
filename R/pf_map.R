@@ -83,7 +83,7 @@ pf_coords <- function(.history, .bathy, .obs = NULL, .cols = NULL) {
 #' * PF is supported by:
 #'     * Setup helpers, namely [`pf_setup_files()`];
 #'
-#' * The backward pass is implemented by [`pf_backward()`];
+#' * The backward pass is implemented by [`pf_backward_*()`];
 #'
 #' * Movement paths are built from PF outputs via `pf_path()` functions:
 #'     * [`pf_path()`] reconstructs paths;
@@ -159,7 +159,7 @@ pf_map_pou <-
 #' * PF is supported by:
 #'     * Setup helpers, namely [`pf_setup_files()`];
 #'
-#' * The backward pass is implemented by [`pf_backward()`];
+#' * The backward pass is implemented by [`pf_backward_*()`];
 #'
 #' * Movement paths are built from PF outputs via `pf_path()` functions:
 #'     * [`pf_path()`] reconstructs paths;

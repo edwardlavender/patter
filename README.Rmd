@@ -72,7 +72,7 @@ For example algorithm outputs `datasets-algorithms`, see:
 * `dat_overlaps()` for an example output from `acs_setup_detection_overlaps()`;
 * `dat_kernels()` for an example output from `acs_setup_detection_kernels()`;
 * `dat_pff()` for an example output from `pf_forward()`;
-* `dat_pfb()` for an example output from `pf_backward()`;
+* `dat_pfb()` for an example output from `pf_backward_killer()`;
 * `dat_pfp()` for an example output from `pf_path()`;
 
 # Simulation
@@ -125,7 +125,7 @@ To implement particle filtering (PF), use:
  
 * `pf_setup_files()` to set up the record;
 * `pf_forward()` to implement the forward simulation;
-* `pf_backward()` to implement the backward pass;
+* `pf_backward_*()` to implement the backward pass;
 * `pf_coords()` to collate particle coordinates;
 * `pf_path()` (and `pf_path_pivot()`) to reconstruct movement paths;
 * `pf_map_pou()` to map probability-of-use;

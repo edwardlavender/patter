@@ -15,7 +15,7 @@ pf_setup_files(.root, ...)
 The function returns an ordered \code{list} of file paths.
 }
 \description{
-This function creates an ordered \code{list} of files for \code{\link[=pf_backward]{pf_backward()}}.
+This function creates an ordered \code{list} of files for \code{\link[=pf_backward_*]{pf_backward_*()}}.
 }
 \examples{
 # Quick implementation of pf_forward()
@@ -27,16 +27,16 @@ out_pff <- pf_forward(.obs = dat_obs(),
                       .detection_kernels = dat_kernels(),
                       .write_opts = list(sink = pff_folder))
 
-# List files for pf_backward()
-files <- pf_setup_files(pff_folder)
+# List files for pf_backward_*()
+files <- pf_setup_files(file.path(pff_folder, "history"))
 
-# Quick implementation of pf_backward()
+# Quick implementation of pf_backward_killer()
 pfb_folder <- file.path(con, "patter", "pf", "backward")
 dir.create(pfb_folder, recursive = TRUE)
-out_pfb <- pf_backward(files,
-                       .write_history = list(sink = pfb_folder))
+out_pfb <- pf_backward_killer(files,
+                              .write_history = list(sink = pfb_folder))
 
-# List files from pf_backward()
+# List files from pf_backward_*()
 pf_setup_files(pfb_folder)
 
 # Clean up

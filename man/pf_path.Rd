@@ -50,7 +50,7 @@ The path reconstruction algorithm 'chains' sequential particle samples into move
 #### Workflow
 # A. Define input datasets (see ?`acs_setup_obs()`)
 # B. Implement forward simulation (see ?`pf_forward()`)
-# C. Implement backwards pass (see ?`pf_backward()`)
+# C. Implement backwards pass (see ?`pf_backward_*()`)
 # D. Implement `pf_path()`, `pf_map_pou()` etc.
 
 #### Set up examples using pre-defined datasets

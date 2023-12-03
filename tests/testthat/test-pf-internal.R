@@ -24,9 +24,9 @@ test_that(".pf_history_dt() works", {
   con        <- tempdir()
   pfb_folder <- file.path(con, "patter", "pf", "backward")
   dir.create(pfb_folder, recursive = TRUE)
-  out_pfb <- pf_backward(dat_pff$history,
-                         .save_history = TRUE,
-                         .write_history = list(sink = pfb_folder))
+  out_pfb <- pf_backward_killer(dat_pff$history,
+                                .save_history = TRUE,
+                                .write_history = list(sink = pfb_folder))
 
   # Implement .pf_history_dt()
   a <- .pf_history_dt(out_pfb)

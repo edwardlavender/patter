@@ -9,7 +9,7 @@
 #'
 #' @details At the time of writing, this function only removes 'dead ends' from particle samples. Backwards smoothing is not currently implemented.
 #'
-#' @example man/examples/pf_backward-examples.R
+#' @example man/examples/pf_backward_killer-examples.R
 #'
 #' @return The function returns a [`pf-class`] object.
 #'
@@ -19,7 +19,8 @@
 #' @author Edward Lavender
 #' @export
 
-pf_backward <- function(.history, .save_history = FALSE, .write_history = NULL,
+pf_backward_killer <- function(.history,
+                               .save_history = FALSE, .write_history = NULL,
                                .progress = TRUE, .verbose = TRUE, .txt = "") {
 
   #### Check user inputs
@@ -32,8 +33,8 @@ pf_backward <- function(.history, .save_history = FALSE, .write_history = NULL,
 
   #### Set up messages
   cat_to_cf <- cat_helper(.verbose = .verbose, .txt = .txt)
-  cat_to_cf(paste0("patter::pf_backward() called (@ ", t_onset, ")..."))
-  on.exit(cat_to_cf(paste0("patter::pf_backward() call ended (@ ", Sys.time(), ").")), add = TRUE)
+  cat_to_cf(paste0("patter::pf_backward_*() called (@ ", t_onset, ")..."))
+  on.exit(cat_to_cf(paste0("patter::pf_backward_*() call ended (@ ", Sys.time(), ").")), add = TRUE)
 
   #### Set up loop
   # Define whether or not .history dataframes need to be read from file

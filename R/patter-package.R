@@ -25,7 +25,7 @@
 #' * [`dat_overlaps()`] for an example output from [`acs_setup_detection_overlaps()`];
 #' * [`dat_kernels()`] for an example output from [`acs_setup_detection_kernels()`];
 #' * [`dat_pff()`] for an example output from [`pf_forward()`];
-#' * [`dat_pfb()`] for an example output from [`pf_backward()`];
+#' * [`dat_pfb()`] for an example output from [`pf_backward_killer()`];
 #' * [`dat_pfp()`] for an example output from [`pf_path()`];
 #'
 #' # Simulation
@@ -77,7 +77,7 @@
 #'
 #' * [`pf_setup_files()`] to set up files;
 #' * [`pf_forward()`] to implement the forward simulation;
-#' * [`pf_backward()`] to implement the backward pass;
+#' * [`pf_backward_*()`] functions implement the backward pass;
 #' * [`pf_coords()`] to collate particle coordinates;
 #' * [`pf_path()`] (and [`pf_path_pivot()`]) to reconstruct movement paths;
 #' * [`pf_map_pou()`] to map probability-of-use;

@@ -28,7 +28,7 @@ If \code{.in_memory = TRUE}, this can be provided as:
 
 If \code{.in_memory = FALSE}, this must be a character string that defines the directory within which parquet files are stored.}
 
-\item{.dens_step, ...}{A function, and associated arguments, to calculate the density of movements between locations (see \code{\link[=pf_backward]{pf_backward()}} and \code{\link[=dstep]{dstep()}}). This must accept the arguments described in \code{\link[=pf_backward]{pf_backward()}}:
+\item{.dens_step, ...}{A function, and associated arguments, to calculate the density of movements between locations (see \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} and \code{\link[=dstep]{dstep()}}). This must accept the arguments described in \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}:
 \itemize{
 \item \code{.data_now}---a \code{\link{data.table}} of particle locations;
 \item \code{.data_past}---a \code{\link{data.table}} of paired particle locations;
@@ -38,7 +38,7 @@ If \code{.in_memory = FALSE}, this must be a character string that defines the d
 However, note that the exact form of \code{.data_now} and \code{.data_past} differ depending on the implementation (see Details):
 \itemize{
 \item For implementation options (1) and (2A), densities are calculated between all cell pairs (i.e., two multi-row \code{\link{data.table}}s), by default via \code{\link[=dstep]{dstep()}}. Internally, this uses \code{\link[terra:distance]{terra::distance()}} so you must specify \code{lonlat} and \code{pairwise = TRUE}.
-\item For implementation option (2B) \code{.data_now} is a single row (as described in \code{\link[=pf_backward]{pf_backward()}}). Under the default implementation, \code{lonlat} is required but \code{pairwise} is optional.
+\item For implementation option (2B) \code{.data_now} is a single row (as described in \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}). Under the default implementation, \code{lonlat} is required but \code{pairwise} is optional.
 }
 
 For custom functions, note that coordinates are stored in each \code{\link{data.table}} in \code{x_now} and \code{y_now} columns. Other columns are dropped, with some exceptions.}
@@ -64,7 +64,7 @@ The function returns:
 This function is used to pre-calculate densities for the backward pass.
 }
 \details{
-The backward pass sweeps backwards in time through particle samples to reconstruct movement paths (see \code{\link[=pf_backward]{pf_backward()}}). For each particle, at each time step this algorithm samples a preceding location according to the probability densities connecting that particle to all particles from the preceding time step. The purpose of this function is to identify the set of unique transitions between particle pairs and pre-calculate probability densities for \code{\link[=pf_backward]{pf_backward()}}.
+The backward pass sweeps backwards in time through particle samples to reconstruct movement paths (see \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}). For each particle, at each time step this algorithm samples a preceding location according to the probability densities connecting that particle to all particles from the preceding time step. The purpose of this function is to identify the set of unique transitions between particle pairs and pre-calculate probability densities for \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}.
 
 There are five steps:
 \enumerate{
@@ -72,31 +72,31 @@ There are five steps:
 \item Identify transitions. The second step is to reconstruct the set of possible transitions between cells at each time step. This requires a cross-join operation (at each time step, each (unique) cell is paired against all (unique) cells from the previous time step). This is memory intensive and can be optionally implemented using \code{sparklyr} (see below).
 \item Identify distinct transitions. The third step is to identify the set of unique cell combinations for which probability densities are required. This is hopefully considerably fewer less than the total number of transitions.
 \item Calculate densities. The fourth step is to calculate densities (e.g., via \code{\link[=dstep]{dstep()}}).
-\item Return outputs. The final step is to return densities in a format that can be efficiently accessed in \code{\link[=pf_backward]{pf_backward()}} (e.g., via \code{\link[=dstep_lookup]{dstep_lookup()}} or \code{\link[=dstep_read]{dstep_read()}}).
+\item Return outputs. The final step is to return densities in a format that can be efficiently accessed in \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} (e.g., via \code{\link[=dstep_lookup]{dstep_lookup()}} or \code{\link[=dstep_read]{dstep_read()}}).
 }
 
 There are three implementation options:
 \enumerate{
-\item \code{.in_memory} is \code{TRUE}. Under this option, steps 1--5 are implemented in memory. A \code{list} is returned that can be accessed in \code{\link[=pf_backward]{pf_backward()}} via \code{\link[=dstep_lookup]{dstep_lookup()}}.
+\item \code{.in_memory} is \code{TRUE}. Under this option, steps 1--5 are implemented in memory. A \code{list} is returned that can be accessed in \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} via \code{\link[=dstep_lookup]{dstep_lookup()}}.
 \item \code{.in_memory} is \code{FALSE}. Under this option, steps 1--5 are implemented without bringing the data (fully) into memory. Steps 1--3 are achieved using \code{sparklyr}. The function establishes a connection to Spark, implements 1--3 using Spark, and counts the resultant number of unique transitions for which densities are required (\code{n}). What happens next depends on whether or not \code{n <= .collect}:
 \itemize{
-\item (A) \code{n <= .collect}. If \code{n < .collect}, data are brought into memory for steps 4--5. A \code{list} is returned that can be accessed in \code{\link[=pf_backward]{pf_backward()}} via \code{\link[=dstep_lookup]{dstep_lookup()}}.
+\item (A) \code{n <= .collect}. If \code{n < .collect}, data are brought into memory for steps 4--5. A \code{list} is returned that can be accessed in \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} via \code{\link[=dstep_lookup]{dstep_lookup()}}.
 \item (B) \code{n > .collect}. If \code{n > .collect}, steps 4--5 are implemented in batches:
 \itemize{
 \item For each grid cell, a parquet file is written to \verb{\{.store\}/pairs/\{cell\}.parquet} with the coordinates of cell pairs;
-\item Parquet files are iteratively read into memory, density calculations are implemented and, for each grid cell, a \code{list} of densities to paired cells is written to \verb{\{.store\}/density/\{cell\}.qs}. This step can be optionally parallelised. Limited experimentation suggested that this approach is faster than a full Spark implementation. The resultant files can be accessed in \code{\link[=pf_backward]{pf_backward()}} via \code{\link[=dstep_read]{dstep_read()}}. The function itself returns \code{invisible(NULL)}.
+\item Parquet files are iteratively read into memory, density calculations are implemented and, for each grid cell, a \code{list} of densities to paired cells is written to \verb{\{.store\}/density/\{cell\}.qs}. This step can be optionally parallelised. Limited experimentation suggested that this approach is faster than a full Spark implementation. The resultant files can be accessed in \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} via \code{\link[=dstep_read]{dstep_read()}}. The function itself returns \code{invisible(NULL)}.
 }
 }
 }
 }
 \examples{
-# See ?`pf_backward()` for examples
+# See ?`pf_backward_sampler()` for examples
 
 }
 \seealso{
 \itemize{
 \item \code{\link[=pf_forward]{pf_forward()}} to implement the forward simulation;
-\item \code{\link[=pf_backward]{pf_backward()}} implements the backward pass;
+\item \code{\link[=pf_backward_*]{pf_backward_*()}} implements the backward pass;
 \item \code{\link[=pf_path]{pf_path()}} reconstructs movement paths;
 \item \code{\link[=pf_map_pou]{pf_map_pou()}} and \code{\link[=pf_map_dens]{pf_map_dens()}} generate maps of space use;
 \item \code{\link[=pf_setup_files]{pf_setup_files()}} and \code{\link[=pf_coords]{pf_coords()}} are helper functions;

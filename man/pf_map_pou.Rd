@@ -32,7 +32,7 @@ Probability-of-use is the proportion of samples of each unique cell (out of the 
 #### Workflow
 # A. Define input datasets (see ?`acs_setup_obs()`)
 # B. Implement forward simulation (see ?`pf_forward()`)
-# C. Implement backwards pass (see ?`pf_backward()`)
+# C. Implement backwards pass (see ?`pf_backward_*()`)
 # D. Implement `pf_path()`, `pf_map_pou()` etc.
 
 #### Set up examples using pre-defined datasets
@@ -45,9 +45,9 @@ dat_pff    <- dat_pff()
 con        <- tempdir()
 pfb_folder <- file.path(con, "patter", "pf", "backward")
 dir.create(pfb_folder, recursive = TRUE)
-out_pfb <- pf_backward(dat_pff$history,
-                       .save_history = TRUE,
-                       .write_history = list(sink = pfb_folder))
+out_pfb <- pf_backward_killer(dat_pff$history,
+                              .save_history = TRUE,
+                              .write_history = list(sink = pfb_folder))
 
 #### Example (1): Calculate POU from pf object
 pou_1 <- pf_map_pou(.history = out_pfb$history, .bathy = gebco)
@@ -73,7 +73,7 @@ unlink(pfb_folder, recursive = TRUE)
 \itemize{
 \item Setup helpers, namely \code{\link[=pf_setup_files]{pf_setup_files()}};
 }
-\item The backward pass is implemented by \code{\link[=pf_backward]{pf_backward()}};
+\item The backward pass is implemented by \code{\link[=pf_backward_*]{pf_backward_*()}};
 \item Movement paths are built from PF outputs via \code{pf_path()} functions:
 \itemize{
 \item \code{\link[=pf_path]{pf_path()}} reconstructs paths;

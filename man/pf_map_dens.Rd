@@ -117,7 +117,7 @@ pf_map_dens(pou, sigma = bw.scott)
 \itemize{
 \item Setup helpers, namely \code{\link[=pf_setup_files]{pf_setup_files()}};
 }
-\item The backward pass is implemented by \code{\link[=pf_backward]{pf_backward()}};
+\item The backward pass is implemented by \code{\link[=pf_backward_*]{pf_backward_*()}};
 \item Movement paths are built from PF outputs via \code{pf_path()} functions:
 \itemize{
 \item \code{\link[=pf_path]{pf_path()}} reconstructs paths;

@@ -122,7 +122,7 @@ The following wrapper functions are provided in the form required by front-end f
 \itemize{
 \item \verb{sim_*} functions implement \emph{de novo} simulation of movements and observations;
 \item \code{\link[=pf_forward]{pf_forward()}} implements forward simulation-based reconstruction of movement paths;
-\item \code{\link[=pf_backward]{pf_backward()}} implements backward simulation-based reconstruction of movement paths;
+\item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implements backward simulation-based reconstruction of movement paths;
 }
 }
 \author{

@@ -197,10 +197,10 @@ par(pp)
 
 ## Backward pass
 
-`pf_backward()` implements the backward pass. 
+`pf_backward_*()` implements the backward pass. 
 
 ```{r}
-out_pfb <- pf_backward(out_pff$history, .save_history = TRUE, .verbose = FALSE)
+out_pfb <- pf_backward_killer(out_pff$history, .save_history = TRUE, .verbose = FALSE)
 ```
 
 # Outputs

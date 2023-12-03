@@ -52,8 +52,8 @@ out_pff <- pf_forward(obs,
                       .detection_kernels = kernels,
                       .save_opts = TRUE)
 
-#### Implement pf_backward()
-out_pfb <- pf_backward(out_pff$history, .save_history = TRUE)
+#### Implement pf_backward_killer()
+out_pfb <- pf_backward_killer(out_pff$history, .save_history = TRUE)
 
 #### Implement pf_path()
 out_pfp <- pf_path(out_pfb$history, .bathy = gebco)

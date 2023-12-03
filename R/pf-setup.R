@@ -1,5 +1,5 @@
 #' @title PF set up: list files for PF
-#' @description This function creates an ordered `list` of files for [`pf_backward()`].
+#' @description This function creates an ordered `list` of files for [`pf_backward_*()`].
 #'
 #' @param .root A string that defines the directory in which files are located.
 #' @param ... Additional arguments passed to [`list.files()`], such as `pattern`, excluding `full.names`.
@@ -16,16 +16,16 @@
 #'                       .detection_kernels = dat_kernels(),
 #'                       .write_opts = list(sink = pff_folder))
 #'
-#' # List files for pf_backward()
-#' files <- pf_setup_files(pff_folder)
+#' # List files for pf_backward_*()
+#' files <- pf_setup_files(file.path(pff_folder, "history"))
 #'
-#' # Quick implementation of pf_backward()
+#' # Quick implementation of pf_backward_killer()
 #' pfb_folder <- file.path(con, "patter", "pf", "backward")
 #' dir.create(pfb_folder, recursive = TRUE)
-#' out_pfb <- pf_backward(files,
-#'                        .write_history = list(sink = pfb_folder))
+#' out_pfb <- pf_backward_killer(files,
+#'                               .write_history = list(sink = pfb_folder))
 #'
-#' # List files from pf_backward()
+#' # List files from pf_backward_*()
 #' pf_setup_files(pfb_folder)
 #'
 #' # Clean up
@@ -51,7 +51,7 @@ pf_setup_files <- function(.root, ...) {
     abort("Multiple file types (extensions) identified in `.root`. Do you need to pass `pattern` to `list.files()`?")
   }
   if (!all(exts == "parquet")) {
-    abort(".parquet files (for `pf_backward()`) are expected.")
+    abort(".parquet files (for `pf_backward_*()`) are expected.")
   }
   bsname <- basename(files)
   ext <- exts[1]
