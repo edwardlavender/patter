@@ -16,6 +16,9 @@ pf_rpropose_origin <- function(.obs, .origin, .grid = FALSE,
     # (1) Define 'quadrature points' within acoustic containers
     if (!is.null(.moorings)) {
       # Define container for possible locations
+      if (!.grid) {
+        .detection_kernels <- NULL
+      }
       container <- .acs_container_1(.obs,
                                     .detection_kernels = .detection_kernels,
                                     .moorings = .moorings)
