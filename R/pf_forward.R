@@ -83,10 +83,11 @@ pf_forward <- function(.obs,
                                       .iter_m = iter_m, .iter_i = iter_i)
     # Record accepted cells
     if (.save_opts) {
-      history[[1L]]     <- copy(pnow)
+      # Drop attributes via data.table()
+      history[[1L]]     <- copy(data.table(pnow))
       diagnostics[[1L]] <- diagnostics_1
     }
-    .pf_write_particles_abbr(pnow)
+    .pf_write_particles_abbr(data.table(pnow))
     .pf_write_diagnostics_abbr(diagnostics_1)
   }
 
@@ -166,9 +167,9 @@ pf_forward <- function(.obs,
       # Save particle samples (if possible)
       if (continue) {
         if (.save_opts) {
-          history[[t]] <- copy(pnow)
+          history[[t]] <- copy(data.table(pnow))
         }
-        .pf_write_particles_abbr(.particles = pnow)
+        .pf_write_particles_abbr(.particles = data.table(pnow))
       } else {
         # For convergence failures, collate outputs & return up to current time step
         out <- .pf_outputs(.rerun = .rerun,
