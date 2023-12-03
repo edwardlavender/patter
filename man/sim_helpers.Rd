@@ -72,7 +72,7 @@ dstep(.data_now, .data_past, ...)
 }}
 }
 \description{
-These convenience functions support the generation of animal movement paths and observations in \emph{de novo} simulations (\verb{sim_*()} functions) and simulation-based reconstructions of movement paths (\code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_p]{pf_backward_p()}}).
+These convenience functions support the generation of animal movement paths and observations in \emph{de novo} simulations (\verb{sim_*()} functions) and simulation-based reconstructions of movement paths (\code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}).
 \itemize{
 \item \verb{r*()} functions simulate random variates;
 \item \verb{c*()} functions calculate outcomes from random-variate inputs;
@@ -81,7 +81,7 @@ These convenience functions support the generation of animal movement paths and 
 
 \verb{r*()} and \verb{c*()} functions are used in \emph{de novo} simulations (via \verb{sim_*()} functions such as \code{\link[=sim_path_walk]{sim_path_walk()}}) and the forward simulation-based reconstruction of movement paths (in \code{\link[=pf_forward]{pf_forward()}}).
 
-\verb{d*()} functions are used in the simulation-based reconstruction of movement paths as part of the backward sampler via \code{\link[=pf_backward_p]{pf_backward_p()}}.
+\verb{d*()} functions are used in the simulation-based reconstruction of movement paths as part of the backward sampler via \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}.
 }
 \section{Movement}{
 \subsection{Core functions}{
@@ -103,7 +103,7 @@ These convenience functions support the generation of animal movement paths and 
 
 \subsection{Wrappers}{
 
-The following wrapper functions are provided in the form required by front-end functions (e.g., \code{\link[=sim_path_walk]{sim_path_walk()}} and \code{\link[=pf_backward_p]{pf_backward_p()}}):
+The following wrapper functions are provided in the form required by front-end functions (e.g., \code{\link[=sim_path_walk]{sim_path_walk()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}):
 \itemize{
 \item \code{\link[=rlen]{rlen()}} is a wrapper for \code{\link[=rtruncgamma]{rtruncgamma()}}. The corresponding function \code{dlen} is not currently implemented.
 \item \code{\link[=rangrw]{rangrw()}}, \code{\link[=rangcrw]{rangcrw()}} are wrappers for \code{\link[=rwn]{rwn()}} for random walks and correlated random walks. The corresponding functions \code{dangrw()} and \code{dangcrw()} are not currently implemented.

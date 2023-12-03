@@ -97,7 +97,7 @@ pf_backward_dens <- function(.history, .dens_step, ...,
 #' @param .dens_step,... A function, and associated inputs, used to calculate the probability density of movements between particle samples. `.dens_step` must accept the following arguments:
 #'    * `.data_now`---a one-row [`data.table`] that defines the current particle sample (as in `.history`).
 #'    * `.data_past`---a multi-row [`data.table`] that defines all particle samples for the previous time step (as in `.history`).
-#'    * (optional) `...`---additional arguments passed from [`pf_backward_p()`].
+#'    * (optional) `...`---additional arguments passed from [`pf_backward_sampler()`].
 #'
 #' Three helper functions are provided:
 #' * [`dstep()`] calculates distances between current and past particle samples (via [`terra::distance()`]) and translates these into probability densities (via [`dtruncgamma()`]). Arguments passed via `...` are passed to both [`terra::distance()`] (which requires a `lonlat` input) and [`dtruncgamma()`].
@@ -156,16 +156,16 @@ pf_backward_dens <- function(.history, .dens_step, ...,
 #'     * [`get_hr()`] for home range estimates;
 #'
 #' @author Edward Lavender
-#' @name pf_backward_p
+#' @name pf_backward_sampler
 
-#' @rdname pf_backward_p
+#' @rdname pf_backward_sampler
 #' @export
 
 dstep_lookup <- function(.data_now, .data_past, .density) {
   rbindlist(.density[[as.character(.data_now$cell_now)]][as.character(.data_past$cell_now)])$density
 }
 
-#' @rdname pf_backward_p
+#' @rdname pf_backward_sampler
 #' @export
 
 dstep_read <- function(.data_now, .data_past, .density) {
@@ -175,7 +175,7 @@ dstep_read <- function(.data_now, .data_past, .density) {
   unlist(dens[as.character(.data_past$cell_now)])
 }
 
-#' @rdname pf_backward_p
+#' @rdname pf_backward_sampler
 #' @export
 
 pf_backward_sampler <- function(.history,

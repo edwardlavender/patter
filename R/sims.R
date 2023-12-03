@@ -1,5 +1,5 @@
 #' @title Simulation helpers
-#' @description These convenience functions support the generation of animal movement paths and observations in _de novo_ simulations (`sim_*()` functions) and simulation-based reconstructions of movement paths ([`pf_forward()`] and [`pf_backward_p()`]).
+#' @description These convenience functions support the generation of animal movement paths and observations in _de novo_ simulations (`sim_*()` functions) and simulation-based reconstructions of movement paths ([`pf_forward()`] and [`pf_backward_sampler()`]).
 #'
 #' * `r*()` functions simulate random variates;
 #' * `c*()` functions calculate outcomes from random-variate inputs;
@@ -7,7 +7,7 @@
 #'
 #' `r*()` and `c*()` functions are used in _de novo_ simulations (via `sim_*()` functions such as [`sim_path_walk()`]) and the forward simulation-based reconstruction of movement paths (in [`pf_forward()`]).
 #'
-#' `d*()` functions are used in the simulation-based reconstruction of movement paths as part of the backward sampler via [`pf_backward_p()`].
+#' `d*()` functions are used in the simulation-based reconstruction of movement paths as part of the backward sampler via [`pf_backward_sampler()`].
 #'
 #' @param .n,.x,.shape,.scale,.mobility Arguments for [`rtruncgamma()`] and [`dtruncgamma()`]:
 #' * `.n` is an `integer` that defines the number of simulated outcome(s);
@@ -55,7 +55,7 @@
 #'
 #' ## Wrappers
 #'
-#' The following wrapper functions are provided in the form required by front-end functions (e.g., [`sim_path_walk()`] and [`pf_backward_p()`]):
+#' The following wrapper functions are provided in the form required by front-end functions (e.g., [`sim_path_walk()`] and [`pf_backward_sampler()`]):
 #'
 #' * [`rlen()`] is a wrapper for [`rtruncgamma()`]. The corresponding function `dlen` is not currently implemented.
 #' * [`rangrw()`], [`rangcrw()`] are wrappers for [`rwn()`] for random walks and correlated random walks. The corresponding functions `dangrw()` and `dangcrw()` are not currently implemented.
