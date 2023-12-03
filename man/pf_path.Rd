@@ -59,13 +59,13 @@ obs        <- dat_obs()
 gebco      <- dat_gebco()
 # Collect pre-defined particle samples from forward simulation
 dat_pff    <- dat_pff()
-# Implement backwards pass
+# Implement backward pass
 con        <- tempdir()
 pfb_folder <- file.path(con, "patter", "pf", "backward")
 dir.create(pfb_folder, recursive = TRUE)
-out_pfb <- pf_backward(dat_pff$history,
-                       .save_history = TRUE,
-                       .write_history = list(sink = pfb_folder))
+out_pfb <- pf_backward_killer(dat_pff$history,
+                              .save_history = TRUE,
+                              .write_history = list(sink = pfb_folder))
 
 #### Example (1): Implement pf_path() from `pf` object
 p1 <- pf_path(out_pfb$history)

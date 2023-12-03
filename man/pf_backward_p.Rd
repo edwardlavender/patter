@@ -215,14 +215,14 @@ if (FALSE) {
                    .store = mktempdir("patter", "pf", "backward", "pre-calcs"),
                    .cl = parallel::makeCluster(2L))
 
-  # Implement `pf_backward()` using `dstep_read()`
+  # Implement `pf_backward_sampler()` using `dstep_read()`
   out_pfb <-
     pf_backward_sampler(history,
                         .dens_step = dstep_read,
                         .density = file.path(pfb_folder, "density"),
                         .save_history = TRUE)
 
-  # Implement `pf_backward()` using `dstep_read()` in parallel
+  # Implement `pf_backward_sampler()` using `dstep_read()` in parallel
   if (.Platform$OS.type == "unix") {
     out_pfb <-
       pf_backward_sampler(history,

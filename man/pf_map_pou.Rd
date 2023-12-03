@@ -65,6 +65,7 @@ get_hr_core(pou, .add = TRUE, lwd = 0.75)
 
 # Clean up
 unlink(pfb_folder, recursive = TRUE)
+
 }
 \seealso{
 \itemize{
