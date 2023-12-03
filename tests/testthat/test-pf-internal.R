@@ -15,6 +15,8 @@ test_that(".pf_check_*() functions work", {
 
 test_that(".pf_history_dt() works", {
 
+  require(arrow)
+
   # Define particle samples
   # * Use pre-defined samples from pf_forward()
   # * Implement backward pass
@@ -32,7 +34,19 @@ test_that(".pf_history_dt() works", {
   a <- .pf_history_dt(out_pfb)
   b <- .pf_history_dt(out_pfb$history)
   c <- .pf_history_dt(pf_setup_files(pfb_folder))
-  d <- .pf_history_dt(pfb_folder)
+  d <- .pf_history_dt(pfb_folder,
+                      schema = schema(
+                        timestep = int32(),
+                        cell_past = int32(),
+                        x_past = double(),
+                        y_past = double(),
+                        cell_now = int32(),
+                        x_now = double(),
+                        y_now = double(),
+                        lik = double(),
+                        dens = double(),
+                        weight = double()
+                      ))
 
   # Confirm each implementation option returns identical outputs
   expect_equal(a, b)
