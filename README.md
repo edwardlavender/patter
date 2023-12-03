@@ -107,8 +107,7 @@ For example algorithm outputs `datasets-algorithms`, see:
   `acs_setup_detection_overlaps()`;
 - `dat_kernels()` for an example output from
   `acs_setup_detection_kernels()`;
-- `dat_ac()` for an example output from `acs()`;
-- `dat_pff()` for an example output from `pf_forward_*()`;
+- `dat_pff()` for an example output from `pf_forward()`;
 - `dat_pfb()` for an example output from `pf_backward()`;
 - `dat_pfp()` for an example output from `pf_path()`;
 
@@ -119,9 +118,8 @@ To simulate passive acoustic telemetry data, see:
 - `sim_array()` to simulate an acoustic array;
 - `sim_path_walk()` to simulate a movement path from a walk model, with
   the help of:
-  - `rtruncgamma()` and `sim_length()` to simulate step lengths;
-  - `rwn()`, `sim_angle_rw()` and `sim_angle_crw()` to simulate turning
-    angles;
+  - `rtruncgamma()` and `rlen()` to simulate step lengths;
+  - `rwn()`, `rangrw()` and `rangcrw()` to simulate turning angles;
 - `sim_detections()` to simulate detections at receivers, with the help
   of:
   - `calc_detection_pr_logistic()` and `calc_detection_pr()`, which
@@ -165,11 +163,6 @@ To implement the centre-of-activity algorithm use:
 
 - `coa()` to calculate centres of activity;
 
-To implement the depth-contour (DC) algorithm, use:
-
-- `dc_setup_model()` for an example DC model;
-- `dc()` to implement the algorithm;
-
 To implement the acoustic-centroid\* (AC\*) algorithm(s) (e.g., AC and
 ACDC), use:
 
@@ -177,15 +170,12 @@ ACDC), use:
 - `acs_setup_detection_overlaps()` to set up detection overlaps;
 - `acs_setup_detection_pr()` to define a detection probability model;
 - `acs_setup_detection_kernels()` to set up detection kernels;
-- `acs()` to implement the algorithm(s);
 
 To implement particle filtering (PF), use:
 
 - `pf_setup_files()` to set up the record;
 - `pf_kick()` for an example movement model;
-- `pf_forward_*()` to implement the forward simulation; namely:
-  - `pf_forward_1()` for the original (two-step) implementation;
-  - `pf_forward_2()` for an integrated implementation;
+- `pf_forward()` to implement the forward simulation;
 - `pf_backward()` to implement the backward pass;
 - `pf_coords()` to collate particle coordinates;
 - `pf_path()` (and `pf_path_pivot()`) to reconstruct movement paths;
@@ -213,8 +203,8 @@ The following convenience functions are also made available to users of
     `SpatRaster`;
   - `degrees()` to create circular angles;
 - `terra` helpers. See:
-  - `rast_template()` to create a template `SpatRaster`;
-  - `normalise()` to normalise a `SpatRaster`;
+  - `spatTemplate()` to create a template `SpatRaster`;
+  - `spatNormalise()` to normalise a `SpatRaster`;
   - `as.im.SpatRaster` and `as.owin.SpatRaster` for interfaces to
     `spatstat` function(s);
 - Parallelisation. See:
