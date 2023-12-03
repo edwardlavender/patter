@@ -16,9 +16,9 @@ gebco <- dat_gebco()
 
 #### Example (1): A. Implementation with default options
 out_pfb <-
-  pf_backward_(history,
-               .dens_step = dstep, lonlat = FALSE,
-               .save_history = TRUE)
+  pf_backward_sampler(history,
+                      .dens_step = dstep, lonlat = FALSE,
+                      .save_history = TRUE)
 
 #### Example (1): B. Parallelise default implementation
 # Use forking
