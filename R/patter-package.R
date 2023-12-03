@@ -77,7 +77,6 @@
 #' * [`acs_setup_detection_overlaps()`] to set up detection overlaps;
 #' * [`acs_setup_detection_pr()`] to define a detection probability model;
 #' * [`acs_setup_detection_kernels()`] to set up detection kernels;
-#' * [`acs()`] to implement the algorithm(s);
 #'
 #' To implement particle filtering (PF), use:
 #'

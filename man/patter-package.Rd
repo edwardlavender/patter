@@ -96,7 +96,6 @@ To implement the acoustic-centroid* (AC*) algorithm(s) (e.g., AC and ACDC), use:
 \item \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}} to set up detection overlaps;
 \item \code{\link[=acs_setup_detection_pr]{acs_setup_detection_pr()}} to define a detection probability model;
 \item \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}} to set up detection kernels;
-\item \code{\link[=acs]{acs()}} to implement the algorithm(s);
 }
 
 To implement particle filtering (PF), use:

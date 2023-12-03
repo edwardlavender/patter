@@ -135,7 +135,7 @@ pf_map_pou <-
 #' @param .use_tryCatch A `logical` variable that controls error handling:
 #' * If `.use_tryCatch = FALSE`, if density estimation fails with an error, the function fails with the same error.
 #' * If `.use_tryCatch = TRUE`, if density estimation fails with an error, the function produces a warning with the error message and returns `NULL`.
-#' @param .verbose,.txt Controls on function prompts and messages (see [`acs()`]).
+#' @param .verbose,.txt Controls on function prompts and messages (see [`pf_forward()`].
 #' @param ... Arguments passed to [`spatstat.explore::density.ppp()`], such as `sigma` (i.e., the bandwidth).
 #'
 #' @details

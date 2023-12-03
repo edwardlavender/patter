@@ -31,7 +31,7 @@ Probability-of-use is the proportion of samples of each unique cell (out of the 
 \examples{
 #### Workflow
 # A. Define input datasets (see ?`acs_setup_obs()`)
-# B. Implement forward simulation (see ?`acs()`, ?`dc()` and ?`pf_forward_*()`)
+# B. Implement forward simulation (see ?`pf_forward()`)
 # C. Implement backwards pass (see ?`pf_backward()`)
 # D. Implement `pf_path()`, `pf_map_pou()` etc.
 

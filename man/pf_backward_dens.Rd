@@ -95,7 +95,6 @@ There are three implementation options:
 }
 \seealso{
 \itemize{
-\item \code{\link[=acs]{acs()}} and \code{\link[=dc]{dc()}} implement AC-branch algorithms;
 \item \code{\link[=pf_forward]{pf_forward()}} to implement the forward simulation;
 \item \code{\link[=pf_backward]{pf_backward()}} implements the backward pass;
 \item \code{\link[=pf_path]{pf_path()}} reconstructs movement paths;

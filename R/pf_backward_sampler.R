@@ -53,7 +53,6 @@
 #' # See ?`pf_backward()` for examples
 #'
 #' @seealso
-#' * [`acs()`] and [`dc()`] implement AC-branch algorithms;
 #' * [`pf_forward()`] to implement the forward simulation;
 #' * [`pf_backward()`] implements the backward pass;
 #' * [`pf_path()`] reconstructs movement paths;
