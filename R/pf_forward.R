@@ -86,8 +86,8 @@ pf_forward <- function(.obs,
         .pf_diag_collect(.diagnostics = attr(pnow, "diagnostics"),
                          .iter_m = iter_m, .iter_i = iter_i)
     }
-    .pf_write_particles_abbr(pnow)
-    .pf_write_diagnostics_abbr(diagnostics)
+    .pf_write_particles_abbr(history[[1L]])
+    .pf_write_diagnostics_abbr(diagnostics[[1L]])
   }
 
   #### Initiate loop
@@ -143,7 +143,7 @@ pf_forward <- function(.obs,
     if (.save_opts) {
       diagnostics[[index_diag]] <- diagnostics_t
     }
-    .pf_write_diagnostics_abbr(diagnostics)
+    .pf_write_diagnostics_abbr(diagnostics_t)
     index_diag <- index_diag + 1L
 
     #### (4) (A) Revert to an earlier time step

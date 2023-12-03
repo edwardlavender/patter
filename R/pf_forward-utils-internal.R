@@ -19,7 +19,7 @@
     if (!dir.exists(.folder)) {
       dir.create(.folder)
     }
-    check_dir_is_empty(.folder)
+    check_dir_is_empty(.folder, action = warn)
   })
   list(history = folder_history,
        diagnostics = folder_diagnostics)
@@ -43,8 +43,8 @@
 .pf_write_diagnostics <- function(.diagnostics, .sink, .write) {
   if (.write) {
     file <- paste0(
-      paste0(.diagnostics$m_iter[1],
-             .diagnostics$i_iter[1],
+      paste0(.diagnostics$iter_m[1],
+             .diagnostics$iter_i[1],
              .diagnostics$timestep[1], collapse = "-"),
       ".parquet")
     arrow::write_parquet(.diagnostics, sink = file.path(.sink, file))
@@ -77,7 +77,7 @@
   diagnostics <- list()
   # directories to write outputs (may be NULL)
   folders            <- .pf_dirs(.write_opts)
-  folder_history     <- folders[[".history"]]
+  folder_history     <- folders[["history"]]
   folder_diagnostics <- folders[["diagnostics"]]
 
   #### Prepare controls
@@ -128,7 +128,7 @@
     ),
     wrapper = list(.pf_lik_abbr = .pf_lik_abbr,
                    .pf_write_particles_abbr = .pf_write_particles_abbr,
-                   .pf_write_diagnostics_abbr = .pf_write_particles_abbr)
+                   .pf_write_diagnostics_abbr = .pf_write_diagnostics_abbr)
   )
 }
 
