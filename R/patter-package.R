@@ -99,7 +99,6 @@
 #'
 #' * Distance calculations. See:
 #'    * [`dist_along_path()`] to calculate distances along a movement path;
-#'    * [`dist_btw_cells()`] to calculate distances between cells on a [`SpatRaster`];
 #'    * [`degrees()`] to create circular angles;
 #'
 #' * `terra` helpers. See:

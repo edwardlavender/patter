@@ -122,7 +122,6 @@ The following convenience functions are also made available to users of \href{ht
 \item Distance calculations. See:
 \itemize{
 \item \code{\link[=dist_along_path]{dist_along_path()}} to calculate distances along a movement path;
-\item \code{\link[=dist_btw_cells]{dist_btw_cells()}} to calculate distances between cells on a \code{\link{SpatRaster}};
 \item \code{\link[=degrees]{degrees()}} to create circular angles;
 }
 \item \code{terra} helpers. See:
