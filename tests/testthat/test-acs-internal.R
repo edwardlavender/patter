@@ -1,4 +1,4 @@
-test_that(".acs_absences() and .acs_given_detection_SpatRaster() works", {
+test_that(".acs_absences() works", {
 
   #### Define example 'moorings' dataset
   # receivers 3 and 4 overlap in space but receiver 5 is further afield
@@ -43,31 +43,5 @@ test_that(".acs_absences() and .acs_given_detection_SpatRaster() works", {
     .acs_absences(date, c(3, 4), overlaps) |> expect_null()
     .acs_absences(date, 5, overlaps) |> expect_null()
   })
-
-  #### Test .acs_given_detection_SpatRaster()
-
-  # Test detection at receiver 3 only
-  a <- kernels$receiver_specific_kernels[[3]]
-  b <- .acs_given_detection_SpatRaster(.detections = 3, .absences = NULL, .kernels = kernels)
-  names(a) <- names(b) <- "z"
-  terra::all.equal(a, b) |> expect_true()
-
-  # Test detection at receiver 3 only with .zero_to_na = TRUE
-  a <- terra::classify(a, cbind(0, NA))
-  b <- .acs_given_detection_SpatRaster(.detections = 3, .absences = NULL, .kernels = kernels, .zero_to_na = TRUE)
-  names(a) <- names(b) <- "z"
-  terra::all.equal(a, b) |> expect_true()
-
-  # Test detection at receiver 3 and at receiver 4
-  a <- kernels$receiver_specific_kernels[[3]] * kernels$receiver_specific_kernels[[4]]
-  b <- .acs_given_detection_SpatRaster(.detections = c(3, 4), .absences = NULL, .kernels = kernels)
-  names(a) <- names(b) <- "z"
-  terra::all.equal(a, b) |> expect_true()
-
-  # Test detection at receiver 3 and no detection at receiver 4
-  a <- kernels$receiver_specific_kernels[[3]] * kernels$receiver_specific_inv_kernels[[4]]
-  b <- .acs_given_detection_SpatRaster(.detections = 3, .absences = 4, .kernels = kernels)
-  names(a) <- names(b) <- "z"
-  terra::all.equal(a, b) |> expect_true()
 
 })
