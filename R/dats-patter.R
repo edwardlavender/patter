@@ -6,7 +6,6 @@
 #' * [`dat_obs()`] reads an example input dataset from [`acs_setup_obs()`];
 #' * [`dat_overlaps()`] reads an example output from [`acs_setup_detection_overlaps()`];
 #' * [`dat_kernels()`] reads an example output from [`acs_setup_detection_kernels()`];
-#' * [`dat_ac()`] reads an example output from [`acs()`];
 #' * [`dat_pff()`] reads an example output from [`pf_forward_1()`];
 #' * [`dat_pfb()`] reads an example output from [`pf_backward()`];
 #' * [`dat_pfp()`] reads an example output from [`pf_path()`];
@@ -15,7 +14,6 @@
 #' dat_obs() |> summary()
 #' dat_overlaps() |> summary()
 #' dat_kernels() |> summary()
-#' dat_ac() |> summary()
 #' dat_pff() |> summary()
 #' dat_pfb() |> summary()
 #' dat_pfp() |> summary()
@@ -58,17 +56,6 @@ dat_kernels <- function() {
     lapply(data$bkg_surface_by_design, unwrap_elm)
   data$bkg_inv_surface_by_design <-
     lapply(data$bkg_inv_surface_by_design, unwrap_elm)
-  data
-}
-
-#' @rdname datasets-algorithms
-#' @export
-
-dat_ac <- function() {
-  path <- system.file("extdata", "dat_ac.rds",
-                      package = "patter", mustWork = TRUE)
-  data <- readRDS(path)
-  data$record <- lapply(data$record, unwrap_elm)
   data
 }
 

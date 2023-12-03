@@ -32,7 +32,6 @@ For example algorithm outputs (\code{\link{datasets-algorithms}}), see:
 \item \code{\link[=dat_obs]{dat_obs()}} for an example output dataset from \code{\link[=acs_setup_obs]{acs_setup_obs()}};
 \item \code{\link[=dat_overlaps]{dat_overlaps()}} for an example output from \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}};
 \item \code{\link[=dat_kernels]{dat_kernels()}} for an example output from \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}};
-\item \code{\link[=dat_ac]{dat_ac()}} for an example output from \code{\link[=acs]{acs()}};
 \item \code{\link[=dat_pff]{dat_pff()}} for an example output from \code{\link[=pf_forward_1]{pf_forward_1()}};
 \item \code{\link[=dat_pfb]{dat_pfb()}} for an example output from \code{\link[=pf_backward]{pf_backward()}};
 \item \code{\link[=dat_pfp]{dat_pfp()}} for an example output from \code{\link[=pf_path]{pf_path()}};

@@ -5,7 +5,6 @@
 \alias{dat_obs}
 \alias{dat_overlaps}
 \alias{dat_kernels}
-\alias{dat_ac}
 \alias{dat_pff}
 \alias{dat_pfb}
 \alias{dat_pfp}
@@ -19,8 +18,6 @@ dat_obs()
 dat_overlaps()
 
 dat_kernels()
-
-dat_ac()
 
 dat_pff()
 
@@ -36,7 +33,6 @@ These functions load example outputs from key \code{\link{patter}} functions. Th
 \item \code{\link[=dat_obs]{dat_obs()}} reads an example input dataset from \code{\link[=acs_setup_obs]{acs_setup_obs()}};
 \item \code{\link[=dat_overlaps]{dat_overlaps()}} reads an example output from \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}};
 \item \code{\link[=dat_kernels]{dat_kernels()}} reads an example output from \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}};
-\item \code{\link[=dat_ac]{dat_ac()}} reads an example output from \code{\link[=acs]{acs()}};
 \item \code{\link[=dat_pff]{dat_pff()}} reads an example output from \code{\link[=pf_forward_1]{pf_forward_1()}};
 \item \code{\link[=dat_pfb]{dat_pfb()}} reads an example output from \code{\link[=pf_backward]{pf_backward()}};
 \item \code{\link[=dat_pfp]{dat_pfp()}} reads an example output from \code{\link[=pf_path]{pf_path()}};
@@ -46,7 +42,6 @@ These functions load example outputs from key \code{\link{patter}} functions. Th
 dat_obs() |> summary()
 dat_overlaps() |> summary()
 dat_kernels() |> summary()
-dat_ac() |> summary()
 dat_pff() |> summary()
 dat_pfb() |> summary()
 dat_pfp() |> summary()

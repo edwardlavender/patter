@@ -21,10 +21,6 @@ test_that("Algorithm datasets can be loaded", {
   x$bkg_surface_by_design[[1]] |> terra::plot()
   x$bkg_inv_surface_by_design[[1]] |> terra::plot()
 
-  x <- dat_ac()
-  x |> check_inherits("list")
-  x$record[[1]] |> terra::plot()
-
   x <- dat_pff()
   x |> check_inherits("list")
 

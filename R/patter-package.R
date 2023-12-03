@@ -24,7 +24,6 @@
 #' * [`dat_obs()`] for an example output dataset from [`acs_setup_obs()`];
 #' * [`dat_overlaps()`] for an example output from [`acs_setup_detection_overlaps()`];
 #' * [`dat_kernels()`] for an example output from [`acs_setup_detection_kernels()`];
-#' * [`dat_ac()`] for an example output from [`acs()`];
 #' * [`dat_pff()`] for an example output from [`pf_forward_1()`];
 #' * [`dat_pfb()`] for an example output from [`pf_backward()`];
 #' * [`dat_pfp()`] for an example output from [`pf_path()`];

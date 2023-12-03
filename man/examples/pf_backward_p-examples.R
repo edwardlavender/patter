@@ -1,20 +1,14 @@
 #### Set up examples
-# A. Define input datasets (see ?`acs_setup_obs()`)
-# (Here, we used pre-defined outputs for speed)
 obs <- dat_obs()
-# B. Implement AC-branch algorithm (see ?`acs()` or ?`dc()`)
-out_ac <- dat_ac()
-# C. Implement forward simulation (see ?`pf_forward()`)
 con <- tempdir()
 pff_folder <- file.path(tempdir(), "patter", "pf", "forward")
 dir.create(pff_folder, recursive = TRUE)
-out_pff <- pf_forward_1(.obs = obs,
-                        .record = out_ac$record,
-                        .n = 1e2,
-                        .kick = pf_kick,
-                        .bathy = NULL,
-                        .save_history = TRUE,
-                        .write_history = list(sink = pff_folder))
+out_pff <- pf_forward(.obs = obs,
+                      .bathy = dat_gebco(),
+                      .moorings = dat_moorings, .detection_overlaps = dat_overlaps(),
+                      .detection_kernels = dat_kernels(),
+                      .save_opts = TRUE,
+                      .write_opts = list(sink = pff_folder))
 # D. Define inputs for pf_backward()
 # * Use a subset of samples for speed
 history <- out_pff$history[1:10]
