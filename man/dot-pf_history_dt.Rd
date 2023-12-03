@@ -4,7 +4,7 @@
 \alias{.pf_history_dt}
 \title{PF: Compile particle histories into a \code{\link{data.table}}}
 \usage{
-.pf_history_dt(.history, .collect = TRUE)
+.pf_history_dt(.history, ..., .collect = TRUE)
 }
 \arguments{
 \item{.history}{The particle samples, supplied as:
