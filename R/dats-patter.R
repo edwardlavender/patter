@@ -6,7 +6,7 @@
 #' * [`dat_obs()`] reads an example input dataset from [`acs_setup_obs()`];
 #' * [`dat_overlaps()`] reads an example output from [`acs_setup_detection_overlaps()`];
 #' * [`dat_kernels()`] reads an example output from [`acs_setup_detection_kernels()`];
-#' * [`dat_pff()`] reads an example output from [`pf_forward_1()`];
+#' * [`dat_pff()`] reads an example output from [`pf_forward()`];
 #' * [`dat_pfb()`] reads an example output from [`pf_backward()`];
 #' * [`dat_pfp()`] reads an example output from [`pf_path()`];
 #'

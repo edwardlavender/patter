@@ -24,7 +24,7 @@
 #' @param .collect If `.in_memory = FALSE`, `.collect` is an `integer` that controls whether or not particle pairs are brought into memory for density calculations (see Details). If the number of particle pairs exceeds `.collect`, processing continues without bringing the data fully into memory.
 #' @param .store If `.in_memory = FALSE` and `.collect` is exceeded, `.store` is required. This is a character string that defines the path to an empty directory within which to write files.
 #' @param .cl,.varlist Parallelisation options for implementation 2B (see Details and [`cl_lapply()`]).
-#' @param .verbose,.txt Arguments to monitor function progress (see [`pf_forward_1()`]).
+#' @param .verbose,.txt Arguments to monitor function progress (see [`pf_forward()`]).
 #'
 #' @details
 #' The backward pass sweeps backwards in time through particle samples to reconstruct movement paths (see [`pf_backward()`]). For each particle, at each time step this algorithm samples a preceding location according to the probability densities connecting that particle to all particles from the preceding time step. The purpose of this function is to identify the set of unique transitions between particle pairs and pre-calculate probability densities for [`pf_backward()`].
@@ -54,7 +54,7 @@
 #'
 #' @seealso
 #' * [`acs()`] and [`dc()`] implement AC-branch algorithms;
-#' * [`pf_forward_1()`] and [`pf_forward_2()`] implement the forward simulation;
+#' * [`pf_forward()`] to implement the forward simulation;
 #' * [`pf_backward()`] implements the backward pass;
 #' * [`pf_path()`] reconstructs movement paths;
 #' * [`pf_map_pou()`] and [`pf_map_dens()`] generate maps of space use;
@@ -105,12 +105,12 @@ pf_backward_dens <- function(.history, .dens_step, ...,
 #' * [`dstep_lookup()`] looks up pre-calculated density values from an object in memory (from XXX);
 #' * [`dstep_read()`] reads selected pre-calculated density values (from XXX) into memory. This requires the `qs` package but, for speed, performs no checks as to whether it is available.
 #'
-#' @param .save_history A logical variable that defines whether or not to save updated particle samples in memory (see [`pf_forward_1()`]).
-#' @param .write_history A named list, passed to [`arrow::write_parquet()`], to write updated particle samples to file (see [`pf_forward_1()`]).
+#' @param .save_history A logical variable that defines whether or not to save updated particle samples in memory (see [`pf_forward()`]).
+#' @param .write_history A named list, passed to [`arrow::write_parquet()`], to write updated particle samples to file (see [`pf_forward()`]).
 #' @param .progress,.cl,.varlist (optional) Parallelisation options. Parallelisation is implemented over particles.
 #' * `.progress` is a logical variable that defines whether or not to show a progress bar.
 #' * `.cl` and `.varlist` are cluster controls passed to [`cl_lapply()`].
-#' @param .verbose,.txt Arguments to monitor function progress (see [`pf_forward_1()`]).
+#' @param .verbose,.txt Arguments to monitor function progress (see [`pf_forward()`]).
 #'
 #' @details
 #'
@@ -139,9 +139,7 @@ pf_backward_dens <- function(.history, .dens_step, ...,
 #' @return The function returns a [`pf_path-class`] object.
 #'
 #' @seealso
-#' * The PF (forward simulation) is implemented by [`pf_forward_*()`]:
-#'     * [`pf_forward_1()`] refines AC-branch algorithm ([`acs()`] and [`dc()`]) outputs using PF;
-#'     * [`pf_forward_2()`] is an integrated implementation that couples AC- and PF-branch algorithms internally;
+#' * The PF (forward simulation) is implemented by [`pf_forward()`];
 #'
 #' * PF is supported by:
 #'     * Setup helpers, namely [`pf_setup_files()`];

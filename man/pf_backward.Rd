@@ -20,11 +20,11 @@ pf_backward(
 \item An ordered list of file paths (from \code{\link[=pf_setup_files]{pf_setup_files()}}) that define the directories in which particle samples were written from the forward simulation (as parquet files).
 }}
 
-\item{.save_history}{A logical variable that defines whether or not to save updated particle samples in memory (see \code{\link[=pf_forward_1]{pf_forward_1()}}).}
+\item{.save_history}{A logical variable that defines whether or not to save updated particle samples in memory (see \code{\link[=pf_forward]{pf_forward()}}).}
 
-\item{.write_history}{A named list, passed to \code{\link[arrow:write_parquet]{arrow::write_parquet()}}, to write updated particle samples to file (see \code{\link[=pf_forward_1]{pf_forward_1()}}).}
+\item{.write_history}{A named list, passed to \code{\link[arrow:write_parquet]{arrow::write_parquet()}}, to write updated particle samples to file (see \code{\link[=pf_forward]{pf_forward()}}).}
 
-\item{.progress, .verbose, .txt}{Arguments to monitor function progress (see \code{\link[=pf_forward_1]{pf_forward_1()}}).}
+\item{.progress, .verbose, .txt}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
 }
 \value{
 The function returns a \code{\linkS4class{pf}} object.
@@ -34,53 +34,6 @@ This function implements the backward correction of particle samples.
 }
 \details{
 At the time of writing, this function only removes 'dead ends' from particle samples. Backwards smoothing is not currently implemented.
-}
-\examples{
-#### Set up examples
-obs <- dat_obs()
-con <- tempdir()
-pff_folder <- file.path(tempdir(), "patter", "pf", "forward")
-dir.create(pff_folder, recursive = TRUE)
-out_pff <- pf_forward(.obs = obs,
-                      .bathy = dat_gebco(),
-                      .moorings = dat_moorings, .detection_overlaps = dat_overlaps(),
-                      .detection_kernels = dat_kernels(),
-                      .save_opts = TRUE,
-                      .write_opts = list(sink = pff_folder))
-
-#### Example (1): Implement backward simulation from `pf` object
-out_pfb <- pf_backward(out_pff$history, .save_history = TRUE)
-
-#### Example (2): Implement backward simulation from parquet files
-pff_folder_h <- file.path(pff_folder, "history")
-out_pfb <- pf_backward(pf_setup_files(pff_folder_h),
-                       .save_history = TRUE)
-
-#### Example (3): Write history to file (as in `pf_forward_*()`)
-pfb_folder <- file.path(con, "patter", "pf", "backward")
-dir.create(pfb_folder, recursive = TRUE)
-out_pfb <- pf_backward(pf_setup_files(pff_folder_h),
-                       .write_history = list(sink = pfb_folder))
-utils::head(list.files(pfb_folder))
-
-#### Example (4): Control monitoring of function progress
-# Suppress progress bar
-out_pfb <- pf_backward(pf_setup_files(pff_folder_h),
-                       .save_history = TRUE,
-                       .progress = FALSE)
-# Save messages
-log.txt <- tempfile(fileext = ".txt")
-out_pfb <- pf_backward(pf_setup_files(pff_folder_h),
-                       .save_history = TRUE,
-                       .txt = log.txt)
-utils::head(readLines(log.txt), 15)
-# Suppress messages
-out_pfb <- pf_backward(pf_setup_files(pff_folder_h),
-                       .save_history = TRUE,
-                       .verbose = FALSE)
-
-# Clean up
-unlink(file.path(con, "patter"), recursive = TRUE)
 }
 \seealso{
 TO DO

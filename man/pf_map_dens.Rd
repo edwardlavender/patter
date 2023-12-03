@@ -112,11 +112,7 @@ pf_map_dens(pou, sigma = bw.scott)
 }
 \seealso{
 \itemize{
-\item The PF (forward simulation) is implemented by \code{\link[=pf_forward_*]{pf_forward_*()}}:
-\itemize{
-\item \code{\link[=pf_forward_1]{pf_forward_1()}} refines AC-branch algorithm (\code{\link[=acs]{acs()}} and \code{\link[=dc]{dc()}}) outputs using PF;
-\item \code{\link[=pf_forward_2]{pf_forward_2()}} is an integrated implementation that couples AC- and PF-branch algorithms internally;
-}
+\item The PF (forward simulation) is implemented by \code{\link[=pf_forward]{pf_forward()}};
 \item PF is supported by:
 \itemize{
 \item Setup helpers, namely \code{\link[=pf_setup_files]{pf_setup_files()}};

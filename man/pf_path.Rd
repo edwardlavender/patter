@@ -25,7 +25,7 @@ pf_path(
 
 \item{.obs, .cols}{(optional) If \code{.return = "long"}, \code{.obs} and \code{.cols} are a \code{\link{data.table}} and a \code{character} vector of column names in \code{.obs} to match onto the output (see \code{\link[=pf_path_pivot]{pf_path_pivot()}}).}
 
-\item{.verbose, .txt}{Arguments to monitor function progress (see \code{\link[=pf_forward_1]{pf_forward_1()}}).}
+\item{.verbose, .txt}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
 
 \item{.return}{A \code{character} that defines the return format:
 \itemize{

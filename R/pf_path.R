@@ -5,7 +5,7 @@
 #' * An ordered list of file paths (from [`pf_setup_files()`]) that define the directories in which particle samples were written from the forward simulation (as parquet files).
 #' @param .bathy (optional) If `.return = "long"`, a bathymetry [`SpatRaster`] can be supplied to define cell coordinates (see [`pf_path_pivot()`]).
 #' @param .obs,.cols (optional) If `.return = "long"`, `.obs` and `.cols` are a [`data.table`] and a `character` vector of column names in `.obs` to match onto the output (see [`pf_path_pivot()`]).
-#' @param .verbose,.txt Arguments to monitor function progress (see [`pf_forward_1()`]).
+#' @param .verbose,.txt Arguments to monitor function progress (see [`pf_forward()`]).
 #' @param .return A `character` that defines the return format:
 #' * `long` specifies a long-format [`data.table`] that defines path IDs, time steps and associated locations (see [`pf_path_pivot()`]).
 #' * `wide` specifies a wide-format [`data.table`], with:

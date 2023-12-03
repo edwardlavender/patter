@@ -1,5 +1,5 @@
 #' @title PF set up: list files for PF
-#' @description This function creates an ordered `list` of files for PF, either from an AC* algorithm (i.e., [`acs()`] or [`dc()`]) for the forward simulation ([`pf_forward_1()`]), or from the forward simulation ([`pf_forward_*()`]) for the backward pass ([`pf_backward()`]).
+#' @description This function creates an ordered `list` of files for [`pf_backward()`].
 #'
 #' @param .root A string that defines the directory in which files are located.
 #' @param ... Additional arguments passed to [`list.files()`], such as `pattern`, excluding `full.names`.
@@ -7,30 +7,14 @@
 #' @return The function returns an ordered `list` of file paths.
 #'
 #' @examples
-#' # Quick implementation of AC algorithm
-#' obs    <- dat_obs()[1:10, ]
-#' gebco  <- dat_gebco()
-#' con    <- tempdir()
-#' ac_folder <- file.path(con, "patter", "ac")
-#' dir.create(ac_folder, recursive = TRUE)
-#' out_ac <-
-#'   acs(obs,
-#'       .bathy = gebco,
-#'       .detection_overlaps = dat_overlaps(),
-#'       .detection_kernels = dat_kernels(),
-#'       .write_record = list(filename = ac_folder, overwrite = TRUE))
-#'
-#' # List files for pf_forward_*()
-#' files <- pf_setup_files(ac_folder)
-#'
-#' # Quick implementation of pf_forward_1()
+#' # Quick implementation of pf_forward()
 #' pff_folder <- file.path(con, "patter", "pf", "forward")
 #' dir.create(pff_folder, recursive = TRUE)
-#' out_pff <- pf_forward_1(obs,
-#'                         .record = files,
-#'                         .kick = pf_kick,
-#'                         .bathy = gebco,
-#'                         .write_history = list(sink = pff_folder))
+#' out_pff <- pf_forward(.obs = dat_obs(),
+#'                       .bathy = dat_gebco(),
+#'                       .moorings = dat_moorings, .detection_overlaps = dat_overlaps(),
+#'                       .detection_kernels = dat_kernels(),
+#'                       .write_opts = list(sink = pff_folder))
 #'
 #' # List files for pf_backward()
 #' files <- pf_setup_files(pff_folder)

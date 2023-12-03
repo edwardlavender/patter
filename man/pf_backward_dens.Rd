@@ -51,7 +51,7 @@ For custom functions, note that coordinates are stored in each \code{\link{data.
 
 \item{.cl, .varlist}{Parallelisation options for implementation 2B (see Details and \code{\link[=cl_lapply]{cl_lapply()}}).}
 
-\item{.verbose, .txt}{Arguments to monitor function progress (see \code{\link[=pf_forward_1]{pf_forward_1()}}).}
+\item{.verbose, .txt}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
 }
 \value{
 The function returns:
@@ -96,7 +96,7 @@ There are three implementation options:
 \seealso{
 \itemize{
 \item \code{\link[=acs]{acs()}} and \code{\link[=dc]{dc()}} implement AC-branch algorithms;
-\item \code{\link[=pf_forward_1]{pf_forward_1()}} and \code{\link[=pf_forward_2]{pf_forward_2()}} implement the forward simulation;
+\item \code{\link[=pf_forward]{pf_forward()}} to implement the forward simulation;
 \item \code{\link[=pf_backward]{pf_backward()}} implements the backward pass;
 \item \code{\link[=pf_path]{pf_path()}} reconstructs movement paths;
 \item \code{\link[=pf_map_pou]{pf_map_pou()}} and \code{\link[=pf_map_dens]{pf_map_dens()}} generate maps of space use;

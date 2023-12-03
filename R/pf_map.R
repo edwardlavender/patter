@@ -78,9 +78,7 @@ pf_coords <- function(.history, .bathy, .obs = NULL, .cols = NULL) {
 #' @example man/examples/pf_map_pou-examples.R
 #'
 #' @seealso
-#' * The PF (forward simulation) is implemented by [`pf_forward_*()`]:
-#'     * [`pf_forward_1()`] refines AC-branch algorithm ([`acs()`] and [`dc()`]) outputs using PF;
-#'     * [`pf_forward_2()`] is an integrated implementation that couples AC- and PF-branch algorithms internally;
+#' * The PF (forward simulation) is implemented by [`pf_forward()`];
 #'
 #' * PF is supported by:
 #'     * Setup helpers, namely [`pf_setup_files()`];
@@ -157,9 +155,7 @@ pf_map_pou <-
 #' @example man/examples/pf_map_dens-examples.R
 #'
 #' @seealso
-#' * The PF (forward simulation) is implemented by [`pf_forward_*()`]:
-#'     * [`pf_forward_1()`] refines AC-branch algorithm ([`acs()`] and [`dc()`]) outputs using PF;
-#'     * [`pf_forward_2()`] is an integrated implementation that couples AC- and PF-branch algorithms internally;
+#' * The PF (forward simulation) is implemented by [`pf_forward()`];
 #'
 #' * PF is supported by:
 #'     * Setup helpers, namely [`pf_setup_files()`];
