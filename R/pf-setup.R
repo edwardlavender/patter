@@ -50,8 +50,8 @@ pf_setup_files <- function(.root, ...) {
   if (length(unique(exts)) != 1L) {
     abort("Multiple file types (extensions) identified in `.root`. Do you need to pass `pattern` to `list.files()`?")
   }
-  if (!all(exts %in% c("tif", "parquet"))) {
-    abort("Either .tif files (for `pf_forward_*()` or .parquet files (for `pf_backward()` are expected.")
+  if (!all(exts == "parquet")) {
+    abort(".parquet files (for `pf_backward()`) are expected.")
   }
   bsname <- basename(files)
   ext <- exts[1]

@@ -72,14 +72,14 @@ dstep(.data_now, .data_past, ...)
 }}
 }
 \description{
-These convenience functions support the generation of animal movement paths and observations in \emph{de novo} simulations (\verb{sim_*()} functions) and simulation-based reconstructions of movement paths (\code{\link[=pf_forward_*]{pf_forward_*()}} and \code{\link[=pf_backward_p]{pf_backward_p()}}).
+These convenience functions support the generation of animal movement paths and observations in \emph{de novo} simulations (\verb{sim_*()} functions) and simulation-based reconstructions of movement paths (\code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_p]{pf_backward_p()}}).
 \itemize{
 \item \verb{r*()} functions simulate random variates;
 \item \verb{c*()} functions calculate outcomes from random-variate inputs;
 \item \verb{d*()} functions return densities;
 }
 
-\verb{r*()} and \verb{c*()} functions are used in \emph{de novo} simulations (via \verb{sim_*()} functions such as \code{\link[=sim_path_walk]{sim_path_walk()}}) and the forward simulation-based reconstruction of movement paths (via \code{\link[=pf_kick]{pf_kick()}} in \code{\link[=pf_forward_*]{pf_forward_*()}}).
+\verb{r*()} and \verb{c*()} functions are used in \emph{de novo} simulations (via \verb{sim_*()} functions such as \code{\link[=sim_path_walk]{sim_path_walk()}}) and the forward simulation-based reconstruction of movement paths (via \code{\link[=pf_kick]{pf_kick()}} in \code{\link[=pf_forward]{pf_forward()}}).
 
 \verb{d*()} functions are used in the simulation-based reconstruction of movement paths as part of the backward sampler via \code{\link[=pf_backward_p]{pf_backward_p()}}.
 }
@@ -121,7 +121,7 @@ The following wrapper functions are provided in the form required by front-end f
 \seealso{
 \itemize{
 \item \verb{sim_*} functions implement \emph{de novo} simulation of movements and observations;
-\item \code{\link[=pf_forward_*]{pf_forward_*()}} implements forward simulation-based reconstruction of movement paths;
+\item \code{\link[=pf_forward]{pf_forward()}} implements forward simulation-based reconstruction of movement paths;
 \item \code{\link[=pf_backward]{pf_backward()}} implements backward simulation-based reconstruction of movement paths;
 }
 }

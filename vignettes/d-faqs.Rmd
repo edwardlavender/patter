@@ -37,7 +37,7 @@ In PF, particles are 'kicked' into new locations using a movement model. Under t
 
 * **Temporal resolution.** Using `flapper::lcp_comp()` as a guide, consider adjusting the temporal resolution of the analysis. Animals can move less far in shorter time steps and at shorter distances Euclidean and swimming distances become more similar. Some internal function improvements are required if the required temporal resolution is smaller than the acoustic transmission frequency. Please get in touch if this is the case for you. 
 
-* **Use custom kicks.** In `pf_forward_*()`, you can adjust the movement model to suit your requirements (and computational resources). 
+* **Use custom kicks.** In `pf_forward()`, you can adjust the movement model to suit your requirements (and computational resources). 
 
     * **Kick over the grid.** One option is to simulate, at each time step, particle movement over a grid (cell by cell) from the starting point to an ending point, according to a movement model and while keeping track of the travelled distance. At each time step, this approach requires multiple steps and is computationally expensive. 
     

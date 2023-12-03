@@ -73,7 +73,7 @@ The function returns a \code{\linkS4class{pf_path}} object.
 These functions implement backwards sampling of particle samples.
 }
 \section{Overview}{
-The forward filter (\code{\link[=pf_forward_*]{pf_forward_*()}}) reconstructs the possible locations of an individual at each time step, given the previous time step. Backwards sampling refines the particle filter in two ways:
+The forward filter (\code{\link[=pf_forward]{pf_forward()}}) reconstructs the possible locations of an individual at each time step, given the previous time step. Backwards sampling refines the particle filter in two ways:
 \itemize{
 \item We mitigate the issue of particle degeneracy;
 \item We reconstruct entire trajectories;

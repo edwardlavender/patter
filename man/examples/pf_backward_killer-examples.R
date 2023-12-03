@@ -18,7 +18,7 @@ pff_folder_h <- file.path(pff_folder, "history")
 out_pfb <- pf_backward(pf_setup_files(pff_folder_h),
                        .save_history = TRUE)
 
-#### Example (3): Write history to file (as in `pf_forward_*()`)
+#### Example (3): Write history to file (as in `pf_forward()`)
 pfb_folder <- file.path(con, "patter", "pf", "backward")
 dir.create(pfb_folder, recursive = TRUE)
 out_pfb <- pf_backward(pf_setup_files(pff_folder_h),

@@ -115,7 +115,7 @@ pf_backward_dens <- function(.history, .dens_step, ...,
 #'
 #' # Overview
 #'
-#' The forward filter ([`pf_forward_*()`]) reconstructs the possible locations of an individual at each time step, given the previous time step. Backwards sampling refines the particle filter in two ways:
+#' The forward filter ([`pf_forward()`]) reconstructs the possible locations of an individual at each time step, given the previous time step. Backwards sampling refines the particle filter in two ways:
 #'
 #' * We mitigate the issue of particle degeneracy;
 #' * We reconstruct entire trajectories;
