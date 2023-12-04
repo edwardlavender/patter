@@ -129,8 +129,8 @@ pf_map_pou <-
 #' @description [`pf_map_dens()`] creates a smoothed density map (e.g., of particle samples).
 #' @param .xpf A [`SpatRaster`] that defines the grid for density estimation and, if `.coord = NULL`, the points (and associated weights) that are smoothed. Weights must sum to one. The coordinate reference system of `.xpf` must be planar and specified.
 #' @param .im,.owin A pixel image representation of `.xpf` (see [`as.im.SpatRaster()`] and [`spatstat.geom::im()`]) and an observation window (see [`as.owin.SpatRaster()`], [`as.owin.sf()`] and [`spatstat.geom::owin()`]). These objects may be computed automatically from `.xpf` (with rectangular or gridded observation windows used by default, depending on whether or not `.xpf` contains `NA`s), but this option can be over-ridden. For faster results, use a rectangular or polygon observation window (see [`as.owin.sf()`]). If `.coord` is supplied, `.im` is necessarily (re)-defined internally (see Details).
-#' @param .poly,.bbox,.invert For [`as.owin.sf`] to construct observation windows from [`sf`] objects.
-#' * `.poly` is an [`sf`] polygon object;
+#' @param .poly,.bbox,.invert For [`as.owin.sf`] to construct observation windows from `sf` objects.
+#' * `.poly` is an `sf` polygon object;
 #' * `.bbox` is the bounding of a simple feature (see [`sf::st_bbox()`]);
 #' * `.invert` is a logical variable that defines whether or not to invert `.poly` (e.g., to turn a terrestrial polygon into an aquatic polygon);
 #' @param .coord (optional) A [`matrix`], [`data.frame`] or [`data.table`] with x and y coordinates, in columns named `x` and `y` or `cell_x` and `cell_y`. `x` and `y` columns are used preferentially. Coordinates must be planar.  A `timestep` column can also be included if there are multiple possible locations at each time step. A `mark` column can be included with coordinate weights; otherwise, equal weights are assumed (see Details). Other columns are ignored.

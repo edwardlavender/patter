@@ -198,3 +198,24 @@ pf_forward <- function(.obs,
               .convergence = TRUE)
 
 }
+
+#' @title PF: forward run diagnostics
+#' @description This function collates diagnostics from the forward run.
+#' @param .sink A character string that defines the directory in which [`pf_forward()`] outputs are saved. `.sink` should contain the `diagnostics/` directory that is created by [`pf_forward()`].
+#' @details This function is not memory safe.
+#' @return The function returns the diagnostics [`data.table`].
+#' @author Edward Lavender
+#' @export
+
+pf_forward_diagnostics <- function(.sink) {
+  # TO DO
+  # * Use .pf_history_dt() here
+  check_dir(.sink)
+  if (basename(.sink) != "diagnostics") {
+    .sink <- file.path(.sink, "diagnostics")
+  }
+  check_dir(.sink)
+  .sink |>
+    arrow::open_dataset() |>
+    collect()
+}

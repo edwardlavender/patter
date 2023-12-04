@@ -112,3 +112,35 @@ pf_backward_killer <- function(.history,
   out
 
 }
+
+
+#' @title PF: backward killer diagnostics
+#' @description This function collates diagnostics from [`pf_backward_killer()`] outputs.
+#' @param .sink A character string that defines the directory containing outputs.
+#' @param .cl,.cl_varlist,.cl_chunks (optional) Cluster options, passed to [`cl_lapply()`].
+#'
+#' @return The function returns a [`data.table`] with the following columns:
+#' * `timestep`---an `integer` that defines the timestep;
+#' * `n`---an `integer` that defines the number of particles;
+#' * `n_u`---an `integer` that defines the number of unique location samples;
+#' * `ess`---a `double` that defines the effective sample size (see [`.pf_diag_ess()`]);
+#'
+#' @author Edward Lavender
+#' @export
+
+pf_backward_killer_diagnostics <- function(.sink,
+                                           .cl = NULL, .cl_varlist = NULL, .cl_chunks = TRUE) {
+  .history <- pf_setup_files(.sink)
+  cl_lapply(.history,
+            .cl = .cl, .varlist = .cl_varlist,
+            .use_chunks = .cl_chunks,
+            .fun = function(f) {
+              d <- arrow::read_parquet(f)
+              data.table(timestep = d$timestep[1],
+                         n = fnrow(d),
+                         n_u = .pf_diag_unique(d$cell_now),
+                         ess = .pf_diag_ess(d$lik)
+              )
+            }) |>
+    rbindlist()
+}
