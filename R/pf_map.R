@@ -38,9 +38,13 @@ pf_coords <- function(.history, .bathy, .obs = NULL, .cols = NULL) {
   .pf_path_pivot_checks(.obs, .cols)
 
   # Define particle coordinates
+  sch <- schema(timestep = int32(),
+                cell_now = int32(),
+                x_now = double(),
+                y_now = double())
   p <-
     .history |>
-    .pf_history_dt() |>
+    .pf_history_dt(schema = sch) |>
     rename(cell_id = .data$cell_now) |>
     mutate(cell_xy = terra::xyFromCell(.bathy, .data$cell_id),
            cell_x = .data$cell_xy[, 1],
