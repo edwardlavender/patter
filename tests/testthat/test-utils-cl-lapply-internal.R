@@ -29,9 +29,9 @@ test_that("cl_*() helpers work", {
 
   # Check cl_chunks()
   cl_chunks(NULL, 10) |>
-    expect_equal(list(1:10))
+    expect_equal(list(1:3, 4:5, 6:7, 8:10))
   cl_chunks(2L, 10) |>
-    expect_equal(list(1:5L, 6:10L))
+    expect_equal(list(1:2, 3, 4, 5, 6, 7, 8, 9:10))
 
   # Check cl_export()
   cl_export()
