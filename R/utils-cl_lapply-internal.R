@@ -110,7 +110,10 @@ cl_cores <- function(.cl = NULL) {
 #' @keywords internal
 
 cl_chunks <- function(.cl = NULL, .length) {
-  chunks <- cl_cores(.cl)
+  # Define chunks as cores * 4L
+  # > In cl_lapply(), this produces a progress bar with four increments
+  chunks <- cl_cores(.cl) * 4L
+  # Define indices
   parallel::splitIndices(.length, chunks)
 
 }
