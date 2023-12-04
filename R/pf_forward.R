@@ -125,7 +125,7 @@ pf_forward <- function(.obs,
     #### (2) Propose new particles (using direct sampling)
     if (.trial_sampler > 0L) {
       use_sampler <- .pf_trial_sampler(.diagnostics = diagnostics_t,
-                                       .trial_crit = .trial_kick_crit)
+                                       .trial_crit = .trial_sampler_crit)
       if (use_sampler) {
         cat_to_cf("... ... ... Using directed sampling...")
         pnow <- .pf_particles_sampler(.particles = copy(ppast),
