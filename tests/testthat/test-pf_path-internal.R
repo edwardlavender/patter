@@ -41,8 +41,8 @@ test_that(".pf_path_chain() works", {
   .pf_path_join(arrow::read_parquet(.history[[3]]), .t = 3, .pb = .pb) |>
   .pf_path_join(arrow::read_parquet(.history[[4]]), .t = 4, .pb = .pb) |>
   .pf_path_join(arrow::read_parquet(.history[[5]]), .t = 5, .pb = .pb)"
-  expect_equal(chain_1 |> stringr::str_replace_all(" ", ""),
-               chain_2  |> stringr::str_replace_all(" ", ""))
+  expect_equal(gsub(" ", "", chain_1),
+               gsub(" ", "", chain_2))
 
   # Test with .read = FALSE
   chain_1 <- .pf_path_chain(as.list(1:5), .read = FALSE)
@@ -52,7 +52,7 @@ test_that(".pf_path_chain() works", {
   .pf_path_join(.history[[3]], .t = 3, .pb = .pb) |>
   .pf_path_join(.history[[4]], .t = 4, .pb = .pb) |>
   .pf_path_join(.history[[5]], .t = 5, .pb = .pb)"
-  expect_equal(chain_1 |> stringr::str_replace_all(" ", ""),
-               chain_2  |> stringr::str_replace_all(" ", ""))
+  expect_equal(gsub(" ", "", chain_1),
+               gsub(" ", "", chain_2))
 
 })
