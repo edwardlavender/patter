@@ -2,14 +2,8 @@
 % Please edit documentation in R/pf_backward_sampler.R
 \name{pf_backward_sampler}
 \alias{pf_backward_sampler}
-\alias{dstep_lookup}
-\alias{dstep_read}
 \title{PF: run the backward pass}
 \usage{
-dstep_lookup(.data_now, .data_past, .density)
-
-dstep_read(.data_now, .data_past, .density)
-
 pf_backward_sampler(
   .history,
   .dens_step = dstep,
@@ -17,23 +11,14 @@ pf_backward_sampler(
   .save_history = FALSE,
   .write_history = NULL,
   .cl = NULL,
-  .varlist = NULL,
+  .cl_varlist = NULL,
+  .cl_chunks = TRUE,
   .progress = TRUE,
   .verbose = TRUE,
   .txt = ""
 )
 }
 \arguments{
-\item{.data_now, .data_past, .density}{Arguments for \verb{.dens_step*} functions.
-\itemize{
-\item \code{.data_now} and \code{.data_past} are \code{\link{data.table}}s (see \code{.dens_step}), below;
-\item \code{.density} is either:
-\itemize{
-\item A \code{list} that contains movement densities (for \code{\link[=dstep_lookup]{dstep_lookup()}}) from \code{\link[=pf_backward_dens]{pf_backward_dens()}};
-\item A \code{character} string that defines the directory to \code{parquet} files containing movement densities (for \code{\link[=dstep_read]{dstep_read()}}) from \code{\link[=pf_backward_dens]{pf_backward_dens()}};
-}
-}}
-
 \item{.history}{Particle samples from the forward simulation, provided either as:
 \itemize{
 \item A \code{list} of \code{\link{data.table}}s that define cell samples; i.e., the \code{history} element of a \code{\linkS4class{pf}} object.
@@ -50,21 +35,29 @@ pf_backward_sampler(
 Three helper functions are provided:
 \itemize{
 \item \code{\link[=dstep]{dstep()}} calculates distances between current and past particle samples (via \code{\link[terra:distance]{terra::distance()}}) and translates these into probability densities (via \code{\link[=dtruncgamma]{dtruncgamma()}}). Arguments passed via \code{...} are passed to both \code{\link[terra:distance]{terra::distance()}} (which requires a \code{lonlat} input) and \code{\link[=dtruncgamma]{dtruncgamma()}}.
-\item \code{\link[=dstep_lookup]{dstep_lookup()}} looks up pre-calculated density values from an object in memory (from XXX);
-\item \code{\link[=dstep_read]{dstep_read()}} reads selected pre-calculated density values (from XXX) into memory. This requires the \code{qs} package but, for speed, performs no checks as to whether it is available.
 }}
 
 \item{.save_history}{A logical variable that defines whether or not to save updated particle samples in memory (see \code{\link[=pf_forward]{pf_forward()}}).}
 
 \item{.write_history}{A named list, passed to \code{\link[arrow:write_parquet]{arrow::write_parquet()}}, to write updated particle samples to file (see \code{\link[=pf_forward]{pf_forward()}}).}
 
-\item{.progress, .cl, .varlist}{(optional) Parallelisation options. Parallelisation is implemented over particles.
+\item{.progress, .cl, .cl_varlist, .cl_chunks}{(optional) Parallelisation options. Parallelisation is implemented over particles.
 \itemize{
 \item \code{.progress} is a logical variable that defines whether or not to show a progress bar.
-\item \code{.cl} and \code{.varlist} are cluster controls passed to \code{\link[=cl_lapply]{cl_lapply()}}.
+\item \code{.cl}, \code{.cl_varlist} and \code{.cl_chunks} are cluster controls passed to \code{\link[=cl_lapply]{cl_lapply()}}.
 }}
 
 \item{.verbose, .txt}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
+
+\item{.data_now, .data_past, .density}{Arguments for \verb{.dens_step*} functions.
+\itemize{
+\item \code{.data_now} and \code{.data_past} are \code{\link{data.table}}s (see \code{.dens_step}), below;
+\item \code{.density} is either:
+\itemize{
+\item A \code{list} that contains movement densities (for \code{\link[=dstep_lookup]{dstep_lookup()}}) from \code{\link[=pf_backward_dens]{pf_backward_dens()}};
+\item A \code{character} string that defines the directory to \code{parquet} files containing movement densities (for \code{\link[=dstep_read]{dstep_read()}}) from \code{\link[=pf_backward_dens]{pf_backward_dens()}};
+}
+}}
 }
 \value{
 The function returns a \code{\linkS4class{pf_path}} object.
@@ -94,7 +87,7 @@ In outline, the backward pass (backward sampling) proceeds as follows:
 \item The process can be implemented in parallel for each particle;
 }
 
-Note that the algorithm requires large numbers of calculations. Under default options, calculations are implemented on-the-fly, but it may be more efficient to pre-compute the set of distances between the set of unique particle pairs before implementation of the backward sampler.
+Note that the algorithm requires large numbers of calculations. Under default options, calculations are implemented on-the-fly, but it may be more efficient to pre-compute the set of distances between the set of unique particle pairs before implementation of the backward sampler. However, this is not currently implemented.
 }
 
 \examples{
@@ -114,13 +107,13 @@ out_pff <- pf_forward(.obs = obs,
 history <- out_pff$history[1:10]
 gebco <- dat_gebco()
 
-#### Example (1): A. Implementation with default options
+#### Example (1): Implementation with default options
 out_pfb <-
   pf_backward_sampler(history,
                       .dens_step = dstep, lonlat = FALSE,
                       .save_history = TRUE)
 
-#### Example (1): B. Parallelise default implementation
+#### Example (2): Parallelise default implementation
 # Use forking
 if (.Platform$OS.type == "unix") {
   out_pfb <-
@@ -136,109 +129,6 @@ out_pfb <-
                       .save_history = TRUE,
                       .cl = parallel::makeCluster(2L),
   )
-
-#### Example (2): A. Pre-compute step densities in memory
-# Pre-compute densities using default dstep() function
-densities <- pf_backward_dens(history,
-                              .dens_step = dstep, lonlat = FALSE, pairwise = TRUE,
-                              .in_memory = TRUE)
-# Use pre-computed densities in algorithm
-out_pfb <-
-  pf_backward_sampler(history,
-                      .dens_step = dstep_lookup, .density = densities,
-                      .save_history = TRUE)
-
-#### Example (2): B. Parallelise algorithm
-# Use forking
-if (.Platform$OS.type == "unix") {
-  out_pfb <-
-    pf_backward_sampler(history,
-                        .dens_step = dstep_lookup, .density = densities,
-                        .save_history = TRUE,
-                        .cl = 2L)
-}
-# Use socket cluster
-out_pfb <-
-  pf_backward_sampler(history,
-                      .dens_step = patter::dstep_lookup, .density = densities,
-                      .save_history = TRUE,
-                      .cl = parallel::makeCluster(2L),
-                      .varlist = "densities")
-
-#### Example (3): Pre-compute step densities without bring data fully into memory
-
-if (FALSE) {
-
-  ## i) Assemble data using {sparklyr} & calculate densities in memory
-  # Compute densities
-  densities <- pf_backward_dens(pff_folder,
-                                .dens_step = dstep, lonlat = FALSE, pairwise = TRUE,
-                                .in_memory = FALSE, .collect = Inf)
-  # Implement pf_backward_dens() as shown above (in serial or parallel)
-  out_pfb <-
-    pf_backward_sampler(history,
-                        .dens_step = dstep_lookup, .density = densities,
-                        .save_history = TRUE)
-
-  ## ii) Assemble data using {sparklyr} & calculate densities iteratively
-
-  # Compute densities
-  pfb_folder <- mktempdir("patter", "pf", "backward", "pre-calcs")
-  pf_backward_dens(pff_folder,
-                   .dens_step = dstep, lonlat = FALSE, pairwise = TRUE,
-                   .in_memory = FALSE,
-                   .collect = 0L,
-                   .store = pfb_folder)
-
-  # We population {pfb_folder}/density/ with one file for each cell
-  # (which is a list of density estimates)
-  list.files(pfb_folder)
-  dens <-
-    file.path(pfb_folder, "density") |>
-    list.files(full.names = TRUE, recursive = TRUE)
-  qs::qread(dens[1])
-
-  # (optional) Trial parallelisation for density computation
-  if (.Platform$OS.type == "unix") {
-    pf_backward_dens(pff_folder,
-                     .dens_step = dstep, lonlat = FALSE, pairwise = TRUE,
-                     .in_memory = FALSE,
-                     .collect = 0L,
-                     .store = mktempdir("patter", "pf", "backward", "pre-calcs"),
-                     .cl = 2L)
-  }
-  pf_backward_dens(pff_folder,
-                   .dens_step = patter::dstep, lonlat = FALSE, pairwise = TRUE,
-                   .in_memory = FALSE,
-                   .collect = 0L,
-                   .store = mktempdir("patter", "pf", "backward", "pre-calcs"),
-                   .cl = parallel::makeCluster(2L))
-
-  # Implement `pf_backward_sampler()` using `dstep_read()`
-  out_pfb <-
-    pf_backward_sampler(history,
-                        .dens_step = dstep_read,
-                        .density = file.path(pfb_folder, "density"),
-                        .save_history = TRUE)
-
-  # Implement `pf_backward_sampler()` using `dstep_read()` in parallel
-  if (.Platform$OS.type == "unix") {
-    out_pfb <-
-      pf_backward_sampler(history,
-                          .dens_step = dstep_read,
-                          .density = file.path(pfb_folder, "density"),
-                          .save_history = TRUE,
-                          .cl = 2L)
-  }
-  out_pfb <-
-    pf_backward_sampler(history,
-                        .dens_step = patter::dstep_read,
-                        .density = file.path(pfb_folder, "density"),
-                        .save_history = TRUE,
-                        .cl = parallel::makeCluster(2L),
-                        .varlist = "pfb_folder")
-
-}
 }
 \seealso{
 \itemize{
