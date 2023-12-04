@@ -169,5 +169,8 @@
 #' @importFrom collapse seq_row
 #'
 #' @importFrom lubridate `%within%`
+#'
+#' @importFrom arrow schema
+#' @importFrom arrow int32
 
 NULL
