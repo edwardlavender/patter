@@ -61,7 +61,7 @@ The function returns a normalised \code{\link{SpatRaster}} (or \code{NULL} if \c
 \code{\link[=pf_map_dens]{pf_map_dens()}} smooths (a) a \code{\link{SpatRaster}} or (b) a set of inputted coordinates:
 \itemize{
 \item If \code{.coords} is \code{NULL}, \code{.xpf} cell coordinates are used for density estimation and cell values are used as weights.
-\item If coordinates are supplied, coordinates are re-expressed on \code{.xpf} and then used for density estimation. Equal weights are assumed unless specified. Default or supplied weights are normalised to sum to one at each time step. The total weight of each location within time steps is calculated and then these weights are aggregated by location across the whole time series and renomalised. See the internal \code{\link[=.pf_map_weights]{.pf_map_weights()}} function for full details.
+\item If coordinates are supplied, coordinates are re-expressed on \code{.xpf} and then used for density estimation. This option is generally faster. Equal weights are assumed unless specified. Default or supplied weights are normalised to sum to one at each time step. The total weight of each location within time steps is calculated and then these weights are aggregated by location across the whole time series and renomalised. See the internal \code{\link[=.pf_map_weights]{.pf_map_weights()}} function for full details.
 }
 
 Cell coordinates are converted to a \code{\link[spatstat.geom:ppp]{spatstat.geom::ppp()}} object, which is passed, alongside the observation window (\code{.owin}) and an image of the weights to \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} for the estimation. Weights must sum to one.
@@ -89,6 +89,7 @@ dens_1    <- pf_map_dens(pou)
 
 #### Example (2): Smooth particle coordinates
 # This approach is equivalent to Example (1) & the outputs are identical
+# But this implementation can be considerably faster
 dens_2 <- pf_map_dens(gebco, .coord = pf_coords(out_pfb$history, gebco))
 stopifnot(all.equal(dens_1, dens_2))
 
