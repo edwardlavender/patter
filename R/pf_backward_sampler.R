@@ -1,3 +1,58 @@
+#' @title PF: isolate distinct samples
+#' @description This function identifies distinct particle (cell) samples from the forward filter for [`pf_backward_sampler()`].
+#' @param .history Particle samples from the backward pass, provided either as:
+#' * A `list` of [`data.table`]s that define cell samples; i.e., the `history` element of a [`pf-class`] object.
+#' * An ordered list of file paths (from [`pf_setup_files()`]) that define the directories in which particle samples were written from the forward simulation (as parquet files).
+#' @param .cl,.cl_varlist,.cl_chunks Parallelisation options, passed to [`cl_lapply()`].
+#' @param .save_opts,.write_opts Arguments to save particle histories in memory or write them to file (see [`pf_backward_sampler()`]).
+#' @details
+#' This function iterates over time steps, identifies distinct cells and saves these in memory and/or writes them to file for [`pf_backward_sampler()`]. This is designed to improve speed in [`pf_backward_sampler()`], which only requires distinct samples.
+#' @return The function returns a `list` of distinct particle samples (if `.save_opts = TRUE`) or `NULL`. If `.write_opts` is supplied, distinct particle samples are written to file.
+#' @author Edward Lavender
+#' @export
+
+pf_distinct <- function(.history,
+                        .cl = NULL, .cl_varlist = NULL, .cl_chunks = TRUE,
+                        .save_opts = FALSE, .write_opts = list()) {
+  if (length(.history) == 1L && dir.exists(.history)) {
+    .history <- pf_setup_files(.history)
+  }
+  read  <- inherits(.history[[1]], "character")
+  write <- rlang::has_name(.write_opts, "sink")
+  history <-
+    cl_lapply(.history,
+                       .cl = .cl, .varlist = .cl_varlist, .use_chunks = .cl_chunks,
+                       .fun = function(d) {
+                         # Read cells
+                         if (read) {
+                           d <- arrow::read_parquet(d,
+                                                    col_select = c("timestep", "cell_now", "x_now", "y_now"))
+                         }
+                         # Identify distinct cells
+                         d <-
+                           d |>
+                           dplyr::select("timestep", "cell_now", "x_now", "y_now") |>
+                           dplyr::distinct(.data$cell_now, .keep_all = TRUE)
+                         # Save oututs
+                         if (write) {
+                           arrow::write_parquet(d,
+                                                file.path(.write_opts, paste0(d$timestep[1], ".parquet")))
+                         }
+                         if (.save_opts) {
+                           .history
+                         } else {
+                           NULL
+                         }
+                       })
+
+  # Return outputs
+  if (.save_opts) {
+    history
+  } else {
+    invisible(NULL)
+  }
+}
+
 #' @title PF: pre-calculate densities for the backward pass
 #' @description This function is used to pre-calculate densities for the backward pass.
 #'
@@ -207,6 +262,7 @@ pf_backward_sampler <- function(.history,
     read_history <- TRUE
   }
   # Define constants
+  # * FIX
   n_particle <- nrow(.history[[1]])
   n_step     <- length(.history)
   density    <- NULL
