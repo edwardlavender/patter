@@ -30,9 +30,9 @@ pf_map_dens(
 
 \item{.im, .owin}{A pixel image representation of \code{.xpf} (see \code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}} and \code{\link[spatstat.geom:im]{spatstat.geom::im()}}) and an observation window (see \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}}, \code{\link[=as.owin.sf]{as.owin.sf()}} and \code{\link[spatstat.geom:owin]{spatstat.geom::owin()}}). These objects may be computed automatically from \code{.xpf} (with rectangular or gridded observation windows used by default, depending on whether or not \code{.xpf} contains \code{NA}s), but this option can be over-ridden. For faster results, use a rectangular or polygon observation window (see \code{\link[=as.owin.sf]{as.owin.sf()}}). If \code{.coord} is supplied, \code{.im} is necessarily (re)-defined internally (see Details).}
 
-\item{.poly, .bbox, .invert}{For \code{\link{as.owin.sf}} to construct observation windows from \code{\link{sf}} objects.
+\item{.poly, .bbox, .invert}{For \code{\link{as.owin.sf}} to construct observation windows from \code{sf} objects.
 \itemize{
-\item \code{.poly} is an \code{\link{sf}} polygon object;
+\item \code{.poly} is an \code{sf} polygon object;
 \item \code{.bbox} is the bounding of a simple feature (see \code{\link[sf:st_bbox]{sf::st_bbox()}});
 \item \code{.invert} is a logical variable that defines whether or not to invert \code{.poly} (e.g., to turn a terrestrial polygon into an aquatic polygon);
 }}
