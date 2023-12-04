@@ -283,7 +283,7 @@ pf_map_dens <- function(.xpf,
   ## (A) Define coordinates & weights from the SpatRaster (e.g., POU grid)
   if (is.null(.coord)) {
     cat_to_cf("... ... Using `.xpf`...")
-    .coord <- terra::as.data.frame(.xpf, xy = TRUE)
+    .coord <- terra::as.data.frame(.xpf, xy = TRUE, na.rm = TRUE)
     colnames(.coord) <- c("x", "y", "mark")
     .coord <- .coord[which(!is.na(.coord$mark) & .coord$mark != 0), ]
     marks <- .coord[, 3]
