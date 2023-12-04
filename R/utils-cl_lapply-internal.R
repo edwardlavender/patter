@@ -42,7 +42,8 @@ cl_lapply <- function(.x, .fun, ...,
                       .use_chunks = FALSE) {
   # Check cluster
   cl_check(.cl, .varlist)
-  if (.use_chunks) {
+  cores <- cl_cores(.cl)
+  if (.use_chunks && cores > 1L) {
     # Define list of indices by chunk
     rlang::check_installed("purrr")
     index_by_chunk <- cl_chunks(.cl, length(.x))
