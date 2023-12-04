@@ -209,13 +209,15 @@ pf_forward <- function(.obs,
 
 pf_forward_diagnostics <- function(.sink) {
   # TO DO
-  # * Use .pf_history_dt() here
+  # * Consider use of .pf_history_dt() here
+  # * But note that file ordering with arrow::open_dataset() may be problematic
   check_dir(.sink)
   if (basename(.sink) != "diagnostics") {
     .sink <- file.path(.sink, "diagnostics")
+    check_dir(.sink)
   }
-  check_dir(.sink)
   .sink |>
-    arrow::open_dataset() |>
-    collect()
+    pf_setup_files() |>
+    pbapply::pblapply(arrow::read_parquet) |>
+    rbindlist()
 }
