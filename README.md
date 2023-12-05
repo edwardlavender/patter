@@ -108,7 +108,7 @@ For example algorithm outputs `datasets-algorithms`, see:
 - `dat_kernels()` for an example output from
   `acs_setup_detection_kernels()`;
 - `dat_pff()` for an example output from `pf_forward()`;
-- `dat_pfb()` for an example output from `pf_backward()`;
+- `dat_pfb()` for an example output from `pf_backward_killer()`;
 - `dat_pfp()` for an example output from `pf_path()`;
 
 # Simulation
@@ -174,9 +174,8 @@ ACDC), use:
 To implement particle filtering (PF), use:
 
 - `pf_setup_files()` to set up the record;
-- `pf_kick()` for an example movement model;
 - `pf_forward()` to implement the forward simulation;
-- `pf_backward()` to implement the backward pass;
+- `pf_backward_*()` to implement the backward pass;
 - `pf_coords()` to collate particle coordinates;
 - `pf_path()` (and `pf_path_pivot()`) to reconstruct movement paths;
 - `pf_map_pou()` to map probability-of-use;
@@ -199,8 +198,6 @@ The following convenience functions are also made available to users of
     series;
 - Distance calculations. See:
   - `dist_along_path()` to calculate distances along a movement path;
-  - `dist_btw_cells()` to calculate distances between cells on a
-    `SpatRaster`;
   - `degrees()` to create circular angles;
 - `terra` helpers. See:
   - `spatTemplate()` to create a template `SpatRaster`;
