@@ -32,10 +32,16 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/faqs.html">FAQs</a>
+      <a href="../articles/a-methodology.html">Methodology</a>
     </li>
     <li>
-      <a href="../articles/workflow.html">A re-implementation of the `flapper` algorithms</a>
+      <a href="../articles/b-workflow.html">A revised implementation of the `flapper` algorithms</a>
+    </li>
+    <li>
+      <a href="../articles/c-demos.html">Demos</a>
+    </li>
+    <li>
+      <a href="../articles/d-faqs.html">FAQs</a>
     </li>
   </ul></li>
 <li>
@@ -68,11 +74,11 @@
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">call_time</span><span class="op">(</span><span class="va">.time</span>, form <span class="op">=</span> <span class="st">"%Y-%m-%d %H:%M:%S"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">call_start</span><span class="op">(</span>.fun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">sys.call</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1L</span><span class="op">)</span><span class="op">)</span>, .time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">call_start</span><span class="op">(</span>.fun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">sys.call</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1L</span><span class="op">)</span><span class="op">)</span>, .start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">call_end</span><span class="op">(</span>.fun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">sys.call</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1L</span><span class="op">)</span><span class="op">)</span>, .time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">call_end</span><span class="op">(</span>.fun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sys.parent.html" class="external-link">sys.call</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1L</span><span class="op">)</span><span class="op">)</span>, <span class="va">.start</span>, .end <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">call_duration</span><span class="op">(</span><span class="va">.start</span>, .end <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">call_timings</span><span class="op">(</span><span class="va">.start</span>, .end <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
 

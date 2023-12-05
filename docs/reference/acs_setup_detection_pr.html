@@ -32,10 +32,16 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/faqs.html">FAQs</a>
+      <a href="../articles/a-methodology.html">Methodology</a>
     </li>
     <li>
-      <a href="../articles/workflow.html">A re-implementation of the `flapper` algorithms</a>
+      <a href="../articles/b-workflow.html">A revised implementation of the `flapper` algorithms</a>
+    </li>
+    <li>
+      <a href="../articles/c-demos.html">Demos</a>
+    </li>
+    <li>
+      <a href="../articles/d-faqs.html">FAQs</a>
     </li>
   </ul></li>
 <li>
@@ -110,15 +116,10 @@
 </ul></div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index"><p>AC-branch algorithms in <code><a href="patter-package.html">patter</a></code> include the AC* algorithm (<code><a href="acs.html">acs()</a></code>) and the DC algorithm (<code><a href="dc.html">dc()</a></code>).</p>
-<p>To implement the AC* algorithm, use:</p><ol><li><p><code><a href="acs_setup_obs.html">acs_setup_obs()</a></code> to set up observations;</p></li>
+    <div class="dont-index"><p>To implement an AC*PF algorithm, use:</p><ol><li><p><code><a href="acs_setup_obs.html">acs_setup_obs()</a></code> to set up observations;</p></li>
 <li><p><code><a href="acs_setup_detection_overlaps.html">acs_setup_detection_overlaps()</a></code> to identify receiver overlaps (used in detection probability calculations);</p></li>
 <li><p><code><a href="acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code> and <code>acs_setup_detection_pr()</code> to define detection probability kernels;</p></li>
-<li><p><code><a href="acs.html">acs()</a></code> to implement the AC algorithm;</p></li>
-</ol><p>To implement the DC algorithm, use:</p><ol><li><p><code><a href="dc.html">dc()</a></code> to implement the algorithm;</p></li>
-</ol><p>AC-branch algorithms return an <code><a href="acb-class.html">acb</a></code> object.</p>
-<p>AC-branch algorithms are typically followed by particle filtering to reconstruct movement paths and refine maps of space use (see <code>pf_*()</code> functions).</p><ol><li><p>To begin, see <code><a href="pf_forward_1.html">pf_forward_1()</a></code>;</p></li>
-<li><p>To implement AC- and PF-branch algorithms simultaneously, see <code><a href="pf_forward_2.html">pf_forward_2()</a></code>;</p></li>
+<li><p><code><a href="pf_forward.html">pf_forward()</a></code> to run the simulation;</p></li>
 </ol></div>
     </div>
     <div id="author">
