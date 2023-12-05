@@ -7,21 +7,32 @@
 acs_setup_obs(
   .acoustics,
   .archival = NULL,
+  .trim = TRUE,
   .step,
   .mobility,
-  .detection_range = NULL
+  .detection_range
 )
 }
 \arguments{
-\item{.acoustics}{A \code{\link{data.table}} that defines passive acoustic telemetry detections (see \code{\link{dat_acoustics}} for an example) for a single individual. At a minimum, this must contain a \code{timestamp} column (an ordered, \code{POSIXct} vector that defines the times of detections) and \code{receiver_id} (an \code{integer} vector that defines the receiver(s) that recorded detections).}
+\item{.acoustics}{A \code{\link{data.table}} that defines passive acoustic telemetry detections (see \code{\link{dat_acoustics}} for an example) for a single individual. At a minimum, this must contain two columns:
+\itemize{
+\item \code{timestamp}---an ordered, \code{POSIXct} vector that defines the times of detections;
+\item \code{receiver_id}---an \code{integer} vector that defines the receiver(s) that recorded detections;
+}}
 
-\item{.archival}{(optional) A \code{\link{data.table}} that defines depth (m) observations (see \code{\link{dat_archival}} for an example) for the same individual. At a minimum, this must contain a \code{timestamp} column (as in \code{.acoustics}) and a \code{depth} column (a positive-valued \code{numeric} vector that defines the individual's depth (m) below the surface at each time step).}
+\item{.archival}{(optional) A \code{\link{data.table}} that defines depth (m) observations (see \code{\link{dat_archival}} for an example) for the same individual. At a minimum, this must contain two columns:
+\itemize{
+\item \code{timestamp}---an ordered, \code{POSIXct} vector that defines the times of observations (which may be regular or irregular);
+\item \code{depth}---a positive-valued \code{numeric} vector that defines the individual's depth (m) below the surface at each time step;
+}}
 
-\item{.step}{An character, passed to \code{\link[lubridate:period]{lubridate::period()}}, \code{\link[lubridate:round_date]{lubridate::round_date()}} and \code{\link[=seq]{seq()}} that defines the duration between sequential time steps (e.g., \code{"2 mins"}). If \code{.archival} is supplied, \code{.step} should be the duration between sequential depth observations.}
+\item{.trim}{If \code{.archival} is supplied, \code{.trim} is \code{logical} variable that defines whether or not to trim \code{.acoustic} and \code{.archival} time series to the time period for which they overlap.}
+
+\item{.step}{An character, passed to \code{\link[lubridate:period]{lubridate::period()}}, \code{\link[lubridate:round_date]{lubridate::round_date()}} and \code{\link[=seq]{seq()}} that defines the duration between sequential time steps (e.g., \code{"2 mins"}).}
 
 \item{.mobility}{A constant that defines the maximum (Euclidean) distance the individual could move in \code{.step}.}
 
-\item{.detection_range}{A constant that defines the detection range (required for \code{\link[=pf_forward]{pf_forward()}} implementations). A constant value across all receivers and time steps is assumed. If this is unsuitable, a manual definition of the \code{buffer_future_incl_gamma} column (see Value) is currently required.}
+\item{.detection_range}{A constant that defines the detection range. A constant value across all receivers and time steps is assumed.}
 }
 \value{
 The function returns a \code{\link{data.table}} with the following columns:
@@ -35,8 +46,8 @@ The function returns a \code{\link{data.table}} with the following columns:
 \item \code{receiver_id_next}---a \code{list} that defines the receiver(s) that recorded the next detection(s);
 \item \code{mobility}---a \code{double} that defines \code{.mobility};
 \item \code{buffer_past}---a \code{double} that controls container growth from the past to the present;
-\item \code{buffer_future}---a \code{double} that controls container shrinkage from the future to the present  (formerly used in \code{acs()});
-\item \code{buffer_future_incl_gamma}---if \code{.detection_range} is provided, \code{buffer_future_incl_gamma} is a \code{double} (\code{buffer_future} + \code{.detection_range}) that controls container shrinkage for \code{\link[=pf_forward]{pf_forward()}};
+\item \code{buffer_future}---a \code{double} that controls container shrinkage from the future to the present;
+\item \code{buffer_future_incl_gamma}---a \code{double} (\code{buffer_future} + \code{.detection_range}) that controls container shrinkage for \code{\link[=pf_forward]{pf_forward()}};
 \item \code{depth}---if \code{.archival} is provided, \code{depth} is a number that defines the individual's depth (m) at each time step;
 }
 }
@@ -49,9 +60,10 @@ This function implements the following routines:
 \item Acoustic time series are rounded to the nearest \code{.step};
 \item All receivers that recorded detection(s) in each time interval are listed;
 \item Duplicate detections (at the same receiver in the same time interval) are dropped;
-\item Archival time series, if provided, are defined over the same time interval and both sets of time series are aligned;
+\item Archival time series, if provided, are rounded to the nearest \code{.step}
+\item Acoustic and archival time series are optionally trimmed to the time period for which they overlap;
 \item Acoustic and archival time series are merged and ordered by time stamp;
-\item Information required by the AC* algorithms (ultimately \code{\link[=pf_forward]{pf_forward()}}) is added;
+\item Information required by \code{\link[=pf_forward]{pf_forward()}} is added;
 }
 }
 \examples{
@@ -60,16 +72,35 @@ acoustics <- dat_acoustics[dat_acoustics$individual_id == 25, ]
 archival  <- dat_archival[dat_archival$individual_id == 25, ]
 
 #### Example (1): Implement the function for acoustic time series only
-obs <- acs_setup_obs(acoustics, .step = "2 mins", .mobility = 500)
+obs <- acs_setup_obs(acoustics,
+                     .step = "2 mins",
+                     .mobility = 500,
+                     .detection_range = 750)
 utils::head(obs)
 
-#### Example (2): Use alternative step lengths & mobilities
-obs <- acs_setup_obs(acoustics, .step = "4 mins", .mobility = 1000)
+#### Example (2): Use alternative parameters
+obs <- acs_setup_obs(acoustics,
+                     .step = "4 mins",
+                     .mobility = 1000,
+                     .detection_range = 500)
 utils::head(obs)
 
 #### Example (3): Implement the function for acoustic & archival time series
-obs <- acs_setup_obs(acoustics, archival, .step = "2 mins", .mobility = 500)
+obs <- acs_setup_obs(acoustics, archival,
+                     .step = "2 mins",
+                     .mobility = 500,
+                     .detection_range = 750)
 utils::head(obs)
+
+#### Example (4): Include full acoustic & archival time series
+range(acoustics$timestamp)
+range(archival$timestamp)
+obs <- acs_setup_obs(acoustics, archival, .trim = FALSE,
+                     .step = "2 mins",
+                     .mobility = 500,
+                     .detection_range = 750)
+utils::head(obs)
+utils::tail(obs)
 
 }
 \seealso{

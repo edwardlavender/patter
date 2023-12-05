@@ -80,8 +80,6 @@ test_that("check_*() functions work", {
   # Fail on time stamp ordering
   check_archival(data.table(timestamp = as.POSIXct(c("2016-01-01", "2015-01-01"), tz = "UTC"), depth = c(1, 2.3))) |>
     expect_error("Archival time stamps should be ordered chronologically.", fixed = TRUE)
-  check_archival(data.table(timestamp = as.POSIXct(c("2016-01-01", "2016-01-02", "2016-01-04"), tz = "UTC"), depth = c(1, 2.3, 3))) |>
-    expect_error("Archival time steps are assumed to be regularly spaced.", fixed = TRUE)
   # Fail on depth values
   check_archival(data.table(timestamp = as.POSIXct("2016-01-01", tz = "UTC"), depth = -1)) |>
     expect_error("Archival depths should be a positive-valued numeric vector and not negative.", fixed = TRUE)

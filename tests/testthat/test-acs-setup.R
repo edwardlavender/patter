@@ -2,21 +2,14 @@ test_that("acs_setup_obs() works", {
 
   #### Fail user input checks
   # Pass unsorted time series
-  acs_setup_obs(dat_acoustics, .step = "2 mins", .mobility = 500) |>
+  acs_setup_obs(dat_acoustics, .step = "2 mins", .mobility = 500, .detection_range = 750) |>
     expect_error("Multiple individuals detected in acoustic data.", fixed = TRUE)
-  # Pass 2-minute archival time series & 3 minute step
-  acs_setup_obs(dat_acoustics[individual_id == 25, ],
-                .archival = dat_archival[individual_id == 25, ],
-                .step = "3 mins", .mobility = 500) |>
-    expect_error("Archival time series are not spaced `.step` ('3 mins') units apart (observed step: 120 s).", fixed = TRUE)
-  # Pass a single archival observation
-  acs_setup_obs(dat_acoustics[individual_id == 25, ],
-                .archival = dat_archival[1, ],
-                .step = "3 mins", .mobility = 500) |>
-    expect_error("There is only one archival observation.", fixed = TRUE)
   # Pass time series that don't overlap
   acs_setup_obs(dat_acoustics[individual_id == 25, ],
-                .archival = data.table(timestamp = as.POSIXct(c("2012-01-01", "2012-01-02"), tz = "UTC"), depth = c(1, 2)),
+                .archival = data.table(timestamp = as.POSIXct(c("2012-01-01",
+                                                                "2012-01-02"),
+                                                              tz = "UTC"),
+                                       depth = c(1, 2)),
                 .step = "1 day", .mobility = 500) |>
     expect_error("There are no remaining observations after aligning the acoustic and archival time series.", fixed = TRUE)
 
@@ -35,16 +28,27 @@ test_that("acs_setup_obs() works", {
                      receiver_id_next = list(1, c(2, 3), c(2, 3), NA_integer_),
                      mobility = 500,
                      buffer_past = rep(500, 4),
-                     buffer_future = c(500, 1000, 500, 500)
+                     buffer_future = c(500, 1000, 500, 500),
+                     buffer_future_incl_gamma = c(500 + 750, 1000 + 750, 500 + 750, 500 + 750)
   )
-  expect_equal(acs_setup_obs(acc, .step = "2 mins", .mobility = 500) |> as.data.frame(),
+  expect_equal(acs_setup_obs(acc,
+                             .step = "2 mins",
+                             .mobility = 500,
+                             .detection_range = 750) |>
+                 as.data.frame(),
                ans |> as.data.frame())
 
   #### Test incorporation of archival data
-  arc <- data.table(timestamp = seq(as.POSIXct("2016-01-01 00:00:00", tz = "UTC"), as.POSIXct("2016-01-01 0:08:00", tz = "UTC"), "2 mins"),
+  arc <- data.table(timestamp = seq(as.POSIXct("2016-01-01 00:00:00", tz = "UTC"),
+                                    as.POSIXct("2016-01-01 0:08:00", tz = "UTC"),
+                                    "2 mins"),
                     depth = c(2, 4, 6, 8, 10))
   ans$depth <- arc$depth[1:4]
-  expect_equal(acs_setup_obs(acc, .archival = arc, .step = "2 mins", .mobility = 500) |> as.data.frame(),
+  expect_equal(acs_setup_obs(acc,
+                             .archival = arc,
+                             .step = "2 mins",
+                             .mobility = 500,
+                             .detection_range = 750) |> as.data.frame(),
                ans |> as.data.frame())
 
 })

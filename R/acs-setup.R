@@ -1,18 +1,25 @@
 #' @title AC* set up: set up movement datasets
 #' @description This function processes passive acoustic telemetry detections and (optionally) archival time series for [`pf_forward()`].
-#' @param .acoustics A [`data.table`] that defines passive acoustic telemetry detections (see [`dat_acoustics`] for an example) for a single individual. At a minimum, this must contain a `timestamp` column (an ordered, `POSIXct` vector that defines the times of detections) and `receiver_id` (an `integer` vector that defines the receiver(s) that recorded detections).
-#' @param .archival (optional) A [`data.table`] that defines depth (m) observations (see [`dat_archival`] for an example) for the same individual. At a minimum, this must contain a `timestamp` column (as in `.acoustics`) and a `depth` column (a positive-valued `numeric` vector that defines the individual's depth (m) below the surface at each time step).
-#' @param .step An character, passed to [`lubridate::period()`], [`lubridate::round_date()`] and [`seq()`] that defines the duration between sequential time steps (e.g., `"2 mins"`). If `.archival` is supplied, `.step` should be the duration between sequential depth observations.
+#' @param .acoustics A [`data.table`] that defines passive acoustic telemetry detections (see [`dat_acoustics`] for an example) for a single individual. At a minimum, this must contain two columns:
+#' * `timestamp`---an ordered, `POSIXct` vector that defines the times of detections;
+#' * `receiver_id`---an `integer` vector that defines the receiver(s) that recorded detections;
+#' @param .archival (optional) A [`data.table`] that defines depth (m) observations (see [`dat_archival`] for an example) for the same individual. At a minimum, this must contain two columns:
+#' * `timestamp`---an ordered, `POSIXct` vector that defines the times of observations (which may be regular or irregular);
+#' * `depth`---a positive-valued `numeric` vector that defines the individual's depth (m) below the surface at each time step;
+#' @param .trim If `.archival` is supplied, `.trim` is `logical` variable that defines whether or not to trim `.acoustic` and `.archival` time series to the time period for which they overlap.
+#' @param .step An character, passed to [`lubridate::period()`], [`lubridate::round_date()`] and [`seq()`] that defines the duration between sequential time steps (e.g., `"2 mins"`).
 #' @param .mobility A constant that defines the maximum (Euclidean) distance the individual could move in `.step`.
-#' @param .detection_range A constant that defines the detection range (required for [`pf_forward()`] implementations). A constant value across all receivers and time steps is assumed. If this is unsuitable, a manual definition of the `buffer_future_incl_gamma` column (see Value) is currently required.
+#' @param .detection_range A constant that defines the detection range. A constant value across all receivers and time steps is assumed.
 #'
-#' @details This function implements the following routines:
+#' @details
+#' This function implements the following routines:
 #' * Acoustic time series are rounded to the nearest `.step`;
 #' * All receivers that recorded detection(s) in each time interval are listed;
 #' * Duplicate detections (at the same receiver in the same time interval) are dropped;
-#' * Archival time series, if provided, are defined over the same time interval and both sets of time series are aligned;
+#' * Archival time series, if provided, are rounded to the nearest `.step`
+#' * Acoustic and archival time series are optionally trimmed to the time period for which they overlap;
 #' * Acoustic and archival time series are merged and ordered by time stamp;
-#' * Information required by the AC* algorithms (ultimately [`pf_forward()`]) is added;
+#' * Information required by [`pf_forward()`] is added;
 #'
 #' @return The function returns a [`data.table`] with the following columns:
 #' * `timestep`---an `integer` that defines the time step;
@@ -24,8 +31,8 @@
 #' * `receiver_id_next`---a `list` that defines the receiver(s) that recorded the next detection(s);
 #' * `mobility`---a `double` that defines `.mobility`;
 #' * `buffer_past`---a `double` that controls container growth from the past to the present;
-#' * `buffer_future`---a `double` that controls container shrinkage from the future to the present  (formerly used in `acs()`);
-#' * `buffer_future_incl_gamma`---if `.detection_range` is provided, `buffer_future_incl_gamma` is a `double` (`buffer_future` + `.detection_range`) that controls container shrinkage for [`pf_forward()`];
+#' * `buffer_future`---a `double` that controls container shrinkage from the future to the present;
+#' * `buffer_future_incl_gamma`---a `double` (`buffer_future` + `.detection_range`) that controls container shrinkage for [`pf_forward()`];
 #' * `depth`---if `.archival` is provided, `depth` is a number that defines the individual's depth (m) at each time step;
 #'
 #' @examples
@@ -34,16 +41,35 @@
 #' archival  <- dat_archival[dat_archival$individual_id == 25, ]
 #'
 #' #### Example (1): Implement the function for acoustic time series only
-#' obs <- acs_setup_obs(acoustics, .step = "2 mins", .mobility = 500)
+#' obs <- acs_setup_obs(acoustics,
+#'                      .step = "2 mins",
+#'                      .mobility = 500,
+#'                      .detection_range = 750)
 #' utils::head(obs)
 #'
-#' #### Example (2): Use alternative step lengths & mobilities
-#' obs <- acs_setup_obs(acoustics, .step = "4 mins", .mobility = 1000)
+#' #### Example (2): Use alternative parameters
+#' obs <- acs_setup_obs(acoustics,
+#'                      .step = "4 mins",
+#'                      .mobility = 1000,
+#'                      .detection_range = 500)
 #' utils::head(obs)
 #'
 #' #### Example (3): Implement the function for acoustic & archival time series
-#' obs <- acs_setup_obs(acoustics, archival, .step = "2 mins", .mobility = 500)
+#' obs <- acs_setup_obs(acoustics, archival,
+#'                      .step = "2 mins",
+#'                      .mobility = 500,
+#'                      .detection_range = 750)
 #' utils::head(obs)
+#'
+#' #### Example (4): Include full acoustic & archival time series
+#' range(acoustics$timestamp)
+#' range(archival$timestamp)
+#' obs <- acs_setup_obs(acoustics, archival, .trim = FALSE,
+#'                      .step = "2 mins",
+#'                      .mobility = 500,
+#'                      .detection_range = 750)
+#' utils::head(obs)
+#' utils::tail(obs)
 #'
 #' @seealso
 #' To implement an AC*PF algorithm, use:
@@ -58,27 +84,17 @@
 #' @author Edward Lavender
 #' @export
 
-acs_setup_obs <- function(.acoustics, .archival = NULL,
+acs_setup_obs <- function(.acoustics,
+                          .archival = NULL,
+                          .trim = TRUE,
                           .step,
                           .mobility,
-                          .detection_range = NULL) {
+                          .detection_range) {
 
   #### Check user inputs
   .acoustics <- check_acoustics(.acoustics)
   .archival  <- check_archival(.archival)
   check_inherits(.step, "character")
-  if (!is.null(.archival)) {
-    # Check archival time series are spaced `.step` apart
-    if (nrow(.archival) == 1L) {
-      abort("There is only one archival observation.")
-    }
-    .step_req <- as.integer(lubridate::seconds(lubridate::period(.step)))
-    .step_obs <- as.numeric(difftime(.archival$timestamp[2], .archival$timestamp[1], .step, units = "secs"))
-    if (!isTRUE(all.equal(.step_req, .step_obs))) {
-      abort("Archival time series are not spaced `.step` ('{.step}') units apart (observed step: {.step_obs} s).",
-            .envir = environment())
-    }
-  }
 
   #### Process acoustics
   # * Round time series & drop duplicates
@@ -101,27 +117,34 @@ acs_setup_obs <- function(.acoustics, .archival = NULL,
     as.data.table()
 
   #### Align time series
-  if (!is.null(.archival)) {
+  if (!is.null(.archival) && .trim) {
     # Filter acoustics by archival time series
+    timestamp <- NULL
+    .archival[, timestamp := lubridate::round_date(timestamp, .step)]
+    start <- max(c(min(.acoustics$timestamp), min(.archival$timestamp)))
+    end   <- min(c(max(.acoustics$timestamp), max(.archival$timestamp)))
     .acoustics <-
       .acoustics |>
-      filter(.data$timestamp >= min(.archival$timestamp) &
-               .data$timestamp <= max(.archival$timestamp))
-    # Filter archival time series by acoustic time series
-    if (nrow(.acoustics) > 0L) {
-      .archival <-
-        .archival |>
-        filter(.data$timestamp >= min(.acoustics$timestamp) &
-                 .data$timestamp <= max(.acoustics$timestamp))
-    }
+      filter(.data$timestamp >= start & .data$timestamp <= end) |>
+      as.data.table()
+    .archival <-
+      .archival |>
+      filter(.data$timestamp >= start & .data$timestamp <= end) |>
+      as.data.table()
     if (nrow(.acoustics) == 0L | nrow(.archival) == 0L) {
       abort("There are no remaining observations after aligning the acoustic and archival time series.")
     }
   }
 
-  #### Define output time series with acoustic & archival data
+  #### Define output time series with acoustic and (optionally) archival data
   # Define regular time series
-  out <- data.table(timestamp = seq(min(.acoustics$timestamp), max(.acoustics$timestamp), by = .step))
+  start <- min(.acoustics$timestamp)
+  end   <- max(.acoustics$timestamp)
+  if (!is.null(.archival) && !.trim) {
+    start <- min(c(start, .archival$timestamp))
+    end   <- max(c(end, .archival$timestamp))
+  }
+  out <- data.table(timestamp = seq(start, end, by = .step))
   # Add acoustic data
   detection <- NULL
   out[, detection := as.integer((timestamp %in% .acoustics$timestamp) + 0)]
@@ -130,6 +153,17 @@ acs_setup_obs <- function(.acoustics, .archival = NULL,
   if (!is.null(.archival)) {
     depth <- timestamp <- NULL
     out[, depth := .archival$depth[match(timestamp, .archival$timestamp)]]
+    bool <- is.na(out$depth)
+    if (any(bool)) {
+      nrw <- fnrow(out)
+      nob <- nrw - length(which(bool))
+      warn("There are {nob}/{nrw} ({round(nob / nrw * 100, digits = 1)} %) archival observations within the acoustic time series.",
+           .envir = environment())
+      if (all(bool)) {
+        warn("The depth column has been dropped.")
+        out[, depth := NULL]
+      }
+    }
   }
 
   #### Tidy outputs & return
@@ -145,7 +179,8 @@ acs_setup_obs <- function(.acoustics, .archival = NULL,
            # We buffer the past by mobility
            buffer_past = .mobility,
            # We shrink the future
-           buffer_future = .mobility * .data$step_backwards) |>
+           buffer_future = .mobility * .data$step_backwards,
+           buffer_future_incl_gamma = .data$buffer_future + .detection_range) |>
     ungroup() |>
     arrange(.data$timestamp) |>
     mutate(timestep = as.integer(row_number()),
@@ -153,20 +188,13 @@ acs_setup_obs <- function(.acoustics, .archival = NULL,
            mobility = .mobility
     ) |>
     as.data.table()
-  # Add buffer_future_incl_gamma column, if applicable
-  # * In pf_forward(), we calculate distances between particles & receivers so the gamma parameter is required
-  if (!is.null(.detection_range)) {
-    buffer_future <- NULL
-    buffer_future_incl_gamma <- NULL
-    out[, buffer_future_incl_gamma := buffer_future + .detection_range]
-  }
   # Tidy
   out |>
     select("timestep",
            "timestamp", "date",
            "detection_id", "detection", "receiver_id", "receiver_id_next",
            "mobility", "buffer_past", "buffer_future",
-           any_of(c("buffer_future_incl_gamma", "depth"))
+           "buffer_future_incl_gamma", any_of("depth")
            ) |>
     as.data.table()
 

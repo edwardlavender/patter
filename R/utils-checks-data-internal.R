@@ -161,7 +161,7 @@ check_archival <- function(.archival) {
     }
     # Check regularity
     if (nrow(.archival) > 1 && length(unique(diff(.archival$timestamp))) != 1L) {
-      abort("Archival time steps are assumed to be regularly spaced.")
+      warn("Archival time steps are not regularly spaced.")
     }
     # Check depths
     if (any(.archival$depth < 0, na.rm = TRUE)) {
