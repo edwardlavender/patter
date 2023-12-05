@@ -55,7 +55,7 @@ spatIntersect <- function(.x, .value = 1, .fun = NULL) {
   # Permit (but drop) NULL elements in `.x`
   .x <- compact(.x)
   # Handle one-length lists quickly
-  if (length(.x) == 1) {
+  if (length(.x) == 1L) {
     return(.x[[1]])
   }
   # Intersect Spat* objects
@@ -84,7 +84,7 @@ spatIntersect.SpatRaster <- function(.x, .value, .fun) {
 spatIntersect.SpatVector <- function(.x) {
   int <- .x[[1]]
   for (i in 2:length(.x)) {
-    int <- terra::intersect(int, .x[[2]])
+    int <- terra::intersect(int, .x[[i]])
   }
   int
 }
