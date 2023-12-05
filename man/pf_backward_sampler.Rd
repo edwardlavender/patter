@@ -48,16 +48,6 @@ Three helper functions are provided:
 }}
 
 \item{.verbose, .txt}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
-
-\item{.data_now, .data_past, .density}{Arguments for \verb{.dens_step*} functions.
-\itemize{
-\item \code{.data_now} and \code{.data_past} are \code{\link{data.table}}s (see \code{.dens_step}), below;
-\item \code{.density} is either:
-\itemize{
-\item A \code{list} that contains movement densities (for \code{\link[=dstep_lookup]{dstep_lookup()}}) from \code{\link[=pf_backward_dens]{pf_backward_dens()}};
-\item A \code{character} string that defines the directory to \code{parquet} files containing movement densities (for \code{\link[=dstep_read]{dstep_read()}}) from \code{\link[=pf_backward_dens]{pf_backward_dens()}};
-}
-}}
 }
 \value{
 The function returns a \code{\linkS4class{pf_path}} object.

@@ -55,13 +55,6 @@ pf_distinct <- function(.history,
 
 #' @title PF: run the backward pass
 #' @description These functions implement backwards sampling of particle samples.
-#'
-#' @param .data_now,.data_past,.density Arguments for `.dens_step*` functions.
-#'  * `.data_now` and `.data_past` are [`data.table`]s (see `.dens_step`), below;
-#'  * `.density` is either:
-#'      * A `list` that contains movement densities (for [`dstep_lookup()`]) from [`pf_backward_dens()`];
-#'      * A `character` string that defines the directory to `parquet` files containing movement densities (for [`dstep_read()`]) from [`pf_backward_dens()`];
-#'
 #' @param .history Particle samples from the forward simulation, provided either as:
 #' * A `list` of [`data.table`]s that define cell samples; i.e., the `history` element of a [`pf-class`] object.
 #' * An ordered list of file paths (from [`pf_setup_files()`]) that define the directories in which particle samples were written from the forward simulation (as parquet files).
