@@ -37,7 +37,7 @@ pf_rpropose_origin <- function(.obs, .origin, .grid = FALSE,
            cell_past = NA_integer_,
            x_past = NA_integer_,
            y_past = NA_integer_,
-           cell_now = as.integer(.data$cell_id)) |>
+           cell_now = .data$cell_id) |>
     select("timestep",
            "cell_past", "x_past", "y_past",
            "cell_now", x_now = "cell_x", y_now = "cell_y") |>
@@ -66,7 +66,7 @@ pf_rpropose_kick <- function(.particles,
                    .angle = rang)
   # Update data.table
   cell_now <- NULL
-  .particles[, cell_now := terra::cellFromXY(.bathy, xy_next)]
+  .particles[, cell_now := as.integer(terra::cellFromXY(.bathy, xy_next))]
   xy_next <- terra::xyFromCell(.bathy, .particles$cell_now)
   x_now <- y_now <- NULL
   .particles[, x_now := xy_next[, 1]]
@@ -108,6 +108,7 @@ pf_rpropose_reachable <- function(.particles, .obs, .t, .bathy, ...) {
     choices |>
     rbindlist() |>
     filter(!is.na(.data$value)) |>
+    mutate(cell = as.integer(.data$cell)) |>
     select("cell_past", cell_now = "cell",
            x_now = "x", y_now = "y",
            bathy = "value") |>
