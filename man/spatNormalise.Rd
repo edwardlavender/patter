@@ -14,7 +14,7 @@ This function normalises a \code{\link{SpatRaster}}.
 }
 \section{Warning}{
 \itemize{
-\item For speed in iterative applications (e.g., \code{\link[=acs]{acs()}}), this function does not implement any internal checks.
+\item This function does not implement any internal checks.
 \item \code{NA}s are ignored.
 }
 }

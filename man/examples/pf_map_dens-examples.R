@@ -16,6 +16,7 @@ dens_1    <- pf_map_dens(pou)
 
 #### Example (2): Smooth particle coordinates
 # This approach is equivalent to Example (1) & the outputs are identical
+# But this implementation can be considerably faster
 dens_2 <- pf_map_dens(gebco, .coord = pf_coords(out_pfb$history, gebco))
 stopifnot(all.equal(dens_1, dens_2))
 

@@ -21,7 +21,7 @@ acs_setup_obs(
 
 \item{.mobility}{A constant that defines the maximum (Euclidean) distance the individual could move in \code{.step}.}
 
-\item{.detection_range}{A constant that defines the detection range (required for \code{\link[=pf_forward_2]{pf_forward_2()}} implementations). A constant value across all receivers and time steps is assumed. If this is unsuitable, a manual definition of the \code{buffer_future_incl_gamma} column (see Value) is currently required.}
+\item{.detection_range}{A constant that defines the detection range (required for \code{\link[=pf_forward]{pf_forward()}} implementations). A constant value across all receivers and time steps is assumed. If this is unsuitable, a manual definition of the \code{buffer_future_incl_gamma} column (see Value) is currently required.}
 }
 \value{
 The function returns a \code{\link{data.table}} with the following columns:
@@ -35,13 +35,13 @@ The function returns a \code{\link{data.table}} with the following columns:
 \item \code{receiver_id_next}---a \code{list} that defines the receiver(s) that recorded the next detection(s);
 \item \code{mobility}---a \code{double} that defines \code{.mobility};
 \item \code{buffer_past}---a \code{double} that controls container growth from the past to the present;
-\item \code{buffer_future}---a \code{double} that controls container shrinkage from the future to the present for \code{\link[=acs]{acs()}};
-\item \code{buffer_future_incl_gamma}---if \code{.detection_range} is provided, \code{buffer_future_incl_gamma} is a \code{double} (\code{buffer_future} + \code{.detection_range}) that controls container shrinkage for \code{\link[=pf_forward_2]{pf_forward_2()}};
+\item \code{buffer_future}---a \code{double} that controls container shrinkage from the future to the present  (formerly used in \code{acs()});
+\item \code{buffer_future_incl_gamma}---if \code{.detection_range} is provided, \code{buffer_future_incl_gamma} is a \code{double} (\code{buffer_future} + \code{.detection_range}) that controls container shrinkage for \code{\link[=pf_forward]{pf_forward()}};
 \item \code{depth}---if \code{.archival} is provided, \code{depth} is a number that defines the individual's depth (m) at each time step;
 }
 }
 \description{
-This function processes passive acoustic telemetry detections and (optionally) archival time series for use in AC-branch algorithms.
+This function processes passive acoustic telemetry detections and (optionally) archival time series for \code{\link[=pf_forward]{pf_forward()}}.
 }
 \details{
 This function implements the following routines:
@@ -51,7 +51,7 @@ This function implements the following routines:
 \item Duplicate detections (at the same receiver in the same time interval) are dropped;
 \item Archival time series, if provided, are defined over the same time interval and both sets of time series are aligned;
 \item Acoustic and archival time series are merged and ordered by time stamp;
-\item Information required by the AC* algorithms (ultimately \code{\link[=acs]{acs()}}) is added;
+\item Information required by the AC* algorithms (ultimately \code{\link[=pf_forward]{pf_forward()}}) is added;
 }
 }
 \examples{
@@ -73,27 +73,12 @@ utils::head(obs)
 
 }
 \seealso{
-AC-branch algorithms in \code{\link{patter}} include the AC* algorithm (\code{\link[=acs]{acs()}}) and the DC algorithm (\code{\link[=dc]{dc()}}).
-
-To implement the AC* algorithm, use:
+To implement an AC*PF algorithm, use:
 \enumerate{
 \item \code{\link[=acs_setup_obs]{acs_setup_obs()}} to set up observations;
 \item \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}} to identify receiver overlaps (used in detection probability calculations);
 \item \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}} and \code{\link[=acs_setup_detection_pr]{acs_setup_detection_pr()}} to define detection probability kernels;
-\item \code{\link[=acs]{acs()}} to implement the AC algorithm;
-}
-
-To implement the DC algorithm, use:
-\enumerate{
-\item \code{\link[=dc]{dc()}} to implement the algorithm;
-}
-
-AC-branch algorithms return an \code{\linkS4class{acb}} object.
-
-AC-branch algorithms are typically followed by particle filtering to reconstruct movement paths and refine maps of space use (see \verb{pf_*()} functions).
-\enumerate{
-\item To begin, see \code{\link[=pf_forward_1]{pf_forward_1()}};
-\item To implement AC- and PF-branch algorithms simultaneously, see \code{\link[=pf_forward_2]{pf_forward_2()}};
+\item \code{\link[=pf_forward]{pf_forward()}} to run the simulation;
 }
 
 For \code{\link[=acs_setup_obs]{acs_setup_obs()}} specifically:

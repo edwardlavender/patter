@@ -35,7 +35,7 @@ spatTemplate <- function(.xmin = 0, .xmax = 1000,
 #' @param x A [`SpatRaster`].
 #' @details
 #' # Warning
-#' * For speed in iterative applications (e.g., [`acs()`]), this function does not implement any internal checks.
+#' * This function does not implement any internal checks.
 #' * `NA`s are ignored.
 #' @author Edward Lavender
 #' @export

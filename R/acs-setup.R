@@ -1,10 +1,10 @@
 #' @title AC* set up: set up movement datasets
-#' @description This function processes passive acoustic telemetry detections and (optionally) archival time series for use in AC-branch algorithms.
+#' @description This function processes passive acoustic telemetry detections and (optionally) archival time series for [`pf_forward()`].
 #' @param .acoustics A [`data.table`] that defines passive acoustic telemetry detections (see [`dat_acoustics`] for an example) for a single individual. At a minimum, this must contain a `timestamp` column (an ordered, `POSIXct` vector that defines the times of detections) and `receiver_id` (an `integer` vector that defines the receiver(s) that recorded detections).
 #' @param .archival (optional) A [`data.table`] that defines depth (m) observations (see [`dat_archival`] for an example) for the same individual. At a minimum, this must contain a `timestamp` column (as in `.acoustics`) and a `depth` column (a positive-valued `numeric` vector that defines the individual's depth (m) below the surface at each time step).
 #' @param .step An character, passed to [`lubridate::period()`], [`lubridate::round_date()`] and [`seq()`] that defines the duration between sequential time steps (e.g., `"2 mins"`). If `.archival` is supplied, `.step` should be the duration between sequential depth observations.
 #' @param .mobility A constant that defines the maximum (Euclidean) distance the individual could move in `.step`.
-#' @param .detection_range A constant that defines the detection range (required for [`pf_forward_2()`] implementations). A constant value across all receivers and time steps is assumed. If this is unsuitable, a manual definition of the `buffer_future_incl_gamma` column (see Value) is currently required.
+#' @param .detection_range A constant that defines the detection range (required for [`pf_forward()`] implementations). A constant value across all receivers and time steps is assumed. If this is unsuitable, a manual definition of the `buffer_future_incl_gamma` column (see Value) is currently required.
 #'
 #' @details This function implements the following routines:
 #' * Acoustic time series are rounded to the nearest `.step`;
@@ -12,7 +12,7 @@
 #' * Duplicate detections (at the same receiver in the same time interval) are dropped;
 #' * Archival time series, if provided, are defined over the same time interval and both sets of time series are aligned;
 #' * Acoustic and archival time series are merged and ordered by time stamp;
-#' * Information required by the AC* algorithms (ultimately [`acs()`]) is added;
+#' * Information required by the AC* algorithms (ultimately [`pf_forward()`]) is added;
 #'
 #' @return The function returns a [`data.table`] with the following columns:
 #' * `timestep`---an `integer` that defines the time step;
@@ -24,8 +24,8 @@
 #' * `receiver_id_next`---a `list` that defines the receiver(s) that recorded the next detection(s);
 #' * `mobility`---a `double` that defines `.mobility`;
 #' * `buffer_past`---a `double` that controls container growth from the past to the present;
-#' * `buffer_future`---a `double` that controls container shrinkage from the future to the present for [`acs()`];
-#' * `buffer_future_incl_gamma`---if `.detection_range` is provided, `buffer_future_incl_gamma` is a `double` (`buffer_future` + `.detection_range`) that controls container shrinkage for [`pf_forward_2()`];
+#' * `buffer_future`---a `double` that controls container shrinkage from the future to the present  (formerly used in `acs()`);
+#' * `buffer_future_incl_gamma`---if `.detection_range` is provided, `buffer_future_incl_gamma` is a `double` (`buffer_future` + `.detection_range`) that controls container shrinkage for [`pf_forward()`];
 #' * `depth`---if `.archival` is provided, `depth` is a number that defines the individual's depth (m) at each time step;
 #'
 #' @examples
@@ -46,22 +46,11 @@
 #' utils::head(obs)
 #'
 #' @seealso
-#' AC-branch algorithms in [`patter`] include the AC* algorithm ([`acs()`]) and the DC algorithm ([`dc()`]).
-#'
-#' To implement the AC* algorithm, use:
+#' To implement an AC*PF algorithm, use:
 #'   1. [`acs_setup_obs()`] to set up observations;
 #'   2. [`acs_setup_detection_overlaps()`] to identify receiver overlaps (used in detection probability calculations);
 #'   3. [`acs_setup_detection_kernels()`] and [`acs_setup_detection_pr()`] to define detection probability kernels;
-#'   4. [`acs()`] to implement the AC algorithm;
-#'
-#' To implement the DC algorithm, use:
-#'   1. [`dc()`] to implement the algorithm;
-#'
-#' AC-branch algorithms return an [`acb-class`] object.
-#'
-#' AC-branch algorithms are typically followed by particle filtering to reconstruct movement paths and refine maps of space use (see `pf_*()` functions).
-#'   1. To begin, see [`pf_forward_1()`];
-#'   2. To implement AC- and PF-branch algorithms simultaneously, see [`pf_forward_2()`];
+#'   4. [`pf_forward()`] to run the simulation;
 #'
 #' For [`acs_setup_obs()`] specifically:
 #'  * [`process_receiver_ids`](https://edwardlavender.github.io/flapper/reference/process_receiver_id.html) in the [`flapper`](https://edwardlavender.github.io/flapper/reference/process_receiver_id.html) package can be used to define receiver deployments using an integer vector.
@@ -165,8 +154,7 @@ acs_setup_obs <- function(.acoustics, .archival = NULL,
     ) |>
     as.data.table()
   # Add buffer_future_incl_gamma column, if applicable
-  # * In acs(), kernels are buffered, so we do not require the gamma parameter
-  # * In pf_forward_2(), we calculate distances between particles & receivers so the gamma parameter is required
+  # * In pf_forward(), we calculate distances between particles & receivers so the gamma parameter is required
   if (!is.null(.detection_range)) {
     buffer_future <- NULL
     buffer_future_incl_gamma <- NULL
@@ -200,8 +188,6 @@ acs_setup_obs <- function(.acoustics, .archival = NULL,
 #'
 #' @details In the AC* algorithms, at the moment of detection, the set of possible locations depends on the receiver(s) at which an individual is, and is not, detected. The outputs of this function are used to restrict the probability calculations to the set of receivers that overlap with the receiver(s) at which an individual is detected for improved efficiency.
 #'
-#' At the time of writing (November 2023), the function permits receiver ranges to differ between receivers, but assumes they are constant in time.
-#'
 #' @return The function returns a nested `list`, with one element for all integers from `1:max(.moorings$receiver_id)`. Any elements that do not correspond to receivers contain a `NULL` element. List elements that correspond to receivers contain a `NULL` or a `list` that defines, for each deployment date with overlapping receiver(s), a vector of overlapping receiver(s).
 #'
 #' @examples
@@ -212,22 +198,11 @@ acs_setup_obs <- function(.acoustics, .archival = NULL,
 #' @source This function supersedes the [`get_detection_containers_overlaps`](https://edwardlavender.github.io/flapper/reference/get_detection_containers_overlap.html) function in the [`flapper`](https://github.com/edwardlavender/flapper) package.
 #'
 #' @seealso
-#' AC-branch algorithms in [`patter`] include the AC* algorithm ([`acs()`]) and the DC algorithm ([`dc()`]).
-#'
-#' To implement the AC* algorithm, use:
+#' To implement an AC*PF algorithm, use:
 #'   1. [`acs_setup_obs()`] to set up observations;
 #'   2. [`acs_setup_detection_overlaps()`] to identify receiver overlaps (used in detection probability calculations);
 #'   3. [`acs_setup_detection_kernels()`] and [`acs_setup_detection_pr()`] to define detection probability kernels;
-#'   4. [`acs()`] to implement the AC algorithm;
-#'
-#' To implement the DC algorithm, use:
-#'   1. [`dc()`] to implement the algorithm;
-#'
-#' AC-branch algorithms return an [`acb-class`] object.
-#'
-#' AC-branch algorithms are typically followed by particle filtering to reconstruct movement paths and refine maps of space use (see `pf_*()` functions).
-#'   1. To begin, see [`pf_forward_1()`];
-#'   2. To implement AC- and PF-branch algorithms simultaneously, see [`pf_forward_2()`];
+#'   4. [`pf_forward()`] to run the simulation;
 #'
 #' @author Edward Lavender
 #' @export
@@ -382,22 +357,11 @@ acs_setup_detection_overlaps <- function(.moorings, .services = NULL) {
 #' points(m$receiver_easting, m$receiver_northing, pch = ".")
 #'
 #' @seealso
-#' AC-branch algorithms in [`patter`] include the AC* algorithm ([`acs()`]) and the DC algorithm ([`dc()`]).
-#'
-#' To implement the AC* algorithm, use:
+#' To implement an AC*PF algorithm, use:
 #'   1. [`acs_setup_obs()`] to set up observations;
 #'   2. [`acs_setup_detection_overlaps()`] to identify receiver overlaps (used in detection probability calculations);
 #'   3. [`acs_setup_detection_kernels()`] and [`acs_setup_detection_pr()`] to define detection probability kernels;
-#'   4. [`acs()`] to implement the AC algorithm;
-#'
-#' To implement the DC algorithm, use:
-#'   1. [`dc()`] to implement the algorithm;
-#'
-#' AC-branch algorithms return an [`acb-class`] object.
-#'
-#' AC-branch algorithms are typically followed by particle filtering to reconstruct movement paths and refine maps of space use (see `pf_*()` functions).
-#'   1. To begin, see [`pf_forward_1()`];
-#'   2. To implement AC- and PF-branch algorithms simultaneously, see [`pf_forward_2()`];
+#'   4. [`pf_forward()`] to run the simulation;
 #'
 #' @author Edward Lavender
 #' @export
@@ -539,22 +503,11 @@ acs_setup_detection_pr <- function(.data,
 #' @source This function is based on the [`acs_setup_detection_kernels`](https://edwardlavender.github.io/flapper/reference/acs_setup_detection_kernels.html) function in the [`flapper`](https://github.com/edwardlavender/flapper) package, where the role of detection kernels in the AC* algorithms is described extensively (see Details).
 #'
 #' @seealso
-#' AC-branch algorithms in [`patter`] include the AC* algorithm ([`acs()`]) and the DC algorithm ([`dc()`]).
-#'
-#' To implement the AC* algorithm, use:
+#' To implement an AC*PF algorithm, use:
 #'   1. [`acs_setup_obs()`] to set up observations;
 #'   2. [`acs_setup_detection_overlaps()`] to identify receiver overlaps (used in detection probability calculations);
 #'   3. [`acs_setup_detection_kernels()`] and [`acs_setup_detection_pr()`] to define detection probability kernels;
-#'   4. [`acs()`] to implement the AC algorithm;
-#'
-#' To implement the DC algorithm, use:
-#'   1. [`dc()`] to implement the algorithm;
-#'
-#' AC-branch algorithms return an [`acb-class`] object.
-#'
-#' AC-branch algorithms are typically followed by particle filtering to reconstruct movement paths and refine maps of space use (see `pf_*()` functions).
-#'   1. To begin, see [`pf_forward_1()`];
-#'   2. To implement AC- and PF-branch algorithms simultaneously, see [`pf_forward_2()`];
+#'   4. [`pf_forward()`] to run the simulation;
 #'
 #' @author Edward Lavender
 #' @export

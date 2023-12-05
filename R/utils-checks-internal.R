@@ -18,12 +18,12 @@ check_dir <- function(input) {
 #' @rdname check_utils
 #' @keywords internal
 
-check_dir_is_empty <- function(input) {
+check_dir_is_empty <- function(input, action = abort) {
   if (!is.null(input)) {
     check_dir(input)
     if (length(list.files(input) != 0L)) {
-      abort("The directory '{input}' is not empty.",
-            .envir = environment())
+      action("The directory '{input}' is not empty.",
+             .envir = environment())
     }
   }
   invisible(input)

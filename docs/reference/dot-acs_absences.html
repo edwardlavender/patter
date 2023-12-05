@@ -32,10 +32,16 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/faqs.html">FAQs</a>
+      <a href="../articles/a-methodology.html">Methodology</a>
     </li>
     <li>
-      <a href="../articles/workflow.html">A re-implementation of the `flapper` algorithms</a>
+      <a href="../articles/b-workflow.html">A revised implementation of the `flapper` algorithms</a>
+    </li>
+    <li>
+      <a href="../articles/c-demos.html">Demos</a>
+    </li>
+    <li>
+      <a href="../articles/d-faqs.html">FAQs</a>
     </li>
   </ul></li>
 <li>
@@ -57,7 +63,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>AC* helper: define active, overlapping receivers with absences</h1>
-    <small class="dont-index">Source: <a href="https://github.com/edwardlavender/patter/blob/HEAD/R/acs-misc-internal.R" class="external-link"><code>R/acs-misc-internal.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/edwardlavender/patter/blob/HEAD/R/acs-internal.R" class="external-link"><code>R/acs-internal.R</code></a></small>
     <div class="hidden name"><code>dot-acs_absences.Rd</code></div>
     </div>
 
@@ -72,15 +78,15 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.date</dt>
-<dd><p>A <code>character</code> that defines the date (e.g., <code>obs$date[t]</code> internally in <code><a href="acs.html">acs()</a></code>).</p></dd>
+<dd><p>A <code>character</code> that defines the date.</p></dd>
 
 
 <dt>.detections</dt>
-<dd><p>An <code>integer</code> vector that defines the receiver(s) that recorded detection(s) at the current time step (e.g., <code>recs_current</code> or <code>recs_next</code> internally in <code><a href="acs.html">acs()</a></code>).</p></dd>
+<dd><p>An <code>integer</code> vector that defines the receiver(s) that recorded detection(s) at the current time step.</p></dd>
 
 
 <dt>.overlaps</dt>
-<dd><p>A named <code>list</code> from <code><a href="acs_setup_detection_overlaps.html">acs_setup_detection_overlaps()</a></code> that defines receiver overlaps (e.g., <code>detection_overlaps</code> internally in <code><a href="acs.html">acs()</a></code>). <code>NULL</code> is permitted.</p></dd>
+<dd><p>A named <code>list</code> from <code><a href="acs_setup_detection_overlaps.html">acs_setup_detection_overlaps()</a></code> that defines receiver overlaps. <code>NULL</code> is permitted.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -91,7 +97,7 @@
     </div>
     <div id="details">
     <h2>Details</h2>
-    <p>In the AC* algorithms, at the moment of detection, the probability kernels that describe the possible locations of an individual given the data depend on both the receivers that record detections and those that did not (eqn S5 in Lavender et al., 2023). This function is used to restrict the set of receivers to which eqn S5 needs to be applied.</p>
+    <p>In the AC* algorithms, at the moment of detection, likelihood of the acoustic data given a particle sample depends on depends on both the receivers that record detections and those that did not (eqn S5 in Lavender et al., 2023). This function is used to restrict the set of receivers to which eqn S5 needs to be applied.</p>
     </div>
     <div id="warning">
     <h2>Warning</h2>
@@ -99,7 +105,7 @@
     </div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index"><p>This function defines the <code>absences</code> argument for <code><a href="acs_given_detection.html">.acs_given_detection_SpatRaster()</a></code> and <code><a href="acs_given_detection.html">.acs_given_detection_particles()</a></code>.</p></div>
+    <div class="dont-index"><p>This function defines the <code>absences</code> argument for <code><a href="dot-acs_given_detection_particles.html">.acs_given_detection_particles()</a></code>.</p></div>
     </div>
     <div id="author">
     <h2>Author</h2>

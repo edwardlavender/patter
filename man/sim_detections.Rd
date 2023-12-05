@@ -148,13 +148,13 @@ calc_dpr <- function(.data) {
 sim_detections(.paths = p, .arrays = a, .calc_detection_pr = calc_dpr)
 
 #### Example (5): Customise simulation function
-# extraDistr::rbern() is equivalent to rbinom with size = 1 (& a bit faster!)
-if (rlang::is_installed("extraDistr")) {
-  sim_obs <- function(n = 1, size = NULL, prob) {
-    extraDistr::rbern(n = n, prob = prob)
-  }
-  sim_detections(.paths = p, .arrays = a, .sim_obs = sim_obs)
-}
+# extraDistr::rbern() v.1.10.0 is equivalent to rbinom with size = 1 (& a bit faster!)
+# if (rlang::is_installed("extraDistr")) {
+#   sim_obs <- function(n = 1, size = NULL, prob) {
+#     extraDistr::rbern(n = n, prob = prob)
+#   }
+#   sim_detections(.paths = p, .arrays = a, .sim_obs = sim_obs)
+# }
 
 #### Example (6): Handle multiple paths/arrays
 # Simulate observations between each array/path pair

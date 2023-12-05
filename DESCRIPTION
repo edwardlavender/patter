@@ -16,6 +16,7 @@ Imports:
     glue,
     lifecycle,
     lubridate,
+    purrr, 
     pbapply,
     progress,
     rlang,
@@ -23,20 +24,15 @@ Imports:
     truncdist
 Suggests: 
     exactextractr,
-    extraDistr, 
     geosphere, 
     knitr,
-    purrr, 
     Rfast,
     rmarkdown,
     spatialEco, 
     spatstat.explore,
     spatstat.geom, 
     sf, 
-    sparklyr,
-    stringr,
     testthat (>= 3.0.0), 
-    qs,
     zoo
 Depends: R (>= 4.1)
 Config/testthat/edition: 3

@@ -49,7 +49,7 @@ test_that("check_*() functions work", {
     expect_error("`.acoustics$receiver_id` must be a integer.", fixed = TRUE)
   # Fail on NAs
   check_acoustics(data.table(timestamp = as.POSIXct("2016-01-01", tz = "UTC"), receiver_id = NA_integer_)) |>
-    expect_error("The acoustic data contains NAs.", fixed = TRUE)
+    expect_warning("The acoustic data contains NAs.", fixed = TRUE)
   # Fail on multiple individuals
   check_acoustics(dat_acoustics) |>
     expect_error("Multiple individuals detected in acoustic data.", fixed = TRUE)
@@ -73,7 +73,7 @@ test_that("check_*() functions work", {
     expect_error("`.archival$timestamp` must be a POSIXct.", fixed = TRUE)
   # Fail on NAs
   check_archival(data.table(timestamp = as.POSIXct("2016-01-01", tz = "UTC"), depth = NA_real_)) |>
-    expect_error("The archival data contains NAs.", fixed = TRUE)
+    expect_warning("The archival data contains NAs.", fixed = TRUE)
   # Fail on multiple individuals
   check_archival(dat_archival) |>
     expect_error("Multiple individuals detected in archival data.", fixed = TRUE)

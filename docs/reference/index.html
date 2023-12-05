@@ -32,10 +32,16 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/faqs.html">FAQs</a>
+      <a href="../articles/a-methodology.html">Methodology</a>
     </li>
     <li>
-      <a href="../articles/workflow.html">A re-implementation of the `flapper` algorithms</a>
+      <a href="../articles/b-workflow.html">A revised implementation of the `flapper` algorithms</a>
+    </li>
+    <li>
+      <a href="../articles/c-demos.html">Demos</a>
+    </li>
+    <li>
+      <a href="../articles/d-faqs.html">FAQs</a>
     </li>
   </ul></li>
 <li>
@@ -64,15 +70,6 @@
           <p class="section-desc"></p>
         </th>
       </tr></tbody><tbody><tr><td>
-          <p><code><a href="acb-class.html">acb-class</a></code> </p>
-        </td>
-        <td><p>AC-branch algorithms: <code>acb</code> objects</p></td>
-      </tr><tr><td>
-          <p><code><a href="acs.html">acs()</a></code> </p>
-        </td>
-        <td><p>AC* algorithms
-<a href="https://lifecycle.r-lib.org/articles/stages.html#superseded" class="external-link"><img src="figures/lifecycle-superseded.svg" alt="[Superseded]"></a></p></td>
-      </tr><tr><td>
           <p><code><a href="acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code> </p>
         </td>
         <td><p>AC* set up: define detection kernels</p></td>
@@ -89,29 +86,17 @@
         </td>
         <td><p>AC* set up: set up movement datasets</p></td>
       </tr><tr><td>
-          <p><code><a href="cl.html">cl_lapply()</a></code> <code><a href="cl.html">cl_check()</a></code> <code><a href="cl.html">cl_cores()</a></code> <code><a href="cl.html">cl_chunks()</a></code> <code><a href="cl.html">cl_export()</a></code> <code><a href="cl.html">cl_stop()</a></code> </p>
-        </td>
-        <td><p>Parallelisation helpers</p></td>
-      </tr><tr><td>
           <p><code><a href="coa.html">coa()</a></code> </p>
         </td>
         <td><p>The centres of activity (COA) algorithm</p></td>
       </tr><tr><td>
-          <p><code><a href="datasets-algorithms.html">dat_obs()</a></code> <code><a href="datasets-algorithms.html">dat_overlaps()</a></code> <code><a href="datasets-algorithms.html">dat_kernels()</a></code> <code><a href="datasets-algorithms.html">dat_ac()</a></code> <code><a href="datasets-algorithms.html">dat_pff()</a></code> <code><a href="datasets-algorithms.html">dat_pfb()</a></code> <code><a href="datasets-algorithms.html">dat_pfp()</a></code> </p>
+          <p><code><a href="datasets-algorithms.html">dat_obs()</a></code> <code><a href="datasets-algorithms.html">dat_overlaps()</a></code> <code><a href="datasets-algorithms.html">dat_kernels()</a></code> <code><a href="datasets-algorithms.html">dat_pff()</a></code> <code><a href="datasets-algorithms.html">dat_pfb()</a></code> <code><a href="datasets-algorithms.html">dat_pfp()</a></code> </p>
         </td>
         <td><p>Datasets: example algorithm outputs</p></td>
       </tr><tr><td>
           <p><code><a href="datasets-mefs.html">dat_moorings</a></code> <code><a href="datasets-mefs.html">dat_acoustics</a></code> <code><a href="datasets-mefs.html">dat_archival</a></code> <code><a href="datasets-mefs.html">dat_gebco()</a></code> </p>
         </td>
         <td><p>Datasets: the MEFS project</p></td>
-      </tr><tr><td>
-          <p><code><a href="dc.html">dc()</a></code> </p>
-        </td>
-        <td><p>DC: the depth-contour algorithm</p></td>
-      </tr><tr><td>
-          <p><code><a href="dc_setup_model.html">dc_setup_model()</a></code> </p>
-        </td>
-        <td><p>DC: a template DC model</p></td>
       </tr><tr><td>
           <p><code><a href="degrees.html">degrees()</a></code> </p>
         </td>
@@ -120,10 +105,6 @@
           <p><code><a href="dist_along_path.html">dist_along_path()</a></code> </p>
         </td>
         <td><p>Distances: along a path</p></td>
-      </tr><tr><td>
-          <p><code><a href="dist_btw_cells.html">dist_btw_cells()</a></code> </p>
-        </td>
-        <td><p>Distances: between cells on a <code>SpatRaster</code></p></td>
       </tr><tr><td>
           <p><code><a href="get_hr.html">get_hr_prop()</a></code> <code><a href="get_hr.html">get_hr_core()</a></code> <code><a href="get_hr.html">get_hr_home()</a></code> <code><a href="get_hr.html">get_hr_full()</a></code> </p>
         </td>
@@ -141,15 +122,19 @@
         </td>
         <td><p>PF outputs: <code>pf</code> objects</p></td>
       </tr><tr><td>
-          <p><code><a href="pf_backward.html">pf_backward()</a></code> </p>
+          <p><code><a href="pf_backward_-times.html">pf_backward_*</a></code> </p>
         </td>
         <td><p>PF: run the backward pass</p></td>
       </tr><tr><td>
-          <p><code><a href="pf_backward_dens.html">pf_backward_dens()</a></code> </p>
+          <p><code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> </p>
         </td>
-        <td><p>PF: pre-calculate densities for the backward pass</p></td>
+        <td><p>PF: run the backward pass</p></td>
       </tr><tr><td>
-          <p><code><a href="pf_backward_p.html">dstep_lookup()</a></code> <code><a href="pf_backward_p.html">dstep_read()</a></code> <code><a href="pf_backward_p.html">pf_backward_p()</a></code> </p>
+          <p><code><a href="pf_backward_killer_diagnostics.html">pf_backward_killer_diagnostics()</a></code> </p>
+        </td>
+        <td><p>PF: backward killer diagnostics</p></td>
+      </tr><tr><td>
+          <p><code><a href="pf_backward_sampler.html">pf_backward_sampler()</a></code> </p>
         </td>
         <td><p>PF: run the backward pass</p></td>
       </tr><tr><td>
@@ -157,24 +142,19 @@
         </td>
         <td><p>PF: particle coordinates</p></td>
       </tr><tr><td>
-          <p><code><a href="pf_forward_-times.html">pf_forward_*</a></code> </p>
+          <p><code><a href="pf_distinct.html">pf_distinct()</a></code> </p>
         </td>
-        <td><p>PF: run the forward simulation</p></td>
+        <td><p>PF: isolate distinct samples</p></td>
       </tr><tr><td>
-          <p><code><a href="pf_forward_1.html">pf_forward_1()</a></code> </p>
+          <p><code><a href="pf_forward.html">pf_forward()</a></code> </p>
         </td>
-        <td><p>PF: run the forward simulation
-<a href="https://lifecycle.r-lib.org/articles/stages.html#superseded" class="external-link"><img src="figures/lifecycle-superseded.svg" alt="[Superseded]"></a></p></td>
+        <td><p>PF: forward simulation</p></td>
       </tr><tr><td>
-          <p><code><a href="pf_forward_2.html">pf_forward_2()</a></code> </p>
+          <p><code><a href="pf_forward_diagnostics.html">pf_forward_diagnostics()</a></code> </p>
         </td>
-        <td><p>PF: run the forward simulation</p></td>
+        <td><p>PF: forward run diagnostics</p></td>
       </tr><tr><td>
-          <p><code><a href="pf_kick.html">pf_kick()</a></code> </p>
-        </td>
-        <td><p>PF: template movement models</p></td>
-      </tr><tr><td>
-          <p><code><a href="pf_map_dens.html">as.im.SpatRaster()</a></code> <code><a href="pf_map_dens.html">as.owin.SpatRaster()</a></code> <code><a href="pf_map_dens.html">pf_map_dens()</a></code> </p>
+          <p><code><a href="pf_map_dens.html">as.im.SpatRaster()</a></code> <code><a href="pf_map_dens.html">as.owin.SpatRaster()</a></code> <code><a href="pf_map_dens.html">as.owin.sf()</a></code> <code><a href="pf_map_dens.html">pf_map_dens()</a></code> </p>
         </td>
         <td><p>PF: map point density</p></td>
       </tr><tr><td>
@@ -190,9 +170,21 @@
         </td>
         <td><p>PF: pivot path matrices</p></td>
       </tr><tr><td>
+          <p><code><a href="pf_propose.html">pf_rpropose_origin()</a></code> <code><a href="pf_propose.html">pf_rpropose_kick()</a></code> <code><a href="pf_propose.html">pf_rpropose_reachable()</a></code> <code><a href="pf_propose.html">pf_dpropose()</a></code> </p>
+        </td>
+        <td><p>PF: proposal functions</p></td>
+      </tr><tr><td>
+          <p><code><a href="pf_sample.html">pf_sample_multinomial()</a></code> <code><a href="pf_sample.html">pf_sample_systematic()</a></code> </p>
+        </td>
+        <td><p>PF: sampling functions</p></td>
+      </tr><tr><td>
           <p><code><a href="pf_setup_files.html">pf_setup_files()</a></code> </p>
         </td>
         <td><p>PF set up: list files for PF</p></td>
+      </tr><tr><td>
+          <p><code><a href="pf_setup_rerun.html">pf_setup_rerun()</a></code> </p>
+        </td>
+        <td><p>PF: rerun</p></td>
       </tr><tr><td>
           <p><code><a href="sim_array.html">sim_array()</a></code> </p>
         </td>

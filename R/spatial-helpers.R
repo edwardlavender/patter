@@ -11,3 +11,14 @@
 degrees <- function(.x) {
   circular::circular(x = .x, units = "degrees")
 }
+
+#' @title Invert a spatial polygon
+#' @keywords internal
+
+.st_invert <- function(.x, .bbox = sf::st_bbox(.x)) {
+  rlang::check_installed("sf")
+  .x <- sf::st_union(.x)
+  .bbox |>
+    sf::st_as_sfc() |>
+    sf::st_difference(.x)
+}

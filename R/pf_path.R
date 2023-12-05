@@ -5,7 +5,7 @@
 #' * An ordered list of file paths (from [`pf_setup_files()`]) that define the directories in which particle samples were written from the forward simulation (as parquet files).
 #' @param .bathy (optional) If `.return = "long"`, a bathymetry [`SpatRaster`] can be supplied to define cell coordinates (see [`pf_path_pivot()`]).
 #' @param .obs,.cols (optional) If `.return = "long"`, `.obs` and `.cols` are a [`data.table`] and a `character` vector of column names in `.obs` to match onto the output (see [`pf_path_pivot()`]).
-#' @param .verbose,.txt Arguments to monitor function progress (see [`pf_forward_1()`]).
+#' @param .verbose,.txt Arguments to monitor function progress (see [`pf_forward()`]).
 #' @param .return A `character` that defines the return format:
 #' * `long` specifies a long-format [`data.table`] that defines path IDs, time steps and associated locations (see [`pf_path_pivot()`]).
 #' * `wide` specifies a wide-format [`data.table`], with:
@@ -19,25 +19,7 @@
 #' @example man/examples/pf_path-examples.R
 #'
 #' @seealso
-#' * The PF (forward simulation) is implemented by [`pf_forward_*()`]:
-#'     * [`pf_forward_1()`] refines AC-branch algorithm ([`acs()`] and [`dc()`]) outputs using PF;
-#'     * [`pf_forward_2()`] is an integrated implementation that couples AC- and PF-branch algorithms internally;
-#'
-#' * PF is supported by:
-#'     * Setup helpers, namely [`pf_setup_files()`];
-#'     * Template movement models, namely [`pf_kick()`];
-#'
-#' * The backward pass is implemented by [`pf_backward()`];
-#'
-#' * Movement paths are built from PF outputs via `pf_path()` functions:
-#'     * [`pf_path()`] reconstructs paths;
-#'     * [`pf_path_pivot()`] supports path reconstruction;
-#'
-#' * To reconstruct maps of space use, see:
-#'     * [`pf_coords()`] to extract particle coordinates;
-#'     * [`pf_map_pou()`] for probability-of-use maps;
-#'     * [`pf_map_dens()`] for smooth utilisation distributions;
-#'     * [`get_hr()`] for home range estimates;
+#' TO DO
 #'
 #' @author Edward Lavender
 #' @export

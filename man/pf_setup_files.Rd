@@ -15,44 +15,29 @@ pf_setup_files(.root, ...)
 The function returns an ordered \code{list} of file paths.
 }
 \description{
-This function creates an ordered \code{list} of files for PF, either from an AC* algorithm (i.e., \code{\link[=acs]{acs()}} or \code{\link[=dc]{dc()}}) for the forward simulation (\code{\link[=pf_forward_1]{pf_forward_1()}}), or from the forward simulation (\code{\link[=pf_forward_*]{pf_forward_*()}}) for the backward pass (\code{\link[=pf_backward]{pf_backward()}}).
+This function creates an ordered \code{list} of files for \code{\link[=pf_backward_*]{pf_backward_*()}}.
 }
 \examples{
-# Quick implementation of AC algorithm
-obs    <- dat_obs()[1:10, ]
-gebco  <- dat_gebco()
-con    <- tempdir()
-ac_folder <- file.path(con, "patter", "ac")
-dir.create(ac_folder, recursive = TRUE)
-out_ac <-
-  acs(obs,
-      .bathy = gebco,
-      .detection_overlaps = dat_overlaps(),
-      .detection_kernels = dat_kernels(),
-      .write_record = list(filename = ac_folder, overwrite = TRUE))
-
-# List files for pf_forward_*()
-files <- pf_setup_files(ac_folder)
-
-# Quick implementation of pf_forward_1()
+# Quick implementation of pf_forward()
+con <- tempdir()
 pff_folder <- file.path(con, "patter", "pf", "forward")
 dir.create(pff_folder, recursive = TRUE)
-out_pff <- pf_forward_1(obs,
-                        .record = files,
-                        .kick = pf_kick,
-                        .bathy = gebco,
-                        .write_history = list(sink = pff_folder))
+out_pff <- pf_forward(.obs = dat_obs(),
+                      .bathy = dat_gebco(),
+                      .moorings = dat_moorings, .detection_overlaps = dat_overlaps(),
+                      .detection_kernels = dat_kernels(),
+                      .write_opts = list(sink = pff_folder))
 
-# List files for pf_backward()
-files <- pf_setup_files(pff_folder)
+# List files for pf_backward_*()
+files <- pf_setup_files(file.path(pff_folder, "history"))
 
-# Quick implementation of pf_backward()
+# Quick implementation of pf_backward_killer()
 pfb_folder <- file.path(con, "patter", "pf", "backward")
 dir.create(pfb_folder, recursive = TRUE)
-out_pfb <- pf_backward(files,
-                       .write_history = list(sink = pfb_folder))
+out_pfb <- pf_backward_killer(files,
+                              .write_history = list(sink = pfb_folder))
 
-# List files from pf_backward()
+# List files from pf_backward_*()
 pf_setup_files(pfb_folder)
 
 # Clean up
@@ -60,31 +45,7 @@ unlink(file.path(con, "patter"), recursive = TRUE)
 
 }
 \seealso{
-\itemize{
-\item The PF (forward simulation) is implemented by \code{\link[=pf_forward_*]{pf_forward_*()}}:
-\itemize{
-\item \code{\link[=pf_forward_1]{pf_forward_1()}} refines AC-branch algorithm (\code{\link[=acs]{acs()}} and \code{\link[=dc]{dc()}}) outputs using PF;
-\item \code{\link[=pf_forward_2]{pf_forward_2()}} is an integrated implementation that couples AC- and PF-branch algorithms internally;
-}
-\item PF is supported by:
-\itemize{
-\item Setup helpers, namely \code{\link[=pf_setup_files]{pf_setup_files()}};
-\item Template movement models, namely \code{\link[=pf_kick]{pf_kick()}};
-}
-\item The backward pass is implemented by \code{\link[=pf_backward]{pf_backward()}};
-\item Movement paths are built from PF outputs via \code{pf_path()} functions:
-\itemize{
-\item \code{\link[=pf_path]{pf_path()}} reconstructs paths;
-\item \code{\link[=pf_path_pivot]{pf_path_pivot()}} supports path reconstruction;
-}
-\item To reconstruct maps of space use, see:
-\itemize{
-\item \code{\link[=pf_coords]{pf_coords()}} to extract particle coordinates;
-\item \code{\link[=pf_map_pou]{pf_map_pou()}} for probability-of-use maps;
-\item \code{\link[=pf_map_dens]{pf_map_dens()}} for smooth utilisation distributions;
-\item \code{\link[=get_hr]{get_hr()}} for home range estimates;
-}
-}
+TO DO
 }
 \author{
 Edward Lavender

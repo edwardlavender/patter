@@ -1,5 +1,5 @@
 #' @title PF set up: list files for PF
-#' @description This function creates an ordered `list` of files for PF, either from an AC* algorithm (i.e., [`acs()`] or [`dc()`]) for the forward simulation ([`pf_forward_1()`]), or from the forward simulation ([`pf_forward_*()`]) for the backward pass ([`pf_backward()`]).
+#' @description This function creates an ordered `list` of files for [`pf_backward_*()`].
 #'
 #' @param .root A string that defines the directory in which files are located.
 #' @param ... Additional arguments passed to [`list.files()`], such as `pattern`, excluding `full.names`.
@@ -7,66 +7,33 @@
 #' @return The function returns an ordered `list` of file paths.
 #'
 #' @examples
-#' # Quick implementation of AC algorithm
-#' obs    <- dat_obs()[1:10, ]
-#' gebco  <- dat_gebco()
-#' con    <- tempdir()
-#' ac_folder <- file.path(con, "patter", "ac")
-#' dir.create(ac_folder, recursive = TRUE)
-#' out_ac <-
-#'   acs(obs,
-#'       .bathy = gebco,
-#'       .detection_overlaps = dat_overlaps(),
-#'       .detection_kernels = dat_kernels(),
-#'       .write_record = list(filename = ac_folder, overwrite = TRUE))
-#'
-#' # List files for pf_forward_*()
-#' files <- pf_setup_files(ac_folder)
-#'
-#' # Quick implementation of pf_forward_1()
+#' # Quick implementation of pf_forward()
+#' con <- tempdir()
 #' pff_folder <- file.path(con, "patter", "pf", "forward")
 #' dir.create(pff_folder, recursive = TRUE)
-#' out_pff <- pf_forward_1(obs,
-#'                         .record = files,
-#'                         .kick = pf_kick,
-#'                         .bathy = gebco,
-#'                         .write_history = list(sink = pff_folder))
+#' out_pff <- pf_forward(.obs = dat_obs(),
+#'                       .bathy = dat_gebco(),
+#'                       .moorings = dat_moorings, .detection_overlaps = dat_overlaps(),
+#'                       .detection_kernels = dat_kernels(),
+#'                       .write_opts = list(sink = pff_folder))
 #'
-#' # List files for pf_backward()
-#' files <- pf_setup_files(pff_folder)
+#' # List files for pf_backward_*()
+#' files <- pf_setup_files(file.path(pff_folder, "history"))
 #'
-#' # Quick implementation of pf_backward()
+#' # Quick implementation of pf_backward_killer()
 #' pfb_folder <- file.path(con, "patter", "pf", "backward")
 #' dir.create(pfb_folder, recursive = TRUE)
-#' out_pfb <- pf_backward(files,
-#'                        .write_history = list(sink = pfb_folder))
+#' out_pfb <- pf_backward_killer(files,
+#'                               .write_history = list(sink = pfb_folder))
 #'
-#' # List files from pf_backward()
+#' # List files from pf_backward_*()
 #' pf_setup_files(pfb_folder)
 #'
 #' # Clean up
 #' unlink(file.path(con, "patter"), recursive = TRUE)
 #'
 #' @seealso
-#' * The PF (forward simulation) is implemented by [`pf_forward_*()`]:
-#'     * [`pf_forward_1()`] refines AC-branch algorithm ([`acs()`] and [`dc()`]) outputs using PF;
-#'     * [`pf_forward_2()`] is an integrated implementation that couples AC- and PF-branch algorithms internally;
-#'
-#' * PF is supported by:
-#'     * Setup helpers, namely [`pf_setup_files()`];
-#'     * Template movement models, namely [`pf_kick()`];
-#'
-#' * The backward pass is implemented by [`pf_backward()`];
-#'
-#' * Movement paths are built from PF outputs via `pf_path()` functions:
-#'     * [`pf_path()`] reconstructs paths;
-#'     * [`pf_path_pivot()`] supports path reconstruction;
-#'
-#' * To reconstruct maps of space use, see:
-#'     * [`pf_coords()`] to extract particle coordinates;
-#'     * [`pf_map_pou()`] for probability-of-use maps;
-#'     * [`pf_map_dens()`] for smooth utilisation distributions;
-#'     * [`get_hr()`] for home range estimates;
+#' TO DO
 #'
 #' @author Edward Lavender
 #' @export
@@ -84,14 +51,11 @@ pf_setup_files <- function(.root, ...) {
   if (length(unique(exts)) != 1L) {
     abort("Multiple file types (extensions) identified in `.root`. Do you need to pass `pattern` to `list.files()`?")
   }
-  if (!all(exts %in% c("tif", "parquet"))) {
-    abort("Either .tif files (for `pf_forward_*()` or .parquet files (for `pf_backward()` are expected.")
+  if (!all(exts == "parquet")) {
+    abort(".parquet files (for `pf_backward_*()`) are expected.")
   }
   bsname <- basename(files)
   ext <- exts[1]
-  if (!isTRUE(all.equal(paste0(sort(paste0(seq_len(length(files)), ".", ext))), bsname))) {
-    abort("Files do not match expected naming convention ('1.{ext}', '2.{ext}', ..., 'N.{ext}' where N is the number of files.)", .envir = environment())
-  }
   # Define ordered vector of files
   data.table(file = files,
              name = tools::file_path_sans_ext(bsname),
@@ -101,4 +65,12 @@ pf_setup_files <- function(.root, ...) {
     arrange(.data$name) |>
     pull(.data$file) |>
     as.list()
+}
+
+#' @title PF: rerun
+#' @export
+
+pf_setup_rerun <- function(.rerun, .revert = 25L) {
+  # default `.revert` is bigger than `.trial_revert_steps`
+  max(c(1L, length(.rerun[["history"]]) - .revert))
 }

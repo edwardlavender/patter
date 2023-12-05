@@ -8,31 +8,7 @@
 An S3 class that defines the named \code{list} returned by a PF-branch algorithm.
 }
 \seealso{
-\itemize{
-\item The PF (forward simulation) is implemented by \code{\link[=pf_forward_*]{pf_forward_*()}}:
-\itemize{
-\item \code{\link[=pf_forward_1]{pf_forward_1()}} refines AC-branch algorithm (\code{\link[=acs]{acs()}} and \code{\link[=dc]{dc()}}) outputs using PF;
-\item \code{\link[=pf_forward_2]{pf_forward_2()}} is an integrated implementation that couples AC- and PF-branch algorithms internally;
-}
-\item PF is supported by:
-\itemize{
-\item Setup helpers, namely \code{\link[=pf_setup_files]{pf_setup_files()}};
-\item Template movement models, namely \code{\link[=pf_kick]{pf_kick()}};
-}
-\item The backward pass is implemented by \code{\link[=pf_backward]{pf_backward()}};
-\item Movement paths are built from PF outputs via \code{pf_path()} functions:
-\itemize{
-\item \code{\link[=pf_path]{pf_path()}} reconstructs paths;
-\item \code{\link[=pf_path_pivot]{pf_path_pivot()}} supports path reconstruction;
-}
-\item To reconstruct maps of space use, see:
-\itemize{
-\item \code{\link[=pf_coords]{pf_coords()}} to extract particle coordinates;
-\item \code{\link[=pf_map_pou]{pf_map_pou()}} for probability-of-use maps;
-\item \code{\link[=pf_map_dens]{pf_map_dens()}} for smooth utilisation distributions;
-\item \code{\link[=get_hr]{get_hr()}} for home range estimates;
-}
-}
+TO DO
 }
 \author{
 Edward Lavender

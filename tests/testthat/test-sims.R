@@ -218,8 +218,8 @@ test_that("sim_path_walk() works", {
   expect_true(all(p$path_id == 1L))
   expect_equal(p$timestep, 1:n_step)
   # Validate step lengths
-  l1 <- p$length[-nrow(p)]
-  l2 <- dist_along_path(p[, .(x, y)])[-1]
+  l1 <- p$length
+  l2 <- dist_along_path(p[, .(x, y)])
   expect_equal(l1, l2)
   # Validate angle ranges are sensible
   expect_true(all(p$angle > 0 & p$angle < 360, na.rm = TRUE))
@@ -242,7 +242,7 @@ test_that("sim_path_walk() works", {
   r <- dat_gebco()
   r <- terra::project(r, "EPSG:4326")
   p <- sim_path_walk(r, .lonlat = TRUE)
-  expect_equal(c(0, p$length[-nrow(p)]),
+  expect_equal(p$length,
                dist_along_path(cbind(p$x, p$y), .lonlat = TRUE))
 
   #### Test `.origin` argument

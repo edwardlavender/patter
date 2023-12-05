@@ -50,10 +50,16 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="articles/faqs.html">FAQs</a>
+      <a href="articles/a-methodology.html">Methodology</a>
     </li>
     <li>
-      <a href="articles/workflow.html">A re-implementation of the `flapper` algorithms</a>
+      <a href="articles/b-workflow.html">A revised implementation of the `flapper` algorithms</a>
+    </li>
+    <li>
+      <a href="articles/c-demos.html">Demos</a>
+    </li>
+    <li>
+      <a href="articles/d-faqs.html">FAQs</a>
     </li>
   </ul>
 </li>
@@ -124,9 +130,9 @@
 <p>For an introduction to <a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a>, use:</p>
 <ul>
 <li>
-<code><a href="articles/workflow.html">vignette("workflow", package = "patter")</a></code> for an overview of the analytical workflow;</li>
+<code>vignette("workflow", package = "patter")</code> for an overview of the analytical workflow;</li>
 <li>
-<code><a href="articles/faqs.html">vignette("faqs", package = "patter")</a></code> for FAQs;</li>
+<code>vignette("faqs", package = "patter")</code> for FAQs;</li>
 </ul>
 <p>For a full list of all functions, see <code><a href="https://rdrr.io/pkg/patter/man" class="external-link">help(package = 'patter')</a></code>.</p>
 </div>
@@ -153,11 +159,9 @@
 <li>
 <code><a href="reference/datasets-algorithms.html">dat_kernels()</a></code> for an example output from <code><a href="reference/acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code>;</li>
 <li>
-<code><a href="reference/datasets-algorithms.html">dat_ac()</a></code> for an example output from <code><a href="reference/acs.html">acs()</a></code>;</li>
+<code><a href="reference/datasets-algorithms.html">dat_pff()</a></code> for an example output from <code><a href="reference/pf_forward.html">pf_forward()</a></code>;</li>
 <li>
-<code><a href="reference/datasets-algorithms.html">dat_pff()</a></code> for an example output from <code>pf_forward_*()</code>;</li>
-<li>
-<code><a href="reference/datasets-algorithms.html">dat_pfb()</a></code> for an example output from <code><a href="reference/pf_backward.html">pf_backward()</a></code>;</li>
+<code><a href="reference/datasets-algorithms.html">dat_pfb()</a></code> for an example output from <code><a href="reference/pf_backward_killer.html">pf_backward_killer()</a></code>;</li>
 <li>
 <code><a href="reference/datasets-algorithms.html">dat_pfp()</a></code> for an example output from <code><a href="reference/pf_path.html">pf_path()</a></code>;</li>
 </ul>
@@ -173,9 +177,9 @@
 <code><a href="reference/sim_path_walk.html">sim_path_walk()</a></code> to simulate a movement path from a walk model, with the help of:
 <ul>
 <li>
-<code><a href="reference/sim_helpers.html">rtruncgamma()</a></code> and <code>sim_length()</code> to simulate step lengths;</li>
+<code><a href="reference/sim_helpers.html">rtruncgamma()</a></code> and <code><a href="reference/sim_helpers.html">rlen()</a></code> to simulate step lengths;</li>
 <li>
-<code><a href="reference/sim_helpers.html">rwn()</a></code>, <code>sim_angle_rw()</code> and <code>sim_angle_crw()</code> to simulate turning angles;</li>
+<code><a href="reference/sim_helpers.html">rwn()</a></code>, <code><a href="reference/sim_helpers.html">rangrw()</a></code> and <code><a href="reference/sim_helpers.html">rangcrw()</a></code> to simulate turning angles;</li>
 </ul>
 </li>
 <li>
@@ -222,13 +226,6 @@
 <li>
 <code><a href="reference/coa.html">coa()</a></code> to calculate centres of activity;</li>
 </ul>
-<p>To implement the depth-contour (DC) algorithm, use:</p>
-<ul>
-<li>
-<code><a href="reference/dc_setup_model.html">dc_setup_model()</a></code> for an example DC model;</li>
-<li>
-<code><a href="reference/dc.html">dc()</a></code> to implement the algorithm;</li>
-</ul>
 <p>To implement the acoustic-centroid* (AC*) algorithm(s) (e.g., AC and ACDC), use:</p>
 <ul>
 <li>
@@ -239,26 +236,15 @@
 <code><a href="reference/acs_setup_detection_pr.html">acs_setup_detection_pr()</a></code> to define a detection probability model;</li>
 <li>
 <code><a href="reference/acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code> to set up detection kernels;</li>
-<li>
-<code><a href="reference/acs.html">acs()</a></code> to implement the algorithm(s);</li>
 </ul>
 <p>To implement particle filtering (PF), use:</p>
 <ul>
 <li>
 <code><a href="reference/pf_setup_files.html">pf_setup_files()</a></code> to set up the record;</li>
 <li>
-<code><a href="reference/pf_kick.html">pf_kick()</a></code> for an example movement model;</li>
+<code><a href="reference/pf_forward.html">pf_forward()</a></code> to implement the forward simulation;</li>
 <li>
-<code>pf_forward_*()</code> to implement the forward simulation; namely:
-<ul>
-<li>
-<code><a href="reference/pf_forward_1.html">pf_forward_1()</a></code> for the original (two-step) implementation;</li>
-<li>
-<code><a href="reference/pf_forward_2.html">pf_forward_2()</a></code> for an integrated implementation;</li>
-</ul>
-</li>
-<li>
-<code><a href="reference/pf_backward.html">pf_backward()</a></code> to implement the backward pass;</li>
+<code>pf_backward_*()</code> to implement the backward pass;</li>
 <li>
 <code><a href="reference/pf_coords.html">pf_coords()</a></code> to collate particle coordinates;</li>
 <li>
@@ -296,8 +282,6 @@
 <li>
 <code><a href="reference/dist_along_path.html">dist_along_path()</a></code> to calculate distances along a movement path;</li>
 <li>
-<code><a href="reference/dist_btw_cells.html">dist_btw_cells()</a></code> to calculate distances between cells on a <code>SpatRaster</code>;</li>
-<li>
 <code><a href="reference/degrees.html">degrees()</a></code> to create circular angles;</li>
 </ul>
 </li>
@@ -305,9 +289,9 @@
 <code>terra</code> helpers. See:
 <ul>
 <li>
-<code>rast_template()</code> to create a template <code>SpatRaster</code>;</li>
+<code><a href="reference/spatTemplate.html">spatTemplate()</a></code> to create a template <code>SpatRaster</code>;</li>
 <li>
-<code>normalise()</code> to normalise a <code>SpatRaster</code>;</li>
+<code><a href="reference/spatNormalise.html">spatNormalise()</a></code> to normalise a <code>SpatRaster</code>;</li>
 <li>
 <code>as.im.SpatRaster</code> and <code>as.owin.SpatRaster</code> for interfaces to <code>spatstat</code> function(s);</li>
 </ul>

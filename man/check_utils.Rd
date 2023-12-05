@@ -17,7 +17,7 @@
 \usage{
 check_dir(input)
 
-check_dir_is_empty(input)
+check_dir_is_empty(input, action = abort)
 
 check_contents_ext(input, ext, ...)
 

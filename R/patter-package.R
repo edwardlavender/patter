@@ -24,9 +24,8 @@
 #' * [`dat_obs()`] for an example output dataset from [`acs_setup_obs()`];
 #' * [`dat_overlaps()`] for an example output from [`acs_setup_detection_overlaps()`];
 #' * [`dat_kernels()`] for an example output from [`acs_setup_detection_kernels()`];
-#' * [`dat_ac()`] for an example output from [`acs()`];
-#' * [`dat_pff()`] for an example output from [`pf_forward_1()`];
-#' * [`dat_pfb()`] for an example output from [`pf_backward()`];
+#' * [`dat_pff()`] for an example output from [`pf_forward()`];
+#' * [`dat_pfb()`] for an example output from [`pf_backward_killer()`];
 #' * [`dat_pfp()`] for an example output from [`pf_path()`];
 #'
 #' # Simulation
@@ -67,27 +66,18 @@
 #'
 #' * [`coa()`] to calculate centres of activity;
 #'
-#' To implement the depth-contour (DC) algorithm, use:
-#'
-#' * [`dc_setup_model()`] for an example DC model;
-#' * [`dc()`] to implement the algorithm;
-#'
 #' To implement the acoustic-centroid* (AC*) algorithm(s) (e.g., AC and ACDC), use:
 #'
 #' * [`acs_setup_obs()`] to set up observations;
 #' * [`acs_setup_detection_overlaps()`] to set up detection overlaps;
 #' * [`acs_setup_detection_pr()`] to define a detection probability model;
 #' * [`acs_setup_detection_kernels()`] to set up detection kernels;
-#' * [`acs()`] to implement the algorithm(s);
 #'
 #' To implement particle filtering (PF), use:
 #'
 #' * [`pf_setup_files()`] to set up files;
-#' * [`pf_kick()`] for an example movement model;
-#' * [`pf_forward_*()`] functions to implement the forward simulation; namely:
-#'      * [`pf_forward_1()`] for the original (two-step) implementation;
-#'      * [`pf_forward_2()`] for an integrated implementation;
-#' * [`pf_backward()`] to implement the backward pass;
+#' * [`pf_forward()`] to implement the forward simulation;
+#' * [`pf_backward_*()`] functions implement the backward pass;
 #' * [`pf_coords()`] to collate particle coordinates;
 #' * [`pf_path()`] (and [`pf_path_pivot()`]) to reconstruct movement paths;
 #' * [`pf_map_pou()`] to map probability-of-use;
@@ -109,7 +99,6 @@
 #'
 #' * Distance calculations. See:
 #'    * [`dist_along_path()`] to calculate distances along a movement path;
-#'    * [`dist_btw_cells()`] to calculate distances between cells on a [`SpatRaster`];
 #'    * [`degrees()`] to create circular angles;
 #'
 #' * `terra` helpers. See:
@@ -178,5 +167,10 @@
 #' @importFrom collapse fnrow
 #' @importFrom collapse seq_col
 #' @importFrom collapse seq_row
+#'
+#' @importFrom lubridate `%within%`
+#'
+#' @importFrom arrow schema
+#' @importFrom arrow int32
 
 NULL

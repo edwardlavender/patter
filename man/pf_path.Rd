@@ -25,7 +25,7 @@ pf_path(
 
 \item{.obs, .cols}{(optional) If \code{.return = "long"}, \code{.obs} and \code{.cols} are a \code{\link{data.table}} and a \code{character} vector of column names in \code{.obs} to match onto the output (see \code{\link[=pf_path_pivot]{pf_path_pivot()}}).}
 
-\item{.verbose, .txt}{Arguments to monitor function progress (see \code{\link[=pf_forward_1]{pf_forward_1()}}).}
+\item{.verbose, .txt}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
 
 \item{.return}{A \code{character} that defines the return format:
 \itemize{
@@ -49,8 +49,8 @@ The path reconstruction algorithm 'chains' sequential particle samples into move
 \examples{
 #### Workflow
 # A. Define input datasets (see ?`acs_setup_obs()`)
-# B. Implement forward simulation (see ?`acs()`, ?`dc()` and ?`pf_forward_*()`)
-# C. Implement backwards pass (see ?`pf_backward()`)
+# B. Implement forward simulation (see ?`pf_forward()`)
+# C. Implement backwards pass (see ?`pf_backward_*()`)
 # D. Implement `pf_path()`, `pf_map_pou()` etc.
 
 #### Set up examples using pre-defined datasets
@@ -59,13 +59,13 @@ obs        <- dat_obs()
 gebco      <- dat_gebco()
 # Collect pre-defined particle samples from forward simulation
 dat_pff    <- dat_pff()
-# Implement backwards pass
+# Implement backward pass
 con        <- tempdir()
 pfb_folder <- file.path(con, "patter", "pf", "backward")
 dir.create(pfb_folder, recursive = TRUE)
-out_pfb <- pf_backward(dat_pff$history,
-                       .save_history = TRUE,
-                       .write_history = list(sink = pfb_folder))
+out_pfb <- pf_backward_killer(dat_pff$history,
+                              .save_history = TRUE,
+                              .write_history = list(sink = pfb_folder))
 
 #### Example (1): Implement pf_path() from `pf` object
 p1 <- pf_path(out_pfb$history)
@@ -113,31 +113,7 @@ p6 <- pf_path(out_pfb$history, .return = "wide")
 str(p6)
 }
 \seealso{
-\itemize{
-\item The PF (forward simulation) is implemented by \code{\link[=pf_forward_*]{pf_forward_*()}}:
-\itemize{
-\item \code{\link[=pf_forward_1]{pf_forward_1()}} refines AC-branch algorithm (\code{\link[=acs]{acs()}} and \code{\link[=dc]{dc()}}) outputs using PF;
-\item \code{\link[=pf_forward_2]{pf_forward_2()}} is an integrated implementation that couples AC- and PF-branch algorithms internally;
-}
-\item PF is supported by:
-\itemize{
-\item Setup helpers, namely \code{\link[=pf_setup_files]{pf_setup_files()}};
-\item Template movement models, namely \code{\link[=pf_kick]{pf_kick()}};
-}
-\item The backward pass is implemented by \code{\link[=pf_backward]{pf_backward()}};
-\item Movement paths are built from PF outputs via \code{pf_path()} functions:
-\itemize{
-\item \code{\link[=pf_path]{pf_path()}} reconstructs paths;
-\item \code{\link[=pf_path_pivot]{pf_path_pivot()}} supports path reconstruction;
-}
-\item To reconstruct maps of space use, see:
-\itemize{
-\item \code{\link[=pf_coords]{pf_coords()}} to extract particle coordinates;
-\item \code{\link[=pf_map_pou]{pf_map_pou()}} for probability-of-use maps;
-\item \code{\link[=pf_map_dens]{pf_map_dens()}} for smooth utilisation distributions;
-\item \code{\link[=get_hr]{get_hr()}} for home range estimates;
-}
-}
+TO DO
 }
 \author{
 Edward Lavender

@@ -32,9 +32,8 @@ For example algorithm outputs (\code{\link{datasets-algorithms}}), see:
 \item \code{\link[=dat_obs]{dat_obs()}} for an example output dataset from \code{\link[=acs_setup_obs]{acs_setup_obs()}};
 \item \code{\link[=dat_overlaps]{dat_overlaps()}} for an example output from \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}};
 \item \code{\link[=dat_kernels]{dat_kernels()}} for an example output from \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}};
-\item \code{\link[=dat_ac]{dat_ac()}} for an example output from \code{\link[=acs]{acs()}};
-\item \code{\link[=dat_pff]{dat_pff()}} for an example output from \code{\link[=pf_forward_1]{pf_forward_1()}};
-\item \code{\link[=dat_pfb]{dat_pfb()}} for an example output from \code{\link[=pf_backward]{pf_backward()}};
+\item \code{\link[=dat_pff]{dat_pff()}} for an example output from \code{\link[=pf_forward]{pf_forward()}};
+\item \code{\link[=dat_pfb]{dat_pfb()}} for an example output from \code{\link[=pf_backward_killer]{pf_backward_killer()}};
 \item \code{\link[=dat_pfp]{dat_pfp()}} for an example output from \code{\link[=pf_path]{pf_path()}};
 }
 }
@@ -85,31 +84,19 @@ To implement the centre-of-activity algorithm use:
 \item \code{\link[=coa]{coa()}} to calculate centres of activity;
 }
 
-To implement the depth-contour (DC) algorithm, use:
-\itemize{
-\item \code{\link[=dc_setup_model]{dc_setup_model()}} for an example DC model;
-\item \code{\link[=dc]{dc()}} to implement the algorithm;
-}
-
 To implement the acoustic-centroid* (AC*) algorithm(s) (e.g., AC and ACDC), use:
 \itemize{
 \item \code{\link[=acs_setup_obs]{acs_setup_obs()}} to set up observations;
 \item \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}} to set up detection overlaps;
 \item \code{\link[=acs_setup_detection_pr]{acs_setup_detection_pr()}} to define a detection probability model;
 \item \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}} to set up detection kernels;
-\item \code{\link[=acs]{acs()}} to implement the algorithm(s);
 }
 
 To implement particle filtering (PF), use:
 \itemize{
 \item \code{\link[=pf_setup_files]{pf_setup_files()}} to set up files;
-\item \code{\link[=pf_kick]{pf_kick()}} for an example movement model;
-\item \code{\link[=pf_forward_*]{pf_forward_*()}} functions to implement the forward simulation; namely:
-\itemize{
-\item \code{\link[=pf_forward_1]{pf_forward_1()}} for the original (two-step) implementation;
-\item \code{\link[=pf_forward_2]{pf_forward_2()}} for an integrated implementation;
-}
-\item \code{\link[=pf_backward]{pf_backward()}} to implement the backward pass;
+\item \code{\link[=pf_forward]{pf_forward()}} to implement the forward simulation;
+\item \code{\link[=pf_backward_*]{pf_backward_*()}} functions implement the backward pass;
 \item \code{\link[=pf_coords]{pf_coords()}} to collate particle coordinates;
 \item \code{\link[=pf_path]{pf_path()}} (and \code{\link[=pf_path_pivot]{pf_path_pivot()}}) to reconstruct movement paths;
 \item \code{\link[=pf_map_pou]{pf_map_pou()}} to map probability-of-use;
@@ -135,7 +122,6 @@ The following convenience functions are also made available to users of \href{ht
 \item Distance calculations. See:
 \itemize{
 \item \code{\link[=dist_along_path]{dist_along_path()}} to calculate distances along a movement path;
-\item \code{\link[=dist_btw_cells]{dist_btw_cells()}} to calculate distances between cells on a \code{\link{SpatRaster}};
 \item \code{\link[=degrees]{degrees()}} to create circular angles;
 }
 \item \code{terra} helpers. See:

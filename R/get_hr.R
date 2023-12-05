@@ -29,7 +29,7 @@
 #' map <- get_hr_prop(r, .prop = 0.2, .add = TRUE, border = "red")
 #'
 #' @seealso
-#' * For modelling algorithms in [`patter`], see [`acs()`], [`dc()`], [`pf_forward_1()`] and [`pf_forward_2()`];
+#' * For reconstructing movement paths and patterns of space use, see [`pf_forward()`];
 #' * For mapping utilisation distributions, see [`pf_map_pou()`] and [`pf_map_dens()`];
 #'
 #' @author Edward Lavender

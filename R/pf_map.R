@@ -22,25 +22,7 @@
 #' pf_coords(p$history, dat_gebco())
 #'
 #' @seealso
-#' * The PF (forward simulation) is implemented by [`pf_forward_*()`]:
-#'     * [`pf_forward_1()`] refines AC-branch algorithm ([`acs()`] and [`dc()`]) outputs using PF;
-#'     * [`pf_forward_2()`] is an integrated implementation that couples AC- and PF-branch algorithms internally;
-#'
-#' * PF is supported by:
-#'     * Setup helpers, namely [`pf_setup_files()`];
-#'     * Template movement models, namely [`pf_kick()`];
-#'
-#' * The backward pass is implemented by [`pf_backward()`];
-#'
-#' * Movement paths are built from PF outputs via `pf_path()` functions:
-#'     * [`pf_path()`] reconstructs paths;
-#'     * [`pf_path_pivot()`] supports path reconstruction;
-#'
-#' * To reconstruct maps of space use, see:
-#'     * [`pf_coords()`] to extract particle coordinates;
-#'     * [`pf_map_pou()`] for probability-of-use maps;
-#'     * [`pf_map_dens()`] for smooth utilisation distributions;
-#'     * [`get_hr()`] for home range estimates;
+#' TO DO
 #'
 #' @author Edward Lavender
 #' @export
@@ -56,9 +38,13 @@ pf_coords <- function(.history, .bathy, .obs = NULL, .cols = NULL) {
   .pf_path_pivot_checks(.obs, .cols)
 
   # Define particle coordinates
+  sch <- schema(timestep = int32(),
+                cell_now = int32(),
+                x_now = double(),
+                y_now = double())
   p <-
     .history |>
-    .pf_history_dt() |>
+    .pf_history_dt(schema = sch) |>
     rename(cell_id = .data$cell_now) |>
     mutate(cell_xy = terra::xyFromCell(.bathy, .data$cell_id),
            cell_x = .data$cell_xy[, 1],
@@ -96,15 +82,12 @@ pf_coords <- function(.history, .bathy, .obs = NULL, .cols = NULL) {
 #' @example man/examples/pf_map_pou-examples.R
 #'
 #' @seealso
-#' * The PF (forward simulation) is implemented by [`pf_forward_*()`]:
-#'     * [`pf_forward_1()`] refines AC-branch algorithm ([`acs()`] and [`dc()`]) outputs using PF;
-#'     * [`pf_forward_2()`] is an integrated implementation that couples AC- and PF-branch algorithms internally;
+#' * The PF (forward simulation) is implemented by [`pf_forward()`];
 #'
 #' * PF is supported by:
 #'     * Setup helpers, namely [`pf_setup_files()`];
-#'     * Template movement models, namely [`pf_kick()`];
 #'
-#' * The backward pass is implemented by [`pf_backward()`];
+#' * The backward pass is implemented by [`pf_backward_*()`];
 #'
 #' * Movement paths are built from PF outputs via `pf_path()` functions:
 #'     * [`pf_path()`] reconstructs paths;
@@ -129,7 +112,7 @@ pf_map_pou <-
     pou <-
       .history |>
       .pf_history_dt(.collect = FALSE) |>
-      rename(cell_id = "cell_now") |>
+      select("timestep", cell_id = "cell_now") |>
       collect() |>
      .pf_map_weights()
 
@@ -149,24 +132,28 @@ pf_map_pou <-
 #' @title PF: map point density
 #' @description [`pf_map_dens()`] creates a smoothed density map (e.g., of particle samples).
 #' @param .xpf A [`SpatRaster`] that defines the grid for density estimation and, if `.coord = NULL`, the points (and associated weights) that are smoothed. Weights must sum to one. The coordinate reference system of `.xpf` must be planar and specified.
-#' @param .im,.owin A pixel image representation of `.xpf` (see [`as.im.SpatRaster()`] and [`spatstat.geom::im()`]) and an observation window (see [`as.owin.SpatRaster()`] and [`spatstat.geom::owin()`]). These objects may be computed automatically from `.xpf`, but this option can be over-ridden. For faster results, use a rectangular or polygon observation window. If `.coord` is supplied, `.im` is necessarily (re)-defined internally (see Details).
+#' @param .im,.owin A pixel image representation of `.xpf` (see [`as.im.SpatRaster()`] and [`spatstat.geom::im()`]) and an observation window (see [`as.owin.SpatRaster()`], [`as.owin.sf()`] and [`spatstat.geom::owin()`]). These objects may be computed automatically from `.xpf` (with rectangular or gridded observation windows used by default, depending on whether or not `.xpf` contains `NA`s), but this option can be over-ridden. For faster results, use a rectangular or polygon observation window (see [`as.owin.sf()`]). If `.coord` is supplied, `.im` is necessarily (re)-defined internally (see Details).
+#' @param .poly,.bbox,.invert For [`as.owin.sf`] to construct observation windows from `sf` objects.
+#' * `.poly` is an `sf` polygon object;
+#' * `.bbox` is the bounding of a simple feature (see [`sf::st_bbox()`]);
+#' * `.invert` is a logical variable that defines whether or not to invert `.poly` (e.g., to turn a terrestrial polygon into an aquatic polygon);
 #' @param .coord (optional) A [`matrix`], [`data.frame`] or [`data.table`] with x and y coordinates, in columns named `x` and `y` or `cell_x` and `cell_y`. `x` and `y` columns are used preferentially. Coordinates must be planar.  A `timestep` column can also be included if there are multiple possible locations at each time step. A `mark` column can be included with coordinate weights; otherwise, equal weights are assumed (see Details). Other columns are ignored.
 #' @param .plot A `logical` variable that defines whether or not to plot the output.
 #' @param .use_tryCatch A `logical` variable that controls error handling:
 #' * If `.use_tryCatch = FALSE`, if density estimation fails with an error, the function fails with the same error.
 #' * If `.use_tryCatch = TRUE`, if density estimation fails with an error, the function produces a warning with the error message and returns `NULL`.
-#' @param .verbose,.txt Controls on function prompts and messages (see [`acs()`]).
+#' @param .verbose,.txt Controls on function prompts and messages (see [`pf_forward()`].
 #' @param ... Arguments passed to [`spatstat.explore::density.ppp()`], such as `sigma` (i.e., the bandwidth).
 #'
 #' @details
 #'
 #' [`pf_map_dens()`] smooths (a) a [`SpatRaster`] or (b) a set of inputted coordinates:
 #' * If `.coords` is `NULL`, `.xpf` cell coordinates are used for density estimation and cell values are used as weights.
-#' * If coordinates are supplied, coordinates are re-expressed on `.xpf` and then used for density estimation. Equal weights are assumed unless specified. Default or supplied weights are normalised to sum to one at each time step. The total weight of each location within time steps is calculated and then these weights are aggregated by location across the whole time series and renomalised. See the internal [`.pf_map_weights()`] function for full details.
+#' * If coordinates are supplied, coordinates are re-expressed on `.xpf` and then used for density estimation. This option is generally faster. Equal weights are assumed unless specified. Default or supplied weights are normalised to sum to one at each time step. The total weight of each location within time steps is calculated and then these weights are aggregated by location across the whole time series and renomalised. See the internal [`.pf_map_weights()`] function for full details.
 #'
 #' Cell coordinates are converted to a [`spatstat.geom::ppp()`] object, which is passed, alongside the observation window (`.owin`) and an image of the weights to [`spatstat.explore::density.ppp()`] for the estimation. Weights must sum to one.
 #'
-#' [`as.im.SpatRaster`] and [`as.owin.SpatRaster`] are helper functions that convert a [`SpatRaster`] to a pixel image and an observation window (see [`spatstat.geom::owin()`]). The former is based on `maptools::as.im.RasterLayer()`. The latter either defines a rectangular window, if there are no NAs on `.xpf`, or converts `.xpf` directly to an `owin` object. Gridded observation windows, especially if high resolution, considerably slow down density estimation and may exhaust vector memory. Use rectangular windows, or convert `sf` objects to polygon windows (via `spatstat.geom::as.owin()`]) if possible.
+#' [`as.im.SpatRaster()`], [`as.owin.SpatRaster()`] and [`as.owin.sf()`] are helper functions that convert a [`SpatRaster`] to a pixel image and an observation window (see [`spatstat.geom::owin()`]). [`as.im.SpatRaster`] is based on `maptools::as.im.RasterLayer()`. [`as.owin.SpatRaster()`] either defines a rectangular window, if there are no NAs on `.xpf`, or converts `.xpf` directly to an `owin` object. Gridded observation windows, especially if high resolution, considerably slow down density estimation and may exhaust vector memory. Use rectangular windows, or convert `sf` objects to polygon windows (via `as.owin.sf()`]) if possible.
 #'
 #' Coordinates and associated weights are smoothed via [`spatstat.explore::density.ppp()`] into an image. Pixel resolution and smoothing parameters such as bandwidth can be controlled via `...` arguments which are passed directly to this function. The output is translated into a gridded probability density surface (on the geometry defined by `.xpf`).
 #'
@@ -175,15 +162,12 @@ pf_map_pou <-
 #' @example man/examples/pf_map_dens-examples.R
 #'
 #' @seealso
-#' * The PF (forward simulation) is implemented by [`pf_forward_*()`]:
-#'     * [`pf_forward_1()`] refines AC-branch algorithm ([`acs()`] and [`dc()`]) outputs using PF;
-#'     * [`pf_forward_2()`] is an integrated implementation that couples AC- and PF-branch algorithms internally;
+#' * The PF (forward simulation) is implemented by [`pf_forward()`];
 #'
 #' * PF is supported by:
 #'     * Setup helpers, namely [`pf_setup_files()`];
-#'     * Template movement models, namely [`pf_kick()`];
 #'
-#' * The backward pass is implemented by [`pf_backward()`];
+#' * The backward pass is implemented by [`pf_backward_*()`];
 #'
 #' * Movement paths are built from PF outputs via `pf_path()` functions:
 #'     * [`pf_path()`] reconstructs paths;
@@ -194,9 +178,6 @@ pf_map_pou <-
 #'     * [`pf_map_pou()`] for probability-of-use maps;
 #'     * [`pf_map_dens()`] for smooth utilisation distributions;
 #'     * [`get_hr()`] for home range estimates;
-#'
-#' @author Edward Lavender
-#' @name pf_map_dens
 
 #' @rdname pf_map_dens
 #' @export
@@ -246,13 +227,23 @@ as.owin.SpatRaster <- function(.xpf, .im = NULL) {
 #' @rdname pf_map_dens
 #' @export
 
+as.owin.sf <- function(.poly, .bbox = sf::st_bbox(.poly), .invert = TRUE) {
+  if (.invert) {
+    .poly <- .st_invert(.x = .poly, .bbox = .bbox)
+  }
+  spatstat.geom::as.owin(.poly)
+}
+
+#' @rdname pf_map_dens
+#' @export
+
 pf_map_dens <- function(.xpf,
-                    .im = NULL, .owin = NULL,
-                    .coord = NULL,
-                    .plot = TRUE,
-                    .use_tryCatch = TRUE,
-                    .verbose = TRUE, .txt = "",
-                    ...) {
+                        .im = NULL, .owin = NULL,
+                        .coord = NULL,
+                        .plot = TRUE,
+                        .use_tryCatch = TRUE,
+                        .verbose = TRUE, .txt = "",
+                        ...) {
 
   #### Check user inputs
   # Check packages
@@ -296,7 +287,7 @@ pf_map_dens <- function(.xpf,
   ## (A) Define coordinates & weights from the SpatRaster (e.g., POU grid)
   if (is.null(.coord)) {
     cat_to_cf("... ... Using `.xpf`...")
-    .coord <- terra::as.data.frame(.xpf, xy = TRUE)
+    .coord <- terra::as.data.frame(.xpf, xy = TRUE, na.rm = TRUE)
     colnames(.coord) <- c("x", "y", "mark")
     .coord <- .coord[which(!is.na(.coord$mark) & .coord$mark != 0), ]
     marks <- .coord[, 3]

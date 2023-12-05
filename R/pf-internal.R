@@ -105,7 +105,7 @@ NULL
 #' @author Edward Lavender
 #' @keywords internal
 
-.pf_history_dt <- function(.history, .collect = TRUE) {
+.pf_history_dt <- function(.history, ..., .collect = TRUE) {
 
   # Handle .pf objects
   if (inherits(.history, "pf")) {
@@ -143,12 +143,13 @@ NULL
     check_contents_ext(.history, "parquet")
     out <-
       .history |>
-      arrow::open_dataset()
+      arrow::open_dataset(...)
     if (.collect) {
       out <-
         out |>
         arrange(.data$timestep) |>
-        collect()
+        collect() |>
+        as.data.table()
     }
     return(out)
   }

@@ -1,7 +1,7 @@
 #### Workflow
 # A. Define input datasets (see ?`acs_setup_obs()`)
-# B. Implement forward simulation (see ?`acs()`, ?`dc()` and ?`pf_forward_*()`)
-# C. Implement backwards pass (see ?`pf_backward()`)
+# B. Implement forward simulation (see ?`pf_forward()`)
+# C. Implement backwards pass (see ?`pf_backward_*()`)
 # D. Implement `pf_path()`, `pf_map_pou()` etc.
 
 #### Set up examples using pre-defined datasets
@@ -10,13 +10,13 @@ obs        <- dat_obs()
 gebco      <- dat_gebco()
 # Collect pre-defined particle samples from forward simulation
 dat_pff    <- dat_pff()
-# Implement backwards pass
+# Implement backward pass
 con        <- tempdir()
 pfb_folder <- file.path(con, "patter", "pf", "backward")
 dir.create(pfb_folder, recursive = TRUE)
-out_pfb <- pf_backward(dat_pff$history,
-                       .save_history = TRUE,
-                       .write_history = list(sink = pfb_folder))
+out_pfb <- pf_backward_killer(dat_pff$history,
+                              .save_history = TRUE,
+                              .write_history = list(sink = pfb_folder))
 
 #### Example (1): Implement pf_path() from `pf` object
 p1 <- pf_path(out_pfb$history)

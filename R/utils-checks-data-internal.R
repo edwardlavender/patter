@@ -116,7 +116,7 @@ check_acoustics <- function(.acoustics) {
   check_inherits(.acoustics$receiver_id, "integer")
   # Check for NAs
   if (any(is.na(.acoustics))) {
-    abort("The acoustic data contains NAs.")
+    warn("The acoustic data contains NAs.")
   }
   # Check for multiple individuals
   if (rlang::has_name(.acoustics, "individual_id") && length(unique(.acoustics$individual_id)) > 1L) {
@@ -147,7 +147,7 @@ check_archival <- function(.archival) {
     check_inherits(.archival$depth, "numeric")
     # Check for NAs
     if (any(is.na(.archival))) {
-      abort("The archival data contains NAs.")
+      warn("The archival data contains NAs.")
     }
     # Check for multiple individuals
     if (rlang::has_name(.archival, "individual_id") && length(unique(.archival$individual_id)) > 1L) {
@@ -164,7 +164,7 @@ check_archival <- function(.archival) {
       abort("Archival time steps are assumed to be regularly spaced.")
     }
     # Check depths
-    if (any(.archival$depth < 0)) {
+    if (any(.archival$depth < 0, na.rm = TRUE)) {
       abort("Archival depths should be a positive-valued numeric vector and not negative.")
     }
   }
