@@ -1,6 +1,6 @@
 #' @title AC* set up: set up movement datasets
-#' @description This function processes passive acoustic telemetry detections and (optionally) archival time series for [`pf_forward()`].
-#' @param .acoustics A [`data.table`] that defines passive acoustic telemetry detections (see [`dat_acoustics`] for an example) for a single individual. At a minimum, this must contain two columns:
+#' @description This function processes passive acoustic telemetry detections and/or archival time series for [`pf_forward()`].
+#' @param .acoustics (optional) A [`data.table`] that defines passive acoustic telemetry detections (see [`dat_acoustics`] for an example) for a single individual. At a minimum, this must contain two columns:
 #' * `timestamp`---an ordered, `POSIXct` vector that defines the times of detections;
 #' * `receiver_id`---an `integer` vector that defines the receiver(s) that recorded detections;
 #' @param .archival (optional) A [`data.table`] that defines depth (m) observations (see [`dat_archival`] for an example) for the same individual. At a minimum, this must contain two columns:
@@ -14,27 +14,39 @@
 #'
 #' @details
 #' This function implements the following routines:
-#' * Acoustic time series are rounded to the nearest `.step`;
-#' * All receivers that recorded detection(s) in each time interval are listed;
-#' * Duplicate detections (at the same receiver in the same time interval) are dropped;
-#' * Archival time series, if provided, are rounded to the nearest `.step`
-#' * Acoustic and archival time series are optionally trimmed to the time period for which they overlap;
-#' * Acoustic and archival time series are merged and ordered by time stamp;
-#' * Information required by [`pf_forward()`] is added;
+#' * Acoustic progressing (if applicable);
+#'    - Acoustic time series are rounded to the nearest `.step`;
+#'    - All receivers that recorded detection(s) in each time interval are listed;
+#'    - Duplicate detections (at the same receiver in the same time interval) are dropped;
+#'
+#' * Archival processing (if applicable);
+#'    - Archival time series are rounded to the nearest `.step`;
+#'    - Duplicate records (in the same time interval) are not permitted;
+#'
+#' * Alignment (if applicable)
+#'    - Acoustic and archival time series are optionally trimmed to the time period for which they overlap;;
+#'
+#' * Time series
+#'    - Acoustic and/or archival time series are mapped onto a regular time series;
+#'    - Information required by [`pf_forward_2()`] is added
 #'
 #' @return The function returns a [`data.table`] with the following columns:
 #' * `timestep`---an `integer` that defines the time step;
 #' * `timestamp`---a regular sequences of `POSIXct` time stamps;
 #' * `date`---a `character` that defines the date;
+#' * `mobility`---a `double` that defines `.mobility`;
+#'
+#' If `.acoustics` is provided, the following column(s) are also included:
 #' * `detection_id`---an `integer` vector that uniquely defines each detection;
 #' * `detection`---an `integer` that distinguishes the time steps at which detections were (1) or were not (0) recorded;
 #' * `receiver_id`---a `list` that defines the receiver(s) that recorded detection(s) at each time step;
 #' * `receiver_id_next`---a `list` that defines the receiver(s) that recorded the next detection(s);
-#' * `mobility`---a `double` that defines `.mobility`;
 #' * `buffer_past`---a `double` that controls container growth from the past to the present;
 #' * `buffer_future`---a `double` that controls container shrinkage from the future to the present;
 #' * `buffer_future_incl_gamma`---a `double` (`buffer_future` + `.detection_range`) that controls container shrinkage for [`pf_forward()`];
-#' * `depth`---if `.archival` is provided, `depth` is a number that defines the individual's depth (m) at each time step;
+#'
+#' If `.archival` is provided, the following column(s) are also included:
+#' * `depth`---a number that defines the individual's depth (m) at each time step;
 #'
 #' @examples
 #' #### Define example datasets
@@ -94,6 +106,9 @@ acs_setup_obs <- function(.acoustics = NULL,
                           .detection_range) {
 
   #### Check user inputs
+  if (is.null(.acoustics) && is.null(.archival)) {
+    abort("`.acoustics` and/or `.archival` should be supplied.")
+  }
   .acoustics <- check_acoustics(.acoustics)
   .archival  <- check_archival(.archival)
   check_inherits(.step, "character")
@@ -101,28 +116,33 @@ acs_setup_obs <- function(.acoustics = NULL,
   #### Process acoustics
   # * Round time series & drop duplicates
   # * List receivers with detections
-  .acoustics <-
-    .acoustics |>
-    lazy_dt(immutable = TRUE) |>
-    # Round time series & drop duplicates
-    mutate(timestamp = lubridate::round_date(.data$timestamp, .step)) |>
-    group_by(.data$receiver_id, .data$timestamp) |>
-    slice(1L) |>
-    ungroup() |>
-    # List receivers with detections at each time step
-    group_by(.data$timestamp) |>
-    summarise(receiver_id = list(unique(.data$receiver_id))) |>
-    ungroup() |>
-    arrange(timestamp) |>
-    # Add additional columns
-    mutate(detection_id = as.integer(row_number())) |>
-    as.data.table()
+  if (!is.null(.acoustics)) {
+    .acoustics <-
+      .acoustics |>
+      lazy_dt(immutable = TRUE) |>
+      # Round time series & drop duplicates
+      mutate(timestamp = lubridate::round_date(.data$timestamp, .step)) |>
+      group_by(.data$receiver_id, .data$timestamp) |>
+      slice(1L) |>
+      ungroup() |>
+      # List receivers with detections at each time step
+      group_by(.data$timestamp) |>
+      summarise(receiver_id = list(unique(.data$receiver_id))) |>
+      ungroup() |>
+      arrange(timestamp) |>
+      # Add additional columns
+      mutate(detection_id = as.integer(row_number())) |>
+      as.data.table()
+  }
 
-  #### Align time series
-  if (!is.null(.archival) && .trim) {
-    # Filter acoustics by archival time series
+  #### Process archival time series
+  if (!is.null(.archival)) {
     timestamp <- NULL
     .archival[, timestamp := lubridate::round_date(timestamp, .step)]
+  }
+
+  #### Align time series
+  if (!is.null(.acoustics) && !is.null(.archival) && .trim) {
     start <- max(c(min(.acoustics$timestamp), min(.archival$timestamp)))
     end   <- min(c(max(.acoustics$timestamp), max(.archival$timestamp)))
     .acoustics <-
@@ -138,24 +158,50 @@ acs_setup_obs <- function(.acoustics = NULL,
     }
   }
 
-  #### Define output time series with acoustic and (optionally) archival data
+  #### Define output time series
   # Define regular time series
   if (!is.null(.period)) {
     start <- min(.period)
     end   <- max(.period)
   } else {
-    start <- min(.acoustics$timestamp)
-    end   <- max(.acoustics$timestamp)
-    if (!is.null(.archival) && !.trim) {
-      start <- min(c(start, .archival$timestamp))
-      end   <- max(c(end, .archival$timestamp))
+    timestamps <- list(.acoustics[["timestamp"]], .archival[["timestamp"]])
+    timestamps <- compact(timestamps)
+    if (length(timestamps) == 1L) {
+      timestamps <- timestamps[[1]]
+    } else {
+      timestamps <- c(timestamps[[1]], timestamps[[2]])
     }
+    start <- min(timestamps)
+    end   <- max(timestamps)
   }
-  out <- data.table(timestamp = seq(start, end, by = .step))
+  tss <- seq(start, end, by = .step)
+  out <- data.table(timestep = seq_len(length(tss)),
+                    timestamp = tss,
+                    date = as.character(as.Date(tss)),
+                    mobility = .mobility)
   # Add acoustic data
-  detection <- NULL
-  out[, detection := as.integer((timestamp %in% .acoustics$timestamp) + 0)]
-  out <- merge(out, .acoustics, all.x = TRUE, by = "timestamp")
+  if (!is.null(.acoustics)) {
+    out <-
+      out |>
+      mutate(detection = as.integer((timestamp %in% .acoustics$timestamp) + 0)) |>
+      merge(.acoustics, all.x = TRUE, by = "timestamp") |>
+      mutate(detection_id = as.integer(data.table::nafill(.data$detection_id, type = "locf"))) |>
+      group_by(.data$detection_id) |>
+      # Define buffers
+      mutate(step_forwards = row_number(),
+             step_backwards = rev(.data$step_forwards),
+             # We buffer the past by mobility
+             buffer_past = .mobility,
+             # We shrink the future
+             buffer_future = .mobility * .data$step_backwards,
+             buffer_future_incl_gamma = .data$buffer_future + .detection_range) |>
+      ungroup() |>
+      arrange(.data$timestamp) |>
+      mutate(timestep = as.integer(row_number()),
+             receiver_id_next = .acs_setup_obs_receiver_id_next(.data$receiver_id)
+      ) |>
+      as.data.table()
+  }
   # Add archival data
   if (!is.null(.archival)) {
     depth <- timestamp <- NULL
@@ -164,7 +210,7 @@ acs_setup_obs <- function(.acoustics = NULL,
     if (any(bool)) {
       nrw <- fnrow(out)
       nob <- nrw - length(which(bool))
-      warn("There are {nob}/{nrw} ({round(nob / nrw * 100, digits = 1)} %) archival observations within the acoustic time series.",
+      warn("There are {nob}/{nrw} ({round(nob / nrw * 100, digits = 1)} %) archival observations within the time series.",
            .envir = environment())
       if (all(bool)) {
         warn("The depth column has been dropped.")
@@ -174,34 +220,12 @@ acs_setup_obs <- function(.acoustics = NULL,
   }
 
   #### Tidy outputs & return
-  out <-
-    out |>
-    lazy_dt(immutable = TRUE) |>
-    mutate(date = as.character(as.Date(.data$timestamp)),
-           detection_id = as.integer(data.table::nafill(.data$detection_id, type = "locf"))) |>
-    group_by(.data$detection_id) |>
-    # Define buffers
-    mutate(step_forwards = row_number(),
-           step_backwards = rev(.data$step_forwards),
-           # We buffer the past by mobility
-           buffer_past = .mobility,
-           # We shrink the future
-           buffer_future = .mobility * .data$step_backwards,
-           buffer_future_incl_gamma = .data$buffer_future + .detection_range) |>
-    ungroup() |>
-    arrange(.data$timestamp) |>
-    mutate(timestep = as.integer(row_number()),
-           receiver_id_next = .acs_setup_obs_receiver_id_next(.data$receiver_id),
-           mobility = .mobility
-    ) |>
-    as.data.table()
-  # Tidy
   out |>
     select("timestep",
            "timestamp", "date",
-           "detection_id", "detection", "receiver_id", "receiver_id_next",
-           "mobility", "buffer_past", "buffer_future",
-           "buffer_future_incl_gamma", any_of("depth")
+           any_of(c("detection_id", "detection", "receiver_id", "receiver_id_next",
+                    "mobility", "buffer_past", "buffer_future",
+                    "buffer_future_incl_gamma", "depth"))
            ) |>
     as.data.table()
 

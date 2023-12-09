@@ -15,7 +15,7 @@ acs_setup_obs(
 )
 }
 \arguments{
-\item{.acoustics}{A \code{\link{data.table}} that defines passive acoustic telemetry detections (see \code{\link{dat_acoustics}} for an example) for a single individual. At a minimum, this must contain two columns:
+\item{.acoustics}{(optional) A \code{\link{data.table}} that defines passive acoustic telemetry detections (see \code{\link{dat_acoustics}} for an example) for a single individual. At a minimum, this must contain two columns:
 \itemize{
 \item \code{timestamp}---an ordered, \code{POSIXct} vector that defines the times of detections;
 \item \code{receiver_id}---an \code{integer} vector that defines the receiver(s) that recorded detections;
@@ -43,30 +43,51 @@ The function returns a \code{\link{data.table}} with the following columns:
 \item \code{timestep}---an \code{integer} that defines the time step;
 \item \code{timestamp}---a regular sequences of \code{POSIXct} time stamps;
 \item \code{date}---a \code{character} that defines the date;
+\item \code{mobility}---a \code{double} that defines \code{.mobility};
+}
+
+If \code{.acoustics} is provided, the following column(s) are also included:
+\itemize{
 \item \code{detection_id}---an \code{integer} vector that uniquely defines each detection;
 \item \code{detection}---an \code{integer} that distinguishes the time steps at which detections were (1) or were not (0) recorded;
 \item \code{receiver_id}---a \code{list} that defines the receiver(s) that recorded detection(s) at each time step;
 \item \code{receiver_id_next}---a \code{list} that defines the receiver(s) that recorded the next detection(s);
-\item \code{mobility}---a \code{double} that defines \code{.mobility};
 \item \code{buffer_past}---a \code{double} that controls container growth from the past to the present;
 \item \code{buffer_future}---a \code{double} that controls container shrinkage from the future to the present;
 \item \code{buffer_future_incl_gamma}---a \code{double} (\code{buffer_future} + \code{.detection_range}) that controls container shrinkage for \code{\link[=pf_forward]{pf_forward()}};
-\item \code{depth}---if \code{.archival} is provided, \code{depth} is a number that defines the individual's depth (m) at each time step;
+}
+
+If \code{.archival} is provided, the following column(s) are also included:
+\itemize{
+\item \code{depth}---a number that defines the individual's depth (m) at each time step;
 }
 }
 \description{
-This function processes passive acoustic telemetry detections and (optionally) archival time series for \code{\link[=pf_forward]{pf_forward()}}.
+This function processes passive acoustic telemetry detections and/or archival time series for \code{\link[=pf_forward]{pf_forward()}}.
 }
 \details{
 This function implements the following routines:
 \itemize{
+\item Acoustic progressing (if applicable);
+\itemize{
 \item Acoustic time series are rounded to the nearest \code{.step};
 \item All receivers that recorded detection(s) in each time interval are listed;
 \item Duplicate detections (at the same receiver in the same time interval) are dropped;
-\item Archival time series, if provided, are rounded to the nearest \code{.step}
-\item Acoustic and archival time series are optionally trimmed to the time period for which they overlap;
-\item Acoustic and archival time series are merged and ordered by time stamp;
-\item Information required by \code{\link[=pf_forward]{pf_forward()}} is added;
+}
+\item Archival processing (if applicable);
+\itemize{
+\item Archival time series are rounded to the nearest \code{.step};
+\item Duplicate records (in the same time interval) are not permitted;
+}
+\item Alignment (if applicable)
+\itemize{
+\item Acoustic and archival time series are optionally trimmed to the time period for which they overlap;;
+}
+\item Time series
+\itemize{
+\item Acoustic and/or archival time series are mapped onto a regular time series;
+\item Information required by \code{\link[=pf_forward_2]{pf_forward_2()}} is added
+}
 }
 }
 \examples{

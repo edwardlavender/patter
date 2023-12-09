@@ -103,6 +103,9 @@ check_services <- function(.services, .moorings) {
 
 check_acoustics <- function(.acoustics) {
   # Check class
+  if (is.null(.acoustics)) {
+    return(NULL)
+  }
   if (!inherits(.acoustics, "data.table")) {
     .acoustics <- as.data.table(.acoustics)
   }
