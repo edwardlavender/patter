@@ -14,7 +14,7 @@
 #' * `.x` is a `numeric` vector that defines step length(s);
 #' * `.shape` is a `numeric` value that defines the shape parameter of a Gamma distribution (see [`stats::rgamma()`]).
 #' * `.scale` is a `numeric` value that defines the scale parameter of a Gamma distribution (see [`stats::rgamma()`]).
-#' * `.mobility` is a `numeric` value that defines the maximum length (see [`truncdist::rtrunc()`]).
+#' * `.mobility` is a `numeric` value that defines the maximum length (see `truncdist::rtrunc()`).
 #'
 #' @param .mu,.rho,.sd Arguments for [`rwn()`] for the simulation of turning angles, passed to the `mu`, `rho` and `sd` arguments of [`circular::rwrappednormal()`].
 #'
@@ -77,16 +77,26 @@
 #' @export
 
 rtruncgamma <- function(.n = 1, .shape = 15, .scale = 15, .mobility = 500, ...) {
-  truncdist::rtrunc(.n, "gamma", a = 0, b = .mobility,
-                    shape = .shape, scale = .scale)
+  u <- stats::runif(.n, min = 0, max = 1)
+  pmin(
+    stats::qgamma(u * stats::pgamma(.mobility, shape = .shape, scale = .scale),
+                  shape = .shape,
+                  scale = .scale),
+    .mobility)
 }
 
 #' @rdname sim_helpers
 #' @export
 
-dtruncgamma <- function(.x = 1, .shape = 15, .scale = 15, .mobility = 500, ...) {
-  truncdist::dtrunc(.x, "gamma", a = 0, b = .mobility,
-                    shape = .shape, scale = .scale)
+dtruncgamma <- function(.x,
+                        .shape = 15,
+                        .scale = 15,
+                        .mobility = 500, ...) {
+  tt <- rep(0, length(.x))
+  tt[.x <= .mobility] <-
+    stats::dgamma(x = .x[.x <= .mobility], shape = .shape, scale = .scale) /
+    stats::pgamma(q = .mobility, shape = .shape, scale = .scale)
+  tt
 }
 
 #' @rdname sim_helpers

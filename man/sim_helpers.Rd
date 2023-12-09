@@ -14,7 +14,7 @@
 \usage{
 rtruncgamma(.n = 1, .shape = 15, .scale = 15, .mobility = 500, ...)
 
-dtruncgamma(.x = 1, .shape = 15, .scale = 15, .mobility = 500, ...)
+dtruncgamma(.x, .shape = 15, .scale = 15, .mobility = 500, ...)
 
 rwn(.n = 1, .mu = 0, .rho = 0, .sd = 1, ...)
 
@@ -41,7 +41,7 @@ dstep(.data_now, .data_past, ...)
 \item \code{.x} is a \code{numeric} vector that defines step length(s);
 \item \code{.shape} is a \code{numeric} value that defines the shape parameter of a Gamma distribution (see \code{\link[stats:GammaDist]{stats::rgamma()}}).
 \item \code{.scale} is a \code{numeric} value that defines the scale parameter of a Gamma distribution (see \code{\link[stats:GammaDist]{stats::rgamma()}}).
-\item \code{.mobility} is a \code{numeric} value that defines the maximum length (see \code{\link[truncdist:rtrunc]{truncdist::rtrunc()}}).
+\item \code{.mobility} is a \code{numeric} value that defines the maximum length (see \code{truncdist::rtrunc()}).
 }}
 
 \item{...}{Arguments passed to/from functions.}
