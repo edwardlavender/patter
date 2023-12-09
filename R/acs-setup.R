@@ -8,6 +8,7 @@
 #' * `depth`---a positive-valued `numeric` vector that defines the individual's depth (m) below the surface at each time step;
 #' @param .trim If `.archival` is supplied, `.trim` is `logical` variable that defines whether or not to trim `.acoustic` and `.archival` time series to the time period for which they overlap.
 #' @param .step An character, passed to [`lubridate::period()`], [`lubridate::round_date()`] and [`seq()`] that defines the duration between sequential time steps (e.g., `"2 mins"`).
+#' @param .period (optional) A length-two `POSIXct` vector that defines the start and end time of the observations. If unprovided, this is defined internally according to `.acoustics`, `.archival` and `.trim`.
 #' @param .mobility A constant that defines the maximum (Euclidean) distance the individual could move in `.step`.
 #' @param .detection_range A constant that defines the detection range. A constant value across all receivers and time steps is assumed.
 #'
@@ -84,10 +85,11 @@
 #' @author Edward Lavender
 #' @export
 
-acs_setup_obs <- function(.acoustics,
+acs_setup_obs <- function(.acoustics = NULL,
                           .archival = NULL,
                           .trim = TRUE,
                           .step,
+                          .period = NULL,
                           .mobility,
                           .detection_range) {
 
@@ -138,11 +140,16 @@ acs_setup_obs <- function(.acoustics,
 
   #### Define output time series with acoustic and (optionally) archival data
   # Define regular time series
-  start <- min(.acoustics$timestamp)
-  end   <- max(.acoustics$timestamp)
-  if (!is.null(.archival) && !.trim) {
-    start <- min(c(start, .archival$timestamp))
-    end   <- max(c(end, .archival$timestamp))
+  if (!is.null(.period)) {
+    start <- min(.period)
+    end   <- max(.period)
+  } else {
+    start <- min(.acoustics$timestamp)
+    end   <- max(.acoustics$timestamp)
+    if (!is.null(.archival) && !.trim) {
+      start <- min(c(start, .archival$timestamp))
+      end   <- max(c(end, .archival$timestamp))
+    }
   }
   out <- data.table(timestamp = seq(start, end, by = .step))
   # Add acoustic data

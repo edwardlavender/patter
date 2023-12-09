@@ -5,10 +5,11 @@
 \title{AC* set up: set up movement datasets}
 \usage{
 acs_setup_obs(
-  .acoustics,
+  .acoustics = NULL,
   .archival = NULL,
   .trim = TRUE,
   .step,
+  .period = NULL,
   .mobility,
   .detection_range
 )
@@ -29,6 +30,8 @@ acs_setup_obs(
 \item{.trim}{If \code{.archival} is supplied, \code{.trim} is \code{logical} variable that defines whether or not to trim \code{.acoustic} and \code{.archival} time series to the time period for which they overlap.}
 
 \item{.step}{An character, passed to \code{\link[lubridate:period]{lubridate::period()}}, \code{\link[lubridate:round_date]{lubridate::round_date()}} and \code{\link[=seq]{seq()}} that defines the duration between sequential time steps (e.g., \code{"2 mins"}).}
+
+\item{.period}{(optional) A length-two \code{POSIXct} vector that defines the start and end time of the observations. If unprovided, this is defined internally according to \code{.acoustics}, \code{.archival} and \code{.trim}.}
 
 \item{.mobility}{A constant that defines the maximum (Euclidean) distance the individual could move in \code{.step}.}
 
