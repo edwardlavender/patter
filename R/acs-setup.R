@@ -28,7 +28,7 @@
 #'
 #' * Time series
 #'    - Acoustic and/or archival time series are mapped onto a regular time series;
-#'    - Information required by [`pf_forward_2()`] is added
+#'    - Information required by [`pf_forward()`] is added
 #'
 #' @return The function returns a [`data.table`] with the following columns:
 #' * `timestep`---an `integer` that defines the time step;

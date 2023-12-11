@@ -86,7 +86,7 @@ This function implements the following routines:
 \item Time series
 \itemize{
 \item Acoustic and/or archival time series are mapped onto a regular time series;
-\item Information required by \code{\link[=pf_forward_2]{pf_forward_2()}} is added
+\item Information required by \code{\link[=pf_forward]{pf_forward()}} is added
 }
 }
 }
