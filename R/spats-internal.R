@@ -44,6 +44,21 @@ spatCellCoordsDT <- function(.x, .spatcell = .x) {
 #' @rdname spat
 #' @keywords internal
 
+# As above, but a subsample
+spatSampleDT <- function(.x, .size = 1e6) {
+  terra::spatSample(x = .x,
+                    size = .size, replace = FALSE,
+                    na.rm = TRUE, cells = TRUE, xy = TRUE,
+                    values = FALSE) |>
+    as.data.table() |>
+    mutate(cell = as.integer(.data$cell)) |>
+    select(cell_id = "cell", cell_x = "x", cell_y = "y") |>
+    as.data.table()
+}
+
+#' @rdname spat
+#' @keywords internal
+
 # Intersect SpatRaster/Spatvectors in a list
 spatIntersect <- function(.x, .value = 1, .fun = NULL) {
   # Check inputs
