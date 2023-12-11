@@ -19,6 +19,7 @@ pf_rpropose_origin <- function(.obs, .origin, .grid = FALSE,
                                     .detection_kernels = .detection_kernels,
                                     .moorings = .moorings)
       # Sample cell coordinates within container
+      terra::crs(container) <- terra::crs(.origin)
       samples <- spatSampleDT(container, .spatcell = .origin)
 
     # (2) Sample quadrature points on `.origin`
