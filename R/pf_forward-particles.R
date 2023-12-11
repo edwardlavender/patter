@@ -49,8 +49,7 @@
   # Generate proposal location(s)
   diagnostics <- list()
   proposals <- pf_rpropose_origin(.obs = .obs, .origin = .origin, .grid = .grid,
-                                  .detection_kernels = .detection_kernels, .moorings = .moorings,
-                                  .bathy = .bathy)
+                                  .detection_kernels = .detection_kernels, .moorings = .moorings)
   # Calculate likelihood(s) & weights
   proposals <- .pf_lik(.particles = proposals, .t = 1L)
   diagnostics[["lik"]] <- attr(proposals, "diagnostics")

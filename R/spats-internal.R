@@ -18,40 +18,19 @@ spatContainsNA <- function(.x) {
 #' @rdname spat
 #' @keywords internal
 
-# Identify non NA cells/coordinates in a SpatRaster or SpatVector
-spatCellCoordsDT <- function(.x, .spatcell = .x) {
-  check_inherits(.x, c("SpatRaster", "SpatVector"))
-  if (inherits(.x, "SpatRaster")) {
-    # Extract cell coordinates in .x (using cell IDs from .spatcell)
-    dt <-
-      .x |>
-      terra::as.data.frame(cells = FALSE, xy = TRUE, na.rm = TRUE) |>
-      mutate(cell = terra::cellFromXY(.spatcell, cbind(.data$x, .data$y)))
-  } else if (inherits(.x, "SpatVector")) {
-    # Extract cell coordinates in .x
-    names(.spatcell) <- "layer"
-    dt <-
-      .spatcell |>
-      terra::extract(.x, cells = TRUE, ID = FALSE, xy = TRUE) |>
-      filter(!is.na(.data$layer))
-  }
-  dt |>
-    mutate(cell = as.integer(.data$cell)) |>
-    select(cell_id = "cell", cell_x = "x", cell_y = "y") |>
-    as.data.table()
-}
-
-#' @rdname spat
-#' @keywords internal
-
 # As above, but a subsample
-spatSampleDT <- function(.x, .size = 1e6) {
+spatSampleDT <- function(.x, .spatcell = .x, .size = 1e6) {
+  # Define .x as a SpatRaster using .spatcell
+  if (inherits(.x, "SpatVector")) {
+    .x <- terra::mask(.spatcell, .x)
+  }
+  # Sample from the SpatRaster, ignoring NAs
   terra::spatSample(x = .x,
-                    size = .size, replace = FALSE,
-                    na.rm = TRUE, cells = TRUE, xy = TRUE,
+                    size = .size, method = "regular", replace = FALSE,
+                    na.rm = TRUE, cells = FALSE, xy = TRUE,
                     values = FALSE) |>
     as.data.table() |>
-    mutate(cell = as.integer(.data$cell)) |>
+    mutate(cell = as.integer(terra::cellFromXY(.spatcell, cbind(.data$x, .data$y)))) |>
     select(cell_id = "cell", cell_x = "x", cell_y = "y") |>
     as.data.table()
 }

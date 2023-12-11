@@ -7,11 +7,7 @@
 #' @export
 
 pf_rpropose_origin <- function(.obs, .origin, .grid = FALSE,
-                                .detection_kernels, .moorings,
-                                .bathy) {
-
-  # Define .origin, if necessary
-  if (is.null(.origin)) {
+                               .detection_kernels, .moorings) {
 
     # (1) Define 'quadrature points' within acoustic containers
     if (!is.null(.moorings)) {
@@ -22,17 +18,16 @@ pf_rpropose_origin <- function(.obs, .origin, .grid = FALSE,
       container <- .acs_container_1(.obs,
                                     .detection_kernels = .detection_kernels,
                                     .moorings = .moorings)
-      # Define cell coordinates within container
-      .origin <- spatCellCoordsDT(container, .spatcell = .bathy)
+      # Sample cell coordinates within container
+      samples <- spatSampleDT(container, .spatcell = .origin)
 
-      # (2) Define quadrature points across all of `.bathy`
+    # (2) Sample quadrature points on `.origin`
     } else {
-      .origin <- spatCellCoordsDT(.x = .bathy)
+      samples <- spatSampleDT(.x = .origin)
     }
-  }
 
-  # Tidy .origin data.table
-  .origin |>
+  # Tidy data.table
+  samples |>
     mutate(timestep = 1L,
            cell_past = NA_integer_,
            x_past = NA_integer_,

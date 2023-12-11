@@ -8,14 +8,7 @@
 \alias{pf_dpropose}
 \title{PF: proposal functions}
 \usage{
-pf_rpropose_origin(
-  .obs,
-  .origin,
-  .grid = FALSE,
-  .detection_kernels,
-  .moorings,
-  .bathy
-)
+pf_rpropose_origin(.obs, .origin, .grid = FALSE, .detection_kernels, .moorings)
 
 pf_rpropose_kick(
   .particles,

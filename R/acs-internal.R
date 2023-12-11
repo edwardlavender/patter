@@ -177,7 +177,7 @@
   # (C) Define container accounting for detection & future
   container <- spatIntersect(list(detection_container, future_container),
                              .value = NULL, .fun = function(x) all(x > 0))
-  # For SpatRaster containers(0, 1), convert zero to NA for spatCellCoordsDT()
+  # For SpatRaster containers(0, 1), convert zero to NA for spatSampleDT()
   if (inherits(container, "SpatRaster")) {
     container <- terra::classify(container, cbind(0, NA))
   }

@@ -6,8 +6,8 @@
 \usage{
 pf_forward(
   .obs,
-  .origin = NULL,
   .bathy,
+  .origin = .bathy,
   .lonlat = FALSE,
   .moorings = NULL,
   .detection_overlaps = NULL,

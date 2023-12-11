@@ -3,7 +3,6 @@
 \name{spat}
 \alias{spat}
 \alias{spatContainsNA}
-\alias{spatCellCoordsDT}
 \alias{spatSampleDT}
 \alias{spatIntersect}
 \alias{spatIntersect.SpatRaster}
@@ -13,9 +12,7 @@
 \usage{
 spatContainsNA(.x)
 
-spatCellCoordsDT(.x, .spatcell = .x)
-
-spatSampleDT(.x, .size = 1e+06)
+spatSampleDT(.x, .spatcell = .x, .size = 1e+06)
 
 spatIntersect(.x, .value = 1, .fun = NULL)
 
