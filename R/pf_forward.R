@@ -131,7 +131,7 @@ pf_forward <- function(.obs,
                                       .obs = .obs, .t = t, .bathy = .bathy, .lonlat = .lonlat,
                                       .pf_lik = .pf_lik_abbr,
                                       .dpropose = .dpropose,
-                                      .sample, .n,
+                                      .sample = .sample, .n = .n,
                                       .trial_crit = .trial_sampler_crit,
                                       .trial_count = .trial_sampler)
         diagnostics_t[["sampler"]] <- .pf_diag_bind(attr(pnow, "diagnostics"))
