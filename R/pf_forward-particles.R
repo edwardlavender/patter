@@ -111,21 +111,24 @@
   # Calculate likelihood
   proposals <- .pf_lik(.particles = proposals, .t = .t)
   diagnostics[["sampler-lik"]] <- attr(proposals, "diagnostics")
-  # Calculate movement densities & weights (likelihood * movement densities)
-  proposals <-
-    # Calculate movement densities
-    .dpropose(proposals, .lonlat = .lonlat) |>
-    # Calculate weights & normalise
-    mutate(weight = .data$lik * .data$dens,
-           weight = .data$weight / sum(.data$weight)) |>
-    as.data.table()
-  diagnostics[["sampler-dens"]] <-
-    .pf_diag(.particles = proposals, .t = .t, .trial = NA_integer_, .label = "directed-dens")
-  # Sample particles (from the set of allowed particles)
-  count <- 1L
-  crit  <- diagnostics[["sampler-dens"]]$n_u
-  pnow  <- proposals
+  pnow <- proposals
+  # Calculate movement densities/weights & implement sampling
   if (fnrow(pnow) > 0L) {
+    # Calculate movement densities & weights (likelihood * movement densities)
+    proposals <-
+      # Calculate movement densities
+      .dpropose(proposals, .lonlat = .lonlat) |>
+      # Calculate weights & normalise
+      mutate(weight = .data$lik * .data$dens,
+             weight = .data$weight / sum(.data$weight)) |>
+      as.data.table()
+    # Sample particles (from the set of allowed particles)
+    pnow  <- .sample(.particles = proposals, .n = .n)
+    diagnostics[["sampler-sample-1"]] <-
+      .pf_diag(.particles = proposals, .t = .t, .label = "sampler-sample", .trial = 1L)
+    # Repeat sampling, if required
+    count <- 2L
+    crit  <- diagnostics[["sampler-dens"]]$n_u
     while (crit < .trial_crit & count <= .trial_count) {
       pnow <- .sample(.particles = proposals, .n = .n)
       label <- paste0("sampler-sample-", count)
