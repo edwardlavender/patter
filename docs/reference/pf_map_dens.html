@@ -109,7 +109,7 @@
 
 
 <dt>.coord</dt>
-<dd><p>(optional) A <code><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></code>, <code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></code> or <code><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> with x and y coordinates, in columns named <code>x</code> and <code>y</code> or <code>cell_x</code> and <code>cell_y</code>. <code>x</code> and <code>y</code> columns are used preferentially. Coordinates must be planar.  A <code>timestep</code> column can also be included if there are multiple possible locations at each time step. A <code>mark</code> column can be included with coordinate weights; otherwise, equal weights are assumed (see Details). Other columns are ignored.</p></dd>
+<dd><p>(optional) A <code><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></code>, <code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></code> or <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> with x and y coordinates, in columns named <code>x</code> and <code>y</code> or <code>cell_x</code> and <code>cell_y</code>. <code>x</code> and <code>y</code> columns are used preferentially. Coordinates must be planar.  A <code>timestep</code> column can also be included if there are multiple possible locations at each time step. A <code>mark</code> column can be included with coordinate weights; otherwise, equal weights are assumed (see Details). Other columns are ignored.</p></dd>
 
 
 <dt>.plot</dt>
@@ -202,7 +202,7 @@
 <span class="r-plt img"><img src="pf_map_dens-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># Smooth POU</span></span></span>
 <span class="r-in"><span><span class="va">dens_1</span>    <span class="op">&lt;-</span> <span class="fu">pf_map_dens</span><span class="op">(</span><span class="va">pou</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() called (@ 2023-12-05 14:11:45.964054)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() called (@ 2023-12-12 21:41:14.767532)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.xpf`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building `ppp` object... </span>
@@ -211,13 +211,13 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
 <span class="r-plt img"><img src="pf_map_dens-2.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() call ended (@ 2023-12-05 14:11:46.122908). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() call ended (@ 2023-12-12 21:41:14.926941). </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (2): Smooth particle coordinates</span></span></span>
 <span class="r-in"><span><span class="co"># This approach is equivalent to Example (1) &amp; the outputs are identical</span></span></span>
 <span class="r-in"><span><span class="co"># But this implementation can be considerably faster</span></span></span>
 <span class="r-in"><span><span class="va">dens_2</span> <span class="op">&lt;-</span> <span class="fu">pf_map_dens</span><span class="op">(</span><span class="va">gebco</span>, .coord <span class="op">=</span> <span class="fu"><a href="pf_coords.html">pf_coords</a></span><span class="op">(</span><span class="va">out_pfb</span><span class="op">$</span><span class="va">history</span>, <span class="va">gebco</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() called (@ 2023-12-05 14:11:46.123763)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() called (@ 2023-12-12 21:41:14.927715)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.xpf`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building `ppp` object... </span>
@@ -225,7 +225,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Defining `ppp` object... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() call ended (@ 2023-12-05 14:11:46.39228). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() call ended (@ 2023-12-12 21:41:15.354212). </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">dens_1</span>, <span class="va">dens_2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (3): Smooth coordinates from other algorithms</span></span></span>
@@ -238,14 +238,14 @@
 <span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">out_pfb</span><span class="op">$</span><span class="va">history</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="co"># Calculate centres of activity over some (arbitrary) time interval</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/pkg/terra/man/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">dat_moorings</span>, by <span class="op">=</span> <span class="st">"receiver_id"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="coa.html">coa</a></span><span class="op">(</span>.delta_t <span class="op">=</span> <span class="st">"12 hours"</span>, .plot_weights <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"coa_x"</span>, y <span class="op">=</span> <span class="st">"coa_y"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/pkg/terra/man/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>UTM coordinates used (both UTM and lon/lat coordinates detected).</span>
 <span class="r-in"><span><span class="co"># Smooth centres of activity</span></span></span>
 <span class="r-in"><span><span class="va">dens_3</span> <span class="op">&lt;-</span> <span class="fu">pf_map_dens</span><span class="op">(</span><span class="va">gebco</span>, .coord <span class="op">=</span> <span class="va">out_coa</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() called (@ 2023-12-05 14:11:46.454118)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() called (@ 2023-12-12 21:41:15.373475)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.xpf`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building `ppp` object... </span>
@@ -253,14 +253,14 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Defining `ppp` object... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() call ended (@ 2023-12-05 14:11:46.612323). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() call ended (@ 2023-12-12 21:41:15.515071). </span>
 <span class="r-in"><span><span class="fu">graphics</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">out_coa</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="pf_map_dens-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (4): Control smoothing parameters via `spatstat.explore::density.ppp()`</span></span></span>
 <span class="r-in"><span><span class="co"># E.g. use fixed bandwidth:</span></span></span>
 <span class="r-in"><span><span class="fu">pf_map_dens</span><span class="op">(</span><span class="va">pou</span>, sigma <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() called (@ 2023-12-05 14:11:46.613988)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() called (@ 2023-12-12 21:41:15.516599)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.xpf`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building `ppp` object... </span>
@@ -269,7 +269,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
 <span class="r-plt img"><img src="pf_map_dens-4.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() call ended (@ 2023-12-05 14:11:46.764077). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() call ended (@ 2023-12-12 21:41:15.645722). </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
@@ -280,7 +280,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> min value   : -4.906683e-18 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> max value   :  2.028007e-02 </span>
 <span class="r-in"><span><span class="fu">pf_map_dens</span><span class="op">(</span><span class="va">pou</span>, sigma <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() called (@ 2023-12-05 14:11:46.767481)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() called (@ 2023-12-12 21:41:15.647998)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.xpf`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building `ppp` object... </span>
@@ -289,7 +289,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
 <span class="r-plt img"><img src="pf_map_dens-5.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() call ended (@ 2023-12-05 14:11:47.068187). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() call ended (@ 2023-12-12 21:41:15.777494). </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
@@ -301,7 +301,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> max value   :  1.222871e-02 </span>
 <span class="r-in"><span><span class="co"># E.g., perform automatic bandwidth selection using cross validation:</span></span></span>
 <span class="r-in"><span><span class="fu">pf_map_dens</span><span class="op">(</span><span class="va">pou</span>, sigma <span class="op">=</span> <span class="va">bw.diggle</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() called (@ 2023-12-05 14:11:47.070005)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() called (@ 2023-12-12 21:41:15.779451)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.xpf`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building `ppp` object... </span>
@@ -310,7 +310,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
 <span class="r-plt img"><img src="pf_map_dens-6.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() call ended (@ 2023-12-05 14:11:47.23766). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() call ended (@ 2023-12-12 21:41:15.977242). </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
@@ -321,7 +321,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> min value   : -2.873613e-18 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> max value   :  1.138193e-02 </span>
 <span class="r-in"><span><span class="fu">pf_map_dens</span><span class="op">(</span><span class="va">pou</span>, sigma <span class="op">=</span> <span class="va">bw.scott</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() called (@ 2023-12-05 14:11:47.239428)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() called (@ 2023-12-12 21:41:15.979387)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.xpf`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building `ppp` object... </span>
@@ -330,7 +330,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
 <span class="r-plt img"><img src="pf_map_dens-7.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() call ended (@ 2023-12-05 14:11:47.370697). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() call ended (@ 2023-12-12 21:41:16.115556). </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>

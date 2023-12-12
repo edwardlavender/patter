@@ -25,13 +25,7 @@
     <loc>/articles/d-faqs.html</loc>
   </url>
   <url>
-    <loc>/articles/faqs.html</loc>
-  </url>
-  <url>
     <loc>/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>/articles/workflow.html</loc>
   </url>
   <url>
     <loc>/authors.html</loc>
@@ -43,28 +37,7 @@
     <loc>/news/index.html</loc>
   </url>
   <url>
-    <loc>/reference/ac_filter.html</loc>
-  </url>
-  <url>
-    <loc>/reference/acb-class.html</loc>
-  </url>
-  <url>
-    <loc>/reference/acs-class.html</loc>
-  </url>
-  <url>
-    <loc>/reference/acs.html</loc>
-  </url>
-  <url>
-    <loc>/reference/acs_check.html</loc>
-  </url>
-  <url>
     <loc>/reference/acs_container.html</loc>
-  </url>
-  <url>
-    <loc>/reference/acs_given_detection.html</loc>
-  </url>
-  <url>
-    <loc>/reference/acs_setup_detection_containers.html</loc>
   </url>
   <url>
     <loc>/reference/acs_setup_detection_kernels.html</loc>
@@ -80,9 +53,6 @@
   </url>
   <url>
     <loc>/reference/call_.html</loc>
-  </url>
-  <url>
-    <loc>/reference/cat_helper.html</loc>
   </url>
   <url>
     <loc>/reference/check_data.html</loc>
@@ -103,34 +73,10 @@
     <loc>/reference/colProds.matrix.html</loc>
   </url>
   <url>
-    <loc>/reference/compact.html</loc>
-  </url>
-  <url>
-    <loc>/reference/create_log.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dat_acoustics.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dat_archival.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dat_gebco.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dat_moorings.html</loc>
-  </url>
-  <url>
     <loc>/reference/datasets-algorithms.html</loc>
   </url>
   <url>
     <loc>/reference/datasets-mefs.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dc.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dc_setup_model.html</loc>
   </url>
   <url>
     <loc>/reference/degrees.html</loc>
@@ -139,13 +85,7 @@
     <loc>/reference/dist_along_path.html</loc>
   </url>
   <url>
-    <loc>/reference/dist_btw_cells.html</loc>
-  </url>
-  <url>
     <loc>/reference/dot-acs_absences.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-acs_given_detection.html</loc>
   </url>
   <url>
     <loc>/reference/dot-acs_given_detection_particles.html</loc>
@@ -161,9 +101,6 @@
   </url>
   <url>
     <loc>/reference/dot-pf_map_weights.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-pf_weights.html</loc>
   </url>
   <url>
     <loc>/reference/dot-st_invert.html</loc>
@@ -184,9 +121,6 @@
     <loc>/reference/mktempdir.html</loc>
   </url>
   <url>
-    <loc>/reference/normalise.html</loc>
-  </url>
-  <url>
     <loc>/reference/patter-package.html</loc>
   </url>
   <url>
@@ -196,25 +130,13 @@
     <loc>/reference/pf-class.html</loc>
   </url>
   <url>
-    <loc>/reference/pf_backward.html</loc>
-  </url>
-  <url>
     <loc>/reference/pf_backward_-times.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_backward_dens.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_backward_internals.html</loc>
   </url>
   <url>
     <loc>/reference/pf_backward_killer.html</loc>
   </url>
   <url>
     <loc>/reference/pf_backward_killer_diagnostics.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_backward_p.html</loc>
   </url>
   <url>
     <loc>/reference/pf_backward_sampler.html</loc>
@@ -226,9 +148,6 @@
     <loc>/reference/pf_coords.html</loc>
   </url>
   <url>
-    <loc>/reference/pf_dens.html</loc>
-  </url>
-  <url>
     <loc>/reference/pf_diag.html</loc>
   </url>
   <url>
@@ -238,22 +157,10 @@
     <loc>/reference/pf_forward.html</loc>
   </url>
   <url>
-    <loc>/reference/pf_forward_-times.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_forward_1.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_forward_2.html</loc>
-  </url>
-  <url>
     <loc>/reference/pf_forward_2_utils.html</loc>
   </url>
   <url>
     <loc>/reference/pf_forward_diagnostics.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_kick.html</loc>
   </url>
   <url>
     <loc>/reference/pf_lik.html</loc>
@@ -277,9 +184,6 @@
     <loc>/reference/pf_path_pivot.html</loc>
   </url>
   <url>
-    <loc>/reference/pf_pou.html</loc>
-  </url>
-  <url>
     <loc>/reference/pf_propose.html</loc>
   </url>
   <url>
@@ -289,19 +193,10 @@
     <loc>/reference/pf_setup_files.html</loc>
   </url>
   <url>
-    <loc>/reference/pf_setup_record.html</loc>
-  </url>
-  <url>
     <loc>/reference/pf_setup_rerun.html</loc>
   </url>
   <url>
     <loc>/reference/prettyGraphics.html</loc>
-  </url>
-  <url>
-    <loc>/reference/rast_template.html</loc>
-  </url>
-  <url>
-    <loc>/reference/signal.html</loc>
   </url>
   <url>
     <loc>/reference/sim_array.html</loc>
@@ -328,9 +223,6 @@
     <loc>/reference/spat.html</loc>
   </url>
   <url>
-    <loc>/reference/spatIntersect.html</loc>
-  </url>
-  <url>
     <loc>/reference/spatNormalise.html</loc>
   </url>
   <url>
@@ -338,5 +230,17 @@
   </url>
   <url>
     <loc>/reference/unwrap_elm.html</loc>
+  </url>
+  <url>
+    <loc>/reference/utils-lists.html</loc>
+  </url>
+  <url>
+    <loc>/reference/utils-logs.html</loc>
+  </url>
+  <url>
+    <loc>/reference/utils-signal.html</loc>
+  </url>
+  <url>
+    <loc>/reference/utils-str.html</loc>
   </url>
 </urlset>

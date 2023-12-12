@@ -82,7 +82,7 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.moorings</dt>
-<dd><p>A <code><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines receiver deployments and associated information (see <code><a href="datasets-mefs.html">dat_moorings</a></code> for an example). At a minimum, this must contain the following columns:</p><ul><li><p><code>receiver_id</code>---an <code>integer</code> vector of receiver IDs;</p></li>
+<dd><p>A <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines receiver deployments and associated information (see <code><a href="datasets-mefs.html">dat_moorings</a></code> for an example). At a minimum, this must contain the following columns:</p><ul><li><p><code>receiver_id</code>---an <code>integer</code> vector of receiver IDs;</p></li>
 <li><p><code>receiver_easting</code> and <code>receiver_northing</code> or <code>receiver_lon</code> and <code>receiver_lat</code>---doubles that define receiver coordinates on a planar coordinate reference system or in longitude/latitude;</p></li>
 <li><p><code>receiver_start</code>---a <code>Date</code> vector that defines receiver deployment dates;</p></li>
 <li><p><code>receiver_end</code>---a <code>Date</code> vector that defines receiver retrieval dates;</p></li>
@@ -91,7 +91,7 @@
 
 
 <dt>.services</dt>
-<dd><p>(optional) A <code><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines receiver IDs and servicing <code>Date</code>s (times during the deployment period of a receiver when it was not active due to servicing) (see <code><a href="make_matrix_receivers.html">make_matrix_receivers()</a></code>). If provided, this must contain the following columns:</p><ul><li><p><code>receiver_id</code>---an <code>integer</code> vector of receiver IDs;</p></li>
+<dd><p>(optional) A <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines receiver IDs and servicing <code>Date</code>s (times during the deployment period of a receiver when it was not active due to servicing) (see <code><a href="make_matrix_receivers.html">make_matrix_receivers()</a></code>). If provided, this must contain the following columns:</p><ul><li><p><code>receiver_id</code>---an <code>integer</code> vector of receiver IDs;</p></li>
 <li><p><code>service_start</code>---a <code>Date</code> vector that defines receiver servicing start dates;</p></li>
 <li><p><code>service_end</code>---a <code>Date</code> vector that defines receiver servicing completion dates;</p></li>
 </ul></dd>

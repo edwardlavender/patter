@@ -78,7 +78,7 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.history</dt>
-<dd><p>Particle samples from the particle filter, provided either as:</p><ul><li><p>A <code>list</code> of <code><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>s that define cell samples; i.e., the <code>history</code> element of a <code><a href="pf-class.html">pf</a></code> object. This must contain a column that defines accepted cell samples at each time step (<code>cell_now</code>).</p></li>
+<dd><p>Particle samples from the particle filter, provided either as:</p><ul><li><p>A <code>list</code> of <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>s that define cell samples; i.e., the <code>history</code> element of a <code><a href="pf-class.html">pf</a></code> object. This must contain a column that defines accepted cell samples at each time step (<code>cell_now</code>).</p></li>
 <li><p>An ordered list of file paths (from <code><a href="pf_setup_files.html">pf_setup_files()</a></code>) that define the directories in which particle samples were written from the forward simulation (as parquet files).</p></li>
 </ul></dd>
 
@@ -88,14 +88,14 @@
 
 
 <dt>.obs, .cols</dt>
-<dd><p>(optional) A <code><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> and a character vector of column names in <code>.obs</code> to match onto the output. <code>.obs</code> must contain a <code>timestep</code> column for matching.</p></dd>
+<dd><p>(optional) A <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> and a character vector of column names in <code>.obs</code> to match onto the output. <code>.obs</code> must contain a <code>timestep</code> column for matching.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     
 
-<p>The function returns a <code><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines timesteps, sampled locations and, optionally, information from <code>.obs</code>, with the following columns:</p><ul><li><p><code>timestep</code>---an <code>integer</code> vector that defines the time step;</p></li>
+<p>The function returns a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines timesteps, sampled locations and, optionally, information from <code>.obs</code>, with the following columns:</p><ul><li><p><code>timestep</code>---an <code>integer</code> vector that defines the time step;</p></li>
 <li><p><code>cell_id</code>---an <code>integer</code> vector that defines the cell ID on <code>.bathy</code>;</p></li>
 <li><p><code>cell_x</code>, <code>cell_y</code>, <code>cell_z</code>---<code>double</code>s that define cell coordinates;</p></li>
 </ul><p>If <code>.obs</code> is supplied, the output also contains any columns specified in <code>.cols</code>.</p>

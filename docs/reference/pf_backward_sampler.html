@@ -90,14 +90,14 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.history</dt>
-<dd><p>Particle samples from the forward simulation, provided either as:</p><ul><li><p>A <code>list</code> of <code><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>s that define cell samples; i.e., the <code>history</code> element of a <code><a href="pf-class.html">pf</a></code> object.</p></li>
+<dd><p>Particle samples from the forward simulation, provided either as:</p><ul><li><p>A <code>list</code> of <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>s that define cell samples; i.e., the <code>history</code> element of a <code><a href="pf-class.html">pf</a></code> object.</p></li>
 <li><p>An ordered list of file paths (from <code><a href="pf_setup_files.html">pf_setup_files()</a></code>) that define the directories in which particle samples were written from the forward simulation (as parquet files).</p></li>
 </ul></dd>
 
 
 <dt>.dens_step, ...</dt>
-<dd><p>A function, and associated inputs, used to calculate the probability density of movements between particle samples. <code>.dens_step</code> must accept the following arguments:</p><ul><li><p><code>.data_now</code>---a one-row <code><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines the current particle sample (as in <code>.history</code>).</p></li>
-<li><p><code>.data_past</code>---a multi-row <code><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines all particle samples for the previous time step (as in <code>.history</code>).</p></li>
+<dd><p>A function, and associated inputs, used to calculate the probability density of movements between particle samples. <code>.dens_step</code> must accept the following arguments:</p><ul><li><p><code>.data_now</code>---a one-row <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines the current particle sample (as in <code>.history</code>).</p></li>
+<li><p><code>.data_past</code>---a multi-row <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines all particle samples for the previous time step (as in <code>.history</code>).</p></li>
 <li><p>(optional) <code>...</code>---additional arguments passed from <code>pf_backward_sampler()</code>.</p></li>
 </ul><p>Three helper functions are provided:</p><ul><li><p><code><a href="sim_helpers.html">dstep()</a></code> calculates distances between current and past particle samples (via <code><a href="https://rdrr.io/pkg/terra/man/distance.html" class="external-link">terra::distance()</a></code>) and translates these into probability densities (via <code><a href="sim_helpers.html">dtruncgamma()</a></code>). Arguments passed via <code>...</code> are passed to both <code><a href="https://rdrr.io/pkg/terra/man/distance.html" class="external-link">terra::distance()</a></code> (which requires a <code>lonlat</code> input) and <code><a href="sim_helpers.html">dtruncgamma()</a></code>.</p></li>
 </ul></dd>
@@ -119,14 +119,6 @@
 
 <dt>.verbose, .txt</dt>
 <dd><p>Arguments to monitor function progress (see <code><a href="pf_forward.html">pf_forward()</a></code>).</p></dd>
-
-
-<dt>.data_now, .data_past, .density</dt>
-<dd><p>Arguments for <code>.dens_step*</code> functions.</p><ul><li><p><code>.data_now</code> and <code>.data_past</code> are <code><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>s (see <code>.dens_step</code>), below;</p></li>
-<li><p><code>.density</code> is either:</p><ul><li><p>A <code>list</code> that contains movement densities (for <code>dstep_lookup()</code>) from <code>pf_backward_dens()</code>;</p></li>
-<li><p>A <code>character</code> string that defines the directory to <code>parquet</code> files containing movement densities (for <code>dstep_read()</code>) from <code>pf_backward_dens()</code>;</p></li>
-</ul></li>
-</ul></dd>
 
 </dl></div>
     <div id="value">
@@ -184,9 +176,8 @@
 <span class="r-in"><span>                      .bathy <span class="op">=</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                      .moorings <span class="op">=</span> <span class="va">dat_moorings</span>, .detection_overlaps <span class="op">=</span> <span class="fu"><a href="datasets-algorithms.html">dat_overlaps</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                      .detection_kernels <span class="op">=</span> <span class="fu"><a href="datasets-algorithms.html">dat_kernels</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                      .save_opts <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>                      .write_opts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sink <span class="op">=</span> <span class="va">pff_folder</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2023-12-05 14:11:37... </span>
+<span class="r-in"><span>                      .record_opts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>save <span class="op">=</span> <span class="cn">TRUE</span>, sink <span class="op">=</span> <span class="va">pff_folder</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2023-12-12 21:41:06... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up simulation... </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`.moorings` coordinates coerced onto `.bathy` grid.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining origin... </span>
@@ -290,7 +281,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 50: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |================================================================================| 100% elapsed=01s, remaining~00s... ... ... Kicking particles... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2023-12-05 14:11:38 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2023-12-12 21:41:07 (duration: ~1 sec(s)). </span>
 <span class="r-in"><span><span class="co"># D. Define inputs for pf_backward_*()</span></span></span>
 <span class="r-in"><span><span class="co"># * Use a subset of samples for speed</span></span></span>
 <span class="r-in"><span><span class="va">history</span> <span class="op">&lt;-</span> <span class="va">out_pff</span><span class="op">$</span><span class="va">history</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span></span></span>
@@ -301,7 +292,7 @@
 <span class="r-in"><span>  <span class="fu">pf_backward_sampler</span><span class="op">(</span><span class="va">history</span>,</span></span>
 <span class="r-in"><span>                      .dens_step <span class="op">=</span> <span class="va">dstep</span>, lonlat <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>                      .save_history <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_backward_*() called (@ 2023-12-05 14:11:38.573948)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_backward_*() called (@ 2023-12-12 21:41:07.739275)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Set up... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Generating path(s)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... On particle 1 ... </span>
@@ -1705,7 +1696,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Collating paths... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Recording path... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Completing simulation... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_backward_*() call ended (@ 2023-12-05 14:11:39.243914). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_backward_*() call ended (@ 2023-12-12 21:41:08.399647). </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (2): Parallelise default implementation</span></span></span>
 <span class="r-in"><span><span class="co"># Use forking</span></span></span>
@@ -1716,11 +1707,11 @@
 <span class="r-in"><span>                        .save_history <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>                        .cl <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_backward_*() called (@ 2023-12-05 14:11:39.244674)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_backward_*() called (@ 2023-12-12 21:41:08.400439)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Set up... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Generating path(s)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Completing simulation... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_backward_*() call ended (@ 2023-12-05 14:11:39.741337). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_backward_*() call ended (@ 2023-12-12 21:41:08.882717). </span>
 <span class="r-in"><span><span class="co"># Use socket cluster</span></span></span>
 <span class="r-in"><span><span class="va">out_pfb</span> <span class="op">&lt;-</span></span></span>
 <span class="r-in"><span>  <span class="fu">pf_backward_sampler</span><span class="op">(</span><span class="va">history</span>,</span></span>
@@ -1728,11 +1719,11 @@
 <span class="r-in"><span>                      .save_history <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>                      .cl <span class="op">=</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/makeCluster.html" class="external-link">makeCluster</a></span><span class="op">(</span><span class="fl">2L</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_backward_*() called (@ 2023-12-05 14:11:39.742663)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_backward_*() called (@ 2023-12-12 21:41:08.884229)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Set up... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Generating path(s)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Completing simulation... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_backward_*() call ended (@ 2023-12-05 14:11:44.370796). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_backward_*() call ended (@ 2023-12-12 21:41:13.201298). </span>
 </code></pre></div>
     </div>
   </div>

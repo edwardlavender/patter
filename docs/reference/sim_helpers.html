@@ -85,7 +85,7 @@ d*() functions are used in the simulation-based reconstruction of movement paths
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">rtruncgamma</span><span class="op">(</span>.n <span class="op">=</span> <span class="fl">1</span>, .shape <span class="op">=</span> <span class="fl">15</span>, .scale <span class="op">=</span> <span class="fl">15</span>, .mobility <span class="op">=</span> <span class="fl">500</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">dtruncgamma</span><span class="op">(</span>.x <span class="op">=</span> <span class="fl">1</span>, .shape <span class="op">=</span> <span class="fl">15</span>, .scale <span class="op">=</span> <span class="fl">15</span>, .mobility <span class="op">=</span> <span class="fl">500</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">dtruncgamma</span><span class="op">(</span><span class="va">.x</span>, .shape <span class="op">=</span> <span class="fl">15</span>, .scale <span class="op">=</span> <span class="fl">15</span>, .mobility <span class="op">=</span> <span class="fl">500</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">rwn</span><span class="op">(</span>.n <span class="op">=</span> <span class="fl">1</span>, .mu <span class="op">=</span> <span class="fl">0</span>, .rho <span class="op">=</span> <span class="fl">0</span>, .sd <span class="op">=</span> <span class="fl">1</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
@@ -143,8 +143,8 @@ d*() functions are used in the simulation-based reconstruction of movement paths
 
 
 <dt>.data_now, .data_past</dt>
-<dd><p>Arguments for <code>dstep()</code>.</p><ul><li><p><code>.data_now</code> is a <code><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> with coordinates in <code>x_now</code> and <code>y_now</code> columns;</p></li>
-<li><p><code>.data_past</code> is a <code><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> as above;</p></li>
+<dd><p>Arguments for <code>dstep()</code>.</p><ul><li><p><code>.data_now</code> is a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> with coordinates in <code>x_now</code> and <code>y_now</code> columns;</p></li>
+<li><p><code>.data_past</code> is a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> as above;</p></li>
 </ul></dd>
 
 </dl></div>

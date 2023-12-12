@@ -78,7 +78,7 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.mat</dt>
-<dd><p>A wide-format <code><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>, from <code><a href="pf_path.html">pf_path()</a></code> with <code>.return = "wide"</code>, in which:</p><ul><li><p>columns (<code>x1</code>, <code>x2</code>, etc.) represent time steps;</p></li>
+<dd><p>A wide-format <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>, from <code><a href="pf_path.html">pf_path()</a></code> with <code>.return = "wide"</code>, in which:</p><ul><li><p>columns (<code>x1</code>, <code>x2</code>, etc.) represent time steps;</p></li>
 <li><p>rows represent paths;</p></li>
 </ul></dd>
 
@@ -88,17 +88,17 @@
 
 
 <dt>.obs, .cols</dt>
-<dd><p>(optional) A <code><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> and a <code>character</code> vector of column names in <code>.obs</code> to match onto the output. <code>.obs</code> must contain a <code>timestep</code> column for matching.</p></dd>
+<dd><p>(optional) A <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> and a <code>character</code> vector of column names in <code>.obs</code> to match onto the output. <code>.obs</code> must contain a <code>timestep</code> column for matching.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     
 
-<p>The function returns a <code><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> with at least three columns:</p><ul><li><p><code>path_id</code>---An <code>integer</code> that defines each path (row in <code>.mat</code>);</p></li>
+<p>The function returns a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> with at least three columns:</p><ul><li><p><code>path_id</code>---An <code>integer</code> that defines each path (row in <code>.mat</code>);</p></li>
 <li><p><code>timestep</code>---An <code>integer</code> that defines each time step (column in <code>.mat</code>);</p></li>
 <li><p><code>cell_id</code>---An integer that defines each cell (value in <code>.mat</code>);</p></li>
-</ul><p>If <code>.bathy</code> is supplied, the <code><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> contains three additional columns:</p><ul><li><p><code>cell_x</code>---A <code>double</code> that defines the cell's x coordinate;</p></li>
+</ul><p>If <code>.bathy</code> is supplied, the <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> contains three additional columns:</p><ul><li><p><code>cell_x</code>---A <code>double</code> that defines the cell's x coordinate;</p></li>
 <li><p><code>cell_y</code>---A <code>double</code> that defines the cell's y coordinate;</p></li>
 <li><p><code>cell_z</code>---A <code>double</code> that defines the cell's z coordinate;</p></li>
 </ul><p>If <code>.obs</code> is supplied, the output also contains any columns specified in <code>.cols</code>.</p>
@@ -117,7 +117,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Define a hypothetical set of paths in wide-format</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">25</span>, ncol <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">mat</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">mat</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">mat</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x1"</span>, <span class="st">"x2"</span>, <span class="st">"x3"</span>, <span class="st">"x4"</span>, <span class="st">"x5"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Convert to long format</span></span></span>
