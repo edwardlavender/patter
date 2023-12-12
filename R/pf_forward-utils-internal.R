@@ -209,9 +209,9 @@
   if (is.null(.particles)) {
     # Extract .particles from .history list, if available
     # (if `.save_opts` = TRUE)
-    .particles <- .history[[tp]]
-    # Read .particles from file, otherwise
-    if (is.null(.particles)) {
+    if (length(.history) > 0L) {
+      .particles <- .history[[tp]]
+    } else {
       .particles <- arrow::read_parquet(file.path(.sink, paste0(tp, ".parquet")))
     }
   }
