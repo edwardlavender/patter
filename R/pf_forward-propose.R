@@ -96,7 +96,8 @@ pf_rpropose_reachable <- function(.particles, .obs, .t, .bathy, ...) {
     exactextractr::exact_extract(.bathy,
                                  sf::st_as_sf(zone),
                                  include_cell = TRUE,
-                                 include_xy = TRUE)
+                                 include_xy = TRUE,
+                                 progress = FALSE)
   for (i in seq_len(length(choices))) {
     choices[[i]]$cell_past <- .particles$cell_past[i]
   }
