@@ -16,7 +16,6 @@
   .grid = FALSE,
   .detection_kernels,
   .moorings,
-  .bathy,
   .pf_lik,
   .sample,
   .n,

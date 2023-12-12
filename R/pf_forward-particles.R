@@ -42,7 +42,6 @@
                                  .origin,
                                  .grid = FALSE,
                                  .detection_kernels, .moorings,
-                                 .bathy,
                                  .pf_lik,
                                  .sample, .n,
                                  .trial_crit, .trial_count) {
@@ -126,7 +125,7 @@
   count <- 1L
   crit  <- diagnostics[["sampler-dens"]]$n_u
   pnow  <- proposals
-  if (nrow(pnow) > 0L) {
+  if (fnrow(pnow) > 0L) {
     while (crit < .trial_crit & count <= .trial_count) {
       pnow <- .sample(.particles = proposals, .n = .n)
       label <- paste0("sampler-sample-", count)
