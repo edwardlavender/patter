@@ -9,14 +9,13 @@
 #' @keywords internal
 
 .pf_path_join <-
-  function(.data, .current, .t, .pb = NULL) {
+  function(.data, .current, .t, .pb = NULL, .pb_step) {
     # Monitor progress
     # print(.t)
     # Use Sys.sleep() for testing (e.g., visualise progress bar)
     # Sys.sleep(0.1)
-    if (!is.null(.pb)) {
-      .pb$tick()
-    }
+    # print(.t)
+    pb_tick(.pb = .pb, .t = .pb_step, .progress = !is.null(.pb))
     collapse::join(.data,
                    .current |>
                      select("x{.t - 1}" := "cell_past", "x{.t}" := "cell_now") |>
@@ -43,6 +42,8 @@
     }
     paste0(
       ".history[[1]] |> \n",
-      paste(paste0("  .pf_path_join(", history_for_index, ", .t = ", index, ", .pb = .pb)"), collapse = " |> \n")
-    )
+      paste(paste0("  .pf_path_join(", history_for_index, ", .t = ", index,
+                   ",.pb = .pb, .pb_step = ", rev(index), ")"),
+            collapse = " |> \n")
+      )
   }

@@ -45,16 +45,13 @@ pf_backward_killer <- function(.history,
   }
   timestep_final <- length(.history)
   # Define progress bar
-  if (.progress) {
-    pb <- progress::progress_bar$new(total = timestep_final)
-    pb$tick(0)
-  }
+  pb <- pb_init(.n = timestep_final, .init = 0L, .progress = .progress)
 
   #### Implement loop
   for (t in rev(seq_len(timestep_final))) {
 
     #### Read particle samples for t and t - 1
-    if (.progress) pb$tick()
+    pb_tick(.pb = pb, .t = (timestep_final - t) + 1L, .progress = .progress)
     cat_to_cf(paste0("... Time step ", t, ":"))
     if (read_history) {
       if (t == timestep_final) {
@@ -95,6 +92,7 @@ pf_backward_killer <- function(.history,
     }
 
   }
+  pb_close(.pb = pb, .progress = .progress)
 
   #### Return outputs (modified from pf_forward())
   if (!.save_history) {

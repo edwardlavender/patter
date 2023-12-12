@@ -1,7 +1,6 @@
 test_that(".pf_path_join() works", {
 
   # Define example data tables to join
-  pb <- progress::progress_bar$new(total = 1)
   d1 <- data.table(x0 = NA, x1 = 1:5)
   d2 <- data.table(cell_past = c(1, 2, 2, 3, 4),
                    cell_now = c(2, 6, 7, 8, 8))
@@ -9,7 +8,7 @@ test_that(".pf_path_join() works", {
                    cell_now = c(10, 11, 12, 13, 13))
 
   # Test joining d1 and d2
-  j1a <- .pf_path_join(d1, d2, .t = 2, .pb = pb)
+  j1a <- .pf_path_join(d1, d2, .t = 2, .pb = NULL)
   j2a <-
     right_join(d1, d2, by = c("x1" = "cell_past")) |>
     select(x0, x1, x2 = cell_now)
@@ -37,10 +36,10 @@ test_that(".pf_path_chain() works", {
   chain_1 <- .pf_path_chain(as.list(1:5), .read = TRUE)
   chain_2 <-
     ".history[[1]] |>
-  .pf_path_join(arrow::read_parquet(.history[[2]]), .t = 2, .pb = .pb) |>
-  .pf_path_join(arrow::read_parquet(.history[[3]]), .t = 3, .pb = .pb) |>
-  .pf_path_join(arrow::read_parquet(.history[[4]]), .t = 4, .pb = .pb) |>
-  .pf_path_join(arrow::read_parquet(.history[[5]]), .t = 5, .pb = .pb)"
+  .pf_path_join(arrow::read_parquet(.history[[2]]), .t = 2, .pb = .pb, .pb_step = 5) |>
+  .pf_path_join(arrow::read_parquet(.history[[3]]), .t = 3, .pb = .pb, .pb_step = 4) |>
+  .pf_path_join(arrow::read_parquet(.history[[4]]), .t = 4, .pb = .pb, .pb_step = 3) |>
+  .pf_path_join(arrow::read_parquet(.history[[5]]), .t = 5, .pb = .pb, .pb_step = 2)"
   expect_equal(gsub(" ", "", chain_1),
                gsub(" ", "", chain_2))
 
@@ -48,10 +47,10 @@ test_that(".pf_path_chain() works", {
   chain_1 <- .pf_path_chain(as.list(1:5), .read = FALSE)
   chain_2 <-
     ".history[[1]] |>
-  .pf_path_join(.history[[2]], .t = 2, .pb = .pb) |>
-  .pf_path_join(.history[[3]], .t = 3, .pb = .pb) |>
-  .pf_path_join(.history[[4]], .t = 4, .pb = .pb) |>
-  .pf_path_join(.history[[5]], .t = 5, .pb = .pb)"
+  .pf_path_join(.history[[2]], .t = 2, .pb = .pb, .pb_step = 5) |>
+  .pf_path_join(.history[[3]], .t = 3, .pb = .pb, .pb_step = 4) |>
+  .pf_path_join(.history[[4]], .t = 4, .pb = .pb, .pb_step = 3) |>
+  .pf_path_join(.history[[5]], .t = 5, .pb = .pb, .pb_step = 2)"
   expect_equal(gsub(" ", "", chain_1),
                gsub(" ", "", chain_2))
 

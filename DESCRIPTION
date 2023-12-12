@@ -18,7 +18,6 @@ Imports:
     lubridate,
     purrr, 
     pbapply,
-    progress,
     rlang,
     terra
 Suggests: 

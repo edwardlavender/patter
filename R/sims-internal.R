@@ -56,10 +56,9 @@ NULL
 
   #### Simulate future locations
   lookup <- lapply(seq_len(.n_step), \(i) c(i + i - 1, i + i))
-  pb <- progress::progress_bar$new(total = .n_step - 1)
-  pb$tick(0)
+  pb <- pb_init(.n = .n_step - 1L, .progress = TRUE)
   for (t in seq_len(.n_step - 1)) {
-    pb$tick()
+    pb_tick(.pb = pb, .t = t, .progress = TRUE)
     mat[, lookup[[t + 1]]] <- .cstep_iter(.xy_now = mat[, lookup[[t]], drop = FALSE],
                                           .xy_next = mat[, lookup[[t + 1]], drop = FALSE],
                                           .lonlat = .lonlat,
@@ -67,6 +66,7 @@ NULL
                                           .move = .move, .t = t,
                                           .bathy = .bathy)
   }
+  pb_close(.pb = pb, .progress = TRUE)
 
   #### Pivot path(s) into long format
   paths <-
