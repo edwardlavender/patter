@@ -65,8 +65,8 @@ pf_rpropose_kick <- function(.particles,
   .particles[, cell_now := as.integer(terra::cellFromXY(.bathy, xy_next))]
   xy_next <- terra::xyFromCell(.bathy, .particles$cell_now)
   x_now <- y_now <- NULL
-  .particles[, x_now := xy_next[, 1]]
-  .particles[, y_now := xy_next[, 2]]
+  .particles[, x_now := as.numeric(xy_next[, 1])]
+  .particles[, y_now := as.numeric(xy_next[, 2])]
   .particles
 }
 
@@ -104,7 +104,9 @@ pf_rpropose_reachable <- function(.particles, .obs, .t, .bathy, ...) {
     choices |>
     rbindlist() |>
     filter(!is.na(.data$value)) |>
-    mutate(cell = as.integer(.data$cell)) |>
+    mutate(cell = as.integer(.data$cell),
+           x = as.numeric(.data$x),
+           y = as.numeric(.data$y)) |>
     select("cell_past", cell_now = "cell",
            x_now = "x", y_now = "y",
            bathy = "value") |>

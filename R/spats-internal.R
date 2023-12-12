@@ -31,7 +31,9 @@ spatSampleDT <- function(.x, .spatcell = .x, .size = 1e6, .method = "random") {
                     na.rm = TRUE, cells = FALSE, xy = TRUE,
                     values = FALSE, warn = FALSE) |>
     as.data.table() |>
-    mutate(cell = as.integer(terra::cellFromXY(.spatcell, cbind(.data$x, .data$y)))) |>
+    mutate(cell = as.integer(terra::cellFromXY(.spatcell, cbind(.data$x, .data$y))),
+           x = as.numeric(.data$x),
+           y = as.numeric(.data$y)) |>
     select(cell_id = "cell", cell_x = "x", cell_y = "y") |>
     as.data.table()
 }
