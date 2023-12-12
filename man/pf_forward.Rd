@@ -29,8 +29,7 @@ pf_forward(
   .trial_revert = 2L,
   .rerun = list(),
   .rerun_from = pf_setup_rerun(.rerun),
-  .save_opts = FALSE,
-  .write_opts = NULL,
+  .record_opts = list(save = FALSE, cols = NULL, sink = NULL),
   .progress = TRUE,
   .verbose = TRUE,
   .txt = ""

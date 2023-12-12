@@ -1,3 +1,20 @@
+#' @title Utilities: strings
+#' @name utils-str
+
+#' @rdname utils-str
+#' @keywords internal
+
+str_items <- function(.items, quo = "`") {
+  if (all(.items == "")) {
+    rlang::warn("`.items` is an empty string ('').")
+    out <- .items
+  } else {
+    collap <- paste0(quo, ", ", quo)
+    out <- paste0(quo, paste0(.items, collapse = collap), quo)
+  }
+  out
+}
+
 #' @title Utilities: signal messages, warnings or errors
 #' @description These functions are wrappers for [`message()`], [`warning()`] and [`stop()`].
 #' @param ... Arguments passed to [`glue::glue()`].
@@ -8,36 +25,34 @@
 #'
 #' @return Returned values follow parent functions.
 #' @author Edward Lavender
-#' @name signal
+#' @name utils-signal
 NULL
 
-#' @rdname signal
+#' @rdname utils-signal
 #' @keywords internal
 
 msg <- function(...) {
   message(glue::glue(...))
 }
 
-#' @rdname signal
+#' @rdname utils-signal
 #' @keywords internal
 
 warn <- function(...) {
   warning(glue::glue(...), immediate. = TRUE, call. = FALSE)
 }
 
-#' @rdname signal
+#' @rdname utils-signal
 #' @keywords internal
 
 abort <- function(...) {
   stop(glue::glue(...), call. = FALSE)
 }
 
-#' @title Utilities: create a log file
-#' @description This function creates a .txt file (`.file`) via [`file.create`].
-#' @param .file A character path to a file. `NULL` and `""` are permitted.
-#' @param .verbose A logical variable that defines whether or not to act on `.file`.
-#' @return The function returns `invisible(TRUE)`.
-#' @author Edward Lavender
+#' @title Utilities: logs
+#' @name utils-logs
+
+#' @rdname utils-logs
 #' @keywords internal
 
 create_log <- function(.file, .verbose) {
@@ -66,7 +81,7 @@ create_log <- function(.file, .verbose) {
   invisible(TRUE)
 }
 
-#' @title `cat_to_cf()` helper
+#' @rdname utils-logs
 #' @keywords internal
 
 cat_helper <- function(.verbose, .txt) {
@@ -80,13 +95,48 @@ cat_helper <- function(.verbose, .txt) {
   }
 }
 
-#' @title Utilities: compact a list
-#' @description Remove all `NULL` entries from a list.
-#' @param l A list.
-#' @source This function is derived from the `plyr::compact()` function. The function is defined separately in [`patter`] to reduce reliance on non-default packages.
+#' @title Utilities: list helpers
+#' @name utils-lists
+
+#' @rdname utils-lists
 #' @keywords internal
 
-compact <- function(l) l[which(!sapply(l, is.null))]
+# plyr::compact()
+list_compact <- function(l) l[which(!sapply(l, is.null))]
+
+#' @rdname utils-lists
+#' @keywords internal
+
+# rlist::list.merge()
+list_merge <- function(...) {
+  lists <- list(...)
+  if (any(vapply(lists, function(x) is.null(names(x)), logical(1L)))) {
+    stop("All arguments must be named list", call. = FALSE)
+  }
+  Reduce(utils::modifyList, lists, list())
+}
+
+#' @rdname utils-lists
+#' @keywords internal
+
+# List arguments
+list_args <- function(.args, .defaults) {
+  if (is.null(.args)) {
+    abort("`{deparse(substitute(.args))}` must be specified.",
+          .envir = environment())
+  }
+  if (length(.args) == 0L) {
+    return(.defaults)
+  }
+  check_named_list(.args)
+  bool <- names(.args) %in% names(.defaults)
+  if (!all(bool)) {
+    unsupp <- names(.args)[!bool]
+    abort("`{deparse(substitute(.args))}` contains unsupported argument(s): {str_items(unsupp)}.",
+          .envir = environment())
+  }
+  list_merge(.defaults, .args)
+}
 
 #' @title Utilities: calculate column products
 #' @description This function calculates column products for each row in a [`matrix`].

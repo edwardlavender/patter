@@ -165,7 +165,7 @@ acs_setup_obs <- function(.acoustics = NULL,
     end   <- max(.period)
   } else {
     timestamps <- list(.acoustics[["timestamp"]], .archival[["timestamp"]])
-    timestamps <- compact(timestamps)
+    timestamps <- list_compact(timestamps)
     if (length(timestamps) == 1L) {
       timestamps <- timestamps[[1]]
     } else {

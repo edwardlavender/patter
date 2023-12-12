@@ -2,10 +2,12 @@
 % Please edit documentation in R/pf_forward-utils-internal.R
 \name{pf_forward_2_utils}
 \alias{pf_forward_2_utils}
+\alias{.pf_record_opts}
 \alias{.pf_dirs}
 \alias{.pf_write_particles}
 \alias{.pf_write_diagnostics}
 \alias{.pf_startup}
+\alias{.pf_snapshot}
 \alias{.pf_start_t}
 \alias{.pf_increment}
 \alias{.pf_ppast}
@@ -15,6 +17,8 @@
 \alias{.pf_outputs}
 \title{PF helper: internal utilities}
 \usage{
+.pf_record_opts(.record_opts)
+
 .pf_dirs(.write_opts)
 
 .pf_write_particles(.particles, .sink, .write)
@@ -30,8 +34,10 @@
   .detection_overlaps,
   .detection_kernels,
   .update_ac,
-  .write_opts
+  .record_opts
 )
+
+.pf_snapshot(.dt, .select, .cols)
 
 .pf_start_t(.rerun, .rerun_from)
 

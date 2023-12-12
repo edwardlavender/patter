@@ -2,6 +2,21 @@
 #' @keywords internal
 #' @name pf_forward_2_utils
 
+
+#' @rdname pf_forward_2_utils
+#' @keywords internal
+
+# Check .record_opts
+.pf_record_opts <- function(.record_opts) {
+  out <- list_args(.args = .record_opts, .defaults = list(save = FALSE,
+                                                          cols = NULL,
+                                                          sink = NULL))
+  if (!out$save && is.null(out$sink)) {
+    abort("`.record_opts$save = FALSE` and `.record_opts$sink = NULL`. There is nothing to do.")
+  }
+  out
+}
+
 #' @rdname pf_forward_2_utils
 #' @keywords internal
 
@@ -56,10 +71,10 @@
 
 .pf_startup <- function(.rerun, .obs, .lonlat, .bathy, .moorings,
                         .detection_overlaps, .detection_kernels, .update_ac,
-                        .write_opts) {
+                        .record_opts) {
 
   #### Use .rerun, if specified
-  # Currently, we assume that input arguments (e.g., .write_opts) are the same on reruns
+  # Currently, we assume that input arguments (e.g., .record_opts) are the same on reruns
   if (length(.rerun) > 0L) {
     # Pull startup values
     startup <- .rerun$internal$startup
@@ -71,12 +86,15 @@
     return(startup)
   }
 
+  #### Validate inputs
+  .record_opts <- .pf_record_opts(.record_opts)
+
   #### Define output containers
   # Lists to hold outputs
   history     <- list()
   diagnostics <- list()
   # directories to write outputs (may be NULL)
-  folders            <- .pf_dirs(.write_opts)
+  folders            <- .pf_dirs(.record_opts)
   folder_history     <- folders[["history"]]
   folder_diagnostics <- folders[["diagnostics"]]
 
@@ -104,15 +122,17 @@
            .trial = .trial)
   }
   .pf_write_particles_abbr <- function(.particles) {
-    .pf_write_particles(.particles = .particles, .sink = folder_history, .write = !is.null(.write_opts))
+    .pf_write_particles(.particles = .particles, .sink = folder_history, .write = !is.null(.record_opts$sink))
   }
   .pf_write_diagnostics_abbr <- function(.diagnostics) {
-    .pf_write_diagnostics(.diagnostics = .diagnostics, .sink = folder_diagnostics, !is.null(.write_opts))
+    .pf_write_diagnostics(.diagnostics = .diagnostics, .sink = folder_diagnostics, !is.null(.record_opts$sink))
   }
 
   #### Collate outputs
   list(
     output = list(
+      .record_opts = .record_opts,
+      select_cols = !is.null(.record_opts$cols),
       history = history,
       diagnostics = diagnostics,
       folder_history = folder_history,
@@ -130,6 +150,24 @@
                    .pf_write_particles_abbr = .pf_write_particles_abbr,
                    .pf_write_diagnostics_abbr = .pf_write_diagnostics_abbr)
   )
+}
+
+
+#' @rdname pf_forward_2_utils
+#' @keywords internal
+
+# Snapshot data.tables for saving in memory or to file
+.pf_snapshot <- function(.dt, .select, .cols) {
+  # Copy & drop attributes
+  dt <- copy(data.table(.dt))
+  # Subset columns (to reduce file size)
+  if (.select) {
+    dt <-
+      dt |>
+      select(any_of(.cols)) |>
+      as.data.table()
+  }
+  dt
 }
 
 #' @rdname pf_forward_2_utils

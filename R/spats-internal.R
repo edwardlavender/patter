@@ -48,7 +48,7 @@ spatIntersect <- function(.x, .value = 1, .fun = NULL) {
     abort("Either `.value` or `.fun` should be supplied.")
   }
   # Permit (but drop) NULL elements in `.x`
-  .x <- compact(.x)
+  .x <- list_compact(.x)
   # Handle one-length lists quickly
   if (length(.x) == 1L) {
     return(.x[[1]])

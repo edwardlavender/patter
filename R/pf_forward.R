@@ -27,7 +27,9 @@ pf_forward <- function(.obs,
                        .trial_revert_steps = 10L,
                        .trial_revert = 2L,
                        .rerun = list(), .rerun_from = pf_setup_rerun(.rerun),
-                       .save_opts = FALSE, .write_opts = NULL,
+                       .record_opts = list(save = FALSE,
+                                           cols = NULL,
+                                           sink = NULL),
                        .progress = TRUE, .verbose = TRUE, .txt = "") {
 
   #### Check user inputs
@@ -50,18 +52,21 @@ pf_forward <- function(.obs,
                          .detection_overlaps = .detection_overlaps,
                          .detection_kernels = .detection_kernels,
                          .update_ac = .update_ac,
-                         .write_opts = .write_opts)
+                         .record_opts = .record_opts)
   # Output objects
+  .record_opts   <- startup$output$.record_opts
+  select_cols    <- startup$output$select_cols
   history        <- startup$output$history
   diagnostics    <- startup$output$diagnostics
   # Controls
   iter_i         <- startup$control$iter_i
   iter_m         <- startup$control$iter_m
+
   # (Processed) data
   .moorings      <- startup$data$.moorings
   # Wrappers
   .pf_lik_abbr   <- startup$wrapper$.pf_lik_abbr
-  .pf_write_particles_abbr <- startup$wrapper$.pf_write_particles_abbr
+  .pf_write_particles_abbr   <- startup$wrapper$.pf_write_particles_abbr
   .pf_write_diagnostics_abbr <- startup$wrapper$.pf_write_diagnostics_abbr
 
   #### Define origin
@@ -80,9 +85,9 @@ pf_forward <- function(.obs,
     diagnostics_1 <- .pf_diag_collect(.diagnostics = attr(pnow, "diagnostics"),
                                       .iter_m = iter_m, .iter_i = iter_i)
     # Record accepted cells
-    if (.save_opts) {
-      # Drop attributes via data.table()
-      history[[1L]]     <- copy(data.table(pnow))
+    snapshot <- .pf_snapshot(.dt = pnow, .select = select_cols, .cols = .record_opts$cols)
+    if (.record_opts$save) {
+      history[[1L]]     <- snapshot
       diagnostics[[1L]] <- diagnostics_1
     }
     .pf_write_particles_abbr(data.table(pnow))
@@ -139,7 +144,7 @@ pf_forward <- function(.obs,
 
     #### (3) Collect diagnostics
     diagnostics_t <- .pf_diag_collect(diagnostics_t, .iter_m = iter_m, .iter_i = iter_i)
-    if (.save_opts) {
+    if (.record_opts$save) {
       diagnostics[[index_diag]] <- diagnostics_t
     }
     .pf_write_diagnostics_abbr(diagnostics_t)
@@ -164,10 +169,11 @@ pf_forward <- function(.obs,
                                .crit = crit, .trial_revert_crit = .trial_revert_crit)
       # Save particle samples (if possible)
       if (continue) {
-        if (.save_opts) {
-          history[[t]] <- copy(data.table(pnow))
+        snapshot <- .pf_snapshot(.dt = pnow, .select = select_cols, .cols = .record_opts$cols)
+        if (.record_opts$save) {
+          history[[t]] <- snapshot
         }
-        .pf_write_particles_abbr(.particles = data.table(pnow))
+        .pf_write_particles_abbr(.particles = snapshot)
       } else {
         # For convergence failures, collate outputs & return up to current time step
         out <- .pf_outputs(.rerun = .rerun,
