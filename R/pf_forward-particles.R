@@ -128,7 +128,7 @@
       .pf_diag(.particles = proposals, .t = .t, .label = "sampler-sample", .trial = 1L)
     # Repeat sampling, if required
     count <- 2L
-    crit  <- diagnostics[["sampler-dens"]]$n_u
+    crit  <- diagnostics[["sampler-sample-1"]]$n_u
     while (crit < .trial_crit & count <= .trial_count) {
       pnow <- .sample(.particles = proposals, .n = .n)
       label <- paste0("sampler-sample-", count)
