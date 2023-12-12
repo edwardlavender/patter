@@ -19,16 +19,17 @@ spatContainsNA <- function(.x) {
 #' @keywords internal
 
 # As above, but a subsample
-spatSampleDT <- function(.x, .spatcell = .x, .size = 1e6) {
+spatSampleDT <- function(.x, .spatcell = .x, .size = 1e6, .method = "random") {
   # Define .x as a SpatRaster using .spatcell
   if (inherits(.x, "SpatVector")) {
     .x <- terra::mask(.spatcell, .x)
   }
   # Sample from the SpatRaster, ignoring NAs
+  # * Random sampling is required for full coverage of small regions
   terra::spatSample(x = .x,
-                    size = .size, method = "regular", replace = FALSE,
+                    size = .size, method = .method, replace = FALSE,
                     na.rm = TRUE, cells = FALSE, xy = TRUE,
-                    values = FALSE) |>
+                    values = FALSE, warn = FALSE) |>
     as.data.table() |>
     mutate(cell = as.integer(terra::cellFromXY(.spatcell, cbind(.data$x, .data$y)))) |>
     select(cell_id = "cell", cell_x = "x", cell_y = "y") |>

@@ -12,7 +12,7 @@
 \usage{
 spatContainsNA(.x)
 
-spatSampleDT(.x, .spatcell = .x, .size = 1e+06)
+spatSampleDT(.x, .spatcell = .x, .size = 1e+06, .method = "random")
 
 spatIntersect(.x, .value = 1, .fun = NULL)
 
