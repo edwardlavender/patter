@@ -74,45 +74,6 @@ In outline, the backward pass (backward sampling) proceeds as follows:
 Note that the algorithm requires large numbers of calculations. Under default options, calculations are implemented on-the-fly, but it may be more efficient to pre-compute the set of distances between the set of unique particle pairs before implementation of the backward sampler. However, this is not currently implemented.
 }
 
-\examples{
-#### Set up examples
-obs <- dat_obs()
-con <- tempdir()
-pff_folder <- file.path(tempdir(), "patter", "pf", "forward")
-dir.create(pff_folder, recursive = TRUE)
-out_pff <- pf_forward(.obs = obs,
-                      .bathy = dat_gebco(),
-                      .moorings = dat_moorings, .detection_overlaps = dat_overlaps(),
-                      .detection_kernels = dat_kernels(),
-                      .record_opts = list(save = TRUE, sink = pff_folder))
-# D. Define inputs for pf_backward_*()
-# * Use a subset of samples for speed
-history <- out_pff$history[1:10]
-gebco <- dat_gebco()
-
-#### Example (1): Implementation with default options
-out_pfb <-
-  pf_backward_sampler(history,
-                      .dens_step = dstep, lonlat = FALSE,
-                      .save_history = TRUE)
-
-#### Example (2): Parallelise default implementation
-# Use forking
-if (.Platform$OS.type == "unix") {
-  out_pfb <-
-    pf_backward_sampler(history,
-                        .dens_step = dstep, lonlat = FALSE,
-                        .save_history = TRUE,
-                        .cl = 2L)
-}
-# Use socket cluster
-out_pfb <-
-  pf_backward_sampler(history,
-                      .dens_step = patter::dstep, lonlat = FALSE,
-                      .save_history = TRUE,
-                      .cl = parallel::makeCluster(2L),
-  )
-}
 \seealso{
 \itemize{
 \item The PF (forward simulation) is implemented by \code{\link[=pf_forward]{pf_forward()}};
