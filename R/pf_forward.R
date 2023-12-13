@@ -30,20 +30,20 @@ pf_forward <- function(.obs,
                        .record_opts = list(save = FALSE,
                                            cols = NULL,
                                            sink = NULL),
-                       .verbose = TRUE, .txt = "") {
+                       .verbose = TRUE) {
 
   #### Check user inputs
   t_onset <- Sys.time()
   # .pf_checks()
 
   #### Set up messages
-  cat_to_cf <- cat_helper(.verbose = .verbose, .txt = .txt)
-  cat_to_cf(call_start(.fun = as.character(sys.call(0L)), .start = t_onset))
-  on.exit(cat_to_cf(call_end(.fun = as.character(sys.call(0L)),
+  cat_log <- cat_init(.verbose = .verbose)
+  cat_log(call_start(.fun = as.character(sys.call(0L)), .start = t_onset))
+  on.exit(cat_log(call_end(.fun = as.character(sys.call(0L)),
                              .start = t_onset, .end = Sys.time())), add = TRUE)
 
   #### Define startup objects (e.g., empty output lists)
-  cat_to_cf("... Setting up simulation...")
+  cat_log("... Setting up simulation...")
   startup <- .pf_startup(.rerun = .rerun,
                          .obs = .obs,
                          .lonlat = .lonlat,
@@ -72,7 +72,7 @@ pf_forward <- function(.obs,
   #### Define origin
   pnow <- NULL
   if (length(history) == 0L | .rerun_from == 1L) {
-    cat_to_cf("... Defining origin...")
+    cat_log("... Defining origin...")
     pnow <- .pf_particles_origin(.obs = .obs,
                                  .origin = .origin,
                                  .grid = FALSE,
@@ -105,17 +105,17 @@ pf_forward <- function(.obs,
   pb <- pb_init(.min = 2L, .max = max(.obs$timestep))
 
   #### Run simulation
-  cat_to_cf("... Initiating simulation...")
+  cat_log("... Initiating simulation...")
   while (t %in% 2L:max(.obs$timestep)) {
 
     #### Initiate time step
-    cat_to_cf(paste0("... ... Time step ", t, ":"))
+    cat_log(paste0("... ... Time step ", t, ":"))
     pb_tick(.pb = pb, .t = t)
     diagnostics_t <- list()
 
     #### (1) Propose new particles (using kicks)
     if (.trial_kick > 0L) {
-      cat_to_cf("... ... ... Kicking particles...")
+      cat_log("... ... ... Kicking particles...")
       pnow <- .pf_particles_kick(.particles = copy(ppast),
                                  .rpropose = .rpropose, .obs = .obs, .t = t, .bathy = .bathy,
                                  .pf_lik = .pf_lik_abbr,
@@ -130,7 +130,7 @@ pf_forward <- function(.obs,
       use_sampler <- .pf_trial_sampler(.diagnostics = diagnostics_t,
                                        .trial_crit = .trial_sampler_crit)
       if (use_sampler) {
-        cat_to_cf("... ... ... Using directed sampling...")
+        cat_log("... ... ... Using directed sampling...")
         pnow <- .pf_particles_sampler(.particles = copy(ppast),
                                       .obs = .obs, .t = t, .bathy = .bathy, .lonlat = .lonlat,
                                       .pf_lik = .pf_lik_abbr,
@@ -155,7 +155,7 @@ pf_forward <- function(.obs,
     if (crit < .trial_revert_crit & iter_i <= .trial_revert) {
       # Define time step
       t <- .pf_revert(.t = t, .trial_revert_steps = .trial_revert_steps)
-      cat_to_cf(paste0("... ... ... Reverting to time ", t, " (on ", iter_i, "/", .trial_revert, " revert attempt(s)...)"))
+      cat_log(paste0("... ... ... Reverting to time ", t, " (on ", iter_i, "/", .trial_revert, " revert attempt(s)...)"))
       iter_i <- iter_i + 1L
       # Define ppast for relevant time step
       ppast <- .pf_ppast(.particles = NULL, .history = history,
