@@ -37,7 +37,7 @@ In the AC* algorithms, a model of the detection process informs the set of possi
 }
 
 \examples{
-data <- pat_setup_data(.moorings = moorings,
+data <- pat_setup_data(.moorings = dat_moorings,
                        .bathy = dat_gebco(),
                        .lonlat = FALSE)
 m <- data$data$moorings[1, ]

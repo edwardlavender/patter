@@ -401,7 +401,7 @@ acs_setup_detection_overlaps <- function(.data) {
 #' @return The function returns a [`SpatRaster`] that defines the probability of detection in each cell, according to a pre-defined model.
 #'
 #' @examples
-#' data <- pat_setup_data(.moorings = moorings,
+#' data <- pat_setup_data(.moorings = dat_moorings,
 #'                        .bathy = dat_gebco(),
 #'                        .lonlat = FALSE)
 #' m <- data$data$moorings[1, ]
