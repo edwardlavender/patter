@@ -40,8 +40,8 @@ pf_path <- function(.history,
 
   # Set up messages
   cat_log <- cat_init(.verbose = .verbose)
-  cat_log(paste0("patter::pf_path() called (@ ", t_onset, ")..."))
-  on.exit(cat_log(paste0("patter::pf_path() call ended (@ ", Sys.time(), ").")), add = TRUE)
+  cat_log(call_start(.fun = "pf_path", .start = t_onset))
+  on.exit(cat_log(call_end(.fun = "pf_path", .start = t_onset, .end = Sys.time())), add = TRUE)
 
   # Set up chain
   cat_log("... Setting up...")

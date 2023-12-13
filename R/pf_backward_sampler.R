@@ -134,8 +134,8 @@ pf_backward_sampler <- function(.history,
 
   #### Set up messages (as usual)
   cat_log <- cat_init(.verbose = .verbose)
-  cat_log(paste0("patter::pf_backward_*() called (@ ", t_onset, ")..."))
-  on.exit(cat_log(paste0("patter::pf_backward_*() call ended (@ ", Sys.time(), ").")), add = TRUE)
+  cat_log(call_start(.fun = "pf_backward_sampler", .start = t_onset))
+  on.exit(cat_log(call_end(.fun = "pf_backward_sampler", .start = t_onset, .end = Sys.time())), add = TRUE)
 
   #### Set up loop
   cat_log("... Set up...")

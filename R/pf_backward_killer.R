@@ -33,8 +33,8 @@ pf_backward_killer <- function(.history,
 
   #### Set up messages
   cat_log <- cat_init(.verbose = .verbose)
-  cat_log(paste0("patter::pf_backward_*() called (@ ", t_onset, ")..."))
-  on.exit(cat_log(paste0("patter::pf_backward_*() call ended (@ ", Sys.time(), ").")), add = TRUE)
+  cat_log(call_start(.fun = "pf_backward_killer", .start = t_onset))
+  on.exit(cat_log(call_end(.fun = "pf_backward_killer", .start = t_onset, .end = Sys.time())), add = TRUE)
 
   #### Set up loop
   # Define whether or not .history dataframes need to be read from file

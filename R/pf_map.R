@@ -258,8 +258,8 @@ pf_map_dens <- function(.xpf,
 
   #### Set up messages
   cat_log <- cat_init(.verbose = .verbose)
-  cat_log(paste0("patter::pf_map_dens() called (@ ", t_onset, ")..."))
-  on.exit(cat_log(paste0("patter::pf_map_dens() call ended (@ ", Sys.time(), ").")), add = TRUE)
+  cat_log(call_start(.fun = "pf_map_dens", .start = t_onset))
+  on.exit(cat_log(call_end(.fun = "pf_map_dens", .start = t_onset, .end = Sys.time())), add = TRUE)
 
   #### Process SpatRaster
   # spatstat assumes planar coordinates
