@@ -73,7 +73,12 @@ test_that("acs_setup_detection_overlaps() work", {
   points(m$receiver_easting, m$receiver_northing)
 
   #### Identify detection overlaps
-  out <- acs_setup_detection_overlaps(m, s)
+  data <- pat_setup_data(.moorings = m,
+                         .services = s,
+                         .bathy = gebco,
+                         .lonlat = FALSE
+                         )
+  out <- acs_setup_detection_overlaps(data)
 
   #### Validate detection overlaps
   # Validate detection overlaps[[1]] and [[2]] are blank
@@ -91,9 +96,9 @@ test_that("acs_setup_detection_overlaps() work", {
 })
 
 test_that("acs_setup_detection_pr() works", {
-  m <- dat_moorings[1, , drop = FALSE]
+  m <- dat_moorings[1, .(receiver_x = receiver_easting, receiver_y = receiver_northing)]
   p <- acs_setup_detection_pr(m, dat_gebco())
-  expect_equal(terra::extract(p, data.frame(m$receiver_easting, m$receiver_northing))[1, 2],
+  expect_equal(terra::extract(p, data.frame(m$receiver_x, m$receiver_y))[1, 2],
                calc_detection_pr_logistic(0))
 
 })
@@ -111,17 +116,21 @@ test_that("acs_setup_detection_kernels() works", {
   s <- data.table(receiver_id = c(3, 5),
                   service_start = as.Date(c("2016-01-01", "2016-01-01")),
                   service_end = as.Date(c("2016-01-01", "2016-01-01")))
+  data <- pat_setup_data(.moorings = m,
+                         .services = s,
+                         .bathy = dat_gebco(),
+                         .lonlat = FALSE)
 
   #### Implement function
   # Define output for example receiver
+  m <- data$data$moorings
   pr <- lapply(seq_len(max(m$receiver_id)), function(id) {
     if (!(id %in% m$receiver_id)) return(NULL)
     acs_setup_detection_pr(m[m$receiver_id == id, , drop = FALSE], dat_gebco())
   })
   # Define kernels
-  k <- acs_setup_detection_kernels(m, s,
-                                   .calc_detection_pr = acs_setup_detection_pr,
-                                   .bathy = dat_gebco())
+  k <- acs_setup_detection_kernels(data,
+                                   .calc_detection_pr = acs_setup_detection_pr)
 
   #### Check array designs
   expect_true(all.equal(
@@ -152,15 +161,15 @@ test_that("acs_setup_detection_kernels() works", {
 
   #### Check validation of invalid inputs
   # Define invalid input
-  calc_dpr <- function(.data, .bathy, .error = NA) {
+  calc_dpr <- function(.mooring, .bathy, .error = NA) {
     # Define helper function to calculate detection probability given distance (m)
     .calc_dpr <- function(distance) {
       pr <- stats::plogis(2.5 + -0.02 * distance)
-      pr[distance > .data$receiver_range] <- 0
+      pr[distance > .mooring$receiver_range] <- 0
       pr
     }
     # Calculate Euclidean distance around receiver
-    rxy <- matrix(c(.data$receiver_easting, .data$receiver_northing), ncol = 2)
+    rxy <- matrix(c(.mooring$receiver_easting, .mooring$receiver_northing), ncol = 2)
     cell <- terra::cellFromXY(.bathy, rxy)
     grid <- terra::setValues(.bathy, NA)
     grid[cell] <- 1
@@ -169,19 +178,17 @@ test_that("acs_setup_detection_kernels() works", {
     # Convert distances to detection pr
     pr <- terra::app(dist, .calc_dpr)
     # Introduce error: set the receiver 3 location to 0 or NA
-    if (.data$receiver_id == 3L) {
+    if (.mooring$receiver_id == 3L) {
       pr[cell] <- .error
     }
     pr
   }
   # Check warnings (NA at receiver)
-  acs_setup_detection_kernels(m, s,
-                              .calc_detection_pr = calc_dpr,
-                              .bathy = dat_gebco()) |>
+  acs_setup_detection_kernels(data,
+                              .calc_detection_pr = calc_dpr) |>
     expect_warning("Detection probability is NA at receiver 3.", fixed = TRUE)
   # Check warnings (0 at receiver)
-  acs_setup_detection_kernels(m, s,
-                              .calc_detection_pr = function(.d, .b) calc_dpr(.d, .b, .error = 0),
-                              .bathy = dat_gebco()) |>
+  acs_setup_detection_kernels(data,
+                              .calc_detection_pr = function(.mooring, .bathy) calc_dpr(.mooring, .bathy, .error = 0)) |>
     expect_warning("Detection probability is 0 at receiver 3.", fixed = TRUE)
 })
