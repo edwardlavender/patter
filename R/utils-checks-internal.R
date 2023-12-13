@@ -153,3 +153,18 @@ check_new_colnames <- function(.data, .new) {
   }
   NULL
 }
+
+#' @rdname check_utils
+#' @keywords internal
+
+# Check elements of a list are not NULL
+check_not_null <- function(input, req) {
+  if (!is.null(req)) {
+    sapply(req, \(elm) {
+      if (is.null(input[[elm]])) {
+        abort("{deparse(substitute(input))}${elm} is required for this function.",
+              .envir = environment())
+      }
+    })
+  }
+}
