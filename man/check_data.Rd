@@ -11,7 +11,7 @@
 \usage{
 check_bathy(.bathy)
 
-check_acoustics(.acoustics)
+check_acoustics(.acoustics, .moorings = NULL)
 
 check_moorings(.moorings, .lonlat, .bathy)
 
@@ -26,7 +26,7 @@ check_data(.data, .dataset = NULL, .spatial = NULL, .par = NULL)
 
 \item{.acoustics, .moorings, .services, .archival}{Movement \code{\link{data.table}}s.}
 
-\item{.lonlat}{A \code{logical} variable that defines whether spatial data is in longitude/latitude format.}
+\item{.lonlat}{A \code{logical} variable that defines whether spatial data is in longitude/latitude format. If unsupplied, this is defined (if possible) based on the columns in \code{.moorings}.}
 
 \item{.data, .dataset, .spatial, .par}{Arguments for \code{\link[=check_data]{check_data()}}.}
 }
@@ -82,7 +82,7 @@ These are internal functions that ensure that input dataset(s) meet \code{\link{
 \item Columns:
 \itemize{
 \item \code{receiver_id}---an \code{integer} vector of unique receiver deployments (\verb{1, ..., N});
-\item \code{receiver_easting} and \code{receiver_northing} and/or \code{receiver_lon} and \code{receiver_lat}---Receiver coordinates. \code{receiver_easting} and \code{receiver_northing} must be present if \code{.lonlat = FALSE} and \code{receiver_lon} and \code{receiver_lat} must be present otherwise. The selected coordinate columns are copied, renamed to \code{receiver_x} and \code{receiver_y} and coerced onto the \code{.bathy} grid.
+\item \code{receiver_easting} and \code{receiver_northing} and/or \code{receiver_lon} and \code{receiver_lat}---Receiver coordinates. \code{receiver_easting} and \code{receiver_northing} must be present if \code{.lonlat = FALSE} and \code{receiver_lon} and \code{receiver_lat} must be present otherwise. The selected coordinate columns are copied, renamed to \code{receiver_x} and \code{receiver_y} and coerced onto the \code{.bathy} grid. Note that \code{.bathy} must be in the specified projection.
 }
 \item Properties:
 \itemize{

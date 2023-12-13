@@ -1,17 +1,16 @@
 #' @title The centres of activity (COA) algorithm
 #' @description This function calculates centres of activity (COAs).
-#' @param .acoustics A [`data.table`] of acoustic detections. At a minimum, this must contain the following columns:
-#' * `receiver_id`---a unique identifier of each receiver;
-#' * `timestamp`---a time variable that defines the time stamp of detections;
-#' * `receiver_easting` and `receiver_northing` (planar coordinates) or `receiver_lon` and `receiver_lat` (longitude/latitude coordinates)---receiver locations;
+#' @param .data A named `list` of data and parameters from [`pat_setup_data()`]. This function requires:
+#' * `.data$data$acoustics`, with the following columns: `receiver_id` and `timestamp`;
+#' * `.data$data$moorings`, with the following columns: `receiver_id`, `receiver_x` and  `receiver_y`;
+#' * `.data$pars$lonlat`, which specifies the coordin
+#' @param .split (optional) A `character` that defines the name of the grouping factor in `.data$data$acoustics` (e.g., `individual_id` for [`dat_acoustics`]).
 #' @param .delta_t The time interval over which to calculate COAs. This can be specified in any way understood by [`cut.POSIXt()`] (see the `breaks` argument).
-#' @param .split (optional) A `character` that defines the name of the grouping factor in `.acoustics` (e.g., `individual_id` for [`dat_acoustics`]).
-#' @param .lonlat (optional) A `logical` variable that defines whether or not to calculate COAs using planar coordinates (`receiver_easting` and `receiver_northing` columns) or longitude/latitude coordinates (`receiver_lon` and `receiver_lat` columns). If unsupplied, this is defined automatically based on the columns in `.acoustics`. `receiver_easting` and `receiver_northing` are used preferentially, if available, unless `.lonlat` is specified. `.lonlat = TRUE` requires the [`geosphere::geomean()`] function.
 #' @param .plot_weights A `logical` variable that defines whether or not to plot the frequency distribution of weights for each `.split` value.
 #' @param .one_page A `logical` variable that defines whether or not to plot all histograms on one page.
 #' @param ... Additional arguments passed to [`graphics::hist()`].
 #'
-#' @details COAs are calculated as a weighted mean of the locations of receivers at which individuals are detected over consecutive time intervals, weighted by the frequency of detections at each of those receivers.
+#' @details COAs are calculated as a weighted mean of the locations of receivers at which individuals are detected over consecutive time intervals, weighted by the frequency of detections at each of those receivers. COAs are calculated via [`stats::weighted.mean()`] (for planar coordinates) or [`geosphere::geomean()`] (for longitude/latitude coordinates).
 #'
 #' @seealso
 #' * For reconstructing movement paths and patterns of space use, see [`pf_forward()`];
@@ -21,18 +20,24 @@
 #' @author Edward Lavender
 #' @export
 
-coa <- function(.acoustics, .delta_t, .split = NULL, .lonlat = NULL,
+coa <- function(.data, .delta_t, .split = NULL,
                 .plot_weights = TRUE, ..., .one_page = TRUE) {
 
   #### Check user inputs
-  .acoustics <- .coa_check_acoustics(.acoustics, .split)
-  if (is.null(.lonlat)) {
-    .lonlat <- .is_lonlat(.acoustics)
-  }
-  if (.lonlat) {
-    rlang::check_installed("geosphere")
-  }
+  check_data(.data,
+             .dataset = c("acoustics", "moorings"),
+             .par = "lonlat")
   check_dots_for_missing_period(formals(), list(...))
+
+  #### Define datasets
+  acoustics <- .data$data$acoustics
+  moorings  <- .data$data$moorings
+  ind       <- match(acoustics$receiver_id, moorings$receiver_id)
+  receiver_x <- receiver_y <- NULL
+  acoustics[, receiver_x := moorings$receiver_x[ind]]
+  acoustics[, receiver_y := moorings$receiver_y[ind]]
+  check_names(acoustics, req = .split)
+  lonlat <- .data$par$lonlat
 
   #### Identify split column e.g., individual_id
   keep_split <- TRUE
@@ -40,17 +45,17 @@ coa <- function(.acoustics, .delta_t, .split = NULL, .lonlat = NULL,
     keep_split <- FALSE
     .split <- "individual_id"
     individual_id <- NULL
-    .acoustics[, individual_id := 1L]
+    acoustics[, individual_id := 1L]
   }
 
   #### Prepare acoustics for COA calculations
   # * Define split column
   # * Group by split & define bins
   # * Calculate the frequency of detections in each bin
-  tz <- lubridate::tz(.acoustics$timestamp)
-  .acoustics <-
-    .acoustics |>
-    mutate(split = .acoustics[[.split]]) |>
+  tz <- lubridate::tz(acoustics$timestamp)
+  acoustics <-
+    acoustics |>
+    mutate(split = acoustics[[.split]]) |>
     group_by(.data$split) |>
     mutate(bin = as.POSIXct(cut(.data$timestamp, .delta_t), tz = tz)) |>
     ungroup() |>
@@ -61,22 +66,22 @@ coa <- function(.acoustics, .delta_t, .split = NULL, .lonlat = NULL,
     as.data.table()
   # Plot the frequency distribution of weights
   if (.plot_weights) {
-    pp <- graphics::par(mfrow = par_mf(length(unique(.acoustics$split))))
+    pp <- graphics::par(mfrow = par_mf(length(unique(acoustics$split))))
     on.exit(graphics::par(pp), add = TRUE)
-    lapply(split(.acoustics, .acoustics$split), function(d) {
+    lapply(split(acoustics, acoustics$split), function(d) {
       graphics::hist(d$n, main = d$split[1], ...)
     }) |> invisible()
   }
 
   #### Calculate COAs
-  if (.lonlat) {
+  if (lonlat) {
     # Calculate COAs using geomean() if lonlat
     out <-
-      .acoustics |>
+      acoustics |>
       group_by(.data$split, .data$bin) |>
       summarise(
-        coa_xy = geomean(xy = as.matrix(cbind(x = .data$receiver_lon,
-                                              y = .data$receiver_lat),
+        coa_xy = geomean(xy = as.matrix(cbind(x = .data$receiver_x,
+                                              y = .data$receiver_y),
                                         ncol = 2),
                          w = .data$n),
         coa_x = .data$coa_xy[, 1],
@@ -87,10 +92,10 @@ coa <- function(.acoustics, .delta_t, .split = NULL, .lonlat = NULL,
   } else {
     # Calculate COAs using weighted.mean() if planar
     out <-
-      .acoustics |>
+      acoustics |>
       group_by(.data$split, .data$bin) |>
-      summarise(coa_x = stats::weighted.mean(.data$receiver_easting, .data$n),
-                coa_y = stats::weighted.mean(.data$receiver_northing, .data$n)) |>
+      summarise(coa_x = stats::weighted.mean(.data$receiver_x, .data$n),
+                coa_y = stats::weighted.mean(.data$receiver_y, .data$n)) |>
       ungroup() |>
       as.data.table()
   }

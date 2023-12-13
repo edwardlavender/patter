@@ -12,6 +12,8 @@
 #' @details
 #' The preparation of datasets for [`patter`] is a one-off inconvenience. See the [`check_data`] function documentation for full details as to the required properties of each input dataset. All requirements are kept to a minimum and straightforward to address. To minimise inconvenience, all inputs are optional in [`pat_setup_data()`]. If you are only interested in  specific routine(s), check the associated documentation to see which inputs are essential for those routine(s). The output of [`pat_setup_data()`] is widely passed to downstream [`patter`] functions, which streamlines the API, documentation and internal code.
 #'
+#' If `.lonlat = TRUE`, downstream functions require the `geosphere` package.
+#'
 #' @return The function returns a named `list` with three elements:
 #' * `data`---a named list, with one element for each movement dataset;
 #' * `spatial`---a named list, with one element for each spatial dataset;
@@ -35,7 +37,7 @@ pat_setup_data <- function(.acoustics = NULL,
                            .archival = NULL,
                            .bathy = NULL,
                            .lonlat = NULL) {
-  # Define blank data
+  #### Define blank data
   data <- list(acoustics = NULL,
                moorings = NULL,
                services = NULL,
@@ -43,17 +45,38 @@ pat_setup_data <- function(.acoustics = NULL,
   spatial <- list(bathy = NULL)
   pars <- list(lonlat = NULL,
                spatna = NULL)
-  # Check movement datasets
-  data$acoustics <- check_acoustics(.acoustics = .acoustics)
-  data$moorings  <- check_moorings(.moorings = .moorings, .lonlat = .lonlat, .bathy = .bathy)
+
+  #### Check movement datasets
+  # Acoustics
+  data$acoustics <- check_acoustics(.acoustics = .acoustics, .moorings = .moorings)
+  # Moorings
+  if (!is.null(.moorings)) {
+    if (is.null(.lonlat)) {
+      .lonlat <-  .is_lonlat(.moorings)
+    }
+    if (is.null(.bathy) | is.null(.lonlat)) {
+      warn("`.moorings` should be accompanied by `.bathy` and `.lonlat` to define receiver coordinate (`receiver_x` and `receiver_y`) columns.")
+    }
+  }
+  data$moorings  <- check_moorings(.moorings = .moorings,
+                                   .lonlat = .lonlat,
+                                   .bathy = .bathy)
   data$services  <- check_services(.services = .services, .moorings = .moorings)
   data$archival  <- check_archival(.archival)
-  # Check spatial datasets
+
+  #### Check spatial datasets
   spatial$bathy <- check_bathy(.bathy)
-  # Define parameters
+
+  #### Define parameters
   pars$lonlat <- .lonlat
   pars$spatna <- spatContainsNA(.bathy)
-  # Return list
+
+  #### Check packages
+  if (!is.null(pars$lonlat) && pars$lonlat) {
+    rlang::check_installed("geosphere")
+  }
+
+  #### Return list
   list(data = data,
        spatial = spatial,
        pars = pars)

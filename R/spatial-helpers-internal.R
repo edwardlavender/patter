@@ -17,7 +17,8 @@
     warn("UTM coordinates used (both UTM and lon/lat coordinates detected).")
   }
   if (!is_utm & !is_lonlat) {
-    abort("Neither UTM coordinates (`.data$receiver_easting`, `.data$receiver_northing`) nor lon/lat coordinates (`.data$receiver_lon`, `.data$receiver_lat`) detected. ")
+    warn("Neither UTM coordinates (`.data$receiver_easting`, `.data$receiver_northing`) nor lon/lat coordinates (`.data$receiver_lon`, `.data$receiver_lat`) detected. ")
+    return(NULL)
   }
   if (is_utm) {
     is_lonlat <- FALSE

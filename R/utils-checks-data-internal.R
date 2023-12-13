@@ -2,7 +2,7 @@
 #' @description These functions validate user datasets.
 #'
 #' @param .bathy A bathymetry [`SpatRaster`]. This is widely used as a generic grid in [`patter`] functions.
-#' @param .lonlat A `logical` variable that defines whether spatial data is in longitude/latitude format.
+#' @param .lonlat A `logical` variable that defines whether spatial data is in longitude/latitude format. If unsupplied, this is defined (if possible) based on the columns in `.moorings`.
 #' @param .acoustics,.moorings,.services,.archival Movement [`data.table`]s.
 #' @param .data,.dataset,.spatial,.par Arguments for [`check_data()`].
 #'
@@ -37,7 +37,7 @@
 #'    - Class: [`data.table`];
 #'    - Columns:
 #'        * `receiver_id`---an `integer` vector of unique receiver deployments (`1, ..., N`);
-#'        * `receiver_easting` and `receiver_northing` and/or `receiver_lon` and `receiver_lat`---Receiver coordinates. `receiver_easting` and `receiver_northing` must be present if `.lonlat = FALSE` and `receiver_lon` and `receiver_lat` must be present otherwise. The selected coordinate columns are copied, renamed to `receiver_x` and `receiver_y` and coerced onto the `.bathy` grid.
+#'        * `receiver_easting` and `receiver_northing` and/or `receiver_lon` and `receiver_lat`---Receiver coordinates. `receiver_easting` and `receiver_northing` must be present if `.lonlat = FALSE` and `receiver_lon` and `receiver_lat` must be present otherwise. The selected coordinate columns are copied, renamed to `receiver_x` and `receiver_y` and coerced onto the `.bathy` grid. Note that `.bathy` must be in the specified projection.
 #'    - Properties:
 #'       * `receiver_start` should precede `receiver_end` (not currently validated);
 #'       * Receiver coordinates must be valid (not currently validated);
@@ -90,7 +90,7 @@ check_bathy <- function(.bathy) {
 #' @rdname check_data
 #' @keywords internal
 
-check_acoustics <- function(.acoustics) {
+check_acoustics <- function(.acoustics, .moorings = NULL) {
   # Skip NULL
   if (is.null(.acoustics)) {
     return(NULL)
@@ -116,6 +116,11 @@ check_acoustics <- function(.acoustics) {
     .acoustics$receiver_id <- as.integer(.acoustics$receiver_id)
   }
   check_inherits(.acoustics$receiver_id, "integer")
+  if (!is.null(.moorings)) {
+    if (!all(.acoustics$receiver_id %in% .moorings$receiver_id)) {
+      warn("Not all receivers in `.acoustics` are found in `.moorings`.")
+    }
+  }
   # Check for NAs
   if (any(is.na(.acoustics))) {
     warn("The acoustic data contains NAs.")
@@ -167,13 +172,14 @@ check_moorings <- function(.moorings, .lonlat, .bathy) {
       .moorings$receiver_x <- .moorings$receiver_lon
       .moorings$receiver_y <- .moorings$receiver_lat
     } else {
-      .moorings$receiver_y <- .moorings$receiver_northing
       coords <- c("receiver_easting", "receiver_northing")
       .moorings$receiver_x <- .moorings$receiver_easting
+      .moorings$receiver_y <- .moorings$receiver_northing
     }
     check_names(.moorings, req = coords)
 
     # (optional) Coerce coordinates onto grid
+    # * This assumes the grid is in the correct projection
     if (!is.null(.bathy)) {
       xy <-
         .moorings |>

@@ -39,6 +39,8 @@ This function is used to set up movement datasets, spatial datasets and associat
 }
 \details{
 The preparation of datasets for \code{\link{patter}} is a one-off inconvenience. See the \code{\link{check_data}} function documentation for full details as to the required properties of each input dataset. All requirements are kept to a minimum and straightforward to address. To minimise inconvenience, all inputs are optional in \code{\link[=pat_setup_data]{pat_setup_data()}}. If you are only interested in  specific routine(s), check the associated documentation to see which inputs are essential for those routine(s). The output of \code{\link[=pat_setup_data]{pat_setup_data()}} is widely passed to downstream \code{\link{patter}} functions, which streamlines the API, documentation and internal code.
+
+If \code{.lonlat = TRUE}, downstream functions require the \code{geosphere} package.
 }
 \examples{
 data <- pat_setup_data(.acoustics = dat_acoustics,

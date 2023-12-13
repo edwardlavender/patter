@@ -5,28 +5,25 @@
 \title{The centres of activity (COA) algorithm}
 \usage{
 coa(
-  .acoustics,
+  .data,
   .delta_t,
   .split = NULL,
-  .lonlat = NULL,
   .plot_weights = TRUE,
   ...,
   .one_page = TRUE
 )
 }
 \arguments{
-\item{.acoustics}{A \code{\link{data.table}} of acoustic detections. At a minimum, this must contain the following columns:
+\item{.data}{A named \code{list} of data and parameters from \code{\link[=pat_setup_data]{pat_setup_data()}}. This function requires:
 \itemize{
-\item \code{receiver_id}---a unique identifier of each receiver;
-\item \code{timestamp}---a time variable that defines the time stamp of detections;
-\item \code{receiver_easting} and \code{receiver_northing} (planar coordinates) or \code{receiver_lon} and \code{receiver_lat} (longitude/latitude coordinates)---receiver locations;
+\item \code{.data$data$acoustics}, with the following columns: \code{receiver_id} and \code{timestamp};
+\item \code{.data$data$moorings}, with the following columns: \code{receiver_id}, \code{receiver_x} and  \code{receiver_y};
+\item \code{.data$pars$lonlat}, which specifies the coordin
 }}
 
 \item{.delta_t}{The time interval over which to calculate COAs. This can be specified in any way understood by \code{\link[=cut.POSIXt]{cut.POSIXt()}} (see the \code{breaks} argument).}
 
-\item{.split}{(optional) A \code{character} that defines the name of the grouping factor in \code{.acoustics} (e.g., \code{individual_id} for \code{\link{dat_acoustics}}).}
-
-\item{.lonlat}{(optional) A \code{logical} variable that defines whether or not to calculate COAs using planar coordinates (\code{receiver_easting} and \code{receiver_northing} columns) or longitude/latitude coordinates (\code{receiver_lon} and \code{receiver_lat} columns). If unsupplied, this is defined automatically based on the columns in \code{.acoustics}. \code{receiver_easting} and \code{receiver_northing} are used preferentially, if available, unless \code{.lonlat} is specified. \code{.lonlat = TRUE} requires the \code{\link[geosphere:geomean]{geosphere::geomean()}} function.}
+\item{.split}{(optional) A \code{character} that defines the name of the grouping factor in \code{.data$data$acoustics} (e.g., \code{individual_id} for \code{\link{dat_acoustics}}).}
 
 \item{.plot_weights}{A \code{logical} variable that defines whether or not to plot the frequency distribution of weights for each \code{.split} value.}
 
@@ -38,35 +35,36 @@ coa(
 This function calculates centres of activity (COAs).
 }
 \details{
-COAs are calculated as a weighted mean of the locations of receivers at which individuals are detected over consecutive time intervals, weighted by the frequency of detections at each of those receivers.
+COAs are calculated as a weighted mean of the locations of receivers at which individuals are detected over consecutive time intervals, weighted by the frequency of detections at each of those receivers. COAs are calculated via \code{\link[stats:weighted.mean]{stats::weighted.mean()}} (for planar coordinates) or \code{\link[geosphere:geomean]{geosphere::geomean()}} (for longitude/latitude coordinates).
 }
 \examples{
 require(data.table)
-require(dtplyr)
-require(dplyr, warn.conflicts = FALSE)
-
-#### Prepare example data
-# Define example acoustics data
-acc   <- dat_acoustics
-index <- match(acc$receiver_id, dat_moorings$receiver_id)
-# Add UTM receiver coordinates from `dat_moorings`
-acc$receiver_easting  <- dat_moorings$receiver_easting[index]
-acc$receiver_northing <- dat_moorings$receiver_northing[index]
-# Add lon/lat coordinates
-acc$receiver_lon <- dat_moorings$receiver_lon[index]
-acc$receiver_lat <- dat_moorings$receiver_lat[index]
 
 #### Example (1): Calculate COAs for an example individual
-pos <- which(acc$individual_id == acc$individual_id[1])
-coa(acc[pos, ], .delta_t = "2 hours")
-coa(acc[pos, ], .delta_t = "4 hours")
+acc   <- dat_acoustics[individual_id == dat_acoustics$individual_id[1], ]
+gebco <- dat_gebco()
+data  <- pat_setup_data(.acoustics = acc,
+                        .moorings = dat_moorings,
+                        .bathy = gebco,
+                        .lonlat = FALSE)
+coa(data, .delta_t = "2 hours")
+coa(data, .delta_t = "4 hours")
 
 #### Example (2): Calculate COAs for multiple individuals via .split
-coa(acc, .delta_t = "6 hours", .split = "individual_id")
+data <- pat_setup_data(.acoustics = dat_acoustics,
+                       .moorings = dat_moorings,
+                       .bathy = gebco,
+                       .lonlat = FALSE)
+coa(data, .delta_t = "6 hours", .split = "individual_id")
 
-#### Example (3): Use planar or lon/lat coordinates
-coa(acc, .delta_t = "8 hours", .split = "individual_id", .lonlat = FALSE)
-coa(acc, .delta_t = "8 hours", .split = "individual_id", .lonlat = TRUE)
+#### Example (3): Use lon/lat coordinates
+gebco_ll <- terra::project(dat_gebco(), "EPSG:4326")
+data <- pat_setup_data(.acoustics = dat_acoustics,
+                       .moorings = dat_moorings,
+                       .bathy = gebco_ll,
+                       .lonlat = TRUE)
+coa(data, .delta_t = "6 hours", .split = "individual_id")
+
 }
 \seealso{
 \itemize{
