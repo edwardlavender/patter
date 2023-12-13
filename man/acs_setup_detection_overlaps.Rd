@@ -10,7 +10,7 @@ This function supersedes the \href{https://edwardlavender.github.io/flapper/refe
 acs_setup_detection_overlaps(.data)
 }
 \arguments{
-\item{.data}{A \code{list} of data and parameters from \code{\link[=pat_setup_data]{pat_setup_data()}}. This function requires:
+\item{.data}{A named \code{list} of data and parameters from \code{\link[=pat_setup_data]{pat_setup_data()}}. This function requires:
 \itemize{
 \item \code{.data$data$moorings}, with the following columns: \code{receiver_id}, \code{receiver_x}, \code{receiver_y}, \code{receiver_start}, \code{receiver_end} and \code{receiver_range}.
 \item (optional) \code{.data$data$services}, with the following columns: \code{receiver_id}, \code{service_start} and \code{service_end}.
@@ -27,8 +27,10 @@ In the AC* algorithms, at the moment of detection, the set of possible locations
 }
 \examples{
 #### Example (1): Basic implementation
-overlaps <- acs_setup_detection_overlaps(dat_moorings)
-summary(overlaps)
+data <- pat_setup_data(.moorings = dat_moorings,
+                       .bathy = dat_gebco(),
+                       .lonlat = FALSE)
+overlaps <- acs_setup_detection_overlaps(data)
 
 }
 \seealso{

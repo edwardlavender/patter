@@ -234,7 +234,7 @@ acs_setup_obs <- function(.acoustics = NULL,
 #' @title AC* set up: define detection container overlaps
 #' @description This function identifies receivers with overlapping detection containers in space and time for the AC* algorithms.
 #'
-#' @param .data A `list` of data and parameters from [`pat_setup_data()`]. This function requires:
+#' @param .data A named `list` of data and parameters from [`pat_setup_data()`]. This function requires:
 #' * `.data$data$moorings`, with the following columns: `receiver_id`, `receiver_x`, `receiver_y`, `receiver_start`, `receiver_end` and `receiver_range`.
 #' *  (optional) `.data$data$services`, with the following columns: `receiver_id`, `service_start` and `service_end`.
 #'
@@ -244,8 +244,10 @@ acs_setup_obs <- function(.acoustics = NULL,
 #'
 #' @examples
 #' #### Example (1): Basic implementation
-#' overlaps <- acs_setup_detection_overlaps(dat_moorings)
-#' summary(overlaps)
+#' data <- pat_setup_data(.moorings = dat_moorings,
+#'                        .bathy = dat_gebco(),
+#'                        .lonlat = FALSE)
+#' overlaps <- acs_setup_detection_overlaps(data)
 #'
 #' @source This function supersedes the [`get_detection_containers_overlaps`](https://edwardlavender.github.io/flapper/reference/get_detection_containers_overlap.html) function in the [`flapper`](https://github.com/edwardlavender/flapper) package.
 #'
