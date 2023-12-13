@@ -18,7 +18,7 @@ test_that(".is_lonlat() works", {
              d <- data.table(x = 0)
              colnames(d) <- x
              .is_lonlat(d) |>
-               expect_error("Neither UTM coordinates (`.data$receiver_easting`, `.data$receiver_northing`) nor lon/lat coordinates (`.data$receiver_lon`, `.data$receiver_lat`) detected.",
+               expect_warning("Neither UTM coordinates (`.data$receiver_easting`, `.data$receiver_northing`) nor lon/lat coordinates (`.data$receiver_lon`, `.data$receiver_lat`) detected.",
                             fixed = TRUE)
 
            }) |> invisible()

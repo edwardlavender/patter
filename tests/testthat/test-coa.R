@@ -1,30 +1,55 @@
 test_that("coa() works", {
 
-  # Define example data
+  # Define example acoustic data
   acc <-
     dat_acoustics |>
-    merge(dat_moorings, by = "receiver_id") |>
     group_by(individual_id) |>
     # Select a subset of rows for speed
     slice(1:100) |>
     ungroup() |>
     as.data.table()
 
+  # Prepare data
+  d_utm <- pat_setup_data(.acoustics = acc,
+                          .moorings = dat_moorings,
+                          .bathy = dat_gebco(),
+                          .lonlat = FALSE)
+  d_ll  <- pat_setup_data(.acoustics = acc,
+                          .moorings = dat_moorings,
+                          .bathy = terra::project(dat_gebco(), "EPSG:4236"),
+                          .lonlat = TRUE)
+  acc <-
+    acc |>
+    left_join(
+      d_utm$data$moorings |>
+        select(receiver_id,
+               receiver_easting = receiver_x,
+               receiver_northing = receiver_y),
+      by = "receiver_id") |>
+    left_join(d_ll$data$moorings |>
+                select(receiver_id,
+                       receiver_lon = receiver_x,
+                       receiver_lat = receiver_y)) |>
+    as.data.table()
+
   # Test output columns
   # * Test outputs with .split = NULL
-  z <- coa(acc[individual_id == individual_id[1], ], .delta_t = "2 hours")
+  d_utm_1 <- d_utm
+  d_utm_1$data$acoustics <-
+    d_utm_1$data$acoustics[individual_id == d_utm_1$data$acoustics$individual_id[1]]
+  z <- coa(d_utm_1, .delta_t = "2 hours")
   check_inherits(z, "data.table")
   expect_equal(colnames(z), c("timestamp", "coa_x", "coa_y"))
   # * Test outputs with .split = TRUE
-  z <- coa(acc, .delta_t = "2 hours", .split = "individual_id")
+  z <- coa(d_utm_1, .delta_t = "2 hours", .split = "individual_id")
   expect_equal(colnames(z), c("individual_id", "timestamp", "coa_x", "coa_y"))
 
   # Compare coa() outputs & manual calculations for multiple delta_t values
   lapply(c("2 hours", "4 hours"), function(delta_t) {
 
     # Use coa()
-    z_utm <- coa(acc, .delta_t = delta_t, .split = "individual_id", .lonlat = FALSE)
-    z_ll  <- coa(acc, .delta_t = delta_t, .split = "individual_id", .lonlat = TRUE)
+    z_utm <- coa(d_utm, .delta_t = delta_t, .split = "individual_id")
+    z_ll  <- coa(d_ll, .delta_t = delta_t, .split = "individual_id")
 
     # Re-compute COAs manually
     acc_manual <-

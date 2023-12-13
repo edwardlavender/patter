@@ -19,8 +19,13 @@ test_that(".acs_absences() works", {
   }
 
   #### Define overlaps & kernels
-  overlaps <- acs_setup_detection_overlaps(m, s)
-  kernels <- acs_setup_detection_kernels(m, s, acs_setup_detection_pr, gebco)
+  data <- pat_setup_data(.moorings = m,
+                         .services = s,
+                         .bathy = dat_gebco(),
+                         .lonlat = FALSE)
+  overlaps <- acs_setup_detection_overlaps(data)
+  kernels <- acs_setup_detection_kernels(data,
+                                         .calc_detection_pr = acs_setup_detection_pr)
 
   #### Test .acs_absences()
   # Detections only at 3 indicate absences at 4

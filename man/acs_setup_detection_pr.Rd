@@ -42,8 +42,8 @@ data <- pat_setup_data(.moorings = dat_moorings,
                        .lonlat = FALSE)
 m <- data$data$moorings[1, ]
 b <- data$spatial$bathy
-p <- acs_setup_detection_pr(m, n)
-terra::plot(p)
+k <- acs_setup_detection_pr(m, b)
+terra::plot(k)
 points(m$receiver_x, m$receiver_y, pch = ".")
 
 }
