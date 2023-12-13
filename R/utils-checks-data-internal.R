@@ -3,12 +3,8 @@
 #'
 #' @param .bathy A bathymetry [`SpatRaster`]. This is widely used as a generic grid in [`patter`] functions.
 #' @param .lonlat A `logical` variable that defines whether spatial data is in longitude/latitude format.
-#'
 #' @param .acoustics,.moorings,.services,.archival Movement [`data.table`]s.
-#' * `.acoustics` contains the detection time series (see [`dat_acoustics`] for an example);
-#' * `.moorings` contains the receiver deployments (see [`dat_moorings`]) for an example);
-#' * `.services` contains receiver servicing information;
-#' * `.archival` contains archival (depth) time series (see [`dat_archival`] for an example);
+#' @param .data,.dataset,.spatial,.par Arguments for [`check_data()`].
 #'
 #' @details
 #' These are internal functions that ensure that input dataset(s) meet [`patter`] requirements. Users should implement [`pat_setup_data()`] to prepare datasets for [`patter`] functions. Downstream functions silently assume that input datasets meet all requirements, without subsequent checks. This simplifies internal code and documentation.
@@ -55,6 +51,8 @@
 #'        * Functions assume accurate clock alignment between acoustic and archival tags (if applicable);
 #'        * For most functions, a single time series (for one individual) is required;
 #'        * It is convenient if archival time stamps are regularly spaced;
+#'
+#' * [`check_data()`] is an internal function used to confirm that the data `list` passed to a [`patter`] function contains the elements required for that function.
 #'
 #' For all datasets, `NA`s may cause unexpected errors and produce a [`warning`]. `NAs` in columns other than those described above are safe.
 #'
@@ -136,7 +134,9 @@ check_moorings <- function(.moorings, .lonlat, .bathy) {
   #### Check names
   check_names(
     input = .moorings,
-    req = c("receiver_id", "receiver_start", "receiver_end"),
+    req = c("receiver_id",
+            "receiver_start", "receiver_end",
+            "receiver_range"),
     extract_names = colnames,
     type = all
   )
@@ -208,6 +208,9 @@ check_services <- function(.services, .moorings) {
   check_names(
     input = .services, req = c("receiver_id", "service_start", "service_end"),
     extract_names = colnames, type = all)
+  # Check dates
+  check_inherits(.services$service_start, "Date")
+  check_inherits(.services$service_end, "Date")
   # Check receiver IDs
   if (is.numeric(.services$receiver_id)) {
     .services$receiver_id <- as.integer(.services$receiver_id)
@@ -238,14 +241,14 @@ check_archival <- function(.archival) {
   # Check for multiple individuals
   if (rlang::has_name(.archival, "individual_id") &&
       length(unique(.archival$individual_id)) > 1L) {
-    abort("Multiple individuals detected in archival data.")
+    warn("Multiple individuals detected in archival data.")
   }
   # Check time stamps
   check_inherits(.archival$timestamp, "POSIXct")
   timestamp <- NULL
   .archival[, timestamp := check_tz(timestamp)]
   if (is.unsorted(.archival$timestamp)) {
-    abort("Archival time stamps should be ordered chronologically.")
+    warn("Archival time stamps should be ordered chronologically.")
   }
   if (nrow(.archival) > 1 && length(unique(diff(.archival$timestamp))) != 1L) {
     warn("Archival time steps are not regularly spaced.")
@@ -253,11 +256,23 @@ check_archival <- function(.archival) {
   # Check depths
   check_inherits(.archival$depth, "numeric")
   if (any(.archival$depth < 0, na.rm = TRUE)) {
-    abort("Archival depths should be a positive-valued numeric vector and not negative.")
+    warn("Archival depths should be a positive-valued numeric vector and not negative.")
   }
   # Check for NAs
   if (any(is.na(.archival))) {
     warn("The archival data contains NAs.")
   }
   .archival
+}
+
+#' @rdname check_data
+#' @keywords internal
+
+check_data <- function(.data, .dataset = NULL, .spatial = NULL, .par = NULL) {
+  check_named_list(.data)
+  check_names(.data, c("data", "spatial", "pars"))
+  check_not_null(input = .data$data, req = .dataset)
+  check_not_null(input = .data$spatial, req = .spatial)
+  check_not_null(input = .data$pars, req = .par)
+  invisible(TRUE)
 }

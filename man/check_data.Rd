@@ -18,19 +18,17 @@ check_moorings(.moorings, .lonlat, .bathy)
 check_services(.services, .moorings)
 
 check_archival(.archival)
+
+check_data(.data, .dataset = NULL, .spatial = NULL, .par = NULL)
 }
 \arguments{
 \item{.bathy}{A bathymetry \code{\link{SpatRaster}}. This is widely used as a generic grid in \code{\link{patter}} functions.}
 
-\item{.acoustics, .moorings, .services, .archival}{Movement \code{\link{data.table}}s.
-\itemize{
-\item \code{.acoustics} contains the detection time series (see \code{\link{dat_acoustics}} for an example);
-\item \code{.moorings} contains the receiver deployments (see \code{\link{dat_moorings}}) for an example);
-\item \code{.services} contains receiver servicing information;
-\item \code{.archival} contains archival (depth) time series (see \code{\link{dat_archival}} for an example);
-}}
+\item{.acoustics, .moorings, .services, .archival}{Movement \code{\link{data.table}}s.}
 
 \item{.lonlat}{A \code{logical} variable that defines whether spatial data is in longitude/latitude format.}
+
+\item{.data, .dataset, .spatial, .par}{Arguments for \code{\link[=check_data]{check_data()}}.}
 }
 \value{
 Each function returns the input dataset, as described, formatted in line with \code{\link{patter}}'s requirements.
@@ -107,6 +105,7 @@ These are internal functions that ensure that input dataset(s) meet \code{\link{
 \item It is convenient if archival time stamps are regularly spaced;
 }
 }
+\item \code{\link[=check_data]{check_data()}} is an internal function used to confirm that the data \code{list} passed to a \code{\link{patter}} function contains the elements required for that function.
 }
 
 For all datasets, \code{NA}s may cause unexpected errors and produce a \code{\link{warning}}. \code{NAs} in columns other than those described above are safe.
