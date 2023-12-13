@@ -7,23 +7,13 @@
 This function supersedes the \href{https://edwardlavender.github.io/flapper/reference/get_detection_containers_overlap.html}{\code{get_detection_containers_overlaps}} function in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package.
 }
 \usage{
-acs_setup_detection_overlaps(.moorings, .services = NULL)
+acs_setup_detection_overlaps(.data)
 }
 \arguments{
-\item{.moorings}{A \code{\link{data.table}} that defines receiver deployments and associated information (see \code{\link{dat_moorings}} for an example). At a minimum, this must contain the following columns:
+\item{.data}{A \code{list} of data and parameters from \code{\link[=pat_setup_data]{pat_setup_data()}}. This function requires:
 \itemize{
-\item \code{receiver_id}---an \code{integer} vector of receiver IDs;
-\item \code{receiver_easting} and \code{receiver_northing} or \code{receiver_lon} and \code{receiver_lat}---doubles that define receiver coordinates on a planar coordinate reference system or in longitude/latitude;
-\item \code{receiver_start}---a \code{Date} vector that defines receiver deployment dates;
-\item \code{receiver_end}---a \code{Date} vector that defines receiver retrieval dates;
-\item \code{receiver_range}---a double that defines the detection range (m) for each receiver;
-}}
-
-\item{.services}{(optional) A \code{\link{data.table}} that defines receiver IDs and servicing \code{Date}s (times during the deployment period of a receiver when it was not active due to servicing) (see \code{\link[=make_matrix_receivers]{make_matrix_receivers()}}). If provided, this must contain the following columns:
-\itemize{
-\item \code{receiver_id}---an \code{integer} vector of receiver IDs;
-\item \code{service_start}---a \code{Date} vector that defines receiver servicing start dates;
-\item \code{service_end}---a \code{Date} vector that defines receiver servicing completion dates;
+\item \code{.data$data$moorings}, with the following columns: \code{receiver_id}, \code{receiver_x}, \code{receiver_y}, \code{receiver_start}, \code{receiver_end} and \code{receiver_range}.
+\item (optional) \code{.data$data$services}, with the following columns: \code{receiver_id}, \code{service_start} and \code{service_end}.
 }}
 }
 \value{

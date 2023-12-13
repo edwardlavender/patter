@@ -234,16 +234,9 @@ acs_setup_obs <- function(.acoustics = NULL,
 #' @title AC* set up: define detection container overlaps
 #' @description This function identifies receivers with overlapping detection containers in space and time for the AC* algorithms.
 #'
-#' @param .moorings A [`data.table`] that defines receiver deployments and associated information (see [`dat_moorings`] for an example). At a minimum, this must contain the following columns:
-#' * `receiver_id`---an `integer` vector of receiver IDs;
-#' * `receiver_easting` and `receiver_northing` or `receiver_lon` and `receiver_lat`---doubles that define receiver coordinates on a planar coordinate reference system or in longitude/latitude;
-#' * `receiver_start`---a `Date` vector that defines receiver deployment dates;
-#' * `receiver_end`---a `Date` vector that defines receiver retrieval dates;
-#' * `receiver_range`---a double that defines the detection range (m) for each receiver;
-#' @param .services (optional) A [`data.table`] that defines receiver IDs and servicing `Date`s (times during the deployment period of a receiver when it was not active due to servicing) (see [`make_matrix_receivers()`]). If provided, this must contain the following columns:
-#' * `receiver_id`---an `integer` vector of receiver IDs;
-#' * `service_start`---a `Date` vector that defines receiver servicing start dates;
-#' * `service_end`---a `Date` vector that defines receiver servicing completion dates;
+#' @param .data A `list` of data and parameters from [`pat_setup_data()`]. This function requires:
+#' * `.data$data$moorings`, with the following columns: `receiver_id`, `receiver_x`, `receiver_y`, `receiver_start`, `receiver_end` and `receiver_range`.
+#' *  (optional) `.data$data$services`, with the following columns: `receiver_id`, `service_start` and `service_end`.
 #'
 #' @details In the AC* algorithms, at the moment of detection, the set of possible locations depends on the receiver(s) at which an individual is, and is not, detected. The outputs of this function are used to restrict the probability calculations to the set of receivers that overlap with the receiver(s) at which an individual is detected for improved efficiency.
 #'
@@ -266,22 +259,18 @@ acs_setup_obs <- function(.acoustics = NULL,
 #' @author Edward Lavender
 #' @export
 
-acs_setup_detection_overlaps <- function(.moorings, .services = NULL) {
+acs_setup_detection_overlaps <- function(.data) {
 
-  #### Check user inputs
-  lonlat    <- .is_lonlat(.moorings)
-  .moorings <- check_moorings(.moorings, .lonlat = lonlat)
-  check_inherits(.moorings$receiver_start, "Date")
-  check_inherits(.moorings$receiver_end, "Date")
-  check_names(.moorings, "receiver_range")
-  if (!is.null(.services)) {
-    .services <- check_services(.services, .moorings)
-    check_inherits(.services$service_start, "Date")
-    check_inherits(.services$service_end, "Date")
-  }
+  #### Collect data
+  check_data(.data = .data,
+             .dataset = "moorings",
+             .par = "lonlat")
+  moorings <- .data$data$moorings
+  services <- .data$data$services
+  lonlat   <- .data$pars$lonlat
 
   #### Define receiver pairs
-  receivers <- unique(.moorings$receiver_id)
+  receivers <- unique(moorings$receiver_id)
   pairs <-
     expand.grid(r1 = receivers, r2 = receivers) |>
     filter(.data$r1 != .data$r2) |>
@@ -289,27 +278,27 @@ acs_setup_detection_overlaps <- function(.moorings, .services = NULL) {
 
   #### Define receivers overlapping in deployment period & time
   # Note that lubridate::interval() only works with data.frame() (not data.table())
-  .moorings     <- as.data.frame(.moorings)
-  .moorings$int <- lubridate::interval(.moorings$receiver_start, .moorings$receiver_end)
-  ind_1 <- match(pairs$r1, .moorings$receiver_id)
-  ind_2 <- match(pairs$r2, .moorings$receiver_id)
+  moorings     <- as.data.frame(moorings)
+  moorings$int <- lubridate::interval(moorings$receiver_start, moorings$receiver_end)
+  ind_1 <- match(pairs$r1, moorings$receiver_id)
+  ind_2 <- match(pairs$r2, moorings$receiver_id)
   pairs <-
     pairs |>
     mutate(
       # Identify deployment periods
-      receiver_start = .moorings$receiver_start[ind_1],
-      receiver_end = .moorings$receiver_end[ind_1],
+      receiver_start = moorings$receiver_start[ind_1],
+      receiver_end = moorings$receiver_end[ind_1],
       int_1 = lubridate::interval(.data$receiver_start,
                                   .data$receiver_end),
-      int_2 = lubridate::interval(.moorings$receiver_start[ind_2],
-                                  .moorings$receiver_end[ind_2]),
+      int_2 = lubridate::interval(moorings$receiver_start[ind_2],
+                                  moorings$receiver_end[ind_2]),
       # Calculate distances between receivers
-      rng_1 = .moorings$receiver_range[ind_1],
-      rng_2 = .moorings$receiver_range[ind_2],
-      dist = terra::distance(cbind(.moorings$receiver_x[ind_1],
-                                   .moorings$receiver_y[ind_1]),
-                             cbind(.moorings$receiver_x[ind_2],
-                                   .moorings$receiver_y[ind_2]),
+      rng_1 = moorings$receiver_range[ind_1],
+      rng_2 = moorings$receiver_range[ind_2],
+      dist = terra::distance(cbind(moorings$receiver_x[ind_1],
+                                   moorings$receiver_y[ind_1]),
+                             cbind(moorings$receiver_x[ind_2],
+                                   moorings$receiver_y[ind_2]),
                              lonlat = lonlat, pairwise = TRUE)
     ) |>
     # Identify receivers that overlap (at least partially) in time & space
@@ -320,16 +309,16 @@ acs_setup_detection_overlaps <- function(.moorings, .services = NULL) {
 
   #### Build overlaps list
   # Define data lists for quick access
-  moorings_ls <- split(.moorings, .moorings$receiver_id)
+  moorings_ls <- split(moorings, moorings$receiver_id)
   pairs_ls    <- split(pairs, pairs$r1)
-  if (!is.null(.services)) {
-    .services     <- as.data.frame(.services)
-    .services$int <- lubridate::interval(.services$service_start, .services$service_end)
-    services_ls   <- split(.services, .services$receiver_id)
+  if (!is.null(services)) {
+    services     <- as.data.frame(services)
+    services$int <- lubridate::interval(services$service_start, services$service_end)
+    services_ls   <- split(services, services$receiver_id)
   }
   # Build list
   out <-
-    pbapply::pblapply(seq_len(max(.moorings$receiver_id)), function(i) {
+    pbapply::pblapply(seq_len(max(moorings$receiver_id)), function(i) {
 
       # Define data for relevant receiver
       # print(i)
@@ -343,7 +332,7 @@ acs_setup_detection_overlaps <- function(.moorings, .services = NULL) {
 
       # Define active dates
       active <- seq(min(r_moorings$receiver_start), max(r_moorings$receiver_end), by = "days")
-      if (!is.null(.services)) {
+      if (!is.null(services)) {
         r_services <- services_ls[[rc]]
         if (!is.null(r_services)) {
           active <- active[!(active %within% r_services$int)]
@@ -354,18 +343,18 @@ acs_setup_detection_overlaps <- function(.moorings, .services = NULL) {
       # * Dates must be _within_ active deployment intervals of other receivers
       overlaps <-
         expand.grid(r1 = r, date = active, r2 = r_pairs$r2) |>
-        mutate(r2_active = .moorings$int[match(.data$r2, .moorings$receiver_id)]) |>
+        mutate(r2_active = moorings$int[match(.data$r2, moorings$receiver_id)]) |>
         filter(date %within% .data$r2_active) |>
         select("r1", "date", "r2") |>
         as.data.frame()
 
       # Account for servicing dates of overlapping receivers
       # * Dates must _not_ be within servicing intervals of other receivers
-      if (!is.null(.services)) {
+      if (!is.null(services)) {
         # Add service intervals
         overlaps <-
           overlaps |>
-          mutate(r2_service = .services$int[match(.data$r2, .services$receiver_id)],
+          mutate(r2_service = services$int[match(.data$r2, services$receiver_id)],
                  r2_service_na = .data$r2_service@start) |>
           as.data.frame()
         # Identify positions with service intervals (pos_1) that overlap with service dates (to drop)
