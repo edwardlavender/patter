@@ -49,49 +49,62 @@ abort <- function(...) {
   stop(glue::glue(...), call. = FALSE)
 }
 
-#' @title Utilities: logs
-#' @name utils-logs
+#' @title Utilities: `cat_*()` functions
+#' @name utils-cats
 
-#' @rdname utils-logs
+#' @rdname utils-cats
 #' @keywords internal
 
-create_log <- function(.file, .verbose) {
-  if (.verbose & !is.null(.file) & .file != "") {
-    if (tools::file_ext(.file) != "txt") {
-      abort("`.txt` ('{.file}') should be the path to a text (.txt) file.",
+# Create a log.txt file
+cat_log_file <- function(.verbose) {
+  # Check .verbose input
+  if (!is.logical(.verbose) & !is.character(.verbose)) {
+    abort("`.verbose` should be a logical variable or a file path.")
+  }
+  # Return .verbose if TRUE/FALSE
+  if (is.logical(.verbose)) {
+    return("")
+    # Handle file path inputs
+  } else if (is.character(.verbose)) {
+    # Check .verbose is a text file
+    if (tools::file_ext(.verbose) != "txt") {
+      abort("`.verbose` ('{.verbose}') should be the path to a text (.txt) file.",
             .envir = environment())
     }
-    if (!dir.exists(dirname(.file))) {
-      abort("`dirname(.txt)` ('{dirname(.file)}') does not exist.",
+    # Check the directory exists
+    if (!dir.exists(dirname(.verbose))) {
+      abort("`dirname(.verbose)` ('{dirname(.verbose)}') does not exist.",
             .envir = environment())
     }
-    if (!file.exists(.file)) {
-      success <- file.create(.file)
+    if (!file.exists(.verbose)) {
+      # Create the text file
+      success <- file.create(.verbose)
       if (!success) {
         abort("Failed to create log file ('{.file}').",
               .envir = environment())
       }
     } else {
-      if (length(readLines(.file)) > 0L) {
-        warn("`.txt` ('{.file}`) already exists and is not empty!",
+      # Warn if the text file exists and is not empty
+      if (length(readLines(.verbose)) > 0L) {
+        warn("`.verbose` ('{.verbose}`) already exists and is not empty!",
              .envir = environment())
       }
     }
   }
-  invisible(TRUE)
+  .verbose
 }
 
 #' @rdname utils-logs
 #' @keywords internal
 
-cat_helper <- function(.verbose, .txt) {
+# Initiate cat() options and get an appropriate cat() function
+cat_init <- function(.verbose) {
   # Define log file
-  check_verbose_and_log(.verbose = .verbose, .txt = .txt)
-  create_log(.file = .txt, .verbose = .verbose)
+  log_file <- cat_log_file(.verbose = .verbose)
   # Define function to send messages to console or file
-  append_messages <- ifelse(.txt == "", FALSE, TRUE)
-  function(..., message = .verbose, file = .txt, append = append_messages) {
-    if (message) cat(paste(..., "\n"), file = .txt, append = append)
+  append_messages <- ifelse(log_file == "", FALSE, TRUE)
+  function(..., message = !isFALSE(.verbose), file = log_file, append = append_messages) {
+    if (message) cat(paste(..., "\n"), file = file, append = append)
   }
 }
 
