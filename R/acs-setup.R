@@ -386,7 +386,7 @@ acs_setup_detection_overlaps <- function(.data) {
 
 #' @title AC* set up: calculate detection probability around a receiver
 #' @description This function is an example detection probability function, of the kind required by [`acs_setup_detection_kernels()`].
-#' @param .data A one-row [`data.table`] that defines the location of the receiver and associated information used by the model of detection probability.
+#' @param .mooring A one-row [`data.table`] that defines the location of the receiver and associated information used by the model of detection probability.
 #' @param .bathy A [`SpatRaster`] that defines the grid over which detection probability is calculated.
 #' @param .calc_detection_pr A function that calculates detection probability. In this implementation, the function is used to translate a [`SpatRaster`] of distances (m) (from each grid cell to the receiver in `.data`) via [`terra::app()`].
 #' @param ... Additional arguments passed to `.calc_detection_pr` ([`calc_detection_pr_logistic()`]  by default.)
@@ -401,10 +401,14 @@ acs_setup_detection_overlaps <- function(.data) {
 #' @return The function returns a [`SpatRaster`] that defines the probability of detection in each cell, according to a pre-defined model.
 #'
 #' @examples
-#' m <- dat_moorings[1, , drop = FALSE]
-#' p <- acs_setup_detection_pr(m, dat_gebco())
+#' data <- pat_setup_data(.moorings = moorings,
+#'                        .bathy = dat_gebco(),
+#'                        .lonlat = FALSE)
+#' m <- data$data$moorings[1, ]
+#' b <- data$spatial$bathy
+#' p <- acs_setup_detection_pr(m, n)
 #' terra::plot(p)
-#' points(m$receiver_easting, m$receiver_northing, pch = ".")
+#' points(m$receiver_x, m$receiver_y, pch = ".")
 #'
 #' @seealso
 #' To implement an AC*PF algorithm, use:
