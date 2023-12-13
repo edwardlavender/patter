@@ -442,7 +442,7 @@ acs_setup_detection_pr <- function(.mooring,
 #' * `.bathy`---A [`SpatRaster`] that defines the grid over which detection probability is calculated (see below);
 #' * `...` Additional arguments passed via [`acs_setup_detection_kernels()`].
 #' Using these inputs, the function must return a [`SpatRaster`] that defines the detection kernel around a specific receiver (see Examples).
-#' @param .verbose A `logical` variable that defines whether or not to print messages to the console to relay function progress.
+#' @param .verbose Argument(s) to monitor function progress (see [`patter-progress`]).
 #'
 #' @details This function permits receiver-specific detection kernels.
 #'
@@ -458,7 +458,7 @@ acs_setup_detection_pr <- function(.mooring,
 #' * **`bkg_surface_by_design`**. A `list`, with one element for each array design, that defines the detection probability surface across all receivers deployed in that phase of the study. In areas that are covered by the detection probability kernel of a single receiver, the detection probability depends only on distance to that receiver (via `.calc_detection_pr`). In areas covered by multiple, overlapping kernels, detection probability represents the combined detection probability across all overlapping kernels (see Details).
 #' * **`bkg_inv_surface_by_design`**. A `list`, as above for `bkg_surface_by_design`, but which contains the inverse detection probability surface (i.e., 1 - `bkg_surface_by_design`). In the AC* algorithm(s), this is used to up-weight areas away from receivers (or, equivalently, down-weight areas near to receivers) in the time steps between detections.
 #'
-#' @example
+#' @example man/examples/acs_setup_detection_kernels-examples.R
 #'
 #' @source This function is based on the [`acs_setup_detection_kernels`](https://edwardlavender.github.io/flapper/reference/acs_setup_detection_kernels.html) function in the [`flapper`](https://github.com/edwardlavender/flapper) package, where the role of detection kernels in the AC* algorithms is described extensively (see Details).
 #'
@@ -482,12 +482,10 @@ acs_setup_detection_kernels <-
     #### Initiation, set up and checks
 
     #### Initiation
-    cat_to_console <- function(..., show = .verbose) {
-      if (show) cat(paste(..., "\n"))
-    }
     t_onset <- Sys.time()
-    cat_to_console(paste0("patter::acs_setup_detection_kernels() called (@ ", t_onset, ")..."))
-    cat_to_console("... Setting up function...")
+    cat_log <- cat_init(.verbose = .verbose)
+    cat_log(call_start(.fun = "acs_setup_detection_kernels", .start = t_onset))
+    on.exit(cat_log(call_end(.fun = "acs_setup_detection_kernels", .start = t_onset, .end = Sys.time())), add = TRUE)
 
     #### Check user inputs
     check_data(.data, .dataset = "moorings", .spatial = "bathy")
@@ -501,7 +499,7 @@ acs_setup_detection_kernels <-
 
     #### Calculate detection Pr around each receiver
     # (used to up-weight areas around a receiver with a detection)
-    cat_to_console("... Getting receiver-specific kernels (for detection)...")
+    cat_log("... Getting receiver-specific kernels (for detection)...")
     receiver_specific_kernels <-
       pbapply::pblapply(split(moorings, moorings$receiver_id), function(m) {
         # Define kernel using user-provided function
@@ -524,7 +522,7 @@ acs_setup_detection_kernels <-
     #### Calculate inverse detection Pr around each receiver
     # (used in calculations to down-weight areas, around a receiver that recorded detections,
     # ... that overlap with receivers that didn't record a detection)
-    cat_to_console("... Getting receiver-specific inverse kernels...")
+    cat_log("... Getting receiver-specific inverse kernels...")
     receiver_specific_inv_kernels <- lapply(receiver_specific_kernels, function(k) 1 - k)
     names(receiver_specific_inv_kernels) <- names(receiver_specific_kernels)
 
@@ -533,8 +531,8 @@ acs_setup_detection_kernels <-
     #### Area-wide kernel (for non detection)
 
     #### Get dates of changes in array design
-    cat_to_console("... Getting area-wide kernels (for non-detection)...")
-    cat_to_console("... ... Get unique array designs...")
+    cat_log("... Getting area-wide kernels (for non-detection)...")
+    cat_log("... ... Get unique array designs...")
     # Get receiver status matrix from moorings and services (in units of days, time unit is Date)
     rs_mat <- make_matrix_receivers(.data = .data,
                                     .delta_t = "days",
@@ -566,23 +564,23 @@ acs_setup_detection_kernels <-
     names(array_design_by_date) <- as.character(cdates)
 
     #### For each unique array design, create the area-wide kernel surface that represents detection Pr/inverse detection Pr
-    cat_to_console("... ... Get area wide kernels for each array design...")
+    cat_log("... ... Get area wide kernels for each array design...")
     bkgs_by_design <-
       pbapply::pblapply(1:nrow(rs_mat_cp), function(icp) {
 
         #### Identify active receivers on that date
         # icp <- 1
-        cat_to_console(paste0("\n... ... ... For design ", icp, "/", nrow(rs_mat_cp), "..."))
+        cat_log(paste0("\n... ... ... For design ", icp, "/", nrow(rs_mat_cp), "..."))
         cp <- rs_mat_cp[icp, , drop = FALSE]
         rs_active <- colnames(cp)[which(cp == 1)]
 
         #### Pull out necessary kernels for active receivers from detection_kernels_by_xy into a list
-        cat_to_console("... ... ... ... Extract detection probability kernels for active receivers...")
+        cat_log("... ... ... ... Extract detection probability kernels for active receivers...")
         detection_kernels_inv_by_rs_active <-
           lapply(rs_active, function(ra) receiver_specific_inv_kernels[[ra]])
 
         #### Calculate the probability of not being detected in each cell
-        cat_to_console("... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)...")
+        cat_log("... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)...")
         if (length(rs_active) == 1) {
           bkg_inv <- detection_kernels_inv_by_rs_active[[1]]
         } else {
@@ -599,7 +597,7 @@ acs_setup_detection_kernels <-
     bkg_inv_by_design <- lapply(bkgs_by_design, function(elm) elm$bkg_inv)
 
     #### Process outputs
-    cat_to_console("... Process detection probability kernels ...")
+    cat_log("... Process detection probability kernels ...")
     # For receiver-specific detection probability kernel lists,
     # add NULL elements to the list for any receivers
     # in the range 1:max(rs) that are not in rs.
@@ -624,7 +622,7 @@ acs_setup_detection_kernels <-
     # Check function duration
     t_end <- Sys.time()
     total_duration <- difftime(t_end, t_onset, units = "mins")
-    cat_to_console(paste0("... patter::acs_setup_detection_kernels() call completed (@ ", t_end, ") after ~", round(total_duration, digits = 2), " minutes."))
+    cat_log(paste0("... patter::acs_setup_detection_kernels() call completed (@ ", t_end, ") after ~", round(total_duration, digits = 2), " minutes."))
     # Return outputs
     out
   }
