@@ -8,25 +8,25 @@ test_that("msg(), warn() and abort() work", {
   e(x) |> expect_error("hello world", fixed = TRUE)
 })
 
-test_that("create_log() works", {
+test_that("cat_log_file() works", {
 
-  create_log(.file = "some-folder", .verbose = TRUE) |>
-    expect_error("`.txt` ('some-folder') should be the path to a text (.txt) file.", fixed = TRUE)
+  cat_log_file(.verbose = "some-folder") |>
+    expect_error("`.verbose` ('some-folder') should be the path to a text (.txt) file.", fixed = TRUE)
 
-  create_log("some-folder/log.txt", .verbose = TRUE) |>
-    expect_error("`dirname(.txt)` ('some-folder') does not exist.", fixed = TRUE)
+  cat_log_file(.verbose = "some-folder/log.txt") |>
+    expect_error("`dirname(.verbose)` ('some-folder') does not exist.", fixed = TRUE)
 
-  f <- tempfile(fileext = ".txt")
-  create_log(f, .verbose = TRUE)
-  expect_true(file.exists(f))
+  log.txt <- tempfile(fileext = ".txt")
+  cat_log_file(.verbose = log.txt)
+  expect_true(file.exists(log.txt))
 
-  sink(f)
+  sink(log.txt)
   cat("hello world\n")
   sink()
 
-  create_log(f, .verbose = TRUE) |>
-    expect_warning(paste0("`.txt` ('", f, "`) already exists and is not empty!"), fixed = TRUE)
-  unlink(f)
+  cat_log_file(.verbose = log.txt) |>
+    expect_warning(paste0("`.verbose` ('", log.txt, "`) already exists and is not empty!"), fixed = TRUE)
+  unlink(log.txt)
 
 })
 

@@ -1,7 +1,7 @@
 test_that("call_*() functions work", {
 
   # log.txt <- tempfile(fileext = ".txt")
-  # cat_to_cf <- cat_helper(.verbose = TRUE, .txt = )
+  # cat_log <- cat_init(.verbose = TRUE)
 
   #### Test call_time()
   time <- "2016-01-01 00:00:00"

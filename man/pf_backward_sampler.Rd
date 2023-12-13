@@ -13,8 +13,7 @@ pf_backward_sampler(
   .cl = NULL,
   .cl_varlist = NULL,
   .cl_chunks = TRUE,
-  .verbose = TRUE,
-  .txt = ""
+  .verbose = TRUE
 )
 }
 \arguments{
@@ -42,7 +41,7 @@ Three helper functions are provided:
 
 \item{.cl, .cl_varlist, .cl_chunks}{(optional) Parallelisation options passed to \code{\link[=cl_lapply]{cl_lapply()}}. Parallelisation is implemented over particles.}
 
-\item{.verbose, .txt}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
+\item{.verbose}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
 }
 \value{
 The function returns a \code{\linkS4class{pf_path}} object.

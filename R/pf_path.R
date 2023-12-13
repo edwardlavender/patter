@@ -5,7 +5,7 @@
 #' * An ordered list of file paths (from [`pf_setup_files()`]) that define the directories in which particle samples were written from the forward simulation (as parquet files).
 #' @param .bathy (optional) If `.return = "long"`, a bathymetry [`SpatRaster`] can be supplied to define cell coordinates (see [`pf_path_pivot()`]).
 #' @param .obs,.cols (optional) If `.return = "long"`, `.obs` and `.cols` are a [`data.table`] and a `character` vector of column names in `.obs` to match onto the output (see [`pf_path_pivot()`]).
-#' @param .verbose,.txt Arguments to monitor function progress (see [`pf_forward()`]).
+#' @param .verbose Arguments to monitor function progress (see [`pf_forward()`]).
 #' @param .return A `character` that defines the return format:
 #' * `long` specifies a long-format [`data.table`] that defines path IDs, time steps and associated locations (see [`pf_path_pivot()`]).
 #' * `wide` specifies a wide-format [`data.table`], with:
@@ -26,7 +26,7 @@
 
 pf_path <- function(.history,
                     .bathy = NULL, .obs = NULL, .cols = NULL,
-                    .verbose = TRUE, .txt = "",
+                    .verbose = TRUE,
                     .return = c("long", "wide")){
 
   # Check user inputs
@@ -39,12 +39,12 @@ pf_path <- function(.history,
   }
 
   # Set up messages
-  cat_to_cf <- cat_helper(.verbose = .verbose, .txt = .txt)
-  cat_to_cf(paste0("patter::pf_path() called (@ ", t_onset, ")..."))
-  on.exit(cat_to_cf(paste0("patter::pf_path() call ended (@ ", Sys.time(), ").")), add = TRUE)
+  cat_log <- cat_init(.verbose = .verbose)
+  cat_log(paste0("patter::pf_path() called (@ ", t_onset, ")..."))
+  on.exit(cat_log(paste0("patter::pf_path() call ended (@ ", Sys.time(), ").")), add = TRUE)
 
   # Set up chain
-  cat_to_cf("... Setting up...")
+  cat_log("... Setting up...")
   if (inherits(.history[[1]], "data.frame")) {
     check_names(.history[[1]], c("cell_past", "cell_now"))
     read <- FALSE
@@ -53,7 +53,7 @@ pf_path <- function(.history,
   }
 
   # Define history[[1]]
-  cat_to_cf("... Processing history[[1]]...")
+  cat_log("... Processing history[[1]]...")
   if (read) {
     .history[[1]] <- arrow::read_parquet(.history[[1]])
   }
@@ -63,11 +63,11 @@ pf_path <- function(.history,
     as.data.table()
 
   # Define chain text
-  cat_to_cf("... Defining chain text...")
+  cat_log("... Defining chain text...")
   txt <- .pf_path_chain(.history, .read = read)
 
   # Implement chain
-  cat_to_cf("... Evaluating chain text...")
+  cat_log("... Evaluating chain text...")
   .pb <- pb_init(.min = 0L, .max = length(.history) - 1L)
   paths <- eval(parse(text = txt))
   pb_close(.pb = .pb)
@@ -75,7 +75,7 @@ pf_path <- function(.history,
 
   # Reorientate paths (long format)
   if (.return == "long") {
-    cat_to_cf("... Reorientating matrix via pf_path_pivot()...")
+    cat_log("... Reorientating matrix via pf_path_pivot()...")
     paths <- pf_path_pivot(paths, .bathy = .bathy,
                            .obs = .obs, .cols = .cols)
   }

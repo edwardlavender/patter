@@ -5,7 +5,7 @@
 #' * An ordered list of file paths (from [`pf_setup_files()`]) that define the directories in which particle samples were written from the forward simulation (as parquet files).
 #' @param .save_history A logical variable that defines whether or not to save updated particle samples in memory (see [`pf_forward()`]).
 #' @param .write_history A named list, passed to [`arrow::write_parquet()`], to write updated particle samples to file (see [`pf_forward()`]).
-#' @param .verbose,.txt Arguments to monitor function progress (see [`pf_forward()`]).
+#' @param .verbose Arguments to monitor function progress (see [`pf_forward()`]).
 #'
 #' @details At the time of writing, this function only removes 'dead ends' from particle samples. Backwards smoothing is not currently implemented.
 #'
@@ -21,7 +21,7 @@
 
 pf_backward_killer <- function(.history,
                                .save_history = FALSE, .write_history = NULL,
-                               .verbose = TRUE, .txt = "") {
+                               .verbose = TRUE) {
 
   #### Check user inputs
   t_onset <- Sys.time()
@@ -32,9 +32,9 @@ pf_backward_killer <- function(.history,
   write_history_folder <- .pf_check_write_history(.write_history)
 
   #### Set up messages
-  cat_to_cf <- cat_helper(.verbose = .verbose, .txt = .txt)
-  cat_to_cf(paste0("patter::pf_backward_*() called (@ ", t_onset, ")..."))
-  on.exit(cat_to_cf(paste0("patter::pf_backward_*() call ended (@ ", Sys.time(), ").")), add = TRUE)
+  cat_log <- cat_init(.verbose = .verbose)
+  cat_log(paste0("patter::pf_backward_*() called (@ ", t_onset, ")..."))
+  on.exit(cat_log(paste0("patter::pf_backward_*() call ended (@ ", Sys.time(), ").")), add = TRUE)
 
   #### Set up loop
   # Define whether or not .history dataframes need to be read from file
@@ -52,14 +52,14 @@ pf_backward_killer <- function(.history,
 
     #### Read particle samples for t and t - 1
     pb_tick(.pb = pb, .t = (timestep_final - t) + 1L)
-    cat_to_cf(paste0("... Time step ", t, ":"))
+    cat_log(paste0("... Time step ", t, ":"))
     if (read_history) {
       if (t == timestep_final) {
-        cat_to_cf(paste0("... ... Reading `.history[[", timestep_final, "]]`..."))
+        cat_log(paste0("... ... Reading `.history[[", timestep_final, "]]`..."))
         .history[[t]] <- arrow::read_parquet(.history[[t]])
       }
       if (t > 1) {
-        cat_to_cf(paste0("... ... Reading `.history[[", t - 1, "]]`..."))
+        cat_log(paste0("... ... Reading `.history[[", t - 1, "]]`..."))
         .history[[t - 1]] <- arrow::read_parquet(.history[[t - 1]])
       }
     }
@@ -67,20 +67,20 @@ pf_backward_killer <- function(.history,
     #### Filter particle samples
     # cell_past for current time step should match cell_now for previous one
     if (t < timestep_final && t > 1) {
-      cat_to_cf(paste0("... ... Cleaning `.history[[", t - 1, "]]`..."))
-      cat_to_cf(paste0("... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)..."))
-      cat_to_cf(paste0("... ... ... Input: ", nrow(.history[[t]]), " rows in `.history[[t]]`..."))
+      cat_log(paste0("... ... Cleaning `.history[[", t - 1, "]]`..."))
+      cat_log(paste0("... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)..."))
+      cat_log(paste0("... ... ... Input: ", nrow(.history[[t]]), " rows in `.history[[t]]`..."))
       bool <- .history[[t - 1]]$cell_now %in% .history[[t]]$cell_past
       if (!all(bool)) {
-        cat_to_cf(paste0("... ... ... Filtering ", length(which(!bool)), " dead ends (", length(which(bool)), " remain)..."))
+        cat_log(paste0("... ... ... Filtering ", length(which(!bool)), " dead ends (", length(which(bool)), " remain)..."))
         .history[[t - 1]] <- .history[[t - 1]] |> filter(bool) |> as.data.table()
-        cat_to_cf(paste0("... ... ... Output: ", nrow(.history[[t - 1]]), " rows in `.history[[t - 1]]`..."))
+        cat_log(paste0("... ... ... Output: ", nrow(.history[[t - 1]]), " rows in `.history[[t - 1]]`..."))
       }
     }
 
     #### Save particles
     # Write particles to file
-    cat_to_cf(paste0("... ... Recording (cleaned) outputs for `.history[[", t, "]]`..."))
+    cat_log(paste0("... ... Recording (cleaned) outputs for `.history[[", t, "]]`..."))
     if (!is.null(.write_history)) {
       .write_history$x    <- .history[[t]]
       .write_history$sink <- file.path(write_history_folder, paste0(t, ".parquet"))

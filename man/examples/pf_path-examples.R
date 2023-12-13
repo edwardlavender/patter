@@ -34,7 +34,7 @@ head(p3)
 p4 <- pf_path(out_pfb$history, .verbose = FALSE)
 # Write messages to log
 log.txt <- tempfile(fileext = ".txt")
-p4 <- pf_path(out_pfb$history, .txt = log.txt)
+p4 <- pf_path(out_pfb$history, .verbose = log.txt)
 readLines(log.txt)
 
 #### Example (5): Examine outputs

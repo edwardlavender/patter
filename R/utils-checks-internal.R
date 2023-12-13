@@ -153,12 +153,3 @@ check_new_colnames <- function(.data, .new) {
   }
   NULL
 }
-
-#' @rdname check_utils
-#' @keywords internal
-
-check_verbose_and_log <- function(.verbose, .txt) {
-  if (!.verbose & .txt != "") {
-    warn("Input to `.txt` ignored since `.verbose = FALSE`.")
-  }
-}

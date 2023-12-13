@@ -142,7 +142,7 @@ pf_map_pou <-
 #' @param .use_tryCatch A `logical` variable that controls error handling:
 #' * If `.use_tryCatch = FALSE`, if density estimation fails with an error, the function fails with the same error.
 #' * If `.use_tryCatch = TRUE`, if density estimation fails with an error, the function produces a warning with the error message and returns `NULL`.
-#' @param .verbose,.txt Controls on function prompts and messages (see [`pf_forward()`].
+#' @param .verbose Controls on function prompts and messages (see [`pf_forward()`].
 #' @param ... Arguments passed to [`spatstat.explore::density.ppp()`], such as `sigma` (i.e., the bandwidth).
 #'
 #' @details
@@ -242,7 +242,7 @@ pf_map_dens <- function(.xpf,
                         .coord = NULL,
                         .plot = TRUE,
                         .use_tryCatch = TRUE,
-                        .verbose = TRUE, .txt = "",
+                        .verbose = TRUE,
                         ...) {
 
   #### Check user inputs
@@ -257,13 +257,13 @@ pf_map_dens <- function(.xpf,
   check_dots_for_missing_period(formals(), list(...))
 
   #### Set up messages
-  cat_to_cf <- cat_helper(.verbose = .verbose, .txt = .txt)
-  cat_to_cf(paste0("patter::pf_map_dens() called (@ ", t_onset, ")..."))
-  on.exit(cat_to_cf(paste0("patter::pf_map_dens() call ended (@ ", Sys.time(), ").")), add = TRUE)
+  cat_log <- cat_init(.verbose = .verbose)
+  cat_log(paste0("patter::pf_map_dens() called (@ ", t_onset, ")..."))
+  on.exit(cat_log(paste0("patter::pf_map_dens() call ended (@ ", Sys.time(), ").")), add = TRUE)
 
   #### Process SpatRaster
   # spatstat assumes planar coordinates
-  cat_to_cf("... Processing `.xpf`...")
+  cat_log("... Processing `.xpf`...")
   crs <- terra::crs(.xpf)
   if (is.na(crs)) {
     abort("`terra::crs(.xpf)` must be specified (and should be planar).")
@@ -282,11 +282,11 @@ pf_map_dens <- function(.xpf,
   }
 
   #### Get ppp
-  cat_to_cf("... Building `ppp` object...")
+  cat_log("... Building `ppp` object...")
 
   ## (A) Define coordinates & weights from the SpatRaster (e.g., POU grid)
   if (is.null(.coord)) {
-    cat_to_cf("... ... Using `.xpf`...")
+    cat_log("... ... Using `.xpf`...")
     .coord <- terra::as.data.frame(.xpf, xy = TRUE, na.rm = TRUE)
     colnames(.coord) <- c("x", "y", "mark")
     .coord <- .coord[which(!is.na(.coord$mark) & .coord$mark != 0), ]
@@ -298,7 +298,7 @@ pf_map_dens <- function(.xpf,
 
     ## (B) Define coordinates & weights from `.coord` input
     # i) Define coordinates data.table with x and y columns
-    cat_to_cf("... ... Using `.coord`...")
+    cat_log("... ... Using `.coord`...")
     if (inherits(.coord, "matrix") |
         inherits(.coord, "data.frame") & !inherits(.coord, "data.table")) {
       .coord <- as.data.table(.coord)
@@ -339,7 +339,7 @@ pf_map_dens <- function(.xpf,
   }
 
   ## Build ppp object
-  cat_to_cf("... ... Defining `ppp` object...")
+  cat_log("... ... Defining `ppp` object...")
   rppp <- spatstat.geom::ppp(x = .coord$x, y = .coord$y,
                              window = .owin, marks = marks)
   if (rppp$n == 0L) {
@@ -348,7 +348,7 @@ pf_map_dens <- function(.xpf,
 
   #### Estimate density surface
   # Get intensity (expected number of points PER UNIT AREA)
-  cat_to_cf("... Estimating density surface...")
+  cat_log("... Estimating density surface...")
   dens <- tryCatch(spatstat.explore::density.ppp(rppp, weights = .im,
                                                  at = "pixels", se = FALSE, ...),
                    error = function(e) e)
@@ -361,7 +361,7 @@ pf_map_dens <- function(.xpf,
     }
   }
   # Translate intensity into expected number of points PER PIXEL
-  cat_to_cf("... Scaling density surface...")
+  cat_log("... Scaling density surface...")
   terra::crs(.xpf) <- crs
   dens <- terra::rast(dens)
   terra::crs(dens) <- crs
@@ -369,7 +369,7 @@ pf_map_dens <- function(.xpf,
   # Translate expect counts into proportion of points per pixel
   dens <- dens / terra::global(dens, "sum", na.rm = TRUE)[1, 1]
   if (!terra::compareGeom(dens, .xpf, stopOnError = FALSE, messages = FALSE)) {
-    cat_to_cf("... ... Resampling density surface onto `.xpf`...")
+    cat_log("... ... Resampling density surface onto `.xpf`...")
     dens <- terra::resample(dens, .xpf, method = "near")
     # dens <- terra::mask(dens, .xpf)
     dens <- dens / terra::global(dens, "sum", na.rm = TRUE)[1, 1]

@@ -10,7 +10,6 @@ pf_path(
   .obs = NULL,
   .cols = NULL,
   .verbose = TRUE,
-  .txt = "",
   .return = c("long", "wide")
 )
 }
@@ -25,7 +24,7 @@ pf_path(
 
 \item{.obs, .cols}{(optional) If \code{.return = "long"}, \code{.obs} and \code{.cols} are a \code{\link{data.table}} and a \code{character} vector of column names in \code{.obs} to match onto the output (see \code{\link[=pf_path_pivot]{pf_path_pivot()}}).}
 
-\item{.verbose, .txt}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
+\item{.verbose}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
 
 \item{.return}{A \code{character} that defines the return format:
 \itemize{
@@ -83,7 +82,7 @@ head(p3)
 p4 <- pf_path(out_pfb$history, .verbose = FALSE)
 # Write messages to log
 log.txt <- tempfile(fileext = ".txt")
-p4 <- pf_path(out_pfb$history, .txt = log.txt)
+p4 <- pf_path(out_pfb$history, .verbose = log.txt)
 readLines(log.txt)
 
 #### Example (5): Examine outputs

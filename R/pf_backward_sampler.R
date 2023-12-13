@@ -68,7 +68,7 @@ pf_distinct <- function(.history,
 #' @param .save_history A logical variable that defines whether or not to save updated particle samples in memory (see [`pf_forward()`]).
 #' @param .write_history A named list, passed to [`arrow::write_parquet()`], to write updated particle samples to file (see [`pf_forward()`]).
 #' @param .cl,.cl_varlist,.cl_chunks (optional) Parallelisation options passed to [`cl_lapply()`]. Parallelisation is implemented over particles.
-#' @param .verbose,.txt Arguments to monitor function progress (see [`pf_forward()`]).
+#' @param .verbose Arguments to monitor function progress (see [`pf_forward()`]).
 #'
 #' @details
 #'
@@ -121,7 +121,7 @@ pf_backward_sampler <- function(.history,
                                 .dens_step = dstep, ...,
                                 .save_history = FALSE, .write_history = NULL,
                                 .cl = NULL, .cl_varlist = NULL, .cl_chunks = TRUE,
-                                .verbose = TRUE, .txt = ""
+                                .verbose = TRUE
 ) {
 
   #### Check user inputs
@@ -133,12 +133,12 @@ pf_backward_sampler <- function(.history,
   write_history_folder <- .pf_check_write_history(.write_history)
 
   #### Set up messages (as usual)
-  cat_to_cf <- cat_helper(.verbose = .verbose, .txt = .txt)
-  cat_to_cf(paste0("patter::pf_backward_*() called (@ ", t_onset, ")..."))
-  on.exit(cat_to_cf(paste0("patter::pf_backward_*() call ended (@ ", Sys.time(), ").")), add = TRUE)
+  cat_log <- cat_init(.verbose = .verbose)
+  cat_log(paste0("patter::pf_backward_*() called (@ ", t_onset, ")..."))
+  on.exit(cat_log(paste0("patter::pf_backward_*() call ended (@ ", Sys.time(), ").")), add = TRUE)
 
   #### Set up loop
-  cat_to_cf("... Set up...")
+  cat_log("... Set up...")
   # Define whether or not to read history files
   if (inherits(.history[[1]], "data.frame")) {
     read_history <- FALSE
@@ -154,7 +154,7 @@ pf_backward_sampler <- function(.history,
   density    <- NULL
 
   #### Generate paths
-  cat_to_cf("... Generating path(s)...")
+  cat_log("... Generating path(s)...")
   paths <-
     cl_lapply(seq_len(n_particle),
               .cl = .cl,
@@ -163,17 +163,17 @@ pf_backward_sampler <- function(.history,
               .fun = function(i) {
 
                 #### Set up loop
-                cat_to_cf(paste("... ... On particle", i, "..."))
-                cat_to_cf("... ... ... Preparing to run sampler...")
+                cat_log(paste("... ... On particle", i, "..."))
+                cat_log("... ... ... Preparing to run sampler...")
                 path <- dens <- list()
                 path[[n_step]] <- .history[[n_step]][i, ]
                 path[[n_step]][, density := 1]
 
                 #### Run backwards sampler for a selected particle (i)
-                cat_to_cf("... ... ... Running sampler...")
+                cat_log("... ... ... Running sampler...")
                 for (t in n_step:2) {
                   # Read history if necessary
-                  cat_to_cf(paste("... ... ... ... On time step", t, "..."))
+                  cat_log(paste("... ... ... ... On time step", t, "..."))
                   if (read_history) {
                     # Drop history for t (to save memory) & read new history
                     .history[[t]] <- NA
@@ -189,7 +189,7 @@ pf_backward_sampler <- function(.history,
                 }
 
                 #### Collate path
-                cat_to_cf("... ... ... Collating paths...")
+                cat_log("... ... ... Collating paths...")
                 path <-
                   path |>
                   rbindlist() |>
@@ -197,7 +197,7 @@ pf_backward_sampler <- function(.history,
                   as.data.table()
 
                 #### Save path
-                cat_to_cf("... ... ... Recording path...")
+                cat_log("... ... ... Recording path...")
                 if (!is.null(.write_history)) {
                   .write_history$x    <- path
                   .write_history$sink <- file.path(write_history_folder, paste0(t, ".parquet"))
@@ -213,7 +213,7 @@ pf_backward_sampler <- function(.history,
               })
 
   #### Return outputs
-  cat_to_cf("... Completing simulation...")
+  cat_log("... Completing simulation...")
   if (is.null(paths[[1]])) {
     paths <- NULL
   } else {

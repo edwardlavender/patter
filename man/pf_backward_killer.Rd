@@ -8,8 +8,7 @@ pf_backward_killer(
   .history,
   .save_history = FALSE,
   .write_history = NULL,
-  .verbose = TRUE,
-  .txt = ""
+  .verbose = TRUE
 )
 }
 \arguments{
@@ -23,7 +22,7 @@ pf_backward_killer(
 
 \item{.write_history}{A named list, passed to \code{\link[arrow:write_parquet]{arrow::write_parquet()}}, to write updated particle samples to file (see \code{\link[=pf_forward]{pf_forward()}}).}
 
-\item{.verbose, .txt}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
+\item{.verbose}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
 }
 \value{
 The function returns a \code{\linkS4class{pf}} object.
@@ -69,7 +68,7 @@ out_pfb <- pf_backward_killer(pf_setup_files(pff_folder_h),
 log.txt <- tempfile(fileext = ".txt")
 out_pfb <- pf_backward_killer(pf_setup_files(pff_folder_h),
                               .save_history = TRUE,
-                              .txt = log.txt)
+                              .verbose = log.txt)
 utils::head(readLines(log.txt), 15)
 # Suppress messages
 out_pfb <- pf_backward_killer(pf_setup_files(pff_folder_h),
