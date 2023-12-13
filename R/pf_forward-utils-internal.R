@@ -106,12 +106,6 @@
   # Prepare land filter
   is_land <- spatContainsNA(.bathy)
 
-  #### Prepare data
-  # Check moorings & coerce onto grid
-  if (!is.null(.moorings)) {
-    .moorings <- check_moorings(.moorings, .lonlat = .lonlat, .bathy = .bathy)
-  }
-
   #### Define wrapper functions
   .pf_lik_abbr <- function(.particles, .t, .trial = NA_integer_) {
     pf_lik(.particles = .particles, .obs = .obs, .t = .t, .bathy = .bathy,

@@ -2,31 +2,122 @@
 % Please edit documentation in R/utils-checks-data-internal.R
 \name{check_data}
 \alias{check_data}
+\alias{check_bathy}
+\alias{check_acoustics}
 \alias{check_moorings}
 \alias{check_services}
-\alias{check_acoustics}
 \alias{check_archival}
 \title{Utilities: check data}
 \usage{
-check_moorings(.moorings, .class = "data.table", .lonlat = NULL, .bathy = NULL)
-
-check_services(.services, .moorings)
+check_bathy(.bathy)
 
 check_acoustics(.acoustics)
+
+check_moorings(.moorings, .lonlat, .bathy)
+
+check_services(.services, .moorings)
 
 check_archival(.archival)
 }
 \arguments{
-\item{.moorings, .services, .acoustics, .archival}{User inputs. \code{NULL} inputs are allowed for \code{.services} and \code{.archival}.}
+\item{.bathy}{A bathymetry \code{\link{SpatRaster}}. This is widely used as a generic grid in \code{\link{patter}} functions.}
+
+\item{.acoustics, .moorings, .services, .archival}{Movement \code{\link{data.table}}s.
+\itemize{
+\item \code{.acoustics} contains the detection time series (see \code{\link{dat_acoustics}} for an example);
+\item \code{.moorings} contains the receiver deployments (see \code{\link{dat_moorings}}) for an example);
+\item \code{.services} contains receiver servicing information;
+\item \code{.archival} contains archival (depth) time series (see \code{\link{dat_archival}} for an example);
+}}
+
+\item{.lonlat}{A \code{logical} variable that defines whether spatial data is in longitude/latitude format.}
 }
 \value{
-The functions invisibly return the inputted object if all checks are passed, with the following adjustments:
-\itemize{
-\item \code{.moorings$receiver_id} is silently coerced to an integer if numeric;
-}
+Each function returns the input dataset, as described, formatted in line with \code{\link{patter}}'s requirements.
 }
 \description{
-These functions check input datasets.
+These functions validate user datasets.
+}
+\details{
+These are internal functions that ensure that input dataset(s) meet \code{\link{patter}} requirements. Users should implement \code{\link[=pat_setup_data]{pat_setup_data()}} to prepare datasets for \code{\link{patter}} functions. Downstream functions silently assume that input datasets meet all requirements, without subsequent checks. This simplifies internal code and documentation.
+\itemize{
+\item \code{check_bathy()} checks the bathymetry \code{\link{SpatRaster}}:
+\itemize{
+\item Class: \code{\link{SpatRaster}};
+\item Properties:
+\itemize{
+\item A square grid is recommended;
+\item Absolute values (m) are recommended;
+\item At the time of writing (December 2023), planar grids are better tested;
+}
+}
+\item \code{check_acoustics()} checks detection time series:
+\itemize{
+\item Class: \code{\link{data.table}};
+\item Columns:
+\itemize{
+\item \code{timestamp}---an ordered, \code{POSIXct} vector of time stamps with a defined \code{tzone} attribute;
+\item \code{receiver_id---see }.moorings$receiver_id`;
+}
+\item Properties:
+\itemize{
+\item Functions assume accurate clock alignment between receivers;
+\item For most functions, a single time series (for one individual) is required;
+}
+}
+\item \code{check_services()} checks acoustic servicing records:
+\itemize{
+\item Class: \code{\link{data.table}};
+\item Columns:
+\itemize{
+\item \code{receiver_id}---a \code{integer} vector of unique receiver deployments;
+\item \code{receiver_start},\code{receiver_end}---\code{Date} vectors of service start and end dates;
+}
+\item Properties:
+\itemize{
+\item Serviced receivers should be found in the \code{.moorings} dataset;
+}
+}
+\item \code{check_moorings()} checks receiver deployment records:
+\itemize{
+\item Class: \code{\link{data.table}};
+\item Columns:
+\itemize{
+\item \code{receiver_id}---an \code{integer} vector of unique receiver deployments (\verb{1, ..., N});
+\item \code{receiver_easting} and \code{receiver_northing} and/or \code{receiver_lon} and \code{receiver_lat}---Receiver coordinates. \code{receiver_easting} and \code{receiver_northing} must be present if \code{.lonlat = FALSE} and \code{receiver_lon} and \code{receiver_lat} must be present otherwise. The selected coordinate columns are copied, renamed to \code{receiver_x} and \code{receiver_y} and coerced onto the \code{.bathy} grid.
+}
+\item Properties:
+\itemize{
+\item \code{receiver_start} should precede \code{receiver_end} (not currently validated);
+\item Receiver coordinates must be valid (not currently validated);
+}
+}
+\item \code{check_archival()} checks archival depth time series data:
+\itemize{
+\item Class: \code{\link{data.table}};
+\item Columns:
+\itemize{
+\item \code{timestamp}---an ordered, \code{POSIXct} vector of time stamps with a defined \code{tzone} attribute;
+\item \code{depth}---a \code{numeric} vector of (absolute) depths (m);
+}
+\item Properties:
+\itemize{
+\item Functions assume accurate clock alignment between acoustic and archival tags (if applicable);
+\item For most functions, a single time series (for one individual) is required;
+\item It is convenient if archival time stamps are regularly spaced;
+}
+}
+}
+
+For all datasets, \code{NA}s may cause unexpected errors and produce a \code{\link{warning}}. \code{NAs} in columns other than those described above are safe.
+
+\code{NULL} inputs are permitted in all \verb{check_\{data\}} functions, in which case \code{NULL} is returned.
+}
+\seealso{
+\itemize{
+\item See \code{\link{datasets-mefs}} for example datasets included in \code{\link{patter}};
+\item See \code{\link[=pat_setup_data]{pat_setup_data()}} for the front-end function;
+}
 }
 \author{
 Edward Lavender
