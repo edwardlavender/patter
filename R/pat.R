@@ -29,7 +29,12 @@
 #' @author Edward Lavender
 #' @export
 
-pat_setup_data <- function(.acoustics, .moorings, .services, .archival, .bathy, .lonlat) {
+pat_setup_data <- function(.acoustics = NULL,
+                           .moorings = NULL,
+                           .services = NULL,
+                           .archival = NULL,
+                           .bathy = NULL,
+                           .lonlat = NULL) {
   # Define blank data
   data <- list(acoustics = NULL,
                moorings = NULL,

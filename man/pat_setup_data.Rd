@@ -4,7 +4,14 @@
 \alias{pat_setup_data}
 \title{Set up data for \code{\link{patter}}}
 \usage{
-pat_setup_data(.acoustics, .moorings, .services, .archival, .bathy, .lonlat)
+pat_setup_data(
+  .acoustics = NULL,
+  .moorings = NULL,
+  .services = NULL,
+  .archival = NULL,
+  .bathy = NULL,
+  .lonlat = NULL
+)
 }
 \arguments{
 \item{.acoustics, .services, .archival, .moorings}{(optional) Movement datasets.
