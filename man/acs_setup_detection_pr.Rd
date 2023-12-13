@@ -5,20 +5,20 @@
 \title{AC* set up: calculate detection probability around a receiver}
 \usage{
 acs_setup_detection_pr(
-  .data,
+  .mooring,
   .bathy,
   .calc_detection_pr = calc_detection_pr_logistic,
   ...
 )
 }
 \arguments{
-\item{.data}{A one-row \code{\link{data.table}} that defines the location of the receiver and associated information used by the model of detection probability.}
-
 \item{.bathy}{A \code{\link{SpatRaster}} that defines the grid over which detection probability is calculated.}
 
 \item{.calc_detection_pr}{A function that calculates detection probability. In this implementation, the function is used to translate a \code{\link{SpatRaster}} of distances (m) (from each grid cell to the receiver in \code{.data}) via \code{\link[terra:app]{terra::app()}}.}
 
 \item{...}{Additional arguments passed to \code{.calc_detection_pr} (\code{\link[=calc_detection_pr_logistic]{calc_detection_pr_logistic()}}  by default.)}
+
+\item{.data}{A one-row \code{\link{data.table}} that defines the location of the receiver and associated information used by the model of detection probability.}
 }
 \value{
 The function returns a \code{\link{SpatRaster}} that defines the probability of detection in each cell, according to a pre-defined model.

@@ -7,40 +7,23 @@
 This function is based on the \href{https://edwardlavender.github.io/flapper/reference/acs_setup_detection_kernels.html}{\code{acs_setup_detection_kernels}} function in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package, where the role of detection kernels in the AC* algorithms is described extensively (see Details).
 }
 \usage{
-acs_setup_detection_kernels(
-  .moorings,
-  .services = NULL,
-  .calc_detection_pr,
-  .bathy,
-  .verbose = TRUE,
-  ...
-)
+acs_setup_detection_kernels(.data, .calc_detection_pr, .verbose = TRUE, ...)
 }
 \arguments{
-\item{.moorings}{A \code{\link{data.table}} that defines receiver deployments and associated information (see \code{\link{dat_moorings}} for an example). At a minimum, this must contain the following columns:
+\item{.data}{A named \code{list} of data and parameters from \code{\link[=pat_setup_data]{pat_setup_data()}}. This function requires:
 \itemize{
-\item \code{receiver_id}---an \code{integer} vector that defines unique receiver deployments;
-\item \code{receiver_start} and \code{receiver_end}---\code{Date} vectors that defines receiver operational periods (see \code{\link[=make_matrix_receivers]{make_matrix_receivers()}});
-\item \code{receiver_easting} and \code{receiver_northing}---\code{numeric} vectors that define receiver locations on \code{.bathy} (used to validate \code{.calc_detection_pr()})
-\item Plus any columns used internally by \code{.calc_detection_pr} (see below).
-}}
-
-\item{.services}{(optional) A \code{\link{data.table}} that defines receiver IDs and servicing \code{Date}s (times during the deployment period of a receiver when it was not active due to servicing) (see \code{\link[=make_matrix_receivers]{make_matrix_receivers()}}). If provided, this must contain the following columns:
-\itemize{
-\item \code{receiver_id}---an \code{integer} vector of receiver IDs;
-\item \code{service_start}---a \code{Date} vector that defines receiver servicing start dates;
-\item \code{service_end}---a \code{Date} vector that defines receiver servicing completion dates;
+\item \code{.data$data$moorings}, with the following columns: \code{receiver_id}, \code{receiver_start}, \code{receiver_end}, \code{receiver_x} and \code{receiver_y}, plus any columns used internally by \code{.calc_detection_pr} (see below).
+\item \code{.data$data$services}, with the following columns: \code{receiver_id}, \code{service_start} and \code{service_end} (see \code{\link[=make_matrix_receivers]{make_matrix_receivers()}}).
+\item \code{.data$spatial$bathy}, which defines the grid over which detection kernels are defined.
 }}
 
 \item{.calc_detection_pr, ...}{A function that defines a receiver-specific detection kernel (see \code{\link[=acs_setup_detection_pr]{acs_setup_detection_pr()}} for an example). This must accept three arguments (even if they are ignored):
 \itemize{
-\item \code{.data}---A one-row \code{\link{data.table}} that contains the information in \code{.moorings} for a specific receiver;
+\item \code{.mooring}---A one-row \code{\link{data.table}} that contains the information in \code{.moorings} for a specific receiver;
 \item \code{.bathy}---A \code{\link{SpatRaster}} that defines the grid over which detection probability is calculated (see below);
 \item \code{...} Additional arguments passed via \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}.
 Using these inputs, the function must return a \code{\link{SpatRaster}} that defines the detection kernel around a specific receiver (see Examples).
 }}
-
-\item{.bathy}{A \code{\link{SpatRaster}} that defines the grid over which detection kernels are defined;}
 
 \item{.verbose}{A \code{logical} variable that defines whether or not to print messages to the console to relay function progress.}
 }
@@ -66,93 +49,6 @@ This function defines the detection kernels for the AC* algorithms.
 }
 \details{
 This function permits receiver-specific detection kernels.
-}
-\examples{
-#### Define example 'moorings' & 'services' dataset
-# receivers 3 and 4 overlap in space but receiver 5 is further afield
-require(graphics)
-require(data.table)
-m <- data.table(receiver_id = c(3, 4, 5),
-                receiver_start = as.Date(c("2016-01-01", "2016-01-01", "2016-01-01")),
-                receiver_end = as.Date(c("2016-01-05", "2016-01-05", "2016-01-05")),
-                receiver_easting = c(706124.9, 706012.7, 709379.0),
-                receiver_northing = c(6265030, 6264993, 6260093),
-                receiver_range = 750)
-s <- data.table(receiver_id = c(3, 5),
-                service_start = as.Date(c("2016-01-01", "2016-01-01")),
-                service_end = as.Date(c("2016-01-01", "2016-01-01")))
-
-#### Define function to calculate detection probability
-# This must accept a .data & .bathy argument:
-# * .data is the .moorings data for a specific receiver (e.g., containing receiver coordinates)
-# * .bathy is as described above
-# Using these arguments, the function must calculate detection probability around the receiver
-# * This implementation supports receiver-specific detection ranges
-acs_setup_detection_pr <- function(.data, .bathy, ...) {
-
-  # Define helper function to calculate detection probability give distance
-  calc_dpr <- function(distance) {
-    pr <- stats::plogis(2.5 + -0.02 * distance)
-    pr[distance > .data$receiver_range] <- 0
-    pr
-  }
-  # Calculate Euclidean distance around receiver
-  rxy <- matrix(c(.data$receiver_easting, .data$receiver_northing), ncol = 2)
-  cell <- terra::cellFromXY(.bathy, rxy)
-  grid <- terra::setValues(.bathy, NA)
-  grid[cell] <- 1
-  dist <- terra::distance(grid, unit = "m")
-  dist <- terra::mask(dist, .bathy)
-  # Convert distances to detection pr
-  terra::app(dist, calc_dpr)
-}
-# Examine output of function for example receiver
-pr <- lapply(seq_len(max(m$receiver_id)), function(id) {
-  if (!(id \%in\% m$receiver_id)) return(NULL)
-  acs_setup_detection_pr(m[m$receiver_id == id, , drop = FALSE], dat_gebco())
-})
-
-#### Example (1): Implement function using specified inputs
-k <- acs_setup_detection_kernels(m, s,
-                                 .calc_detection_pr = acs_setup_detection_pr,
-                                 .bathy = dat_gebco())
-
-# Examine list elements
-summary(k)
-
-# Examine example receiver-specific kernels
-pp <- par(mfrow = c(1, 2))
-lapply(c(3, 4), \(id) {
-  terra::plot(k$receiver_specific_kernels[[id]])
-  points(m[m$receiver_id == id, .(receiver_easting, receiver_northing)], cex = 2)
-}) |> invisible()
-par(pp)
-
-# Examine example receiver-specific inverse kernels
-pp <- par(mfrow = c(1, 2))
-lapply(c(3, 4), \(id) {
-  terra::plot(k$receiver_specific_kernels[[id]])
-  points(m[m$receiver_id == id, .(receiver_easting, receiver_northing)], cex = 2)
-}) |> invisible()
-par(pp)
-
-# Examine background detection Pr surfaces
-# (for each unique combination of receivers that were deployed)
-pp <- par(mfrow = c(1, 2))
-lapply(k$bkg_surface_by_design, \(bkg) {
-  terra::plot(bkg, axes = FALSE)
-  box()
-}) |> invisible()
-par(pp)
-
-# Examine background inverse detection Pr surfaces
-pp <- par(mfrow = c(1, 2))
-lapply(k$bkg_inv_surface_by_design, \(bkg) {
-  terra::plot(bkg, axes = FALSE)
-  box()
-}) |> invisible()
-par(pp)
-
 }
 \seealso{
 To implement an AC*PF algorithm, use:

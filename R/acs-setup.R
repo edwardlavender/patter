@@ -416,11 +416,11 @@ acs_setup_detection_overlaps <- function(.data) {
 #' @author Edward Lavender
 #' @export
 
-acs_setup_detection_pr <- function(.data,
+acs_setup_detection_pr <- function(.mooring,
                                    .bathy,
                                    .calc_detection_pr = calc_detection_pr_logistic, ...) {
   # Calculate Euclidean distance around receiver
-  rxy  <- matrix(c(.data$receiver_easting, .data$receiver_northing), ncol = 2)
+  rxy  <- matrix(c(.mooring$receiver_x, .mooring$receiver_y), ncol = 2)
   cell <- terra::cellFromXY(.bathy, rxy)
   grid <- terra::setValues(.bathy, NA)
   grid[cell] <- 1
@@ -433,21 +433,15 @@ acs_setup_detection_pr <- function(.data,
 
 #' @title AC* set up: define detection kernels
 #' @description This function defines the detection kernels for the AC* algorithms.
-#' @param .moorings A [`data.table`] that defines receiver deployments and associated information (see [`dat_moorings`] for an example). At a minimum, this must contain the following columns:
-#' * `receiver_id`---an `integer` vector that defines unique receiver deployments;
-#' * `receiver_start` and `receiver_end`---`Date` vectors that defines receiver operational periods (see [`make_matrix_receivers()`]);
-#' * `receiver_easting` and `receiver_northing`---`numeric` vectors that define receiver locations on `.bathy` (used to validate `.calc_detection_pr()`)
-#' * Plus any columns used internally by `.calc_detection_pr` (see below).
-#' @param .services (optional) A [`data.table`] that defines receiver IDs and servicing `Date`s (times during the deployment period of a receiver when it was not active due to servicing) (see [`make_matrix_receivers()`]). If provided, this must contain the following columns:
-#' * `receiver_id`---an `integer` vector of receiver IDs;
-#' * `service_start`---a `Date` vector that defines receiver servicing start dates;
-#' * `service_end`---a `Date` vector that defines receiver servicing completion dates;
+#' @param .data A named `list` of data and parameters from [`pat_setup_data()`]. This function requires:
+#' * `.data$data$moorings`, with the following columns: `receiver_id`, `receiver_start`, `receiver_end`, `receiver_x` and `receiver_y`, plus any columns used internally by `.calc_detection_pr` (see below).
+#' * `.data$data$services`, with the following columns: `receiver_id`, `service_start` and `service_end` (see [`make_matrix_receivers()`]).
+#' * `.data$spatial$bathy`, which defines the grid over which detection kernels are defined.
 #' @param .calc_detection_pr,... A function that defines a receiver-specific detection kernel (see [`acs_setup_detection_pr()`] for an example). This must accept three arguments (even if they are ignored):
-#' * `.data`---A one-row [`data.table`] that contains the information in `.moorings` for a specific receiver;
+#' * `.mooring`---A one-row [`data.table`] that contains the information in `.moorings` for a specific receiver;
 #' * `.bathy`---A [`SpatRaster`] that defines the grid over which detection probability is calculated (see below);
 #' * `...` Additional arguments passed via [`acs_setup_detection_kernels()`].
 #' Using these inputs, the function must return a [`SpatRaster`] that defines the detection kernel around a specific receiver (see Examples).
-#' @param .bathy A [`SpatRaster`] that defines the grid over which detection kernels are defined;
 #' @param .verbose A `logical` variable that defines whether or not to print messages to the console to relay function progress.
 #'
 #' @details This function permits receiver-specific detection kernels.
@@ -464,91 +458,7 @@ acs_setup_detection_pr <- function(.data,
 #' * **`bkg_surface_by_design`**. A `list`, with one element for each array design, that defines the detection probability surface across all receivers deployed in that phase of the study. In areas that are covered by the detection probability kernel of a single receiver, the detection probability depends only on distance to that receiver (via `.calc_detection_pr`). In areas covered by multiple, overlapping kernels, detection probability represents the combined detection probability across all overlapping kernels (see Details).
 #' * **`bkg_inv_surface_by_design`**. A `list`, as above for `bkg_surface_by_design`, but which contains the inverse detection probability surface (i.e., 1 - `bkg_surface_by_design`). In the AC* algorithm(s), this is used to up-weight areas away from receivers (or, equivalently, down-weight areas near to receivers) in the time steps between detections.
 #'
-#' @examples
-#' #### Define example 'moorings' & 'services' dataset
-#' # receivers 3 and 4 overlap in space but receiver 5 is further afield
-#' require(graphics)
-#' require(data.table)
-#' m <- data.table(receiver_id = c(3, 4, 5),
-#'                 receiver_start = as.Date(c("2016-01-01", "2016-01-01", "2016-01-01")),
-#'                 receiver_end = as.Date(c("2016-01-05", "2016-01-05", "2016-01-05")),
-#'                 receiver_easting = c(706124.9, 706012.7, 709379.0),
-#'                 receiver_northing = c(6265030, 6264993, 6260093),
-#'                 receiver_range = 750)
-#' s <- data.table(receiver_id = c(3, 5),
-#'                 service_start = as.Date(c("2016-01-01", "2016-01-01")),
-#'                 service_end = as.Date(c("2016-01-01", "2016-01-01")))
-#'
-#' #### Define function to calculate detection probability
-#' # This must accept a .data & .bathy argument:
-#' # * .data is the .moorings data for a specific receiver (e.g., containing receiver coordinates)
-#' # * .bathy is as described above
-#' # Using these arguments, the function must calculate detection probability around the receiver
-#' # * This implementation supports receiver-specific detection ranges
-#' acs_setup_detection_pr <- function(.data, .bathy, ...) {
-#'
-#'   # Define helper function to calculate detection probability give distance
-#'   calc_dpr <- function(distance) {
-#'     pr <- stats::plogis(2.5 + -0.02 * distance)
-#'     pr[distance > .data$receiver_range] <- 0
-#'     pr
-#'   }
-#'   # Calculate Euclidean distance around receiver
-#'   rxy <- matrix(c(.data$receiver_easting, .data$receiver_northing), ncol = 2)
-#'   cell <- terra::cellFromXY(.bathy, rxy)
-#'   grid <- terra::setValues(.bathy, NA)
-#'   grid[cell] <- 1
-#'   dist <- terra::distance(grid, unit = "m")
-#'   dist <- terra::mask(dist, .bathy)
-#'   # Convert distances to detection pr
-#'   terra::app(dist, calc_dpr)
-#' }
-#' # Examine output of function for example receiver
-#' pr <- lapply(seq_len(max(m$receiver_id)), function(id) {
-#'   if (!(id %in% m$receiver_id)) return(NULL)
-#'   acs_setup_detection_pr(m[m$receiver_id == id, , drop = FALSE], dat_gebco())
-#' })
-#'
-#' #### Example (1): Implement function using specified inputs
-#' k <- acs_setup_detection_kernels(m, s,
-#'                                  .calc_detection_pr = acs_setup_detection_pr,
-#'                                  .bathy = dat_gebco())
-#'
-#' # Examine list elements
-#' summary(k)
-#'
-#' # Examine example receiver-specific kernels
-#' pp <- par(mfrow = c(1, 2))
-#' lapply(c(3, 4), \(id) {
-#'   terra::plot(k$receiver_specific_kernels[[id]])
-#'   points(m[m$receiver_id == id, .(receiver_easting, receiver_northing)], cex = 2)
-#' }) |> invisible()
-#' par(pp)
-#'
-#' # Examine example receiver-specific inverse kernels
-#' pp <- par(mfrow = c(1, 2))
-#' lapply(c(3, 4), \(id) {
-#'   terra::plot(k$receiver_specific_kernels[[id]])
-#'   points(m[m$receiver_id == id, .(receiver_easting, receiver_northing)], cex = 2)
-#' }) |> invisible()
-#' par(pp)
-#'
-#' # Examine background detection Pr surfaces
-#' # (for each unique combination of receivers that were deployed)
-#' pp <- par(mfrow = c(1, 2))
-#' lapply(k$bkg_surface_by_design, \(bkg) {
-#'   terra::plot(bkg, axes = FALSE)
-#'   box()
-#' }) |> invisible()
-#' par(pp)
-#'
-#' # Examine background inverse detection Pr surfaces
-#' pp <- par(mfrow = c(1, 2))
-#' lapply(k$bkg_inv_surface_by_design, \(bkg) {
-#'   terra::plot(bkg, axes = FALSE)
-#'   box()
-#' }) |> invisible()
-#' par(pp)
+#' @example
 #'
 #' @source This function is based on the [`acs_setup_detection_kernels`](https://edwardlavender.github.io/flapper/reference/acs_setup_detection_kernels.html) function in the [`flapper`](https://github.com/edwardlavender/flapper) package, where the role of detection kernels in the AC* algorithms is described extensively (see Details).
 #'
@@ -563,10 +473,8 @@ acs_setup_detection_pr <- function(.data,
 #' @export
 
 acs_setup_detection_kernels <-
-  function(.moorings,
-           .services = NULL,
+  function(.data,
            .calc_detection_pr,
-           .bathy,
            .verbose = TRUE, ...) {
 
 
@@ -582,10 +490,10 @@ acs_setup_detection_kernels <-
     cat_to_console("... Setting up function...")
 
     #### Check user inputs
-    .moorings <- check_moorings(.moorings)
-    if (!is.null(.services)) {
-      .services <- check_services(.services, .moorings)
-    }
+    check_data(.data, .dataset = "moorings", .spatial = "bathy")
+    moorings <- .data$data$moorings
+    check_names(.data$data$moorings, req = c("receiver_x", "receiver_y"))
+    bathy    <- .data$spatial$bathy
 
 
     #########################
@@ -595,11 +503,12 @@ acs_setup_detection_kernels <-
     # (used to up-weight areas around a receiver with a detection)
     cat_to_console("... Getting receiver-specific kernels (for detection)...")
     receiver_specific_kernels <-
-      pbapply::pblapply(split(.moorings, .moorings$receiver_id), function(m) {
+      pbapply::pblapply(split(moorings, moorings$receiver_id), function(m) {
         # Define kernel using user-provided function
-        k <- .calc_detection_pr(m, .bathy, ...)
+        print(m)
+        k <- .calc_detection_pr(.mooring = m, .bathy = bathy,...)
         # Calculate Pr at receiver and check it is not NA or 0
-        pr_at_receiver <- terra::extract(k, data.frame(m$receiver_easting, m$receiver_northing))[1, 2]
+        pr_at_receiver <- terra::extract(k, data.frame(m$receiver_x, m$receiver_y))[1, 2]
         if (is.na(pr_at_receiver)) {
           warn("Detection probability is NA at receiver {m$receiver_id}.",
                .envir = environment())
@@ -610,7 +519,7 @@ acs_setup_detection_kernels <-
         # Return kernel
         k
       })
-    names(receiver_specific_kernels) <- as.character(.moorings$receiver_id)
+    names(receiver_specific_kernels) <- as.character(moorings$receiver_id)
 
     #### Calculate inverse detection Pr around each receiver
     # (used in calculations to down-weight areas, around a receiver that recorded detections,
@@ -627,12 +536,9 @@ acs_setup_detection_kernels <-
     cat_to_console("... Getting area-wide kernels (for non-detection)...")
     cat_to_console("... ... Get unique array designs...")
     # Get receiver status matrix from moorings and services (in units of days, time unit is Date)
-    rs_mat <- make_matrix_receivers(
-      .moorings = .moorings,
-      .services = .services,
-      .delta_t = "days",
-      .as_POSIXct = NULL
-    )
+    rs_mat <- make_matrix_receivers(.data = .data,
+                                    .delta_t = "days",
+                                    .as_POSIXct = NULL)
     # Get receiver status change points (dates when the array design changed)
     rs_mat_cp <- unique(rs_mat)
     # Define the time interval for each array design
@@ -643,7 +549,7 @@ acs_setup_detection_kernels <-
     array_design$array_end_date <-
       lead(array_design$array_start_date) - 1
     array_design$array_end_date[nrow(array_design)] <-
-      max(.moorings$receiver_end)
+      max(moorings$receiver_end)
     array_design$array_interval <-
       lubridate::interval(
         array_design$array_start_date,
@@ -699,10 +605,10 @@ acs_setup_detection_kernels <-
     # in the range 1:max(rs) that are not in rs.
     # This means we can use receiver numbers to go straight
     # ... to the correct element in the list from the integer receiver ID.
-    receiver_specific_kernels <- lapply(seq_len(max(.moorings$receiver_id)), function(i) {
+    receiver_specific_kernels <- lapply(seq_len(max(moorings$receiver_id)), function(i) {
       receiver_specific_kernels[[as.character(i)]]
     })
-    receiver_specific_inv_kernels <- lapply(seq_len(max(.moorings$receiver_id)), function(i) {
+    receiver_specific_inv_kernels <- lapply(seq_len(max(moorings$receiver_id)), function(i) {
       receiver_specific_inv_kernels[[as.character(i)]]
     })
 
