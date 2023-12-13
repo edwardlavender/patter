@@ -29,7 +29,7 @@
 #'    - Class: [`data.table`];
 #'    - Columns:
 #'        * `receiver_id`---a `integer` vector of unique receiver deployments;
-#'        * `receiver_start`,`receiver_end`---`Date` vectors of service start and end dates;
+#'        * `receiver_start`,`receiver_end`---`Date` vectors of service start and end dates. Before/after service events, receivers are assumed to have been deployed in the same locations; receiver deployments in different locations before/after servicing should be treated as distinct deployments in `.moorings`.
 #'    - Properties:
 #'        * Serviced receivers should be found in the `.moorings` dataset;
 #'
@@ -72,6 +72,9 @@ NULL
 #' @keywords internal
 
 check_bathy <- function(.bathy) {
+  if (is.null(.bathy)) {
+    return(.bathy)
+  }
   check_inherits(.bathy, "SpatRaster")
   res <- terra::res(.bathy)
   if (!all.equal(res[1], res[2])) {

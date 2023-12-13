@@ -69,7 +69,7 @@ These are internal functions that ensure that input dataset(s) meet \code{\link{
 \item Columns:
 \itemize{
 \item \code{receiver_id}---a \code{integer} vector of unique receiver deployments;
-\item \code{receiver_start},\code{receiver_end}---\code{Date} vectors of service start and end dates;
+\item \code{receiver_start},\code{receiver_end}---\code{Date} vectors of service start and end dates. Before/after service events, receivers are assumed to have been deployed in the same locations; receiver deployments in different locations before/after servicing should be treated as distinct deployments in \code{.moorings}.
 }
 \item Properties:
 \itemize{
