@@ -31,23 +31,23 @@
 #' }
 #' @seealso These functions wrap [`pbapply::setpb`] and associated routines.
 #'
-#' @name pb
+#' @name pb_
 
-#' @rdname pb
+#' @rdname pb_
 #' @keywords internal
 
 pb_init <- function(.min, .max) {
   pbapply::startpb(min = .min, max = .max)
 }
 
-#' @rdname pb
+#' @rdname pb_
 #' @keywords internal
 
 pb_tick <- function(.pb, .t) {
   pbapply::setpb(pb = .pb, value = .t)
 }
 
-#' @rdname pb
+#' @rdname pb_
 #' @keywords internal
 
 pb_close <- function(.pb) {
