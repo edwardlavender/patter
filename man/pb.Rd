@@ -7,33 +7,44 @@
 \alias{pb_close}
 \title{Progress bar wrappers}
 \usage{
-pb_init(.n, .init = 0L, .progress)
+pb_init(.min, .max)
 
-pb_tick(.pb, .t, .progress)
+pb_tick(.pb, .t)
 
-pb_close(.pb, .progress)
+pb_close(.pb)
 }
 \description{
-Progress bar wrappers
+Progress bars in \code{\link{patter}} are implemented via the \code{pbapply} package. These can be customised or suppressed before the implementation of \code{patter} functions that use progress bars via \code{\link[pbapply:pboptions]{pbapply::pboptions()}}. These simple wrappers facilitate the internal implementation of progress bars via \code{pbapply} functions.
 }
 \examples{
 \dontrun{
 # Define loop
-loop <- function(.progress) {
+loop <- function() {
   n <- 10L
-  pb <- pb_init(n, .progress)
-  for (i in seq_len(n)){
+  pb <- pb_init(.min = 0L, .max = n)
+  for (i in seq_len(n)) {
     Sys.sleep(0.1)
-    pb_tick(pb, .progress)
+    pb_tick(pb, .t = i)
   }
-  pb_close(pb, .progress)
+  pb_close(pb)
 }
 
-# Show progress bar
-loop(.progress = TRUE)
+# Show default progress bar
+loop()
 
-# Hide no progress bar
-loop(.progress = FALSE)
+# Customise default progress bar
+pbo <- pbapply::pboptions(type = "txt")
+loop()
+
+# Suppress progress bar
+pbo <- pbapply::pboptions(type = "none")
+loop()
+
+# Reset options
+pbapply::pboptions(pbo)
 }
+}
+\seealso{
+These functions wrap \code{\link[pbapply:pboptions]{pbapply::setpb}} and associated routines.
 }
 \keyword{internal}

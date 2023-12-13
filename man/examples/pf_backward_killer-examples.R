@@ -27,8 +27,7 @@ utils::head(list.files(pfb_folder))
 #### Example (4): Control monitoring of function progress
 # Suppress progress bar
 out_pfb <- pf_backward_killer(pf_setup_files(pff_folder_h),
-                              .save_history = TRUE,
-                              .progress = FALSE)
+                              .save_history = TRUE)
 # Save messages
 log.txt <- tempfile(fileext = ".txt")
 out_pfb <- pf_backward_killer(pf_setup_files(pff_folder_h),

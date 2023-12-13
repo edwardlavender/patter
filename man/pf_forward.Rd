@@ -30,7 +30,6 @@ pf_forward(
   .rerun = list(),
   .rerun_from = pf_setup_rerun(.rerun),
   .record_opts = list(save = FALSE, cols = NULL, sink = NULL),
-  .progress = TRUE,
   .verbose = TRUE,
   .txt = ""
 )

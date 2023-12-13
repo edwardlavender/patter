@@ -8,7 +8,6 @@ pf_backward_killer(
   .history,
   .save_history = FALSE,
   .write_history = NULL,
-  .progress = TRUE,
   .verbose = TRUE,
   .txt = ""
 )
@@ -24,7 +23,7 @@ pf_backward_killer(
 
 \item{.write_history}{A named list, passed to \code{\link[arrow:write_parquet]{arrow::write_parquet()}}, to write updated particle samples to file (see \code{\link[=pf_forward]{pf_forward()}}).}
 
-\item{.progress, .verbose, .txt}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
+\item{.verbose, .txt}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
 }
 \value{
 The function returns a \code{\linkS4class{pf}} object.
@@ -65,8 +64,7 @@ utils::head(list.files(pfb_folder))
 #### Example (4): Control monitoring of function progress
 # Suppress progress bar
 out_pfb <- pf_backward_killer(pf_setup_files(pff_folder_h),
-                              .save_history = TRUE,
-                              .progress = FALSE)
+                              .save_history = TRUE)
 # Save messages
 log.txt <- tempfile(fileext = ".txt")
 out_pfb <- pf_backward_killer(pf_setup_files(pff_folder_h),

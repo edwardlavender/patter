@@ -68,9 +68,9 @@ pf_path <- function(.history,
 
   # Implement chain
   cat_to_cf("... Evaluating chain text...")
-  .pb <- pb_init(.n = length(.history) - 1L, .progress = TRUE)
+  .pb <- pb_init(.min = 0L, .max = length(.history) - 1L)
   paths <- eval(parse(text = txt))
-  pb_close(.pb = .pb, .progress = TRUE)
+  pb_close(.pb = .pb)
   paths$x0 <- NULL
 
   # Reorientate paths (long format)

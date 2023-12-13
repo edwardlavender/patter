@@ -5,7 +5,7 @@
 #' * An ordered list of file paths (from [`pf_setup_files()`]) that define the directories in which particle samples were written from the forward simulation (as parquet files).
 #' @param .save_history A logical variable that defines whether or not to save updated particle samples in memory (see [`pf_forward()`]).
 #' @param .write_history A named list, passed to [`arrow::write_parquet()`], to write updated particle samples to file (see [`pf_forward()`]).
-#' @param .progress,.verbose,.txt Arguments to monitor function progress (see [`pf_forward()`]).
+#' @param .verbose,.txt Arguments to monitor function progress (see [`pf_forward()`]).
 #'
 #' @details At the time of writing, this function only removes 'dead ends' from particle samples. Backwards smoothing is not currently implemented.
 #'
@@ -21,7 +21,7 @@
 
 pf_backward_killer <- function(.history,
                                .save_history = FALSE, .write_history = NULL,
-                               .progress = TRUE, .verbose = TRUE, .txt = "") {
+                               .verbose = TRUE, .txt = "") {
 
   #### Check user inputs
   t_onset <- Sys.time()
@@ -45,13 +45,13 @@ pf_backward_killer <- function(.history,
   }
   timestep_final <- length(.history)
   # Define progress bar
-  pb <- pb_init(.n = timestep_final, .init = 0L, .progress = .progress)
+  pb <- pb_init(.min = 0L, .max = timestep_final)
 
   #### Implement loop
   for (t in rev(seq_len(timestep_final))) {
 
     #### Read particle samples for t and t - 1
-    pb_tick(.pb = pb, .t = (timestep_final - t) + 1L, .progress = .progress)
+    pb_tick(.pb = pb, .t = (timestep_final - t) + 1L)
     cat_to_cf(paste0("... Time step ", t, ":"))
     if (read_history) {
       if (t == timestep_final) {
@@ -92,7 +92,7 @@ pf_backward_killer <- function(.history,
     }
 
   }
-  pb_close(.pb = pb, .progress = .progress)
+  pb_close(.pb = pb)
 
   #### Return outputs (modified from pf_forward())
   if (!.save_history) {

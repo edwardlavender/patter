@@ -179,8 +179,7 @@ out_pff <- pf_forward(
   .sample = pf_sample_multinomial, 
   # Other settings
   .record_opts = list(save = TRUE),
-  .verbose = FALSE,
-  .progress = FALSE)
+  .verbose = FALSE)
 ```
 
 Particle samples are stored in the `history` element of the output. We can plot the first few samples as follows:

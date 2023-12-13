@@ -67,9 +67,7 @@ pf_distinct <- function(.history,
 #' * [`dstep()`] calculates distances between current and past particle samples (via [`terra::distance()`]) and translates these into probability densities (via [`dtruncgamma()`]). Arguments passed via `...` are passed to both [`terra::distance()`] (which requires a `lonlat` input) and [`dtruncgamma()`].
 #' @param .save_history A logical variable that defines whether or not to save updated particle samples in memory (see [`pf_forward()`]).
 #' @param .write_history A named list, passed to [`arrow::write_parquet()`], to write updated particle samples to file (see [`pf_forward()`]).
-#' @param .progress,.cl,.cl_varlist,.cl_chunks (optional) Parallelisation options. Parallelisation is implemented over particles.
-#' * `.progress` is a logical variable that defines whether or not to show a progress bar.
-#' * `.cl`, `.cl_varlist` and `.cl_chunks` are cluster controls passed to [`cl_lapply()`].
+#' @param .cl,.cl_varlist,.cl_chunks (optional) Parallelisation options passed to [`cl_lapply()`]. Parallelisation is implemented over particles.
 #' @param .verbose,.txt Arguments to monitor function progress (see [`pf_forward()`]).
 #'
 #' @details
@@ -123,7 +121,7 @@ pf_backward_sampler <- function(.history,
                                 .dens_step = dstep, ...,
                                 .save_history = FALSE, .write_history = NULL,
                                 .cl = NULL, .cl_varlist = NULL, .cl_chunks = TRUE,
-                                .progress = TRUE, .verbose = TRUE, .txt = ""
+                                .verbose = TRUE, .txt = ""
 ) {
 
   #### Check user inputs
@@ -154,11 +152,6 @@ pf_backward_sampler <- function(.history,
   }
   n_particle <- fnrow(.history[[n_step]])
   density    <- NULL
-  # Control progress bar (over particles, not time steps)
-  if (!.progress) {
-    pbo <- pbapply::pboptions(type = "none")
-    on.exit(pbapply::pboptions(pbo), add = TRUE)
-  }
 
   #### Generate paths
   cat_to_cf("... Generating path(s)...")

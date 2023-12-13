@@ -13,7 +13,6 @@ pf_backward_sampler(
   .cl = NULL,
   .cl_varlist = NULL,
   .cl_chunks = TRUE,
-  .progress = TRUE,
   .verbose = TRUE,
   .txt = ""
 )
@@ -41,11 +40,7 @@ Three helper functions are provided:
 
 \item{.write_history}{A named list, passed to \code{\link[arrow:write_parquet]{arrow::write_parquet()}}, to write updated particle samples to file (see \code{\link[=pf_forward]{pf_forward()}}).}
 
-\item{.progress, .cl, .cl_varlist, .cl_chunks}{(optional) Parallelisation options. Parallelisation is implemented over particles.
-\itemize{
-\item \code{.progress} is a logical variable that defines whether or not to show a progress bar.
-\item \code{.cl}, \code{.cl_varlist} and \code{.cl_chunks} are cluster controls passed to \code{\link[=cl_lapply]{cl_lapply()}}.
-}}
+\item{.cl, .cl_varlist, .cl_chunks}{(optional) Parallelisation options passed to \code{\link[=cl_lapply]{cl_lapply()}}. Parallelisation is implemented over particles.}
 
 \item{.verbose, .txt}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
 }

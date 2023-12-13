@@ -15,7 +15,7 @@
     # Use Sys.sleep() for testing (e.g., visualise progress bar)
     # Sys.sleep(0.1)
     # print(.t)
-    pb_tick(.pb = .pb, .t = .pb_step, .progress = !is.null(.pb))
+    pb_tick(.pb = .pb, .t = .pb_step)
     collapse::join(.data,
                    .current |>
                      select("x{.t - 1}" := "cell_past", "x{.t}" := "cell_now") |>

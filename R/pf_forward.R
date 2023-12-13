@@ -30,7 +30,7 @@ pf_forward <- function(.obs,
                        .record_opts = list(save = FALSE,
                                            cols = NULL,
                                            sink = NULL),
-                       .progress = TRUE, .verbose = TRUE, .txt = "") {
+                       .verbose = TRUE, .txt = "") {
 
   #### Check user inputs
   t_onset <- Sys.time()
@@ -102,7 +102,7 @@ pf_forward <- function(.obs,
   ppast <- .pf_ppast(.particles = pnow, .history = history,
                      .sink = startup$output$folder_history, .t = t)
   # Define progress bar
-  pb <- pb_init(.n = max(.obs$timestep), .init = 2L, .progress = .progress)
+  pb <- pb_init(.min = 2L, .max = max(.obs$timestep))
 
   #### Run simulation
   cat_to_cf("... Initiating simulation...")
@@ -110,7 +110,7 @@ pf_forward <- function(.obs,
 
     #### Initiate time step
     cat_to_cf(paste0("... ... Time step ", t, ":"))
-    pb_tick(.pb = pb, .t = t, .progress = .progress)
+    pb_tick(.pb = pb, .t = t)
     diagnostics_t <- list()
 
     #### (1) Propose new particles (using kicks)
@@ -191,7 +191,7 @@ pf_forward <- function(.obs,
     }
 
   }
-  pb_close(.pb = pb, .progress = .progress)
+  pb_close(.pb = pb)
 
   #### Return outputs
   .pf_outputs(.rerun = .rerun,
