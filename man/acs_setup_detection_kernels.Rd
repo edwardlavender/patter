@@ -7,14 +7,14 @@
 This function is based on the \href{https://edwardlavender.github.io/flapper/reference/acs_setup_detection_kernels.html}{\code{acs_setup_detection_kernels}} function in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package, where the role of detection kernels in the AC* algorithms is described extensively (see Details).
 }
 \usage{
-acs_setup_detection_kernels(.data, .calc_detection_pr, .verbose = TRUE, ...)
+acs_setup_detection_kernels(.dlist, .calc_detection_pr, .verbose = TRUE, ...)
 }
 \arguments{
-\item{.data}{A named \code{list} of data and parameters from \code{\link[=pat_setup_data]{pat_setup_data()}}. This function requires:
+\item{.dlist}{A named \code{list} of data and parameters from \code{\link[=pat_setup_data]{pat_setup_data()}}. This function requires:
 \itemize{
-\item \code{.data$data$moorings}, with the following columns: \code{receiver_id}, \code{receiver_start}, \code{receiver_end}, \code{receiver_x} and \code{receiver_y}, plus any columns used internally by \code{.calc_detection_pr} (see below).
-\item \code{.data$data$services}, with the following columns: \code{receiver_id}, \code{service_start} and \code{service_end} (see \code{\link[=make_matrix_receivers]{make_matrix_receivers()}}).
-\item \code{.data$spatial$bathy}, which defines the grid over which detection kernels are defined.
+\item \code{.dlist$data$moorings}, with the following columns: \code{receiver_id}, \code{receiver_start}, \code{receiver_end}, \code{receiver_x} and \code{receiver_y}, plus any columns used internally by \code{.calc_detection_pr} (see below).
+\item \code{.dlist$data$services}, with the following columns: \code{receiver_id}, \code{service_start} and \code{service_end} (see \code{\link[=make_matrix_receivers]{make_matrix_receivers()}}).
+\item \code{.dlist$spatial$bathy}, which defines the grid over which detection kernels are defined.
 }}
 
 \item{.calc_detection_pr, ...}{A function that defines a receiver-specific detection kernel (see \code{\link[=acs_setup_detection_pr]{acs_setup_detection_pr()}} for an example). This must accept three arguments (even if they are ignored):
@@ -68,14 +68,14 @@ s <- data.table(receiver_id = c(3, 5),
                 service_start = as.Date(c("2016-01-01", "2016-01-01")),
                 service_end = as.Date(c("2016-01-01", "2016-01-01")))
 # Set up data as usual
-data <- pat_setup_data(.moorings = m,
+dlist <- pat_setup_data(.moorings = m,
                        .services = s,
                        .bathy = dat_gebco(),
                        .lonlat = FALSE)
 
 #### Example (1): Implement function using specified inputs
 # Implement function
-k <- acs_setup_detection_kernels(data, .calc_detection_pr = acs_setup_detection_pr)
+k <- acs_setup_detection_kernels(dlist, .calc_detection_pr = acs_setup_detection_pr)
 # Examine list elements
 summary(k)
 # Examine example receiver-specific kernels

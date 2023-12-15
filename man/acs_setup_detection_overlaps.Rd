@@ -7,13 +7,13 @@
 This function supersedes the \href{https://edwardlavender.github.io/flapper/reference/get_detection_containers_overlap.html}{\code{get_detection_containers_overlaps}} function in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package.
 }
 \usage{
-acs_setup_detection_overlaps(.data)
+acs_setup_detection_overlaps(.dlist)
 }
 \arguments{
-\item{.data}{A named \code{list} of data and parameters from \code{\link[=pat_setup_data]{pat_setup_data()}}. This function requires:
+\item{.dlist}{A named \code{list} of data and parameters from \code{\link[=pat_setup_data]{pat_setup_data()}}. This function requires:
 \itemize{
-\item \code{.data$data$moorings}, with the following columns: \code{receiver_id}, \code{receiver_x}, \code{receiver_y}, \code{receiver_start}, \code{receiver_end} and \code{receiver_range}.
-\item (optional) \code{.data$data$services}, with the following columns: \code{receiver_id}, \code{service_start} and \code{service_end}.
+\item \code{.dlist$data$moorings}, with the following columns: \code{receiver_id}, \code{receiver_x}, \code{receiver_y}, \code{receiver_start}, \code{receiver_end} and \code{receiver_range}.
+\item (optional) \code{.dlist$data$services}, with the following columns: \code{receiver_id}, \code{service_start} and \code{service_end}.
 }}
 }
 \value{
@@ -27,10 +27,10 @@ In the AC* algorithms, at the moment of detection, the set of possible locations
 }
 \examples{
 #### Example (1): Basic implementation
-data <- pat_setup_data(.moorings = dat_moorings,
+dlist <- pat_setup_data(.moorings = dat_moorings,
                        .bathy = dat_gebco(),
                        .lonlat = FALSE)
-overlaps <- acs_setup_detection_overlaps(data)
+overlaps <- acs_setup_detection_overlaps(dlist)
 
 }
 \seealso{

@@ -8,7 +8,7 @@ This function is based on the \href{https://edwardlavender.github.io/flapper/ref
 }
 \usage{
 make_matrix_receivers(
-  .data,
+  .dlist,
   .start = NULL,
   .end = NULL,
   .delta_t = "days",
@@ -17,17 +17,17 @@ make_matrix_receivers(
 )
 }
 \arguments{
-\item{.data}{A named \code{list} of data and parameters from \code{\link[=pat_setup_data]{pat_setup_data()}}. This function requires:
+\item{.dlist}{A named \code{list} of data and parameters from \code{\link[=pat_setup_data]{pat_setup_data()}}. This function requires:
 \itemize{
-\item \code{.data$data$moorings}, with the following columns: \code{receiver_id}, \code{receiver_start}, and \code{receiver_end}.
-\item (optional) \code{.data$data$services}, with the following columns: \code{receiver_id}, \code{service_start} and \code{service_end}.
+\item \code{.dlist$data$moorings}, with the following columns: \code{receiver_id}, \code{receiver_start}, and \code{receiver_end}.
+\item (optional) \code{.dlist$data$services}, with the following columns: \code{receiver_id}, \code{service_start} and \code{service_end}.
 }}
 
 \item{.start, .end}{\code{Date} or \code{POSIXct} objects that define the start and end time. If unspecified, these are taken from the range of deployment times in \code{.moorings}.}
 
 \item{.delta_t}{A number or character that defines the time interval between successive time steps. This is passed to the \code{by} argument of \code{\link[base:seq.POSIXt]{base::seq.POSIXt()}} or \code{\link[base:seq.Date]{base::seq.Date()}} (depending on \code{as_POSIXct}, below).}
 
-\item{.as_POSIXct}{(optional) A function that coerces supplied any supplied times (\code{.data$data$moorings$receiver_start}, \verb{.data$data$$moorings$receiver_end}, \code{.data$data$services$service_start}, \code{.data$data$services$service_end}, \code{start} and \code{end}) that are not \code{POSIXct} objects to \code{POSIXct} objects. This can be suppressed via \code{as_POSIXct = NULL} if supplied times are Date objects and \code{delta_t} is not less than one day.}
+\item{.as_POSIXct}{(optional) A function that coerces supplied any supplied times (\code{.dlist$data$moorings$receiver_start}, \verb{.dlist$data$$moorings$receiver_end}, \code{.dlist$data$services$service_start}, \code{.dlist$data$services$service_end}, \code{start} and \code{end}) that are not \code{POSIXct} objects to \code{POSIXct} objects. This can be suppressed via \code{as_POSIXct = NULL} if supplied times are Date objects and \code{delta_t} is not less than one day.}
 
 \item{.set_names}{A logical variable that defines whether or not to set the row and column names of the matrix to the time steps and the receiver IDs respectively.}
 }
@@ -79,20 +79,20 @@ services <- data.table(
   ))
 )
 # Collect data
-data <- pat_setup_data(.moorings = moorings, .services = services)
+dlist <- pat_setup_data(.moorings = moorings, .services = services)
 
 ## Get daily receiver status (0, 1) matrix
-make_matrix_receivers(data, .delta_t = "days")
+make_matrix_receivers(dlist, .delta_t = "days")
 
 ## Get daily receiver status (0, 1) matrix
 # ... accounting for servicing dates
-make_matrix_receivers(data, .delta_t = "days")
+make_matrix_receivers(dlist, .delta_t = "days")
 
 #### Example (2): Illustration using actual data for different time windows
-data      <- pat_setup_data(.moorings = dat_moorings)
-mat_days  <- make_matrix_receivers(data, .delta_t = "days")
+dlist      <- pat_setup_data(.moorings = dat_moorings)
+mat_days  <- make_matrix_receivers(dlist, .delta_t = "days")
 mat_hours <-
-  make_matrix_receivers(data,
+  make_matrix_receivers(dlist,
                         .delta_t = "hours",
                         .as_POSIXct = \(x) as.POSIXct(paste(x, "00:00:00"), tz = "UTC"))
 utils::str(mat_days)

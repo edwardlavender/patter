@@ -20,13 +20,13 @@
 #' * `pars`---a named list, with required parameters;
 #'
 #' @examples
-#' data <- pat_setup_data(.acoustics = dat_acoustics,
+#' dlist <- pat_setup_data(.acoustics = dat_acoustics,
 #'                       .services = NULL,
 #'                       .archival = dat_archival,
 #'                       .moorings = dat_moorings,
 #'                       .bathy = dat_gebco(),
 #'                       .lonlat = FALSE)
-#' summary(data)
+#' summary(dlist)
 #'
 #' @author Edward Lavender
 #' @export

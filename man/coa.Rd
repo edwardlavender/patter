@@ -5,7 +5,7 @@
 \title{The centres of activity (COA) algorithm}
 \usage{
 coa(
-  .data,
+  .dlist,
   .delta_t,
   .split = NULL,
   .plot_weights = TRUE,
@@ -14,16 +14,16 @@ coa(
 )
 }
 \arguments{
-\item{.data}{A named \code{list} of data and parameters from \code{\link[=pat_setup_data]{pat_setup_data()}}. This function requires:
+\item{.dlist}{A named \code{list} of data and parameters from \code{\link[=pat_setup_data]{pat_setup_data()}}. This function requires:
 \itemize{
-\item \code{.data$data$acoustics}, with the following columns: \code{receiver_id} and \code{timestamp};
-\item \code{.data$data$moorings}, with the following columns: \code{receiver_id}, \code{receiver_x} and  \code{receiver_y};
-\item \code{.data$pars$lonlat}, which specifies the coordin
+\item \code{.dlist$data$acoustics}, with the following columns: \code{receiver_id} and \code{timestamp};
+\item \code{.dlist$data$moorings}, with the following columns: \code{receiver_id}, \code{receiver_x} and  \code{receiver_y};
+\item \code{.dlist$pars$lonlat}, which specifies the coordin
 }}
 
 \item{.delta_t}{The time interval over which to calculate COAs. This can be specified in any way understood by \code{\link[=cut.POSIXt]{cut.POSIXt()}} (see the \code{breaks} argument).}
 
-\item{.split}{(optional) A \code{character} that defines the name of the grouping factor in \code{.data$data$acoustics} (e.g., \code{individual_id} for \code{\link{dat_acoustics}}).}
+\item{.split}{(optional) A \code{character} that defines the name of the grouping factor in \code{.dlist$data$acoustics} (e.g., \code{individual_id} for \code{\link{dat_acoustics}}).}
 
 \item{.plot_weights}{A \code{logical} variable that defines whether or not to plot the frequency distribution of weights for each \code{.split} value.}
 
@@ -43,27 +43,27 @@ require(data.table)
 #### Example (1): Calculate COAs for an example individual
 acc   <- dat_acoustics[individual_id == dat_acoustics$individual_id[1], ]
 gebco <- dat_gebco()
-data  <- pat_setup_data(.acoustics = acc,
+dlist  <- pat_setup_data(.acoustics = acc,
                         .moorings = dat_moorings,
                         .bathy = gebco,
                         .lonlat = FALSE)
-coa(data, .delta_t = "2 hours")
-coa(data, .delta_t = "4 hours")
+coa(dlist, .delta_t = "2 hours")
+coa(dlist, .delta_t = "4 hours")
 
 #### Example (2): Calculate COAs for multiple individuals via .split
-data <- pat_setup_data(.acoustics = dat_acoustics,
+dlist <- pat_setup_data(.acoustics = dat_acoustics,
                        .moorings = dat_moorings,
                        .bathy = gebco,
                        .lonlat = FALSE)
-coa(data, .delta_t = "6 hours", .split = "individual_id")
+coa(dlist, .delta_t = "6 hours", .split = "individual_id")
 
 #### Example (3): Use lon/lat coordinates
 gebco_ll <- terra::project(dat_gebco(), "EPSG:4326")
-data <- pat_setup_data(.acoustics = dat_acoustics,
+dlist <- pat_setup_data(.acoustics = dat_acoustics,
                        .moorings = dat_moorings,
                        .bathy = gebco_ll,
                        .lonlat = TRUE)
-coa(data, .delta_t = "6 hours", .split = "individual_id")
+coa(dlist, .delta_t = "6 hours", .split = "individual_id")
 
 }
 \seealso{

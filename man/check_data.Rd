@@ -19,7 +19,7 @@ check_services(.services, .moorings)
 
 check_archival(.archival)
 
-check_data(.data, .dataset = NULL, .spatial = NULL, .par = NULL)
+check_data(.dlist, .dataset = NULL, .spatial = NULL, .par = NULL)
 }
 \arguments{
 \item{.bathy}{A bathymetry \code{\link{SpatRaster}}. This is widely used as a generic grid in \code{\link{patter}} functions.}
@@ -28,7 +28,7 @@ check_data(.data, .dataset = NULL, .spatial = NULL, .par = NULL)
 
 \item{.lonlat}{A \code{logical} variable that defines whether spatial data is in longitude/latitude format. If unsupplied, this is defined (if possible) based on the columns in \code{.moorings}.}
 
-\item{.data, .dataset, .spatial, .par}{Arguments for \code{\link[=check_data]{check_data()}}.}
+\item{.dlist, .dataset, .spatial, .par}{Arguments for \code{\link[=check_data]{check_data()}}.}
 }
 \value{
 Each function returns the input dataset, as described, formatted in line with \code{\link{patter}}'s requirements.

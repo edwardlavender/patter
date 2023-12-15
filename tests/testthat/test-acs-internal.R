@@ -19,12 +19,12 @@ test_that(".acs_absences() works", {
   }
 
   #### Define overlaps & kernels
-  data <- pat_setup_data(.moorings = m,
+  dlist <- pat_setup_data(.moorings = m,
                          .services = s,
                          .bathy = dat_gebco(),
                          .lonlat = FALSE)
-  overlaps <- acs_setup_detection_overlaps(data)
-  kernels <- acs_setup_detection_kernels(data,
+  overlaps <- acs_setup_detection_overlaps(dlist)
+  kernels <- acs_setup_detection_kernels(dlist,
                                          .calc_detection_pr = acs_setup_detection_pr)
 
   #### Test .acs_absences()

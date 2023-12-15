@@ -39,20 +39,20 @@ services <- data.table(
   ))
 )
 # Collect data
-data <- pat_setup_data(.moorings = moorings, .services = services)
+dlist <- pat_setup_data(.moorings = moorings, .services = services)
 
 ## Get daily receiver status (0, 1) matrix
-make_matrix_receivers(data, .delta_t = "days")
+make_matrix_receivers(dlist, .delta_t = "days")
 
 ## Get daily receiver status (0, 1) matrix
 # ... accounting for servicing dates
-make_matrix_receivers(data, .delta_t = "days")
+make_matrix_receivers(dlist, .delta_t = "days")
 
 #### Example (2): Illustration using actual data for different time windows
-data      <- pat_setup_data(.moorings = dat_moorings)
-mat_days  <- make_matrix_receivers(data, .delta_t = "days")
+dlist      <- pat_setup_data(.moorings = dat_moorings)
+mat_days  <- make_matrix_receivers(dlist, .delta_t = "days")
 mat_hours <-
-  make_matrix_receivers(data,
+  make_matrix_receivers(dlist,
                         .delta_t = "hours",
                         .as_POSIXct = \(x) as.POSIXct(paste(x, "00:00:00"), tz = "UTC"))
 utils::str(mat_days)

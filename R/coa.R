@@ -1,10 +1,10 @@
 #' @title The centres of activity (COA) algorithm
 #' @description This function calculates centres of activity (COAs).
-#' @param .data A named `list` of data and parameters from [`pat_setup_data()`]. This function requires:
-#' * `.data$data$acoustics`, with the following columns: `receiver_id` and `timestamp`;
-#' * `.data$data$moorings`, with the following columns: `receiver_id`, `receiver_x` and  `receiver_y`;
-#' * `.data$pars$lonlat`, which specifies the coordin
-#' @param .split (optional) A `character` that defines the name of the grouping factor in `.data$data$acoustics` (e.g., `individual_id` for [`dat_acoustics`]).
+#' @param .dlist A named `list` of data and parameters from [`pat_setup_data()`]. This function requires:
+#' * `.dlist$data$acoustics`, with the following columns: `receiver_id` and `timestamp`;
+#' * `.dlist$data$moorings`, with the following columns: `receiver_id`, `receiver_x` and  `receiver_y`;
+#' * `.dlist$pars$lonlat`, which specifies the coordin
+#' @param .split (optional) A `character` that defines the name of the grouping factor in `.dlist$data$acoustics` (e.g., `individual_id` for [`dat_acoustics`]).
 #' @param .delta_t The time interval over which to calculate COAs. This can be specified in any way understood by [`cut.POSIXt()`] (see the `breaks` argument).
 #' @param .plot_weights A `logical` variable that defines whether or not to plot the frequency distribution of weights for each `.split` value.
 #' @param .one_page A `logical` variable that defines whether or not to plot all histograms on one page.
@@ -20,24 +20,24 @@
 #' @author Edward Lavender
 #' @export
 
-coa <- function(.data, .delta_t, .split = NULL,
+coa <- function(.dlist, .delta_t, .split = NULL,
                 .plot_weights = TRUE, ..., .one_page = TRUE) {
 
   #### Check user inputs
-  check_data(.data,
+  check_data(.dlist = .dlist,
              .dataset = c("acoustics", "moorings"),
              .par = "lonlat")
   check_dots_for_missing_period(formals(), list(...))
 
   #### Define datasets
-  acoustics <- .data$data$acoustics
-  moorings  <- .data$data$moorings
+  acoustics <- .dlist$data$acoustics
+  moorings  <- .dlist$data$moorings
   ind       <- match(acoustics$receiver_id, moorings$receiver_id)
   receiver_x <- receiver_y <- NULL
   acoustics[, receiver_x := moorings$receiver_x[ind]]
   acoustics[, receiver_y := moorings$receiver_y[ind]]
   check_names(acoustics, req = .split)
-  lonlat <- .data$par$lonlat
+  lonlat <- .dlist$par$lonlat
 
   #### Identify split column e.g., individual_id
   keep_split <- TRUE

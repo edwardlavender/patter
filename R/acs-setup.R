@@ -234,9 +234,9 @@ acs_setup_obs <- function(.acoustics = NULL,
 #' @title AC* set up: define detection container overlaps
 #' @description This function identifies receivers with overlapping detection containers in space and time for the AC* algorithms.
 #'
-#' @param .data A named `list` of data and parameters from [`pat_setup_data()`]. This function requires:
-#' * `.data$data$moorings`, with the following columns: `receiver_id`, `receiver_x`, `receiver_y`, `receiver_start`, `receiver_end` and `receiver_range`.
-#' *  (optional) `.data$data$services`, with the following columns: `receiver_id`, `service_start` and `service_end`.
+#' @param .dlist A named `list` of data and parameters from [`pat_setup_data()`]. This function requires:
+#' * `.dlist$data$moorings`, with the following columns: `receiver_id`, `receiver_x`, `receiver_y`, `receiver_start`, `receiver_end` and `receiver_range`.
+#' *  (optional) `.dlist$data$services`, with the following columns: `receiver_id`, `service_start` and `service_end`.
 #'
 #' @details In the AC* algorithms, at the moment of detection, the set of possible locations depends on the receiver(s) at which an individual is, and is not, detected. The outputs of this function are used to restrict the probability calculations to the set of receivers that overlap with the receiver(s) at which an individual is detected for improved efficiency.
 #'
@@ -244,10 +244,10 @@ acs_setup_obs <- function(.acoustics = NULL,
 #'
 #' @examples
 #' #### Example (1): Basic implementation
-#' data <- pat_setup_data(.moorings = dat_moorings,
+#' dlist <- pat_setup_data(.moorings = dat_moorings,
 #'                        .bathy = dat_gebco(),
 #'                        .lonlat = FALSE)
-#' overlaps <- acs_setup_detection_overlaps(data)
+#' overlaps <- acs_setup_detection_overlaps(dlist)
 #'
 #' @source This function supersedes the [`get_detection_containers_overlaps`](https://edwardlavender.github.io/flapper/reference/get_detection_containers_overlap.html) function in the [`flapper`](https://github.com/edwardlavender/flapper) package.
 #'
@@ -261,15 +261,15 @@ acs_setup_obs <- function(.acoustics = NULL,
 #' @author Edward Lavender
 #' @export
 
-acs_setup_detection_overlaps <- function(.data) {
+acs_setup_detection_overlaps <- function(.dlist) {
 
   #### Collect data
-  check_data(.data = .data,
+  check_data(.dlist = .dlist,
              .dataset = "moorings",
              .par = "lonlat")
-  moorings <- .data$data$moorings
-  services <- .data$data$services
-  lonlat   <- .data$pars$lonlat
+  moorings <- .dlist$data$moorings
+  services <- .dlist$data$services
+  lonlat   <- .dlist$pars$lonlat
 
   #### Define receiver pairs
   receivers <- unique(moorings$receiver_id)
@@ -437,10 +437,10 @@ acs_setup_detection_pr <- function(.mooring,
 
 #' @title AC* set up: define detection kernels
 #' @description This function defines the detection kernels for the AC* algorithms.
-#' @param .data A named `list` of data and parameters from [`pat_setup_data()`]. This function requires:
-#' * `.data$data$moorings`, with the following columns: `receiver_id`, `receiver_start`, `receiver_end`, `receiver_x` and `receiver_y`, plus any columns used internally by `.calc_detection_pr` (see below).
-#' * `.data$data$services`, with the following columns: `receiver_id`, `service_start` and `service_end` (see [`make_matrix_receivers()`]).
-#' * `.data$spatial$bathy`, which defines the grid over which detection kernels are defined.
+#' @param .dlist A named `list` of data and parameters from [`pat_setup_data()`]. This function requires:
+#' * `.dlist$data$moorings`, with the following columns: `receiver_id`, `receiver_start`, `receiver_end`, `receiver_x` and `receiver_y`, plus any columns used internally by `.calc_detection_pr` (see below).
+#' * `.dlist$data$services`, with the following columns: `receiver_id`, `service_start` and `service_end` (see [`make_matrix_receivers()`]).
+#' * `.dlist$spatial$bathy`, which defines the grid over which detection kernels are defined.
 #' @param .calc_detection_pr,... A function that defines a receiver-specific detection kernel (see [`acs_setup_detection_pr()`] for an example). This must accept three arguments (even if they are ignored):
 #' * `.mooring`---A one-row [`data.table`] that contains the information in `.moorings` for a specific receiver;
 #' * `.bathy`---A [`SpatRaster`] that defines the grid over which detection probability is calculated (see below);
@@ -477,7 +477,7 @@ acs_setup_detection_pr <- function(.mooring,
 #' @export
 
 acs_setup_detection_kernels <-
-  function(.data,
+  function(.dlist,
            .calc_detection_pr,
            .verbose = TRUE, ...) {
 
@@ -492,10 +492,10 @@ acs_setup_detection_kernels <-
     on.exit(cat_log(call_end(.fun = "acs_setup_detection_kernels", .start = t_onset, .end = Sys.time())), add = TRUE)
 
     #### Check user inputs
-    check_data(.data, .dataset = "moorings", .spatial = "bathy")
-    moorings <- .data$data$moorings
-    check_names(.data$data$moorings, req = c("receiver_x", "receiver_y"))
-    bathy    <- .data$spatial$bathy
+    check_data(.dlist = .dlist, .dataset = "moorings", .spatial = "bathy")
+    moorings <- .dlist$data$moorings
+    check_names(.dlist$data$moorings, req = c("receiver_x", "receiver_y"))
+    bathy    <- .dlist$spatial$bathy
 
 
     #########################
@@ -538,7 +538,7 @@ acs_setup_detection_kernels <-
     cat_log("... Getting area-wide kernels (for non-detection)...")
     cat_log("... ... Get unique array designs...")
     # Get receiver status matrix from moorings and services (in units of days, time unit is Date)
-    rs_mat <- make_matrix_receivers(.data = .data,
+    rs_mat <- make_matrix_receivers(.dlist = .dlist,
                                     .delta_t = "days",
                                     .as_POSIXct = NULL)
     # Get receiver status change points (dates when the array design changed)

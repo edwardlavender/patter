@@ -4,7 +4,7 @@
 #' @param .bathy A bathymetry [`SpatRaster`]. This is widely used as a generic grid in [`patter`] functions.
 #' @param .lonlat A `logical` variable that defines whether spatial data is in longitude/latitude format. If unsupplied, this is defined (if possible) based on the columns in `.moorings`.
 #' @param .acoustics,.moorings,.services,.archival Movement [`data.table`]s.
-#' @param .data,.dataset,.spatial,.par Arguments for [`check_data()`].
+#' @param .dlist,.dataset,.spatial,.par Arguments for [`check_data()`].
 #'
 #' @details
 #' These are internal functions that ensure that input dataset(s) meet [`patter`] requirements. Users should implement [`pat_setup_data()`] to prepare datasets for [`patter`] functions. Downstream functions silently assume that input datasets meet all requirements, without subsequent checks. This simplifies internal code and documentation.
@@ -277,11 +277,11 @@ check_archival <- function(.archival) {
 #' @rdname check_data
 #' @keywords internal
 
-check_data <- function(.data, .dataset = NULL, .spatial = NULL, .par = NULL) {
-  check_named_list(.data)
-  check_names(.data, c("data", "spatial", "pars"))
-  check_not_null(input = .data$data, req = .dataset)
-  check_not_null(input = .data$spatial, req = .spatial)
-  check_not_null(input = .data$pars, req = .par)
+check_data <- function(.dlist, .dataset = NULL, .spatial = NULL, .par = NULL) {
+  check_named_list(.dlist)
+  check_names(.dlist, c("data", "spatial", "pars"))
+  check_not_null(input = .dlist$data, req = .dataset)
+  check_not_null(input = .dlist$spatial, req = .spatial)
+  check_not_null(input = .dlist$pars, req = .par)
   invisible(TRUE)
 }

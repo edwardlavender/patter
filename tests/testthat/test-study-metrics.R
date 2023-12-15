@@ -36,8 +36,8 @@ test_that("make_matrix_receivers() works", {
   )
 
   #### Test (1): Test basic implementation
-  data <- pat_setup_data(.moorings = moorings)
-  mat <- make_matrix_receivers(data,
+  dlist <- pat_setup_data(.moorings = moorings)
+  mat <- make_matrix_receivers(dlist,
                                .delta_t = "days",
                                .start = NULL, .end = NULL,
                                .as_POSIXct = NULL)
@@ -51,8 +51,8 @@ test_that("make_matrix_receivers() works", {
   expect_true(all(mat[, 5] == c(0, 0, 0, 0, 1, 1, 1, 1, 1)))
 
   #### Test (2): Test exclusion of servicing dates
-  data <- pat_setup_data(.moorings = moorings, .services = services)
-  mat <- make_matrix_receivers(data,
+  dlist <- pat_setup_data(.moorings = moorings, .services = services)
+  mat <- make_matrix_receivers(dlist,
                                .delta_t = "days",
                                .start = NULL, .end = NULL,
                                .as_POSIXct = NULL)
@@ -66,13 +66,13 @@ test_that("make_matrix_receivers() works", {
   expect_true(all(mat[, 5] == c(0, 0, 0, 0, 1, 1, 1, 0, 1)))
 
   #### Test (3): Test implementation with other times
-  mat <- make_matrix_receivers(data,
+  mat <- make_matrix_receivers(dlist,
                                .delta_t = "12 hours",
                                .as_POSIXct = function(x) as.POSIXct(paste(x, "00:00:00"), tz = "UTC"))
   expect_true(all(mat[, 1] == c(1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0)))
 
   #### Test (4): Modify start & end dates
-  mat <-  make_matrix_receivers(data,
+  mat <-  make_matrix_receivers(dlist,
                                 .start = as.Date("2015-01-01"),
                                 .end = as.Date("2018-01-01"),
                                 .delta_t = "days",
