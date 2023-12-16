@@ -43,7 +43,7 @@ out_pff <- pf_forward(.obs = obs,
                       .bathy = dat_gebco(),
                       .moorings = dat_moorings, .detection_overlaps = dat_overlaps(),
                       .detection_kernels = dat_kernels(),
-                      .record_opts = list(save = TRUE, sink = pff_folder))
+                      .record = list(save = TRUE, sink = pff_folder))
 
 #### Example (1): Implement backward simulation from `pf` object
 out_pfb <- pf_backward_killer(out_pff$history, .save_history = TRUE)

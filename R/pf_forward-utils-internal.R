@@ -6,13 +6,13 @@
 #' @rdname pf_forward_2_utils
 #' @keywords internal
 
-# Check .record_opts
-.pf_record_opts <- function(.record_opts) {
-  out <- list_args(.args = .record_opts, .defaults = list(save = FALSE,
+# Check .record options
+.pf_record <- function(.record) {
+  out <- list_args(.args = .record, .defaults = list(save = FALSE,
                                                           cols = NULL,
                                                           sink = NULL))
   if (!out$save && is.null(out$sink)) {
-    abort("`.record_opts$save = FALSE` and `.record_opts$sink = NULL`. There is nothing to do.")
+    abort("`.record$save = FALSE` and `.record$sink = NULL`. There is nothing to do.")
   }
   out
 }
@@ -69,9 +69,7 @@
 #' @rdname pf_forward_2_utils
 #' @keywords internal
 
-.pf_startup <- function(.rerun, .obs, .lonlat, .bathy, .moorings,
-                        .detection_overlaps, .detection_kernels, .update_ac,
-                        .record_opts) {
+.pf_startup <- function(.obs, .dlist, .rerun, .record) {
 
   #### Use .rerun, if specified
   # Currently, we assume that input arguments (e.g., .record_opts) are the same on reruns
@@ -87,14 +85,14 @@
   }
 
   #### Validate inputs
-  .record_opts <- .pf_record_opts(.record_opts)
+  .record <- .pf_record(.record)
 
   #### Define output containers
   # Lists to hold outputs
   history     <- list()
   diagnostics <- list()
   # directories to write outputs (may be NULL)
-  folders            <- .pf_dirs(.record_opts)
+  folders            <- .pf_dirs(.record)
   folder_history     <- folders[["history"]]
   folder_diagnostics <- folders[["diagnostics"]]
 
@@ -107,14 +105,6 @@
   is_land <- spatContainsNA(.bathy)
 
   #### Define wrapper functions
-  .pf_lik_abbr <- function(.particles, .t, .trial = NA_integer_) {
-    pf_lik(.particles = .particles, .obs = .obs, .t = .t, .bathy = .bathy,
-           .is_land = is_land,
-           .moorings = .moorings,
-           .detection_overlaps = .detection_overlaps, .detection_kernels = .detection_kernels,
-           .update_ac = .update_ac,
-           .trial = .trial)
-  }
   .pf_write_particles_abbr <- function(.particles) {
     .pf_write_particles(.particles = .particles, .sink = folder_history, .write = !is.null(.record_opts$sink))
   }
@@ -125,23 +115,19 @@
   #### Collate outputs
   list(
     output = list(
-      .record_opts = .record_opts,
-      select_cols = !is.null(.record_opts$cols),
+      .record = .record,
+      select_cols = !is.null(.record$cols),
       history = history,
       diagnostics = diagnostics,
       folder_history = folder_history,
       folder_diagnostics = folder_diagnostics
-    ),
-    data = list(
-      .moorings = .moorings
     ),
     control = list(
       iter_m = iter_m,
       iter_i = iter_i,
       is_land = is_land
     ),
-    wrapper = list(.pf_lik_abbr = .pf_lik_abbr,
-                   .pf_write_particles_abbr = .pf_write_particles_abbr,
+    wrapper = list(.pf_write_particles_abbr = .pf_write_particles_abbr,
                    .pf_write_diagnostics_abbr = .pf_write_diagnostics_abbr)
   )
 }

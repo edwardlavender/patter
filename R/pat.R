@@ -10,7 +10,7 @@
 #' @param .lonlat (optional) A `logical` variable that defines whether spatial data is in longitude/latitude format.
 #'
 #' @details
-#' The preparation of datasets for [`patter`] is a one-off inconvenience. See the [`check_data`] function documentation for full details as to the required properties of each input dataset. All requirements are kept to a minimum and straightforward to address. To minimise inconvenience, all inputs are optional in [`pat_setup_data()`]. If you are only interested in  specific routine(s), check the associated documentation to see which inputs are essential for those routine(s). The output of [`pat_setup_data()`] is widely passed to downstream [`patter`] functions, which streamlines the API, documentation and internal code.
+#' The preparation of datasets for [`patter`] is a one-off inconvenience. See the [`check_dlist()`] function documentation for full details as to the required properties of each input dataset. All requirements are kept to a minimum and straightforward to address. To minimise inconvenience, all inputs are optional in [`pat_setup_data()`]. If you are only interested in  specific routine(s), check the associated documentation to see which inputs are essential for those routine(s). The output of [`pat_setup_data()`] is widely passed to downstream [`patter`] functions, which streamlines the API, documentation and internal code.
 #'
 #' If `.lonlat = TRUE`, downstream functions require the `geosphere` package.
 #'
@@ -45,6 +45,7 @@ pat_setup_data <- function(.acoustics = NULL,
   spatial <- list(bathy = NULL)
   pars <- list(lonlat = NULL,
                spatna = NULL)
+  algorithm <- list()
 
   #### Check movement datasets
   # Acoustics
@@ -79,5 +80,6 @@ pat_setup_data <- function(.acoustics = NULL,
   #### Return list
   list(data = data,
        spatial = spatial,
-       pars = pars)
+       pars = pars,
+       algorithm = algorithm)
 }

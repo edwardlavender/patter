@@ -5,48 +5,54 @@
 \alias{acs_filter_land}
 \alias{acs_filter_container}
 \alias{pf_lik_ac}
-\alias{pf_lik_update}
-\title{PF: calculate particle likelihoods}
+\alias{pf_lik_dc}
+\title{PF: Likelihood functions}
 \usage{
-acs_filter_land(.particles, .bathy)
+acs_filter_land(.particles, .obs, .t, .dlist)
 
-acs_filter_container(.particles, .moorings, .receivers, .threshold)
+acs_filter_container(.particles, .obs, .t, .dlist)
 
-pf_lik_ac(.particles, .obs, .t, .detection_overlaps, .detection_kernels)
+pf_lik_ac(.particles, .obs, .t, .dlist)
 
-pf_lik_update(.particles, .obs, .t, .bathy, .update_ac)
-
-pf_lik(
-  .particles,
-  .obs,
-  .t,
-  .bathy,
-  .is_land,
-  .moorings,
-  .detection_overlaps,
-  .detection_kernels,
-  .update_ac,
-  .trial = NA_integer_
-)
+pf_lik_dc(.particles, .obs, .t, .dlist)
 }
 \arguments{
-\item{.moorings}{For \code{\link{acs_filter_container}},}
+\item{.particles}{A \code{\link{data.table}} that defines proposal locations. This contains the following columns:
+\itemize{
+\item \code{timestep}---an \code{integer} that defines the time step;
+\item \code{cell_now}---an \code{integer} that defines the grid cell(s) of proposal location(s);
+\item \code{x_now},\code{y_now}---\code{double}s that define proposal location coordinates;
+\item \code{lik}---a \code{double} that defines the likelihood. At each time step, this begins as a vector of \code{1}s that should be progressively updated by each likelihood function.
+}}
 
-\item{.detection_overlaps, .detection_kernels, }{For \code{\link{pf_lik_ac}}}
+\item{.obs, .t}{(optional) The \code{.obs} \code{\link{.data.table}} (from \code{\link[=pf_forward]{pf_forward()}}) and an \code{integer} that defines the time step (used to index \code{.obs}).}
 
-\item{.update_ac}{For \code{\link{pf_lik_update}}}
-
-\item{.is_land}{For \code{\link{acs_filter_land}},}
+\item{.dlist}{(optional) The \code{.dlist} \code{list} (from \code{\link[=pf_forward]{pf_forward()}}).
+\itemize{
+\item For \code{\link[=acs_filter_land]{acs_filter_land()}}, \code{.dlist} should contain \code{.dlist$spatial$bathy} and \code{.dlist$pars$spatna}.
+\item For \code{\link[=acs_filter_container]{acs_filter_container()}}, \code{.dlist} should contain \code{.dlist$data$moorings} and \code{.dlist$pars$lonlat}.
+\item For \code{\link[=pf_lik_ac]{pf_lik_ac()}}, \code{.dlist} should contain \code{.dlist$algorithm$detection_overlaps} and \code{.dlist$algorithm$detection_kernels}.
+\item For \code{\link[=pf_lik_dc]{pf_lik_dc()}}, \code{.dlist} should contain \code{.dlist$spatial$bathy}.
+\item For custom likelihood functions, \code{.dlist} may require other datasets.
+}}
+}
+\value{
+Functions return an updated \code{.particle} \code{\link{data.table}} for valid proposal locations and updated likelihoods (in the \code{.lik} column).
 }
 \description{
-PF: calculate particle likelihoods
+These are likelihood functions for \code{\link[=pf_forward]{pf_forward()}}. This function expects a named \code{list} of likelihood functions that evaluate the likelihood of each dataset given location proposals. Convenience functions are provided that calculate the likelihood of acoustic and archival data, given location proposals, as resolved by the acoustic-container and depth-contour algorithms presented by Lavender et al. (2023).
 }
 \details{
-TO DO
-provide likelihood so you can stack them how you like e.g. filters first then DC or AC
-each function should accept particles, return filtered particles & likelihood column
+In \code{\link[=pf_forward]{pf_forward()}}, the likelihood of the data given proposal locations is evaluated using a named \code{list} of user-defined functions (one for each dataset). Each function must accept a \code{\link{data.table}} of proposal locations (\code{.particles}) alongside the arguments named above (even if they are ignored), evaluate the likelihood of the data and return an updated \code{\link{data.table}} for the subset of valid proposals and \emph{updated} likelihoods (in the \code{.lik}). For computational efficiency, is is desirable that functions are ordered by the extent to which they invalidate proposal locations and that each function drops invalid proposals (since this reduces the number of subsequent likelihood calculations).
+
+The following convenience functions are provided:
+\itemize{
+\item \code{\link[=acs_filter_land]{acs_filter_land()}} is a binary 'habitability' (land/water) filter. This is useful when the 'stochastic kick' methodology is used to generate proposal locations in systems that include inhospitable habitats. The function calculates the likelihood (0, 1) of the 'hospitable' data given sampled particles. Location proposals in \code{NA} cells on the bathymetry grid (\code{.dlist$spatial$bathy}) are dropped.
+\item \code{\link[=acs_filter_container]{acs_filter_container()}} is recommended for acoustic time series. This function calculates the approximate likelihood of the next acoustic detection, given particle proposals. This is a binary filter that excludes location proposals that are incompatible with acoustic container dynamics. This is strictly optional but facilitates algorithm convergence by filtering location proposals that are inconsistent with the location of the next detection.
+\item \code{\link[=pf_lik_ac]{pf_lik_ac()}} calculates the likelihood of acoustic data (detection or non detection at each operational receiver), given location proposals.
+\item \code{\link[=pf_lik_dc]{pf_lik_dc()}} calculates the likelihood of archival (depth) data, given particle proposals. This is based on Lavender et al.'s (2023) depth-contour algorithm in which depth observations are considered valid in locations whose depth's lie between a shallow and deep limit (\code{.obs$depth_shallow[.t]} and \code{.obs$depth_deep[.t]}) but impossible otherwise.
+}
 }
 \author{
 Edward Lavender
 }
-\keyword{internal}

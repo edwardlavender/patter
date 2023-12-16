@@ -26,7 +26,7 @@ out_pff <- pf_forward(.obs = dat_obs(),
                       .bathy = dat_gebco(),
                       .moorings = dat_moorings, .detection_overlaps = dat_overlaps(),
                       .detection_kernels = dat_kernels(),
-                      .record_opts = list(sink = pff_folder))
+                      .record = list(sink = pff_folder))
 
 # List files for pf_backward_*()
 files <- pf_setup_files(file.path(pff_folder, "history"))

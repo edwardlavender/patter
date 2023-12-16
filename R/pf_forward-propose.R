@@ -6,18 +6,20 @@
 #' @rdname pf_propose
 #' @export
 
-pf_rpropose_origin <- function(.obs, .origin, .grid = FALSE,
-                               .detection_kernels, .moorings) {
+pf_rpropose_origin <- function(.obs, .dlist, .origin, .grid = FALSE) {
+
+  moorings          <- .dlist$data$moorings
+  detection_kernels <- .dlist$algorithm$detection_kernels
 
     # (1) Define 'quadrature points' within acoustic containers
-    if (!is.null(.moorings)) {
+    if (!is.null(moorings)) {
       # Define container for possible locations
       if (!.grid) {
-        .detection_kernels <- NULL
+        detection_kernels <- NULL
       }
       container <- .acs_container_1(.obs,
-                                    .detection_kernels = .detection_kernels,
-                                    .moorings = .moorings)
+                                    .detection_kernels = detection_kernels,
+                                    .moorings = moorings)
       # Sample cell coordinates within container
       terra::crs(container) <- terra::crs(.origin)
       samples <- spatSampleDT(container, .spatcell = .origin)
@@ -73,7 +75,7 @@ pf_rpropose_kick <- function(.particles,
 #' @rdname pf_propose
 #' @export
 
-pf_rpropose_reachable <- function(.particles, .obs, .t, .bathy, ...) {
+pf_rpropose_reachable <- function(.particles, .obs, .t, .dlist,...) {
 
   # Isolate unique particles
   .particles <-
@@ -88,12 +90,12 @@ pf_rpropose_reachable <- function(.particles, .obs, .t, .bathy, ...) {
     as.matrix() |>
     terra::vect(type = "point") |>
     terra::buffer(width = .obs$mobility[.t], quadsegs = 1e3)
-  terra::crs(zone) <- terra::crs(.bathy)
+  terra::crs(zone) <- terra::crs(.dlist$spatial$bathy)
 
   # Identify permitted location choices given .mobility
   # * Use exact_extract() for much faster speeds
   choices <-
-    exactextractr::exact_extract(.bathy,
+    exactextractr::exact_extract(.dlist$spatial$bathy,
                                  sf::st_as_sf(zone),
                                  include_cell = TRUE,
                                  include_xy = TRUE,

@@ -84,7 +84,7 @@ out_pff <- pf_forward(.obs = obs,
                       .bathy = dat_gebco(),
                       .moorings = dat_moorings, .detection_overlaps = dat_overlaps(),
                       .detection_kernels = dat_kernels(),
-                      .record_opts = list(save = TRUE, sink = pff_folder))
+                      .record = list(save = TRUE, sink = pff_folder))
 # D. Define inputs for pf_backward_*()
 # * Use a subset of samples for speed
 history <- out_pff$history[1:10]

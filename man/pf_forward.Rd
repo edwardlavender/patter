@@ -6,18 +6,13 @@
 \usage{
 pf_forward(
   .obs,
-  .bathy,
-  .origin = .bathy,
-  .lonlat = FALSE,
-  .moorings = NULL,
-  .detection_overlaps = NULL,
-  .detection_kernels = NULL,
-  .update_ac = NULL,
+  .dlist,
+  .origin = .dlist$spatial$bathy,
   .rpropose = pf_rpropose_kick,
   .dpropose = pf_dpropose,
+  .likelihood = list(),
   .n = 100L,
-  .sample_origin = pf_sample_multinomial,
-  .sample = .sample_origin,
+  .sample = pf_sample_multinomial,
   .trial_origin_crit = 1L,
   .trial_origin = 1L,
   .trial_kick_crit = 1L,
@@ -27,9 +22,10 @@ pf_forward(
   .trial_revert_crit = 2L,
   .trial_revert_steps = 10L,
   .trial_revert = 2L,
+  .control = list(sampler_batch_size = 10L),
   .rerun = list(),
   .rerun_from = pf_setup_rerun(.rerun),
-  .record_opts = list(save = FALSE, cols = NULL, sink = NULL),
+  .record = list(save = FALSE, cols = NULL, sink = NULL),
   .verbose = TRUE
 )
 }

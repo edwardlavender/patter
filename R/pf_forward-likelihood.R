@@ -1,78 +1,114 @@
-#' @title PF: calculate particle likelihoods
-#' @description
-#' @param .particles
-#' @param .obs,.t,.bathy
-#' @param .is_land For [`acs_filter_land`],
-#' @param .moorings For [`acs_filter_container`],
-#' @param .detection_overlaps,.detection_kernels, For [`pf_lik_ac`]
-#' @param .update_ac For [`pf_lik_update`]
+#' @title PF: Likelihood functions
+#' @description These are likelihood functions for [`pf_forward()`]. This function expects a named `list` of likelihood functions that evaluate the likelihood of each dataset given location proposals. Convenience functions are provided that calculate the likelihood of acoustic and archival data, given location proposals, as resolved by the acoustic-container and depth-contour algorithms presented by Lavender et al. (2023).
+#'
+#' @param .particles A [`data.table`] that defines proposal locations. This contains the following columns:
+#' * `timestep`---an `integer` that defines the time step;
+#' * `cell_now`---an `integer` that defines the grid cell(s) of proposal location(s);
+#' * `x_now`,`y_now`---`double`s that define proposal location coordinates;
+#' * `lik`---a `double` that defines the likelihood. At each time step, this begins as a vector of `1`s that should be progressively updated by each likelihood function.
+#' @param .obs,.t (optional) The `.obs` [`.data.table`] (from [`pf_forward()`]) and an `integer` that defines the time step (used to index `.obs`).
+#' @param .dlist (optional) The `.dlist` `list` (from [`pf_forward()`]).
+#' * For [`acs_filter_land()`], `.dlist` should contain `.dlist$spatial$bathy` and `.dlist$pars$spatna`.
+#' * For [`acs_filter_container()`], `.dlist` should contain `.dlist$data$moorings` and `.dlist$pars$lonlat`.
+#' * For [`pf_lik_ac()`], `.dlist` should contain `.dlist$algorithm$detection_overlaps` and `.dlist$algorithm$detection_kernels`.
+#' * For [`pf_lik_dc()`], `.dlist` should contain `.dlist$spatial$bathy`.
+#' * For custom likelihood functions, `.dlist` may require other datasets.
 #'
 #' @details
-#' TO DO
-#' provide likelihood so you can stack them how you like e.g. filters first then DC or AC
-# land filter
-# AC* filter
-# AC weights
-# .update_ac weights
-#'each function should accept particles, return filtered particles & likelihood column
+#' In [`pf_forward()`], the likelihood of the data given proposal locations is evaluated using a named `list` of user-defined functions (one for each dataset). Each function must accept a [`data.table`] of proposal locations (`.particles`) alongside the arguments named above (even if they are ignored), evaluate the likelihood of the data and return an updated [`data.table`] for the subset of valid proposals and _updated_ likelihoods (in the `.lik`). For computational efficiency, is is desirable that functions are ordered by the extent to which they invalidate proposal locations and that each function drops invalid proposals (since this reduces the number of subsequent likelihood calculations).
 #'
-#' @return
+#' The following convenience functions are provided:
+#' * [`acs_filter_land()`] is a binary 'habitability' (land/water) filter. This is useful when the 'stochastic kick' methodology is used to generate proposal locations in systems that include inhospitable habitats. The function calculates the likelihood (0, 1) of the 'hospitable' data given sampled particles. Location proposals in `NA` cells on the bathymetry grid (`.dlist$spatial$bathy`) are dropped.
+#' * [`acs_filter_container()`] is recommended for acoustic time series. This function calculates the approximate likelihood of the next acoustic detection, given particle proposals. This is a binary filter that excludes location proposals that are incompatible with acoustic container dynamics. This is strictly optional but facilitates algorithm convergence by filtering location proposals that are inconsistent with the location of the next detection.
+#' * [`pf_lik_ac()`] calculates the likelihood of acoustic data (detection or non detection at each operational receiver), given location proposals.
+#' * [`pf_lik_dc()`] calculates the likelihood of archival (depth) data, given particle proposals. This is based on Lavender et al.'s (2023) depth-contour algorithm in which depth observations are considered valid in locations whose depth's lie between a shallow and deep limit (`.obs$depth_shallow[.t]` and `.obs$depth_deep[.t]`) but impossible otherwise.
+#'
+#' @return Functions return an updated `.particle` [`data.table`] for valid proposal locations and updated likelihoods (in the `.lik` column).
 #'
 #' @author Edward Lavender
 #' @name pf_lik
 
 #' @rdname pf_lik
-#' @keywords internal
+#' @export
 
-acs_filter_land <- function(.particles, .bathy) {
-  .particles |>
-    filter(!is.na(terra::extract(.bathy, .data$cell_now))[, 1]) |>
-    as.data.table()
+# Eliminate particles in inhospitable locations (e.g., on land)
+acs_filter_land <- function(.particles, .obs, .t, .dlist) {
+  if (.t == 1L) {
+    if (is.null(.dlist$pars$spatna)) {
+      warn("`.dlist$pars$spatna` is undefined & assumed FALSE by `acs_filter_land()`.")
+      return(.particles)
+    }
+  }
+  if (isTRUE(.dlist$pars$spatna)) {
+    .particles |>
+      filter(!is.na(terra::extract(.dlist$spatial$bathy, .data$cell_now))[, 1]) |>
+      as.data.table()
+  }
 }
 
 #' @rdname pf_lik
-#' @keywords internal
+#' @export
 
-acs_filter_container <- function(.particles, .moorings, .receivers, .threshold) {
-  # Calculate distances between particle samples & the receivers that recorded the next detection
-  dist <- terra::distance(.particles |>
-                            select("x_now", "y_now") |>
-                            as.matrix(),
-                          .moorings |>
-                            filter(.data$receiver_id %in% .receivers) |>
-                            select("receiver_x", "receiver_y") |>
-                            as.data.table() |>
-                            as.matrix(),
-                          lonlat = FALSE)
-  # Eliminates particles using distance threshold
-  # * Particles are always within `mobility` of the past container
-  # * Particles are forced to be within (all) future containers
-  # * This does not eliminate all impossible locations e.g., due to peninsulas
-  # * But it is a quick way of dropping particles
-  .particles[Rfast::rowsums(dist <= .threshold) == ncol(dist), ]
+# Eliminate particles incompatible with container dynamics
+acs_filter_container <- function(.particles, .obs, .t, .dlist) {
+  if (.t == 1L) {
+    check_names(.obs, req = c("receiver_id_next", "buffer_future_incl_gamma"))
+    check_dlist(.dlist,
+               .dataset = "moorings",
+               .par = "lonlat")
+  }
+  if (.t > 1 && .t < max(.obs$timestep)) {
+    # Calculate distances between particle samples & the receivers that recorded the next detection
+    dist <- terra::distance(.particles |>
+                              select("x_now", "y_now") |>
+                              as.matrix(),
+                            .dlist$data$moorings |>
+                              filter(.data$receiver_id %in% .obs$receiver_id_next[.t][[1]]) |>
+                              select("receiver_x", "receiver_y") |>
+                              as.data.table() |>
+                              as.matrix(),
+                            lonlat = .dlist$par$lonlat)
+    # Eliminates particles using distance threshold
+    # * Particles are always within `mobility` of the past container
+    # * Particles are forced to be within (all) future containers
+    # * This does not eliminate all impossible locations e.g., due to peninsulas
+    # * But it is a quick way of dropping particles
+    .particles[Rfast::rowsums(dist <= .obs$buffer_future_incl_gamma[.t]) == ncol(dist), ]
+  }
 }
 
 #' @rdname pf_lik
-#' @keywords internal
+#' @export
 
-pf_lik_ac <- function(.particles, .obs, .t, .detection_overlaps, .detection_kernels) {
+pf_lik_ac <- function(.particles, .obs, .t, .dlist) {
 
-  #### Calculate likelihood _given detection_
+  #### Checks
+  if (.t == 1L) {
+    check_names(.obs, c("detection", "receiver_id", "date"))
+    check_dlist(.dlist, .algorithm = c("detection_kernels", "detection_overlaps"))
+  }
+
+  #### Calculate likelihood _detection_ given position
   lik <- NULL
-  if (.obs$detection[.t] == 1) {
+  if (.obs$detection[.t] == 1L) {
     # (1) Calculate AC weights _given_detection_ at current time step
     # Identify receiver(s) that recorded detections at the selected time step
     detections_current <- .obs$receiver_id[.t][[1]]
     # Identify remaining (active) receivers which did not record a detection (if any)
-    absences_current <- .acs_absences(.obs$date[.t], detections_current, .detection_overlaps)
+    absences_current <- .acs_absences(.date = .obs$date[.t],
+                                      .detections = detections_current,
+                                      .overlaps = .dlist$algorithm$detection_overlaps)
     # Calculate weights
-    .particles[, lik := .acs_given_detection_particles(detections_current, absences_current, .detection_kernels, .particles)]
+    .particles[, lik := lik * .acs_given_detection_particles(.detections = detections_current,
+                                                             .absences = absences_current,
+                                                             .kernels = .dlist$algorithm$detection_kernels,
+                                                             .particles = .particles)]
 
-    #### Calculate likelihood _given non-detection_ at current time step
+    #### Calculate likelihood given _non detection_
   } else {
-    .particles[, lik :=
+    .particles[, lik := lik *
                  terra::extract(
-                   .detection_kernels$bkg_inv_surface_by_design[[.detection_kernels$array_design_by_date[[.obs$date[.t]]]]],
+                   .dlist$algorithm$detection_kernels$bkg_inv_surface_by_design[[.dlist$algorithm$detection_kernels$array_design_by_date[[.obs$date[.t]]]]],
                    .particles$cell_now
                  )[, 1]
     ]
@@ -86,89 +122,19 @@ pf_lik_ac <- function(.particles, .obs, .t, .detection_overlaps, .detection_kern
 }
 
 #' @rdname pf_lik
-#' @keywords internal
+#' @export
 
-pf_lik_update <- function(.particles, .obs, .t, .bathy, .update_ac) {
-  mlik <- matrix(NA, nrow(.particles), ncol = length(.update_ac) + 1)
-  mlik[, 1] <- .particles$lik
-  update_ac_index <- seq_len(length(.update_ac))
-  for (i in update_ac_index) {
-    mlik[, i + 1] <- .update_ac(.particles = .particles,
-                               .obs = .obs, .t = .t,
-                               .bathy = .bathy)
+# Evaluate particles incompatible with the depth data
+pf_lik_dc <- function(.particles, .obs, .t, .dlist) {
+  # Checks
+  if (.t == 1L) {
+    check_names(.obs, req = c("depth_shallow", "depth_deep"))
+    check_dlist(.dlist = .dlist, .spatial = "bathy")
   }
-  .particles |>
-    mutate(lik = colProds.matrix(mlik)) |>
-    filter(.data$lik > 0) |>
-    as.data.table()
-}
-
-#' @rdname pf_lik
-#' @keywords internal
-
-pf_lik <- function(.particles, .obs, .t, .bathy,
-                   .is_land,
-                   .moorings,
-                   .detection_overlaps, .detection_kernels,
-                   .update_ac, .trial = NA_integer_
-) {
-
-  #### Set up
-  # Define global variables
-  lik <- dens <- weight <- NULL
-  .particles[, lik := 1]
-  # Define baseline diagnostics
-  diagnostics <- list()
-  diagnostics[["base"]] <- .pf_diag(.particles, .t, .trial = .trial, .label = "base")
-
-  #### Land filter
-  # Eliminate particles in inhospitable locations (e.g., on land)
-  if (.is_land) {
-    .particles <- acs_filter_land(.particles, .bathy)
-    diagnostics[["acs_filter_land"]] <-
-      .pf_diag(.particles, .t = .t, .trial = .trial, .label = "acs_filter_land")
+  # Look up bathymetric depths, if required
+  if (!rlang::has_name(.particles, "bathy")) {
+    .particles$bathy <- terra::extract(.dlist$spatial$bathy, .particles$cell_now)
   }
-
-  #### (2) AC* likelihood
-  if (!is.null(.moorings) && .pf_diag_any(.particles)) {
-
-    ## (A) Container filter
-    # Eliminate particles incompatible with container dynamics
-    if (.t > 1 && .t < max(.obs$timestep)) {
-      .particles <- acs_filter_container(.particles = .particles,
-                                         .moorings = .moorings,
-                                         .receivers = .obs$receiver_id_next[.t][[1]],
-                                         .threshold = .obs$buffer_future_incl_gamma[.t])
-      diagnostics[["acs_filter_container"]] <-
-        .pf_diag(.particles, .t = .t, .trial = .trial, .label = "acs_filter_container")
-    }
-
-    ## (B) Likelihood
-    if (.pf_diag_any(.particles)) {
-      .particles <- pf_lik_ac(.particles,
-                              .obs, .t,
-                              .detection_overlaps,
-                              .detection_kernels)
-      diagnostics[["pf_lik_ac"]] <-
-        .pf_diag(.particles, .t = .t, .trial = .trial, .label = "pf_lik_ac")
-
-    }
-  }
-
-  #### (3) Update AC weights using user-defined model(s)
-  if (!is.null(.update_ac) && .pf_diag_any(.particles)) {
-    .particles <- pf_lik_update(.particles,
-                                .obs, .t,
-                                .bathy,
-                                .update_ac)
-    diagnostics[["update_ac"]] <-
-      .pf_diag(.particles, .t = .t, .trial = .trial, .label = "update_ac")
-  }
-
-  ## Return outputs
-  .particles[, dens := NA_real_]
-  .particles[, weight := lik]
-  attr(.particles, "diagnostics") <- diagnostics
-  .particles
-
+  # Calculate likelihood (0, 1)
+  .particles[(.particles$bathy >= .obs$depth_shallow[.t] & .particles$bathy <= .obs$depth_deep[.t]), ]
 }

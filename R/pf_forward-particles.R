@@ -4,6 +4,14 @@
 #' pf_propose_
 #' pf_sample_
 #' pf_particles
+#'
+#' .pf_rpropose_origin proposes starting locations
+#' .pf_sample_origin samples particles
+#' .pf_particles_origin integrates .pf_propose_origin, likelihood calculations and .pf_particles_origin
+#'
+#' .pf_propose_kick and .pf_propose_reachable are subsequent proposal functions (see XXX)
+#' .pf_particles_kick and .pf_particles_sampler are the integration functions which implement proposals and sampling
+#'
 
 #' @name pf_particle
 
@@ -38,22 +46,31 @@
 #' @rdname pf_particle
 #' @keywords internal
 
+# detection_kernels, .moorings,
+# .pf_lik,
+
 .pf_particles_origin <- function(.obs,
+                                 .dlist,
                                  .origin,
                                  .grid = FALSE,
-                                 .detection_kernels, .moorings,
-                                 .pf_lik,
+                                 .likelihood,
                                  .sample, .n,
                                  .trial_crit, .trial_count) {
   # Generate proposal location(s)
   diagnostics <- list()
-  proposals <- pf_rpropose_origin(.obs = .obs, .origin = .origin, .grid = .grid,
-                                  .detection_kernels = .detection_kernels, .moorings = .moorings)
+  proposals <- pf_rpropose_origin(.obs = .obs,
+                                  .dlist = .dlist,
+                                  .origin = .origin,
+                                  .grid = .grid)
   # Calculate likelihood(s) & weights
-  proposals <- .pf_lik(.particles = proposals, .t = 1L)
+  proposals <- .pf_lik(.particles = proposals,
+                       .obs = .obs,
+                       .t = 1L,
+                       .dlist = .dlist,
+                       .stack = .likelihood)
   diagnostics[["lik"]] <- attr(proposals, "diagnostics")
   # Sample proposal location(s)
-  pnow <- .pf_sample_origin(proposals,
+  pnow <- .pf_sample_origin(.particles = proposals,
                            .sample = .sample, .n = .n,
                            .trial_crit = .trial_crit,
                            .trial_count = .trial_count)
@@ -78,9 +95,15 @@
   # Implement iterative sampling
   while (crit < .trial_crit & count <= .trial_count) {
     # Propose particles
-    proposals <- .rpropose(.particles = .particles, .obs = .obs, .t = .t, .bathy = .bathy)
+    proposals <- .rpropose(.particles = .particles,
+                           .obs = .obs, .t = .t,
+                           .bathy = .bathy)
     # Calculate likelihood & weights (likelihood = weights)
-    proposals <- .pf_lik(.particles = proposals, .t = .particles$timestep[1], .trial = count)
+    proposals <- .pf_lik(.particles = proposals,
+                         .obs = .obs, .t = .t, # .particles$timestep[1]
+                         .dlist = .dlist,
+                         .stack = likelihood,
+                         .trial = count)
     diagnostics[[paste0("kick-", count)]] <- attr(proposals, "diagnostics")
     # Sample particles
     pnow  <- .sample(.particles = proposals, .n = .n)
@@ -100,21 +123,48 @@
 #' @keywords internal
 
 .pf_particles_sampler <- function(.particles,
-                                  .obs, .t, .bathy, .lonlat,
-                                  .pf_lik, .dpropose,
+                                  .obs, .t,
+                                  .dlist,
+                                  .likelihood,
+                                  .dpropose,
                                   .sample, .n,
-                                  .trial_crit, .trial_count) {
-  # Set variables
+                                  .trial_crit, .trial_count,
+                                  .control) {
+  #### Set variables
   diagnostics <- list()
-  # Propose particles (identify all reachable particles)
-  proposals <- pf_rpropose_reachable(.particles = .particles, .obs = .obs, .t = .t, .bathy = .bathy)
-  # Calculate likelihood
-  proposals <- .pf_lik(.particles = proposals, .t = .t)
-  diagnostics[["sampler-lik"]] <- attr(proposals, "diagnostics")
+  diagnostics[["sampler-base"]] <-
+    .pf_diag(.particles = .particles, .t = .t,
+             .trial = .trial, .label = "base")
+  chunks <- parallel::splitIndices(nrow(.particles),
+                                   nrow(.particles) / .control$sampler_batch_size)
+
+  #### Define reachable locations & likelihoods
+  proposals <- lapply(chunks, function(index) {
+    # Propose particles (identify all reachable particles)
+    proposals_for_index <- pf_rpropose_reachable(.particles = .particles[index, ],
+                                                 .obs = .obs, .t = .t,
+                                                 .dlist = dlist)
+    # Calculate likelihood & drop invalid particles
+    .pf_lik(.particles = proposals_for_index,
+            .obs = .obs, .t = .t,
+            .dlist = .dlist,
+            .stack = .likelihood,
+            .diagnostics = NULL)
+  }) |>
+    rbindlist() |>
+    distinct(.data$cell_now, .keep_all = TRUE) |>
+    as.data.table()
+  # Get summary diagnostics
+  # * TO DO
+  # * Provide a more detailed breakdown (include diagnostics in lapply())
+  diagnostics[["sampler-lik"]] <- .pf_diag(.particles = .particles, .t = .t,
+                                           .trial = NA_integer_, .label = "sampler-lik")
+
+  #### Implement sampler
   pnow <- proposals
-  # Calculate movement densities/weights & implement sampling
   if (fnrow(pnow) > 0L) {
-    # Calculate movement densities & weights (likelihood * movement densities)
+
+    ### Calculate movement densities & weights (likelihood * movement densities)
     proposals <-
       # Calculate movement densities
       .dpropose(proposals, .lonlat = .lonlat) |>
@@ -122,7 +172,8 @@
       mutate(weight = .data$lik * .data$dens,
              weight = .data$weight / sum(.data$weight)) |>
       as.data.table()
-    # Sample particles (from the set of allowed particles)
+
+    #### Sample particles (from the set of allowed particles)
     pnow  <- .sample(.particles = proposals, .n = .n)
     diagnostics[["sampler-sample-1"]] <-
       .pf_diag(.particles = proposals, .t = .t, .label = "sampler-sample", .trial = 1L)
@@ -138,7 +189,8 @@
       count <- count + 1L
     }
   }
-  # Return outputs
+
+  #### Return outputs
   attr(pnow, "diagnostics") <- diagnostics
   pnow
 }

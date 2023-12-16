@@ -8,7 +8,7 @@
 \alias{pf_dpropose}
 \title{PF: proposal functions}
 \usage{
-pf_rpropose_origin(.obs, .origin, .grid = FALSE, .detection_kernels, .moorings)
+pf_rpropose_origin(.obs, .dlist, .origin, .grid = FALSE)
 
 pf_rpropose_kick(
   .particles,
@@ -21,7 +21,7 @@ pf_rpropose_kick(
   ...
 )
 
-pf_rpropose_reachable(.particles, .obs, .t, .bathy, ...)
+pf_rpropose_reachable(.particles, .obs, .t, .dlist, ...)
 
 pf_dpropose(.particles, .lonlat)
 }

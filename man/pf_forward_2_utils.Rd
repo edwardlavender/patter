@@ -2,7 +2,7 @@
 % Please edit documentation in R/pf_forward-utils-internal.R
 \name{pf_forward_2_utils}
 \alias{pf_forward_2_utils}
-\alias{.pf_record_opts}
+\alias{.pf_record}
 \alias{.pf_dirs}
 \alias{.pf_write_particles}
 \alias{.pf_write_diagnostics}
@@ -17,7 +17,7 @@
 \alias{.pf_outputs}
 \title{PF helper: internal utilities}
 \usage{
-.pf_record_opts(.record_opts)
+.pf_record(.record)
 
 .pf_dirs(.write_opts)
 
@@ -25,17 +25,7 @@
 
 .pf_write_diagnostics(.diagnostics, .sink, .write)
 
-.pf_startup(
-  .rerun,
-  .obs,
-  .lonlat,
-  .bathy,
-  .moorings,
-  .detection_overlaps,
-  .detection_kernels,
-  .update_ac,
-  .record_opts
-)
+.pf_startup(.obs, .dlist, .rerun, .record)
 
 .pf_snapshot(.dt, .select, .cols)
 

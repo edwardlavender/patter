@@ -264,7 +264,7 @@ acs_setup_obs <- function(.acoustics = NULL,
 acs_setup_detection_overlaps <- function(.dlist) {
 
   #### Collect data
-  check_data(.dlist = .dlist,
+  check_dlist(.dlist = .dlist,
              .dataset = "moorings",
              .par = "lonlat")
   moorings <- .dlist$data$moorings
@@ -492,7 +492,7 @@ acs_setup_detection_kernels <-
     on.exit(cat_log(call_end(.fun = "acs_setup_detection_kernels", .start = t_onset, .end = Sys.time())), add = TRUE)
 
     #### Check user inputs
-    check_data(.dlist = .dlist, .dataset = "moorings", .spatial = "bathy")
+    check_dlist(.dlist = .dlist, .dataset = "moorings", .spatial = "bathy")
     moorings <- .dlist$data$moorings
     check_names(.dlist$data$moorings, req = c("receiver_x", "receiver_y"))
     bathy    <- .dlist$spatial$bathy

@@ -12,11 +12,10 @@
 
 .pf_particles_origin(
   .obs,
+  .dlist,
   .origin,
   .grid = FALSE,
-  .detection_kernels,
-  .moorings,
-  .pf_lik,
+  .likelihood,
   .sample,
   .n,
   .trial_crit,
@@ -40,14 +39,14 @@
   .particles,
   .obs,
   .t,
-  .bathy,
-  .lonlat,
-  .pf_lik,
+  .dlist,
+  .likelihood,
   .dpropose,
   .sample,
   .n,
   .trial_crit,
-  .trial_count
+  .trial_count,
+  .control
 )
 }
 \description{
@@ -58,5 +57,12 @@ Hierarchy
 pf_propose_
 pf_sample_
 pf_particles
+
+.pf_rpropose_origin proposes starting locations
+.pf_sample_origin samples particles
+.pf_particles_origin integrates .pf_propose_origin, likelihood calculations and .pf_particles_origin
+
+.pf_propose_kick and .pf_propose_reachable are subsequent proposal functions (see XXX)
+.pf_particles_kick and .pf_particles_sampler are the integration functions which implement proposals and sampling
 }
 \keyword{internal}

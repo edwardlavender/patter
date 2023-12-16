@@ -50,7 +50,7 @@ out_pff <- pf_forward(obs,
                       .moorings = dat_moorings,
                       .detection_overlaps = overlaps,
                       .detection_kernels = kernels,
-                      .record_opts = list(save = TRUE))
+                      .record = list(save = TRUE))
 
 #### Implement pf_backward_killer()
 out_pfb <- pf_backward_killer(out_pff$history, .save_history = TRUE)

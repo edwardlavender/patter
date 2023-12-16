@@ -178,7 +178,7 @@ out_pff <- pf_forward(
   # The sampler
   .sample = pf_sample_multinomial, 
   # Other settings
-  .record_opts = list(save = TRUE),
+  .record = list(save = TRUE),
   .verbose = FALSE)
 ```
 

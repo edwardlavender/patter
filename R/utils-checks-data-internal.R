@@ -4,7 +4,7 @@
 #' @param .bathy A bathymetry [`SpatRaster`]. This is widely used as a generic grid in [`patter`] functions.
 #' @param .lonlat A `logical` variable that defines whether spatial data is in longitude/latitude format. If unsupplied, this is defined (if possible) based on the columns in `.moorings`.
 #' @param .acoustics,.moorings,.services,.archival Movement [`data.table`]s.
-#' @param .dlist,.dataset,.spatial,.par Arguments for [`check_data()`].
+#' @param .dlist,.dataset,.spatial,.par Arguments for [`check_dlist()`].
 #'
 #' @details
 #' These are internal functions that ensure that input dataset(s) meet [`patter`] requirements. Users should implement [`pat_setup_data()`] to prepare datasets for [`patter`] functions. Downstream functions silently assume that input datasets meet all requirements, without subsequent checks. This simplifies internal code and documentation.
@@ -52,7 +52,7 @@
 #'        * For most functions, a single time series (for one individual) is required;
 #'        * It is convenient if archival time stamps are regularly spaced;
 #'
-#' * [`check_data()`] is an internal function used to confirm that the data `list` passed to a [`patter`] function contains the elements required for that function.
+#' * [`check_dlist()`] is an internal function used to confirm that the data `list` passed to a [`patter`] function contains the elements required for that function.
 #'
 #' For all datasets, `NA`s may cause unexpected errors and produce a [`warning`]. `NAs` in columns other than those described above are safe.
 #'
@@ -65,10 +65,10 @@
 #' * See [`pat_setup_data()`] for the front-end function;
 #'
 #' @author Edward Lavender
-#' @name check_data
+#' @name check_dlist
 NULL
 
-#' @rdname check_data
+#' @rdname check_dlist
 #' @keywords internal
 
 check_bathy <- function(.bathy) {
@@ -87,7 +87,7 @@ check_bathy <- function(.bathy) {
   .bathy
 }
 
-#' @rdname check_data
+#' @rdname check_dlist
 #' @keywords internal
 
 check_acoustics <- function(.acoustics, .moorings = NULL) {
@@ -128,7 +128,7 @@ check_acoustics <- function(.acoustics, .moorings = NULL) {
   .acoustics
 }
 
-#' @rdname check_data
+#' @rdname check_dlist
 #' @keywords internal
 
 check_moorings <- function(.moorings, .lonlat, .bathy) {
@@ -205,7 +205,7 @@ check_moorings <- function(.moorings, .lonlat, .bathy) {
 
 }
 
-#' @rdname check_data
+#' @rdname check_dlist
 #' @keywords internal
 
 check_services <- function(.services, .moorings) {
@@ -235,7 +235,7 @@ check_services <- function(.services, .moorings) {
   .services
 }
 
-#' @rdname check_data
+#' @rdname check_dlist
 #' @keywords internal
 
 check_archival <- function(.archival) {
@@ -274,14 +274,15 @@ check_archival <- function(.archival) {
   .archival
 }
 
-#' @rdname check_data
+#' @rdname check_dlist
 #' @keywords internal
 
-check_data <- function(.dlist, .dataset = NULL, .spatial = NULL, .par = NULL) {
+check_dlist <- function(.dlist, .dataset = NULL, .spatial = NULL, .par = NULL, .algorithm = NULL) {
   check_named_list(.dlist)
-  check_names(.dlist, c("data", "spatial", "pars"))
+  check_names(.dlist, c("data", "spatial", "pars", "algorithm"))
   check_not_null(input = .dlist$data, req = .dataset)
   check_not_null(input = .dlist$spatial, req = .spatial)
   check_not_null(input = .dlist$pars, req = .par)
+  check_not_null(input = .dlist$pars, req = .algorithm)
   invisible(TRUE)
 }

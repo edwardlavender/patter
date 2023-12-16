@@ -24,7 +24,7 @@ coa <- function(.dlist, .delta_t, .split = NULL,
                 .plot_weights = TRUE, ..., .one_page = TRUE) {
 
   #### Check user inputs
-  check_data(.dlist = .dlist,
+  check_dlist(.dlist = .dlist,
              .dataset = c("acoustics", "moorings"),
              .par = "lonlat")
   check_dots_for_missing_period(formals(), list(...))
