@@ -6,6 +6,7 @@
 \alias{.pf_sample_origin}
 \alias{.pf_particles_origin}
 \alias{.pf_lik}
+\alias{.pf_particles_kick}
 \alias{.pf_particles_sampler}
 \title{PF: particle internals}
 \usage{
@@ -44,6 +45,21 @@
   .stack,
   .diagnostics = list(),
   .trial = NA_integer_
+)
+
+.pf_particles_kick(
+  .particles,
+  .obs,
+  .t,
+  .dlist,
+  .rpropose,
+  .dpropose = NULL,
+  .likelihood,
+  .sample,
+  .n,
+  .trial_crit,
+  .trial_count,
+  .control
 )
 
 .pf_particles_sampler(

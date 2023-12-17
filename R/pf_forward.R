@@ -36,7 +36,9 @@
 #' @param .record A named `list` that controls function outputs. This may include the following elements:
 #' * `save`---a `logical` variable that defines whether or not to save particle samples and diagnostics in memory. Use with caution.
 #' * `sink`---a `character` string that defines a (usually) empty directory in which to write particle samples and diagnostics (see Value).
-#' * `cols`---a `character` vector that defines the names of the columns in particle-sample [`data.table`]s to save and/or write to file at each time step. This reduces the space occupied by outputs. At a minimum, you should retain `timestep`, `cell_now`, `x_now` and `y_now` for the backward sampler (see [`pf_backward_sampler()`]).
+#' * `cols`---a `character` vector that defines the names of the columns in particle-sample [`data.table`]s to save and/or write to file at each time step. This reduces the space occupied by outputs. At a minimum, you should retain `timestep`, `cell_now`, `x_now` and `y_now` for the backward sampler (see [`pf_backward_sampler()`]). `NULL` retains all columns.
+#'
+#' At least one of `.save` and `.sink` must be provided.
 #'
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
@@ -134,15 +136,15 @@ pf_forward <- function(.obs,
   pnow <- NULL
   if (length(history) == 0L | .rerun_from == 1L) {
     cat_log("... Defining origin...")
-    pnow <- .pf_particles_origin(.obs = .obs,
+    pnow <- .pf_particles_origin(.particles = NULL,
+                                 .obs = .obs, .t = 1L, .dlist = .dlist,
                                  .origin = .origin,
-                                 .grid = FALSE,
-                                 .detection_kernels = .detection_kernels,
-                                 .moorings = .moorings,
-                                 .pf_lik = .pf_lik_abbr,
+                                 .rpropose = NULL, .dpropose = NULL,
+                                 .likelihood = .likelihood,
                                  .sample = .sample, .n = .n,
                                  .trial_crit = .trial_origin_crit,
-                                 .trial_count = .trial_origin)
+                                 .trial_count = .trial_origin,
+                                 .control = .control)
     diagnostics_1 <- .pf_diag_collect(.diagnostics = attr(pnow, "diagnostics"),
                                       .iter_m = iter_m, .iter_i = iter_i)
     # Record accepted cells
@@ -178,11 +180,14 @@ pf_forward <- function(.obs,
     if (.trial_kick > 0L) {
       cat_log("... ... ... Kicking particles...")
       pnow <- .pf_particles_kick(.particles = copy(ppast),
-                                 .rpropose = .rpropose, .obs = .obs, .t = t, .bathy = .bathy,
-                                 .pf_lik = .pf_lik_abbr,
+                                 .obs = .obs, .t = t, .dlist = .dlist,
+                                 .rpropose = .rpropose, .dpropose = NULL,
+                                 .likelihood = .likelihood,
                                  .sample = .sample, .n = .n,
                                  .trial_crit = .trial_kick_crit,
-                                 .trial_count = .trial_kick)
+                                 .trial_count = .trial_kick,
+                                 .control = .control
+                                 )
       diagnostics_t[["kick"]] <- .pf_diag_bind(attr(pnow, "diagnostics"))
     }
 
@@ -193,9 +198,9 @@ pf_forward <- function(.obs,
       if (use_sampler) {
         cat_log("... ... ... Using directed sampling...")
         pnow <- .pf_particles_sampler(.particles = copy(ppast),
-                                      .obs = .obs, .t = t, .bathy = .bathy, .lonlat = .lonlat,
-                                      .pf_lik = .pf_lik_abbr,
-                                      .dpropose = .dpropose,
+                                      .obs = .obs, .t = t, .dlist = .dlist,
+                                      .rpropose = NULL, .dpropose = .dpropose,
+                                      .likelihood = .likelihood,
                                       .sample = .sample, .n = .n,
                                       .trial_crit = .trial_sampler_crit,
                                       .trial_count = .trial_sampler)

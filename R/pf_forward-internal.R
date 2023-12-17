@@ -193,6 +193,9 @@
 
 }
 
+#' @rdname pf_particle
+#' @keywords internal
+
 .pf_particles_kick <- function(.particles, .obs, .t, .dlist,
                                .rpropose, .dpropose = NULL,
                                .likelihood,

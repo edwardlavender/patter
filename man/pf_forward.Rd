@@ -78,8 +78,10 @@ Algorithm parameters should remain consistent on algorithm reruns.}
 \itemize{
 \item \code{save}---a \code{logical} variable that defines whether or not to save particle samples and diagnostics in memory. Use with caution.
 \item \code{sink}---a \code{character} string that defines a (usually) empty directory in which to write particle samples and diagnostics (see Value).
-\item \code{cols}---a \code{character} vector that defines the names of the columns in particle-sample \code{\link{data.table}}s to save and/or write to file at each time step. This reduces the space occupied by outputs. At a minimum, you should retain \code{timestep}, \code{cell_now}, \code{x_now} and \code{y_now} for the backward sampler (see \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}).
-}}
+\item \code{cols}---a \code{character} vector that defines the names of the columns in particle-sample \code{\link{data.table}}s to save and/or write to file at each time step. This reduces the space occupied by outputs. At a minimum, you should retain \code{timestep}, \code{cell_now}, \code{x_now} and \code{y_now} for the backward sampler (see \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}). \code{NULL} retains all columns.
+}
+
+At least one of \code{.save} and \code{.sink} must be provided.}
 
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 
