@@ -199,14 +199,14 @@ NULL
   # Number of internal iterations
   iter_i <- 1L
   # Prepare land filter
-  is_land <- spatContainsNA(.bathy)
+  is_land <- spatContainsNA(.dlist$spatial$.bathy)
 
   #### Define wrapper functions
   .pf_write_particles_abbr <- function(.particles) {
-    .pf_write_particles(.particles = .particles, .sink = folder_history, .write = !is.null(.record_opts$sink))
+    .pf_write_particles(.particles = .particles, .sink = folder_history, .write = !is.null(.record$sink))
   }
   .pf_write_diagnostics_abbr <- function(.diagnostics) {
-    .pf_write_diagnostics(.diagnostics = .diagnostics, .sink = folder_diagnostics, !is.null(.record_opts$sink))
+    .pf_write_diagnostics(.diagnostics = .diagnostics, .sink = folder_diagnostics, !is.null(.record$sink))
   }
 
   #### Collate outputs

@@ -6,13 +6,10 @@
 #' @rdname pf_propose
 #' @export
 
-pf_rpropose_kick <- function(.particles,
-                             .obs = NULL,
-                             .t = NULL,
-                             .bathy = NULL,
+pf_rpropose_kick <- function(.particles, .obs, .t, .dlist,
                              .sim_length = rlen,
-                             .sim_angle = rangrw,
-                             .lonlat = FALSE, ...) {
+                             .sim_angle = rangrw, ...
+                             ) {
   # Simulate step length & turning angle
   n    <- nrow(.particles)
   rlen <- .sim_length(n, ...)
@@ -20,13 +17,13 @@ pf_rpropose_kick <- function(.particles,
   # Kick each particle from previous location into new proposal locations
   x_past <- y_past <- NULL
   xy_next <- cstep(.xy_now = as.matrix(.particles[, list(x_past, y_past)]),
-                   .lonlat = .lonlat,
+                   .lonlat = .dlist$pars$lonlat,
                    .length = rlen,
                    .angle = rang)
   # Update data.table
   cell_now <- NULL
-  .particles[, cell_now := as.integer(terra::cellFromXY(.bathy, xy_next))]
-  xy_next <- terra::xyFromCell(.bathy, .particles$cell_now)
+  .particles[, cell_now := as.integer(terra::cellFromXY(.dlist$spatial$bathy, xy_next))]
+  xy_next <- terra::xyFromCell(.dlist$spatial$bathy, .particles$cell_now)
   x_now <- y_now <- NULL
   .particles[, x_now := as.numeric(xy_next[, 1])]
   .particles[, y_now := as.numeric(xy_next[, 2])]
@@ -36,7 +33,7 @@ pf_rpropose_kick <- function(.particles,
 #' @rdname pf_propose
 #' @export
 
-pf_rpropose_reachable <- function(.particles, .obs, .t, .dlist,...) {
+pf_rpropose_reachable <- function(.particles, .obs, .t, .dlist) {
 
   # Isolate unique particles
   .particles <-
@@ -84,7 +81,7 @@ pf_rpropose_reachable <- function(.particles, .obs, .t, .dlist,...) {
 #' @rdname pf_propose
 #' @export
 
-pf_dpropose <- function(.particles, .lonlat) {
+pf_dpropose <- function(.particles, .obs, .t, .dlist, ...) {
   # Handle empty data.tables
   # * These result when all proposals have zero likelihood
   if (fnrow(.particles) == 0L) {
@@ -96,7 +93,7 @@ pf_dpropose <- function(.particles, .lonlat) {
     .particles[, dens := dstep(.data_now = .particles[, list(x_now = x_past, y_now = y_past)],
                                .data_past = .particles[, list(x_now, y_now)],
                                pairwise = TRUE,
-                               lonlat = .lonlat)]
+                               lonlat = .dlist$pars$lonlat, ...)]
     # Isolate particles with positive densities
     .particles |>
       filter(dens > 0) |>

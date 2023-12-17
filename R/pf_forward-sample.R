@@ -2,15 +2,15 @@
 #'
 #' @description These are particle sampling functions for [`pf_forward()`].
 #'
-#' @param `.particles` A [`data.table`] that defines particle samples. This includes a `weight` column that should be used for resampling.
-#' @param `.n` An `integer` that defines the number of particle samples at each time step.
+#' @param .particles A [`data.table`] that defines particle samples. This includes a `weight` column that should be used for (re)sampling.
+#' @param .n An `integer` that defines the number of particle samples at each time step.
 #'
 #' @details
-#' [`pf_forward()`] expects a sampling function in the `.sample` argument. You can provide an exported function or write your own.
+#' [`pf_forward()`] expects a sampling function in the `.sample` argument. You can write your own function or use an exported one:
+#'  * [`pf_sample_multinomial`] implements multinomial (re)sampling.
+#'  * [`pf_sample_systematic()`] implements systematic (re)sampling.
 #'
 #' Sampling functions must accept `.particles` and `.n` arguments and return a [`data.table`] of `.n` particle samples.
-#'
-#' [`pf_sample_multinomial`] re(samples) implements multinomial resampling. [`pf_sample_systematic()`] implements systematic resampling.
 #'
 #' Systematic particle sampling ([`pf_sample_systematic()`]) is generally recommended.
 #'

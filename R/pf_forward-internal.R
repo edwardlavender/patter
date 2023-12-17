@@ -1,24 +1,60 @@
-#' @title PF: particle helpers
+#' @title PF: particle wrappers
+#' @description These internal functions facilitate the proposal and sampling of particles.
 #' @details
-#' Hierarchy
-#' pf_propose_
-#' pf_sample_
-#' pf_particles
 #'
-#' .pf_rpropose_origin proposes starting locations
-#' .pf_sample_origin samples particles
-#' .pf_particles_origin integrates .pf_propose_origin, likelihood calculations and .pf_particles_origin
+#' Function hierarchy is as follows:
+#' * `pf_rpropose_*()` functions generate proposals;
+#' * `pf_lik_*()` functions calculate likelihoods;
+#' * `pf_sample_*()` functions sample proposals;
+#' * `pf_particle_*()` functions wrap proposals, likelihood calculations and sampling in an iterative framework;
 #'
-#' .pf_propose_kick and .pf_propose_reachable are subsequent proposal functions (see XXX)
-#' .pf_particles_kick and .pf_particles_sampler are the integration functions which implement proposals and sampling
+#' Proposal and likelihood functions must accept the following arguments:
+#' * `.particles`
+#' * `.obs`
+#' * `.t`
+#' * `.dlist`
 #'
-
+#' This function evaluates the likelihood of the data given location proposals in [`pf_forward()`], wrapping specified likelihood functions (see [`pf_lik`]).
+#' @param .particles,.obs,.t,.dlist Arguments passed to likelihood functions (see [`pf_lik`]).
+#' @param .stack A named `list` of likelihood functions (see [`pf_lik`]).
+#' @param .diagnostics An empty `list`, used to store likelihood diagnostics, or `NULL`.
+#' @param .trial An `integer` that distinguishes trials.
+#' @return A [`data.table`] that defines valid proposal locations, likelihoods and weights. A `diagnostics` attribute contains proposal diagnostics.
+#'
+#' Sampling functions must accept:
+#' * `.particles`
+#' * `.n`
+#'
+#' Wrapper functions must accept:
+#' * Proposal function arguments (`.particles`, `.obs`, `.t`, `.dlist`);
+#' * Proposal functions (`.rpropose`,`.dpropose`);
+#' * Additional likelihood arguments (`.likelihood`);
+#' * Sampling arguments (`.sample`, `.n`);
+#' * Iteration arguments (`.trial_crit`, `.trial_count`);
+#' * Control arguments (`.control`);
+#'
+#' Internal functions may support additional arguments as required.
+#'
+#' At the first time step:
+#' * [`.pf_rpropose_origin()`] 'proposes' starting locations (quadrature points);
+#' * [`.pf_sample_origin()`] samples starting locations;
+#' * [`.pf_particles_origin()`] integrates [`.pf_propose_origin()`], likelihood calculations and [`.pf_particles_origin()`];
+#'
+#' At subsequent time steps:
+#' * The exported functions [`pf_rpropose_kick()`] and [`pf_rpropose_reachable`] propose locations;
+#' * [`.pf_particles_kick()`] and [`.pf_particles_sampler()`] are the integration function;
+#'
+#' `pf_particles_*()` functions are similar internally, but currently separated for convenience.
+#'
+#' @author Edward Lavender
 #' @name pf_particle
 
 #' @rdname pf_particle
 #' @keywords internal
 
-.pf_rpropose_origin <- function(.obs, .dlist, .origin, .grid = FALSE) {
+# Propose origin locations
+# * `.particles`, `.obs`, `.t` and `.dlist` are required for consistency but unused
+.pf_rpropose_origin <- function(.particles = NULL, .obs, .t = 1L, .dlist, .origin, .grid = FALSE) {
 
   moorings          <- .dlist$data$moorings
   detection_kernels <- .dlist$algorithm$detection_kernels
@@ -26,6 +62,7 @@
   # (1) Define 'quadrature points' within acoustic containers
   if (!is.null(moorings)) {
     # Define container for possible locations
+    # * .grid = FALSE uses a vector buffer rather than a gridded buffer, for speed
     if (!.grid) {
       detection_kernels <- NULL
     }
@@ -57,7 +94,8 @@
 #' @rdname pf_particle
 #' @keywords internal
 
-.pf_sample_origin <- function(.particles, .sample, .n, .trial_crit, .trial_count) {
+.pf_sample_origin <- function(.particles, .n,
+                              .sample, .trial_crit, .trial_count) {
   # Set variables
   crit        <- 0
   count       <- 1L
@@ -85,22 +123,17 @@
 #' @rdname pf_particle
 #' @keywords internal
 
-# detection_kernels, .moorings,
-# .pf_lik,
-
-.pf_particles_origin <- function(.obs,
-                                 .dlist,
-                                 .origin,
-                                 .grid = FALSE,
+.pf_particles_origin <- function(.particles = NULL, .obs, .t = 1L, .dlist,
+                                 .origin, .rpropose = NULL, .dpropose = NULL,
                                  .likelihood,
                                  .sample, .n,
-                                 .trial_crit, .trial_count) {
+                                 .trial_crit, .trial_count, .control) {
   # Generate proposal location(s)
   diagnostics <- list()
   proposals <- .pf_rpropose_origin(.obs = .obs,
                                    .dlist = .dlist,
                                    .origin = .origin,
-                                   .grid = .grid)
+                                   .grid = FALSE)
   # Calculate likelihood(s) & weights
   proposals <- .pf_lik(.particles = proposals,
                        .obs = .obs,
@@ -110,7 +143,7 @@
   diagnostics[["lik"]] <- attr(proposals, "diagnostics")
   # Sample proposal location(s)
   pnow <- .pf_sample_origin(.particles = proposals,
-                           .sample = .sample, .n = .n,
+                           .n = .n, .sample = .sample,
                            .trial_crit = .trial_crit,
                            .trial_count = .trial_count)
   diagnostics[["sample"]] <- attr(pnow, "diagnostics")
@@ -122,11 +155,48 @@
 #' @rdname pf_particle
 #' @keywords internal
 
-.pf_particles_kick <- function(.particles,
-                               .rpropose, .obs, .t, .bathy,
-                               .pf_lik,
+.pf_lik <- function(.particles, .obs, .t, .dlist,
+                   .stack,
+                   .diagnostics = list(), .trial = NA_integer_) {
+
+  #### Set up
+  # Define global variables
+  lik <- weight <- NULL
+  .particles[, lik := 1]
+  # Define baseline diagnostics
+  if (!is.null(.diagnostics)) {
+    .diagnostics[["base"]] <-
+      .pf_diag(.particles = .particles, .t = .t,
+               .trial = .trial, .label = "base")
+  }
+
+  #### Calculate likelihoods
+  for (i in seq_len(length(stack))) {
+    if (.pf_diag_any(.particles)) {
+      .particles <- stack[[i]](.particles = .particles,
+                               .obs = .obs,
+                               .t = .t,
+                               .dlist = .dlist)
+      if (!is.null(.diagnostics)) {
+        .diagnostics[[names(stack)[i]]] <-
+          .pf_diag(.particles = .particles, .t = .t,
+                   .trial = .trial, .label = names(stack)[i])
+      }
+    }
+  }
+
+  #### Return outputs
+  .particles[, weight := lik]
+  attr(.particles, "diagnostics") <- .diagnostics
+  .particles
+
+}
+
+.pf_particles_kick <- function(.particles, .obs, .t, .dlist,
+                               .rpropose, .dpropose = NULL,
+                               .likelihood,
                                .sample, .n,
-                               .trial_crit, .trial_count) {
+                               .trial_crit, .trial_count, .control) {
   # Set variables
   diagnostics <- list()
   crit  <- 0
@@ -135,13 +205,14 @@
   while (crit < .trial_crit & count <= .trial_count) {
     # Propose particles
     proposals <- .rpropose(.particles = .particles,
-                           .obs = .obs, .t = .t,
-                           .bathy = .bathy)
+                           .obs = .obs,
+                           .t = .t,
+                           .dlist = .dlist)
     # Calculate likelihood & weights (likelihood = weights)
     proposals <- .pf_lik(.particles = proposals,
                          .obs = .obs, .t = .t, # .particles$timestep[1]
                          .dlist = .dlist,
-                         .stack = likelihood,
+                         .stack = .likelihood,
                          .trial = count)
     diagnostics[[paste0("kick-", count)]] <- attr(proposals, "diagnostics")
     # Sample particles
@@ -161,19 +232,16 @@
 #' @rdname pf_particle
 #' @keywords internal
 
-.pf_particles_sampler <- function(.particles,
-                                  .obs, .t,
-                                  .dlist,
+.pf_particles_sampler <- function(.particles, .obs, .t, .dlist,
+                                  .rpropose = NULL, .dpropose,
                                   .likelihood,
-                                  .dpropose,
                                   .sample, .n,
-                                  .trial_crit, .trial_count,
-                                  .control) {
+                                  .trial_crit, .trial_count, .control) {
   #### Set variables
   diagnostics <- list()
   diagnostics[["sampler-base"]] <-
     .pf_diag(.particles = .particles, .t = .t,
-             .trial = .trial, .label = "base")
+             .trial = NA_integer_, .label = "base")
   chunks <- parallel::splitIndices(nrow(.particles),
                                    nrow(.particles) / .control$sampler_batch_size)
 
@@ -191,7 +259,6 @@
             .diagnostics = NULL)
   }) |>
     rbindlist() |>
-    distinct(.data$cell_now, .keep_all = TRUE) |>
     as.data.table()
   # Get summary diagnostics
   # * TO DO
@@ -206,7 +273,10 @@
     ### Calculate movement densities & weights (likelihood * movement densities)
     proposals <-
       # Calculate movement densities
-      .dpropose(proposals, .lonlat = .lonlat) |>
+      .dpropose(.particles = proposals,
+                .obs = .obs,
+                .t = .t,
+                .dlist = .dlist) |>
       # Calculate weights & normalise
       mutate(weight = .data$lik * .data$dens,
              weight = .data$weight / sum(.data$weight)) |>

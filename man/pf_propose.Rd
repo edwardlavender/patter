@@ -9,18 +9,17 @@
 \usage{
 pf_rpropose_kick(
   .particles,
-  .obs = NULL,
-  .t = NULL,
-  .bathy = NULL,
+  .obs,
+  .t,
+  .dlist,
   .sim_length = rlen,
   .sim_angle = rangrw,
-  .lonlat = FALSE,
   ...
 )
 
-pf_rpropose_reachable(.particles, .obs, .t, .dlist, ...)
+pf_rpropose_reachable(.particles, .obs, .t, .dlist)
 
-pf_dpropose(.particles, .lonlat)
+pf_dpropose(.particles, .obs, .t, .dlist, ...)
 }
 \description{
 TO DO
