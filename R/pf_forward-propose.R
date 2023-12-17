@@ -1,6 +1,23 @@
 #' @title PF: proposal functions
-#' @description TO DO
+#' @description These are proposal functions for [`pf_forward()`].
+#' @param .particles,.obs,.t,.dlist Required arguments for all `propose` functions.
+#' * `.particles`---a [`data.table`] of particle samples from the previous time step;
+#' * `.obs`---the `.obs` [`data.table`] from [`pf_forward()`];
+#' * `.t`---an `integer` that defines the time step;
+#' * `.dlist`---the `.dlist` `list` from [`pf_forward()`];
+#' @param .sim_length,.sim_angle Additional arguments for [`pf_rpropose_kick()`].
+#' @param ... Additional arguments.
 #'
+#' @details
+#' In [`pf_forward()`], proposal functions are used to generate (propose) new, candidate locations for the individual's position, contingent upon previous positions (particle samples). Proposal locations are generated from previous locations via stochastic kicks and directed sampling.
+#'
+#' The `.rpropose` argument in [`pf_forward()`] expects a stochastic-kick routine and [`pf_rpropose_kick()`] is the default. This is used to simulate proposal locations by 'kicking' particles into new locations as specified by a movement model. Custom functions that accept the `.particles`, `.obs`, `.t` and `.dlist` arguments can be provided.
+#'
+#' If stochastic kicks fail to produce a sufficient number of valid particle samples, [`pf_rpropose_reachable()`] may be called under-the-hood for directed sampling. For selected particles, this function identifies the set of reachable locations, for which likelihood calculations and sampling are then implemented (see [`pf_forward()`]).
+#'
+#' [`pf_dpropose()`] calculates the probability density of movements into proposal locations and is required for directed sampling.
+#'
+#' @author Edward Lavender
 #' @name pf_propose
 
 #' @rdname pf_propose

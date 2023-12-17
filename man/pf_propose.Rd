@@ -21,6 +21,31 @@ pf_rpropose_reachable(.particles, .obs, .t, .dlist)
 
 pf_dpropose(.particles, .obs, .t, .dlist, ...)
 }
+\arguments{
+\item{.particles, .obs, .t, .dlist}{Required arguments for all \code{propose} functions.
+\itemize{
+\item \code{.particles}---a \code{\link{data.table}} of particle samples from the previous time step;
+\item \code{.obs}---the \code{.obs} \code{\link{data.table}} from \code{\link[=pf_forward]{pf_forward()}};
+\item \code{.t}---an \code{integer} that defines the time step;
+\item \code{.dlist}---the \code{.dlist} \code{list} from \code{\link[=pf_forward]{pf_forward()}};
+}}
+
+\item{.sim_length, .sim_angle}{Additional arguments for \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}}.}
+
+\item{...}{Additional arguments.}
+}
 \description{
-TO DO
+These are proposal functions for \code{\link[=pf_forward]{pf_forward()}}.
+}
+\details{
+In \code{\link[=pf_forward]{pf_forward()}}, proposal functions are used to generate (propose) new, candidate locations for the individual's position, contingent upon previous positions (particle samples). Proposal locations are generated from previous locations via stochastic kicks and directed sampling.
+
+The \code{.rpropose} argument in \code{\link[=pf_forward]{pf_forward()}} expects a stochastic-kick routine and \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}} is the default. This is used to simulate proposal locations by 'kicking' particles into new locations as specified by a movement model. Custom functions that accept the \code{.particles}, \code{.obs}, \code{.t} and \code{.dlist} arguments can be provided.
+
+If stochastic kicks fail to produce a sufficient number of valid particle samples, \code{\link[=pf_rpropose_reachable]{pf_rpropose_reachable()}} may be called under-the-hood for directed sampling. For selected particles, this function identifies the set of reachable locations, for which likelihood calculations and sampling are then implemented (see \code{\link[=pf_forward]{pf_forward()}}).
+
+\code{\link[=pf_dpropose]{pf_dpropose()}} calculates the probability density of movements into proposal locations and is required for directed sampling.
+}
+\author{
+Edward Lavender
 }
