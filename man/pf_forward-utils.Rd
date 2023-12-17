@@ -44,6 +44,9 @@
 .pf_outputs(.rerun, .start, .startup, .history, .diagnostics, .convergence)
 }
 \description{
-PF helper: internal utilities
+These functions are internal utilities for \code{\link[=pf_forward]{pf_forward()}}.
+}
+\author{
+Edward Lavender
 }
 \keyword{internal}

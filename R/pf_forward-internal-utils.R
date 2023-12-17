@@ -1,5 +1,5 @@
-#' @title PF helper: internal checks
-#' @description These are internal check functions.
+#' @title PF helper: internal check functions
+#' @description These are internal check functions for [`pf_forward()`].
 #' @author Edward Lavender
 #' @name pf_check
 NULL
@@ -9,24 +9,13 @@ NULL
 
 # Collate .pf_checks() for pf_forward()
 .pf_checks <- function(inputs = match.call()[-1L], defaults = formals(), dots) {
-  .pf_check_obs(inputs$.obs)
-  if (!is.null(inputs$.moorings)) {
-    rlang::check_installed("Rfast")
-    check_names(inputs$.obs, c("date", "detection_id", "detection",
-                               "receiver_id", "receiver_id_next",
-                               "buffer_future_incl_gamma"))
-  }
-  if (!inputs$.save_history && is.null(inputs$.write_history)) {
-    abort("`.save_history = FALSE` and `.write_history = NULL`. There is nothing to do.")
-  }
-  .pf_check_write_history(formals$.write_history)
   check_dots_for_missing_period(formals, dots)
 }
-
 
 #' @rdname pf_check
 #' @keywords internal
 
+# Check `.obs` data.table
 .pf_check_obs <- function(.obs) {
   if (inherits(.obs, "data.frame") & !inherits(.obs, "data.table")) {
     .obs <- as.data.table(.obs)
@@ -41,69 +30,16 @@ NULL
   .obs
 }
 
-#' @rdname pf_check
-#' @keywords internal
-
-.pf_check_write_history <- function(.write_history, .element = "sink") {
-  if (!is.null(.write_history)) {
-    check_named_list(.write_history)
-    check_names(.write_history, .element)
-    if (length(.write_history[[.element]]) != 1L) {
-      abort("`.write_history${.element}` should be a single directory in which to write files.",
-            .envir = environment())
-    }
-    check_dir(.write_history[[.element]])
-    if (length(list.files(.write_history[[.element]])) != 0L) {
-      warn("`.write_history${.element}` ('{.write_history[[.element]]}') is not an empty directory.",
-           .envir = environment())
-    }
-  }
-  .write_history[[.element]]
-}
-
-#' @rdname pf_check
-#' @keywords internal
-
-.pf_check_rows <- function(.data, .filter, .t) {
-  fail <- FALSE
-  if (collapse::fnrow(.data) == 0L) {
-    fail <- TRUE
-    msg("There are no particles that pass the {.filter} filter at time {.t}. `history` returned up to this point.", .envir = environment())
-  }
-  fail
-}
-
-#' @rdname pf_check
-#' @keywords internal
-
-.pf_path_pivot_checks <- function(.obs, .cols) {
-  if (is.null(.obs) & !is.null(.cols)) {
-    .cols <- NULL
-    warn("`.obs = NULL` so input to `.cols` is ignored.")
-  }
-  if (!is.null(.obs)) {
-    if (!rlang::has_name(.obs, "timestep")) {
-      abort("`.obs` must have a `timestep` column.")
-    }
-    if (is.null(.cols)) {
-      abort("You must specify the columns in `.obs` required in the output (via `.cols`).")
-    }
-    check_inherits(.cols, "character")
-    if (!all(.cols %in% colnames(.obs))) {
-      abort("All elements in `.cols` must be column names in `.obs`.")
-    }
-  }
-}
-
 #' @title PF helper: internal utilities
+#' @description These functions are internal utilities for [`pf_forward()`].
+#' @author Edward Lavender
 #' @keywords internal
 #' @name pf_forward-utils
-
 
 #' @rdname pf_forward-utils
 #' @keywords internal
 
-# Check .record options
+# Define .record options
 .pf_record <- function(.record) {
   out <- list_args(.args = .record, .defaults = list(save = FALSE,
                                                           cols = NULL,
@@ -166,6 +102,7 @@ NULL
 #' @rdname pf_forward-utils
 #' @keywords internal
 
+# Implement startup checks and operations
 .pf_startup <- function(.obs, .dlist, .rerun, .record) {
 
   #### Use .rerun, if specified
@@ -299,6 +236,7 @@ NULL
 #' @rdname pf_forward-utils
 #' @keywords internal
 
+# Choose whether or not to implement directed sampling
 .pf_trial_sampler <- function(.diagnostics, .trial_crit) {
   opt_1 <- length(.diagnostics) == 0L
   if (opt_1) {
@@ -320,6 +258,7 @@ NULL
 #' @rdname pf_forward-utils
 #' @keywords internal
 
+# Continue the simulation to the next time step
 .pf_continue <- function(.particles, .t, .crit, .trial_revert_crit) {
 
   # Outcome (A): convergence failure
@@ -346,6 +285,7 @@ NULL
 #' @rdname pf_forward-utils
 #' @keywords internal
 
+# Collate `pf_forward()` outputs
 .pf_outputs <- function(.rerun, .start, .startup, .history, .diagnostics, .convergence) {
   .rerun$time[[.startup$control$iter_m]] <- call_timings(.start = .start)
   out  <- list(history = .history,

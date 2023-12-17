@@ -4,23 +4,14 @@
 \alias{pf_check}
 \alias{.pf_checks}
 \alias{.pf_check_obs}
-\alias{.pf_check_write_history}
-\alias{.pf_check_rows}
-\alias{.pf_path_pivot_checks}
-\title{PF helper: internal checks}
+\title{PF helper: internal check functions}
 \usage{
 .pf_checks(inputs = match.call()[-1L], defaults = formals(), dots)
 
 .pf_check_obs(.obs)
-
-.pf_check_write_history(.write_history, .element = "sink")
-
-.pf_check_rows(.data, .filter, .t)
-
-.pf_path_pivot_checks(.obs, .cols)
 }
 \description{
-These are internal check functions.
+These are internal check functions for \code{\link[=pf_forward]{pf_forward()}}.
 }
 \author{
 Edward Lavender
