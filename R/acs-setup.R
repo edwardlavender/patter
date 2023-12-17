@@ -478,7 +478,7 @@ acs_setup_detection_pr <- function(.mooring,
 
 acs_setup_detection_kernels <-
   function(.dlist,
-           .calc_detection_pr,
+           .calc_detection_pr = acs_setup_detection_pr,
            .verbose = TRUE, ...) {
 
 
@@ -507,7 +507,7 @@ acs_setup_detection_kernels <-
     receiver_specific_kernels <-
       pbapply::pblapply(split(moorings, moorings$receiver_id), function(m) {
         # Define kernel using user-provided function
-        print(m)
+        # print(m)
         k <- .calc_detection_pr(.mooring = m, .bathy = bathy,...)
         # Calculate Pr at receiver and check it is not NA or 0
         pr_at_receiver <- terra::extract(k, data.frame(m$receiver_x, m$receiver_y))[1, 2]

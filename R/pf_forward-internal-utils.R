@@ -40,15 +40,15 @@ NULL
 #' @keywords internal
 
 # Define directories for output files
-.pf_dirs <- function(.write_opts) {
-  if (is.null(.write_opts)) {
+.pf_dirs <- function(.record) {
+  check_named_list(.record)
+  check_names(.record, "sink")
+  if (is.null(.record$sink)) {
     return(NULL)
   }
-  check_named_list(.write_opts)
-  check_names(.write_opts, "sink")
-  check_dir(.write_opts$sink)
-  folder_history <- file.path(.write_opts$sink, "history")
-  folder_diagnostics <- file.path(.write_opts$sink, "diagnostics")
+  check_dir(.record$sink)
+  folder_history <- file.path(.record$sink, "history")
+  folder_diagnostics <- file.path(.record$sink, "diagnostics")
   lapply(c(folder_history, folder_diagnostics), \(.folder) {
     if (!dir.exists(.folder)) {
       dir.create(.folder)
@@ -105,7 +105,7 @@ NULL
   }
 
   #### Validate inputs
-  .record <- .pf_record(.record)
+  # TO DO, use .pf_check()
 
   #### Define output containers
   # Lists to hold outputs

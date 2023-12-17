@@ -163,14 +163,13 @@ list_clean <- function(l) {
 # rlist::list.merge() inspired function
 list_merge <- function(...) {
   lists <- list(...)
-  lists <- list_clean(lists)
-  if (length(lists) == 0L) {
-    return(list())
-  }
-  if (any(vapply(lists, function(x) is.null(names(x)), logical(1L)))) {
+  if (any(vapply(lists, function(x) length(x) > 0L && is.null(names(x)), logical(1L)))) {
     stop("A named list is expected.", call. = FALSE)
   }
-  Reduce(utils::modifyList, lists, list())
+  list_modify <- function(x, val) {
+    utils::modifyList(x, val, keep.null = TRUE)
+  }
+  Reduce(list_modify, x = lists, init = list())
 }
 
 #' @rdname utils-lists

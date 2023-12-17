@@ -283,6 +283,6 @@ check_dlist <- function(.dlist, .dataset = NULL, .spatial = NULL, .par = NULL, .
   check_not_null(input = .dlist$data, req = .dataset)
   check_not_null(input = .dlist$spatial, req = .spatial)
   check_not_null(input = .dlist$pars, req = .par)
-  check_not_null(input = .dlist$pars, req = .algorithm)
+  check_not_null(input = .dlist$algorithm, req = .algorithm)
   invisible(TRUE)
 }

@@ -144,9 +144,9 @@
   diagnostics[["lik"]] <- attr(proposals, "diagnostics")
   # Sample proposal location(s)
   pnow <- .pf_sample_origin(.particles = proposals,
-                           .n = .n, .sample = .sample,
-                           .trial_crit = .trial_crit,
-                           .trial_count = .trial_count)
+                            .n = .n, .sample = .sample,
+                            .trial_crit = .trial_crit,
+                            .trial_count = .trial_count)
   diagnostics[["sample"]] <- attr(pnow, "diagnostics")
   # Return outputs
   attr(pnow, "diagnostics") <- diagnostics
@@ -157,8 +157,8 @@
 #' @keywords internal
 
 .pf_lik <- function(.particles, .obs, .t, .dlist,
-                   .stack,
-                   .diagnostics = list(), .trial = NA_integer_) {
+                    .stack,
+                    .diagnostics = list(), .trial = NA_integer_) {
 
   #### Set up
   # Define global variables
@@ -172,16 +172,16 @@
   }
 
   #### Calculate likelihoods
-  for (i in seq_len(length(stack))) {
+  for (i in seq_len(length(.stack))) {
     if (.pf_diag_any(.particles)) {
-      .particles <- stack[[i]](.particles = .particles,
+      .particles <- .stack[[i]](.particles = .particles,
                                .obs = .obs,
                                .t = .t,
                                .dlist = .dlist)
       if (!is.null(.diagnostics)) {
-        .diagnostics[[names(stack)[i]]] <-
+        .diagnostics[[names(.stack)[i]]] <-
           .pf_diag(.particles = .particles, .t = .t,
-                   .trial = .trial, .label = names(stack)[i])
+                   .trial = .trial, .label = names(.stack)[i])
       }
     }
   }

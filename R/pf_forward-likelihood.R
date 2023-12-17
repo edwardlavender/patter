@@ -74,8 +74,9 @@ acs_filter_container <- function(.particles, .obs, .t, .dlist) {
     # * Particles are forced to be within (all) future containers
     # * This does not eliminate all impossible locations e.g., due to peninsulas
     # * But it is a quick way of dropping particles
-    .particles[Rfast::rowsums(dist <= .obs$buffer_future_incl_gamma[.t]) == ncol(dist), ]
+    .particles <- .particles[Rfast::rowsums(dist <= .obs$buffer_future_incl_gamma[.t]) == ncol(dist), ]
   }
+  .particles
 }
 
 #' @rdname pf_lik
