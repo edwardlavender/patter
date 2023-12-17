@@ -1,5 +1,6 @@
-#' @title PF: particle wrappers
-#' @description These internal functions facilitate the proposal and sampling of particles.
+#' @title PF: particle internals
+#' @description These internal functions facilitate proposals, likelihood calculations and sampling in [`pf_forward()`].
+#'
 #' @details
 #'
 #' Function hierarchy is as follows:
@@ -14,12 +15,10 @@
 #' * `.t`
 #' * `.dlist`
 #'
-#' This function evaluates the likelihood of the data given location proposals in [`pf_forward()`], wrapping specified likelihood functions (see [`pf_lik`]).
-#' @param .particles,.obs,.t,.dlist Arguments passed to likelihood functions (see [`pf_lik`]).
-#' @param .stack A named `list` of likelihood functions (see [`pf_lik`]).
-#' @param .diagnostics An empty `list`, used to store likelihood diagnostics, or `NULL`.
-#' @param .trial An `integer` that distinguishes trials.
-#' @return A [`data.table`] that defines valid proposal locations, likelihoods and weights. A `diagnostics` attribute contains proposal diagnostics.
+#' [`.pf_lik()`] is a wrapper for specified likelihood functions (see [`pf_lik`]). The function returns a [`data.table`] that defines valid proposal locations, likelihoods and weights. A `diagnostics` attribute contains proposal diagnostics. This also requires:
+#' * `.stack`---a named `list` of likelihood functions (see [`pf_lik`]).
+#' * `.diagnostics`---an empty `list` used to store likelihood diagnostics, or `NULL`.
+#' * `.trial` An `integer` that distinguishes trials.
 #'
 #' Sampling functions must accept:
 #' * `.particles`
@@ -38,10 +37,12 @@
 #' At the first time step:
 #' * [`.pf_rpropose_origin()`] 'proposes' starting locations (quadrature points);
 #' * [`.pf_sample_origin()`] samples starting locations;
-#' * [`.pf_particles_origin()`] integrates [`.pf_propose_origin()`], likelihood calculations and [`.pf_particles_origin()`];
+#' * [`.pf_lik()`] calculates likelihoods;
+#' * [`.pf_particles_origin()`] integrates [`.pf_propose_origin()`], [`.pf_lik()`] and [`.pf_particles_origin()`];
 #'
 #' At subsequent time steps:
 #' * The exported functions [`pf_rpropose_kick()`] and [`pf_rpropose_reachable`] propose locations;
+#' * [`.pf_lik()`] calculates likelihoods;
 #' * [`.pf_particles_kick()`] and [`.pf_particles_sampler()`] are the integration function;
 #'
 #' `pf_particles_*()` functions are similar internally, but currently separated for convenience.

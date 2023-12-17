@@ -7,7 +7,7 @@
 \alias{.pf_particles_origin}
 \alias{.pf_lik}
 \alias{.pf_particles_sampler}
-\title{PF: particle wrappers}
+\title{PF: particle internals}
 \usage{
 .pf_rpropose_origin(
   .particles = NULL,
@@ -61,17 +61,32 @@
   .control
 )
 }
-\arguments{
-\item{.particles, .obs, .t, .dlist}{Arguments passed to likelihood functions (see \code{\link{pf_lik}}).}
-
-\item{.stack}{A named \code{list} of likelihood functions (see \code{\link{pf_lik}}).}
-
-\item{.diagnostics}{An empty \code{list}, used to store likelihood diagnostics, or \code{NULL}.}
-
-\item{.trial}{An \code{integer} that distinguishes trials.}
+\description{
+These internal functions facilitate proposals, likelihood calculations and sampling in \code{\link[=pf_forward]{pf_forward()}}.
 }
-\value{
-A \code{\link{data.table}} that defines valid proposal locations, likelihoods and weights. A \code{diagnostics} attribute contains proposal diagnostics.
+\details{
+Function hierarchy is as follows:
+\itemize{
+\item \verb{pf_rpropose_*()} functions generate proposals;
+\item \verb{pf_lik_*()} functions calculate likelihoods;
+\item \verb{pf_sample_*()} functions sample proposals;
+\item \verb{pf_particle_*()} functions wrap proposals, likelihood calculations and sampling in an iterative framework;
+}
+
+Proposal and likelihood functions must accept the following arguments:
+\itemize{
+\item \code{.particles}
+\item \code{.obs}
+\item \code{.t}
+\item \code{.dlist}
+}
+
+\code{\link[=.pf_lik]{.pf_lik()}} is a wrapper for specified likelihood functions (see \code{\link{pf_lik}}). The function returns a \code{\link{data.table}} that defines valid proposal locations, likelihoods and weights. A \code{diagnostics} attribute contains proposal diagnostics. This also requires:
+\itemize{
+\item \code{.stack}---a named \code{list} of likelihood functions (see \code{\link{pf_lik}}).
+\item \code{.diagnostics}---an empty \code{list} used to store likelihood diagnostics, or \code{NULL}.
+\item \code{.trial} An \code{integer} that distinguishes trials.
+}
 
 Sampling functions must accept:
 \itemize{
@@ -95,38 +110,18 @@ At the first time step:
 \itemize{
 \item \code{\link[=.pf_rpropose_origin]{.pf_rpropose_origin()}} 'proposes' starting locations (quadrature points);
 \item \code{\link[=.pf_sample_origin]{.pf_sample_origin()}} samples starting locations;
-\item \code{\link[=.pf_particles_origin]{.pf_particles_origin()}} integrates \code{\link[=.pf_propose_origin]{.pf_propose_origin()}}, likelihood calculations and \code{\link[=.pf_particles_origin]{.pf_particles_origin()}};
+\item \code{\link[=.pf_lik]{.pf_lik()}} calculates likelihoods;
+\item \code{\link[=.pf_particles_origin]{.pf_particles_origin()}} integrates \code{\link[=.pf_propose_origin]{.pf_propose_origin()}}, \code{\link[=.pf_lik]{.pf_lik()}} and \code{\link[=.pf_particles_origin]{.pf_particles_origin()}};
 }
 
 At subsequent time steps:
 \itemize{
 \item The exported functions \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}} and \code{\link{pf_rpropose_reachable}} propose locations;
+\item \code{\link[=.pf_lik]{.pf_lik()}} calculates likelihoods;
 \item \code{\link[=.pf_particles_kick]{.pf_particles_kick()}} and \code{\link[=.pf_particles_sampler]{.pf_particles_sampler()}} are the integration function;
 }
 
 \verb{pf_particles_*()} functions are similar internally, but currently separated for convenience.
-}
-\description{
-These internal functions facilitate the proposal and sampling of particles.
-}
-\details{
-Function hierarchy is as follows:
-\itemize{
-\item \verb{pf_rpropose_*()} functions generate proposals;
-\item \verb{pf_lik_*()} functions calculate likelihoods;
-\item \verb{pf_sample_*()} functions sample proposals;
-\item \verb{pf_particle_*()} functions wrap proposals, likelihood calculations and sampling in an iterative framework;
-}
-
-Proposal and likelihood functions must accept the following arguments:
-\itemize{
-\item \code{.particles}
-\item \code{.obs}
-\item \code{.t}
-\item \code{.dlist}
-}
-
-This function evaluates the likelihood of the data given location proposals in \code{\link[=pf_forward]{pf_forward()}}, wrapping specified likelihood functions (see \code{\link{pf_lik}}).
 }
 \author{
 Edward Lavender
