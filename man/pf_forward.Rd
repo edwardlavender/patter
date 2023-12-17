@@ -24,11 +24,108 @@ pf_forward(
   .trial_revert = 2L,
   .control = list(sampler_batch_size = 10L),
   .rerun = list(),
-  .rerun_from = pf_setup_rerun(.rerun),
+  .rerun_from = pf_rerun_from(.rerun),
   .record = list(save = FALSE, cols = NULL, sink = NULL),
   .verbose = TRUE
 )
 }
-\description{
-PF: forward simulation
+\arguments{
+\item{.obs}{A \code{\link{data.table}} defining the timeline and associated observations, typically from \code{\link[=acs_setup_obs]{acs_setup_obs()}}.}
+
+\item{.dlist}{A \code{named} list of data and parameters required propose samples and calculate likelihoods (see \code{\link[=pf_setup_data]{pf_setup_data()}}, \code{\link{pf_lik}} and \code{\link{pf_propose}}. At a minimum, this function requires \code{.dlist$spatial$bathy} and additional elements required by \code{.likelihood},\code{.rpropose} and \code{.dpropose} functions (see XXX).}
+
+\item{.origin}{A \code{\link{SpatRaster}} that defines starting location(s). \code{NA}s/non \code{NA}s distinguish possible/impossible locations. By default, \code{.origin} is defined from the bathymetry grid (\code{.dlist$spatial$bathy}). For AC*PF algorithm implementations, grid cells beyond acoustic containers are masked. For *DCPF implementations, it is also desirable if you can, at least approximately, mask grid cells that are incompatible with the first depth observation. At the first time step, up to \code{1e6} locations ('quadrature points') are sampled from \code{.origin}. The likelihood of the data at each quadrature point is evaluated and \code{.n} starting locations are sampled with replacement (via \code{.sample}).}
+
+\item{.rpropose, .dpropose}{Proposal functions.
+\itemize{
+\item \code{.rpropose} is a function that proposes new locations for the individual, given previous locations. By default, this is a 'stochastic kick' function that simulates new locations by randomly kicking previous particles (see \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}} and Details).
+\item \code{.dpropose} is a function that evaluates the probability density of movements between location pairs (see \code{\link{pf_dpropose}}). This is required for directed sampling (see Details).
 }
+
+See \code{\link{pf_propose}} for required arguments.}
+
+\item{.likelihood}{A named \code{list} of likelihood functions. These are used to calculate the likelihood of each dataset at proposal locations. See \code{\link{pf_lik}} for required arguments, convenience functions and advice.}
+
+\item{.n, .sample}{Sampling arguments.
+\itemize{
+\item \code{.n} is an \code{integer} that defines the number of particle samples at each time step.
+\item \code{.sample} is a function used to (re)-sample proposal locations (see \code{\link{pf_sample}}). This must accept two arguments:
+\itemize{
+\item \code{.particles}---the \code{\link{data.table}} that defines particle samples. This includes a \code{weight} column that should be used for resampling;
+\item \code{.n}---the number of samples (see above);
+}
+}
+
+Systematic particle sampling (\code{\link[=pf_sample_systematic]{pf_sample_systematic()}}) is generally recommended.}
+
+\item{.trial_origin_crit, .trial_origin, .trial_kick_crit, .trial_kick, .trial_sampler_crit, .trial_sampler, .trial_revert_crit, .trial_revert_steps, .trial_revert}{Trial arguments used to tune convergence properties. ALl arguments expect \code{integer}s.
+\itemize{
+\item \verb{.trial_\{step\}} arguments define the number of times to trial a stochastic process at each time step (before giving up).
+\item \verb{.trial_\{step\}_crit} arguments define the number of valid, unique proposal locations (grid cells) required to trigger a repeated trial.
+}
+
+For example, if after kicking previous particles into proposal locations and evaluating the likelihood of each location only 10 unique particles remain, the stochastic process is repeated up to \code{.trial_kick} times or until the number of valid proposals exceeds \code{.trial_kick_crit} (see Details). In full:
+\itemize{
+\item \code{.trial_origin_crit} is the critical threshold for the starting samples. If the number of unique, valid starting locations is <= \code{.trial_origin_crit}, sampling is repeated up to \code{.trial_origin} times.
+\item \code{trial_kick_crit} is the critical threshold for stochastic kicks. If the number of unique, valid proposals is <= \code{trial_kick_crit}, the process of kicking and sampling particles (via \code{.rpropose} and \code{.sample}) is repeated up to \code{.trial_kick} times. Use \code{.trial_kick = 0L} to suppress stochastic kicks.
+\item \code{.trial_sampler_crit} is the critical threshold for directed sampling. Following stochastic kicks, if the number of unique, valid proposals remains <= \code{.trial_sampler_crit}, directed sampling is implemented. Samples are redrawn up to \code{.trial_sampler} times. Use \code{.trial_sampler_crit = 0L} to suppress directed sampling.
+\item \code{.trial_revert_crit} is the critical threshold for a reversion. If the number of unique, valid proposal locations is <= \code{.trial_revert_crit}, the algorithm reverts by \code{.trial_revert_steps} time steps to an earlier time step (time step two or greater). \code{.trial_revert} is the total number of reversions permitted. This is reset on algorithm reruns (see \code{.rerun}).
+}}
+
+\item{.rerun, .rerun_from}{Rerun options. These options are used to restart the algorithm from an earlier time step in the case of a convergence failure.
+\itemize{
+\item \code{.rerun} is the named \code{list} of algorithm outputs from a previous rerun.
+\item \code{.rerun_from} is an \code{integer} that defines the time step from which to rerun the algorithm.
+}
+
+Algorithm parameters should remain consistent on algorithm reruns.}
+
+\item{.record}{A named \code{list} that controls function outputs. This may include the following elements:
+\itemize{
+\item \code{save}---a \code{logical} variable that defines whether or not to save particle samples and diagnostics in memory. Use with caution.
+\item \code{sink}---a \code{character} string that defines a (usually) empty directory in which to write particle samples and diagnostics (see Value).
+\item \code{cols}---a \code{character} vector that defines the names of the columns in particle-sample \code{\link{data.table}}s to save and/or write to file at each time step. This reduces the space occupied by outputs. At a minimum, you should retain \code{timestep}, \code{cell_now}, \code{x_now} and \code{y_now} for the backward sampler (see \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}).
+}}
+
+\item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
+
+\item{control}{A named \code{list} of control options. See \code{\link[=pf_control]{pf_control()}} for supported options.}
+}
+\value{
+The function returns a \code{\linkS4class{pff}} object. If \code{.return$sink} is specified, two directories, {.return$sink}/history/ and {.return$sink}/diagnostics, are also created that contain particle samples and diagnostics. Particle samples are labelled \verb{1.parquet, 2.parquet, ..., T.parquet}, where \code{T} is the number of time steps. Diagnostics are labelled \verb{1.parquet, 2.parquet, ..., Z.parquet}, where Z is the number of diagnostic files. There may be multiple diagnostic files (e.g.., \verb{1.parquet, 2.parquet, 3.parquet} for each time step. Use \code{\link[=pf_forward_diagnostics]{pf_forward_diagnostics()}} to collate diagnostics.
+}
+\description{
+This function runs the forward simulation, generating samples of the set of possible locations of an animal at each time point given the data up to that time point and a movement model.
+}
+\section{Overview}{
+\code{\link[=pf_forward]{pf_forward()}} iterates over time steps, simulating location samples (termed 'particles') that are consistent with the preceding data and a movement model at each time step. At each time step, this process comprises four steps:
+\enumerate{
+\item A proposal step, in which we propose possible locations for the individual.
+\item A likelihood step, in which we calculate the likelihood of the data given each proposal.
+\item A weights step, in which we translate likelihoods into sampling weights.
+\item A sampling step, in which we (re)sample valid proposal locations using the weights.
+}
+
+At the first time step, proposal locations are defined from a large number of 'quadrature points' across \code{.origin}. At each quadrature point, we evaluate likelihoods and calculate weights. \code{.n} starting locations (particles) are sampled from the set of quadrature points using the weights.
+
+At subsequent time steps, proposal locations are generated via \code{.rpropose} which, by default, is a 'stochastic kick' function that 'kicks' previous particles at random into new locations (in line the restrictions imposed by a movement model). The benefit of this approach is that it is extremely fast, but in situations in which there are relatively few possible locations for an individual, the approach can work poorly because few kicked particles end up in valid locations. A \code{list} of likelihood functions is used to evaluate the likelihood of the data, given each proposal, and filter invalid proposals. During this time, we track how the number and diversity of proposal locations declines, as the data are revealed to be incompatible with selected proposals by successive likelihood functions (see Diagnostics). Likelihoods are translated into weights and \code{.n} valid proposals (particles) are resampled, with replacement, using the weights. If the number of unique, valid locations is <= \code{.trial_kick_crit}, this process is repeated up to \code{.trial_kick} times.
+
+Following the stochastic-kick methodology, if the number of unique, valid locations is <= \code{.trial_sampler_crit}, directed sampling is initiated. For each unique, previous location, this methodology identifies the set of reachable cells, given a mobility parameter, and evaluates likelihoods and the probability density of movements into each reachable location (which are used to define sampling weights). \code{.n} locations are then directly sampled from the set of valid locations. This approach is expensive in terms of time (since it requires iteration over particles) and memory (since the complete set of valid locations is used for sampling). Particles can be processed in batches for improved speed, up to the limits imposed by available memory (see \code{.control}). While this approach is expensive, sampling from the set of valid locations facilitates convergence.
+
+You can opt to use either \code{.rpropose} or directed sampling via the \code{.trial_} arguments. However, in general, it is advisable to permit the algorithm to chop-and-change between methods, depending on the number of valid proposals. This approach benefits from the speed benefits of stochastic kicks, where possible, as well as the improved convergence properties of directed sampling, where required.
+
+Particle rejuvenation is another strategy that is sometimes used to facilitate convergence but this is not currently implemented.
+
+At the end of each time step, if the number of unique, valid locations remains <= \code{.trial_revert_crit}, the algorithm can step backwards in time by \code{.trial_revert_steps} and try again. This reversion will be attempted up to \code{.trial_revert} times. After \code{.trial_revert} times, if the algorithm reaches a time step when there are fewer than \code{.trial_revert_crit} unique samples, it will produce a \code{\link{warning}}, but attempt to continue the simulation if possible. In the case of convergence failures, you can rerun the simulation from existing outputs, starting from an earlier time step, via \code{.rerun}. However, algorithm arguments should remain constant. On algorithm reversions and reruns, particle samplers are replaced but particle diagnostics are always retained.
+
+The algorithm iterates over the time series, proposing and sampling particles as described above. Particle samples can be saved in memory or written to file, alongside particle diagnostics. If the function fails to convergence, a \code{\link{warning}} is returned alongside the outputs up to that time step. Otherwise, the function will continue to the end of the time series.
+}
+
+\section{Algorithms}{
+This is highly flexible routine for the reconstruction of possible locations of an individual through time, given the data up to that time point. By modifying the likelihood functions, it is straightforward to implement the ACPF, DCPF and ACDCPF algorithms introduced by Lavender et al. (2023) for reconstructing movements using (a) acoustic time series, (b) archival time series and (c) acoustic and archival time series.
+}
+
+\section{Convergence and diagnostics}{
+While \code{\link[=pf_forward]{pf_forward()}} tries hard to reconstruct a complete time series of location samples, algorithm convergence is not guaranteed. The algorithm may reach a dead-end---a time step at which there are no valid locations into which the algorithm can step. This may be due to data errors, incorrect assumptions, insufficient sampling effort or poor tuning parameter settings. To facilitate diagnosis of the immediate cause of convergence failures, during likelihood evaluations we keep track of 'particle diagnostics', i.e., the number of unique, valid locations before/after each likelihood evaluation alongside other statistics.
+}
+
