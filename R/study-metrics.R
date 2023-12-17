@@ -28,7 +28,8 @@ make_matrix_receivers <- function(.dlist,
                                   .set_names = TRUE) {
 
   #### Check user inputs
-  check_dlist(.obs, req = c("depth_shallow", "depth_deep"))(.dlist = .dlist, .dataset = "moorings")
+  check_names(.obs, req = c("depth_shallow", "depth_deep"))
+  check_dlist(.dlist = .dlist, .dataset = "moorings")
   moorings <- .dlist$data$moorings
   services <- .dlist$data$services
   # Convert inputs to data.frames
