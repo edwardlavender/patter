@@ -1,9 +1,9 @@
 #' @title PF helper: internal utilities
 #' @keywords internal
-#' @name pf_forward_2_utils
+#' @name pf_forward-utils
 
 
-#' @rdname pf_forward_2_utils
+#' @rdname pf_forward-utils
 #' @keywords internal
 
 # Check .record options
@@ -17,7 +17,7 @@
   out
 }
 
-#' @rdname pf_forward_2_utils
+#' @rdname pf_forward-utils
 #' @keywords internal
 
 # Define directories for output files
@@ -40,7 +40,7 @@
        diagnostics = folder_diagnostics)
 }
 
-#' @rdname pf_forward_2_utils
+#' @rdname pf_forward-utils
 #' @keywords internal
 
 # Write files (particles) to output directory
@@ -51,7 +51,7 @@
   }
 }
 
-#' @rdname pf_forward_2_utils
+#' @rdname pf_forward-utils
 #' @keywords internal
 
 # Write files (diagnostics) to output directory
@@ -66,7 +66,7 @@
   }
 }
 
-#' @rdname pf_forward_2_utils
+#' @rdname pf_forward-utils
 #' @keywords internal
 
 .pf_startup <- function(.obs, .dlist, .rerun, .record) {
@@ -133,7 +133,7 @@
 }
 
 
-#' @rdname pf_forward_2_utils
+#' @rdname pf_forward-utils
 #' @keywords internal
 
 # Snapshot data.tables for saving in memory or to file
@@ -150,7 +150,7 @@
   dt
 }
 
-#' @rdname pf_forward_2_utils
+#' @rdname pf_forward-utils
 #' @keywords internal
 
 # Define the starting time step for the loop
@@ -163,7 +163,7 @@
   t
 }
 
-#' @rdname pf_forward_2_utils
+#' @rdname pf_forward-utils
 #' @keywords internal
 
 # Increment loop: current cells become past cells @ next time step
@@ -178,7 +178,7 @@
     as.data.table()
 }
 
-#' @rdname pf_forward_2_utils
+#' @rdname pf_forward-utils
 #' @keywords internal
 
 # Define particles for the previous time step
@@ -199,7 +199,7 @@
   .pf_increment(.particles)
 }
 
-#' @rdname pf_forward_2_utils
+#' @rdname pf_forward-utils
 #' @keywords internal
 
 .pf_trial_sampler <- function(.diagnostics, .trial_crit) {
@@ -212,7 +212,7 @@
   crit < .trial_crit
 }
 
-#' @rdname pf_forward_2_utils
+#' @rdname pf_forward-utils
 #' @keywords internal
 
 # Revert to an earlier time step
@@ -220,7 +220,7 @@
   max(c(2L, .t - .trial_revert_steps))
 }
 
-#' @rdname pf_forward_2_utils
+#' @rdname pf_forward-utils
 #' @keywords internal
 
 .pf_continue <- function(.particles, .t, .crit, .trial_revert_crit) {
@@ -246,7 +246,7 @@
 
 }
 
-#' @rdname pf_forward_2_utils
+#' @rdname pf_forward-utils
 #' @keywords internal
 
 .pf_outputs <- function(.rerun, .start, .startup, .history, .diagnostics, .convergence) {

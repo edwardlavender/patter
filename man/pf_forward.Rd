@@ -129,3 +129,6 @@ This is highly flexible routine for the reconstruction of possible locations of 
 While \code{\link[=pf_forward]{pf_forward()}} tries hard to reconstruct a complete time series of location samples, algorithm convergence is not guaranteed. The algorithm may reach a dead-end---a time step at which there are no valid locations into which the algorithm can step. This may be due to data errors, incorrect assumptions, insufficient sampling effort or poor tuning parameter settings. To facilitate diagnosis of the immediate cause of convergence failures, during likelihood evaluations we keep track of 'particle diagnostics', i.e., the number of unique, valid locations before/after each likelihood evaluation alongside other statistics.
 }
 
+\author{
+Edward Lavender
+}

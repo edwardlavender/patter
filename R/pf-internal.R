@@ -7,7 +7,7 @@ NULL
 #' @rdname pf_check
 #' @keywords internal
 
-# Collate .pf_checks() for pf_forward_2()
+# Collate .pf_checks() for pf_forward()
 .pf_checks <- function(inputs = match.call()[-1L], defaults = formals(), dots) {
   .pf_check_obs(inputs$.obs)
   if (!is.null(inputs$.moorings)) {

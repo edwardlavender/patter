@@ -56,6 +56,7 @@ acs_filter_container <- function(.particles, .obs, .t, .dlist) {
     check_dlist(.dlist,
                .dataset = "moorings",
                .par = "lonlat")
+    rlang::check_installed("Rfast")
   }
   if (.t > 1 && .t < max(.obs$timestep)) {
     # Calculate distances between particle samples & the receivers that recorded the next detection
