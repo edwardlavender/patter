@@ -2,7 +2,6 @@
 % Please edit documentation in R/pf_forward-internal-utils.R
 \name{pf_forward-utils}
 \alias{pf_forward-utils}
-\alias{.pf_record}
 \alias{.pf_dirs}
 \alias{.pf_write_particles}
 \alias{.pf_write_diagnostics}
@@ -17,8 +16,6 @@
 \alias{.pf_outputs}
 \title{PF helper: internal utilities}
 \usage{
-.pf_record(.record)
-
 .pf_dirs(.write_opts)
 
 .pf_write_particles(.particles, .sink, .write)

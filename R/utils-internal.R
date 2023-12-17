@@ -152,11 +152,23 @@ list_compact <- function(l) l[which(!sapply(l, is.null))]
 #' @rdname utils-lists
 #' @keywords internal
 
-# rlist::list.merge()
+list_clean <- function(l) {
+  l <- list_compact(l)
+  l[which(sapply(l, \(x) length(x) != 0))]
+}
+
+#' @rdname utils-lists
+#' @keywords internal
+
+# rlist::list.merge() inspired function
 list_merge <- function(...) {
   lists <- list(...)
+  lists <- list_clean(lists)
+  if (length(lists) == 0L) {
+    return(list())
+  }
   if (any(vapply(lists, function(x) is.null(names(x)), logical(1L)))) {
-    stop("All arguments must be named list", call. = FALSE)
+    stop("A named list is expected.", call. = FALSE)
   }
   Reduce(utils::modifyList, lists, list())
 }

@@ -39,20 +39,6 @@ NULL
 #' @rdname pf_forward-utils
 #' @keywords internal
 
-# Define .record options
-.pf_record <- function(.record) {
-  out <- list_args(.args = .record, .defaults = list(save = FALSE,
-                                                          cols = NULL,
-                                                          sink = NULL))
-  if (!out$save && is.null(out$sink)) {
-    abort("`.record$save = FALSE` and `.record$sink = NULL`. There is nothing to do.")
-  }
-  out
-}
-
-#' @rdname pf_forward-utils
-#' @keywords internal
-
 # Define directories for output files
 .pf_dirs <- function(.write_opts) {
   if (is.null(.write_opts)) {

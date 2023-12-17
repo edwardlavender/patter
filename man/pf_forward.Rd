@@ -2,6 +2,9 @@
 % Please edit documentation in R/pf_forward.R
 \name{pf_forward}
 \alias{pf_forward}
+\alias{pf_record}
+\alias{pf_control}
+\alias{pf_rerun_from}
 \title{PF: forward simulation}
 \usage{
 pf_forward(
@@ -22,12 +25,18 @@ pf_forward(
   .trial_revert_crit = 2L,
   .trial_revert_steps = 10L,
   .trial_revert = 2L,
-  .control = list(sampler_batch_size = 10L),
+  .control = pf_control(),
   .rerun = list(),
   .rerun_from = pf_rerun_from(.rerun),
-  .record = list(save = FALSE, cols = NULL, sink = NULL),
+  .record = pf_record(),
   .verbose = TRUE
 )
+
+pf_record(..., .record = list())
+
+pf_control(..., .control = list())
+
+pf_rerun_from(.rerun, .trial_revert_steps = 25L)
 }
 \arguments{
 \item{.obs}{A \code{\link{data.table}} defining the timeline and associated observations, typically from \code{\link[=acs_setup_obs]{acs_setup_obs()}}.}
@@ -66,6 +75,8 @@ For example, if after kicking previous particles into proposal locations and eva
 \item \code{.trial_revert_crit} is the critical threshold for a reversion. If the number of unique, valid proposal locations is <= \code{.trial_revert_crit}, the algorithm reverts by \code{.trial_revert_steps} time steps to an earlier time step (time step two or greater). \code{.trial_revert} is the total number of reversions permitted. This is reset on algorithm reruns (see \code{.rerun}).
 }}
 
+\item{.control}{A named \code{list} of control options. See \code{\link[=pf_control]{pf_control()}} for supported options.}
+
 \item{.rerun, .rerun_from}{Rerun options. These options are used to restart the algorithm from an earlier time step in the case of a convergence failure.
 \itemize{
 \item \code{.rerun} is the named \code{list} of algorithm outputs from a previous rerun.
@@ -85,7 +96,7 @@ At least one of \code{.save} and \code{.sink} must be provided.}
 
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 
-\item{control}{A named \code{list} of control options. See \code{\link[=pf_control]{pf_control()}} for supported options.}
+\item{...}{Additional arguments.}
 }
 \value{
 The function returns a \code{\linkS4class{pff}} object. If \code{.return$sink} is specified, two directories, {.return$sink}/history/ and {.return$sink}/diagnostics, are also created that contain particle samples and diagnostics. Particle samples are labelled \verb{1.parquet, 2.parquet, ..., T.parquet}, where \code{T} is the number of time steps. Diagnostics are labelled \verb{1.parquet, 2.parquet, ..., Z.parquet}, where Z is the number of diagnostic files. There may be multiple diagnostic files (e.g.., \verb{1.parquet, 2.parquet, 3.parquet} for each time step. Use \code{\link[=pf_forward_diagnostics]{pf_forward_diagnostics()}} to collate diagnostics.

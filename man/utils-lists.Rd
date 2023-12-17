@@ -3,11 +3,14 @@
 \name{utils-lists}
 \alias{utils-lists}
 \alias{list_compact}
+\alias{list_clean}
 \alias{list_merge}
 \alias{list_args}
 \title{Utilities: list helpers}
 \usage{
 list_compact(l)
+
+list_clean(l)
 
 list_merge(...)
 

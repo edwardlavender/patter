@@ -26,7 +26,7 @@
 #' * `.trial_sampler_crit` is the critical threshold for directed sampling. Following stochastic kicks, if the number of unique, valid proposals remains <= `.trial_sampler_crit`, directed sampling is implemented. Samples are redrawn up to `.trial_sampler` times. Use `.trial_sampler_crit = 0L` to suppress directed sampling.
 #' * `.trial_revert_crit` is the critical threshold for a reversion. If the number of unique, valid proposal locations is <= `.trial_revert_crit`, the algorithm reverts by `.trial_revert_steps` time steps to an earlier time step (time step two or greater). `.trial_revert` is the total number of reversions permitted. This is reset on algorithm reruns (see `.rerun`).
 #'
-#' @param control A named `list` of control options. See [`pf_control()`] for supported options.
+#' @param .control A named `list` of control options. See [`pf_control()`] for supported options.
 #' @param .rerun,.rerun_from Rerun options. These options are used to restart the algorithm from an earlier time step in the case of a convergence failure.
 #' * `.rerun` is the named `list` of algorithm outputs from a previous rerun.
 #' * `.rerun_from` is an `integer` that defines the time step from which to rerun the algorithm.
@@ -41,6 +41,7 @@
 #' At least one of `.save` and `.sink` must be provided.
 #'
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
+#' @param ... Additional arguments.
 #'
 #' @details
 #'
@@ -98,11 +99,9 @@ pf_forward <- function(.obs,
                        .trial_revert_crit = 2L,
                        .trial_revert_steps = 10L,
                        .trial_revert = 2L,
-                       .control = list(sampler_batch_size = 10L),
+                       .control = pf_control(),
                        .rerun = list(), .rerun_from = pf_rerun_from(.rerun),
-                       .record = list(save = FALSE,
-                                      cols = NULL,
-                                      sink = NULL),
+                       .record = pf_record(),
                        .verbose = TRUE) {
 
   #### Check user inputs
@@ -203,7 +202,8 @@ pf_forward <- function(.obs,
                                       .likelihood = .likelihood,
                                       .sample = .sample, .n = .n,
                                       .trial_crit = .trial_sampler_crit,
-                                      .trial_count = .trial_sampler)
+                                      .trial_count = .trial_sampler,
+                                      .control = .control)
         diagnostics_t[["sampler"]] <- .pf_diag_bind(attr(pnow, "diagnostics"))
       }
     }
@@ -267,6 +267,40 @@ pf_forward <- function(.obs,
               .diagnostics = diagnostics,
               .convergence = TRUE)
 
+}
+
+#' @rdname pf_forward
+#' @export
+
+pf_record <- function(..., .record = list()) {
+  args <- list(...)
+  args <- list_merge(args, .record)
+  defaults <- list(save = FALSE,
+                   cols = NULL,
+                   sink = NULL)
+  out <- list_args(.args = args, .defaults = defaults)
+  if (!out$save && is.null(out$sink)) {
+    abort("`.record$save = FALSE` and `.record$sink = NULL`. There is nothing to do.")
+  }
+  out
+}
+
+#' @rdname pf_forward
+#' @export
+
+pf_control <- function(..., .control = list()) {
+  args <- list(...)
+  args <- list_merge(args, .control)
+  defaults <- list(sampler_batch_size = 2L)
+  list_args(.args = args, .defaults = defaults)
+}
+
+#' @rdname pf_forward
+#' @export
+
+pf_rerun_from <- function(.rerun, .trial_revert_steps = 25L) {
+  # default `.trial_revert_steps` is bigger than pf_forward `.trial_revert_steps`
+  max(c(1L, length(.rerun[["history"]]) - .trial_revert_steps))
 }
 
 #' @title PF: forward run diagnostics
