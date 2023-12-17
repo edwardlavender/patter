@@ -13,11 +13,7 @@
 #' @param .likelihood A named `list` of likelihood functions. These are used to calculate the likelihood of each dataset at proposal locations. See [`pf_lik`] for required arguments, convenience functions and advice.
 #' @param .n,.sample Sampling arguments.
 #' * `.n` is an `integer` that defines the number of particle samples at each time step.
-#' * `.sample` is a function used to (re)-sample proposal locations (see [`pf_sample`]). This must accept two arguments:
-#'    * `.particles`---the [`data.table`] that defines particle samples. This includes a `weight` column that should be used for resampling;
-#'    * `.n`---the number of samples (see above);
-#'
-#' Systematic particle sampling ([`pf_sample_systematic()`]) is generally recommended.
+#' * `.sample` is a function used to (re)-sample proposal locations (see [`pf_sample`]).
 #'
 #' @param .trial_origin_crit,.trial_origin,.trial_kick_crit,.trial_kick,.trial_sampler_crit,.trial_sampler,.trial_revert_crit,.trial_revert_steps,.trial_revert Trial arguments used to tune convergence properties. ALl arguments expect `integer`s.
 #' * `.trial_{step}` arguments define the number of times to trial a stochastic process at each time step (before giving up).

@@ -49,14 +49,8 @@ See \code{\link{pf_propose}} for required arguments.}
 \item{.n, .sample}{Sampling arguments.
 \itemize{
 \item \code{.n} is an \code{integer} that defines the number of particle samples at each time step.
-\item \code{.sample} is a function used to (re)-sample proposal locations (see \code{\link{pf_sample}}). This must accept two arguments:
-\itemize{
-\item \code{.particles}---the \code{\link{data.table}} that defines particle samples. This includes a \code{weight} column that should be used for resampling;
-\item \code{.n}---the number of samples (see above);
-}
-}
-
-Systematic particle sampling (\code{\link[=pf_sample_systematic]{pf_sample_systematic()}}) is generally recommended.}
+\item \code{.sample} is a function used to (re)-sample proposal locations (see \code{\link{pf_sample}}).
+}}
 
 \item{.trial_origin_crit, .trial_origin, .trial_kick_crit, .trial_kick, .trial_sampler_crit, .trial_sampler, .trial_revert_crit, .trial_revert_steps, .trial_revert}{Trial arguments used to tune convergence properties. ALl arguments expect \code{integer}s.
 \itemize{

@@ -2,14 +2,11 @@
 % Please edit documentation in R/pf_forward-propose.R
 \name{pf_propose}
 \alias{pf_propose}
-\alias{pf_rpropose_origin}
 \alias{pf_rpropose_kick}
 \alias{pf_rpropose_reachable}
 \alias{pf_dpropose}
 \title{PF: proposal functions}
 \usage{
-pf_rpropose_origin(.obs, .dlist, .origin, .grid = FALSE)
-
 pf_rpropose_kick(
   .particles,
   .obs = NULL,

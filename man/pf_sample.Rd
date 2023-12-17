@@ -10,6 +10,32 @@ pf_sample_multinomial(.particles, .n)
 
 pf_sample_systematic(.particles, .n)
 }
+\arguments{
+\item{`.particles`}{A \code{\link{data.table}} that defines particle samples. This includes a \code{weight} column that should be used for resampling.}
+
+\item{`.n`}{An \code{integer} that defines the number of particle samples at each time step.}
+}
+\value{
+The functions return a \code{\link{data.table}}, as inputted, but containing \code{.n} rows, one for each sampled particle.
+}
 \description{
-PF: sampling functions
+These are particle sampling functions for \code{\link[=pf_forward]{pf_forward()}}.
+}
+\details{
+\code{\link[=pf_forward]{pf_forward()}} expects a sampling function in the \code{.sample} argument. You can provide an exported function or write your own.
+
+Sampling functions must accept \code{.particles} and \code{.n} arguments and return a \code{\link{data.table}} of \code{.n} particle samples.
+
+\code{\link{pf_sample_multinomial}} re(samples) implements multinomial resampling. \code{\link[=pf_sample_systematic]{pf_sample_systematic()}} implements systematic resampling.
+
+Systematic particle sampling (\code{\link[=pf_sample_systematic]{pf_sample_systematic()}}) is generally recommended.
+}
+\examples{
+p <- data.table(cell_now = c(1, 2, 3), weight = c(0.5, 0.25, 0.25))
+pf_sample_multinomial(p, .n = 10L)
+pf_sample_systematic(p, .n = 10L)
+
+}
+\author{
+Edward Lavender
 }

@@ -6,45 +6,6 @@
 #' @rdname pf_propose
 #' @export
 
-pf_rpropose_origin <- function(.obs, .dlist, .origin, .grid = FALSE) {
-
-  moorings          <- .dlist$data$moorings
-  detection_kernels <- .dlist$algorithm$detection_kernels
-
-    # (1) Define 'quadrature points' within acoustic containers
-    if (!is.null(moorings)) {
-      # Define container for possible locations
-      if (!.grid) {
-        detection_kernels <- NULL
-      }
-      container <- .acs_container_1(.obs,
-                                    .detection_kernels = detection_kernels,
-                                    .moorings = moorings)
-      # Sample cell coordinates within container
-      terra::crs(container) <- terra::crs(.origin)
-      samples <- spatSampleDT(container, .spatcell = .origin)
-
-    # (2) Sample quadrature points on `.origin`
-    } else {
-      samples <- spatSampleDT(.x = .origin)
-    }
-
-  # Tidy data.table
-  samples |>
-    mutate(timestep = 1L,
-           cell_past = NA_integer_,
-           x_past = NA_integer_,
-           y_past = NA_integer_,
-           cell_now = .data$cell_id) |>
-    select("timestep",
-           "cell_past", "x_past", "y_past",
-           "cell_now", x_now = "cell_x", y_now = "cell_y") |>
-    as.data.table()
-}
-
-#' @rdname pf_propose
-#' @export
-
 pf_rpropose_kick <- function(.particles,
                              .obs = NULL,
                              .t = NULL,
