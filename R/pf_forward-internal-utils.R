@@ -77,9 +77,9 @@ NULL
 .pf_write_diagnostics <- function(.diagnostics, .sink, .write) {
   if (.write) {
     file <- paste0(
-      paste0(.diagnostics$iter_m[1],
+      paste(.diagnostics$iter_m[1],
              .diagnostics$iter_i[1],
-             .diagnostics$timestep[1], collapse = "-"),
+             .diagnostics$timestep[1], sep = "-"),
       ".parquet")
     arrow::write_parquet(.diagnostics, sink = file.path(.sink, file))
   }
