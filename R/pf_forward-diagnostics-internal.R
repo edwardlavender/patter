@@ -1,11 +1,20 @@
-#' @title PF: calculate particle diagnostics
+#' @title PF: particle diagnostic internals
+#' @description These are internal functions that calculate diagnostic statistics from selected particle samples.
+#'
+#' @details
+#' * [`.pf_diag_any()`] identifies whether or not any particle samples remain;
+#' * [`.pf_diag_ess()`] calculates effective sample size;
+#' * [`.pf_diag_unique()`] counts the number of unique particle samples;
+#' * [`.pf_diag()`] is a wrapper function that collates diagnostics;
+#'
+#' @author Edward Lavender
 #' @name pf_diag
 
 #' @rdname pf_diag
 #' @keywords internal
 
 .pf_diag_any <- function(.particles) {
-  nrow(.particles) != 0L
+  fnrow(.particles) != 0L
 }
 
 #' @rdname pf_diag
