@@ -20,16 +20,12 @@
 #' @export
 
 pf_backward_killer <- function(.history,
-                               .save_history = FALSE, .write_history = NULL,
+                               .record = pf_opt_record(),
                                .verbose = TRUE) {
 
   #### Check user inputs
   t_onset <- Sys.time()
   check_inherits(.history, "list")
-  if (!.save_history && is.null(.write_history)) {
-    abort("`.save_history = FALSE` and `.write_history = NULL`. There is nothing to do.")
-  }
-  write_history_folder <- .pf_check_write_history(.write_history)
 
   #### Set up messages
   cat_log <- cat_init(.verbose = .verbose)
@@ -59,8 +55,8 @@ pf_backward_killer <- function(.history,
         .history[[t]] <- arrow::read_parquet(.history[[t]])
       }
       if (t > 1) {
-        cat_log(paste0("... ... Reading `.history[[", t - 1, "]]`..."))
-        .history[[t - 1]] <- arrow::read_parquet(.history[[t - 1]])
+        cat_log(paste0("... ... Reading `.history[[", t - 1L, "]]`..."))
+        .history[[t - 1L]] <- arrow::read_parquet(.history[[t - 1L]])
       }
     }
 
@@ -81,33 +77,20 @@ pf_backward_killer <- function(.history,
     #### Save particles
     # Write particles to file
     cat_log(paste0("... ... Recording (cleaned) outputs for `.history[[", t, "]]`..."))
-    if (!is.null(.write_history)) {
-      .write_history$x    <- .history[[t]]
-      .write_history$sink <- file.path(write_history_folder, paste0(t, ".parquet"))
-      do.call(arrow::write_parquet, .write_history)
-    }
+    .history[[t]] <- .pf_snapshot(.dt = .history[[t]], .save = .record$save,
+                                  .select = !is.null(.record$cols), .cols = .record$cols)
+    .pf_write_particles(.history[[t]], .sink = .record$sink, .write = !is.null(.record$sink))
     # Drop saved particles for current time step, if necessary
-    if (!.save_history) {
+    if (!.record$save) {
       .history[[t]] <- NA
     }
-
   }
   pb_close(.pb = pb)
 
-  #### Return outputs (modified from pf_forward())
-  if (!.save_history) {
-    .history <- list()
-  }
-  t_end <- Sys.time()
-  time <- list(start = t_onset,
-               end = t_onset,
-               duration = difftime(t_end, t_onset))
-  out <- list(history = .history,
-              time = time)
-
   #### Return outputs
-  class(out) <- c(class(out), "pf")
-  out
+  .pf_backward_killer_outputs(.start = t_onset,
+                              .history = .history,
+                              .record = .record)
 
 }
 
