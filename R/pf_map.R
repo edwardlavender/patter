@@ -1,9 +1,7 @@
 #' @title PF: particle coordinates
 #' @description This function collects particle samples and extracts coordinates.
 #'
-#' @param .history Particle samples from the particle filter, provided either as:
-#' * A `list` of [`data.table`]s that define cell samples; i.e., the `history` element of a [`pf-class`] object. This must contain a column that defines accepted cell samples at each time step (`cell_now`).
-#' * An ordered list of file paths (from [`pf_setup_files()`]) that define the directories in which particle samples were written from the forward simulation (as parquet files).
+#' @param .history Particle samples, provided in any format accepted by [`.pf_history_dt()`].
 #' @param .bathy The bathymetry [`SpatRaster`].
 #' @param .obs,.cols (optional) A [`data.table`] and a character vector of column names in `.obs` to match onto the output. `.obs` must contain a `timestep` column for matching.
 #'
@@ -71,9 +69,7 @@ pf_coords <- function(.history, .bathy, .obs = NULL, .cols = NULL) {
 
 #' @title PF: map probability-of-use
 #' @description This function builds a 'probability-of-use' utilisation distribution from (processed) particle samples.
-#' @param .history The (processed) particle samples, provided as:
-#' * A `list` of [`data.table`]s that define cell samples; i.e., the `history` element of a [`pf-class`] object. This must contain a column that defines cell samples at each time step named `cell_now`.
-#' * A `character` string that defines the directory in which particle samples were written (as parquet files).
+#' @param .history Particle samples, provided in any format accepted by [`.pf_history_dt()`].
 #' @param .bathy A [`SpatRaster`] that defines the grid for the utilisation distribution. `NAs` on `.bathy` are used as a mask.
 #' @param .plot A logical input that defines whether or not to plot the [`SpatRaster`].
 #' @param ... If `.plot = TRUE`, `...` is a place holder for additional arguments passed to [`terra::plot()`].
@@ -104,9 +100,6 @@ pf_coords <- function(.history, .bathy, .obs = NULL, .cols = NULL) {
 
 pf_map_pou <-
   function(.history, .bathy, .plot = TRUE, ...) {
-
-    #### Check user inputs
-    check_inherits(.history, c("character", "list"))
 
     #### Calculate cell weights
     pou <-

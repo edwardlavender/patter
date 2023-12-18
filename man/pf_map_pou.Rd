@@ -7,11 +7,7 @@
 pf_map_pou(.history, .bathy, .plot = TRUE, ...)
 }
 \arguments{
-\item{.history}{The (processed) particle samples, provided as:
-\itemize{
-\item A \code{list} of \code{\link{data.table}}s that define cell samples; i.e., the \code{history} element of a \code{\linkS4class{pf}} object. This must contain a column that defines cell samples at each time step named \code{cell_now}.
-\item A \code{character} string that defines the directory in which particle samples were written (as parquet files).
-}}
+\item{.history}{Particle samples, provided in any format accepted by \code{\link[=.pf_history_dt]{.pf_history_dt()}}.}
 
 \item{.bathy}{A \code{\link{SpatRaster}} that defines the grid for the utilisation distribution. \code{NAs} on \code{.bathy} are used as a mask.}
 
