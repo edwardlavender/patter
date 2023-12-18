@@ -1,0 +1,89 @@
+---
+title: "Workflow"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    number_sections: yes
+vignette: >
+  %\VignetteIndexEntry{Workflow}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This vignette lists the steps required to use `patter` to reconstruct movement paths and utilisation distributions. This includes important data preparation and validation steps that are straightforward in `R` but for which `patter` convenience functions are currently lacking. Use it as a reference. See `vignette("c-workflow", package = "patter")` for a streamlined example workflow. See the [`patter-flapper`](https://github.com/edwardlavender/patter-flapper) project for a complete, real-world analysis.
+
+# Preparation
+
+## Prepare study area
+
+1. Define `terra` `SpatRaster` (e.g. `?dat_gebco`)
+2. Mask inhospitable habitats (e.g., land)
+
+## Prepare movement datasets
+
+1. Define movement `data.table`(s) (e.g., `?datasets-mefs`)
+
+    - (optional) Passive acoustic telemetry 
+        - Acoustic detections (e.g. `?dat_acoustics`)
+        - Receiver moorings (`?dat_moorings`)
+    - (optional) Ancillary observations (e.g. `?dat_archival`)
+    
+2. Validate data, e.g.:
+
+    - Remove false detections (e.g. `?glatos::false_detections()`)
+    - Validate detection timing
+    - Validate receiver locations
+    
+3. Collate datasets via `pat_setup_data()`
+
+## Prepare algorithms inputs
+
+1. Define parameters
+
+   - Time step size (e.g., `"2 mins"`)
+   - Mobility (see `?flapper::get_mvt_mobility()`)
+   - (optional) Detection range
+
+2. Validate parameter choices
+
+   - Validate mobility (using transition speeds between receivers)
+   - Validate detection range (using simultaneous detections at multiple receivers)
+   - Validate concurrent observations (e.g., confirm detection containers contain valid locations)
+
+3. (optional) Pre-compute any necessary algorithm layers
+
+   - AC* algorithm layers:
+      - Define detection overlaps via `acs_setup_detection_overlaps()`
+      - Define detection kernels via `acs_setup_detection_kernels()`
+
+## Prepare observations timeline
+
+1. Select single individuals 
+2. Collate observations via `pf_setup_obs()`
+
+# Forward filter
+
+1. Define function arguments (`?pf_forward`)
+
+   - Define proposal functions (`?pf_propose`)
+   - Define likelihood functions (observation models) (`?pf_lik`)
+   - Define (re)sampling function (`?pf_sample`)
+   - Define tuning parameters (`?pf_opt`)
+
+2. Implement forward filter via `pf_forward()`
+
+# Backward pass 
+
+1. Use `pf_backward_killer()` or `pf_backward_sampler()` 
+
+# Analysis 
+
+## 1. Analyse movement paths
+
+1. Build movement paths via `pf_paths()`
+
+## 2. Map space use
+
+1. Map probability-of-use via `map_pou()`
+2. Map smoothed probability density via `map_dens()`
+3. Map home ranges via `map_hr_*()`
