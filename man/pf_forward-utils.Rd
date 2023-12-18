@@ -24,7 +24,7 @@
 
 .pf_startup(.obs, .dlist, .rerun, .record)
 
-.pf_snapshot(.dt, .select, .cols)
+.pf_snapshot(.dt, .save, .select, .cols)
 
 .pf_start_t(.rerun, .rerun_from)
 

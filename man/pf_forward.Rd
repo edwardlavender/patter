@@ -23,7 +23,7 @@ pf_forward(
 \arguments{
 \item{.obs}{A \code{\link{data.table}} defining the timeline and associated observations, typically from \code{\link[=acs_setup_obs]{acs_setup_obs()}}.}
 
-\item{.dlist}{A \code{named} list of data and parameters required propose samples and calculate likelihoods (see \code{\link[=pf_setup_data]{pf_setup_data()}}, \code{\link{pf_lik}} and \code{\link{pf_propose}}. At a minimum, this function requires \code{.dlist$spatial$bathy}. An \code{.dlist$spatial$origin} \code{\link{SpatRaster}} can be included to define the origin. Additional elements required by \code{.likelihood},\code{.rpropose} and \code{.dpropose} functions should be included (see \link{below}).}
+\item{.dlist}{A \code{named} list of data and parameters required propose samples and calculate likelihoods (see \code{\link[=pf_setup_data]{pf_setup_data()}}, \code{\link{pf_lik}} and \code{\link{pf_propose}}). At a minimum, this function requires \code{.dlist$spatial$bathy}. An \code{.dlist$spatial$origin} \code{\link{SpatRaster}} can be included to define the origin. Additional elements required by \code{.likelihood},\code{.rpropose} and \code{.dpropose} functions should be included (see \link{below}).}
 
 \item{.rpropose, .dpropose}{Proposal functions (see \code{\link{pf_propose}}).
 \itemize{

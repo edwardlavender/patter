@@ -4,12 +4,7 @@
 \alias{pf_backward_killer}
 \title{PF: run the backward pass}
 \usage{
-pf_backward_killer(
-  .history,
-  .save_history = FALSE,
-  .write_history = NULL,
-  .verbose = TRUE
-)
+pf_backward_killer(.history, .record = pf_opt_record(), .verbose = TRUE)
 }
 \arguments{
 \item{.history}{Particle samples from the forward simulation, provided either as:
@@ -18,11 +13,11 @@ pf_backward_killer(
 \item An ordered list of file paths (from \code{\link[=pf_setup_files]{pf_setup_files()}}) that define the directories in which particle samples were written from the forward simulation (as parquet files).
 }}
 
+\item{.verbose}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
+
 \item{.save_history}{A logical variable that defines whether or not to save updated particle samples in memory (see \code{\link[=pf_forward]{pf_forward()}}).}
 
 \item{.write_history}{A named list, passed to \code{\link[arrow:write_parquet]{arrow::write_parquet()}}, to write updated particle samples to file (see \code{\link[=pf_forward]{pf_forward()}}).}
-
-\item{.verbose}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
 }
 \value{
 The function returns a \code{\linkS4class{pf}} object.
@@ -35,48 +30,48 @@ At the time of writing, this function only removes 'dead ends' from particle sam
 }
 \examples{
 #### Set up examples
-obs <- dat_obs()
-con <- tempdir()
-pff_folder <- file.path(tempdir(), "patter", "pf", "forward")
-dir.create(pff_folder, recursive = TRUE)
-out_pff <- pf_forward(.obs = obs,
-                      .bathy = dat_gebco(),
-                      .moorings = dat_moorings, .detection_overlaps = dat_overlaps(),
-                      .detection_kernels = dat_kernels(),
-                      .record = list(save = TRUE, sink = pff_folder))
+# Run the forward simulation (see ?`pf_forward()`)
+# We will use example outputs objects:
+out_pff    <- dat_pff()
+pff_folder <- system.file("extdata", "acpf", "forward",
+                          package = "patter", mustWork = TRUE)
 
-#### Example (1): Implement backward simulation from `pf` object
-out_pfb <- pf_backward_killer(out_pff$history, .save_history = TRUE)
+#### Example (1): Implement backward simulation from object in memory
+out_pfb <- pf_backward_killer(.history = out_pff$history,
+                              .record = pf_opt_record(.save = TRUE))
 
 #### Example (2): Implement backward simulation from parquet files
 pff_folder_h <- file.path(pff_folder, "history")
-out_pfb <- pf_backward_killer(pf_setup_files(pff_folder_h),
-                              .save_history = TRUE)
+out_pfb <- pf_backward_killer(.history = pf_setup_files(pff_folder_h),
+                              .record = pf_opt_record(.save = TRUE))
 
 #### Example (3): Write history to file (as in `pf_forward()`)
-pfb_folder <- file.path(con, "patter", "pf", "backward")
+con        <- file.path(tempdir(), "patter")
+pfb_folder <- file.path(con, "pf", "backward")
 dir.create(pfb_folder, recursive = TRUE)
-out_pfb <- pf_backward_killer(pf_setup_files(pff_folder_h),
-                              .write_history = list(sink = pfb_folder))
+out_pfb <- pf_backward_killer(.history = pf_setup_files(pff_folder_h),
+                              .record = pf_opt_record(.sink = pfb_folder))
 utils::head(list.files(pfb_folder))
 
-#### Example (4): Control monitoring of function progress
-# Suppress progress bar
-out_pfb <- pf_backward_killer(pf_setup_files(pff_folder_h),
-                              .save_history = TRUE)
-# Save messages
+#### Example (4): Adjust standard `patter-progress` options
+# Use a log.txt file
 log.txt <- tempfile(fileext = ".txt")
 out_pfb <- pf_backward_killer(pf_setup_files(pff_folder_h),
-                              .save_history = TRUE,
+                              .record = pf_opt_record(.save = TRUE),
                               .verbose = log.txt)
 utils::head(readLines(log.txt), 15)
-# Suppress messages
+unlink(log.txt)
+# Suppress `.verbose`
 out_pfb <- pf_backward_killer(pf_setup_files(pff_folder_h),
-                              .save_history = TRUE,
+                              .record = pf_opt_record(.save = TRUE),
                               .verbose = FALSE)
+# Suppress progress bar
+pbo <- pbapply::pboptions(type = "n")
+out_pfb <- pf_backward_killer(pf_setup_files(pff_folder_h),
+                              .record = pf_opt_record(.save = TRUE))
 
 # Clean up
-unlink(file.path(con, "patter"), recursive = TRUE)
+unlink(con, recursive = TRUE)
 }
 \seealso{
 TO DO
