@@ -6,6 +6,7 @@
 #'
 #' @param .plot A logical input that defines whether or not to plot the [`SpatRaster`].
 #' @param ... If `.plot = TRUE`, `...` is a place holder for additional arguments passed to [`terra::plot()`].
+#' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
 #' @details Probability-of-use is the proportion of samples of each unique cell (out of the total number of samples across all time steps).
 #'
@@ -76,7 +77,7 @@ map_pou <-
 #' @param .use_tryCatch A `logical` variable that controls error handling:
 #' * If `.use_tryCatch = FALSE`, if density estimation fails with an error, the function fails with the same error.
 #' * If `.use_tryCatch = TRUE`, if density estimation fails with an error, the function produces a warning with the error message and returns `NULL`.
-#' @param .verbose Controls on function prompts and messages (see [`pf_forward()`].
+#' @param .verbose User output control (see [`patter-progress`] for supported options).
 #' @param ... Arguments passed to [`spatstat.explore::density.ppp()`], such as `sigma` (i.e., the bandwidth).
 #'
 #' @details

@@ -46,7 +46,7 @@ map_dens(
 \item If \code{.use_tryCatch = TRUE}, if density estimation fails with an error, the function produces a warning with the error message and returns \code{NULL}.
 }}
 
-\item{.verbose}{Controls on function prompts and messages (see \code{\link[=pf_forward]{pf_forward()}}.}
+\item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 
 \item{...}{Arguments passed to \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}}, such as \code{sigma} (i.e., the bandwidth).}
 }

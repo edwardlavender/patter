@@ -11,7 +11,7 @@
 #'
 #' @example man/examples/pf_backward_killer-examples.R
 #'
-#' @return The function returns a [`pf-class`] object.
+#' @return The function returns a [`pf_particles-class`] object.
 #'
 #' @seealso
 #'

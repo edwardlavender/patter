@@ -14,6 +14,8 @@ map_pou(.map, .coord, .plot = TRUE, ..., .verbose = TRUE)
 \item{.plot}{A logical input that defines whether or not to plot the \code{\link{SpatRaster}}.}
 
 \item{...}{If \code{.plot = TRUE}, \code{...} is a place holder for additional arguments passed to \code{\link[terra:plot]{terra::plot()}}.}
+
+\item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }
 \value{
 The function returns a \code{\link{SpatRaster}} (utilisation distribution) in which cell values define probability-of-use.

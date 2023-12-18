@@ -18,7 +18,7 @@ pf_backward_killer(.history, .record = pf_opt_record(), .verbose = TRUE)
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }
 \value{
-The function returns a \code{\linkS4class{pf}} object.
+The function returns a \code{\linkS4class{pf_particles}} object.
 }
 \description{
 This function implements the backward correction of particle samples.
