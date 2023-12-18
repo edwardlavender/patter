@@ -68,7 +68,7 @@ pf_opt_trial <- function(.trial_origin_crit = 1L,
 
 pf_opt_record <- function(.save = FALSE, .cols = NULL, .sink = NULL) {
   # Checks
-  if (.save && is.null(.sink)) {
+  if (!.save && is.null(.sink)) {
     abort("`.save = FALSE` and `.sink = NULL`. There is nothing to do.")
   }
   # Output list

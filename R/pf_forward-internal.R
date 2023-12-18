@@ -267,7 +267,7 @@
             .stack = .likelihood,
             .diagnostics = NULL)
   }) |>
-    rbindlist() |>
+    rbindlist(fill = TRUE) |>
     as.data.table()
   # Get summary diagnostics
   # * TO DO
