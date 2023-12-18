@@ -27,7 +27,7 @@
 #' * To reconstruct maps of space use, see:
 #'     * [`pf_coords()`] to extract particle coordinates;
 #'     * [`pf_map_pou()`] for probability-of-use maps;
-#'     * [`pf_map_dens()`] for smooth utilisation distributions;
+#'     * [`map_dens()`] for smooth utilisation distributions;
 #'     * [`get_hr()`] for home range estimates;
 #'
 #' @author Edward Lavender
@@ -64,7 +64,7 @@ map_pou <-
   }
 
 #' @title Map: map point density
-#' @description [`pf_map_dens()`] creates a smoothed density map (e.g., of particle samples).
+#' @description [`map_dens()`] creates a smoothed density map (e.g., of particle samples).
 #' @param .map A [`SpatRaster`] that defines the grid for density estimation and, if `.coord = NULL`, the points (and associated weights) that are smoothed. Weights must sum to one. The coordinate reference system of `.map` must be planar and specified.
 #' @param .im,.owin A pixel image representation of `.map` (see [`as.im.SpatRaster()`] and [`spatstat.geom::im()`]) and an observation window (see [`as.owin.SpatRaster()`], [`as.owin.sf()`] and [`spatstat.geom::owin()`]). These objects may be computed automatically from `.map` (with rectangular or gridded observation windows used by default, depending on whether or not `.map` contains `NA`s), but this option can be over-ridden. For faster results, use a rectangular or polygon observation window (see [`as.owin.sf()`]). If `.coord` is supplied, `.im` is necessarily (re)-defined internally (see Details).
 #' @param .poly,.bbox,.invert For [`as.owin.sf`] to construct observation windows from `sf` objects.
@@ -81,7 +81,7 @@ map_pou <-
 #'
 #' @details
 #'
-#' [`pf_map_dens()`] smooths (a) a [`SpatRaster`] or (b) a set of inputted coordinates:
+#' [`map_dens()`] smooths (a) a [`SpatRaster`] or (b) a set of inputted coordinates:
 #' * If `.coords` is `NULL`, `.map` cell coordinates are used for density estimation and cell values are used as weights.
 #' * If coordinates are supplied, coordinates are re-expressed on `.map` and then used for density estimation. This option is generally faster. Equal weights are assumed unless specified. Default or supplied weights are normalised to sum to one at each time step. The total weight of each location within time steps is calculated and then these weights are aggregated by location across the whole time series and renomalised. See the internal [`.pf_map_weights()`] function for full details.
 #'
@@ -93,7 +93,7 @@ map_pou <-
 #'
 #' @return The function returns a normalised [`SpatRaster`] (or `NULL` if [`spatstat.explore::density.ppp()`] fails and `.use_tryCatch = TRUE`).
 #'
-#' @example man/examples/pf_map_dens-examples.R
+#' @example man/examples/map_dens-examples.R
 #'
 #' @seealso
 #' * The PF (forward simulation) is implemented by [`pf_forward()`];
@@ -110,10 +110,10 @@ map_pou <-
 #' * To reconstruct maps of space use, see:
 #'     * [`pf_coords()`] to extract particle coordinates;
 #'     * [`pf_map_pou()`] for probability-of-use maps;
-#'     * [`pf_map_dens()`] for smooth utilisation distributions;
+#'     * [`map_dens()`] for smooth utilisation distributions;
 #'     * [`get_hr()`] for home range estimates;
 
-#' @rdname pf_map_dens
+#' @rdname map_dens
 #' @export
 
 as.im.SpatRaster <- function(.map) {
@@ -138,7 +138,7 @@ as.im.SpatRaster <- function(.map) {
   spatstat.geom::im(val, xcol = xx, yrow = yy)
 }
 
-#' @rdname pf_map_dens
+#' @rdname map_dens
 #' @export
 
 as.owin.SpatRaster <- function(.map, .im = NULL) {
@@ -158,7 +158,7 @@ as.owin.SpatRaster <- function(.map, .im = NULL) {
   rwin
 }
 
-#' @rdname pf_map_dens
+#' @rdname map_dens
 #' @export
 
 as.owin.sf <- function(.poly, .bbox = sf::st_bbox(.poly), .invert = TRUE) {
@@ -168,7 +168,7 @@ as.owin.sf <- function(.poly, .bbox = sf::st_bbox(.poly), .invert = TRUE) {
   spatstat.geom::as.owin(.poly)
 }
 
-#' @rdname pf_map_dens
+#' @rdname map_dens
 #' @export
 
 map_dens <- function(.map,
@@ -192,8 +192,8 @@ map_dens <- function(.map,
 
   #### Set up messages
   cat_log <- cat_init(.verbose = .verbose)
-  cat_log(call_start(.fun = "pf_map_dens", .start = t_onset))
-  on.exit(cat_log(call_end(.fun = "pf_map_dens", .start = t_onset, .end = Sys.time())), add = TRUE)
+  cat_log(call_start(.fun = "map_dens", .start = t_onset))
+  on.exit(cat_log(call_end(.fun = "map_dens", .start = t_onset, .end = Sys.time())), add = TRUE)
 
   #### Process SpatRaster
   # spatstat assumes planar coordinates
@@ -353,7 +353,7 @@ map_dens <- function(.map,
 #'
 #' @seealso
 #' * For reconstructing movement paths and patterns of space use, see [`pf_forward()`];
-#' * For mapping utilisation distributions, see [`pf_map_pou()`] and [`pf_map_dens()`];
+#' * For mapping utilisation distributions, see [`pf_map_pou()`] and [`map_dens()`];
 #'
 #' @author Edward Lavender
 #' @name map_hr

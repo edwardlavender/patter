@@ -41,7 +41,7 @@ Probability-of-use is the proportion of samples of each unique cell (out of the 
 \itemize{
 \item \code{\link[=pf_coords]{pf_coords()}} to extract particle coordinates;
 \item \code{\link[=pf_map_pou]{pf_map_pou()}} for probability-of-use maps;
-\item \code{\link[=pf_map_dens]{pf_map_dens()}} for smooth utilisation distributions;
+\item \code{\link[=map_dens]{map_dens()}} for smooth utilisation distributions;
 \item \code{\link[=get_hr]{get_hr()}} for home range estimates;
 }
 }

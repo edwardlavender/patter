@@ -54,10 +54,10 @@ map_dens(
 The function returns a normalised \code{\link{SpatRaster}} (or \code{NULL} if \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} fails and \code{.use_tryCatch = TRUE}).
 }
 \description{
-\code{\link[=pf_map_dens]{pf_map_dens()}} creates a smoothed density map (e.g., of particle samples).
+\code{\link[=map_dens]{map_dens()}} creates a smoothed density map (e.g., of particle samples).
 }
 \details{
-\code{\link[=pf_map_dens]{pf_map_dens()}} smooths (a) a \code{\link{SpatRaster}} or (b) a set of inputted coordinates:
+\code{\link[=map_dens]{map_dens()}} smooths (a) a \code{\link{SpatRaster}} or (b) a set of inputted coordinates:
 \itemize{
 \item If \code{.coords} is \code{NULL}, \code{.map} cell coordinates are used for density estimation and cell values are used as weights.
 \item If coordinates are supplied, coordinates are re-expressed on \code{.map} and then used for density estimation. This option is generally faster. Equal weights are assumed unless specified. Default or supplied weights are normalised to sum to one at each time step. The total weight of each location within time steps is calculated and then these weights are aggregated by location across the whole time series and renomalised. See the internal \code{\link[=.pf_map_weights]{.pf_map_weights()}} function for full details.
@@ -86,7 +86,7 @@ Coordinates and associated weights are smoothed via \code{\link[spatstat.explore
 \itemize{
 \item \code{\link[=pf_coords]{pf_coords()}} to extract particle coordinates;
 \item \code{\link[=pf_map_pou]{pf_map_pou()}} for probability-of-use maps;
-\item \code{\link[=pf_map_dens]{pf_map_dens()}} for smooth utilisation distributions;
+\item \code{\link[=map_dens]{map_dens()}} for smooth utilisation distributions;
 \item \code{\link[=get_hr]{get_hr()}} for home range estimates;
 }
 }

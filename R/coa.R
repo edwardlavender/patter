@@ -14,7 +14,7 @@
 #'
 #' @seealso
 #' * For reconstructing movement paths and patterns of space use, see [`pf_forward()`];
-#' * For mapping utilisation distributions, see [`pf_map_dens()`];
+#' * For mapping utilisation distributions, see [`map_dens()`];
 #'
 #' @example man/examples/coa-examples.R
 #' @author Edward Lavender

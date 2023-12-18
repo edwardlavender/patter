@@ -69,7 +69,7 @@ coa(dlist, .delta_t = "6 hours", .split = "individual_id")
 \seealso{
 \itemize{
 \item For reconstructing movement paths and patterns of space use, see \code{\link[=pf_forward]{pf_forward()}};
-\item For mapping utilisation distributions, see \code{\link[=pf_map_dens]{pf_map_dens()}};
+\item For mapping utilisation distributions, see \code{\link[=map_dens]{map_dens()}};
 }
 }
 \author{

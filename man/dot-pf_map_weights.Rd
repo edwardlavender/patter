@@ -13,7 +13,7 @@
 The function returns a \code{\link{data.table}}.
 }
 \description{
-This function calculates location weights in \code{\link[=pf_map_pou]{pf_map_pou()}} and \code{\link[=pf_map_dens]{pf_map_dens()}}.
+This function calculates location weights in \code{\link[=pf_map_pou]{pf_map_pou()}} and \code{\link[=map_dens]{map_dens()}}.
 }
 \details{
 This function can be used to calculate weights for any set of coordinates (grid cells), including but not exclusively from particle filtering.
