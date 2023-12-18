@@ -43,6 +43,9 @@
 #' @author Edward lavender
 #' @name pf_opt
 
+#' @rdname pf_opt
+#' @export
+
 pf_opt_trial <- function(.trial_origin_crit = 1L,
                          .trial_origin = 1L,
                          .trial_kick_crit = 1L,
