@@ -50,7 +50,7 @@ rxy <-
   st_as_sf(coords = c("receiver_long", "receiver_lat"), crs = 4326) |>
   st_transform(32629) |>
   st_coordinates()
-# Migrate coordinates onto grid
+# (optional) Migrate coordinates onto grid
 rxy <- terra::xyFromCell(dat_gebco,
                          terra::cellFromXY(dat_gebco, rxy))
 # Define clean dataframe
