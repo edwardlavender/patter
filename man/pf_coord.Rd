@@ -13,7 +13,7 @@ pf_coord(.history, .bathy, .wtd = FALSE, .obs = NULL, .cols = NULL)
 
 \item{.bathy}{The bathymetry \code{\link{SpatRaster}}.}
 
-\item{.wtd}{A \code{logical} variable that defines whether or not to summarise coordinates (see \code{\link[=.pf_map_weights]{.pf_map_weights()}}).}
+\item{.wtd}{A \code{logical} variable that defines whether or not to summarise coordinates (see \code{\link[=.map_mark]{.map_mark()}}).}
 
 \item{.obs, .cols}{(optional) A \code{\link{data.table}} and a character vector of column names in \code{.obs} to match onto the output. \code{.obs} must contain a \code{timestep} column for matching.}
 }

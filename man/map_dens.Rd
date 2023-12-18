@@ -60,7 +60,7 @@ The function returns a normalised \code{\link{SpatRaster}} (or \code{NULL} if \c
 \code{\link[=map_dens]{map_dens()}} smooths (a) a \code{\link{SpatRaster}} or (b) a set of inputted coordinates:
 \itemize{
 \item If \code{.coords} is \code{NULL}, \code{.map} cell coordinates are used for density estimation and cell values are used as weights.
-\item If coordinates are supplied, coordinates are re-expressed on \code{.map} and then used for density estimation. This option is generally faster. Equal weights are assumed unless specified. Default or supplied weights are normalised to sum to one at each time step. The total weight of each location within time steps is calculated and then these weights are aggregated by location across the whole time series and renomalised. See the internal \code{\link[=.pf_map_weights]{.pf_map_weights()}} function for full details.
+\item If coordinates are supplied, coordinates are re-expressed on \code{.map} and then used for density estimation. This option is generally faster. Equal weights are assumed unless specified. Default or supplied weights are normalised to sum to one at each time step. The total weight of each location within time steps is calculated and then these weights are aggregated by location across the whole time series and renomalised. See the internal \code{\link[=.map_mark]{.map_mark()}} function for full details.
 }
 
 Cell coordinates are converted to a \code{\link[spatstat.geom:ppp]{spatstat.geom::ppp()}} object, which is passed, alongside the observation window (\code{.owin}) and an image of the weights to \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} for the estimation. Weights must sum to one.

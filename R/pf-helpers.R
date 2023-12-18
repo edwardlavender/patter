@@ -56,7 +56,7 @@ pf_files <- function(.sink, ...) {
 #'
 #' @param .history Particle samples, provided in any format accepted by [`.pf_history_dt()`].
 #' @param .bathy The bathymetry [`SpatRaster`].
-#' @param .wtd A `logical` variable that defines whether or not to summarise coordinates (see [`.pf_map_weights()`]).
+#' @param .wtd A `logical` variable that defines whether or not to summarise coordinates (see [`.map_mark()`]).
 #' @param .obs,.cols (optional) A [`data.table`] and a character vector of column names in `.obs` to match onto the output. `.obs` must contain a `timestep` column for matching.
 #'
 #' @details
@@ -103,7 +103,7 @@ pf_coord <- function(.history, .bathy, .wtd = FALSE, .obs = NULL, .cols = NULL) 
 
   # (Optional) summarise coordinates
   if (.wtd) {
-    p <- .pf_map_weights(p)
+    p <- .map_mark(p)
   }
 
   # Add grid cell coordinates

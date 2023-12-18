@@ -2,7 +2,7 @@
 #' @description This function builds a 'probability-of-use' utilisation distribution.
 #'
 #' @param .map A [`SpatRaster`] that defines the grid for probability-of-use estimation. `NAs` on `.map` are used as a mask.
-#' @param .coord Coordinates, provided in any format accepted by [`.map_marks()`]
+#' @param .coord Coordinates, provided in any format accepted by [`.map_coord()`]
 #'
 #' @param .plot A logical input that defines whether or not to plot the [`SpatRaster`].
 #' @param ... If `.plot = TRUE`, `...` is a place holder for additional arguments passed to [`terra::plot()`].
@@ -49,7 +49,7 @@ map_pou <-
 
     #### Get XYM (cell IDs and marks)
     cat_log("... Processing `.coord`...")
-    xym <- .map_marks(.map = .map, .coord = .coord)
+    xym <- .map_coord(.map = .map, .coord = .coord)
 
     #### Build SpatRaster
     map <- terra::setValues(.map, 0)
@@ -84,7 +84,7 @@ map_pou <-
 #'
 #' [`map_dens()`] smooths (a) a [`SpatRaster`] or (b) a set of inputted coordinates:
 #' * If `.coords` is `NULL`, `.map` cell coordinates are used for density estimation and cell values are used as weights.
-#' * If coordinates are supplied, coordinates are re-expressed on `.map` and then used for density estimation. This option is generally faster. Equal weights are assumed unless specified. Default or supplied weights are normalised to sum to one at each time step. The total weight of each location within time steps is calculated and then these weights are aggregated by location across the whole time series and renomalised. See the internal [`.pf_map_weights()`] function for full details.
+#' * If coordinates are supplied, coordinates are re-expressed on `.map` and then used for density estimation. This option is generally faster. Equal weights are assumed unless specified. Default or supplied weights are normalised to sum to one at each time step. The total weight of each location within time steps is calculated and then these weights are aggregated by location across the whole time series and renomalised. See the internal [`.map_mark()`] function for full details.
 #'
 #' Cell coordinates are converted to a [`spatstat.geom::ppp()`] object, which is passed, alongside the observation window (`.owin`) and an image of the weights to [`spatstat.explore::density.ppp()`] for the estimation. Weights must sum to one.
 #'
@@ -258,13 +258,13 @@ map_dens <- function(.map,
         abort("`.coord` should contain `x` and `y` (or `cell_x` and `cell_y`) coordinates.")
       }
     }
-    # ii) Define cell IDs (if un-supplied) for .pf_map_weights()
+    # ii) Define cell IDs (if un-supplied) for .map_mark()
     if (is.null(.coord$cell_id)) {
       cell_id <- NULL
       .coord[, cell_id := terra::cellFromXY(.map, cbind(.coord$x, .coord$y))]
     }
     # iii) Define `.coord` with weights for each cell_id
-    .coord <- .pf_map_weights(.coord)
+    .coord <- .map_mark(.coord)
     # iv) Define weights on raster image
     marks <- .coord$mark
     .im <- terra::rasterize(x = as.matrix(.coord[, c("x", "y"), drop = FALSE]),

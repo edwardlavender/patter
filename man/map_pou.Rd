@@ -9,7 +9,7 @@ map_pou(.map, .coord, .plot = TRUE, ..., .verbose = TRUE)
 \arguments{
 \item{.map}{A \code{\link{SpatRaster}} that defines the grid for probability-of-use estimation. \code{NAs} on \code{.map} are used as a mask.}
 
-\item{.coord}{Coordinates, provided in any format accepted by \code{\link[=.map_marks]{.map_marks()}}}
+\item{.coord}{Coordinates, provided in any format accepted by \code{\link[=.map_coord]{.map_coord()}}}
 
 \item{.plot}{A logical input that defines whether or not to plot the \code{\link{SpatRaster}}.}
 

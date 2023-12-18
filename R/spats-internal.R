@@ -152,7 +152,7 @@ spatMarksFromCoord <- function(.x, .coord) {
     }
   }
 
-  # Define cell IDs (if un-supplied) for .pf_map_weights()
+  # Define cell IDs (if un-supplied) for .map_mark()
   if (is.null(.coord$cell_id)) {
     cell_id <- NULL
     .coord[, cell_id := terra::cellFromXY(.x, cbind(.coord$x, .coord$y))]
@@ -161,7 +161,7 @@ spatMarksFromCoord <- function(.x, .coord) {
   # Define coord marks, as required
   .coord <-
     .coord |>
-    .pf_map_weights() |>
+    .map_mark() |>
     mutate(x = terra::xFromCell(.x, .data$cell_id),
            y = terra::yFromCell(.x, .data$cell_id)) |>
     select("cell_id", "x", "y", "mark") |>
