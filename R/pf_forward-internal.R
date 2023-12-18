@@ -54,9 +54,15 @@
 #' @keywords internal
 
 # Propose origin locations
-# * `.particles`, `.obs`, `.t` and `.dlist` are required for consistency but unused
-.pf_rpropose_origin <- function(.particles = NULL, .obs, .t = 1L, .dlist, .origin, .grid = FALSE) {
+.pf_rpropose_origin <- function(.particles = NULL, .obs, .t = 1L, .dlist) {
 
+  # Extract required objects from .dlist
+  if (is.null(.dlist$spatial$origin)) {
+    .dlist$spatial$origin <- .dlist$spatial$bathy
+  }
+  if (is.null(.dlist$spatial$origin)) {
+    abort("`.dlist$spatial$origin` (and/or `.dlist$spatial$bathy`) is required.")
+  }
   moorings          <- .dlist$data$moorings
   detection_kernels <- .dlist$algorithm$detection_kernels
 
@@ -64,6 +70,7 @@
   if (!is.null(moorings)) {
     # Define container for possible locations
     # * .grid = FALSE uses a vector buffer rather than a gridded buffer, for speed
+    .grid <- FALSE
     if (!.grid) {
       detection_kernels <- NULL
     }
@@ -71,12 +78,12 @@
                                   .detection_kernels = detection_kernels,
                                   .moorings = moorings)
     # Sample cell coordinates within container
-    terra::crs(container) <- terra::crs(.origin)
-    samples <- spatSampleDT(container, .spatcell = .origin)
+    terra::crs(container) <- terra::crs(.dlist$spatial$origin)
+    samples <- spatSampleDT(container, .spatcell = .dlist$spatial$origin)
 
     # (2) Sample quadrature points on `.origin`
   } else {
-    samples <- spatSampleDT(.x = .origin)
+    samples <- spatSampleDT(.x = .dlist$spatial$origin)
   }
 
   # Tidy data.table
@@ -125,16 +132,14 @@
 #' @keywords internal
 
 .pf_particles_origin <- function(.particles = NULL, .obs, .t = 1L, .dlist,
-                                 .origin, .rpropose = NULL, .dpropose = NULL,
+                                 .rpropose = NULL, .dpropose = NULL,
                                  .likelihood,
                                  .sample, .n,
                                  .trial_crit, .trial_count, .control) {
   # Generate proposal location(s)
   diagnostics <- list()
   proposals <- .pf_rpropose_origin(.obs = .obs,
-                                   .dlist = .dlist,
-                                   .origin = .origin,
-                                   .grid = FALSE)
+                                   .dlist = .dlist)
   # Calculate likelihood(s) & weights
   proposals <- .pf_lik(.particles = proposals,
                        .obs = .obs,

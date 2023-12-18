@@ -1,21 +1,7 @@
-#' @title PF: forward simulation
-#' @description This function runs the forward simulation, generating samples of the set of possible locations of an animal at each time point given the data up to that time point and a movement model.
+#' @title PF: simulation options
+#' @description These functions define selected function arguments for [`pf_forward()`].
 #'
-#' @param .obs A [`data.table`] defining the timeline and associated observations, typically from [`acs_setup_obs()`].
-#' @param .dlist A `named` list of data and parameters required propose samples and calculate likelihoods (see [`pf_setup_data()`], [`pf_lik`] and [`pf_propose`]. At a minimum, this function requires `.dlist$spatial$bathy` and additional elements required by `.likelihood`,`.rpropose` and `.dpropose` functions (see XXX).
-#' @param .origin A [`SpatRaster`] that defines starting location(s). `NA`s/non `NA`s distinguish possible/impossible locations. By default, `.origin` is defined from the bathymetry grid (`.dlist$spatial$bathy`). For AC*PF algorithm implementations, grid cells beyond acoustic containers are masked. For *DCPF implementations, it is also desirable if you can, at least approximately, mask grid cells that are incompatible with the first depth observation. At the first time step, up to `1e6` locations ('quadrature points') are sampled from `.origin`. The likelihood of the data at each quadrature point is evaluated and `.n` starting locations are sampled with replacement (via `.sample`).
-#' @param .rpropose,.dpropose Proposal functions.
-#' * `.rpropose` is a function that proposes new locations for the individual, given previous locations. By default, this is a 'stochastic kick' function that simulates new locations by randomly kicking previous particles (see [`pf_rpropose_kick()`] and Details).
-#' * `.dpropose` is a function that evaluates the probability density of movements between location pairs (see [`pf_dpropose`]). This is required for directed sampling (see Details).
-#'
-#' See [`pf_propose`] for required arguments.
-#'
-#' @param .likelihood A named `list` of likelihood functions. These are used to calculate the likelihood of each dataset at proposal locations. See [`pf_lik`] for required arguments, convenience functions and advice.
-#' @param .n,.sample Sampling arguments.
-#' * `.n` is an `integer` that defines the number of particle samples at each time step.
-#' * `.sample` is a function used to (re)-sample proposal locations (see [`pf_sample`]).
-#'
-#' @param .trial_origin_crit,.trial_origin,.trial_kick_crit,.trial_kick,.trial_sampler_crit,.trial_sampler,.trial_revert_crit,.trial_revert_steps,.trial_revert Trial arguments used to tune convergence properties. ALl arguments expect `integer`s.
+#' @param .trial_origin_crit,.trial_origin,.trial_kick_crit,.trial_kick,.trial_sampler_crit,.trial_sampler,.trial_revert_crit,.trial_revert_steps,.trial_revert Trial arguments used to tune convergence properties. All arguments expect `integer`s.
 #' * `.trial_{step}` arguments define the number of times to trial a stochastic process at each time step (before giving up).
 #' * `.trial_{step}_crit` arguments define the number of valid, unique proposal locations (grid cells) required to trigger a repeated trial.
 #'
@@ -26,19 +12,110 @@
 #' * `.trial_sampler_crit` is the critical threshold for directed sampling. Following stochastic kicks, if the number of unique, valid proposals remains <= `.trial_sampler_crit`, directed sampling is implemented. Samples are redrawn up to `.trial_sampler` times. Use `.trial_sampler_crit = 0L` to suppress directed sampling.
 #' * `.trial_revert_crit` is the critical threshold for a reversion. If the number of unique, valid proposal locations is <= `.trial_revert_crit`, the algorithm reverts by `.trial_revert_steps` time steps to an earlier time step (time step two or greater). `.trial_revert` is the total number of reversions permitted. This is reset on algorithm reruns (see `.rerun`).
 #'
-#' @param .control A named `list` of control options. See [`pf_control()`] for supported options.
+#' @param .save,.sink,.cols [`pf_opt_record()`] arguments, passed to `.record` in [`pf_forward()`].
+#' * `.save`---a `logical` variable that defines whether or not to save particle samples and diagnostics in memory. Use with caution.
+#' * `.sink`---a `character` string that defines a (usually) empty directory in which to write particle samples and diagnostics (see Value).
+#' * `.cols`---a `character` vector that defines the names of the columns in particle-sample [`data.table`]s to save and/or write to file at each time step. This reduces the space occupied by outputs. At a minimum, you should retain `timestep`, `cell_now`, `x_now` and `y_now` for the backward sampler (see [`pf_backward_sampler()`]). `NULL` retains all columns.
+#'
+#' At least one of `.save` and `.sink` must be provided.
+#'
+#' @param .sampler_batch_size [`pf_opt_control()`] arguments, passed to `.control` in [`pf_forward()`].
+#' * `.sampler_batch_size`---an `integer` that controls the batch size (number of particles processed simultaneously) in directed sampling. Increase the batch size to improve speed; decrease the batch size to avoid memory constraints. The appropriate batch size depends on grid resolution and memory availability.
+#'
+#' @param .rerun,.trial_revert_steps [`pf_opt_rerun_from()`], arguments, passed to `.rerun_from` in [`pf_forward()`].
+#' * `.rerun` is a named `list` of algorithm outputs from a previous run.
+#' * `.trial_revert_steps` is an `integer` that defines the number of steps to revert.
+#'
+#' @details These functions are defined separately for convenience of documentation. Note that they do not define global options and must be passed to [`pf_forward()`] arguments.
+#'
+#' @return
+#' * [`pf_opt_trial()`] returns a named `list`;
+#' * [`pf_opt_record()`] returns a named `list`;
+#' * [`pf_opt_control()`] returns a named `list`;
+#' * [`pf_opt_rerun_from()`] returns an `integer`;
+#'
+#' @examples
+#' pf_opt_trial()
+#' pf_opt__record()
+#' pf_opt_control()
+#' pf_opt_rerun_from()
+#'
+#' @author Edward lavender
+#' @name pf_opt
+
+pf_opt_trial <- function(.trial_origin_crit = 1L,
+                         .trial_origin = 1L,
+                         .trial_kick_crit = 1L,
+                         .trial_kick = 1L,
+                         .trial_sampler_crit = 10L,
+                         .trial_sampler = 1L,
+                         .trial_revert_crit = 5L,
+                         .trial_revert_steps = 10L,
+                         .trial_revert = 10L) {
+  list(trial_origin_crit = .trial_origin_crit,
+       trial_origin = .trial_origin,
+       trial_kick_crit = .trial_kick_crit,
+       trial_kick = .trial_kick,
+       trial_sampler_crit = .trial_sampler_crit,
+       trial_sampler = .trial_sampler,
+       trial_revert_crit = .trial_revert_crit,
+       trial_revert_steps = .trial_revert_steps,
+       trial_revert = .trial_revert)
+}
+
+#' @rdname pf_opt
+#' @export
+
+pf_opt_record <- function(.save = FALSE, .cols = NULL, .sink = NULL) {
+  # Checks
+  if (.save && is.null(.sink)) {
+    abort("`.save = FALSE` and `.sink = NULL`. There is nothing to do.")
+  }
+  # Output list
+  list(save = .save,
+       cols = .cols,
+       sink = .sink)
+}
+
+#' @rdname pf_opt
+#' @export
+
+pf_opt_control <- function(.sampler_batch_size = 2L) {
+  list(sampler_batch_size = .sampler_batch_size)
+}
+
+#' @rdname pf_opt
+#' @export
+
+pf_opt_rerun_from <- function(.rerun, .trial_revert_steps = 25L) {
+  # default `.trial_revert_steps` is bigger than pf_forward `.trial_revert_steps`
+  max(c(1L, length(.rerun[["history"]]) - .trial_revert_steps))
+}
+
+#' @title PF: forward simulation
+#' @description This function runs the forward simulation, generating samples of the set of possible locations of an animal at each time point given the data up to that time point and a movement model.
+#'
+#' @param .obs A [`data.table`] defining the timeline and associated observations, typically from [`acs_setup_obs()`].
+#' @param .dlist A `named` list of data and parameters required propose samples and calculate likelihoods (see [`pf_setup_data()`], [`pf_lik`] and [`pf_propose`]). At a minimum, this function requires `.dlist$spatial$bathy`. An `.dlist$spatial$origin` [`SpatRaster`] can be included to define the origin. Additional elements required by `.likelihood`,`.rpropose` and `.dpropose` functions should be included (see [below]).
+#' @param .rpropose,.dpropose Proposal functions (see [`pf_propose`]).
+#' * `.rpropose` is a function that proposes new locations for the individual, given previous locations. By default, this is a 'stochastic kick' function that simulates new locations by randomly kicking previous particles (see [`pf_rpropose_kick()`] and Details).
+#' * `.dpropose` is a function that evaluates the probability density of movements between location pairs (see [`pf_dpropose`]). This is required for directed sampling (see Details).
+#'
+#' @param .likelihood A named `list` of likelihood functions. These are used to calculate the likelihood of each dataset at proposal locations. See [`pf_lik`] for required arguments, convenience functions and advice.
+#' @param .n,.sample Sampling arguments.
+#' * `.n` is an `integer` that defines the number of particle samples at each time step.
+#' * `.sample` is a function used to (re)-sample proposal locations (see [`pf_sample`]).
+#'
+#' @param .trial A named `list` of tuning parameters for convergence, from [`pf_opt_trial()`].
+#'
+#' @param .control A named `list` of control options, from [`pf_opt_control()`].
 #' @param .rerun,.rerun_from Rerun options. These options are used to restart the algorithm from an earlier time step in the case of a convergence failure.
 #' * `.rerun` is the named `list` of algorithm outputs from a previous rerun.
 #' * `.rerun_from` is an `integer` that defines the time step from which to rerun the algorithm.
 #'
 #' Algorithm parameters should remain consistent on algorithm reruns.
 #'
-#' @param .record A named `list` that controls function outputs. This may include the following elements:
-#' * `save`---a `logical` variable that defines whether or not to save particle samples and diagnostics in memory. Use with caution.
-#' * `sink`---a `character` string that defines a (usually) empty directory in which to write particle samples and diagnostics (see Value).
-#' * `cols`---a `character` vector that defines the names of the columns in particle-sample [`data.table`]s to save and/or write to file at each time step. This reduces the space occupied by outputs. At a minimum, you should retain `timestep`, `cell_now`, `x_now` and `y_now` for the backward sampler (see [`pf_backward_sampler()`]). `NULL` retains all columns.
-#'
-#' At least one of `.save` and `.sink` must be provided.
+#' @param .record A named `list` of output options, from [`pf_opt_record()`].
 #'
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #' @param ... Additional arguments.
@@ -53,7 +130,7 @@
 #' 3. A weights step, in which we translate likelihoods into sampling weights.
 #' 4. A sampling step, in which we (re)sample valid proposal locations using the weights.
 #'
-#' At the first time step, proposal locations are defined from a large number of 'quadrature points' across `.origin`. At each quadrature point, we evaluate likelihoods and calculate weights. `.n` starting locations (particles) are sampled from the set of quadrature points using the weights.
+#' At the first time step, proposal locations are defined from a large number of 'quadrature points' across a [`SpatRaster`] that defines starting location(s), defined in `.dlist$spatial$origin` (`.dlist$spatial$bathy` is used if `.dlist$spatial$origin` is undefined). `NA`s/non `NA`s distinguish possible/impossible locations. For AC*PF algorithm implementations, grid cells beyond acoustic containers are masked. For *DCPF implementations, it is also desirable if you can, at least approximately, mask grid cells that are incompatible with the first depth observation. At the first time step, up to `1e6` locations ('quadrature points') are sampled from the [`SpatRaster`]. At each quadrature point, we evaluate likelihoods and calculate weights. `.n` starting locations (particles) are sampled from the set of quadrature points using the weights.
 #'
 #' At subsequent time steps, proposal locations are generated via `.rpropose` which, by default, is a 'stochastic kick' function that 'kicks' previous particles at random into new locations (in line the restrictions imposed by a movement model). The benefit of this approach is that it is extremely fast, but in situations in which there are relatively few possible locations for an individual, the approach can work poorly because few kicked particles end up in valid locations. A `list` of likelihood functions is used to evaluate the likelihood of the data, given each proposal, and filter invalid proposals. During this time, we track how the number and diversity of proposal locations declines, as the data are revealed to be incompatible with selected proposals by successive likelihood functions (see Diagnostics). Likelihoods are translated into weights and `.n` valid proposals (particles) are resampled, with replacement, using the weights. If the number of unique, valid locations is <= `.trial_kick_crit`, this process is repeated up to `.trial_kick` times.
 #'
@@ -76,7 +153,7 @@
 #' While [`pf_forward()`] tries hard to reconstruct a complete time series of location samples, algorithm convergence is not guaranteed. The algorithm may reach a dead-end---a time step at which there are no valid locations into which the algorithm can step. This may be due to data errors, incorrect assumptions, insufficient sampling effort or poor tuning parameter settings. To facilitate diagnosis of the immediate cause of convergence failures, during likelihood evaluations we keep track of 'particle diagnostics', i.e., the number of unique, valid locations before/after each likelihood evaluation alongside other statistics.
 #'
 #'
-#' @return The function returns a [`pff-class`] object. If `.return$sink` is specified, two directories, {.return$sink}/history/ and {.return$sink}/diagnostics, are also created that contain particle samples and diagnostics. Particle samples are labelled `1.parquet, 2.parquet, ..., T.parquet`, where `T` is the number of time steps. Diagnostics are labelled `1.parquet, 2.parquet, ..., Z.parquet`, where Z is the number of diagnostic files. There may be multiple diagnostic files (e.g.., `1.parquet, 2.parquet, 3.parquet` for each time step. Use [`pf_forward_diagnostics()`] to collate diagnostics.
+#' @return The function returns a [`pff-class`] object. If `.return$sink` is specified, two directories, {.return$sink}/history/ and {.return$sink}/diagnostics, are also created that contain particle samples and diagnostics. Particle samples are labelled `1.parquet, 2.parquet, ..., T.parquet`, where `T` is the number of time steps. Diagnostics are labelled `A-B-C`, where `A`, `B` and `C` are the number of manual restarts, internal reversions and time steps. Use [`pf_forward_diagnostics()`] to collate diagnostics.
 #'
 #' @seealso
 #'
@@ -85,23 +162,16 @@
 
 pf_forward <- function(.obs,
                        .dlist,
-                       .origin = .dlist$spatial$bathy,
-                       .rpropose = pf_rpropose_kick, .dpropose = pf_dpropose,
+                       .rpropose = pf_rpropose_kick,
+                       .dpropose = pf_dpropose,
                        .likelihood = list(),
                        .n = 100L,
                        .sample = pf_sample_multinomial,
-                       .trial_origin_crit = 1L,
-                       .trial_origin = 1L,
-                       .trial_kick_crit = 1L,
-                       .trial_kick = 2L,
-                       .trial_sampler_crit = 2L,
-                       .trial_sampler = 2L,
-                       .trial_revert_crit = 2L,
-                       .trial_revert_steps = 10L,
-                       .trial_revert = 2L,
-                       .control = pf_control(),
-                       .rerun = list(), .rerun_from = pf_rerun_from(.rerun),
-                       .record = pf_record(),
+                       .trial = pf_opt_trial(),
+                       .control = pf_opt_control(),
+                       .rerun = list(),
+                       .rerun_from = pf_opt_rerun_from(.rerun),
+                       .record = pf_opt_record(),
                        .verbose = TRUE) {
 
   #### Check user inputs
@@ -137,12 +207,11 @@ pf_forward <- function(.obs,
     cat_log("... Defining origin...")
     pnow <- .pf_particles_origin(.particles = NULL,
                                  .obs = .obs, .t = 1L, .dlist = .dlist,
-                                 .origin = .origin,
                                  .rpropose = NULL, .dpropose = NULL,
                                  .likelihood = .likelihood,
                                  .sample = .sample, .n = .n,
-                                 .trial_crit = .trial_origin_crit,
-                                 .trial_count = .trial_origin,
+                                 .trial_crit = .trial$trial_origin_crit,
+                                 .trial_count = .trial$trial_origin,
                                  .control = .control)
     diagnostics_1 <- .pf_diag_collect(.diagnostics = attr(pnow, "diagnostics"),
                                       .iter_m = iter_m, .iter_i = iter_i)
@@ -176,24 +245,24 @@ pf_forward <- function(.obs,
     diagnostics_t <- list()
 
     #### (1) Propose new particles (using kicks)
-    if (.trial_kick > 0L) {
+    if (.trial$trial_kick > 0L) {
       cat_log("... ... ... Kicking particles...")
       pnow <- .pf_particles_kick(.particles = copy(ppast),
                                  .obs = .obs, .t = t, .dlist = .dlist,
                                  .rpropose = .rpropose, .dpropose = NULL,
                                  .likelihood = .likelihood,
                                  .sample = .sample, .n = .n,
-                                 .trial_crit = .trial_kick_crit,
-                                 .trial_count = .trial_kick,
+                                 .trial_crit = .trial$trial_kick_crit,
+                                 .trial_count = .trial$trial_kick,
                                  .control = .control
                                  )
       diagnostics_t[["kick"]] <- .pf_diag_bind(attr(pnow, "diagnostics"))
     }
 
     #### (2) Propose new particles (using direct sampling)
-    if (.trial_sampler > 0L) {
+    if (.trial$trial_sampler > 0L) {
       use_sampler <- .pf_trial_sampler(.diagnostics = diagnostics_t,
-                                       .trial_crit = .trial_sampler_crit)
+                                       .trial_crit = .trial$trial_sampler_crit)
       if (use_sampler) {
         cat_log("... ... ... Using directed sampling...")
         pnow <- .pf_particles_sampler(.particles = copy(ppast),
@@ -201,8 +270,8 @@ pf_forward <- function(.obs,
                                       .rpropose = NULL, .dpropose = .dpropose,
                                       .likelihood = .likelihood,
                                       .sample = .sample, .n = .n,
-                                      .trial_crit = .trial_sampler_crit,
-                                      .trial_count = .trial_sampler,
+                                      .trial_crit = .trial$trial_sampler_crit,
+                                      .trial_count = .trial$trial_sampler,
                                       .control = .control)
         diagnostics_t[["sampler"]] <- .pf_diag_bind(attr(pnow, "diagnostics"))
       }
@@ -218,10 +287,10 @@ pf_forward <- function(.obs,
 
     #### (4) (A) Revert to an earlier time step
     crit <- diagnostics_t$n_u[nrow(diagnostics_t)]
-    if (crit < .trial_revert_crit & iter_i <= .trial_revert) {
+    if (crit < .trial$trial_revert_crit & iter_i <= .trial$trial_revert) {
       # Define time step
-      t <- .pf_revert(.t = t, .trial_revert_steps = .trial_revert_steps)
-      cat_log(paste0("... ... ... Reverting to time ", t, " (on ", iter_i, "/", .trial_revert, " revert attempt(s)...)"))
+      t <- .pf_revert(.t = t, .trial_revert_steps = .trial$trial_revert_steps)
+      cat_log(paste0("... ... ... Reverting to time ", t, " (on ", iter_i, "/", .trial$trial_revert, " revert attempt(s)...)"))
       iter_i <- iter_i + 1L
       # Define ppast for relevant time step
       ppast <- .pf_ppast(.particles = NULL, .history = history,
@@ -232,7 +301,7 @@ pf_forward <- function(.obs,
       #### (3) (B) Continue or finish simulation
       # Check convergence
       continue <- .pf_continue(.particles = pnow, .t = t,
-                               .crit = crit, .trial_revert_crit = .trial_revert_crit)
+                               .crit = crit, .trial_revert_crit = .trial$trial_revert_crit)
       # Save particle samples (if possible)
       if (continue) {
         snapshot <- .pf_snapshot(.dt = pnow, .select = select_cols, .cols = .record$cols)
@@ -267,40 +336,6 @@ pf_forward <- function(.obs,
               .diagnostics = diagnostics,
               .convergence = TRUE)
 
-}
-
-#' @rdname pf_forward
-#' @export
-
-pf_record <- function(..., .record = list()) {
-  args <- list(...)
-  args <- list_merge(args, .record)
-  defaults <- list(save = FALSE,
-                   cols = NULL,
-                   sink = NULL)
-  out <- list_args(.args = args, .defaults = defaults)
-  if (!out$save && is.null(out$sink)) {
-    abort("`.record$save = FALSE` and `.record$sink = NULL`. There is nothing to do.")
-  }
-  out
-}
-
-#' @rdname pf_forward
-#' @export
-
-pf_control <- function(..., .control = list()) {
-  args <- list(...)
-  args <- list_merge(args, .control)
-  defaults <- list(sampler_batch_size = 2L)
-  list_args(.args = args, .defaults = defaults)
-}
-
-#' @rdname pf_forward
-#' @export
-
-pf_rerun_from <- function(.rerun, .trial_revert_steps = 25L) {
-  # default `.trial_revert_steps` is bigger than pf_forward `.trial_revert_steps`
-  max(c(1L, length(.rerun[["history"]]) - .trial_revert_steps))
 }
 
 #' @title PF: forward run diagnostics

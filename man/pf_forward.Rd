@@ -2,56 +2,34 @@
 % Please edit documentation in R/pf_forward.R
 \name{pf_forward}
 \alias{pf_forward}
-\alias{pf_record}
-\alias{pf_control}
-\alias{pf_rerun_from}
 \title{PF: forward simulation}
 \usage{
 pf_forward(
   .obs,
   .dlist,
-  .origin = .dlist$spatial$bathy,
   .rpropose = pf_rpropose_kick,
   .dpropose = pf_dpropose,
   .likelihood = list(),
   .n = 100L,
   .sample = pf_sample_multinomial,
-  .trial_origin_crit = 1L,
-  .trial_origin = 1L,
-  .trial_kick_crit = 1L,
-  .trial_kick = 2L,
-  .trial_sampler_crit = 2L,
-  .trial_sampler = 2L,
-  .trial_revert_crit = 2L,
-  .trial_revert_steps = 10L,
-  .trial_revert = 2L,
-  .control = pf_control(),
+  .trial = pf_opt_trial(),
+  .control = pf_opt_control(),
   .rerun = list(),
-  .rerun_from = pf_rerun_from(.rerun),
-  .record = pf_record(),
+  .rerun_from = pf_opt_rerun_from(.rerun),
+  .record = pf_opt_record(),
   .verbose = TRUE
 )
-
-pf_record(..., .record = list())
-
-pf_control(..., .control = list())
-
-pf_rerun_from(.rerun, .trial_revert_steps = 25L)
 }
 \arguments{
 \item{.obs}{A \code{\link{data.table}} defining the timeline and associated observations, typically from \code{\link[=acs_setup_obs]{acs_setup_obs()}}.}
 
-\item{.dlist}{A \code{named} list of data and parameters required propose samples and calculate likelihoods (see \code{\link[=pf_setup_data]{pf_setup_data()}}, \code{\link{pf_lik}} and \code{\link{pf_propose}}. At a minimum, this function requires \code{.dlist$spatial$bathy} and additional elements required by \code{.likelihood},\code{.rpropose} and \code{.dpropose} functions (see XXX).}
+\item{.dlist}{A \code{named} list of data and parameters required propose samples and calculate likelihoods (see \code{\link[=pf_setup_data]{pf_setup_data()}}, \code{\link{pf_lik}} and \code{\link{pf_propose}}. At a minimum, this function requires \code{.dlist$spatial$bathy}. An \code{.dlist$spatial$origin} \code{\link{SpatRaster}} can be included to define the origin. Additional elements required by \code{.likelihood},\code{.rpropose} and \code{.dpropose} functions should be included (see \link{below}).}
 
-\item{.origin}{A \code{\link{SpatRaster}} that defines starting location(s). \code{NA}s/non \code{NA}s distinguish possible/impossible locations. By default, \code{.origin} is defined from the bathymetry grid (\code{.dlist$spatial$bathy}). For AC*PF algorithm implementations, grid cells beyond acoustic containers are masked. For *DCPF implementations, it is also desirable if you can, at least approximately, mask grid cells that are incompatible with the first depth observation. At the first time step, up to \code{1e6} locations ('quadrature points') are sampled from \code{.origin}. The likelihood of the data at each quadrature point is evaluated and \code{.n} starting locations are sampled with replacement (via \code{.sample}).}
-
-\item{.rpropose, .dpropose}{Proposal functions.
+\item{.rpropose, .dpropose}{Proposal functions (see \code{\link{pf_propose}}).
 \itemize{
 \item \code{.rpropose} is a function that proposes new locations for the individual, given previous locations. By default, this is a 'stochastic kick' function that simulates new locations by randomly kicking previous particles (see \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}} and Details).
 \item \code{.dpropose} is a function that evaluates the probability density of movements between location pairs (see \code{\link{pf_dpropose}}). This is required for directed sampling (see Details).
-}
-
-See \code{\link{pf_propose}} for required arguments.}
+}}
 
 \item{.likelihood}{A named \code{list} of likelihood functions. These are used to calculate the likelihood of each dataset at proposal locations. See \code{\link{pf_lik}} for required arguments, convenience functions and advice.}
 
@@ -61,21 +39,9 @@ See \code{\link{pf_propose}} for required arguments.}
 \item \code{.sample} is a function used to (re)-sample proposal locations (see \code{\link{pf_sample}}).
 }}
 
-\item{.trial_origin_crit, .trial_origin, .trial_kick_crit, .trial_kick, .trial_sampler_crit, .trial_sampler, .trial_revert_crit, .trial_revert_steps, .trial_revert}{Trial arguments used to tune convergence properties. ALl arguments expect \code{integer}s.
-\itemize{
-\item \verb{.trial_\{step\}} arguments define the number of times to trial a stochastic process at each time step (before giving up).
-\item \verb{.trial_\{step\}_crit} arguments define the number of valid, unique proposal locations (grid cells) required to trigger a repeated trial.
-}
+\item{.trial}{A named \code{list} of tuning parameters for convergence, from \code{\link[=pf_opt_trial]{pf_opt_trial()}}.}
 
-For example, if after kicking previous particles into proposal locations and evaluating the likelihood of each location only 10 unique particles remain, the stochastic process is repeated up to \code{.trial_kick} times or until the number of valid proposals exceeds \code{.trial_kick_crit} (see Details). In full:
-\itemize{
-\item \code{.trial_origin_crit} is the critical threshold for the starting samples. If the number of unique, valid starting locations is <= \code{.trial_origin_crit}, sampling is repeated up to \code{.trial_origin} times.
-\item \code{trial_kick_crit} is the critical threshold for stochastic kicks. If the number of unique, valid proposals is <= \code{trial_kick_crit}, the process of kicking and sampling particles (via \code{.rpropose} and \code{.sample}) is repeated up to \code{.trial_kick} times. Use \code{.trial_kick = 0L} to suppress stochastic kicks.
-\item \code{.trial_sampler_crit} is the critical threshold for directed sampling. Following stochastic kicks, if the number of unique, valid proposals remains <= \code{.trial_sampler_crit}, directed sampling is implemented. Samples are redrawn up to \code{.trial_sampler} times. Use \code{.trial_sampler_crit = 0L} to suppress directed sampling.
-\item \code{.trial_revert_crit} is the critical threshold for a reversion. If the number of unique, valid proposal locations is <= \code{.trial_revert_crit}, the algorithm reverts by \code{.trial_revert_steps} time steps to an earlier time step (time step two or greater). \code{.trial_revert} is the total number of reversions permitted. This is reset on algorithm reruns (see \code{.rerun}).
-}}
-
-\item{.control}{A named \code{list} of control options. See \code{\link[=pf_control]{pf_control()}} for supported options.}
+\item{.control}{A named \code{list} of control options, from \code{\link[=pf_opt_control]{pf_opt_control()}}.}
 
 \item{.rerun, .rerun_from}{Rerun options. These options are used to restart the algorithm from an earlier time step in the case of a convergence failure.
 \itemize{
@@ -85,21 +51,14 @@ For example, if after kicking previous particles into proposal locations and eva
 
 Algorithm parameters should remain consistent on algorithm reruns.}
 
-\item{.record}{A named \code{list} that controls function outputs. This may include the following elements:
-\itemize{
-\item \code{save}---a \code{logical} variable that defines whether or not to save particle samples and diagnostics in memory. Use with caution.
-\item \code{sink}---a \code{character} string that defines a (usually) empty directory in which to write particle samples and diagnostics (see Value).
-\item \code{cols}---a \code{character} vector that defines the names of the columns in particle-sample \code{\link{data.table}}s to save and/or write to file at each time step. This reduces the space occupied by outputs. At a minimum, you should retain \code{timestep}, \code{cell_now}, \code{x_now} and \code{y_now} for the backward sampler (see \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}). \code{NULL} retains all columns.
-}
-
-At least one of \code{.save} and \code{.sink} must be provided.}
+\item{.record}{A named \code{list} of output options, from \code{\link[=pf_opt_record]{pf_opt_record()}}.}
 
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 
 \item{...}{Additional arguments.}
 }
 \value{
-The function returns a \code{\linkS4class{pff}} object. If \code{.return$sink} is specified, two directories, {.return$sink}/history/ and {.return$sink}/diagnostics, are also created that contain particle samples and diagnostics. Particle samples are labelled \verb{1.parquet, 2.parquet, ..., T.parquet}, where \code{T} is the number of time steps. Diagnostics are labelled \verb{1.parquet, 2.parquet, ..., Z.parquet}, where Z is the number of diagnostic files. There may be multiple diagnostic files (e.g.., \verb{1.parquet, 2.parquet, 3.parquet} for each time step. Use \code{\link[=pf_forward_diagnostics]{pf_forward_diagnostics()}} to collate diagnostics.
+The function returns a \code{\linkS4class{pff}} object. If \code{.return$sink} is specified, two directories, {.return$sink}/history/ and {.return$sink}/diagnostics, are also created that contain particle samples and diagnostics. Particle samples are labelled \verb{1.parquet, 2.parquet, ..., T.parquet}, where \code{T} is the number of time steps. Diagnostics are labelled \code{A-B-C}, where \code{A}, \code{B} and \code{C} are the number of manual restarts, internal reversions and time steps. Use \code{\link[=pf_forward_diagnostics]{pf_forward_diagnostics()}} to collate diagnostics.
 }
 \description{
 This function runs the forward simulation, generating samples of the set of possible locations of an animal at each time point given the data up to that time point and a movement model.
@@ -113,7 +72,7 @@ This function runs the forward simulation, generating samples of the set of poss
 \item A sampling step, in which we (re)sample valid proposal locations using the weights.
 }
 
-At the first time step, proposal locations are defined from a large number of 'quadrature points' across \code{.origin}. At each quadrature point, we evaluate likelihoods and calculate weights. \code{.n} starting locations (particles) are sampled from the set of quadrature points using the weights.
+At the first time step, proposal locations are defined from a large number of 'quadrature points' across a \code{\link{SpatRaster}} that defines starting location(s), defined in \code{.dlist$spatial$origin} (\code{.dlist$spatial$bathy} is used if \code{.dlist$spatial$origin} is undefined). \code{NA}s/non \code{NA}s distinguish possible/impossible locations. For AC*PF algorithm implementations, grid cells beyond acoustic containers are masked. For *DCPF implementations, it is also desirable if you can, at least approximately, mask grid cells that are incompatible with the first depth observation. At the first time step, up to \code{1e6} locations ('quadrature points') are sampled from the \code{\link{SpatRaster}}. At each quadrature point, we evaluate likelihoods and calculate weights. \code{.n} starting locations (particles) are sampled from the set of quadrature points using the weights.
 
 At subsequent time steps, proposal locations are generated via \code{.rpropose} which, by default, is a 'stochastic kick' function that 'kicks' previous particles at random into new locations (in line the restrictions imposed by a movement model). The benefit of this approach is that it is extremely fast, but in situations in which there are relatively few possible locations for an individual, the approach can work poorly because few kicked particles end up in valid locations. A \code{list} of likelihood functions is used to evaluate the likelihood of the data, given each proposal, and filter invalid proposals. During this time, we track how the number and diversity of proposal locations declines, as the data are revealed to be incompatible with selected proposals by successive likelihood functions (see Diagnostics). Likelihoods are translated into weights and \code{.n} valid proposals (particles) are resampled, with replacement, using the weights. If the number of unique, valid locations is <= \code{.trial_kick_crit}, this process is repeated up to \code{.trial_kick} times.
 

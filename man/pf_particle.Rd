@@ -10,14 +10,7 @@
 \alias{.pf_particles_sampler}
 \title{PF: particle internals}
 \usage{
-.pf_rpropose_origin(
-  .particles = NULL,
-  .obs,
-  .t = 1L,
-  .dlist,
-  .origin,
-  .grid = FALSE
-)
+.pf_rpropose_origin(.particles = NULL, .obs, .t = 1L, .dlist)
 
 .pf_sample_origin(.particles, .n, .sample, .trial_crit, .trial_count)
 
@@ -26,7 +19,6 @@
   .obs,
   .t = 1L,
   .dlist,
-  .origin,
   .rpropose = NULL,
   .dpropose = NULL,
   .likelihood,

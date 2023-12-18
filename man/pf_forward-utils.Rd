@@ -16,7 +16,7 @@
 \alias{.pf_outputs}
 \title{PF helper: internal utilities}
 \usage{
-.pf_dirs(.write_opts)
+.pf_dirs(.record)
 
 .pf_write_particles(.particles, .sink, .write)
 

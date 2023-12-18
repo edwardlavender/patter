@@ -7,7 +7,12 @@
 This function is based on the \href{https://edwardlavender.github.io/flapper/reference/acs_setup_detection_kernels.html}{\code{acs_setup_detection_kernels}} function in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package, where the role of detection kernels in the AC* algorithms is described extensively (see Details).
 }
 \usage{
-acs_setup_detection_kernels(.dlist, .calc_detection_pr, .verbose = TRUE, ...)
+acs_setup_detection_kernels(
+  .dlist,
+  .calc_detection_pr = acs_setup_detection_pr,
+  .verbose = TRUE,
+  ...
+)
 }
 \arguments{
 \item{.dlist}{A named \code{list} of data and parameters from \code{\link[=pat_setup_data]{pat_setup_data()}}. This function requires:
