@@ -412,7 +412,7 @@ test_that("sim_detections() works", {
   r <- dat_gebco()
   r <- terra::project(r, "EPSG:4326")
   p <- sim_path_walk(r, .lonlat = TRUE)
-  a <- sim_array(r, .lonlat = TRUE)
+  a <- sim_array(r, .n_receiver = 500L, .lonlat = TRUE)
   sim_detections(.paths = p, .arrays = a, .lonlat = TRUE) |>
     check_inherits("data.table")
 

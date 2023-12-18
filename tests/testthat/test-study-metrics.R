@@ -36,7 +36,7 @@ test_that("make_matrix_receivers() works", {
   )
 
   #### Test (1): Test basic implementation
-  dlist <- pat_setup_data(.moorings = moorings)
+  dlist <- pat_setup_data(.moorings = moorings) |> suppressWarnings()
   mat <- make_matrix_receivers(dlist,
                                .delta_t = "days",
                                .start = NULL, .end = NULL,
@@ -51,7 +51,8 @@ test_that("make_matrix_receivers() works", {
   expect_true(all(mat[, 5] == c(0, 0, 0, 0, 1, 1, 1, 1, 1)))
 
   #### Test (2): Test exclusion of servicing dates
-  dlist <- pat_setup_data(.moorings = moorings, .services = services)
+  dlist <- pat_setup_data(.moorings = moorings, .services = services) |>
+    suppressWarnings()
   mat <- make_matrix_receivers(dlist,
                                .delta_t = "days",
                                .start = NULL, .end = NULL,
