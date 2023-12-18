@@ -100,7 +100,7 @@ pf_opt_rerun_from <- function(.rerun, .revert = 25L) {
 #' @description This function runs the forward simulation, generating samples of the set of possible locations of an animal at each time point given the data up to that time point and a movement model.
 #'
 #' @param .obs A [`data.table`] defining the timeline and associated observations, typically from [`acs_setup_obs()`].
-#' @param .dlist A `named` list of data and parameters required propose samples and calculate likelihoods (see [`pf_setup_data()`], [`pf_lik`] and [`pf_propose`]). At a minimum, this function requires `.dlist$spatial$bathy`. An `.dlist$spatial$origin` [`SpatRaster`] can be included to define the origin. Additional elements required by `.likelihood`,`.rpropose` and `.dpropose` functions should be included (see below).
+#' @param .dlist A `named` list of data and parameters required propose samples and calculate likelihoods (see [`pat_setup_data()`], [`pf_lik`] and [`pf_propose`]). At a minimum, this function requires `.dlist$spatial$bathy`. An `.dlist$spatial$origin` [`SpatRaster`] can be included to define the origin. Additional elements required by `.likelihood`,`.rpropose` and `.dpropose` functions should be included (see below).
 #' @param .rpropose,.dpropose Proposal functions (see [`pf_propose`]).
 #' * `.rpropose` is a function that proposes new locations for the individual, given previous locations. By default, this is a 'stochastic kick' function that simulates new locations by randomly kicking previous particles (see [`pf_rpropose_kick()`] and Details).
 #' * `.dpropose` is a function that evaluates the probability density of movements between location pairs (see [`pf_dpropose`]). This is required for directed sampling (see Details).
