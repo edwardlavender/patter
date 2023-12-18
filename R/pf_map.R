@@ -18,7 +18,7 @@
 #' If `.obs` is supplied, the output also contains any columns specified in `.cols`.
 #'
 #' @examples
-#' p <- dat_pfb()
+#' p <- dat_pfbk()
 #' pf_coords(p$history, dat_gebco())
 #'
 #' @seealso

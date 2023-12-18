@@ -34,7 +34,7 @@ This function collects particle samples and extracts coordinates.
 This function is not memory safe.
 }
 \examples{
-p <- dat_pfb()
+p <- dat_pfbk()
 pf_coords(p$history, dat_gebco())
 
 }
