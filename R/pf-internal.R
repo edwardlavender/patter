@@ -18,7 +18,7 @@
   # Handle list of data.table inputs
   if (inherits(.history, "list") && inherits(.history[[1]], "data.table")) {
     check_names(.history[[1]], "cell_now")
-    out <- .history |> rbindlist()
+    out <- .history |> rbindlist(fill = TRUE)
     return(out)
   }
 
@@ -32,7 +32,7 @@
     out <-
       .history |>
       lapply(arrow::read_parquet) |>
-      rbindlist()
+      rbindlist(fill = TRUE)
     return(out)
 
     # Option 2: Open dataset
