@@ -8,7 +8,9 @@
 #' @param ... If `.plot = TRUE`, `...` is a place holder for additional arguments passed to [`terra::plot()`].
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
-#' @details Probability-of-use is the proportion of samples of each unique cell (out of the total number of samples across all time steps).
+#' @details Probability-of-use is the proportion of coordinates in each unique cell (out of the total number of samples across all time steps). This is calculated as follows:
+#'
+#' 1.
 #'
 #' @return The function returns a [`SpatRaster`] (utilisation distribution) in which cell values define probability-of-use.
 #' @example man/examples/map_pou-examples.R
@@ -49,7 +51,7 @@ map_pou <-
 
     #### Get XYM (cell IDs and marks)
     cat_log("... Processing `.coord`...")
-    xym <- .map_coord(.map = .map, .coord = .coord)
+    xym <- .map_coord(.map = .map, .coord = .coord, .simplify = TRUE)
 
     #### Build SpatRaster
     map <- terra::setValues(.map, 0)

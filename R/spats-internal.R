@@ -110,11 +110,11 @@ spatMarks <- function(.x) {
   colnames(.coord) <- c("x", "y", "mark")
   .coord <- .coord[which(!is.na(.coord$mark) & .coord$mark != 0), ]
   if (!isTRUE(all.equal(sum(.coord$marks), 1))) {
-    abort("Weights on `.x` should sum to one since `.coord` = NULL.")
+    abort("Weights on `.x` should sum to one.")
   }
   .coord |>
     mutate(cell_id = terra::cellFromXY(.x, cbind(.data$x, .data$y))) |>
-    select("id", "x", "y", "mark") |>
+    select("cell_id", "x", "y", "mark") |>
     as.data.table()
 }
 
@@ -122,7 +122,7 @@ spatMarks <- function(.x) {
 #' @keywords internal
 
 # Define x, y, mark data.table from coordinates data.table
-spatMarksFromCoord <- function(.x, .coord) {
+spatMarksFromCoord <- function(.x, .coord, .simplify = FALSE) {
 
   # Coerce .coord to a data.table
   if (inherits(.coord, "matrix") |
@@ -153,17 +153,22 @@ spatMarksFromCoord <- function(.x, .coord) {
   }
 
   # Define cell IDs (if un-supplied) for .map_mark()
-  if (is.null(.coord$cell_id)) {
-    cell_id <- NULL
-    .coord[, cell_id := terra::cellFromXY(.x, cbind(.coord$x, .coord$y))]
+  if (.simplify) {
+    id <- cell_id <- NULL
+    if (is.null(.coord$cell_id)) {
+      .coord[, id := terra::cellFromXY(.x, cbind(.coord$x, .coord$y))]
+    } else {
+      .coord[, id := cell_id]
+    }
+  } else {
+    x <- y <- NULL
+    .coord[, id := paste(x, y)]
   }
 
   # Define coord marks, as required
   .coord <-
     .coord |>
     .map_mark() |>
-    mutate(x = terra::xFromCell(.x, .data$cell_id),
-           y = terra::yFromCell(.x, .data$cell_id)) |>
     select("cell_id", "x", "y", "mark") |>
     as.data.table()
 }
