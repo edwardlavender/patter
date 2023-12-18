@@ -2,7 +2,7 @@
 #' @description This function implements the backward correction of particle samples.
 #'
 #' @param .history Particle samples from the forward simulation, provided either as:
-#' * A `list` of [`data.table`]s that define cell samples; i.e., the `history` element of a [`pf-class`] object. This must contain columns that define cell samples at each time step (`cell_now`) alongside previous samples (`cell_past`).
+#' * A `list` of [`data.table`]s that define cell samples; i.e., the `history` element of a [`pf_particles-class`] object. This must contain columns that define cell samples at each time step (`cell_now`) alongside previous samples (`cell_past`).
 #' * An ordered list of file paths (from [`pf_files()`]) that define the directories in which particle samples were written from the forward simulation (as parquet files).
 #' @param .record A named `list` of output options, from [`pf_opt_record()`].
 #' @param .verbose User output control (see [`patter-progress`] for supported options).

@@ -9,7 +9,7 @@ pf_backward_killer(.history, .record = pf_opt_record(), .verbose = TRUE)
 \arguments{
 \item{.history}{Particle samples from the forward simulation, provided either as:
 \itemize{
-\item A \code{list} of \code{\link{data.table}}s that define cell samples; i.e., the \code{history} element of a \code{\linkS4class{pf}} object. This must contain columns that define cell samples at each time step (\code{cell_now}) alongside previous samples (\code{cell_past}).
+\item A \code{list} of \code{\link{data.table}}s that define cell samples; i.e., the \code{history} element of a \code{\linkS4class{pf_particles}} object. This must contain columns that define cell samples at each time step (\code{cell_now}) alongside previous samples (\code{cell_past}).
 \item An ordered list of file paths (from \code{\link[=pf_files]{pf_files()}}) that define the directories in which particle samples were written from the forward simulation (as parquet files).
 }}
 

@@ -1,7 +1,7 @@
 #' @title PF: path reconstruction
 #' @description This function implements the path-reconstruction algorithm.
 #' @param .history Particle samples from the particle filter, provided either as:
-#' * A `list` of [`data.table`]s that define cell samples; i.e., the `history` element of a [`pf-class`] object. This must contain columns that define cell samples at each time step (`cell_now`) alongside previous samples (`cell_past`).
+#' * A `list` of [`data.table`]s that define cell samples; i.e., the `history` element of a [`pf_particles-class`] object. This must contain columns that define cell samples at each time step (`cell_now`) alongside previous samples (`cell_past`).
 #' * An ordered list of file paths (from [`pf_files()`]) that define the directories in which particle samples were written from the forward simulation (as parquet files).
 #' @param .bathy (optional) If `.return = "long"`, a bathymetry [`SpatRaster`] can be supplied to define cell coordinates (see [`pf_path_pivot()`]).
 #' @param .obs,.cols (optional) If `.return = "long"`, `.obs` and `.cols` are a [`data.table`] and a `character` vector of column names in `.obs` to match onto the output (see [`pf_path_pivot()`]).
