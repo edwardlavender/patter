@@ -7,6 +7,8 @@
   if (!.record$save) {
     .history <- list()
   }
-  list(history = .history,
-       time = call_timings(.start = .start))
+  out <- list(history = .history,
+              time = call_timings(.start = .start))
+  class(out) <- c(class(out), pf_class)
+  out
 }

@@ -282,6 +282,6 @@ NULL
                internal = list(startup = .startup),
                convergence = .convergence,
                time = .rerun$time)
-  class(out) <- c(class(out), "pf")
+  class(out) <- c(class(out), pf_class)
   out
 }

@@ -11,7 +11,7 @@
 .pf_history_dt <- function(.history, ..., .collect = TRUE) {
 
   # Handle .pf objects
-  if (inherits(.history, "pf")) {
+  if (inherits(.history, pf_class)) {
     .history <- .history$history
   }
 

@@ -73,14 +73,15 @@ out_pff <- pf_forward(.obs = obs,
                       .record = pf_opt_record(.save = TRUE, .sink = pff_folder))
 
 #### Implement pf_backward_killer()
-out_pfb <- pf_backward_killer(.history = out_pff$history,
-                              .record = pf_opt_record(.save = TRUE))
+pfbk_folder <- file.path("inst", "extdata", "acpf", "backward", "killer")
+out_pfbk <- pf_backward_killer(.history = out_pff$history,
+                               .record = pf_opt_record(.save = TRUE, .sink = pfbk_folder))
 
 #### Implement pf_path()
-out_pfp <- pf_path(out_pfb$history, .bathy = dlist$spatial$bathy)
+out_pfp <- pf_path(out_pfbk$history, .bathy = dlist$spatial$bathy)
 
 #### Implement pf_map_pou()
-out_pou <- pf_map_pou(out_pfb$history, .bathy = dlist$spatial$bathy)
+out_pou <- pf_map_pou(out_pfbk$history, .bathy = dlist$spatial$bathy)
 out_pou <- terra::wrap(out_pou)
 
 
@@ -88,48 +89,32 @@ out_pou <- terra::wrap(out_pou)
 #########################
 #### Update package
 
-#### Define dataset names
-dat_obs        <- obs
-dat_overlaps   <- overlaps
-dat_kernels    <- kernels
-dat_pff        <- out_pff
-dat_pfb        <- out_pfb
-dat_pfp        <- out_pfp
-# dat_pou        <- out_pou
-
-#### Update SpatRasters
-wrap_elm <- function(e) {
-  if (is.null(e)) {
-    return(NULL)
-  } else {
-    return(terra::wrap(e))
-  }
-}
-dat_kernels$receiver_specific_kernels <-
-  lapply(dat_kernels$receiver_specific_kernels, wrap_elm)
-dat_kernels$receiver_specific_inv_kernels <-
-  lapply(dat_kernels$receiver_specific_inv_kernels, wrap_elm)
-dat_kernels$bkg_surface_by_design <-
-  lapply(dat_kernels$bkg_surface_by_design, wrap_elm)
-dat_kernels$bkg_inv_surface_by_design <-
-  lapply(dat_kernels$bkg_inv_surface_by_design, wrap_elm)
-
-#### Check dataset sizes
+#### Collate datasets
+# Update names
+dat_pff   <- out_pff
+dat_pfbk  <- out_pfbk
+dat_pfp   <- out_pfp
+# Collate datasets
 datasets <-
-  list(dat_obs = dat_obs,
-       dat_overlaps = dat_overlaps,
-       dat_kernels = dat_kernels,
-       dat_pff = dat_pff,
-       dat_pfb = dat_pfb,
+  list(dat_pff = dat_pff,
+       dat_pfbk = dat_pfbk,
        dat_pfp = dat_pfp)
-mb <- sapply(datasets, \(dataset) {
-  # Save file
-  con <- tempfile(fileext = ".rda")
-  saveRDS(dataset, con)
-  # Define file size in MB
-  file.size(con) / 1e6
-})
-sum(mb)
+
+#### Check dataset sizes (MB)
+# ./data/
+datasets |>
+  sapply(\(dataset) {
+    # Save file
+    con <- tempfile(fileext = ".rda")
+    saveRDS(dataset, con)
+    # Define file size in MB
+    file.size(con) / 1e6L
+  }) |>
+  sum()
+# ./inst/
+list.files("inst", recursive = TRUE, full.names = TRUE) |>
+  file.size() |>
+  sum() / 1e6L
 
 #### Write datasets to file
 # We will save all datasets in inst/ for consistency
