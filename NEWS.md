@@ -26,6 +26,6 @@ The `pf_backward_killer()` is used to prune dead-ends from the forward simulatio
 
 For the reconstruction of movement paths, `pf_path()` has been completely re-written and is massively faster, thanks to routines from `collapse`. 
 
-For the reconstruction of movement paths, `map_pou()` replaces `flapper::pf_plot_map()` and resolves an issue with the calculation of particle weights. `map_dens()` is a new function for the reconstruction of maps is based on `spatstat` routines. This function accounts for particle weights and fits smooth utilisation distributions using cross validation, superseding approaches in `flapper` based on `adehabitatHR`. The `get_hr_*()` routines for the reconstruction of home ranges remain. 
+For the reconstruction of movement paths, `map_pou()` replaces `flapper::pf_plot_map()` and resolves an issue with the calculation of particle weights. `map_dens()` is a new function for the reconstruction of maps is based on `spatstat` routines. This function accounts for particle weights and fits smooth utilisation distributions using cross validation, superseding approaches in `flapper` based on `adehabitatHR`. The `map_hr_*()` routines for the reconstruction of home ranges remain. 
 
 For the comparison of simulated and reconstructed patterns, the new `skill_*()` functions can be used. 

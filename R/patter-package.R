@@ -82,10 +82,10 @@
 #'
 #' For home ranges, use:
 #'
-#' * [`get_hr_prop()`] for a custom range;
-#' * [`get_hr_core()`] for the 'core' range;
-#' * [`get_hr_home()`] for the 'home' range;
-#' * [`get_hr_full()`] for the full range;
+#' * [`map_hr_prop()`] for a custom range;
+#' * [`map_hr_core()`] for the 'core' range;
+#' * [`map_hr_home()`] for the 'home' range;
+#' * [`map_hr_full()`] for the full range;
 #'
 #' # Miscellaneous helpers
 #'

@@ -250,9 +250,9 @@ To build a utilisation distribution, we simply sum (and renormalise) the number 
 # Map POU 
 pou <- map_pou(out_pfb$history, gebco, .plot = TRUE)
 # Draw full range 
-get_hr_full(pou, .add = TRUE, border = "dimgrey")
-# Highlight home/core range via get_hr_home() or get_hr_core()
-get_hr_home(pou, .add = TRUE)
+map_hr_full(pou, .add = TRUE, border = "dimgrey")
+# Highlight home/core range via map_hr_home() or map_hr_core()
+map_hr_home(pou, .add = TRUE)
 ```
 
 # References
