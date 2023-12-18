@@ -20,6 +20,7 @@ dv::clear()
 
 #### Essential packages
 devtools::load_all()
+library(lubridate)
 
 
 #########################
@@ -27,39 +28,59 @@ devtools::load_all()
 #### Build datasets
 
 #### Define input datasets
-acoustics <- dat_acoustics[individual_id == 25, ]
-archival <- dat_archival[individual_id == 25, ]
-obs <- acs_setup_obs(acoustics,
-                     archival,
-                     .step = "2 mins",
-                     .mobility = 500,
-                     .detection_range = dat_moorings$receiver_range[1])
-obs <- obs[1:50, ]
-gebco <- dat_gebco()
+# Define example datasets
+acc  <- dat_acoustics[individual_id == 25, ]
+arc  <- dat_archival[individual_id == 25, ]
+# Align datasets to minimise storage requirements
+start <- max(c(min(acc$timestamp), min(arc$timestamp)))
+end   <- min(c(max(acc$timestamp), max(arc$timestamp)))
+period <- lubridate::interval(start, end)
+acc   <- acc[timestamp %within% period, ]
+arc   <- arc[timestamp %within% period, ]
+# Crop moorings to minimise storage requirements
+moorings  <-
+  dat_moorings |>
+  mutate(int = lubridate::interval(receiver_start, receiver_end)) |>
+  filter(lubridate::int_overlaps(int, period)) |>
+  as.data.table()
+# Collate datasets
+dlist <- pat_setup_data(.acoustics = acc,
+                        .moorings = moorings,
+                        .archival = arc,
+                        .bathy = dat_gebco(),
+                        .lonlat = FALSE)
 
-#### Define likelihood components
-overlaps   <- acs_setup_detection_overlaps(dat_moorings)
-kernels <-
-  acs_setup_detection_kernels(dat_moorings,
-                              .calc_detection_pr = acs_setup_detection_pr,
-                              .bathy = gebco)
+# Include AC* algorithm layers
+dlist$algorithm$detection_overlaps <- acs_setup_detection_overlaps(dlist)
+dlist$algorithm$detection_kernels  <- acs_setup_detection_kernels(dlist)
+# Collate observations
+obs       <- acs_setup_obs(.acoustics = acc,
+                           .archival = arc,
+                           .step = "2 mins",
+                           .mobility = 500,
+                           .detection_range = dat_moorings$receiver_range[1])
+obs <- obs[1:50, ]
 
 #### Implement pf_forward()
-out_pff <- pf_forward(obs,
-                      .bathy = gebco,
-                      .moorings = dat_moorings,
-                      .detection_overlaps = overlaps,
-                      .detection_kernels = kernels,
-                      .record = list(save = TRUE))
+pff_folder <- file.path("inst", "extdata", "acpf", "forward")
+unlink(pff_folder, recursive = TRUE)
+dir.create(pff_folder, recursive = TRUE)
+out_pff <- pf_forward(.obs = obs,
+                      .dlist = dlist,
+                      .likelihood = list(acs_filter_land = acs_filter_land,
+                                         acs_filter_container = acs_filter_container,
+                                         pf_lik_ac = pf_lik_ac),
+                      .record = pf_opt_record(.save = TRUE, .sink = pff_folder))
 
 #### Implement pf_backward_killer()
-out_pfb <- pf_backward_killer(out_pff$history, .save_history = TRUE)
+out_pfb <- pf_backward_killer(.history = out_pff$history,
+                              .record = pf_opt_record(.save = TRUE))
 
 #### Implement pf_path()
-out_pfp <- pf_path(out_pfb$history, .bathy = gebco)
+out_pfp <- pf_path(out_pfb$history, .bathy = dlist$spatial$bathy)
 
 #### Implement pf_map_pou()
-out_pou <- pf_map_pou(out_pfb$history, .bathy = gebco)
+out_pou <- pf_map_pou(out_pfb$history, .bathy = dlist$spatial$bathy)
 out_pou <- terra::wrap(out_pou)
 
 
