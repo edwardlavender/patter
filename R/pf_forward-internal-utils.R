@@ -161,16 +161,16 @@ NULL
   # Copy & drop attributes
   # * This is necessary if we save objects in memory only
   if (.save) {
-    dt <- copy(data.table(.dt))
+    .dt <- copy(data.table(.dt))
   }
   # Subset columns (to reduce file size)
   if (.select) {
-    dt <-
-      dt |>
+    .dt <-
+      .dt |>
       select(any_of(.cols)) |>
       as.data.table()
   }
-  dt
+  .dt
 }
 
 #' @rdname pf_forward-utils
