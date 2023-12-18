@@ -244,11 +244,11 @@ arrows(x0 = p1$cell_x[s], x1 = p1$cell_x[s + 1],
 
 ## Utilisation distribution
 
-To build a utilisation distribution, we simply sum (and renormalise) the number of copies of each location, via `pf_map_pou()`:
+To build a utilisation distribution, we simply sum (and renormalise) the number of copies of each location, via `map_pou()`:
 
 ```{r}
 # Map POU 
-pou <- pf_map_pou(out_pfb$history, gebco, .plot = TRUE)
+pou <- map_pou(out_pfb$history, gebco, .plot = TRUE)
 # Draw full range 
 get_hr_full(pou, .add = TRUE, border = "dimgrey")
 # Highlight home/core range via get_hr_home() or get_hr_core()

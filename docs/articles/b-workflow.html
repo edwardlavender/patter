@@ -360,10 +360,10 @@ utilisation distributions. To reconstruct movement paths, use
 </h3>
 <p>To build a utilisation distribution, we simply sum (and renormalise)
 the number of copies of each location, via
-<code><a href="../reference/pf_map_pou.html">pf_map_pou()</a></code>:</p>
+<code><a href="../reference/map_pou.html">map_pou()</a></code>:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Map POU </span></span>
-<span><span class="va">pou</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pf_map_pou.html">pf_map_pou</a></span><span class="op">(</span><span class="va">out_pfb</span><span class="op">$</span><span class="va">history</span>, <span class="va">gebco</span>, .plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">pou</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/map_pou.html">map_pou</a></span><span class="op">(</span><span class="va">out_pfb</span><span class="op">$</span><span class="va">history</span>, <span class="va">gebco</span>, .plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co"># Draw full range </span></span>
 <span><span class="fu"><a href="../reference/get_hr.html">get_hr_full</a></span><span class="op">(</span><span class="va">pou</span>, .add <span class="op">=</span> <span class="cn">TRUE</span>, border <span class="op">=</span> <span class="st">"dimgrey"</span><span class="op">)</span></span>
 <span><span class="co"># Highlight home/core range via get_hr_home() or get_hr_core()</span></span>

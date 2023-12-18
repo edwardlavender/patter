@@ -80,8 +80,8 @@ out_pfbk <- pf_backward_killer(.history = out_pff$history,
 #### Implement pf_path()
 out_pfp <- pf_path(out_pfbk$history, .bathy = dlist$spatial$bathy)
 
-#### Implement pf_map_pou()
-out_pou <- pf_map_pou(out_pfbk$history, .bathy = dlist$spatial$bathy)
+#### Implement map_pou()
+out_pou <- map_pou(out_pfbk$history, .bathy = dlist$spatial$bathy)
 out_pou <- terra::wrap(out_pou)
 
 

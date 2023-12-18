@@ -1,5 +1,5 @@
 #' @title PF: location weights
-#' @description This function calculates location weights in [`pf_map_pou()`] and [`map_dens()`].
+#' @description This function calculates location weights in [`map_pou()`] and [`map_dens()`].
 #' @param .pxy A [`data.table`] that contains locations. This should include a `cell_id` column and may include a `timestep` column.
 #' @details This function can be used to calculate weights for any set of coordinates (grid cells), including but not exclusively from particle filtering.
 #' @return The function returns a [`data.table`].

@@ -84,7 +84,7 @@ Particle samples can be used to reconstruct movement paths and maps of space use
 * (original) `pf_forward()` &rarr; `pf_backward_killer()` &rarr; `pf_path()`
 * (recommended) `pf_forward()` &rarr; `pf_backward_sampler()`
 
-Patterns of space use (utilisation distributions) can be reconstructed using standard statistical techniques (see `pf_map_pou()` and `map_dens()` for inbuilt functions).
+Patterns of space use (utilisation distributions) can be reconstructed using standard statistical techniques (see `map_pou()` and `map_dens()` for inbuilt functions).
 
 # References
 

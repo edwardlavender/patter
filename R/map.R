@@ -10,7 +10,7 @@
 #' @details Probability-of-use is the proportion of samples of each unique cell (out of the total number of samples across all time steps).
 #'
 #' @return The function returns a [`SpatRaster`] (utilisation distribution) in which cell values define probability-of-use.
-#' @example man/examples/pf_map_pou-examples.R
+#' @example man/examples/map_pou-examples.R
 #'
 #' @seealso
 #' * The PF (forward simulation) is implemented by [`pf_forward()`];
@@ -26,7 +26,7 @@
 #'
 #' * To reconstruct maps of space use, see:
 #'     * [`pf_coords()`] to extract particle coordinates;
-#'     * [`pf_map_pou()`] for probability-of-use maps;
+#'     * [`map_pou()`] for probability-of-use maps;
 #'     * [`map_dens()`] for smooth utilisation distributions;
 #'     * [`get_hr()`] for home range estimates;
 #'
@@ -109,7 +109,7 @@ map_pou <-
 #'
 #' * To reconstruct maps of space use, see:
 #'     * [`pf_coords()`] to extract particle coordinates;
-#'     * [`pf_map_pou()`] for probability-of-use maps;
+#'     * [`map_pou()`] for probability-of-use maps;
 #'     * [`map_dens()`] for smooth utilisation distributions;
 #'     * [`get_hr()`] for home range estimates;
 
@@ -353,7 +353,7 @@ map_dens <- function(.map,
 #'
 #' @seealso
 #' * For reconstructing movement paths and patterns of space use, see [`pf_forward()`];
-#' * For mapping utilisation distributions, see [`pf_map_pou()`] and [`map_dens()`];
+#' * For mapping utilisation distributions, see [`map_pou()`] and [`map_dens()`];
 #'
 #' @author Edward Lavender
 #' @name map_hr

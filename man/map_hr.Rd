@@ -56,7 +56,7 @@ map <- map_hr_prop(r, .prop = 0.2, .add = TRUE, border = "red")
 \seealso{
 \itemize{
 \item For reconstructing movement paths and patterns of space use, see \code{\link[=pf_forward]{pf_forward()}};
-\item For mapping utilisation distributions, see \code{\link[=pf_map_pou]{pf_map_pou()}} and \code{\link[=map_dens]{map_dens()}};
+\item For mapping utilisation distributions, see \code{\link[=map_pou]{map_pou()}} and \code{\link[=map_dens]{map_dens()}};
 }
 }
 \author{
