@@ -23,7 +23,6 @@ pff_folder <- system.file("extdata", "acpf", "forward", "history",
                           package = "patter", mustWork = TRUE)
 files <- pf_files(pff_folder)
 
-
 # List files from pf_backward_killer()
 pfbk_folder <- system.file("extdata", "acpf", "backward", "killer",
                            package = "patter", mustWork = TRUE)
