@@ -24,7 +24,7 @@ pf_opt_record(.save = FALSE, .cols = NULL, .sink = NULL)
 
 pf_opt_control(.sampler_batch_size = 2L)
 
-pf_opt_rerun_from(.rerun, .trial_revert_steps = 25L)
+pf_opt_rerun_from(.rerun, .revert = 25L)
 }
 \arguments{
 \item{.trial_origin_crit, .trial_origin, .trial_kick_crit, .trial_kick, .trial_sampler_crit, .trial_sampler, .trial_revert_crit, .trial_revert_steps, .trial_revert}{Trial arguments used to tune convergence properties. All arguments expect \code{integer}s.
@@ -55,10 +55,10 @@ At least one of \code{.save} and \code{.sink} must be provided.}
 \item \code{.sampler_batch_size}---an \code{integer} that controls the batch size (number of particles processed simultaneously) in directed sampling. Increase the batch size to improve speed; decrease the batch size to avoid memory constraints. The appropriate batch size depends on grid resolution and memory availability.
 }}
 
-\item{.rerun, .trial_revert_steps}{\code{\link[=pf_opt_rerun_from]{pf_opt_rerun_from()}}, arguments, passed to \code{.rerun_from} in \code{\link[=pf_forward]{pf_forward()}}.
+\item{.rerun, .revert}{\code{\link[=pf_opt_rerun_from]{pf_opt_rerun_from()}} arguments.
 \itemize{
 \item \code{.rerun} is a named \code{list} of algorithm outputs from a previous run.
-\item \code{.trial_revert_steps} is an \code{integer} that defines the number of steps to revert.
+\item \code{.revert.revert} is an \code{integer} that defines the number of steps to revert.
 }}
 }
 \value{

@@ -22,9 +22,9 @@
 #' @param .sampler_batch_size [`pf_opt_control()`] arguments, passed to `.control` in [`pf_forward()`].
 #' * `.sampler_batch_size`---an `integer` that controls the batch size (number of particles processed simultaneously) in directed sampling. Increase the batch size to improve speed; decrease the batch size to avoid memory constraints. The appropriate batch size depends on grid resolution and memory availability.
 #'
-#' @param .rerun,.trial_revert_steps [`pf_opt_rerun_from()`], arguments, passed to `.rerun_from` in [`pf_forward()`].
+#' @param .rerun,.revert [`pf_opt_rerun_from()`] arguments.
 #' * `.rerun` is a named `list` of algorithm outputs from a previous run.
-#' * `.trial_revert_steps` is an `integer` that defines the number of steps to revert.
+#' * `.revert.revert` is an `integer` that defines the number of steps to revert.
 #'
 #' @details These functions are defined separately for convenience of documentation. Note that they do not define global options and must be passed to [`pf_forward()`] arguments.
 #'
@@ -87,16 +87,16 @@ pf_opt_control <- function(.sampler_batch_size = 2L) {
 #' @rdname pf_opt
 #' @export
 
-pf_opt_rerun_from <- function(.rerun, .trial_revert_steps = 25L) {
-  # default `.trial_revert_steps` is bigger than pf_forward `.trial_revert_steps`
-  max(c(1L, length(.rerun[["history"]]) - .trial_revert_steps))
+pf_opt_rerun_from <- function(.rerun, .revert = 25L) {
+  # default `.revert` is bigger than `.trial_revert_steps`
+  max(c(1L, length(.rerun[["history"]]) - .revert))
 }
 
 #' @title PF: forward simulation
 #' @description This function runs the forward simulation, generating samples of the set of possible locations of an animal at each time point given the data up to that time point and a movement model.
 #'
 #' @param .obs A [`data.table`] defining the timeline and associated observations, typically from [`acs_setup_obs()`].
-#' @param .dlist A `named` list of data and parameters required propose samples and calculate likelihoods (see [`pf_setup_data()`], [`pf_lik`] and [`pf_propose`]). At a minimum, this function requires `.dlist$spatial$bathy`. An `.dlist$spatial$origin` [`SpatRaster`] can be included to define the origin. Additional elements required by `.likelihood`,`.rpropose` and `.dpropose` functions should be included (see [below]).
+#' @param .dlist A `named` list of data and parameters required propose samples and calculate likelihoods (see [`pf_setup_data()`], [`pf_lik`] and [`pf_propose`]). At a minimum, this function requires `.dlist$spatial$bathy`. An `.dlist$spatial$origin` [`SpatRaster`] can be included to define the origin. Additional elements required by `.likelihood`,`.rpropose` and `.dpropose` functions should be included (see below).
 #' @param .rpropose,.dpropose Proposal functions (see [`pf_propose`]).
 #' * `.rpropose` is a function that proposes new locations for the individual, given previous locations. By default, this is a 'stochastic kick' function that simulates new locations by randomly kicking previous particles (see [`pf_rpropose_kick()`] and Details).
 #' * `.dpropose` is a function that evaluates the probability density of movements between location pairs (see [`pf_dpropose`]). This is required for directed sampling (see Details).

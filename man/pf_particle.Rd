@@ -119,7 +119,7 @@ At the first time step:
 \item \code{\link[=.pf_rpropose_origin]{.pf_rpropose_origin()}} 'proposes' starting locations (quadrature points);
 \item \code{\link[=.pf_sample_origin]{.pf_sample_origin()}} samples starting locations;
 \item \code{\link[=.pf_lik]{.pf_lik()}} calculates likelihoods;
-\item \code{\link[=.pf_particles_origin]{.pf_particles_origin()}} integrates \code{\link[=.pf_propose_origin]{.pf_propose_origin()}}, \code{\link[=.pf_lik]{.pf_lik()}} and \code{\link[=.pf_particles_origin]{.pf_particles_origin()}};
+\item \code{\link[=.pf_particles_origin]{.pf_particles_origin()}} integrates \code{\link[=.pf_rpropose_origin]{.pf_rpropose_origin()}}, \code{\link[=.pf_lik]{.pf_lik()}} and \code{\link[=.pf_particles_origin]{.pf_particles_origin()}};
 }
 
 At subsequent time steps:

@@ -6,7 +6,7 @@
 #' * `cell_now`---an `integer` that defines the grid cell(s) of proposal location(s);
 #' * `x_now`,`y_now`---`double`s that define proposal location coordinates;
 #' * `lik`---a `double` that defines the likelihood. At each time step, this begins as a vector of `1`s that should be progressively updated by each likelihood function.
-#' @param .obs,.t (optional) The `.obs` [`.data.table`] (from [`pf_forward()`]) and an `integer` that defines the time step (used to index `.obs`).
+#' @param .obs,.t (optional) The `.obs` [`data.table`] (from [`pf_forward()`]) and an `integer` that defines the time step (used to index `.obs`).
 #' @param .dlist (optional) The `.dlist` `list` (from [`pf_forward()`]).
 #' * For [`acs_filter_land()`], `.dlist` should contain `.dlist$spatial$bathy` and `.dlist$pars$spatna`.
 #' * For [`acs_filter_container()`], `.dlist` should contain `.dlist$data$moorings` and `.dlist$pars$lonlat`.

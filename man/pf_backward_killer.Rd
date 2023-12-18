@@ -13,11 +13,9 @@ pf_backward_killer(.history, .record = pf_opt_record(), .verbose = TRUE)
 \item An ordered list of file paths (from \code{\link[=pf_setup_files]{pf_setup_files()}}) that define the directories in which particle samples were written from the forward simulation (as parquet files).
 }}
 
-\item{.verbose}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
+\item{.record}{A named \code{list} of output options, from \code{\link[=pf_opt_record]{pf_opt_record()}}.}
 
-\item{.save_history}{A logical variable that defines whether or not to save updated particle samples in memory (see \code{\link[=pf_forward]{pf_forward()}}).}
-
-\item{.write_history}{A named list, passed to \code{\link[arrow:write_parquet]{arrow::write_parquet()}}, to write updated particle samples to file (see \code{\link[=pf_forward]{pf_forward()}}).}
+\item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }
 \value{
 The function returns a \code{\linkS4class{pf}} object.
@@ -26,7 +24,7 @@ The function returns a \code{\linkS4class{pf}} object.
 This function implements the backward correction of particle samples.
 }
 \details{
-At the time of writing, this function only removes 'dead ends' from particle samples. Backwards smoothing is not currently implemented.
+This function removes 'dead ends' from particle samples.
 }
 \examples{
 #### Set up examples
@@ -72,9 +70,6 @@ out_pfb <- pf_backward_killer(pf_setup_files(pff_folder_h),
 
 # Clean up
 unlink(con, recursive = TRUE)
-}
-\seealso{
-TO DO
 }
 \author{
 Edward Lavender

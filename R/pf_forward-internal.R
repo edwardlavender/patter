@@ -38,7 +38,7 @@
 #' * [`.pf_rpropose_origin()`] 'proposes' starting locations (quadrature points);
 #' * [`.pf_sample_origin()`] samples starting locations;
 #' * [`.pf_lik()`] calculates likelihoods;
-#' * [`.pf_particles_origin()`] integrates [`.pf_propose_origin()`], [`.pf_lik()`] and [`.pf_particles_origin()`];
+#' * [`.pf_particles_origin()`] integrates [`.pf_rpropose_origin()`], [`.pf_lik()`] and [`.pf_particles_origin()`];
 #'
 #' At subsequent time steps:
 #' * The exported functions [`pf_rpropose_kick()`] and [`pf_rpropose_reachable`] propose locations;

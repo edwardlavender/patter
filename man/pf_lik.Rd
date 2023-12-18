@@ -25,7 +25,7 @@ pf_lik_dc(.particles, .obs, .t, .dlist)
 \item \code{lik}---a \code{double} that defines the likelihood. At each time step, this begins as a vector of \code{1}s that should be progressively updated by each likelihood function.
 }}
 
-\item{.obs, .t}{(optional) The \code{.obs} \code{\link{.data.table}} (from \code{\link[=pf_forward]{pf_forward()}}) and an \code{integer} that defines the time step (used to index \code{.obs}).}
+\item{.obs, .t}{(optional) The \code{.obs} \code{\link{data.table}} (from \code{\link[=pf_forward]{pf_forward()}}) and an \code{integer} that defines the time step (used to index \code{.obs}).}
 
 \item{.dlist}{(optional) The \code{.dlist} \code{list} (from \code{\link[=pf_forward]{pf_forward()}}).
 \itemize{

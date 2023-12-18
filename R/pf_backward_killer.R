@@ -1,20 +1,19 @@
 #' @title PF: run the backward pass
 #' @description This function implements the backward correction of particle samples.
+#'
 #' @param .history Particle samples from the forward simulation, provided either as:
 #' * A `list` of [`data.table`]s that define cell samples; i.e., the `history` element of a [`pf-class`] object. This must contain columns that define cell samples at each time step (`cell_now`) alongside previous samples (`cell_past`).
 #' * An ordered list of file paths (from [`pf_setup_files()`]) that define the directories in which particle samples were written from the forward simulation (as parquet files).
-#' @param .save_history A logical variable that defines whether or not to save updated particle samples in memory (see [`pf_forward()`]).
-#' @param .write_history A named list, passed to [`arrow::write_parquet()`], to write updated particle samples to file (see [`pf_forward()`]).
-#' @param .verbose Arguments to monitor function progress (see [`pf_forward()`]).
+#' @param .record A named `list` of output options, from [`pf_opt_record()`].
+#' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
-#' @details At the time of writing, this function only removes 'dead ends' from particle samples. Backwards smoothing is not currently implemented.
+#' @details This function removes 'dead ends' from particle samples.
 #'
 #' @example man/examples/pf_backward_killer-examples.R
 #'
 #' @return The function returns a [`pf-class`] object.
 #'
 #' @seealso
-#' TO DO
 #'
 #' @author Edward Lavender
 #' @export
@@ -24,6 +23,7 @@ pf_backward_killer <- function(.history,
                                .verbose = TRUE) {
 
   #### Check user inputs
+  # TO DO (enhance checks)
   t_onset <- Sys.time()
   check_inherits(.history, "list")
 
@@ -39,6 +39,8 @@ pf_backward_killer <- function(.history,
   } else {
     read_history <- TRUE
   }
+  # Variables
+  write          <- !is.null(.record$sink)
   timestep_final <- length(.history)
   # Define progress bar
   pb <- pb_init(.min = 0L, .max = timestep_final)
@@ -79,7 +81,7 @@ pf_backward_killer <- function(.history,
     cat_log(paste0("... ... Recording (cleaned) outputs for `.history[[", t, "]]`..."))
     .history[[t]] <- .pf_snapshot(.dt = .history[[t]], .save = .record$save,
                                   .select = !is.null(.record$cols), .cols = .record$cols)
-    .pf_write_particles(.particles = .history[[t]], .sink = .record$sink, .write = !is.null(.record$sink))
+    .pf_write_particles(.particles = .history[[t]], .sink = .record$sink, .write = write)
     # Drop saved particles for current time step, if necessary
     if (!.record$save) {
       .history[[t]] <- NA
