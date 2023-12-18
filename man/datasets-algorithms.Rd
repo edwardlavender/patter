@@ -2,6 +2,7 @@
 % Please edit documentation in R/dats-patter.R
 \name{datasets-algorithms}
 \alias{datasets-algorithms}
+\alias{dat_obs}
 \alias{dat_pff}
 \alias{dat_pfbk}
 \alias{dat_pfp}
@@ -10,6 +11,8 @@
 For full details on the algorithm parameters used to generate these datasets, see \url{https://github.com/edwardlavender/patter/blob/main/data-raw/002-add-data-algorithms.R}.
 }
 \usage{
+dat_obs()
+
 dat_pff()
 
 dat_pfbk()
@@ -21,12 +24,14 @@ These functions load example outputs from key \code{\link{patter}} functions. Th
 }
 \details{
 \itemize{
+\item \code{\link[=dat_pff]{dat_pff()}} reads an example output from \code{\link[=acs_setup_obs]{acs_setup_obs()}};
 \item \code{\link[=dat_pff]{dat_pff()}} reads an example output from \code{\link[=pf_forward]{pf_forward()}};
 \item \code{\link[=dat_pfbk]{dat_pfbk()}} reads an example output from \code{\link[=pf_backward_killer]{pf_backward_killer()}};
 \item \code{\link[=dat_pfp]{dat_pfp()}} reads an example output from \code{\link[=pf_path]{pf_path()}};
 }
 }
 \examples{
+dat_obs() |> summary()
 dat_pff() |> summary()
 dat_pfbk() |> summary()
 dat_pfp() |> summary()
