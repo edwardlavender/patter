@@ -4,7 +4,7 @@
 \alias{as.im.SpatRaster}
 \alias{as.owin.SpatRaster}
 \alias{as.owin.sf}
-\alias{pf_map_dens}
+\alias{map_dens}
 \title{Map: map point density}
 \usage{
 as.im.SpatRaster(.map)
@@ -13,7 +13,7 @@ as.owin.SpatRaster(.map, .im = NULL)
 
 as.owin.sf(.poly, .bbox = sf::st_bbox(.poly), .invert = TRUE)
 
-pf_map_dens(
+map_dens(
   .map,
   .im = NULL,
   .owin = NULL,
