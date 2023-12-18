@@ -216,7 +216,8 @@ pf_forward <- function(.obs,
     diagnostics_1 <- .pf_diag_collect(.diagnostics = attr(pnow, "diagnostics"),
                                       .iter_m = iter_m, .iter_i = iter_i)
     # Record accepted cells
-    snapshot <- .pf_snapshot(.dt = pnow, .select = select_cols, .cols = .record$cols)
+    snapshot <- .pf_snapshot(.dt = pnow, .save = .record$save,
+                             .select = select_cols, .cols = .record$cols)
     if (.record$save) {
       history[[1L]]     <- snapshot
       diagnostics[[1L]] <- diagnostics_1
@@ -304,7 +305,8 @@ pf_forward <- function(.obs,
                                .crit = crit, .trial_revert_crit = .trial$trial_revert_crit)
       # Save particle samples (if possible)
       if (continue) {
-        snapshot <- .pf_snapshot(.dt = pnow, .select = select_cols, .cols = .record$cols)
+        snapshot <- .pf_snapshot(.dt = pnow, .save = .record$save,
+                                 .select = select_cols, .cols = .record$cols)
         if (.record$save) {
           history[[t]] <- snapshot
         }

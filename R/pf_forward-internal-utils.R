@@ -157,9 +157,12 @@ NULL
 #' @keywords internal
 
 # Snapshot data.tables for saving in memory or to file
-.pf_snapshot <- function(.dt, .select, .cols) {
+.pf_snapshot <- function(.dt,.save, .select, .cols) {
   # Copy & drop attributes
-  dt <- copy(data.table(.dt))
+  # * This is necessary if we save objects in memory only
+  if (.save) {
+    dt <- copy(data.table(.dt))
+  }
   # Subset columns (to reduce file size)
   if (.select) {
     dt <-
