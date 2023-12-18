@@ -259,7 +259,7 @@
     # Propose particles (identify all reachable particles)
     proposals_for_index <- pf_rpropose_reachable(.particles = .particles[index, ],
                                                  .obs = .obs, .t = .t,
-                                                 .dlist = dlist)
+                                                 .dlist = .dlist)
     # Calculate likelihood & drop invalid particles
     .pf_lik(.particles = proposals_for_index,
             .obs = .obs, .t = .t,
