@@ -96,7 +96,8 @@ dat_pfbk  <- out_pfbk
 dat_pfp   <- out_pfp
 # Collate datasets
 datasets <-
-  list(dat_pff = dat_pff,
+  list(dat_obs = obs,
+       dat_pff = dat_pff,
        dat_pfbk = dat_pfbk,
        dat_pfp = dat_pfp)
 

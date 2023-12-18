@@ -7,33 +7,18 @@
 #' @return The function returns an ordered `list` of file paths.
 #'
 #' @examples
-#' # Quick implementation of pf_forward()
-#' con <- tempdir()
-#' pff_folder <- file.path(con, "patter", "pf", "forward")
-#' dir.create(pff_folder, recursive = TRUE)
-#' out_pff <- pf_forward(.obs = dat_obs(),
-#'                       .bathy = dat_gebco(),
-#'                       .moorings = dat_moorings, .detection_overlaps = dat_overlaps(),
-#'                       .detection_kernels = dat_kernels(),
-#'                       .record = list(sink = pff_folder))
+#' # List files from pf_forward()
+#' pff_folder <- system.file("extdata", "acpf", "forward", "history",
+#'                           package = "patter", mustWork = TRUE)
+#' files <- pf_setup_files(pff_folder)
 #'
-#' # List files for pf_backward_*()
-#' files <- pf_setup_files(file.path(pff_folder, "history"))
 #'
-#' # Quick implementation of pf_backward_killer()
-#' pfb_folder <- file.path(con, "patter", "pf", "backward")
-#' dir.create(pfb_folder, recursive = TRUE)
-#' out_pfb <- pf_backward_killer(files,
-#'                               .write_history = list(sink = pfb_folder))
-#'
-#' # List files from pf_backward_*()
-#' pf_setup_files(pfb_folder)
-#'
-#' # Clean up
-#' unlink(file.path(con, "patter"), recursive = TRUE)
+#' # List files from pf_backward_killer()
+#' pfbk_folder <- system.file("extdata", "acpf", "backward", "killer",
+#'                            package = "patter", mustWork = TRUE)
+#' files <- pf_setup_files(pfbk_folder)
 #'
 #' @seealso
-#' TO DO
 #'
 #' @author Edward Lavender
 #' @export
@@ -55,7 +40,6 @@ pf_setup_files <- function(.root, ...) {
     abort(".parquet files (for `pf_backward_*()`) are expected.")
   }
   bsname <- basename(files)
-  ext <- exts[1]
   # Define ordered vector of files
   data.table(file = files,
              name = tools::file_path_sans_ext(bsname),

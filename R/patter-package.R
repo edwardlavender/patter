@@ -21,11 +21,8 @@
 #'
 #' For example algorithm outputs ([`datasets-algorithms`]), see:
 #'
-#' * [`dat_obs()`] for an example output dataset from [`acs_setup_obs()`];
-#' * [`dat_overlaps()`] for an example output from [`acs_setup_detection_overlaps()`];
-#' * [`dat_kernels()`] for an example output from [`acs_setup_detection_kernels()`];
 #' * [`dat_pff()`] for an example output from [`pf_forward()`];
-#' * [`dat_pfb()`] for an example output from [`pf_backward_killer()`];
+#' * [`dat_pfbk()`] for an example output from [`pf_backward_killer()`];
 #' * [`dat_pfp()`] for an example output from [`pf_path()`];
 #'
 #' # Simulation
