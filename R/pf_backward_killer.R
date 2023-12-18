@@ -79,7 +79,7 @@ pf_backward_killer <- function(.history,
     cat_log(paste0("... ... Recording (cleaned) outputs for `.history[[", t, "]]`..."))
     .history[[t]] <- .pf_snapshot(.dt = .history[[t]], .save = .record$save,
                                   .select = !is.null(.record$cols), .cols = .record$cols)
-    .pf_write_particles(.history[[t]], .sink = .record$sink, .write = !is.null(.record$sink))
+    .pf_write_particles(.particles = .history[[t]], .sink = .record$sink, .write = !is.null(.record$sink))
     # Drop saved particles for current time step, if necessary
     if (!.record$save) {
       .history[[t]] <- NA
