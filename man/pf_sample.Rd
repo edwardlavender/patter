@@ -33,6 +33,7 @@ Sampling functions must accept \code{.particles} and \code{.n} arguments and ret
 Systematic particle sampling (\code{\link[=pf_sample_systematic]{pf_sample_systematic()}}) is generally recommended.
 }
 \examples{
+require(data.table)
 p <- data.table(cell_now = c(1, 2, 3), weight = c(0.5, 0.25, 0.25))
 pf_sample_multinomial(p, .n = 10L)
 pf_sample_systematic(p, .n = 10L)

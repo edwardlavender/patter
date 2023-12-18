@@ -77,9 +77,10 @@ These functions are defined separately for convenience of documentation. Note th
 }
 \examples{
 pf_opt_trial()
-pf_opt__record()
+pf_opt_trial(.trial_kick_crit = 10L, .trial_kick = 2L)
+pf_opt_record(.save = TRUE)
 pf_opt_control()
-pf_opt_rerun_from()
+pf_opt_rerun_from(dat_pff(), .revert = 10L)
 
 }
 \author{

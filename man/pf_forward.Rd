@@ -54,11 +54,9 @@ Algorithm parameters should remain consistent on algorithm reruns.}
 \item{.record}{A named \code{list} of output options, from \code{\link[=pf_opt_record]{pf_opt_record()}}.}
 
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
-
-\item{...}{Additional arguments.}
 }
 \value{
-The function returns a \code{\linkS4class{pff}} object. If \code{.return$sink} is specified, two directories, {.return$sink}/history/ and {.return$sink}/diagnostics, are also created that contain particle samples and diagnostics. Particle samples are labelled \verb{1.parquet, 2.parquet, ..., T.parquet}, where \code{T} is the number of time steps. Diagnostics are labelled \code{A-B-C}, where \code{A}, \code{B} and \code{C} are the number of manual restarts, internal reversions and time steps. Use \code{\link[=pf_forward_diagnostics]{pf_forward_diagnostics()}} to collate diagnostics.
+The function returns a \code{\linkS4class{pf_particles}} object. If \code{.return$sink} is specified, two directories, {.return$sink}/history/ and {.return$sink}/diagnostics, are also created that contain particle samples and diagnostics. Particle samples are labelled \verb{1.parquet, 2.parquet, ..., T.parquet}, where \code{T} is the number of time steps. Diagnostics are labelled \code{A-B-C}, where \code{A}, \code{B} and \code{C} are the number of manual restarts, internal reversions and time steps. Use \code{\link[=pf_forward_diagnostics]{pf_forward_diagnostics()}} to collate diagnostics.
 }
 \description{
 This function runs the forward simulation, generating samples of the set of possible locations of an animal at each time point given the data up to that time point and a movement model.

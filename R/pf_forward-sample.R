@@ -17,6 +17,7 @@
 #' @return The functions return a [`data.table`], as inputted, but containing `.n` rows, one for each sampled particle.
 #'
 #' @examples
+#' require(data.table)
 #' p <- data.table(cell_now = c(1, 2, 3), weight = c(0.5, 0.25, 0.25))
 #' pf_sample_multinomial(p, .n = 10L)
 #' pf_sample_systematic(p, .n = 10L)

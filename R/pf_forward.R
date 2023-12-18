@@ -36,9 +36,10 @@
 #'
 #' @examples
 #' pf_opt_trial()
-#' pf_opt__record()
+#' pf_opt_trial(.trial_kick_crit = 10L, .trial_kick = 2L)
+#' pf_opt_record(.save = TRUE)
 #' pf_opt_control()
-#' pf_opt_rerun_from()
+#' pf_opt_rerun_from(dat_pff(), .revert = 10L)
 #'
 #' @author Edward lavender
 #' @name pf_opt
@@ -121,7 +122,6 @@ pf_opt_rerun_from <- function(.rerun, .revert = 25L) {
 #' @param .record A named `list` of output options, from [`pf_opt_record()`].
 #'
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
-#' @param ... Additional arguments.
 #'
 #' @details
 #'
@@ -156,7 +156,7 @@ pf_opt_rerun_from <- function(.rerun, .revert = 25L) {
 #' While [`pf_forward()`] tries hard to reconstruct a complete time series of location samples, algorithm convergence is not guaranteed. The algorithm may reach a dead-end---a time step at which there are no valid locations into which the algorithm can step. This may be due to data errors, incorrect assumptions, insufficient sampling effort or poor tuning parameter settings. To facilitate diagnosis of the immediate cause of convergence failures, during likelihood evaluations we keep track of 'particle diagnostics', i.e., the number of unique, valid locations before/after each likelihood evaluation alongside other statistics.
 #'
 #'
-#' @return The function returns a [`pff-class`] object. If `.return$sink` is specified, two directories, {.return$sink}/history/ and {.return$sink}/diagnostics, are also created that contain particle samples and diagnostics. Particle samples are labelled `1.parquet, 2.parquet, ..., T.parquet`, where `T` is the number of time steps. Diagnostics are labelled `A-B-C`, where `A`, `B` and `C` are the number of manual restarts, internal reversions and time steps. Use [`pf_forward_diagnostics()`] to collate diagnostics.
+#' @return The function returns a [`pf_particles-class`] object. If `.return$sink` is specified, two directories, {.return$sink}/history/ and {.return$sink}/diagnostics, are also created that contain particle samples and diagnostics. Particle samples are labelled `1.parquet, 2.parquet, ..., T.parquet`, where `T` is the number of time steps. Diagnostics are labelled `A-B-C`, where `A`, `B` and `C` are the number of manual restarts, internal reversions and time steps. Use [`pf_forward_diagnostics()`] to collate diagnostics.
 #'
 #' @seealso
 #'
@@ -189,7 +189,7 @@ pf_forward <- function(.obs,
   #### Define startup objects (e.g., empty output lists)
   cat_log("... Setting up simulation...")
   startup <- .pf_startup(.obs = .obs,
-                         .dlist = dlist,
+                         .dlist = .dlist,
                          .rerun = .rerun,
                          .record = .record)
   # Output objects
