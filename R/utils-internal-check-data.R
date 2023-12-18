@@ -54,7 +54,7 @@
 #'
 #' * [`check_dlist()`] is an internal function used to confirm that the data `list` passed to a [`patter`] function contains the elements required for that function.
 #'
-#' For all datasets, `NA`s may cause unexpected errors and produce a [`warning`]. `NAs` in columns other than those described above are safe.
+#' For all datasets, `NA`s may cause unexpected errors and produce a [`message`]. `NAs` in columns other than those described above are safe.
 #'
 #' `NULL` inputs are permitted in all `check_{data}` functions, in which case `NULL` is returned.
 #'
@@ -78,11 +78,11 @@ check_bathy <- function(.bathy) {
   check_inherits(.bathy, "SpatRaster")
   res <- terra::res(.bathy)
   if (!all.equal(res[1], res[2])) {
-    warn("A square bathymetry grid is recommended.")
+    msg("A square bathymetry grid is recommended.")
   }
   min_val <- terra::global(.bathy, "min", na.rm = TRUE)
   if (min_val < 0) {
-    warn("A bathymetry grid with absolute values is recommended. Use NA to define inhospitable habitats (such as land).")
+    msg("A bathymetry grid with absolute values is recommended. Use NA to define inhospitable habitats (such as land).")
   }
   .bathy
 }
@@ -102,14 +102,14 @@ check_acoustics <- function(.acoustics, .moorings = NULL) {
   # Check for multiple individuals based on individual_id column
   if (rlang::has_name(.acoustics, "individual_id") &&
       length(unique(.acoustics$individual_id)) > 1L) {
-    warn("Multiple individuals detected in acoustic data.")
+    msg("Multiple individuals detected in acoustic data.")
   }
   # Check timestamps
   check_inherits(.acoustics$timestamp, "POSIXct")
   timestamp <- NULL
   .acoustics[, timestamp := check_tz(timestamp)]
   if (is.unsorted(.acoustics$timestamp)) {
-    warn("Acoustic time stamps should be ordered chronologically.")
+    msg("Acoustic time stamps should be ordered chronologically.")
   }
   # Check receiver IDs
   if (inherits(.acoustics$receiver_id, "numeric")) {
@@ -123,7 +123,7 @@ check_acoustics <- function(.acoustics, .moorings = NULL) {
   }
   # Check for NAs
   if (any(is.na(.acoustics))) {
-    warn("The acoustic data contains NAs.")
+    msg("The acoustic data contains NAs.")
   }
   .acoustics
 }
@@ -190,14 +190,14 @@ check_moorings <- function(.moorings, .lonlat, .bathy) {
       .moorings$receiver_y <- xy[, 2]
       if (!identical(.moorings[["receiver_x"]], .moorings[[coords[1]]]) |
           !identical(.moorings[["receiver_y"]], .moorings[[coords[2]]])) {
-        warn("`.moorings` coordinates coerced onto `.bathy` grid.")
+        msg("`.moorings` coordinates coerced onto `.bathy` grid.")
       }
     }
   }
 
   #### Check NAs
   if (any(is.na(.moorings))) {
-    warn("`.moorings` contains NAs.")
+    msg("`.moorings` contains NAs.")
   }
 
   #### Return outputs
@@ -230,7 +230,7 @@ check_services <- function(.services, .moorings) {
   }
   # Check for NAs
   if (any(is.na(.services))) {
-    warn("The services data contains NAs.")
+    msg("The services data contains NAs.")
   }
   .services
 }
@@ -250,26 +250,26 @@ check_archival <- function(.archival) {
   # Check for multiple individuals
   if (rlang::has_name(.archival, "individual_id") &&
       length(unique(.archival$individual_id)) > 1L) {
-    warn("Multiple individuals detected in archival data.")
+    msg("Multiple individuals detected in archival data.")
   }
   # Check time stamps
   check_inherits(.archival$timestamp, "POSIXct")
   timestamp <- NULL
   .archival[, timestamp := check_tz(timestamp)]
   if (is.unsorted(.archival$timestamp)) {
-    warn("Archival time stamps should be ordered chronologically.")
+    msg("Archival time stamps should be ordered chronologically.")
   }
   if (nrow(.archival) > 1 && length(unique(diff(.archival$timestamp))) != 1L) {
-    warn("Archival time steps are not regularly spaced.")
+    msg("Archival time steps are not regularly spaced.")
   }
   # Check depths
   check_inherits(.archival$depth, "numeric")
   if (any(.archival$depth < 0, na.rm = TRUE)) {
-    warn("Archival depths should be a positive-valued numeric vector and not negative.")
+    msg("Archival depths should be a positive-valued numeric vector and not negative.")
   }
   # Check for NAs
   if (any(is.na(.archival))) {
-    warn("The archival data contains NAs.")
+    msg("The archival data contains NAs.")
   }
   .archival
 }

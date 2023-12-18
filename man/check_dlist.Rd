@@ -114,7 +114,7 @@ These are internal functions that ensure that input dataset(s) meet \code{\link{
 \item \code{\link[=check_dlist]{check_dlist()}} is an internal function used to confirm that the data \code{list} passed to a \code{\link{patter}} function contains the elements required for that function.
 }
 
-For all datasets, \code{NA}s may cause unexpected errors and produce a \code{\link{warning}}. \code{NAs} in columns other than those described above are safe.
+For all datasets, \code{NA}s may cause unexpected errors and produce a \code{\link{message}}. \code{NAs} in columns other than those described above are safe.
 
 \code{NULL} inputs are permitted in all \verb{check_\{data\}} functions, in which case \code{NULL} is returned.
 }
