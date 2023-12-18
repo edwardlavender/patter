@@ -91,7 +91,7 @@ To implement the acoustic-centroid* (AC*) algorithm(s) (e.g., AC and ACDC), use:
 
 To implement particle filtering (PF), use:
 \itemize{
-\item \code{\link[=pf_setup_files]{pf_setup_files()}} to set up files;
+\item \code{\link[=pf_files]{pf_files()}} to set up files;
 \item \code{\link[=pf_forward]{pf_forward()}} to implement the forward simulation;
 \item \code{\link[=pf_backward_*]{pf_backward_*()}} functions implement the backward pass;
 \item \code{\link[=pf_coords]{pf_coords()}} to collate particle coordinates;

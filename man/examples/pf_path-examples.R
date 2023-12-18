@@ -15,7 +15,7 @@ pfbk_folder <- system.file("extdata", "acpf", "backward", "killer",
 p1 <- pf_path(out_pfbk$history)
 
 #### Example (2): Implement pf_path from parquet files
-p2 <- pf_path(pf_setup_files(pfbk_folder))
+p2 <- pf_path(pf_files(pfbk_folder))
 stopifnot(all.equal(p1, p2))
 
 #### Example (3): Include cell coordinates/obs columns

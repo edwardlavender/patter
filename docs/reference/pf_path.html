@@ -87,7 +87,7 @@
     <h2>Arguments</h2>
     <dl><dt>.history</dt>
 <dd><p>Particle samples from the particle filter, provided either as:</p><ul><li><p>A <code>list</code> of <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>s that define cell samples; i.e., the <code>history</code> element of a <code><a href="pf-class.html">pf</a></code> object. This must contain columns that define cell samples at each time step (<code>cell_now</code>) alongside previous samples (<code>cell_past</code>).</p></li>
-<li><p>An ordered list of file paths (from <code><a href="pf_setup_files.html">pf_setup_files()</a></code>) that define the directories in which particle samples were written from the forward simulation (as parquet files).</p></li>
+<li><p>An ordered list of file paths (from <code><a href="pf_files.html">pf_files()</a></code>) that define the directories in which particle samples were written from the forward simulation (as parquet files).</p></li>
 </ul></dd>
 
 
@@ -507,7 +507,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_path() call ended (@ 2023-12-12 21:41:20.647034). </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (2): Implement pf_path from parquet files</span></span></span>
-<span class="r-in"><span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu">pf_path</span><span class="op">(</span><span class="fu"><a href="pf_setup_files.html">pf_setup_files</a></span><span class="op">(</span><span class="va">pfb_folder</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu">pf_path</span><span class="op">(</span><span class="fu"><a href="pf_files.html">pf_files</a></span><span class="op">(</span><span class="va">pfb_folder</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_path() called (@ 2023-12-12 21:41:20.647567)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing history[[1]]... </span>

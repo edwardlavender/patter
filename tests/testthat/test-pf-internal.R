@@ -18,7 +18,7 @@ test_that(".pf_history_dt() works", {
   # Implement .pf_history_dt()
   a <- .pf_history_dt(out_pfbk)
   b <- .pf_history_dt(out_pfbk$history)
-  c <- .pf_history_dt(pf_setup_files(pfbk_folder))
+  c <- .pf_history_dt(pf_files(pfbk_folder))
   d <- .pf_history_dt(pfbk_folder,
                       schema = schema(
                         timestep = int32(),

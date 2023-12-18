@@ -3,7 +3,7 @@
 #'
 #' @param .history Particle samples from the forward simulation, provided either as:
 #' * A `list` of [`data.table`]s that define cell samples; i.e., the `history` element of a [`pf-class`] object. This must contain columns that define cell samples at each time step (`cell_now`) alongside previous samples (`cell_past`).
-#' * An ordered list of file paths (from [`pf_setup_files()`]) that define the directories in which particle samples were written from the forward simulation (as parquet files).
+#' * An ordered list of file paths (from [`pf_files()`]) that define the directories in which particle samples were written from the forward simulation (as parquet files).
 #' @param .record A named `list` of output options, from [`pf_opt_record()`].
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
@@ -113,7 +113,7 @@ pf_backward_killer <- function(.history,
 
 pf_backward_killer_diagnostics <- function(.sink,
                                            .cl = NULL, .cl_varlist = NULL, .cl_chunks = TRUE) {
-  .history <- pf_setup_files(.sink)
+  .history <- pf_files(.sink)
   cl_lapply(.history,
             .cl = .cl, .varlist = .cl_varlist,
             .use_chunks = .cl_chunks,

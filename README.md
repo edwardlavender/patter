@@ -173,7 +173,7 @@ ACDC), use:
 
 To implement particle filtering (PF), use:
 
-- `pf_setup_files()` to set up the record;
+- `pf_files()` to set up the record;
 - `pf_forward()` to implement the forward simulation;
 - `pf_backward_*()` to implement the backward pass;
 - `pf_coords()` to collate particle coordinates;

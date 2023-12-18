@@ -56,7 +56,7 @@ get_hr_core(pou, .add = TRUE, lwd = 0.75)
 \item The PF (forward simulation) is implemented by \code{\link[=pf_forward]{pf_forward()}};
 \item PF is supported by:
 \itemize{
-\item Setup helpers, namely \code{\link[=pf_setup_files]{pf_setup_files()}};
+\item Setup helpers, namely \code{\link[=pf_files]{pf_files()}};
 }
 \item The backward pass is implemented by \code{\link[=pf_backward_*]{pf_backward_*()}};
 \item Movement paths are built from PF outputs via \code{pf_path()} functions:

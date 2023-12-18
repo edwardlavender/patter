@@ -4,7 +4,7 @@
 #' * A [`pf_particles-class`] object;
 #' * The `history` element of a [`pf_particles-class`] object;
 #' * A `character` string that defines the directory containing parquet files;
-#' * A `list` of file paths (e.g., from [`pf_setup_files()`]);
+#' * A `list` of file paths (e.g., from [`pf_files()`]);
 #' @param ... If `.history` is a directory, `...` additional arguments can be passed to [`arrow::open_dataset()`] via `...`.
 #' @param .collect If `.history` is a directory, `.collect` is a `logical` variable that defines whether or not to collect the dataset in memory.
 #'
@@ -41,7 +41,7 @@
 #' .pf_history_dt(pfbk_folder, schema = sch, .collect = FALSE)
 #'
 #' # Use a file list
-#' .pf_history_dt(pf_setup_files(pfbk_folder))
+#' .pf_history_dt(pf_files(pfbk_folder))
 #' }
 #' @author Edward Lavender
 #' @keywords internal

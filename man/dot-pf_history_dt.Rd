@@ -12,7 +12,7 @@
 \item A \code{\linkS4class{pf_particles}} object;
 \item The \code{history} element of a \code{\linkS4class{pf_particles}} object;
 \item A \code{character} string that defines the directory containing parquet files;
-\item A \code{list} of file paths (e.g., from \code{\link[=pf_setup_files]{pf_setup_files()}});
+\item A \code{list} of file paths (e.g., from \code{\link[=pf_files]{pf_files()}});
 }}
 
 \item{...}{If \code{.history} is a directory, \code{...} additional arguments can be passed to \code{\link[arrow:open_dataset]{arrow::open_dataset()}} via \code{...}.}
@@ -55,7 +55,7 @@ sch <- schema(timestep = int32(),
 .pf_history_dt(pfbk_folder, schema = sch, .collect = FALSE)
 
 # Use a file list
-.pf_history_dt(pf_setup_files(pfbk_folder))
+.pf_history_dt(pf_files(pfbk_folder))
 }
 }
 \author{

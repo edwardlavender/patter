@@ -81,7 +81,7 @@ pf_coords <- function(.history, .bathy, .obs = NULL, .cols = NULL) {
 #' * The PF (forward simulation) is implemented by [`pf_forward()`];
 #'
 #' * PF is supported by:
-#'     * Setup helpers, namely [`pf_setup_files()`];
+#'     * Setup helpers, namely [`pf_files()`];
 #'
 #' * The backward pass is implemented by [`pf_backward_*()`];
 #'
@@ -158,7 +158,7 @@ pf_map_pou <-
 #' * The PF (forward simulation) is implemented by [`pf_forward()`];
 #'
 #' * PF is supported by:
-#'     * Setup helpers, namely [`pf_setup_files()`];
+#'     * Setup helpers, namely [`pf_files()`];
 #'
 #' * The backward pass is implemented by [`pf_backward_*()`];
 #'

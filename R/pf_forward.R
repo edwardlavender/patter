@@ -361,7 +361,7 @@ pf_forward_diagnostics <- function(.sink) {
     check_dir(.sink)
   }
   .sink |>
-    pf_setup_files() |>
+    pf_files() |>
     pbapply::pblapply(arrow::read_parquet) |>
     rbindlist()
 }
