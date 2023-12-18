@@ -248,7 +248,7 @@ To build a utilisation distribution, we simply sum (and renormalise) the number 
 
 ```{r}
 # Map POU 
-coord <- pf_coords(.history = out_pfb$history, .bathy = gebco)
+coord <- pf_coord(.history = out_pfb$history, .bathy = gebco)
 pou   <- map_pou(.map = gebco, .coord = coord, .plot = TRUE)
 # Draw full range 
 map_hr_full(.map = pou, .add = TRUE, border = "dimgrey")

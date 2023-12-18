@@ -156,7 +156,7 @@
 <li><p>Movement paths are built from PF outputs via <code><a href="pf_path.html">pf_path()</a></code> functions:</p><ul><li><p><code><a href="pf_path.html">pf_path()</a></code> reconstructs paths;</p></li>
 <li><p><code><a href="pf_path_pivot.html">pf_path_pivot()</a></code> supports path reconstruction;</p></li>
 </ul></li>
-<li><p>To reconstruct maps of space use, see:</p><ul><li><p><code><a href="pf_coords.html">pf_coords()</a></code> to extract particle coordinates;</p></li>
+<li><p>To reconstruct maps of space use, see:</p><ul><li><p><code><a href="pf_coord.html">pf_coord()</a></code> to extract particle coordinates;</p></li>
 <li><p><code><a href="map_pou.html">map_pou()</a></code> for probability-of-use maps;</p></li>
 <li><p><code>map_dens()</code> for smooth utilisation distributions;</p></li>
 <li><p><code><a href="get_hr.html">get_hr()</a></code> for home range estimates;</p></li>
@@ -220,7 +220,7 @@
 <span class="r-in"><span><span class="co">#### Example (2): Smooth particle coordinates</span></span></span>
 <span class="r-in"><span><span class="co"># This approach is equivalent to Example (1) &amp; the outputs are identical</span></span></span>
 <span class="r-in"><span><span class="co"># But this implementation can be considerably faster</span></span></span>
-<span class="r-in"><span><span class="va">dens_2</span> <span class="op">&lt;-</span> <span class="fu">map_dens</span><span class="op">(</span><span class="va">gebco</span>, .coord <span class="op">=</span> <span class="fu"><a href="pf_coords.html">pf_coords</a></span><span class="op">(</span><span class="va">out_pfb</span><span class="op">$</span><span class="va">history</span>, <span class="va">gebco</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">dens_2</span> <span class="op">&lt;-</span> <span class="fu">map_dens</span><span class="op">(</span><span class="va">gebco</span>, .coord <span class="op">=</span> <span class="fu"><a href="pf_coord.html">pf_coord</a></span><span class="op">(</span><span class="va">out_pfb</span><span class="op">$</span><span class="va">history</span>, <span class="va">gebco</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2023-12-18 15:10:14... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.xpf`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>

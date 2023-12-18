@@ -71,7 +71,7 @@ pf_files <- function(.sink, ...) {
 #'
 #' @examples
 #' p <- dat_pfbk()
-#' pf_coords(p$history, dat_gebco())
+#' pf_coord(p$history, dat_gebco())
 #'
 #' @seealso
 #' TO DO
@@ -79,13 +79,13 @@ pf_files <- function(.sink, ...) {
 #' @author Edward Lavender
 #' @export
 
-pf_coords <- function(.history, .bathy, .wtd = FALSE, .obs = NULL, .cols = NULL) {
+pf_coord <- function(.history, .bathy, .wtd = FALSE, .obs = NULL, .cols = NULL) {
 
   # Check user inputs
   # * `.history` is checked via .pf_history_dt()
   # * Check remaining inputs
   if (missing(.bathy)) {
-    abort("`.bathy` is required for `pf_coords()`.")
+    abort("`.bathy` is required for `pf_coord()`.")
   }
   .pf_path_pivot_checks(.obs, .cols)
 

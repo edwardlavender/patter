@@ -20,7 +20,7 @@
 #'     * [`pf_path_pivot()`] supports path reconstruction;
 #'
 #' * To reconstruct maps of space use, see:
-#'     * [`pf_coords()`] to extract particle coordinates;
+#'     * [`pf_coord()`] to extract particle coordinates;
 #'     * [`map_pou()`] for probability-of-use maps;
 #'     * [`map_dens()`] for smooth utilisation distributions;
 #'     * [`get_hr()`] for home range estimates;

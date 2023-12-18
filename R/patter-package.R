@@ -75,7 +75,7 @@
 #' * [`pf_files()`] to set up files;
 #' * [`pf_forward()`] to implement the forward simulation;
 #' * [`pf_backward_*()`] functions implement the backward pass;
-#' * [`pf_coords()`] to collate particle coordinates;
+#' * [`pf_coord()`] to collate particle coordinates;
 #' * [`pf_path()`] (and [`pf_path_pivot()`]) to reconstruct movement paths;
 #' * [`map_pou()`] to map probability-of-use;
 #' * [`map_dens()`] to create smooth maps;
