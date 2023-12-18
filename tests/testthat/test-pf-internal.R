@@ -6,11 +6,6 @@ test_that(".pf_check_*() functions work", {
     expect_error("`.obs` should be a data.table with a `timestep` column.",
                  fixed = TRUE)
 
-  folder <- file.path(tempdir(), "pf")
-  dir.create(folder)
-  .pf_check_write_history(list(sink = folder))
-  unlink(folder, recursive = TRUE)
-
 })
 
 test_that(".pf_history_dt() works", {
