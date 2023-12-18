@@ -6,11 +6,11 @@
 #'
 #' @keywords internal
 
-.map_marks <- function(.xpf, .coord) {
+.map_marks <- function(.map, .coord) {
   if (is.null(.coord)) {
-    xym <- spatMarks(.x = .xpf)
+    xym <- spatMarks(.x = .map)
   } else {
-    xym <- spatMarksFromCoord(.x = .xpf, .coord = .coord)
+    xym <- spatMarksFromCoord(.x = .map, .coord = .coord)
   }
   xym
 }

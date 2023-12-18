@@ -2,11 +2,15 @@
 % Please edit documentation in R/map-internal.R
 \name{.map_marks}
 \alias{.map_marks}
-\title{Map: internal functions}
+\title{Map: internal functions
+
+A \code{\link{matrix}}, \code{\link{data.frame}} or \code{\link{data.table}} with x and y coordinates, in columns named \code{x} and \code{y} or \code{cell_x} and \code{cell_y}. \code{x} and \code{y} columns are used preferentially. Coordinates must be planar.  A \code{timestep} column can also be included if there are multiple possible locations at each time step. A \code{mark} column can be included with coordinate weights; otherwise, equal weights are assumed (see Details). Other columns are ignored.}
 \usage{
-.map_marks(.xpf, .coord)
+.map_marks(.map, .coord)
 }
 \description{
 Map: internal functions
+
+A \code{\link{matrix}}, \code{\link{data.frame}} or \code{\link{data.table}} with x and y coordinates, in columns named \code{x} and \code{y} or \code{cell_x} and \code{cell_y}. \code{x} and \code{y} columns are used preferentially. Coordinates must be planar.  A \code{timestep} column can also be included if there are multiple possible locations at each time step. A \code{mark} column can be included with coordinate weights; otherwise, equal weights are assumed (see Details). Other columns are ignored.
 }
 \keyword{internal}

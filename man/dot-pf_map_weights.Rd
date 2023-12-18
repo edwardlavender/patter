@@ -2,7 +2,7 @@
 % Please edit documentation in R/pf_map-internal.R
 \name{.pf_map_weights}
 \alias{.pf_map_weights}
-\title{PF: Calculate location weights}
+\title{PF: location weights}
 \usage{
 .pf_map_weights(.pxy)
 }
