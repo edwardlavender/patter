@@ -16,7 +16,7 @@ out_pfb <- pf_backward_killer(.history = pf_setup_files(pff_folder_h),
 
 #### Example (3): Write history to file (as in `pf_forward()`)
 con        <- file.path(tempdir(), "patter")
-pfb_folder <- file.path(con, "pf", "backward")
+pfb_folder <- file.path(con, "backward", "killer")
 dir.create(pfb_folder, recursive = TRUE)
 out_pfb <- pf_backward_killer(.history = pf_setup_files(pff_folder_h),
                               .record = pf_opt_record(.sink = pfb_folder))
