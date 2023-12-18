@@ -35,13 +35,16 @@
       <a href="../articles/a-methodology.html">Methodology</a>
     </li>
     <li>
-      <a href="../articles/b-workflow.html">A revised implementation of the `flapper` algorithms</a>
+      <a href="../articles/b-workflow-outline.html">Workflow</a>
     </li>
     <li>
-      <a href="../articles/c-demos.html">Demos</a>
+      <a href="../articles/c-workflow-example.html">A revised implementation of the `flapper` algorithms</a>
     </li>
     <li>
-      <a href="../articles/d-faqs.html">FAQs</a>
+      <a href="../articles/d-demos.html">Demos</a>
+    </li>
+    <li>
+      <a href="../articles/e-faqs.html">FAQs</a>
     </li>
   </ul></li>
 <li>
@@ -78,9 +81,7 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.history</dt>
-<dd><p>Particle samples from the particle filter, provided either as:</p><ul><li><p>A <code>list</code> of <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>s that define cell samples; i.e., the <code>history</code> element of a <code><a href="pf-class.html">pf</a></code> object. This must contain a column that defines accepted cell samples at each time step (<code>cell_now</code>).</p></li>
-<li><p>An ordered list of file paths (from <code><a href="pf_files.html">pf_files()</a></code>) that define the directories in which particle samples were written from the forward simulation (as parquet files).</p></li>
-</ul></dd>
+<dd><p>Particle samples, provided in any format accepted by <code><a href="dot-pf_history_dt.html">.pf_history_dt()</a></code>.</p></dd>
 
 
 <dt>.bathy</dt>
@@ -115,20 +116,20 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_pfb</a></span><span class="op">(</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_pfbk</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">pf_coords</span><span class="op">(</span><span class="va">p</span><span class="op">$</span><span class="va">history</span>, <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       timestep cell_id   cell_x  cell_y    cell_z</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:        1   38900 709442.1 6252607  39.33695</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:        1   37758 709242.1 6253207  63.35369</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:        1   37947 709142.1 6253107  66.52094</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:        1   37378 709242.1 6253407  75.20494</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:        1   37946 709042.1 6253107  74.88351</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1:        1   37946 709042.1 6253107  74.88351</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2:        1   36997 709142.1 6253607 105.22495</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3:        1   37569 709342.1 6253307  60.09327</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4:        1   37376 709042.1 6253407  99.90396</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5:        1   37757 709142.1 6253207  73.27666</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2853:       50   38513 708742.1 6252807  76.32019</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2854:       50   38131 708542.1 6253007 108.03202</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2855:       50   38894 708842.1 6252607  56.12966</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2856:       50   37752 708642.1 6253207 119.76311</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2857:       50   38512 708642.1 6252807  82.96889</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2959:       50   38704 708842.1 6252707  62.30672</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2960:       50   37751 708542.1 6253207 125.23798</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2961:       50   38513 708742.1 6252807  76.32019</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2962:       50   38704 708842.1 6252707  62.30672</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2963:       50   37754 708842.1 6253207 103.43065</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

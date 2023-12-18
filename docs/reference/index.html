@@ -35,13 +35,16 @@
       <a href="../articles/a-methodology.html">Methodology</a>
     </li>
     <li>
-      <a href="../articles/b-workflow.html">A revised implementation of the `flapper` algorithms</a>
+      <a href="../articles/b-workflow-outline.html">Workflow</a>
     </li>
     <li>
-      <a href="../articles/c-demos.html">Demos</a>
+      <a href="../articles/c-workflow-example.html">A revised implementation of the `flapper` algorithms</a>
     </li>
     <li>
-      <a href="../articles/d-faqs.html">FAQs</a>
+      <a href="../articles/d-demos.html">Demos</a>
+    </li>
+    <li>
+      <a href="../articles/e-faqs.html">FAQs</a>
     </li>
   </ul></li>
 <li>
@@ -90,7 +93,7 @@
         </td>
         <td><p>The centres of activity (COA) algorithm</p></td>
       </tr><tr><td>
-          <p><code><a href="datasets-algorithms.html">dat_obs()</a></code> <code><a href="datasets-algorithms.html">dat_overlaps()</a></code> <code><a href="datasets-algorithms.html">dat_kernels()</a></code> <code><a href="datasets-algorithms.html">dat_pff()</a></code> <code><a href="datasets-algorithms.html">dat_pfb()</a></code> <code><a href="datasets-algorithms.html">dat_pfp()</a></code> </p>
+          <p><code><a href="datasets-algorithms.html">dat_obs()</a></code> <code><a href="datasets-algorithms.html">dat_pff()</a></code> <code><a href="datasets-algorithms.html">dat_pfbk()</a></code> <code><a href="datasets-algorithms.html">dat_pfp()</a></code> </p>
         </td>
         <td><p>Datasets: example algorithm outputs</p></td>
       </tr><tr><td>
@@ -118,9 +121,13 @@
         </td>
         <td><p>Utilities: make a temporary directory</p></td>
       </tr><tr><td>
-          <p><code><a href="pf-class.html">pf-class</a></code> </p>
+          <p><code><a href="pat_setup_data.html">pat_setup_data()</a></code> </p>
         </td>
-        <td><p>PF outputs: <code>pf</code> objects</p></td>
+        <td><p>Set up data for <code>patter</code></p></td>
+      </tr><tr><td>
+          <p><code><a href="patter-progress.html">patter-progress</a></code> </p>
+        </td>
+        <td><p>Progress monitoring in <code>patter</code></p></td>
       </tr><tr><td>
           <p><code><a href="pf_backward_-times.html">pf_backward_*</a></code> </p>
         </td>
@@ -134,17 +141,13 @@
         </td>
         <td><p>PF: backward killer diagnostics</p></td>
       </tr><tr><td>
-          <p><code><a href="pf_backward_sampler.html">pf_backward_sampler()</a></code> </p>
-        </td>
-        <td><p>PF: run the backward pass</p></td>
-      </tr><tr><td>
           <p><code><a href="pf_coords.html">pf_coords()</a></code> </p>
         </td>
         <td><p>PF: particle coordinates</p></td>
       </tr><tr><td>
-          <p><code><a href="pf_distinct.html">pf_distinct()</a></code> </p>
+          <p><code><a href="pf_files.html">pf_files()</a></code> </p>
         </td>
-        <td><p>PF: isolate distinct samples</p></td>
+        <td><p>PF: list files</p></td>
       </tr><tr><td>
           <p><code><a href="pf_forward.html">pf_forward()</a></code> </p>
         </td>
@@ -154,6 +157,10 @@
         </td>
         <td><p>PF: forward run diagnostics</p></td>
       </tr><tr><td>
+          <p><code><a href="pf_lik.html">acs_filter_land()</a></code> <code><a href="pf_lik.html">acs_filter_container()</a></code> <code><a href="pf_lik.html">pf_lik_ac()</a></code> <code><a href="pf_lik.html">pf_lik_dc()</a></code> </p>
+        </td>
+        <td><p>PF: Likelihood functions</p></td>
+      </tr><tr><td>
           <p><code><a href="pf_map_dens.html">as.im.SpatRaster()</a></code> <code><a href="pf_map_dens.html">as.owin.SpatRaster()</a></code> <code><a href="pf_map_dens.html">as.owin.sf()</a></code> <code><a href="pf_map_dens.html">pf_map_dens()</a></code> </p>
         </td>
         <td><p>PF: map point density</p></td>
@@ -161,6 +168,14 @@
           <p><code><a href="pf_map_pou.html">pf_map_pou()</a></code> </p>
         </td>
         <td><p>PF: map probability-of-use</p></td>
+      </tr><tr><td>
+          <p><code><a href="pf_opt.html">pf_opt_trial()</a></code> <code><a href="pf_opt.html">pf_opt_record()</a></code> <code><a href="pf_opt.html">pf_opt_control()</a></code> <code><a href="pf_opt.html">pf_opt_rerun_from()</a></code> </p>
+        </td>
+        <td><p>PF: simulation options</p></td>
+      </tr><tr><td>
+          <p><code><a href="pf_particles-class.html">pf_particles-class</a></code> </p>
+        </td>
+        <td><p>PF outputs: <code>pf_particles</code> objects</p></td>
       </tr><tr><td>
           <p><code><a href="pf_path.html">pf_path()</a></code> </p>
         </td>
@@ -170,21 +185,13 @@
         </td>
         <td><p>PF: pivot path matrices</p></td>
       </tr><tr><td>
-          <p><code><a href="pf_propose.html">pf_rpropose_origin()</a></code> <code><a href="pf_propose.html">pf_rpropose_kick()</a></code> <code><a href="pf_propose.html">pf_rpropose_reachable()</a></code> <code><a href="pf_propose.html">pf_dpropose()</a></code> </p>
+          <p><code><a href="pf_propose.html">pf_rpropose_kick()</a></code> <code><a href="pf_propose.html">pf_rpropose_reachable()</a></code> <code><a href="pf_propose.html">pf_dpropose()</a></code> </p>
         </td>
         <td><p>PF: proposal functions</p></td>
       </tr><tr><td>
           <p><code><a href="pf_sample.html">pf_sample_multinomial()</a></code> <code><a href="pf_sample.html">pf_sample_systematic()</a></code> </p>
         </td>
         <td><p>PF: sampling functions</p></td>
-      </tr><tr><td>
-          <p><code><a href="pf_files.html">pf_files()</a></code> </p>
-        </td>
-        <td><p>PF set up: list files for PF</p></td>
-      </tr><tr><td>
-          <p><code><a href="pf_setup_rerun.html">pf_setup_rerun()</a></code> </p>
-        </td>
-        <td><p>PF: rerun</p></td>
       </tr><tr><td>
           <p><code><a href="sim_array.html">sim_array()</a></code> </p>
         </td>

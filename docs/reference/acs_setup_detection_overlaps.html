@@ -35,13 +35,16 @@
       <a href="../articles/a-methodology.html">Methodology</a>
     </li>
     <li>
-      <a href="../articles/b-workflow.html">A revised implementation of the `flapper` algorithms</a>
+      <a href="../articles/b-workflow-outline.html">Workflow</a>
     </li>
     <li>
-      <a href="../articles/c-demos.html">Demos</a>
+      <a href="../articles/c-workflow-example.html">A revised implementation of the `flapper` algorithms</a>
     </li>
     <li>
-      <a href="../articles/d-faqs.html">FAQs</a>
+      <a href="../articles/d-demos.html">Demos</a>
+    </li>
+    <li>
+      <a href="../articles/e-faqs.html">FAQs</a>
     </li>
   </ul></li>
 <li>
@@ -72,7 +75,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">acs_setup_detection_overlaps</span><span class="op">(</span><span class="va">.moorings</span>, .services <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">acs_setup_detection_overlaps</span><span class="op">(</span><span class="va">.dlist</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="source">
@@ -81,19 +84,9 @@
     </div>
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>.moorings</dt>
-<dd><p>A <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines receiver deployments and associated information (see <code><a href="datasets-mefs.html">dat_moorings</a></code> for an example). At a minimum, this must contain the following columns:</p><ul><li><p><code>receiver_id</code>---an <code>integer</code> vector of receiver IDs;</p></li>
-<li><p><code>receiver_easting</code> and <code>receiver_northing</code> or <code>receiver_lon</code> and <code>receiver_lat</code>---doubles that define receiver coordinates on a planar coordinate reference system or in longitude/latitude;</p></li>
-<li><p><code>receiver_start</code>---a <code>Date</code> vector that defines receiver deployment dates;</p></li>
-<li><p><code>receiver_end</code>---a <code>Date</code> vector that defines receiver retrieval dates;</p></li>
-<li><p><code>receiver_range</code>---a double that defines the detection range (m) for each receiver;</p></li>
-</ul></dd>
-
-
-<dt>.services</dt>
-<dd><p>(optional) A <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines receiver IDs and servicing <code>Date</code>s (times during the deployment period of a receiver when it was not active due to servicing) (see <code><a href="make_matrix_receivers.html">make_matrix_receivers()</a></code>). If provided, this must contain the following columns:</p><ul><li><p><code>receiver_id</code>---an <code>integer</code> vector of receiver IDs;</p></li>
-<li><p><code>service_start</code>---a <code>Date</code> vector that defines receiver servicing start dates;</p></li>
-<li><p><code>service_end</code>---a <code>Date</code> vector that defines receiver servicing completion dates;</p></li>
+    <dl><dt>.dlist</dt>
+<dd><p>A named <code>list</code> of data and parameters from <code><a href="pat_setup_data.html">pat_setup_data()</a></code>. This function requires:</p><ul><li><p><code>.dlist$data$moorings</code>, with the following columns: <code>receiver_id</code>, <code>receiver_x</code>, <code>receiver_y</code>, <code>receiver_start</code>, <code>receiver_end</code> and <code>receiver_range</code>.</p></li>
+<li><p>(optional) <code>.dlist$data$services</code>, with the following columns: <code>receiver_id</code>, <code>service_start</code> and <code>service_end</code>.</p></li>
 </ul></dd>
 
 </dl></div>
@@ -123,67 +116,11 @@
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#### Example (1): Basic implementation</span></span></span>
-<span class="r-in"><span><span class="va">overlaps</span> <span class="op">&lt;-</span> <span class="fu">acs_setup_detection_overlaps</span><span class="op">(</span><span class="va">dat_moorings</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>UTM coordinates used (both UTM and lon/lat coordinates detected).</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">overlaps</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       Length Class  Mode</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,] 225    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,] 371    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,] 109    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,] 225    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [10,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [11,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [12,] 371    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [13,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [14,] 371    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [15,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [16,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [17,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [18,] 261    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [19,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [20,] 370    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [21,] 427    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [22,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [23,] 206    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [24,] 261    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [25,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [26,] 230    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [27,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [28,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [29,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [30,] 245    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [31,] 262    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [32,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [33,] 144    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [34,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [35,] 116    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [36,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [37,] 115    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [38,] 116    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [39,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [40,] 109    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [41,] 165    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [42,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [43,] 165    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [44,]  79    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [45,] 165    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [46,] 165    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [47,] 165    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [48,] 165    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [49,] 165    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [50,] 165    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [51,] 165    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [52,]  77    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [53,]  77    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [54,]  77    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [55,]  75    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [56,]  75    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [57,]  75    -none- list</span>
+<span class="r-in"><span><span class="va">dlist</span> <span class="op">&lt;-</span> <span class="fu"><a href="pat_setup_data.html">pat_setup_data</a></span><span class="op">(</span>.moorings <span class="op">=</span> <span class="va">dat_moorings</span>,</span></span>
+<span class="r-in"><span>                       .bathy <span class="op">=</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                       .lonlat <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`.moorings` coordinates coerced onto `.bathy` grid.</span>
+<span class="r-in"><span><span class="va">overlaps</span> <span class="op">&lt;-</span> <span class="fu">acs_setup_detection_overlaps</span><span class="op">(</span><span class="va">dlist</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

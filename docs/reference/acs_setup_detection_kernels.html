@@ -35,13 +35,16 @@
       <a href="../articles/a-methodology.html">Methodology</a>
     </li>
     <li>
-      <a href="../articles/b-workflow.html">A revised implementation of the `flapper` algorithms</a>
+      <a href="../articles/b-workflow-outline.html">Workflow</a>
     </li>
     <li>
-      <a href="../articles/c-demos.html">Demos</a>
+      <a href="../articles/c-workflow-example.html">A revised implementation of the `flapper` algorithms</a>
     </li>
     <li>
-      <a href="../articles/d-faqs.html">FAQs</a>
+      <a href="../articles/d-demos.html">Demos</a>
+    </li>
+    <li>
+      <a href="../articles/e-faqs.html">FAQs</a>
     </li>
   </ul></li>
 <li>
@@ -73,10 +76,8 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">acs_setup_detection_kernels</span><span class="op">(</span></span>
-<span>  <span class="va">.moorings</span>,</span>
-<span>  .services <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  <span class="va">.calc_detection_pr</span>,</span>
-<span>  <span class="va">.bathy</span>,</span>
+<span>  <span class="va">.dlist</span>,</span>
+<span>  .calc_detection_pr <span class="op">=</span> <span class="va">acs_setup_detection_pr</span>,</span>
 <span>  .verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -88,35 +89,23 @@
     </div>
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>.moorings</dt>
-<dd><p>A <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines receiver deployments and associated information (see <code><a href="datasets-mefs.html">dat_moorings</a></code> for an example). At a minimum, this must contain the following columns:</p><ul><li><p><code>receiver_id</code>---an <code>integer</code> vector that defines unique receiver deployments;</p></li>
-<li><p><code>receiver_start</code> and <code>receiver_end</code>---<code>Date</code> vectors that defines receiver operational periods (see <code><a href="make_matrix_receivers.html">make_matrix_receivers()</a></code>);</p></li>
-<li><p><code>receiver_easting</code> and <code>receiver_northing</code>---<code>numeric</code> vectors that define receiver locations on <code>.bathy</code> (used to validate <code>.calc_detection_pr()</code>)</p></li>
-<li><p>Plus any columns used internally by <code>.calc_detection_pr</code> (see below).</p></li>
-</ul></dd>
-
-
-<dt>.services</dt>
-<dd><p>(optional) A <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines receiver IDs and servicing <code>Date</code>s (times during the deployment period of a receiver when it was not active due to servicing) (see <code><a href="make_matrix_receivers.html">make_matrix_receivers()</a></code>). If provided, this must contain the following columns:</p><ul><li><p><code>receiver_id</code>---an <code>integer</code> vector of receiver IDs;</p></li>
-<li><p><code>service_start</code>---a <code>Date</code> vector that defines receiver servicing start dates;</p></li>
-<li><p><code>service_end</code>---a <code>Date</code> vector that defines receiver servicing completion dates;</p></li>
+    <dl><dt>.dlist</dt>
+<dd><p>A named <code>list</code> of data and parameters from <code><a href="pat_setup_data.html">pat_setup_data()</a></code>. This function requires:</p><ul><li><p><code>.dlist$data$moorings</code>, with the following columns: <code>receiver_id</code>, <code>receiver_start</code>, <code>receiver_end</code>, <code>receiver_x</code> and <code>receiver_y</code>, plus any columns used internally by <code>.calc_detection_pr</code> (see below).</p></li>
+<li><p><code>.dlist$data$services</code>, with the following columns: <code>receiver_id</code>, <code>service_start</code> and <code>service_end</code> (see <code><a href="make_matrix_receivers.html">make_matrix_receivers()</a></code>).</p></li>
+<li><p><code>.dlist$spatial$bathy</code>, which defines the grid over which detection kernels are defined.</p></li>
 </ul></dd>
 
 
 <dt>.calc_detection_pr, ...</dt>
-<dd><p>A function that defines a receiver-specific detection kernel (see <code><a href="acs_setup_detection_pr.html">acs_setup_detection_pr()</a></code> for an example). This must accept three arguments (even if they are ignored):</p><ul><li><p><code>.data</code>---A one-row <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that contains the information in <code>.moorings</code> for a specific receiver;</p></li>
+<dd><p>A function that defines a receiver-specific detection kernel (see <code><a href="acs_setup_detection_pr.html">acs_setup_detection_pr()</a></code> for an example). This must accept three arguments (even if they are ignored):</p><ul><li><p><code>.mooring</code>---A one-row <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that contains the information in <code>.moorings</code> for a specific receiver;</p></li>
 <li><p><code>.bathy</code>---A <code>SpatRaster</code> that defines the grid over which detection probability is calculated (see below);</p></li>
 <li><p><code>...</code> Additional arguments passed via <code>acs_setup_detection_kernels()</code>.
 Using these inputs, the function must return a <code>SpatRaster</code> that defines the detection kernel around a specific receiver (see Examples).</p></li>
 </ul></dd>
 
 
-<dt>.bathy</dt>
-<dd><p>A <code>SpatRaster</code> that defines the grid over which detection kernels are defined;</p></dd>
-
-
 <dt>.verbose</dt>
-<dd><p>A <code>logical</code> variable that defines whether or not to print messages to the console to relay function progress.</p></dd>
+<dd><p>Argument(s) to monitor function progress (see <code><a href="patter-progress.html">patter-progress</a></code>).</p></dd>
 
 </dl></div>
     <div id="value">
@@ -153,57 +142,34 @@ Using these inputs, the function must return a <code>SpatRaster</code> that defi
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#### Define example 'moorings' &amp; 'services' dataset</span></span></span>
-<span class="r-in"><span><span class="co"># receivers 3 and 4 overlap in space but receiver 5 is further afield</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va">graphics</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va">graphics</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: data.table</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#### Define function inputs</span></span></span>
+<span class="r-in"><span><span class="co"># Define example 'moorings' dataset</span></span></span>
+<span class="r-in"><span><span class="co"># * Receivers 3 and 4 overlap in space but receiver 5 is further afield</span></span></span>
 <span class="r-in"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>receiver_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                receiver_start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2016-01-01"</span>, <span class="st">"2016-01-01"</span>, <span class="st">"2016-01-01"</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                receiver_end <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2016-01-05"</span>, <span class="st">"2016-01-05"</span>, <span class="st">"2016-01-05"</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                receiver_easting <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">706124.9</span>, <span class="fl">706012.7</span>, <span class="fl">709379.0</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                receiver_northing <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6265030</span>, <span class="fl">6264993</span>, <span class="fl">6260093</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                receiver_range <span class="op">=</span> <span class="fl">750</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Define example 'services' dataset</span></span></span>
 <span class="r-in"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>receiver_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">5</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                service_start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2016-01-01"</span>, <span class="st">"2016-01-01"</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                service_end <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2016-01-01"</span>, <span class="st">"2016-01-01"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Define function to calculate detection probability</span></span></span>
-<span class="r-in"><span><span class="co"># This must accept a .data &amp; .bathy argument:</span></span></span>
-<span class="r-in"><span><span class="co"># * .data is the .moorings data for a specific receiver (e.g., containing receiver coordinates)</span></span></span>
-<span class="r-in"><span><span class="co"># * .bathy is as described above</span></span></span>
-<span class="r-in"><span><span class="co"># Using these arguments, the function must calculate detection probability around the receiver</span></span></span>
-<span class="r-in"><span><span class="co"># * This implementation supports receiver-specific detection ranges</span></span></span>
-<span class="r-in"><span><span class="va">acs_setup_detection_pr</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.data</span>, <span class="va">.bathy</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co"># Define helper function to calculate detection probability give distance</span></span></span>
-<span class="r-in"><span>  <span class="va">calc_dpr</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">distance</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>    <span class="va">pr</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="fl">2.5</span> <span class="op">+</span> <span class="op">-</span><span class="fl">0.02</span> <span class="op">*</span> <span class="va">distance</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="va">pr</span><span class="op">[</span><span class="va">distance</span> <span class="op">&gt;</span> <span class="va">.data</span><span class="op">$</span><span class="va">receiver_range</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0</span></span></span>
-<span class="r-in"><span>    <span class="va">pr</span></span></span>
-<span class="r-in"><span>  <span class="op">}</span></span></span>
-<span class="r-in"><span>  <span class="co"># Calculate Euclidean distance around receiver</span></span></span>
-<span class="r-in"><span>  <span class="va">rxy</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">receiver_easting</span>, <span class="va">.data</span><span class="op">$</span><span class="va">receiver_northing</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">cell</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/xyCellFrom.html" class="external-link">cellFromXY</a></span><span class="op">(</span><span class="va">.bathy</span>, <span class="va">rxy</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">grid</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/setValues.html" class="external-link">setValues</a></span><span class="op">(</span><span class="va">.bathy</span>, <span class="cn">NA</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">grid</span><span class="op">[</span><span class="va">cell</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1</span></span></span>
-<span class="r-in"><span>  <span class="va">dist</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/distance.html" class="external-link">distance</a></span><span class="op">(</span><span class="va">grid</span>, unit <span class="op">=</span> <span class="st">"m"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">dist</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/mask.html" class="external-link">mask</a></span><span class="op">(</span><span class="va">dist</span>, <span class="va">.bathy</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="co"># Convert distances to detection pr</span></span></span>
-<span class="r-in"><span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/app.html" class="external-link">app</a></span><span class="op">(</span><span class="va">dist</span>, <span class="va">calc_dpr</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-in"><span><span class="co"># Examine output of function for example receiver</span></span></span>
-<span class="r-in"><span><span class="va">pr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">m</span><span class="op">$</span><span class="va">receiver_id</span><span class="op">)</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">id</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="va">id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">m</span><span class="op">$</span><span class="va">receiver_id</span><span class="op">)</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="acs_setup_detection_pr.html">acs_setup_detection_pr</a></span><span class="op">(</span><span class="va">m</span><span class="op">[</span><span class="va">m</span><span class="op">$</span><span class="va">receiver_id</span> <span class="op">==</span> <span class="va">id</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>, <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Set up data as usual</span></span></span>
+<span class="r-in"><span><span class="va">dlist</span> <span class="op">&lt;-</span> <span class="fu"><a href="pat_setup_data.html">pat_setup_data</a></span><span class="op">(</span>.moorings <span class="op">=</span> <span class="va">m</span>,</span></span>
+<span class="r-in"><span>                       .services <span class="op">=</span> <span class="va">s</span>,</span></span>
+<span class="r-in"><span>                       .bathy <span class="op">=</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                       .lonlat <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`.moorings` coordinates coerced onto `.bathy` grid.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (1): Implement function using specified inputs</span></span></span>
-<span class="r-in"><span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu">acs_setup_detection_kernels</span><span class="op">(</span><span class="va">m</span>, <span class="va">s</span>,</span></span>
-<span class="r-in"><span>                                 .calc_detection_pr <span class="op">=</span> <span class="va">acs_setup_detection_pr</span>,</span></span>
-<span class="r-in"><span>                                 .bathy <span class="op">=</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::acs_setup_detection_kernels() called (@ 2023-12-12 21:40:43.915397)... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up function... </span>
+<span class="r-in"><span><span class="co"># Implement function</span></span></span>
+<span class="r-in"><span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu">acs_setup_detection_kernels</span><span class="op">(</span><span class="va">dlist</span>, .calc_detection_pr <span class="op">=</span> <span class="va">acs_setup_detection_pr</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::acs_setup_detection_kernels()` called @ 2023-12-18 15:09:53... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting receiver-specific kernels (for detection)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting receiver-specific inverse kernels... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting area-wide kernels (for non-detection)... </span>
@@ -218,8 +184,8 @@ Using these inputs, the function must return a <code>SpatRaster</code> that defi
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... ... Extract detection probability kernels for active receivers... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Process detection probability kernels ... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... patter::acs_setup_detection_kernels() call completed (@ 2023-12-12 21:40:43.988457) after ~0 minutes. </span>
-<span class="r-in"><span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... patter::acs_setup_detection_kernels() call completed (@ 2023-12-18 15:09:53.276691) after ~0 minutes. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::acs_setup_detection_kernels()` call ended @ 2023-12-18 15:09:53 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="co"># Examine list elements</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">k</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                               Length Class      Mode</span>
@@ -229,7 +195,6 @@ Using these inputs, the function must return a <code>SpatRaster</code> that defi
 <span class="r-out co"><span class="r-pr">#&gt;</span> array_design_by_date          5      -none-     list</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> bkg_surface_by_design         2      -none-     list</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> bkg_inv_surface_by_design     2      -none-     list</span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Examine example receiver-specific kernels</span></span></span>
 <span class="r-in"><span><span class="va">pp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span>, \<span class="op">(</span><span class="va">id</span><span class="op">)</span> <span class="op">{</span></span></span>
@@ -237,7 +202,6 @@ Using these inputs, the function must return a <code>SpatRaster</code> that defi
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">m</span><span class="op">[</span><span class="va">m</span><span class="op">$</span><span class="va">receiver_id</span> <span class="op">==</span> <span class="va">id</span>, <span class="fu">.</span><span class="op">(</span><span class="va">receiver_easting</span>, <span class="va">receiver_northing</span><span class="op">)</span><span class="op">]</span>, cex <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">pp</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Examine example receiver-specific inverse kernels</span></span></span>
 <span class="r-in"><span><span class="va">pp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span>, \<span class="op">(</span><span class="va">id</span><span class="op">)</span> <span class="op">{</span></span></span>
@@ -246,7 +210,6 @@ Using these inputs, the function must return a <code>SpatRaster</code> that defi
 <span class="r-in"><span><span class="op">}</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="acs_setup_detection_kernels-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">pp</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Examine background detection Pr surfaces</span></span></span>
 <span class="r-in"><span><span class="co"># (for each unique combination of receivers that were deployed)</span></span></span>
 <span class="r-in"><span><span class="va">pp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -256,7 +219,6 @@ Using these inputs, the function must return a <code>SpatRaster</code> that defi
 <span class="r-in"><span><span class="op">}</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="acs_setup_detection_kernels-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">pp</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Examine background inverse detection Pr surfaces</span></span></span>
 <span class="r-in"><span><span class="va">pp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">k</span><span class="op">$</span><span class="va">bkg_inv_surface_by_design</span>, \<span class="op">(</span><span class="va">bkg</span><span class="op">)</span> <span class="op">{</span></span></span>
@@ -265,7 +227,6 @@ Using these inputs, the function must return a <code>SpatRaster</code> that defi
 <span class="r-in"><span><span class="op">}</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="acs_setup_detection_kernels-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">pp</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>

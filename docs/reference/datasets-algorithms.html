@@ -35,13 +35,16 @@
       <a href="../articles/a-methodology.html">Methodology</a>
     </li>
     <li>
-      <a href="../articles/b-workflow.html">A revised implementation of the `flapper` algorithms</a>
+      <a href="../articles/b-workflow-outline.html">Workflow</a>
     </li>
     <li>
-      <a href="../articles/c-demos.html">Demos</a>
+      <a href="../articles/c-workflow-example.html">A revised implementation of the `flapper` algorithms</a>
     </li>
     <li>
-      <a href="../articles/d-faqs.html">FAQs</a>
+      <a href="../articles/d-demos.html">Demos</a>
+    </li>
+    <li>
+      <a href="../articles/e-faqs.html">FAQs</a>
     </li>
   </ul></li>
 <li>
@@ -74,13 +77,9 @@
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">dat_obs</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">dat_overlaps</span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">dat_kernels</span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
 <span><span class="fu">dat_pff</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">dat_pfb</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">dat_pfbk</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">dat_pfp</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -92,11 +91,9 @@
     <div id="details">
     <h2>Details</h2>
     
-<ul><li><p><code>dat_obs()</code> reads an example input dataset from <code><a href="acs_setup_obs.html">acs_setup_obs()</a></code>;</p></li>
-<li><p><code>dat_overlaps()</code> reads an example output from <code><a href="acs_setup_detection_overlaps.html">acs_setup_detection_overlaps()</a></code>;</p></li>
-<li><p><code>dat_kernels()</code> reads an example output from <code><a href="acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code>;</p></li>
+<ul><li><p><code>dat_pff()</code> reads an example output from <code><a href="acs_setup_obs.html">acs_setup_obs()</a></code>;</p></li>
 <li><p><code>dat_pff()</code> reads an example output from <code><a href="pf_forward.html">pf_forward()</a></code>;</p></li>
-<li><p><code>dat_pfb()</code> reads an example output from <code><a href="pf_backward_killer.html">pf_backward_killer()</a></code>;</p></li>
+<li><p><code>dat_pfbk()</code> reads an example output from <code><a href="pf_backward_killer.html">pf_backward_killer()</a></code>;</p></li>
 <li><p><code>dat_pfp()</code> reads an example output from <code><a href="pf_path.html">pf_path()</a></code>;</p></li>
 </ul></div>
     <div id="author">
@@ -413,73 +410,6 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span>                 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                 </span>
-<span class="r-in"><span><span class="fu">dat_overlaps</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       Length Class  Mode</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,] 225    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,] 371    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,] 109    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,] 225    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [10,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [11,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [12,] 371    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [13,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [14,] 371    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [15,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [16,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [17,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [18,] 261    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [19,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [20,] 370    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [21,] 427    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [22,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [23,] 206    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [24,] 261    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [25,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [26,] 230    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [27,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [28,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [29,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [30,] 245    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [31,] 262    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [32,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [33,] 144    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [34,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [35,] 116    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [36,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [37,] 115    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [38,] 116    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [39,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [40,] 109    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [41,] 165    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [42,]   0    -none- NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [43,] 165    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [44,]  79    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [45,] 165    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [46,] 165    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [47,] 165    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [48,] 165    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [49,] 165    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [50,] 165    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [51,] 165    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [52,]  77    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [53,]  77    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [54,]  77    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [55,]  75    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [56,]  75    -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [57,]  75    -none- list</span>
-<span class="r-in"><span><span class="fu">dat_kernels</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                               Length Class      Mode</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> receiver_specific_kernels      57    -none-     list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> receiver_specific_inv_kernels  57    -none-     list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> array_design                    4    data.frame list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> array_design_by_date          508    -none-     list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> bkg_surface_by_design          19    -none-     list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> bkg_inv_surface_by_design      19    -none-     list</span>
 <span class="r-in"><span><span class="fu">dat_pff</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             Length Class      Mode   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> history     50     -none-     list   </span>
@@ -487,25 +417,25 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> internal     1     -none-     list   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> convergence  1     -none-     logical</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> time         1     -none-     list   </span>
-<span class="r-in"><span><span class="fu">dat_pfb</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">dat_pfbk</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         Length Class  Mode</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> history 50     -none- list</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> time     3     -none- list</span>
 <span class="r-in"><span><span class="fu">dat_pfp</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     path_id          timestep       cell_id          cell_x      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   :  1.00   Min.   : 1.0   Min.   :37374   Min.   :708242  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1st Qu.: 25.75   1st Qu.:13.0   1st Qu.:38140   1st Qu.:708842  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Median : 50.50   Median :25.5   Median :38699   Median :709142  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Mean   : 50.50   Mean   :25.5   Mean   :38613   Mean   :709110  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3rd Qu.: 75.25   3rd Qu.:38.0   3rd Qu.:39081   3rd Qu.:709342  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Max.   :100.00   Max.   :50.0   Max.   :40041   Max.   :709942  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   :  1.00   Min.   : 1.0   Min.   :35857   Min.   :708242  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1st Qu.: 25.75   1st Qu.:13.0   1st Qu.:37943   1st Qu.:708842  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Median : 50.50   Median :25.5   Median :38512   Median :709142  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Mean   : 50.50   Mean   :25.5   Mean   :38411   Mean   :709125  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3rd Qu.: 75.25   3rd Qu.:38.0   3rd Qu.:38901   3rd Qu.:709442  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Max.   :100.00   Max.   :50.0   Max.   :39662   Max.   :709742  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      cell_y            cell_z      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   :6252007   Min.   : 35.75  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1st Qu.:6252507   1st Qu.: 44.47  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Median :6252707   Median : 52.98  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Mean   :6252756   Mean   : 59.86  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3rd Qu.:6253007   3rd Qu.: 73.28  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Max.   :6253407   Max.   :128.98  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   :6252207   Min.   : 36.50  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1st Qu.:6252607   1st Qu.: 44.89  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Median :6252807   Median : 52.99  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Mean   :6252863   Mean   : 62.99  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3rd Qu.:6253107   3rd Qu.: 80.03  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Max.   :6254207   Max.   :140.85  </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

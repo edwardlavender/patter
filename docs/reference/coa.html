@@ -35,13 +35,16 @@
       <a href="../articles/a-methodology.html">Methodology</a>
     </li>
     <li>
-      <a href="../articles/b-workflow.html">A revised implementation of the `flapper` algorithms</a>
+      <a href="../articles/b-workflow-outline.html">Workflow</a>
     </li>
     <li>
-      <a href="../articles/c-demos.html">Demos</a>
+      <a href="../articles/c-workflow-example.html">A revised implementation of the `flapper` algorithms</a>
     </li>
     <li>
-      <a href="../articles/d-faqs.html">FAQs</a>
+      <a href="../articles/d-demos.html">Demos</a>
+    </li>
+    <li>
+      <a href="../articles/e-faqs.html">FAQs</a>
     </li>
   </ul></li>
 <li>
@@ -73,10 +76,9 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">coa</span><span class="op">(</span></span>
-<span>  <span class="va">.acoustics</span>,</span>
+<span>  <span class="va">.dlist</span>,</span>
 <span>  <span class="va">.delta_t</span>,</span>
 <span>  .split <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  .lonlat <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  .plot_weights <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span>,</span>
 <span>  .one_page <span class="op">=</span> <span class="cn">TRUE</span></span>
@@ -85,10 +87,10 @@
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>.acoustics</dt>
-<dd><p>A <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of acoustic detections. At a minimum, this must contain the following columns:</p><ul><li><p><code>receiver_id</code>---a unique identifier of each receiver;</p></li>
-<li><p><code>timestamp</code>---a time variable that defines the time stamp of detections;</p></li>
-<li><p><code>receiver_easting</code> and <code>receiver_northing</code> (planar coordinates) or <code>receiver_lon</code> and <code>receiver_lat</code> (longitude/latitude coordinates)---receiver locations;</p></li>
+    <dl><dt>.dlist</dt>
+<dd><p>A named <code>list</code> of data and parameters from <code><a href="pat_setup_data.html">pat_setup_data()</a></code>. This function requires:</p><ul><li><p><code>.dlist$data$acoustics</code>, with the following columns: <code>receiver_id</code> and <code>timestamp</code>;</p></li>
+<li><p><code>.dlist$data$moorings</code>, with the following columns: <code>receiver_id</code>, <code>receiver_x</code> and  <code>receiver_y</code>;</p></li>
+<li><p><code>.dlist$pars$lonlat</code>, which specifies the coordin</p></li>
 </ul></dd>
 
 
@@ -97,11 +99,7 @@
 
 
 <dt>.split</dt>
-<dd><p>(optional) A <code>character</code> that defines the name of the grouping factor in <code>.acoustics</code> (e.g., <code>individual_id</code> for <code><a href="datasets-mefs.html">dat_acoustics</a></code>).</p></dd>
-
-
-<dt>.lonlat</dt>
-<dd><p>(optional) A <code>logical</code> variable that defines whether or not to calculate COAs using planar coordinates (<code>receiver_easting</code> and <code>receiver_northing</code> columns) or longitude/latitude coordinates (<code>receiver_lon</code> and <code>receiver_lat</code> columns). If unsupplied, this is defined automatically based on the columns in <code>.acoustics</code>. <code>receiver_easting</code> and <code>receiver_northing</code> are used preferentially, if available, unless <code>.lonlat</code> is specified. <code>.lonlat = TRUE</code> requires the <code><a href="https://rdrr.io/pkg/geosphere/man/geomean.html" class="external-link">geosphere::geomean()</a></code> function.</p></dd>
+<dd><p>(optional) A <code>character</code> that defines the name of the grouping factor in <code>.dlist$data$acoustics</code> (e.g., <code>individual_id</code> for <code><a href="datasets-mefs.html">dat_acoustics</a></code>).</p></dd>
 
 
 <dt>.plot_weights</dt>
@@ -118,7 +116,7 @@
 </dl></div>
     <div id="details">
     <h2>Details</h2>
-    <p>COAs are calculated as a weighted mean of the locations of receivers at which individuals are detected over consecutive time intervals, weighted by the frequency of detections at each of those receivers.</p>
+    <p>COAs are calculated as a weighted mean of the locations of receivers at which individuals are detected over consecutive time intervals, weighted by the frequency of detections at each of those receivers. COAs are calculated via <code><a href="https://rdrr.io/r/stats/weighted.mean.html" class="external-link">stats::weighted.mean()</a></code> (for planar coordinates) or <code><a href="https://rdrr.io/pkg/geosphere/man/geomean.html" class="external-link">geosphere::geomean()</a></code> (for longitude/latitude coordinates).</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -135,100 +133,90 @@
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://dtplyr.tidyverse.org" class="external-link">dtplyr</a></span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: dtplyr</span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: dplyr</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Prepare example data</span></span></span>
-<span class="r-in"><span><span class="co"># Define example acoustics data</span></span></span>
-<span class="r-in"><span><span class="va">acc</span>   <span class="op">&lt;-</span> <span class="va">dat_acoustics</span></span></span>
-<span class="r-in"><span><span class="va">index</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="va">acc</span><span class="op">$</span><span class="va">receiver_id</span>, <span class="va">dat_moorings</span><span class="op">$</span><span class="va">receiver_id</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># Add UTM receiver coordinates from `dat_moorings`</span></span></span>
-<span class="r-in"><span><span class="va">acc</span><span class="op">$</span><span class="va">receiver_easting</span>  <span class="op">&lt;-</span> <span class="va">dat_moorings</span><span class="op">$</span><span class="va">receiver_easting</span><span class="op">[</span><span class="va">index</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">acc</span><span class="op">$</span><span class="va">receiver_northing</span> <span class="op">&lt;-</span> <span class="va">dat_moorings</span><span class="op">$</span><span class="va">receiver_northing</span><span class="op">[</span><span class="va">index</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="co"># Add lon/lat coordinates</span></span></span>
-<span class="r-in"><span><span class="va">acc</span><span class="op">$</span><span class="va">receiver_lon</span> <span class="op">&lt;-</span> <span class="va">dat_moorings</span><span class="op">$</span><span class="va">receiver_lon</span><span class="op">[</span><span class="va">index</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">acc</span><span class="op">$</span><span class="va">receiver_lat</span> <span class="op">&lt;-</span> <span class="va">dat_moorings</span><span class="op">$</span><span class="va">receiver_lat</span><span class="op">[</span><span class="va">index</span><span class="op">]</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (1): Calculate COAs for an example individual</span></span></span>
-<span class="r-in"><span><span class="va">pos</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">acc</span><span class="op">$</span><span class="va">individual_id</span> <span class="op">==</span> <span class="va">acc</span><span class="op">$</span><span class="va">individual_id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span><span class="va">acc</span><span class="op">[</span><span class="va">pos</span>, <span class="op">]</span>, .delta_t <span class="op">=</span> <span class="st">"2 hours"</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>UTM coordinates used (both UTM and lon/lat coordinates detected).</span>
+<span class="r-in"><span><span class="va">acc</span>   <span class="op">&lt;-</span> <span class="va">dat_acoustics</span><span class="op">[</span><span class="va">individual_id</span> <span class="op">==</span> <span class="va">dat_acoustics</span><span class="op">$</span><span class="va">individual_id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">gebco</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">dlist</span>  <span class="op">&lt;-</span> <span class="fu"><a href="pat_setup_data.html">pat_setup_data</a></span><span class="op">(</span>.acoustics <span class="op">=</span> <span class="va">acc</span>,</span></span>
+<span class="r-in"><span>                        .moorings <span class="op">=</span> <span class="va">dat_moorings</span>,</span></span>
+<span class="r-in"><span>                        .bathy <span class="op">=</span> <span class="va">gebco</span>,</span></span>
+<span class="r-in"><span>                        .lonlat <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`.moorings` coordinates coerced onto `.bathy` grid.</span>
+<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span><span class="va">dlist</span>, .delta_t <span class="op">=</span> <span class="st">"2 hours"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="coa-1.png" alt="" width="700" height="433"></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                timestamp    coa_x   coa_y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   1: 2016-03-17 01:00:00 709206.3 6253082</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   2: 2016-03-17 03:00:00 708989.5 6252974</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   3: 2016-03-17 05:00:00 709340.0 6253137</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   4: 2016-03-17 07:00:00 709434.0 6253166</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   5: 2016-03-17 09:00:00 709447.2 6253170</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1: 2016-03-17 01:00:00 709176.9 6253068</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2: 2016-03-17 03:00:00 708972.9 6252945</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3: 2016-03-17 05:00:00 709304.6 6253132</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4: 2016-03-17 07:00:00 709396.0 6253168</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5: 2016-03-17 09:00:00 709408.8 6253174</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 758: 2017-05-31 21:00:00 702913.7 6266213</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 759: 2017-05-31 23:00:00 702998.5 6266307</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 760: 2017-06-01 01:00:00 703012.8 6266323</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 761: 2017-06-01 03:00:00 703012.8 6266323</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 762: 2017-06-01 05:00:00 703012.8 6266323</span>
-<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span><span class="va">acc</span><span class="op">[</span><span class="va">pos</span>, <span class="op">]</span>, .delta_t <span class="op">=</span> <span class="st">"4 hours"</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>UTM coordinates used (both UTM and lon/lat coordinates detected).</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 758: 2017-05-31 21:00:00 702947.7 6266212</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 759: 2017-05-31 23:00:00 703028.5 6266293</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 760: 2017-06-01 01:00:00 703042.1 6266307</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 761: 2017-06-01 03:00:00 703042.1 6266307</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 762: 2017-06-01 05:00:00 703042.1 6266307</span>
+<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span><span class="va">dlist</span>, .delta_t <span class="op">=</span> <span class="st">"4 hours"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="coa-2.png" alt="" width="700" height="433"></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                timestamp    coa_x   coa_y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   1: 2016-03-17 01:00:00 709069.9 6253014</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   2: 2016-03-17 05:00:00 709373.0 6253147</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   3: 2016-03-17 09:00:00 709447.2 6253170</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   4: 2016-03-21 21:00:00 709275.6 6253117</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   5: 2016-03-22 05:00:00 709275.6 6253117</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1: 2016-03-17 01:00:00 709048.6 6252991</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2: 2016-03-17 05:00:00 709336.7 6253145</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3: 2016-03-17 09:00:00 709408.8 6253174</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4: 2016-03-21 21:00:00 709242.1 6253107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5: 2016-03-22 05:00:00 709242.1 6253107</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 554: 2017-05-30 21:00:00 702813.2 6266056</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 555: 2017-05-31 17:00:00 702967.8 6266273</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 556: 2017-05-31 21:00:00 702938.2 6266241</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 557: 2017-06-01 01:00:00 703012.8 6266323</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 558: 2017-06-01 05:00:00 703012.8 6266323</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 554: 2017-05-30 21:00:00 702847.0 6266057</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 555: 2017-05-31 17:00:00 702999.3 6266264</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 556: 2017-05-31 21:00:00 702971.1 6266236</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 557: 2017-06-01 01:00:00 703042.1 6266307</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 558: 2017-06-01 05:00:00 703042.1 6266307</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (2): Calculate COAs for multiple individuals via .split</span></span></span>
-<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span><span class="va">acc</span>, .delta_t <span class="op">=</span> <span class="st">"6 hours"</span>, .split <span class="op">=</span> <span class="st">"individual_id"</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>UTM coordinates used (both UTM and lon/lat coordinates detected).</span>
-<span class="r-plt img"><img src="coa-3.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="va">dlist</span> <span class="op">&lt;-</span> <span class="fu"><a href="pat_setup_data.html">pat_setup_data</a></span><span class="op">(</span>.acoustics <span class="op">=</span> <span class="va">dat_acoustics</span>,</span></span>
+<span class="r-in"><span>                       .moorings <span class="op">=</span> <span class="va">dat_moorings</span>,</span></span>
+<span class="r-in"><span>                       .bathy <span class="op">=</span> <span class="va">gebco</span>,</span></span>
+<span class="r-in"><span>                       .lonlat <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Multiple individuals detected in acoustic data.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Acoustic time stamps should be ordered chronologically.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`.moorings` coordinates coerced onto `.bathy` grid.</span>
+<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span><span class="va">dlist</span>, .delta_t <span class="op">=</span> <span class="st">"6 hours"</span>, .split <span class="op">=</span> <span class="st">"individual_id"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       individual_id           timestamp    coa_x   coa_y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:            25 2016-03-17 01:00:00 709145.3 6253048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:            25 2016-03-17 07:00:00 709436.5 6253166</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:            25 2016-03-21 19:00:00 709275.6 6253117</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:            25 2016-03-22 01:00:00 709275.6 6253117</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:            25 2016-03-22 07:00:00 709275.6 6253117</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1:            25 2016-03-17 01:00:00 709120.1 6253030</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2:            25 2016-03-17 07:00:00 709398.4 6253169</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3:            25 2016-03-21 19:00:00 709242.1 6253107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4:            25 2016-03-22 01:00:00 709242.1 6253107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5:            25 2016-03-22 07:00:00 709242.1 6253107</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1216:            35 2017-04-10 05:00:00 708308.2 6252858</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1217:            35 2017-04-10 17:00:00 708781.5 6253281</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1218:            35 2017-04-11 23:00:00 706968.8 6253886</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1219:            35 2017-04-12 17:00:00 708780.9 6253196</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1220:            35 2017-04-19 23:00:00 707195.3 6253739</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1216:            35 2017-04-10 05:00:00 708275.5 6252874</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1217:            35 2017-04-10 17:00:00 708772.1 6253272</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1218:            35 2017-04-11 23:00:00 707000.4 6253868</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1219:            35 2017-04-12 17:00:00 708771.2 6253210</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1220:            35 2017-04-19 23:00:00 707242.1 6253707</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Example (3): Use planar or lon/lat coordinates</span></span></span>
-<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span><span class="va">acc</span>, .delta_t <span class="op">=</span> <span class="st">"8 hours"</span>, .split <span class="op">=</span> <span class="st">"individual_id"</span>, .lonlat <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       individual_id           timestamp    coa_x   coa_y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:            25 2016-03-17 01:00:00 709183.2 6253064</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:            25 2016-03-17 09:00:00 709447.2 6253170</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:            25 2016-03-21 17:00:00 709275.6 6253117</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:            25 2016-03-22 01:00:00 709275.6 6253117</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:            25 2016-03-23 17:00:00 707542.3 6267727</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1042:            35 2017-04-10 17:00:00 708781.5 6253281</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1043:            35 2017-04-11 17:00:00 706505.6 6254185</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1044:            35 2017-04-12 01:00:00 707195.3 6253739</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1045:            35 2017-04-12 17:00:00 708780.9 6253196</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1046:            35 2017-04-19 17:00:00 707195.3 6253739</span>
-<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span><span class="va">acc</span>, .delta_t <span class="op">=</span> <span class="st">"8 hours"</span>, .split <span class="op">=</span> <span class="st">"individual_id"</span>, .lonlat <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="coa-4.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="co">#### Example (3): Use lon/lat coordinates</span></span></span>
+<span class="r-in"><span><span class="va">gebco_ll</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/project.html" class="external-link">project</a></span><span class="op">(</span><span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"EPSG:4326"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">dlist</span> <span class="op">&lt;-</span> <span class="fu"><a href="pat_setup_data.html">pat_setup_data</a></span><span class="op">(</span>.acoustics <span class="op">=</span> <span class="va">dat_acoustics</span>,</span></span>
+<span class="r-in"><span>                       .moorings <span class="op">=</span> <span class="va">dat_moorings</span>,</span></span>
+<span class="r-in"><span>                       .bathy <span class="op">=</span> <span class="va">gebco_ll</span>,</span></span>
+<span class="r-in"><span>                       .lonlat <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Multiple individuals detected in acoustic data.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Acoustic time stamps should be ordered chronologically.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`.moorings` coordinates coerced onto `.bathy` grid.</span>
+<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span><span class="va">dlist</span>, .delta_t <span class="op">=</span> <span class="st">"6 hours"</span>, .split <span class="op">=</span> <span class="st">"individual_id"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="coa-3.png" alt="" width="700" height="433"></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       individual_id           timestamp     coa_x    coa_y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:            25 2016-03-17 01:00:00 -5.612269 56.37585</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:            25 2016-03-17 09:00:00 -5.607916 56.37668</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:            25 2016-03-21 17:00:00 -5.610733 56.37628</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:            25 2016-03-22 01:00:00 -5.610733 56.37628</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:            25 2016-03-23 17:00:00 -5.627150 56.50808</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1:            25 2016-03-17 01:00:00 -5.612719 56.37542</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2:            25 2016-03-17 07:00:00 -5.607875 56.37639</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3:            25 2016-03-21 19:00:00 -5.610413 56.37602</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4:            25 2016-03-22 01:00:00 -5.610413 56.37602</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5:            25 2016-03-22 07:00:00 -5.610413 56.37602</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1042:            35 2017-04-10 17:00:00 -5.618588 56.37798</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1043:            35 2017-04-11 17:00:00 -5.654667 56.38708</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1044:            35 2017-04-12 01:00:00 -5.643867 56.38278</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1045:            35 2017-04-12 17:00:00 -5.618665 56.37722</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1046:            35 2017-04-19 17:00:00 -5.643867 56.38278</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1216:            35 2017-04-10 05:00:00 -5.626653 56.37486</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1217:            35 2017-04-10 17:00:00 -5.618533 56.37788</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1218:            35 2017-04-11 23:00:00 -5.647482 56.38423</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1219:            35 2017-04-12 17:00:00 -5.618795 56.37726</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1220:            35 2017-04-19 23:00:00 -5.644054 56.38298</span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>

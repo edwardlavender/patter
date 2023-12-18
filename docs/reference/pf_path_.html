@@ -35,13 +35,16 @@
       <a href="../articles/a-methodology.html">Methodology</a>
     </li>
     <li>
-      <a href="../articles/b-workflow.html">A revised implementation of the `flapper` algorithms</a>
+      <a href="../articles/b-workflow-outline.html">Workflow</a>
     </li>
     <li>
-      <a href="../articles/c-demos.html">Demos</a>
+      <a href="../articles/c-workflow-example.html">A revised implementation of the `flapper` algorithms</a>
     </li>
     <li>
-      <a href="../articles/d-faqs.html">FAQs</a>
+      <a href="../articles/d-demos.html">Demos</a>
+    </li>
+    <li>
+      <a href="../articles/e-faqs.html">FAQs</a>
     </li>
   </ul></li>
 <li>
@@ -72,19 +75,25 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">.pf_path_join</span><span class="op">(</span><span class="va">.data</span>, <span class="va">.current</span>, <span class="va">.t</span>, .pb <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">.pb_step</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">.pf_path_pivot_checks</span><span class="op">(</span><span class="va">.obs</span>, <span class="va">.cols</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">.pf_path_join</span><span class="op">(</span><span class="va">.data</span>, <span class="va">.current</span>, <span class="va">.t</span>, .pb <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">.pb_step</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">.pf_path_chain</span><span class="op">(</span><span class="va">.history</span>, <span class="va">.read</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>.data, .current., t., pb</dt>
-<dd><p>Arguments for <code>.pf_path_join</code>.</p></dd>
+    <dl><dt>.obs, .cols</dt>
+<dd><p>Arguments for <code>.pf_path_pivot_checks()</code></p></dd>
+
+
+<dt>.data, .current., t., pb</dt>
+<dd><p>Arguments for <code>.pf_path_join()</code>.</p></dd>
 
 
 <dt>.history, .read</dt>
-<dd><p>Arguments for <code>.pf_path_chain</code>.</p></dd>
+<dd><p>Arguments for <code>.pf_path_chain()</code>.</p></dd>
 
 </dl></div>
     <div id="author">

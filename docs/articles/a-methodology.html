@@ -53,13 +53,16 @@
       <a href="../articles/a-methodology.html">Methodology</a>
     </li>
     <li>
-      <a href="../articles/b-workflow.html">A revised implementation of the `flapper` algorithms</a>
+      <a href="../articles/b-workflow-outline.html">Workflow</a>
     </li>
     <li>
-      <a href="../articles/c-demos.html">Demos</a>
+      <a href="../articles/c-workflow-example.html">A revised implementation of the `flapper` algorithms</a>
     </li>
     <li>
-      <a href="../articles/d-faqs.html">FAQs</a>
+      <a href="../articles/d-demos.html">Demos</a>
+    </li>
+    <li>
+      <a href="../articles/e-faqs.html">FAQs</a>
     </li>
   </ul>
 </li>
@@ -159,7 +162,7 @@ contingent upon the past (a marginal distribution), they do not embody
 information from the future (the joint distribution). In
 <code>patter</code>, a backward sampling algorithm mitigates these issue
 to reconstruct movement trajectories (see
-<code><a href="../reference/pf_backward_sampler.html">pf_backward_sampler()</a></code>).</p>
+<code>pf_backward_sampler()</code>).</p>
 </div>
 <div class="section level2">
 <h2 id="forward-simulation">Forward simulation<a class="anchor" aria-label="anchor" href="#forward-simulation"></a>
@@ -283,7 +286,7 @@ the probability densities linking each pair of particles;</li>
 <li>Repeat this process until the start of the time series;</li>
 </ul>
 <p>Backward sampling is implemented via
-<code><a href="../reference/pf_backward_sampler.html">pf_backward_sampler()</a></code> and associates. As noted above, you
+<code>pf_backward_sampler()</code> and associates. As noted above, you
 can also reconstruct paths via <code><a href="../reference/pf_forward.html">pf_forward()</a></code> plus
 <code><a href="../reference/pf_backward_killer.html">pf_backward_killer()</a></code> (and <code><a href="../reference/pf_path.html">pf_path()</a></code>), which is
 much less computationally intensive, but subject to limitations (see
@@ -299,7 +302,7 @@ of space use. Movement paths can be reconstructed in two ways:</p>
 <code><a href="../reference/pf_backward_killer.html">pf_backward_killer()</a></code> → <code><a href="../reference/pf_path.html">pf_path()</a></code>
 </li>
 <li>(recommended) <code><a href="../reference/pf_forward.html">pf_forward()</a></code> →
-<code><a href="../reference/pf_backward_sampler.html">pf_backward_sampler()</a></code>
+<code>pf_backward_sampler()</code>
 </li>
 </ul>
 <p>Patterns of space use (utilisation distributions) can be

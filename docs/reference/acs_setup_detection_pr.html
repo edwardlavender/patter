@@ -35,13 +35,16 @@
       <a href="../articles/a-methodology.html">Methodology</a>
     </li>
     <li>
-      <a href="../articles/b-workflow.html">A revised implementation of the `flapper` algorithms</a>
+      <a href="../articles/b-workflow-outline.html">Workflow</a>
     </li>
     <li>
-      <a href="../articles/c-demos.html">Demos</a>
+      <a href="../articles/c-workflow-example.html">A revised implementation of the `flapper` algorithms</a>
     </li>
     <li>
-      <a href="../articles/d-faqs.html">FAQs</a>
+      <a href="../articles/d-demos.html">Demos</a>
+    </li>
+    <li>
+      <a href="../articles/e-faqs.html">FAQs</a>
     </li>
   </ul></li>
 <li>
@@ -73,7 +76,7 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">acs_setup_detection_pr</span><span class="op">(</span></span>
-<span>  <span class="va">.data</span>,</span>
+<span>  <span class="va">.mooring</span>,</span>
 <span>  <span class="va">.bathy</span>,</span>
 <span>  .calc_detection_pr <span class="op">=</span> <span class="va">calc_detection_pr_logistic</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -82,7 +85,7 @@
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>.data</dt>
+    <dl><dt>.mooring</dt>
 <dd><p>A one-row <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines the location of the receiver and associated information used by the model of detection probability.</p></dd>
 
 
@@ -129,10 +132,15 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="va">dat_moorings</span><span class="op">[</span><span class="fl">1</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">acs_setup_detection_pr</span><span class="op">(</span><span class="va">m</span>, <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">m</span><span class="op">$</span><span class="va">receiver_easting</span>, <span class="va">m</span><span class="op">$</span><span class="va">receiver_northing</span>, pch <span class="op">=</span> <span class="st">"."</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="pat_setup_data.html">pat_setup_data</a></span><span class="op">(</span>.moorings <span class="op">=</span> <span class="va">dat_moorings</span>,</span></span>
+<span class="r-in"><span>                       .bathy <span class="op">=</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                       .lonlat <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`.moorings` coordinates coerced onto `.bathy` grid.</span>
+<span class="r-in"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">moorings</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">b</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">$</span><span class="va">spatial</span><span class="op">$</span><span class="va">bathy</span></span></span>
+<span class="r-in"><span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu">acs_setup_detection_pr</span><span class="op">(</span><span class="va">m</span>, <span class="va">b</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">k</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">m</span><span class="op">$</span><span class="va">receiver_x</span>, <span class="va">m</span><span class="op">$</span><span class="va">receiver_y</span>, pch <span class="op">=</span> <span class="st">"."</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="acs_setup_detection_pr-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

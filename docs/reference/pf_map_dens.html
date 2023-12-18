@@ -35,13 +35,16 @@
       <a href="../articles/a-methodology.html">Methodology</a>
     </li>
     <li>
-      <a href="../articles/b-workflow.html">A revised implementation of the `flapper` algorithms</a>
+      <a href="../articles/b-workflow-outline.html">Workflow</a>
     </li>
     <li>
-      <a href="../articles/c-demos.html">Demos</a>
+      <a href="../articles/c-workflow-example.html">A revised implementation of the `flapper` algorithms</a>
     </li>
     <li>
-      <a href="../articles/d-faqs.html">FAQs</a>
+      <a href="../articles/d-demos.html">Demos</a>
+    </li>
+    <li>
+      <a href="../articles/e-faqs.html">FAQs</a>
     </li>
   </ul></li>
 <li>
@@ -86,7 +89,6 @@
 <span>  .plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  .use_tryCatch <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  .verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  .txt <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -122,7 +124,7 @@
 </ul></dd>
 
 
-<dt>.verbose, .txt</dt>
+<dt>.verbose</dt>
 <dd><p>Controls on function prompts and messages (see <code><a href="pf_forward.html">pf_forward()</a></code>.</p></dd>
 
 
@@ -168,7 +170,9 @@
 <span class="r-in"><span><span class="co"># Load and attach selected packages</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://dtplyr.tidyverse.org" class="external-link">dtplyr</a></span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: dtplyr</span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: dplyr</span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="http://spatstat.org/" class="external-link">spatstat.explore</a></span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: spatstat.explore</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: spatstat.data</span>
@@ -197,12 +201,12 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (1): Smooth a POU SpatRaster</span></span></span>
 <span class="r-in"><span><span class="co"># Estimate POU on a grid based on pre-prepared particle samples</span></span></span>
-<span class="r-in"><span><span class="va">out_pfb</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_pfb</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">out_pfb</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_pfbk</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pou</span>     <span class="op">&lt;-</span> <span class="fu"><a href="pf_map_pou.html">pf_map_pou</a></span><span class="op">(</span>.history <span class="op">=</span> <span class="va">out_pfb</span><span class="op">$</span><span class="va">history</span>, .bathy <span class="op">=</span> <span class="va">gebco</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="pf_map_dens-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># Smooth POU</span></span></span>
 <span class="r-in"><span><span class="va">dens_1</span>    <span class="op">&lt;-</span> <span class="fu">pf_map_dens</span><span class="op">(</span><span class="va">pou</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() called (@ 2023-12-12 21:41:14.767532)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_map_dens()` called @ 2023-12-18 15:10:14... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.xpf`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building `ppp` object... </span>
@@ -211,13 +215,13 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
 <span class="r-plt img"><img src="pf_map_dens-2.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() call ended (@ 2023-12-12 21:41:14.926941). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_map_dens()` call ended @ 2023-12-18 15:10:14 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (2): Smooth particle coordinates</span></span></span>
 <span class="r-in"><span><span class="co"># This approach is equivalent to Example (1) &amp; the outputs are identical</span></span></span>
 <span class="r-in"><span><span class="co"># But this implementation can be considerably faster</span></span></span>
 <span class="r-in"><span><span class="va">dens_2</span> <span class="op">&lt;-</span> <span class="fu">pf_map_dens</span><span class="op">(</span><span class="va">gebco</span>, .coord <span class="op">=</span> <span class="fu"><a href="pf_coords.html">pf_coords</a></span><span class="op">(</span><span class="va">out_pfb</span><span class="op">$</span><span class="va">history</span>, <span class="va">gebco</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() called (@ 2023-12-12 21:41:14.927715)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_map_dens()` called @ 2023-12-18 15:10:14... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.xpf`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building `ppp` object... </span>
@@ -225,27 +229,22 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Defining `ppp` object... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() call ended (@ 2023-12-12 21:41:15.354212). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_map_dens()` call ended @ 2023-12-18 15:10:14 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">dens_1</span>, <span class="va">dens_2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Example (3): Smooth coordinates from other algorithms</span></span></span>
-<span class="r-in"><span><span class="co"># Define coordinates to smooth (e.g., based on COA algorithm)</span></span></span>
-<span class="r-in"><span><span class="va">out_coa</span> <span class="op">&lt;-</span></span></span>
-<span class="r-in"><span>  <span class="co"># Define acoustic data for an example individual</span></span></span>
-<span class="r-in"><span>  <span class="co"># (over the same time period as `out_pfb`)</span></span></span>
-<span class="r-in"><span>  <span class="va">dat_acoustics</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">individual_id</span> <span class="op">==</span> <span class="fl">25</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">out_pfb</span><span class="op">$</span><span class="va">history</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="co"># Calculate centres of activity over some (arbitrary) time interval</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/pkg/terra/man/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">dat_moorings</span>, by <span class="op">=</span> <span class="st">"receiver_id"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="coa.html">coa</a></span><span class="op">(</span>.delta_t <span class="op">=</span> <span class="st">"12 hours"</span>, .plot_weights <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"coa_x"</span>, y <span class="op">=</span> <span class="st">"coa_y"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/pkg/terra/man/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>UTM coordinates used (both UTM and lon/lat coordinates detected).</span>
+<span class="r-in"><span><span class="co">#### Example (3): Smooth COAs</span></span></span>
+<span class="r-in"><span><span class="co"># Define data list</span></span></span>
+<span class="r-in"><span><span class="va">dlist</span> <span class="op">&lt;-</span> <span class="fu"><a href="pat_setup_data.html">pat_setup_data</a></span><span class="op">(</span>.acoustics <span class="op">=</span> <span class="va">dat_acoustics</span><span class="op">[</span><span class="va">individual_id</span> <span class="op">==</span> <span class="fl">25</span>, <span class="op">]</span>,</span></span>
+<span class="r-in"><span>                        .moorings <span class="op">=</span> <span class="va">dat_moorings</span>,</span></span>
+<span class="r-in"><span>                        .bathy <span class="op">=</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                        .lonlat <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`.moorings` coordinates coerced onto `.bathy` grid.</span>
+<span class="r-in"><span><span class="co"># Calculate COAs</span></span></span>
+<span class="r-in"><span><span class="va">out_coa</span> <span class="op">&lt;-</span> <span class="fu"><a href="coa.html">coa</a></span><span class="op">(</span><span class="va">dlist</span>, .delta_t <span class="op">=</span> <span class="st">"12 hours"</span>, .plot_weights <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">out_coa</span> <span class="op">&lt;-</span> <span class="va">out_coa</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span>x <span class="op">=</span> <span class="va">coa_x</span>, y <span class="op">=</span> <span class="va">coa_y</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="co"># Smooth centres of activity</span></span></span>
 <span class="r-in"><span><span class="va">dens_3</span> <span class="op">&lt;-</span> <span class="fu">pf_map_dens</span><span class="op">(</span><span class="va">gebco</span>, .coord <span class="op">=</span> <span class="va">out_coa</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() called (@ 2023-12-12 21:41:15.373475)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_map_dens()` called @ 2023-12-18 15:10:15... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.xpf`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building `ppp` object... </span>
@@ -253,14 +252,14 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Defining `ppp` object... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() call ended (@ 2023-12-12 21:41:15.515071). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_map_dens()` call ended @ 2023-12-18 15:10:15 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="fu">graphics</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">out_coa</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="pf_map_dens-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (4): Control smoothing parameters via `spatstat.explore::density.ppp()`</span></span></span>
 <span class="r-in"><span><span class="co"># E.g. use fixed bandwidth:</span></span></span>
 <span class="r-in"><span><span class="fu">pf_map_dens</span><span class="op">(</span><span class="va">pou</span>, sigma <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() called (@ 2023-12-12 21:41:15.516599)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_map_dens()` called @ 2023-12-18 15:10:15... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.xpf`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building `ppp` object... </span>
@@ -269,7 +268,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
 <span class="r-plt img"><img src="pf_map_dens-4.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() call ended (@ 2023-12-12 21:41:15.645722). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_map_dens()` call ended @ 2023-12-18 15:10:15 (duration: ~0 sec(s)). </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
@@ -277,10 +276,10 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> coord. ref. : WGS 84 / UTM zone 29N (EPSG:32629) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> source(s)   : memory</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> name        :         lyr.1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> min value   : -4.906683e-18 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> max value   :  2.028007e-02 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> min value   : -4.871511e-18 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> max value   :  2.356800e-02 </span>
 <span class="r-in"><span><span class="fu">pf_map_dens</span><span class="op">(</span><span class="va">pou</span>, sigma <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() called (@ 2023-12-12 21:41:15.647998)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_map_dens()` called @ 2023-12-18 15:10:15... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.xpf`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building `ppp` object... </span>
@@ -289,7 +288,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
 <span class="r-plt img"><img src="pf_map_dens-5.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() call ended (@ 2023-12-12 21:41:15.777494). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_map_dens()` call ended @ 2023-12-18 15:10:15 (duration: ~0 sec(s)). </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
@@ -297,11 +296,11 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> coord. ref. : WGS 84 / UTM zone 29N (EPSG:32629) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> source(s)   : memory</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> name        :         lyr.1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> min value   : -2.750687e-18 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> max value   :  1.222871e-02 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> min value   : -3.769630e-18 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> max value   :  1.510748e-02 </span>
 <span class="r-in"><span><span class="co"># E.g., perform automatic bandwidth selection using cross validation:</span></span></span>
 <span class="r-in"><span><span class="fu">pf_map_dens</span><span class="op">(</span><span class="va">pou</span>, sigma <span class="op">=</span> <span class="va">bw.diggle</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() called (@ 2023-12-12 21:41:15.779451)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_map_dens()` called @ 2023-12-18 15:10:15... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.xpf`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building `ppp` object... </span>
@@ -310,7 +309,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
 <span class="r-plt img"><img src="pf_map_dens-6.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() call ended (@ 2023-12-12 21:41:15.977242). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_map_dens()` call ended @ 2023-12-18 15:10:15 (duration: ~0 sec(s)). </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
@@ -318,10 +317,10 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> coord. ref. : WGS 84 / UTM zone 29N (EPSG:32629) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> source(s)   : memory</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> name        :         lyr.1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> min value   : -2.873613e-18 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> max value   :  1.138193e-02 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> min value   : -3.797942e-18 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> max value   :  1.396895e-02 </span>
 <span class="r-in"><span><span class="fu">pf_map_dens</span><span class="op">(</span><span class="va">pou</span>, sigma <span class="op">=</span> <span class="va">bw.scott</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() called (@ 2023-12-12 21:41:15.979387)... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_map_dens()` called @ 2023-12-18 15:10:15... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.xpf`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building `ppp` object... </span>
@@ -330,7 +329,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
 <span class="r-plt img"><img src="pf_map_dens-7.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> patter::pf_map_dens() call ended (@ 2023-12-12 21:41:16.115556). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_map_dens()` call ended @ 2023-12-18 15:10:15 (duration: ~0 sec(s)). </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
@@ -338,8 +337,8 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> coord. ref. : WGS 84 / UTM zone 29N (EPSG:32629) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> source(s)   : memory</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> name        :         lyr.1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> min value   : -3.093875e-18 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> max value   :  9.094664e-03 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> min value   : -3.285401e-18 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> max value   :  1.046399e-02 </span>
 <span class="r-in"><span><span class="co"># pf_map_dens(pou, sigma = bw.CvL)  # ~12 s (slow)</span></span></span>
 <span class="r-in"><span><span class="co"># pf_map_dens(pou, sigma = bw.ppl)  # ~14 s (slow)</span></span></span>
 </code></pre></div>

@@ -35,13 +35,16 @@
       <a href="../articles/a-methodology.html">Methodology</a>
     </li>
     <li>
-      <a href="../articles/b-workflow.html">A revised implementation of the `flapper` algorithms</a>
+      <a href="../articles/b-workflow-outline.html">Workflow</a>
     </li>
     <li>
-      <a href="../articles/c-demos.html">Demos</a>
+      <a href="../articles/c-workflow-example.html">A revised implementation of the `flapper` algorithms</a>
     </li>
     <li>
-      <a href="../articles/d-faqs.html">FAQs</a>
+      <a href="../articles/d-demos.html">Demos</a>
+    </li>
+    <li>
+      <a href="../articles/e-faqs.html">FAQs</a>
     </li>
   </ul></li>
 <li>
@@ -69,9 +72,37 @@
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.0.0.9000" id="patter-0009000">
 <code>patter</code> 0.0.0.9000<a class="anchor" aria-label="anchor" href="#patter-0009000"></a></h2>
-<ul><li>The developmental version of <code>patter</code>
-</li>
+<div class="section level3">
+<h3 id="overview-0-0-0-9000">Overview<a class="anchor" aria-label="anchor" href="#overview-0-0-0-9000"></a></h3>
+<p>This is the development version of <code>patter</code>. This package is a complete re-write of the predecessor <code>flapper</code> package. <code>patter</code> is designed to be simpler, faster, more powerful, better tested and easier to maintain. The main thrust of the package is the reconstruction of animal movement paths and emergent patterns of space in passive acoustic telemetry systems within an integrated particle-filtering framework. This consists of a forward simulation and a backward pass. Supporting functions for <em>de novo</em> simulation and other activities are also provided, but current functionality remains more streamlined than <code>flapper</code>. We have worked hard to improve internal routines—with function reparameterisions, faster back-ends (especially <code>terra</code>, <code>data.table</code>, <code>collapse</code> and <code>arrow</code>) and improved memory handling—alongside the API and supporting documentation. The package also benefits from fewer dependencies and has been fully upgraded in line with the evolution of <code>R</code>’s spatial packages (with <code>terra</code> and <code>sf</code> superseding <code>raster</code>, <code>sp</code>, <code>rgeos</code> and associates). Please provide feedback on the new package. Much work remains!</p>
+</div>
+<div class="section level3">
+<h3 id="de-novo-simulation-0-0-0-9000">
+<em>De-novo</em> simulation<a class="anchor" aria-label="anchor" href="#de-novo-simulation-0-0-0-9000"></a></h3>
+<p>The <code>sim_*()</code> functions in <code>flapper</code> have been replaced with faster and more flexible alternatives, including:</p>
+<ul><li>
+<code><a href="../reference/sim_array.html">sim_array()</a></code>, which replaces <code><a href="https://edwardlavender.github.io/flapper/reference/sim_array.html" class="external-link">flapper::sim_array()</a></code>;</li>
+<li>
+<code><a href="../reference/sim_path_walk.html">sim_path_walk()</a></code>, which replaces <code><a href="https://edwardlavender.github.io/flapper/reference/sim_path_sa.html" class="external-link">flapper::sim_path_sa()</a></code>;</li>
+<li>
+<code><a href="../reference/sim_detections.html">sim_detections()</a></code>, which replaces <code><a href="https://edwardlavender.github.io/flapper/reference/sim_detections.html" class="external-link">flapper::sim_detections()</a></code>;</li>
 </ul></div>
+<div class="section level3">
+<h3 id="forward-simulation-0-0-0-9000">Forward simulation<a class="anchor" aria-label="anchor" href="#forward-simulation-0-0-0-9000"></a></h3>
+<p>The <code><a href="../reference/pf_forward.html">pf_forward()</a></code> function implements the forward simulation. This brings together and enhances the <code>ac()</code>, <code>dc()</code>, <code>acdc()</code> and <code><a href="https://rdrr.io/r/stats/Fdist.html" class="external-link">pf()</a></code> functions in <code>flapper</code>. A major benefit of this integration is that the likelihood of simulated locations is evaluated exclusively at particle locations, rather than across the entire grid (as in <code>ac()</code>, <code>dc()</code> and <code>acdc()</code>), which is much faster. <code><a href="../reference/pf_forward.html">pf_forward()</a></code> also reparameterises the forward simulation of individual locations, with stochastic kick and directed sampling methodologies. In <code>flapper</code>, we simulated new locations by calculating movement probabilities into surrounding grid cells and then sampling grid cells in line with those probabilities (a directed sampling methodology). This approach has some significant benefits but becomes prohibitively expensive as grid size (area and resolution) increases. In <code>patter</code>, a new stochastic-kick methodology simulates new locations by ‘kicking’ previous locations using a movement model. Stochastic kicks are vectorised and independent of grid resolution, so this approach is much faster. At the same time, <code><a href="../reference/pf_forward.html">pf_forward()</a></code> implements an improved directed sampling methodology, and can chop and change between the stochastic-kick and directed sampling methodologies on the fly. This approach exploits the speed gains of stochastic kicks, where possible, while benefiting from the convergence properties of directed sampling, where required.</p>
+</div>
+<div class="section level3">
+<h3 id="backward-pass-0-0-0-9000">Backward pass<a class="anchor" aria-label="anchor" href="#backward-pass-0-0-0-9000"></a></h3>
+<p>The <code><a href="../reference/pf_backward_killer.html">pf_backward_killer()</a></code> is used to prune dead-ends from the forward simulation. This replaces previous functionality in <code>pf_simplify()</code> and is much faster. Pruning a 20,000 step time series with 1,000 particles at each time step now takes less than two minutes.</p>
+<p><code>pf_backward_sampler()</code> is a major, new routine that implements the backward sampler. This is required for the reconstruction of movement trajectories.</p>
+</div>
+<div class="section level3">
+<h3 id="analysis-0-0-0-9000">Analysis<a class="anchor" aria-label="anchor" href="#analysis-0-0-0-9000"></a></h3>
+<p>For the reconstruction of movement paths, <code><a href="../reference/pf_path.html">pf_path()</a></code> has been completely re-written and is massively faster, thanks to routines from <code>collapse</code>.</p>
+<p>For the reconstruction of movement paths, <code><a href="../reference/pf_map_pou.html">pf_map_pou()</a></code> replaces <code><a href="https://edwardlavender.github.io/flapper/reference/pf_plot_map.html" class="external-link">flapper::pf_plot_map()</a></code> and resolves an issue with the calculation of particle weights. <code><a href="../reference/pf_map_dens.html">pf_map_dens()</a></code> is a new function for the reconstruction of maps is based on <code>spatstat</code> routines. This function accounts for particle weights and fits smooth utilisation distributions using cross validation, superseding approaches in <code>flapper</code> based on <code>adehabitatHR</code>. The <code>get_hr_*()</code> routines for the reconstruction of home ranges remain.</p>
+<p>For the comparison of simulated and reconstructed patterns, the new <code>skill_*()</code> functions can be used.</p>
+</div>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

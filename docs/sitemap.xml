@@ -16,13 +16,25 @@
     <loc>/articles/a-methodology.html</loc>
   </url>
   <url>
+    <loc>/articles/b-workflow-outline.html</loc>
+  </url>
+  <url>
     <loc>/articles/b-workflow.html</loc>
   </url>
   <url>
     <loc>/articles/c-demos.html</loc>
   </url>
   <url>
+    <loc>/articles/c-workflow-example.html</loc>
+  </url>
+  <url>
+    <loc>/articles/d-demos.html</loc>
+  </url>
+  <url>
     <loc>/articles/d-faqs.html</loc>
+  </url>
+  <url>
+    <loc>/articles/e-faqs.html</loc>
   </url>
   <url>
     <loc>/articles/index.html</loc>
@@ -55,7 +67,13 @@
     <loc>/reference/call_.html</loc>
   </url>
   <url>
+    <loc>/reference/cat_.html</loc>
+  </url>
+  <url>
     <loc>/reference/check_data.html</loc>
+  </url>
+  <url>
+    <loc>/reference/check_dlist.html</loc>
   </url>
   <url>
     <loc>/reference/check_utils.html</loc>
@@ -97,6 +115,9 @@
     <loc>/reference/dot-is_lonlat.html</loc>
   </url>
   <url>
+    <loc>/reference/dot-pf_backward_killer_outputs.html</loc>
+  </url>
+  <url>
     <loc>/reference/dot-pf_history_dt.html</loc>
   </url>
   <url>
@@ -121,10 +142,19 @@
     <loc>/reference/mktempdir.html</loc>
   </url>
   <url>
+    <loc>/reference/pat_setup_data.html</loc>
+  </url>
+  <url>
     <loc>/reference/patter-package.html</loc>
   </url>
   <url>
+    <loc>/reference/patter-progress.html</loc>
+  </url>
+  <url>
     <loc>/reference/pb.html</loc>
+  </url>
+  <url>
+    <loc>/reference/pb_.html</loc>
   </url>
   <url>
     <loc>/reference/pf-class.html</loc>
@@ -154,6 +184,12 @@
     <loc>/reference/pf_distinct.html</loc>
   </url>
   <url>
+    <loc>/reference/pf_files.html</loc>
+  </url>
+  <url>
+    <loc>/reference/pf_forward-utils.html</loc>
+  </url>
+  <url>
     <loc>/reference/pf_forward.html</loc>
   </url>
   <url>
@@ -172,7 +208,13 @@
     <loc>/reference/pf_map_pou.html</loc>
   </url>
   <url>
+    <loc>/reference/pf_opt.html</loc>
+  </url>
+  <url>
     <loc>/reference/pf_particle.html</loc>
+  </url>
+  <url>
+    <loc>/reference/pf_particles-class.html</loc>
   </url>
   <url>
     <loc>/reference/pf_path.html</loc>
@@ -190,7 +232,7 @@
     <loc>/reference/pf_sample.html</loc>
   </url>
   <url>
-    <loc>/reference/pf_files.html</loc>
+    <loc>/reference/pf_setup_files.html</loc>
   </url>
   <url>
     <loc>/reference/pf_setup_rerun.html</loc>
