@@ -66,6 +66,7 @@ spatIntersect <- function(.x, .value = 1, .fun = NULL) {
 #' @rdname spat
 #' @keywords internal
 
+# Intersect SpatRasters in a list
 spatIntersect.SpatRaster <- function(.x, .value, .fun) {
   .x <- terra::rast(.x)
   if (!is.null(.value)) {
@@ -78,6 +79,7 @@ spatIntersect.SpatRaster <- function(.x, .value, .fun) {
 #' @rdname spat
 #' @keywords internal
 
+# Intersect SpatVectors in a list
 spatIntersect.SpatVector <- function(.x) {
   int <- .x[[1]]
   for (i in 2:length(.x)) {
@@ -96,4 +98,72 @@ spatIsEmpty <- function(.x) {
   } else {
     length(.x) == 0
   }
+}
+
+#' @rdname spat
+#' @keywords internal
+
+# Define x, y, mark data.table from SpatRaster
+spatMarks <- function(.x) {
+  # Define coordinates
+  .coord <- terra::as.data.frame(.x, xy = TRUE, na.rm = TRUE)
+  colnames(.coord) <- c("x", "y", "mark")
+  .coord <- .coord[which(!is.na(.coord$mark) & .coord$mark != 0), ]
+  if (!isTRUE(all.equal(sum(.coord$marks), 1))) {
+    abort("Weights on `.x` should sum to one since `.coord` = NULL.")
+  }
+  .coord |>
+    mutate(cell_id = terra::cellFromXY(.x, cbind(.data$x, .data$y))) |>
+    select("id", "x", "y", "mark") |>
+    as.data.table()
+}
+
+#' @rdname spat
+#' @keywords internal
+
+# Define x, y, mark data.table from coordinates data.table
+spatMarksFromCoord <- function(.x, .coord) {
+
+  # Coerce .coord to a data.table
+  if (inherits(.coord, "matrix") |
+      inherits(.coord, "data.frame") & !inherits(.coord, "data.table")) {
+    .coord <- as.data.table(.coord)
+  }
+  check_inherits(.coord, "data.table")
+
+  # Define x and y columns
+  contains_xy      <- all(c("x", "y") %in% colnames(.coord))
+  contains_cell_xy <- all(c("cell_x", "cell_y") %in% colnames(.coord))
+  if (contains_xy) {
+    if (contains_cell_xy) {
+      msg("`.coord` contains both (`x`, `y`) and (`cell_x`, `cell_y`) coordinates: (`x`, `y`) coordinates used.")
+      cell_x <- cell_y <- NULL
+      .coord[, cell_x := NULL]
+      .coord[, cell_y := NULL]
+    }
+  } else {
+    if (contains_cell_xy) {
+      .coord <-
+        .coord |>
+        rename(x = "cell_x", y = "cell_y") |>
+        as.data.table()
+    } else {
+      abort("`.coord` should contain `x` and `y` (or `cell_x` and `cell_y`) coordinates.")
+    }
+  }
+
+  # Define cell IDs (if un-supplied) for .pf_map_weights()
+  if (is.null(.coord$cell_id)) {
+    cell_id <- NULL
+    .coord[, cell_id := terra::cellFromXY(.x, cbind(.coord$x, .coord$y))]
+  }
+
+  # Define coord marks, as required
+  .coord <-
+    .coord |>
+    .pf_map_weights() |>
+    mutate(x = terra::xFromCell(.x, .data$cell_id),
+           y = terra::yFromCell(.x, .data$cell_id)) |>
+    select("cell_id", "x", "y", "mark") |>
+    as.data.table()
 }

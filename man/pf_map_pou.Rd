@@ -4,16 +4,16 @@
 \alias{pf_map_pou}
 \title{PF: map probability-of-use}
 \usage{
-pf_map_pou(.history, .bathy, .plot = TRUE, ...)
+pf_map_pou(.xpf, .coord, .plot = TRUE, .verbose = TRUE, ...)
 }
 \arguments{
-\item{.history}{Particle samples, provided in any format accepted by \code{\link[=.pf_history_dt]{.pf_history_dt()}}.}
-
-\item{.bathy}{A \code{\link{SpatRaster}} that defines the grid for the utilisation distribution. \code{NAs} on \code{.bathy} are used as a mask.}
-
 \item{.plot}{A logical input that defines whether or not to plot the \code{\link{SpatRaster}}.}
 
 \item{...}{If \code{.plot = TRUE}, \code{...} is a place holder for additional arguments passed to \code{\link[terra:plot]{terra::plot()}}.}
+
+\item{.history}{Particle samples, provided in any format accepted by \code{\link[=.pf_history_dt]{.pf_history_dt()}}.}
+
+\item{.bathy}{A \code{\link{SpatRaster}} that defines the grid for the utilisation distribution. \code{NAs} on \code{.bathy} are used as a mask.}
 }
 \value{
 The function returns a \code{\link{SpatRaster}} (utilisation distribution) in which cell values define probability-of-use.

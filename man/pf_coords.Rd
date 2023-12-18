@@ -4,12 +4,14 @@
 \alias{pf_coords}
 \title{PF: particle coordinates}
 \usage{
-pf_coords(.history, .bathy, .obs = NULL, .cols = NULL)
+pf_coords(.history, .bathy, .wtd = FALSE, .obs = NULL, .cols = NULL)
 }
 \arguments{
 \item{.history}{Particle samples, provided in any format accepted by \code{\link[=.pf_history_dt]{.pf_history_dt()}}.}
 
 \item{.bathy}{The bathymetry \code{\link{SpatRaster}}.}
+
+\item{.wtd}{A \code{logical} variable that defines whether or not to summarise coordinates (see \code{\link[=.pf_map_weights]{.pf_map_weights()}}).}
 
 \item{.obs, .cols}{(optional) A \code{\link{data.table}} and a character vector of column names in \code{.obs} to match onto the output. \code{.obs} must contain a \code{timestep} column for matching.}
 }
