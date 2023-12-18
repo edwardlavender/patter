@@ -57,7 +57,7 @@ check_inherits <- function(input, class) {
 #' @rdname check_utils
 #' @keywords internal
 
-check_names <- function(input, req, extract_names = names, type = all, error = abort,
+check_names <- function(input, req, extract_names = names, type = all, action = abort,
                         arg = deparse(substitute(input))) {
   input_names <- extract_names(input)
   if (!type(req %in% input_names)) {
@@ -68,7 +68,7 @@ check_names <- function(input, req, extract_names = names, type = all, error = a
       paste0("'", req_names_missing, collapse = "', "),
       "'."
     )
-    error(msg)
+    action(msg)
   }
   invisible(input)
 }

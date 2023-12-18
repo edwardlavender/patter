@@ -28,7 +28,7 @@ check_names(
   req,
   extract_names = names,
   type = all,
-  error = abort,
+  action = abort,
   arg = deparse(substitute(input))
 )
 

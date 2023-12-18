@@ -250,7 +250,7 @@ NULL
     check_names(arg = "The output data.table",
                 input = out,
                 req = .return,
-                error = warn)
+                action = msg)
     out <-
       out |>
       select(any_of(.return)) |>
