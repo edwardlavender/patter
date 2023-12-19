@@ -50,28 +50,28 @@ map_pou <-
   }
 
 #' @title Map: map point density
-#' @description [`map_dens()`] creates a smoothed density map (e.g., of particle samples).
-#' @param .map A [`SpatRaster`] that defines the grid for density estimation and, if `.coord = NULL`, the points (and associated weights) that are smoothed. Weights must sum to one. The coordinate reference system of `.map` must be planar and specified.
+#' @description [`map_dens()`] creates a smoothed utilisation distribution (UD).
+#' @param .map A [`SpatRaster`] that defines the grid on which the UD is estimated. If `.coord = NULL`, `.map` also defines the points (and associated weights) that are smoothed (see [`.map_coord.dt()`]). **The coordinate reference system of `.map` must be planar** and specified.
 #' @param .im,.owin A pixel image representation of `.map` (see [`as.im.SpatRaster()`] and [`spatstat.geom::im()`]) and an observation window (see [`as.owin.SpatRaster()`], [`as.owin.sf()`] and [`spatstat.geom::owin()`]). These objects may be computed automatically from `.map` (with rectangular or gridded observation windows used by default, depending on whether or not `.map` contains `NA`s), but this option can be over-ridden. For faster results, use a rectangular or polygon observation window (see [`as.owin.sf()`]). If `.coord` is supplied, `.im` is necessarily (re)-defined internally (see Details).
 #' @param .poly,.bbox,.invert For [`as.owin.sf`] to construct observation windows from `sf` objects.
 #' * `.poly` is an `sf` polygon object;
 #' * `.bbox` is the bounding of a simple feature (see [`sf::st_bbox()`]);
 #' * `.invert` is a logical variable that defines whether or not to invert `.poly` (e.g., to turn a terrestrial polygon into an aquatic polygon);
-#' @param .coord (optional) A [`matrix`], [`data.frame`] or [`data.table`] with x and y coordinates, in columns named `x` and `y` or `cell_x` and `cell_y`. `x` and `y` columns are used preferentially. Coordinates must be planar.  A `timestep` column can also be included if there are multiple possible locations at each time step. A `mark` column can be included with coordinate weights; otherwise, equal weights are assumed (see Details). Other columns are ignored.
-#' @param .discretise
+#' @param .coord (optional) Coordinates for density estimation, provided in any format accepted by [`.map_coord()`]. **Coordinates must be planar**.
+#' @param .discretise A `logical` variable that defines whether or not to discretise coordinates on `.map` (see [`.map_coord()`]).
+#' @param ... Arguments for density estimation, passed to [`spatstat.explore::density.ppp()`], such as `sigma` (i.e., the bandwidth).
 #' @param .plot A `logical` variable that defines whether or not to plot the output.
 #' @param .use_tryCatch A `logical` variable that controls error handling:
 #' * If `.use_tryCatch = FALSE`, if density estimation fails with an error, the function fails with the same error.
 #' * If `.use_tryCatch = TRUE`, if density estimation fails with an error, the function produces a warning with the error message and returns `NULL`.
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
-#' @param ... Arguments passed to [`spatstat.explore::density.ppp()`], such as `sigma` (i.e., the bandwidth).
 #'
 #' @details
-#' **Coordinates must be planar**
+#' [`map_dens()`] smooths (a) a [`SpatRaster`] or (b) a set of inputted coordinates.
 #'
-#' [`map_dens()`] smooths (a) a [`SpatRaster`] or (b) a set of inputted coordinates:
+#' [`.map_coord()`] (and [`.map_mark()`]) is used to define coordinates and weights:
 #' * If `.coords` is `NULL`, `.map` cell coordinates are used for density estimation and cell values are used as weights.
-#' * If coordinates are supplied, coordinates are re-expressed on `.map` and then used for density estimation. This option is generally faster. Equal weights are assumed unless specified. Default or supplied weights are normalised to sum to one at each time step. The total weight of each location within time steps is calculated and then these weights are aggregated by location across the whole time series and renomalised. See the internal [`.map_mark()`] function for full details.
+#' * If coordinates are supplied, coordinates are optionally re-expressed on `.map` and then used for density estimation. This option is generally faster. Coordinate weights are defined by (and [`.map_mark()`]).
 #'
 #' Cell coordinates are converted to a [`spatstat.geom::ppp()`] object, which is passed, alongside the observation window (`.owin`) and an image of the weights to [`spatstat.explore::density.ppp()`] for the estimation. Weights must sum to one.
 #'
@@ -145,11 +145,10 @@ as.owin.sf <- function(.poly, .bbox = sf::st_bbox(.poly), .invert = TRUE) {
 
 map_dens <- function(.map,
                      .im = NULL, .owin = NULL,
-                     .coord = NULL,
+                     .coord = NULL, .discretise = FALSE, ...,
                      .plot = TRUE,
                      .use_tryCatch = TRUE,
-                     .verbose = TRUE,
-                     ...) {
+                     .verbose = TRUE) {
 
   #### Check user inputs
   # Check packages
@@ -161,6 +160,7 @@ map_dens <- function(.map,
   # Check dots (`at` and `se` are not currently supported)
   check_dots_allowed(c("at", "se"))
   check_dots_for_missing_period(formals(), list(...))
+  rlang::check_dots_used()
 
   #### Set up messages
   cat_log <- cat_init(.verbose = .verbose)
@@ -187,67 +187,23 @@ map_dens <- function(.map,
     .owin <- as.owin.SpatRaster(.map, .im = .im)
   }
 
-  #### Get ppp
-  cat_log("... Building `ppp` object...")
-
-  ## (A) Define coordinates & weights from the SpatRaster (e.g., POU grid)
-  if (is.null(.coord)) {
-    cat_log("... ... Using `.map`...")
-    .coord <- terra::as.data.frame(.map, xy = TRUE, na.rm = TRUE)
-    colnames(.coord) <- c("x", "y", "mark")
-    .coord <- .coord[which(!is.na(.coord$mark) & .coord$mark != 0), ]
-    marks <- .coord[, 3]
-    if (!isTRUE(all.equal(sum(marks), 1))) {
-      abort("Weights on `.map` should sum to one since `.coord` = NULL.")
-    }
-  } else {
-
-    ## (B) Define coordinates & weights from `.coord` input
-    # i) Define coordinates data.table with x and y columns
-    cat_log("... ... Using `.coord`...")
-    if (inherits(.coord, "matrix") |
-        inherits(.coord, "data.frame") & !inherits(.coord, "data.table")) {
-      .coord <- as.data.table(.coord)
-    }
-    check_inherits(.coord, "data.table")
-    contains_xy      <- all(c("x", "y") %in% colnames(.coord))
-    contains_cell_xy <- all(c("cell_x", "cell_y") %in% colnames(.coord))
-    if (contains_xy) {
-      if (contains_cell_xy) {
-        msg("`.coord` contains both (`x`, `y`) and (`cell_x`, `cell_y`) coordinates: (`x`, `y`) coordinates used.")
-        cell_x <- cell_y <- NULL
-        .coord[, cell_x := NULL]
-        .coord[, cell_y := NULL]
-      }
-    } else {
-      if (contains_cell_xy) {
-        .coord <-
-          .coord |>
-          rename(x = "cell_x", y = "cell_y") |>
-          as.data.table()
-      } else {
-        abort("`.coord` should contain `x` and `y` (or `cell_x` and `cell_y`) coordinates.")
-      }
-    }
-    # ii) Define cell IDs (if un-supplied) for .map_mark()
-    if (is.null(.coord$cell_id)) {
-      cell_id <- NULL
-      .coord[, cell_id := terra::cellFromXY(.map, cbind(.coord$x, .coord$y))]
-    }
-    # iii) Define `.coord` with weights for each cell_id
-    .coord <- .map_mark(.coord)
-    # iv) Define weights on raster image
-    marks <- .coord$mark
+  #### Get XYM
+  cat_log("... Building XYM...")
+  # Define coordinates and weights for density estimation
+  use_coord <- !is.null(.coord)
+  .coord <- .map_coord(.map = .map, .coord = .coord, .discretise = .discretise)
+  # Represent weights on SpatRaster, if required
+  if (use_coord) {
     .im <- terra::rasterize(x = as.matrix(.coord[, c("x", "y"), drop = FALSE]),
                             y = .map,
-                            values = marks)
+                            values = .coord$mark)
     .im <- as.im.SpatRaster(.im)
   }
 
   ## Build ppp object
-  cat_log("... ... Defining `ppp` object...")
+  cat_log("... Defining `ppp` object...")
   rppp <- spatstat.geom::ppp(x = .coord$x, y = .coord$y,
-                             window = .owin, marks = marks)
+                             window = .owin, marks = .coord$mark)
   if (rppp$n == 0L) {
     abort("There are no valid points within the observation window (perhaps you need to invert this?)")
   }

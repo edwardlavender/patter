@@ -43,7 +43,7 @@
   .coord <- terra::as.data.frame(.map, xy = TRUE, na.rm = TRUE)
   colnames(.coord) <- c("x", "y", "mark")
   .coord <- .coord[which(!is.na(.coord$mark) & .coord$mark != 0), ]
-  if (!isTRUE(all.equal(sum(.coord$marks), 1))) {
+  if (!isTRUE(all.equal(sum(.coord$mark), 1))) {
     abort("Weights on `.map` should sum to one.")
   }
   .coord |>
@@ -93,10 +93,10 @@
     .coord[, y := terra::yFromCell(.map, id)]
   } else {
     if (!contains_xy) {
-      .coord[, id := paste(x, y)]
       .coord[, x := cell_x]
       .coord[, y := cell_y]
     }
+    .coord[, id := terra::cellFromXY(.map, cbind(x, y))]
   }
 
   #### Define coord marks, as required

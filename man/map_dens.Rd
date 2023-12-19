@@ -18,14 +18,15 @@ map_dens(
   .im = NULL,
   .owin = NULL,
   .coord = NULL,
+  .discretise = FALSE,
+  ...,
   .plot = TRUE,
   .use_tryCatch = TRUE,
-  .verbose = TRUE,
-  ...
+  .verbose = TRUE
 )
 }
 \arguments{
-\item{.map}{A \code{\link{SpatRaster}} that defines the grid for density estimation and, if \code{.coord = NULL}, the points (and associated weights) that are smoothed. Weights must sum to one. The coordinate reference system of \code{.map} must be planar and specified.}
+\item{.map}{A \code{\link{SpatRaster}} that defines the grid on which the UD is estimated. If \code{.coord = NULL}, \code{.map} also defines the points (and associated weights) that are smoothed (see \code{\link[=.map_coord.dt]{.map_coord.dt()}}). \strong{The coordinate reference system of \code{.map} must be planar} and specified.}
 
 \item{.im, .owin}{A pixel image representation of \code{.map} (see \code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}} and \code{\link[spatstat.geom:im]{spatstat.geom::im()}}) and an observation window (see \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}}, \code{\link[=as.owin.sf]{as.owin.sf()}} and \code{\link[spatstat.geom:owin]{spatstat.geom::owin()}}). These objects may be computed automatically from \code{.map} (with rectangular or gridded observation windows used by default, depending on whether or not \code{.map} contains \code{NA}s), but this option can be over-ridden. For faster results, use a rectangular or polygon observation window (see \code{\link[=as.owin.sf]{as.owin.sf()}}). If \code{.coord} is supplied, \code{.im} is necessarily (re)-defined internally (see Details).}
 
@@ -36,7 +37,11 @@ map_dens(
 \item \code{.invert} is a logical variable that defines whether or not to invert \code{.poly} (e.g., to turn a terrestrial polygon into an aquatic polygon);
 }}
 
-\item{.coord}{(optional) A \code{\link{matrix}}, \code{\link{data.frame}} or \code{\link{data.table}} with x and y coordinates, in columns named \code{x} and \code{y} or \code{cell_x} and \code{cell_y}. \code{x} and \code{y} columns are used preferentially. Coordinates must be planar.  A \code{timestep} column can also be included if there are multiple possible locations at each time step. A \code{mark} column can be included with coordinate weights; otherwise, equal weights are assumed (see Details). Other columns are ignored.}
+\item{.coord}{(optional) Coordinates for density estimation, provided in any format accepted by \code{\link[=.map_coord]{.map_coord()}}. \strong{Coordinates must be planar}.}
+
+\item{.discretise}{A \code{logical} variable that defines whether or not to discretise coordinates on \code{.map} (see \code{\link[=.map_coord]{.map_coord()}}).}
+
+\item{...}{Arguments for density estimation, passed to \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}}, such as \code{sigma} (i.e., the bandwidth).}
 
 \item{.plot}{A \code{logical} variable that defines whether or not to plot the output.}
 
@@ -47,22 +52,20 @@ map_dens(
 }}
 
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
-
-\item{...}{Arguments passed to \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}}, such as \code{sigma} (i.e., the bandwidth).}
 }
 \value{
 The function returns a normalised \code{\link{SpatRaster}} (or \code{NULL} if \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} fails and \code{.use_tryCatch = TRUE}).
 }
 \description{
-\code{\link[=map_dens]{map_dens()}} creates a smoothed density map (e.g., of particle samples).
+\code{\link[=map_dens]{map_dens()}} creates a smoothed utilisation distribution (UD).
 }
 \details{
-\strong{Coordinates must be planar}
+\code{\link[=map_dens]{map_dens()}} smooths (a) a \code{\link{SpatRaster}} or (b) a set of inputted coordinates.
 
-\code{\link[=map_dens]{map_dens()}} smooths (a) a \code{\link{SpatRaster}} or (b) a set of inputted coordinates:
+\code{\link[=.map_coord]{.map_coord()}} (and \code{\link[=.map_mark]{.map_mark()}}) is used to define coordinates and weights:
 \itemize{
 \item If \code{.coords} is \code{NULL}, \code{.map} cell coordinates are used for density estimation and cell values are used as weights.
-\item If coordinates are supplied, coordinates are re-expressed on \code{.map} and then used for density estimation. This option is generally faster. Equal weights are assumed unless specified. Default or supplied weights are normalised to sum to one at each time step. The total weight of each location within time steps is calculated and then these weights are aggregated by location across the whole time series and renomalised. See the internal \code{\link[=.map_mark]{.map_mark()}} function for full details.
+\item If coordinates are supplied, coordinates are optionally re-expressed on \code{.map} and then used for density estimation. This option is generally faster. Coordinate weights are defined by (and \code{\link[=.map_mark]{.map_mark()}}).
 }
 
 Cell coordinates are converted to a \code{\link[spatstat.geom:ppp]{spatstat.geom::ppp()}} object, which is passed, alongside the observation window (\code{.owin}) and an image of the weights to \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} for the estimation. Weights must sum to one.
@@ -70,4 +73,50 @@ Cell coordinates are converted to a \code{\link[spatstat.geom:ppp]{spatstat.geom
 \code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}}, \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}} and \code{\link[=as.owin.sf]{as.owin.sf()}} are helper functions that convert a \code{\link{SpatRaster}} to a pixel image and an observation window (see \code{\link[spatstat.geom:owin]{spatstat.geom::owin()}}). \code{\link{as.im.SpatRaster}} is based on \code{maptools::as.im.RasterLayer()}. \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}} either defines a rectangular window, if there are no NAs on \code{.map}, or converts \code{.map} directly to an \code{owin} object. Gridded observation windows, especially if high resolution, considerably slow down density estimation and may exhaust vector memory. Use rectangular windows, or convert \code{sf} objects to polygon windows (via \code{as.owin.sf()}]) if possible.
 
 Coordinates and associated weights are smoothed via \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} into an image. Pixel resolution and smoothing parameters such as bandwidth can be controlled via \code{...} arguments which are passed directly to this function. The output is translated into a gridded probability density surface (on the geometry defined by \code{.map}).
+}
+\examples{
+#### Set up examples
+# Packages
+require(data.table)
+require(dplyr, warn.conflicts = FALSE)
+require(spatstat.explore)
+# Define grid
+gebco <- dat_gebco()
+
+#### Example (1): Use sample coordinates
+# Sample example coordinates
+cxy <-
+  gebco |>
+  terra::spatSample(size = 5000L, xy = TRUE, cell = TRUE, na.rm = TRUE) |>
+  select("x", "y") |>
+  as.data.table()
+# Use x, y coordinates
+map_dens(gebco, .coord = cxy)
+# Other formats are acceptable
+map_dens(gebco, .coord = as.matrix(cxy))
+map_dens(gebco, .coord = as.data.frame(cxy))
+# cell_x and cell_y coordinates are acceptable
+map_dens(gebco, .coord = cxy[, .(cell_x = x, cell_y = y)])
+# A SpatRaster is also acceptable
+pou <- map_pou(gebco, .coord = cxy, .plot = FALSE)
+map_dens(pou)
+
+#### Example (2): Use coordinates from coa()
+# Use example dataset
+# TO DO
+
+#### Example (3): Use a time series of coordinates from pf_*()
+# Use example dataset
+coord <- pf_coord(dat_pfbk(), .bathy = gebco)
+map_dens(gebco, .coord = coord)
+
+#### Example (4): Control smoothing via `spatstat.explore::density.ppp()`
+# E.g. use fixed bandwidth:
+map_dens(gebco, .coord = coord, sigma = 5)
+map_dens(gebco, .coord = coord, sigma = 100)
+# E.g., perform automatic bandwidth selection using cross validation:
+map_dens(gebco, .coord = coord, sigma = bw.diggle)
+map_dens(gebco, .coord = coord, sigma = bw.scott)
+map_dens(gebco, .coord = coord, sigma = bw.ppl)
+map_dens(gebco, .coord = coord, sigma = bw.CvL)
 }
