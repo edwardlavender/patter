@@ -23,15 +23,9 @@ test_that(".pf_history_dt() works", {
                       schema = schema(
                         timestep = int32(),
                         cell_past = int32(),
-                        x_past = double(),
-                        y_past = double(),
                         cell_now = int32(),
                         x_now = double(),
-                        y_now = double(),
-                        lik = double(),
-                        weight = double(),
-                        bathy = double(),
-                        dens = double()
+                        y_now = double()
                       ))
 
   # Confirm each implementation option returns identical outputs
