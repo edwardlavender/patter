@@ -51,9 +51,9 @@ map_pou <-
 
 #' @title Map: map point density
 #' @description [`map_dens()`] creates a smoothed utilisation distribution (UD).
-#' @param .map A [`SpatRaster`] that defines the grid on which the UD is estimated. If `.coord = NULL`, `.map` also defines the points (and associated weights) that are smoothed (see [`.map_coord.dt()`]). **The coordinate reference system of `.map` must be planar** and specified.
+#' @param .map A [`SpatRaster`] that defines the grid on which the UD is represented. If `.coord = NULL`, `.map` also defines the points (and associated weights) that are smoothed (see [`.map_coord.dt()`]). **The coordinate reference system of `.map` must be planar** and specified.
 #' @param .im,.owin A pixel image representation of `.map` (see [`as.im.SpatRaster()`] and [`spatstat.geom::im()`]) and an observation window (see [`as.owin.SpatRaster()`], [`as.owin.sf()`] and [`spatstat.geom::owin()`]). These objects may be computed automatically from `.map` (with rectangular or gridded observation windows used by default, depending on whether or not `.map` contains `NA`s), but this option can be over-ridden. For faster results, use a rectangular or polygon observation window (see [`as.owin.sf()`]). If `.coord` is supplied, `.im` is necessarily (re)-defined internally (see Details).
-#' @param .poly,.bbox,.invert For [`as.owin.sf`] to construct observation windows from `sf` objects.
+#' @param .poly,.bbox,.invert For [`as.owin.sf()`] to construct observation windows from `sf` objects.
 #' * `.poly` is an `sf` polygon object;
 #' * `.bbox` is the bounding of a simple feature (see [`sf::st_bbox()`]);
 #' * `.invert` is a logical variable that defines whether or not to invert `.poly` (e.g., to turn a terrestrial polygon into an aquatic polygon);
@@ -69,13 +69,13 @@ map_pou <-
 #' @details
 #' [`map_dens()`] smooths (a) a [`SpatRaster`] or (b) a set of inputted coordinates.
 #'
-#' [`.map_coord()`] (and [`.map_mark()`]) is used to define coordinates and weights:
+#' [`.map_coord()`] (and [`.map_mark()`]) are used to define coordinates and weights:
 #' * If `.coords` is `NULL`, `.map` cell coordinates are used for density estimation and cell values are used as weights.
-#' * If coordinates are supplied, coordinates are optionally re-expressed on `.map` and then used for density estimation. This option is generally faster. Coordinate weights are defined by (and [`.map_mark()`]).
+#' * If coordinates are supplied, coordinates are optionally re-expressed on `.map` and then used for density estimation. This option is generally faster. Coordinate weights are defined by [`.map_mark()`].
 #'
 #' Cell coordinates are converted to a [`spatstat.geom::ppp()`] object, which is passed, alongside the observation window (`.owin`) and an image of the weights to [`spatstat.explore::density.ppp()`] for the estimation. Weights must sum to one.
 #'
-#' [`as.im.SpatRaster()`], [`as.owin.SpatRaster()`] and [`as.owin.sf()`] are helper functions that convert a [`SpatRaster`] to a pixel image and an observation window (see [`spatstat.geom::owin()`]). [`as.im.SpatRaster`] is based on `maptools::as.im.RasterLayer()`. [`as.owin.SpatRaster()`] either defines a rectangular window, if there are no NAs on `.map`, or converts `.map` directly to an `owin` object. Gridded observation windows, especially if high resolution, considerably slow down density estimation and may exhaust vector memory. Use rectangular windows, or convert `sf` objects to polygon windows (via `as.owin.sf()`]) if possible.
+#' [`as.im.SpatRaster()`], [`as.owin.SpatRaster()`] and [`as.owin.sf()`] are helper functions that convert a [`SpatRaster`] to a pixel image and an observation window (see [`spatstat.geom::owin()`]). [`as.im.SpatRaster`] is based on `maptools::as.im.RasterLayer()`. [`as.owin.SpatRaster()`] either defines a rectangular window, if there are no NAs on `.map`, or converts `.map` directly to an `owin` object. Gridded observation windows, especially if high resolution, considerably slow down density estimation and may exhaust vector memory. Use rectangular windows, or convert `sf` objects to polygon windows (via [`as.owin.sf()`]) if possible.
 #'
 #' Coordinates and associated weights are smoothed via [`spatstat.explore::density.ppp()`] into an image. Pixel resolution and smoothing parameters such as bandwidth can be controlled via `...` arguments which are passed directly to this function. The output is translated into a gridded probability density surface (on the geometry defined by `.map`).
 #'
