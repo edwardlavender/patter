@@ -1,4 +1,3 @@
-require(graphics)
 require(data.table)
 
 #### Define function inputs

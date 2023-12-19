@@ -95,8 +95,8 @@ mat_hours <-
   make_matrix_receivers(dlist,
                         .delta_t = "hours",
                         .as_POSIXct = \(x) as.POSIXct(paste(x, "00:00:00"), tz = "UTC"))
-utils::str(mat_days)
-utils::str(mat_hours)
+str(mat_days)
+str(mat_hours)
 }
 \seealso{
 This function is used internally in \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}.

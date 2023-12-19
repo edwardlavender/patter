@@ -119,7 +119,14 @@
 #' @keywords internal
 "_PACKAGE"
 
-#' @importFrom lifecycle deprecated
+#' @importFrom utils head
+#' @importFrom utils tail
+#' @importFrom utils str
+#'
+#' @importFrom graphics par
+#' @importFrom graphics arrows
+#' @importFrom graphics points
+#' @importFrom graphics hist
 #'
 #' @importFrom rlang .data
 #'

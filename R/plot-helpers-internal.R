@@ -8,7 +8,7 @@
 #' #### Example (1): one_page() implementation
 #' f <- function() {
 #'   pp <- one_page(TRUE, 2)
-#'   on.exit(graphics::par(pp), add = TRUE)
+#'   on.exit(par(pp), add = TRUE)
 #'   hist(1:10, main = "1")
 #'   hist(1:10, main = "2")
 #'   }
@@ -22,7 +22,7 @@ one_page <- function(.one_page, .n = 1L) {
     if (.n > 25) {
       warn("`.one_page = TRUE` but there are more than 25 plots.")
     }
-    pp <- graphics::par(mfrow = par_mf(.n), no.readonly = TRUE)
+    pp <- par(mfrow = par_mf(.n), no.readonly = TRUE)
   } else {
     pp <- NULL
   }
@@ -57,5 +57,5 @@ add_sp_path <- function(x, y = NULL, ...){
   param$x1 <- x[s + 1, 1]
   param$y0 <- x[s, 2]
   param$y1 <- x[s + 1, 2]
-  do.call(graphics::arrows, param)
+  do.call(arrows, param)
 }

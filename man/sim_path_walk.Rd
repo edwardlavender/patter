@@ -90,7 +90,6 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
   require(dtplyr)
   require(dplyr, warn.conflicts = FALSE)
   require(circular)
-  require(graphics)
 
   #### Example (1): Implement function with default options
   # The function returns a data.table with simulated locations

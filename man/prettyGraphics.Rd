@@ -22,7 +22,7 @@ add_sp_path(x, y = NULL, ...)
 #### Example (1): one_page() implementation
 f <- function() {
   pp <- one_page(TRUE, 2)
-  on.exit(graphics::par(pp), add = TRUE)
+  on.exit(par(pp), add = TRUE)
   hist(1:10, main = "1")
   hist(1:10, main = "2")
   }

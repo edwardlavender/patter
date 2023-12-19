@@ -67,10 +67,10 @@ coa <- function(.dlist, .delta_t, .split = NULL,
     as.data.table()
   # Plot the frequency distribution of weights
   if (.plot_weights) {
-    pp <- graphics::par(mfrow = par_mf(length(unique(acoustics$split))))
-    on.exit(graphics::par(pp), add = TRUE)
+    pp <- par(mfrow = par_mf(length(unique(acoustics$split))))
+    on.exit(par(pp), add = TRUE)
     lapply(split(acoustics, acoustics$split), function(d) {
-      graphics::hist(d$n, main = d$split[1], ...)
+      hist(d$n, main = d$split[1], ...)
     }) |> invisible()
   }
 

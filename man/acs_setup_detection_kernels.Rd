@@ -56,7 +56,6 @@ This function defines the detection kernels for the AC* algorithms.
 This function permits receiver-specific detection kernels.
 }
 \examples{
-require(graphics)
 require(data.table)
 
 #### Define function inputs

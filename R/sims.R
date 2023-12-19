@@ -286,10 +286,10 @@ sim_array <- function(.bathy = spatTemplate(), .lonlat = FALSE,
   #### Plot arrays
   if (.plot) {
     pp <- one_page(.one_page, length(arrays))
-    on.exit(graphics::par(pp), add = TRUE)
+    on.exit(par(pp), add = TRUE)
     lapply(seq_len(length(arrays)), function(i) {
       terra::plot(.bathy, main = paste("Array", i))
-      graphics::points(arrays[[i]]$x, arrays[[i]]$y)
+      points(arrays[[i]]$x, arrays[[i]]$y)
     }) |> invisible()
   }
 

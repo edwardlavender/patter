@@ -100,21 +100,21 @@ obs <- acs_setup_obs(acoustics,
                      .step = "2 mins",
                      .mobility = 500,
                      .detection_range = 750)
-utils::head(obs)
+head(obs)
 
 #### Example (2): Use alternative parameters
 obs <- acs_setup_obs(acoustics,
                      .step = "4 mins",
                      .mobility = 1000,
                      .detection_range = 500)
-utils::head(obs)
+head(obs)
 
 #### Example (3): Implement the function for acoustic & archival time series
 obs <- acs_setup_obs(acoustics, archival,
                      .step = "2 mins",
                      .mobility = 500,
                      .detection_range = 750)
-utils::head(obs)
+head(obs)
 
 #### Example (4): Include full acoustic & archival time series
 range(acoustics$timestamp)
@@ -123,8 +123,8 @@ obs <- acs_setup_obs(acoustics, archival, .trim = FALSE,
                      .step = "2 mins",
                      .mobility = 500,
                      .detection_range = 750)
-utils::head(obs)
-utils::tail(obs)
+head(obs)
+tail(obs)
 
 }
 \seealso{

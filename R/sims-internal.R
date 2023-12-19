@@ -84,7 +84,7 @@ NULL
   #### Visualise paths
   if (.plot) {
     pp <- one_page(.one_page, length(unique(paths$path_id)))
-    on.exit(graphics::par(pp), add = TRUE)
+    on.exit(par(pp), add = TRUE)
     lapply(split(paths, paths$path_id), function(d) {
       terra::plot(.bathy, main = d$path_id[1])
       add_sp_path(d$x, d$y, length = 0)
