@@ -7,7 +7,7 @@
 map_pou(.map, .coord, .plot = TRUE, ..., .verbose = TRUE)
 }
 \arguments{
-\item{.map}{A \code{\link{SpatRaster}} that defines the grid for probability-of-use estimation. \code{NAs} on \code{.map} are used as a mask.}
+\item{.map}{A \code{\link{SpatRaster}} that defines the grid for probability-of-use estimation.}
 
 \item{.coord}{Coordinates, provided in any format accepted by \code{\link[=.map_coord]{.map_coord()}}}
 
@@ -18,35 +18,13 @@ map_pou(.map, .coord, .plot = TRUE, ..., .verbose = TRUE)
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }
 \value{
-The function returns a \code{\link{SpatRaster}} (utilisation distribution) in which cell values define probability-of-use.
+The function returns a \code{\link{SpatRaster}}.
 }
 \description{
 This function builds a 'probability-of-use' utilisation distribution.
 }
 \details{
-Probability-of-use is the proportion of samples of each unique cell (out of the total number of samples across all time steps).
-}
-\seealso{
-\itemize{
-\item The PF (forward simulation) is implemented by \code{\link[=pf_forward]{pf_forward()}};
-\item PF is supported by:
-\itemize{
-\item Setup helpers, namely \code{\link[=pf_files]{pf_files()}};
-}
-\item The backward pass is implemented by \code{\link[=pf_backward_*]{pf_backward_*()}};
-\item Movement paths are built from PF outputs via \code{pf_path()} functions:
-\itemize{
-\item \code{\link[=pf_path]{pf_path()}} reconstructs paths;
-\item \code{\link[=pf_path_pivot]{pf_path_pivot()}} supports path reconstruction;
-}
-\item To reconstruct maps of space use, see:
-\itemize{
-\item \code{\link[=pf_coord]{pf_coord()}} to extract particle coordinates;
-\item \code{\link[=map_pou]{map_pou()}} for probability-of-use maps;
-\item \code{\link[=map_dens]{map_dens()}} for smooth utilisation distributions;
-\item \code{\link[=get_hr]{get_hr()}} for home range estimates;
-}
-}
+Probability-of-use is calculated via \code{\link[=.map_coord]{.map_coord()}} (and \code{\link[=.map_mark]{.map_mark()}}). If a single dataset of unweighted coordinates is provided, probability-of-use is simply the proportion of records in each grid cell. If a time series of unweighted coordinates is provided, probability-of-use is effectively the average proportion of records in each grid cell. This becomes a weighted average if coordinates are weighted. Weights are normalised to sum to one and the result can be interpreted as a utilisation distribution in which cell values define probability-of-use.
 }
 \author{
 Edward Lavender

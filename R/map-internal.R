@@ -1,39 +1,123 @@
-#' @title Map: location coordinates (cell_id, x, y, mark)
-#' @description This function defines coordinates and weights (marks) for utilisation distribution (UD) estimation.
+#' @title Map: location coordinates (id, x, y, mark)
+#' @description [`.map_coord()`] defines coordinates and weights (marks) for utilisation distribution (UD) estimation.
 #'
-#' @param .map The [`SpatRaster`] used to represent the utilisation distribution.
-#' @param .coord A [`matrix`], [`data.frame`] or [`data.table`] with x and y coordinates, in columns named `x` and `y` or `cell_x` and `cell_y`. `x` and `y` columns are used preferentially. **Coordinates must be planar**.  A `timestep` column can also be included if there are multiple possible locations at each time step. A `mark` column can be included with coordinate weights; otherwise, equal weights are assumed (see Details). Other columns are ignored.
+#' @param .map The [`SpatRaster`] used to represent the UD. This can be `NULL` if `.coord` is provided and `.discretise = FALSE`.
+#' @param .coord A [`matrix`], [`data.frame`] or [`data.table`] with x and y coordinates, in columns named `x` and `y` or `cell_x` and `cell_y` (see Details). (`.coord` is coerced to a [`data.table`]). Additional columns (`timestep` and `mark`), as supported by [`.map_mark()`] are supported. Other columns are ignored.
+#' @param .discretise A `logical` variable that defines whether or not to discretise coordinates (i.e., redefine coordinates on `.map`). This is necessarily `TRUE` in the wrapper function [`map_pou()`] but optional for [`map_dens()`].
 #'
 #' @details
-#' This function defines a [`data.table`] that includes cell IDs (`cell_id`), coordinates (`x` and `y`) and associated weights (`mark`) for UD estimation.
+#' [`.map_coord()`] function defines a [`data.table`] that includes coordinate IDs (`id`), coordinates (`x` and `y`) and associated weights (`mark`) for UD estimation. The function wraps [`.map_coord.SpatRaster()`] and [`.map_coord.dt()`].
 #'
-#' * If `.coord` is `NULL`, a [`data.table`] of coordinates is extracted from `.map` (in non `NA` regions) via [`terra::as.data.frame()`]. The values on `.map` are taken as weights and must sum to one.
+#' * If `.coord` is `NULL`, [`.map_coord.SpatRaster()`] is used. This function extracts a [`data.table`] of coordinates is extracted from `.map` (in non `NA` regions) via `terra::as.data.frame(..., na.rm = TRUE)`. The values on `.map` are taken as weights and must sum to one.
 #'
-#' * If `.coord` is supplied, equal weights are assumed unless specified in a `mark` column. Default or supplied weights are normalised to sum to one at each time step. The total weight of each grid cell within time steps is calculated and then these weights are aggregated by location across the whole time series and renomalised. See the internal [`.map_mark()`] function for full details.
+#' * If `.coord` is supplied, [`.map_coord_dt()`] is used. `x` and `y` and/or `cell_x` and `cell_y` columns are expected. If `.discretise = TRUE`, `cell_x` and `cell_y` are used preferentially. Irrespective of whether or not `x` and `y` or `cell_x` and `cell_y` are specified, coordinates are redefined on `.map` and coordinate IDs are defined as grid cell IDs on `.map`. If `.discretise = FALSE`, `x` and `y` coordinates are used preferentially. Coordinates remain unchanged and IDs are defined from the set of unique coordinate pairs. For each ID, weights are calculated from [`.map_mark()`].
 #'
 #' @return The function returns a [`data.table`] with four columns:
-#' * `cell_id`
-#' * `x`,`y`---on the grid???
-#' * `mark`
+#' * `id`---an `integer` vector of coordinate IDs (if `.discretise = TRUE`, `id` represents grid cells on `.map`);
+#' * `x`,`y`---`numeric` vectors that define coordinates (if `.discretise = TRUE`, `x` and `y` represent cell coordinates on `.map`);
+#' * `mark`---a `numeric` vector of weights, normalised to sum to one;
+#'
+#' @seealso [`.map_coord()`] is used by [`map_pou()`] and [`map_dens()`].
 #'
 #' @author Edward Lavender
+#' @name map_coord
+
+#' @rdname map_coord
 #' @keywords internal
 
-.map_coord <- function(.map, .coord = NULL, .simplify) {
+.map_coord <- function(.map, .coord, .discretise) {
   if (is.null(.coord)) {
-    xym <- spatMarks(.x = .map)
+    xym <- .map_coord.SpatRaster(.map = .map)
   } else {
-    xym <- spatMarksFromCoord(.x = .map, .coord = .coord, .simplify = .simplify)
+    xym <- .map_coord.dt(.map = .map, .coord = .coord, .discretise = .discretise)
   }
   xym
 }
 
+#' @rdname map_coord
+#' @keywords internal
+
+# Define x, y, mark data.table from SpatRaster
+.map_coord.SpatRaster <- function(.map) {
+  # Define coordinates
+  .coord <- terra::as.data.frame(.map, xy = TRUE, na.rm = TRUE)
+  colnames(.coord) <- c("x", "y", "mark")
+  .coord <- .coord[which(!is.na(.coord$mark) & .coord$mark != 0), ]
+  if (!isTRUE(all.equal(sum(.coord$marks), 1))) {
+    abort("Weights on `.map` should sum to one.")
+  }
+  .coord |>
+    mutate(id = terra::cellFromXY(.map, cbind(.data$x, .data$y))) |>
+    select("id", "x", "y", "mark") |>
+    as.data.table()
+}
+
+#' @rdname map_coord
+#' @keywords internal
+
+# Define x, y, mark data.table from coordinates data.table
+.map_coord.dt <- function(.map, .coord, .discretise) {
+
+  #### Coerce .coord to a data.table
+  if (inherits(.coord, "matrix") |
+      inherits(.coord, "data.frame") & !inherits(.coord, "data.table")) {
+    .coord <- as.data.table(.coord)
+  }
+  check_inherits(.coord, "data.table")
+
+  #### Define x and y columns
+  # Identify whether or not the .coord contains x, y and/or cell_x and cell_y columns
+  contains_xy      <- all(c("x", "y") %in% colnames(.coord))
+  contains_cell_xy <- all(c("cell_x", "cell_y") %in% colnames(.coord))
+  if (!contains_xy & !contains_cell_xy) {
+    abort("`.coord` should contain `x` and `y` (or `cell_x` and `cell_y`) coordinates.")
+  }
+  # Define coordinates
+  # * If .discretise = TRUE:
+  #   - We use cell_x and cell_y; otherwise we use x and y
+  #   - In both cases we move coordinates onto .map, in case this is different from the original grid
+  #   - Coordinate IDs are defined as grid cells
+  # * If .discretise = FALSE:
+  #   - We use x and y by default; and only if unavailable we use cell_x and cell_y
+  #   - Coordinate IDs are defined as unique coordinates (and not moved onto .map)
+  x <- y <- cell_x <- cell_y <- NULL
+  if (.discretise) {
+    .coord[, id := terra::cellFromXY(.map, cbind(x, y))]
+    if (contains_cell_xy) {
+      .coord[, x := cell_x]
+      .coord[, y := cell_y]
+    }
+    .coord[, x := terra::xFromCell(.map, id)]
+    .coord[, y := terra::yFromCell(.map, id)]
+  } else {
+    if (!contains_xy) {
+      .coord[, id := paste(x, y)]
+      .coord[, x := cell_x]
+      .coord[, y := cell_y]
+    }
+  }
+
+  #### Define coord marks, as required
+  .coord |>
+    .map_mark() |>
+    select("id", "x", "y", "mark") |>
+    as.data.table()
+
+}
 
 #' @title Map: location marks (weights)
-#' @description This function calculates location weights in [`map_pou()`] and [`map_dens()`].
-#' @param .pxy A [`data.table`] that contains locations. This should include a `cell_id` column and may include a `timestep` column.
-#' @details This function can be used to calculate weights for any set of coordinates (grid cells), including but not exclusively from particle filtering.
-#' @return The function returns a [`data.table`].
+#' @description This function calculates coordinate weights for a dataset or time series.
+#' @param .coord A [`data.table`] that defines coordinates, with the following columns:
+#' * (required) `id`---a vector that distinguishes coordinate IDs (such as grid cells or unique coordinate pairs);
+#' * (optional) `timestep`---a vector that distinguishes time steps, if coordinates have been sampled through time;
+#' * (optional) `mark`---a `numeric` vector of coordinate weights;
+#'
+#' @details
+#' Equal weights are assumed unless specified in the `mark` column. Default or supplied weights are normalised to sum to one at each time step (if necessary). The total weight of each coordinate ID within time steps is calculated and then these weights are aggregated by coordinate ID across the whole time series (if applicable) and renomalised to sum to one.
+#'
+#' @return The function returns a [`data.table`]. Columns match `.coord`, excluding `timestep` if specified (since weights are summarised within and across time steps). There is one row for each unique coordinate ID and a `mark` column that defines the associated weights.
+#'
+#' @seealso This function is used by [`.map_coord()`].
 #' @author Edward Lavender
 #' @keywords internal
 

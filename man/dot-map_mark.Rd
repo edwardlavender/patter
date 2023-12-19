@@ -7,16 +7,24 @@
 .map_mark(.coord)
 }
 \arguments{
-\item{.pxy}{A \code{\link{data.table}} that contains locations. This should include a \code{cell_id} column and may include a \code{timestep} column.}
+\item{.coord}{A \code{\link{data.table}} that defines coordinates, with the following columns:
+\itemize{
+\item (required) \code{id}---a vector that distinguishes coordinate IDs (such as grid cells or unique coordinate pairs);
+\item (optional) \code{timestep}---a vector that distinguishes time steps, if coordinates have been sampled through time;
+\item (optional) \code{mark}---a \code{numeric} vector of coordinate weights;
+}}
 }
 \value{
-The function returns a \code{\link{data.table}}.
+The function returns a \code{\link{data.table}}. Columns match \code{.coord}, excluding \code{timestep} if specified (since weights are summarised within and across time steps). There is one row for each unique coordinate ID and a \code{mark} column that defines the associated weights.
 }
 \description{
-This function calculates location weights in \code{\link[=map_pou]{map_pou()}} and \code{\link[=map_dens]{map_dens()}}.
+This function calculates coordinate weights for a dataset or time series.
 }
 \details{
-This function can be used to calculate weights for any set of coordinates (grid cells), including but not exclusively from particle filtering.
+Equal weights are assumed unless specified in the \code{mark} column. Default or supplied weights are normalised to sum to one at each time step (if necessary). The total weight of each coordinate ID within time steps is calculated and then these weights are aggregated by coordinate ID across the whole time series (if applicable) and renomalised to sum to one.
+}
+\seealso{
+This function is used by \code{\link[=.map_coord]{.map_coord()}}.
 }
 \author{
 Edward Lavender

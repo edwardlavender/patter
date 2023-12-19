@@ -57,6 +57,8 @@ The function returns a normalised \code{\link{SpatRaster}} (or \code{NULL} if \c
 \code{\link[=map_dens]{map_dens()}} creates a smoothed density map (e.g., of particle samples).
 }
 \details{
+\strong{Coordinates must be planar}
+
 \code{\link[=map_dens]{map_dens()}} smooths (a) a \code{\link{SpatRaster}} or (b) a set of inputted coordinates:
 \itemize{
 \item If \code{.coords} is \code{NULL}, \code{.map} cell coordinates are used for density estimation and cell values are used as weights.

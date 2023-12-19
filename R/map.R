@@ -1,37 +1,19 @@
 #' @title Map: map probability-of-use
 #' @description This function builds a 'probability-of-use' utilisation distribution.
 #'
-#' @param .map A [`SpatRaster`] that defines the grid for probability-of-use estimation. `NAs` on `.map` are used as a mask.
+#' @param .map A [`SpatRaster`] that defines the grid for probability-of-use estimation.
 #' @param .coord Coordinates, provided in any format accepted by [`.map_coord()`]
 #'
 #' @param .plot A logical input that defines whether or not to plot the [`SpatRaster`].
 #' @param ... If `.plot = TRUE`, `...` is a place holder for additional arguments passed to [`terra::plot()`].
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
-#' @details Probability-of-use is the proportion of coordinates in each unique cell (out of the total number of samples across all time steps). This is calculated as follows:
+#' @details Probability-of-use is calculated via [`.map_coord()`] (and [`.map_mark()`]). If a single dataset of unweighted coordinates is provided, probability-of-use is simply the proportion of records in each grid cell. If a time series of unweighted coordinates is provided, probability-of-use is effectively the average proportion of records in each grid cell. This becomes a weighted average if coordinates are weighted. Weights are normalised to sum to one and the result can be interpreted as a utilisation distribution in which cell values define probability-of-use.
 #'
-#' 1.
-#'
-#' @return The function returns a [`SpatRaster`] (utilisation distribution) in which cell values define probability-of-use.
+#' @return The function returns a [`SpatRaster`].
 #' @example man/examples/map_pou-examples.R
 #'
 #' @seealso
-#' * The PF (forward simulation) is implemented by [`pf_forward()`];
-#'
-#' * PF is supported by:
-#'     * Setup helpers, namely [`pf_files()`];
-#'
-#' * The backward pass is implemented by [`pf_backward_*()`];
-#'
-#' * Movement paths are built from PF outputs via `pf_path()` functions:
-#'     * [`pf_path()`] reconstructs paths;
-#'     * [`pf_path_pivot()`] supports path reconstruction;
-#'
-#' * To reconstruct maps of space use, see:
-#'     * [`pf_coord()`] to extract particle coordinates;
-#'     * [`map_pou()`] for probability-of-use maps;
-#'     * [`map_dens()`] for smooth utilisation distributions;
-#'     * [`get_hr()`] for home range estimates;
 #'
 #' @author Edward Lavender
 #' @export
@@ -50,13 +32,13 @@ map_pou <-
     rlang::check_dots_used()
 
     #### Get XYM (cell IDs and marks)
-    cat_log("... Processing `.coord`...")
-    xym <- .map_coord(.map = .map, .coord = .coord, .simplify = TRUE)
+    cat_log("... Building XYM...")
+    xym <- .map_coord(.map = .map, .coord = .coord, .discretise = TRUE)
 
     #### Build SpatRaster
     map <- terra::setValues(.map, 0)
     map <- terra::mask(map, .map)
-    map[xym$cell_id] <- xym$mark
+    map[xym$id] <- xym$mark
     if (.plot) {
       terra::plot(map, ...)
     }
@@ -75,6 +57,7 @@ map_pou <-
 #' * `.bbox` is the bounding of a simple feature (see [`sf::st_bbox()`]);
 #' * `.invert` is a logical variable that defines whether or not to invert `.poly` (e.g., to turn a terrestrial polygon into an aquatic polygon);
 #' @param .coord (optional) A [`matrix`], [`data.frame`] or [`data.table`] with x and y coordinates, in columns named `x` and `y` or `cell_x` and `cell_y`. `x` and `y` columns are used preferentially. Coordinates must be planar.  A `timestep` column can also be included if there are multiple possible locations at each time step. A `mark` column can be included with coordinate weights; otherwise, equal weights are assumed (see Details). Other columns are ignored.
+#' @param .discretise
 #' @param .plot A `logical` variable that defines whether or not to plot the output.
 #' @param .use_tryCatch A `logical` variable that controls error handling:
 #' * If `.use_tryCatch = FALSE`, if density estimation fails with an error, the function fails with the same error.
@@ -83,6 +66,7 @@ map_pou <-
 #' @param ... Arguments passed to [`spatstat.explore::density.ppp()`], such as `sigma` (i.e., the bandwidth).
 #'
 #' @details
+#' **Coordinates must be planar**
 #'
 #' [`map_dens()`] smooths (a) a [`SpatRaster`] or (b) a set of inputted coordinates:
 #' * If `.coords` is `NULL`, `.map` cell coordinates are used for density estimation and cell values are used as weights.
