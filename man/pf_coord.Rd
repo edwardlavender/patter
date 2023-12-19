@@ -4,18 +4,18 @@
 \alias{pf_coord}
 \title{PF: particle coordinates}
 \usage{
-pf_coord(.history, .bathy, .wtd = FALSE, .obs = NULL, .cols = NULL)
+pf_coord(.history, .bathy, .obs = NULL, .cols = NULL)
 
-pf_coord(.history, .bathy, .wtd = FALSE, .obs = NULL, .cols = NULL)
+pf_coord(.history, .bathy, .obs = NULL, .cols = NULL)
 }
 \arguments{
 \item{.history}{Particle samples, provided in any format accepted by \code{\link[=.pf_history_dt]{.pf_history_dt()}}.}
 
 \item{.bathy}{The bathymetry \code{\link{SpatRaster}}.}
 
-\item{.wtd}{A \code{logical} variable that defines whether or not to summarise coordinates (see \code{\link[=.map_mark]{.map_mark()}}).}
-
 \item{.obs, .cols}{(optional) A \code{\link{data.table}} and a character vector of column names in \code{.obs} to match onto the output. \code{.obs} must contain a \code{timestep} column for matching.}
+
+\item{.wtd}{A \code{logical} variable that defines whether or not to summarise coordinates (see \code{\link[=.map_mark]{.map_mark()}}).}
 }
 \value{
 The function returns a \code{\link{data.table}} that defines timesteps, sampled locations and, optionally, information from \code{.obs}, with the following columns:
