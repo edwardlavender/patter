@@ -149,51 +149,6 @@ cat_init <- function(.verbose) {
 # plyr::compact()
 list_compact <- function(l) l[which(!sapply(l, is.null))]
 
-#' @rdname utils-lists
-#' @keywords internal
-
-list_clean <- function(l) {
-  l <- list_compact(l)
-  l[which(sapply(l, \(x) length(x) != 0))]
-}
-
-#' @rdname utils-lists
-#' @keywords internal
-
-# rlist::list.merge() inspired function
-list_merge <- function(...) {
-  lists <- list(...)
-  if (any(vapply(lists, function(x) length(x) > 0L && is.null(names(x)), logical(1L)))) {
-    stop("A named list is expected.", call. = FALSE)
-  }
-  list_modify <- function(x, val) {
-    utils::modifyList(x, val, keep.null = TRUE)
-  }
-  Reduce(list_modify, x = lists, init = list())
-}
-
-#' @rdname utils-lists
-#' @keywords internal
-
-# List arguments
-list_args <- function(.args, .defaults) {
-  if (is.null(.args)) {
-    abort("`{deparse(substitute(.args))}` must be specified.",
-          .envir = environment())
-  }
-  if (length(.args) == 0L) {
-    return(.defaults)
-  }
-  check_named_list(.args)
-  bool <- names(.args) %in% names(.defaults)
-  if (!all(bool)) {
-    unsupp <- names(.args)[!bool]
-    abort("`{deparse(substitute(.args))}` contains unsupported argument(s): {str_items(unsupp)}.",
-          .envir = environment())
-  }
-  list_merge(.defaults, .args)
-}
-
 #' @title Utilities: calculate column products
 #' @description This function calculates column products for each row in a [`matrix`].
 #' @param .data A [`matrix`].
