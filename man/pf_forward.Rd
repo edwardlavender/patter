@@ -17,7 +17,7 @@ pf_forward(
   .rerun = list(),
   .rerun_from = pf_opt_rerun_from(.rerun),
   .record = pf_opt_record(),
-  .verbose = TRUE
+  .verbose = getOption("patter.verbose")
 )
 }
 \arguments{

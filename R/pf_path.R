@@ -26,8 +26,8 @@
 
 pf_path <- function(.history,
                     .bathy = NULL, .obs = NULL, .cols = NULL,
-                    .verbose = TRUE,
-                    .return = c("long", "wide")){
+                    .return = c("long", "wide"),
+                    .verbose = getOption("patter.verbose")){
 
   # Check user inputs
   t_onset <- Sys.time()

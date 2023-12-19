@@ -479,7 +479,7 @@ acs_setup_detection_pr <- function(.mooring,
 acs_setup_detection_kernels <-
   function(.dlist,
            .calc_detection_pr = acs_setup_detection_pr,
-           .verbose = TRUE, ...) {
+           .verbose = getOption("patter.verbose"), ...) {
 
 
     #########################

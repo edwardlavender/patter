@@ -20,7 +20,7 @@
 
 pf_backward_killer <- function(.history,
                                .record = pf_opt_record(),
-                               .verbose = TRUE) {
+                               .verbose = getOption("patter.verbose")) {
 
   #### Check user inputs
   # TO DO (enhance checks)

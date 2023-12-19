@@ -19,7 +19,9 @@
 #' @export
 
 map_pou <-
-  function(.map, .coord, .plot = TRUE, ..., .verbose = TRUE) {
+  function(.map, .coord,
+           .plot = TRUE, ...,
+           .verbose = getOption("patter.verbose")) {
 
     #### Initiate
     t_onset <- Sys.time()
@@ -148,7 +150,8 @@ map_dens <- function(.map,
                      .coord = NULL, .discretise = FALSE, ...,
                      .plot = TRUE,
                      .use_tryCatch = TRUE,
-                     .verbose = TRUE) {
+                     .verbose = getOption("patter.verbose")
+                     ) {
 
   #### Check user inputs
   # Check packages

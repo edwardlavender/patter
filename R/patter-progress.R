@@ -1,6 +1,6 @@
 #' @title Progress monitoring in [`patter`]
 #' @description [`patter`] functions enable progress monitoring via function arguments and global options. At the time of writing, there are three main tools to monitor and enhance function progress:
-#' * User output messages (via the `.verbose` argument);
+#' * User output messages (via the `patter.verbose` option and the `.verbose` argument);
 #' * Progress bars (via [`pbapply::pboptions()`]);
 #' * Parallelisation (via `.cl_` arguments);
 #'
@@ -10,7 +10,7 @@
 #'
 #' # User outputs
 #'
-#' User output messages are controlled via the `.verbose` argument. See the internal [`cat_`] documentation for permitted inputs to `.verbose`.
+#' User output messages are controlled via the `.verbose` argument. There is a global option `patter.verbose` that can be set to suppress user output messages. See the internal [`cat_`] documentation for permitted inputs to `.verbose`.
 #'
 #' # Progress bars
 #'

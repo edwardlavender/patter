@@ -4,7 +4,11 @@
 \alias{pf_backward_killer}
 \title{PF: run the backward pass}
 \usage{
-pf_backward_killer(.history, .record = pf_opt_record(), .verbose = TRUE)
+pf_backward_killer(
+  .history,
+  .record = pf_opt_record(),
+  .verbose = getOption("patter.verbose")
+)
 }
 \arguments{
 \item{.history}{Particle samples from the forward simulation, provided either as:

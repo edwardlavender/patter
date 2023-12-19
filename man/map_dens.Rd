@@ -22,7 +22,7 @@ map_dens(
   ...,
   .plot = TRUE,
   .use_tryCatch = TRUE,
-  .verbose = TRUE
+  .verbose = getOption("patter.verbose")
 )
 }
 \arguments{

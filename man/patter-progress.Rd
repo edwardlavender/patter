@@ -6,7 +6,7 @@
 \description{
 \code{\link{patter}} functions enable progress monitoring via function arguments and global options. At the time of writing, there are three main tools to monitor and enhance function progress:
 \itemize{
-\item User output messages (via the \code{.verbose} argument);
+\item User output messages (via the \code{patter.verbose} option and the \code{.verbose} argument);
 \item Progress bars (via \code{\link[pbapply:pboptions]{pbapply::pboptions()}});
 \item Parallelisation (via \code{.cl_} arguments);
 }
@@ -14,7 +14,7 @@
 Only selected \code{\link{patter}} functions support these options but this may expand in the future, depending on user feedback.
 }
 \section{User outputs}{
-User output messages are controlled via the \code{.verbose} argument. See the internal \code{\link{cat_}} documentation for permitted inputs to \code{.verbose}.
+User output messages are controlled via the \code{.verbose} argument. There is a global option \code{patter.vebose} that can be set to suppress user output messages. See the internal \code{\link{cat_}} documentation for permitted inputs to \code{.verbose}.
 }
 
 \section{Progress bars}{

@@ -4,7 +4,13 @@
 \alias{map_pou}
 \title{Map: map probability-of-use}
 \usage{
-map_pou(.map, .coord, .plot = TRUE, ..., .verbose = TRUE)
+map_pou(
+  .map,
+  .coord,
+  .plot = TRUE,
+  ...,
+  .verbose = getOption("patter.verbose")
+)
 }
 \arguments{
 \item{.map}{A \code{\link{SpatRaster}} that defines the grid for probability-of-use estimation.}

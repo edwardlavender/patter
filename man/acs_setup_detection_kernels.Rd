@@ -10,7 +10,7 @@ This function is based on the \href{https://edwardlavender.github.io/flapper/ref
 acs_setup_detection_kernels(
   .dlist,
   .calc_detection_pr = acs_setup_detection_pr,
-  .verbose = TRUE,
+  .verbose = getOption("patter.verbose"),
   ...
 )
 }

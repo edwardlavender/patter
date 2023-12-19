@@ -9,8 +9,8 @@ pf_path(
   .bathy = NULL,
   .obs = NULL,
   .cols = NULL,
-  .verbose = TRUE,
-  .return = c("long", "wide")
+  .return = c("long", "wide"),
+  .verbose = getOption("patter.verbose")
 )
 }
 \arguments{
@@ -24,8 +24,6 @@ pf_path(
 
 \item{.obs, .cols}{(optional) If \code{.return = "long"}, \code{.obs} and \code{.cols} are a \code{\link{data.table}} and a \code{character} vector of column names in \code{.obs} to match onto the output (see \code{\link[=pf_path_pivot]{pf_path_pivot()}}).}
 
-\item{.verbose}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
-
 \item{.return}{A \code{character} that defines the return format:
 \itemize{
 \item \code{long} specifies a long-format \code{\link{data.table}} that defines path IDs, time steps and associated locations (see \code{\link[=pf_path_pivot]{pf_path_pivot()}}).
@@ -35,6 +33,8 @@ pf_path(
 \item one column for each time step (named \code{x1}, \code{x2}, etc.);
 }
 }}
+
+\item{.verbose}{Arguments to monitor function progress (see \code{\link[=pf_forward]{pf_forward()}}).}
 }
 \value{
 The function returns a long- or wide-format \code{\link{data.table}} (see \code{.return}).

@@ -176,7 +176,7 @@ pf_forward <- function(.obs,
                        .rerun = list(),
                        .rerun_from = pf_opt_rerun_from(.rerun),
                        .record = pf_opt_record(),
-                       .verbose = TRUE) {
+                       .verbose = getOption("patter.verbose")) {
 
   #### Check user inputs
   t_onset <- Sys.time()
