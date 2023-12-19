@@ -82,10 +82,12 @@
   #   - Coordinate IDs are defined as unique coordinates (and not moved onto .map)
   x <- y <- cell_x <- cell_y <- NULL
   if (.discretise) {
-    .coord[, id := terra::cellFromXY(.map, cbind(x, y))]
     if (contains_cell_xy) {
+      .coord[, id := terra::cellFromXY(.map, cbind(cell_x, cell_y))]
       .coord[, x := cell_x]
       .coord[, y := cell_y]
+    } else {
+      .coord[, id := terra::cellFromXY(.map, cbind(x, y))]
     }
     .coord[, x := terra::xFromCell(.map, id)]
     .coord[, y := terra::yFromCell(.map, id)]
