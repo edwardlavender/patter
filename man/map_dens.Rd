@@ -103,7 +103,8 @@ map_dens(pou)
 
 #### Example (2): Use coordinates from coa()
 # Use example dataset
-# TO DO
+out_coa <- dat_coa()
+map_dens(gebco, .coord = out_coa[, .(x = coa_x, y = coa_y)])
 
 #### Example (3): Use a time series of coordinates from pf_*()
 # Use example dataset
