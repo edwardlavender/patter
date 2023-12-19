@@ -61,6 +61,9 @@ obs       <- acs_setup_obs(.acoustics = acc,
                            .detection_range = dat_moorings$receiver_range[1])
 obs <- obs[1:50, ]
 
+#### Implement coa()
+out_coa <- coa(dlist, .delta_t = "4 hours")
+
 #### Implement pf_forward()
 pff_folder <- file.path("inst", "extdata", "acpf", "forward")
 unlink(pff_folder, recursive = TRUE)
@@ -81,7 +84,8 @@ out_pfbk <- pf_backward_killer(.history = out_pff$history,
 out_pfp <- pf_path(out_pfbk$history, .bathy = dlist$spatial$bathy)
 
 #### Implement map_pou()
-out_pou <- map_pou(out_pfbk$history, .bathy = dlist$spatial$bathy)
+out_pou <- map_pou(.map = dlist$spatial$bathy,
+                   .coord = pf_coord(.history = out_pfbk$history, .bathy = dlist$spatial$bathy))
 out_pou <- terra::wrap(out_pou)
 
 
@@ -92,12 +96,14 @@ out_pou <- terra::wrap(out_pou)
 #### Collate datasets
 # Update names
 dat_obs   <- obs
+dat_coa   <- out_coa
 dat_pff   <- out_pff
 dat_pfbk  <- out_pfbk
 dat_pfp   <- out_pfp
 # Collate datasets
 datasets <-
   list(dat_obs = dat_obs,
+       out_coa = dat_coa,
        dat_pff = dat_pff,
        dat_pfbk = dat_pfbk,
        dat_pfp = dat_pfp)
