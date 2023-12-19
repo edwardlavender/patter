@@ -1,4 +1,4 @@
-#' @title Map: map probability-of-use
+#' @title Map: probability-of-use
 #' @description This function builds a 'probability-of-use' utilisation distribution.
 #'
 #' @param .map A [`SpatRaster`] that defines the grid for probability-of-use estimation.
@@ -51,7 +51,7 @@ map_pou <-
 
   }
 
-#' @title Map: map point density
+#' @title Map: point density
 #' @description [`map_dens()`] creates a smoothed utilisation distribution (UD).
 #' @param .map A [`SpatRaster`] that defines the grid on which the UD is represented. If `.coord = NULL`, `.map` also defines the points (and associated weights) that are smoothed (see [`.map_coord.dt()`]). **The coordinate reference system of `.map` must be planar** and specified.
 #' @param .im,.owin A pixel image representation of `.map` (see [`as.im.SpatRaster()`] and [`spatstat.geom::im()`]) and an observation window (see [`as.owin.SpatRaster()`], [`as.owin.sf()`] and [`spatstat.geom::owin()`]). These objects may be computed automatically from `.map` (with rectangular or gridded observation windows used by default, depending on whether or not `.map` contains `NA`s), but this option can be over-ridden. For faster results, use a rectangular or polygon observation window (see [`as.owin.sf()`]). If `.coord` is supplied, `.im` is necessarily (re)-defined internally (see Details).
@@ -252,7 +252,7 @@ map_dens <- function(.map,
 
 }
 
-#' @title Get animal 'home ranges'
+#' @title Map: animal home ranges
 #' @description These functions extract 'home range' estimates from a [`SpatRaster`] that describes the intensity of movements within an area.
 #'
 #' @param .map A [`SpatRaster`] (utilisation distribution).

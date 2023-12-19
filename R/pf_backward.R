@@ -1,4 +1,4 @@
-#' @title PF: run the backward pass
+#' @title PF: backward pass
 #'
 #' @description
 #'

@@ -1,4 +1,4 @@
-#' @title PF: run the backward pass
+#' @title PF: backward pass
 #' @description This function implements the backward correction of particle samples.
 #'
 #' @param .history Particle samples from the forward simulation, provided either as:

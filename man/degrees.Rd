@@ -2,7 +2,7 @@
 % Please edit documentation in R/spatial-helpers.R
 \name{degrees}
 \alias{degrees}
-\title{Spatial helper: create circular angle in degrees}
+\title{Spatial helper: circular angles}
 \usage{
 degrees(.x)
 }

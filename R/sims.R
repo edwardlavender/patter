@@ -1,4 +1,4 @@
-#' @title Simulation helpers
+#' @title Simulation: helper functions
 #' @description These convenience functions support the generation of animal movement paths and observations in _de novo_ simulations (`sim_*()` functions) and simulation-based reconstructions of movement paths ([`pf_forward()`] and [`pf_backward_sampler()`]).
 #'
 #' * `r*()` functions simulate random variates;
@@ -174,7 +174,7 @@ dstep <- function(.data_now, .data_past, ...) {
   dtruncgamma(.x = rlen, ...)
 }
 
-#' @title Simulate an acoustic array
+#' @title Simulation: acoustic arrays
 #' @description This function simulates acoustic receivers on a grid.
 #' @param .bathy A [`SpatRaster`] that defines the region of interest.
 #' @param .lonlat A `logical` variable that defines whether or not coordinates on `.bathy` are longitudes/latitudes. This input controls the output name of the coordinates column (see Value).
@@ -311,7 +311,7 @@ sim_array <- function(.bathy = spatTemplate(), .lonlat = FALSE,
   arrays
 }
 
-#' @title Simulate movement paths
+#' @title Simulation: movement walks
 #' @description [`sim_path_walk()`] facilitates the simulation of discrete-time animal movement paths from walk models (e.g., random walks, biased random walks, correlated random walks).
 #'
 #' @param .bathy A [`SpatRaster`] that defines the region within which movements are simulated. Movements are simulated in continuous space but restricted within the boundaries defined by `.bathy` and non-NA regions.
@@ -433,7 +433,7 @@ sim_path_walk <- function(.bathy = spatTemplate(), .lonlat = FALSE,
     as.data.table()
 }
 
-#' @title Simulate detections at receivers
+#' @title Simulation: acoustic detections
 #' @description These functions facilitate the simulation of detections, arising from animal movement path(s), at passive acoustic telemetry receiver(s).
 #'
 #' @param .paths A [`data.table`] that defines movement path(s) (e.g., from [`sim_path_walk()`]. This should contain the following columns:

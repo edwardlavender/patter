@@ -6,7 +6,7 @@
 \alias{acs_filter_container}
 \alias{pf_lik_ac}
 \alias{pf_lik_dc}
-\title{PF: Likelihood functions}
+\title{PF: likelihood functions}
 \usage{
 acs_filter_land(.particles, .obs, .t, .dlist)
 

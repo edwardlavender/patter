@@ -1,4 +1,4 @@
-#' @title Progress monitoring in [`patter`]
+#' @title [`patter`] options: progress
 #' @description [`patter`] functions enable progress monitoring via function arguments and global options. At the time of writing, there are three main tools to monitor and enhance function progress:
 #' * User output messages (via the `patter.verbose` option and the `.verbose` argument);
 #' * Progress bars (via [`pbapply::pboptions()`]);

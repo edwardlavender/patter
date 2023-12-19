@@ -3,7 +3,7 @@
 \docType{package}
 \name{pf_particles-class}
 \alias{pf_particles-class}
-\title{PF outputs: \code{\linkS4class{pf_particles}} objects}
+\title{PF: \code{\linkS4class{pf_particles}} objects}
 \description{
 An S3 class that defines the named \code{list} returned by \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_killer]{pf_backward_killer()}}.
 }

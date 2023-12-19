@@ -5,7 +5,7 @@
 \alias{as.owin.SpatRaster}
 \alias{as.owin.sf}
 \alias{map_dens}
-\title{Map: map point density}
+\title{Map: point density}
 \usage{
 as.im.SpatRaster(.map)
 

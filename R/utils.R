@@ -1,4 +1,4 @@
-#' @title Utilities: make a temporary directory
+#' @title Utilities: temporary directories
 #' @description This function wipes and (re)-creates a temporary directory.
 #' @param ... Arguments passed to [`file.path`].
 #' @author Edward Lavender

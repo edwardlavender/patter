@@ -2,7 +2,7 @@
 % Please edit documentation in R/patter-progress.R
 \name{patter-progress}
 \alias{patter-progress}
-\title{Progress monitoring in \code{\link{patter}}}
+\title{\code{\link{patter}} options: progress}
 \description{
 \code{\link{patter}} functions enable progress monitoring via function arguments and global options. At the time of writing, there are three main tools to monitor and enhance function progress:
 \itemize{

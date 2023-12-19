@@ -1,4 +1,4 @@
-#' @title Spatial helper: create circular angle in degrees
+#' @title Spatial helper: circular angles
 #' @description This function is a wrapper for `circular::circular(x, units = "degrees")`.
 #' @param .x A numeric vector of angles (in degrees).
 #' @return The function returns a [`circular::circular`] object.

@@ -6,7 +6,7 @@
 \alias{map_hr_core}
 \alias{map_hr_home}
 \alias{map_hr_full}
-\title{Get animal 'home ranges'}
+\title{Map: animal home ranges}
 \usage{
 map_hr_prop(.map, .prop = 0.5, .add = FALSE, ...)
 

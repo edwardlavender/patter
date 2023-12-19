@@ -1,4 +1,4 @@
-#' @title Set up data for [`patter`]
+#' @title [`patter`] set up: datasets
 #' @description This function is used to set up movement datasets, spatial datasets and associated parameters for all [`patter`] functions. In general, this function should be called before other [`patter`] functions.
 #'
 #' @param .acoustics,.services,.archival,.moorings (optional) Movement datasets.

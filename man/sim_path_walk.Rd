@@ -2,7 +2,7 @@
 % Please edit documentation in R/sims.R
 \name{sim_path_walk}
 \alias{sim_path_walk}
-\title{Simulate movement paths}
+\title{Simulation: movement walks}
 \usage{
 sim_path_walk(
   .bathy = spatTemplate(),

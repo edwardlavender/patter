@@ -1,4 +1,4 @@
-#' @title Matricise receiver deployment time series
+#' @title Study metrics: receiver deployments
 #'
 #' @description This function creates a matrix that, for each time step (matrix row) in a sequence of user-defined times, defines whether or not each receiver (matrix column) was active, optionally accounting for servicing dates. The times for which to express whether or not each receiver was active are provided by optionally defining a `start` and `end` date (these can be taken from the range of deployment times in the input data if unspecified) and the interval (`.delta_t`) between time steps.
 #'

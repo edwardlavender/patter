@@ -2,7 +2,7 @@
 % Please edit documentation in R/pf_backward_killer.R
 \name{pf_backward_killer}
 \alias{pf_backward_killer}
-\title{PF: run the backward pass}
+\title{PF: backward pass}
 \usage{
 pf_backward_killer(
   .history,

@@ -1,4 +1,4 @@
-#' @title Evaluate method skill
+#' @title Skill: evaluation metrics
 #' @description These function are designed to support comparisons of simulated and reconstructed patterns of space use.
 #' @param .obs The 'observed' (true) pattern of space use, as a [`SpatRaster`].
 #' @param .mod The 'modelled' (reconstructed) pattern of space use, as a [`SpatRaster`].

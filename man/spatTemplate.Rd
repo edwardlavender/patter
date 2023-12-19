@@ -2,7 +2,7 @@
 % Please edit documentation in R/spats.R
 \name{spatTemplate}
 \alias{spatTemplate}
-\title{Spatial helper: create a template \code{\link{SpatRaster}}}
+\title{Spatial helper: template \code{\link{SpatRaster}}s}
 \usage{
 spatTemplate(
   .xmin = 0,

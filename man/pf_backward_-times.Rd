@@ -2,7 +2,7 @@
 % Please edit documentation in R/pf_backward.R
 \name{pf_backward_*}
 \alias{pf_backward_*}
-\title{PF: run the backward pass}
+\title{PF: backward pass}
 \description{
 \code{\link{patter}} provides two options for the backward simulation:
 \itemize{

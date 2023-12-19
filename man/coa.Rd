@@ -2,7 +2,7 @@
 % Please edit documentation in R/coa.R
 \name{coa}
 \alias{coa}
-\title{The centres of activity (COA) algorithm}
+\title{COA: centres of activity}
 \usage{
 coa(
   .dlist,

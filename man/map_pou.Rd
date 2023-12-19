@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{map_pou}
 \alias{map_pou}
-\title{Map: map probability-of-use}
+\title{Map: probability-of-use}
 \usage{
 map_pou(
   .map,

@@ -1,4 +1,4 @@
-#' @title  [`patter`] for passive acoustic telemetry
+#' @title [`patter`] for passive acoustic telemetry
 #' @description [`patter`] is a re-implementation of the [`flapper`](https://github.com/edwardlavender/flapper) family of algorithms for passive acoustic telemetry that is simpler, faster and better tested than its [predecessor](https://github.com/edwardlavender/flapper). The aim of the package is to facilitate the reconstruction of movement paths and patterns of space use in passive acoustic telemetry systems.
 #'
 #' # Vignettes

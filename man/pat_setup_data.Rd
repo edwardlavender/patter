@@ -2,7 +2,7 @@
 % Please edit documentation in R/pat.R
 \name{pat_setup_data}
 \alias{pat_setup_data}
-\title{Set up data for \code{\link{patter}}}
+\title{\code{\link{patter}} set up: datasets}
 \usage{
 pat_setup_data(
   .acoustics = NULL,

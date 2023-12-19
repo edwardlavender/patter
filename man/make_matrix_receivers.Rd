@@ -2,7 +2,7 @@
 % Please edit documentation in R/study-metrics.R
 \name{make_matrix_receivers}
 \alias{make_matrix_receivers}
-\title{Matricise receiver deployment time series}
+\title{Study metrics: receiver deployments}
 \source{
 This function is based on the \href{https://edwardlavender.github.io/flapper/reference/make_matrix_receivers.html}{\code{make_matrix_receivers}} function in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package.
 }

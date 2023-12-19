@@ -1,4 +1,4 @@
-#' @title Spatial helper: create a template [`SpatRaster`]
+#' @title Spatial helper: template [`SpatRaster`]s
 #' @description This function creates a template [`SpatRaster`].
 #' @param .xmin,.xmax,.ymin,.ymax Numbers that define the [`SpatRaster`] limits.
 #' @param .res A `numeric` vector that defines [`SpatRaster`] resolution.
@@ -31,7 +31,7 @@ spatTemplate <- function(.xmin = 0, .xmax = 1000,
   r
 }
 
-#' @title Spatial helper: normalise a [`SpatRaster`]
+#' @title Spatial helper: normalise [`SpatRaster`]s
 #' @description This function normalises a [`SpatRaster`].
 #' @param x A [`SpatRaster`].
 #' @details

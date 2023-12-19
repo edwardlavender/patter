@@ -4,7 +4,7 @@
 \alias{sim_detections}
 \alias{calc_detection_pr}
 \alias{calc_detection_pr_logistic}
-\title{Simulate detections at receivers}
+\title{Simulation: acoustic detections}
 \usage{
 sim_detections(
   .paths,

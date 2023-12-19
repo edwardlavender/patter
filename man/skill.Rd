@@ -7,7 +7,7 @@
 \alias{skill_rmse}
 \alias{skill_R}
 \alias{skill_d}
-\title{Evaluate method skill}
+\title{Skill: evaluation metrics}
 \usage{
 skill_mb(.obs, .mod, .summarise = "mean")
 

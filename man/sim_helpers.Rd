@@ -10,7 +10,7 @@
 \alias{rangcrw}
 \alias{cstep}
 \alias{dstep}
-\title{Simulation helpers}
+\title{Simulation: helper functions}
 \usage{
 rtruncgamma(.n = 1, .shape = 15, .scale = 15, .mobility = 500, ...)
 

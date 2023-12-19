@@ -2,7 +2,7 @@
 % Please edit documentation in R/sims.R
 \name{sim_array}
 \alias{sim_array}
-\title{Simulate an acoustic array}
+\title{Simulation: acoustic arrays}
 \usage{
 sim_array(
   .bathy = spatTemplate(),

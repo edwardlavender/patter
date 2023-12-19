@@ -1,4 +1,4 @@
-#' @title PF: Likelihood functions
+#' @title PF: likelihood functions
 #' @description These are likelihood functions for [`pf_forward()`]. This function expects a named `list` of likelihood functions that evaluate the likelihood of each dataset given location proposals. Convenience functions are provided that calculate the likelihood of acoustic and archival data, given location proposals, as resolved by the acoustic-container and depth-contour algorithms presented by Lavender et al. (2023).
 #'
 #' @param .particles A [`data.table`] that defines proposal locations. This contains the following columns:

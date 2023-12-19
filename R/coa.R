@@ -1,4 +1,4 @@
-#' @title The centres of activity (COA) algorithm
+#' @title COA: centres of activity
 #' @description This function calculates centres of activity (COAs).
 #' @param .dlist A named `list` of data and parameters from [`pat_setup_data()`]. This function requires:
 #' * `.dlist$data$acoustics`, with the following columns: `receiver_id` and `timestamp`;
