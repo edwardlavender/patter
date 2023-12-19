@@ -59,19 +59,25 @@ obs       <- acs_setup_obs(.acoustics = acc,
                            .step = "2 mins",
                            .mobility = 500,
                            .detection_range = dat_moorings$receiver_range[1])
-obs <- obs[1:50, ]
+obs <- obs[1:25, ]
 
 #### Implement coa()
 out_coa <- coa(dlist, .delta_t = "4 hours")
 
 #### Implement pf_forward()
 pff_folder <- file.path("inst", "extdata", "acpf", "forward")
+unlink(pff_folder, recursive = TRUE)
+dir.create(pff_folder, recursive = TRUE)
 out_pff <- pf_forward(.obs = obs,
                       .dlist = dlist,
                       .likelihood = list(acs_filter_land = acs_filter_land,
                                          acs_filter_container = acs_filter_container,
                                          pf_lik_ac = pf_lik_ac),
-                      .record = pf_opt_record(.save = TRUE, .sink = pff_folder))
+                      .record = pf_opt_record(.save = TRUE,
+                                              .sink = pff_folder,
+                                              .cols = c("timestep",
+                                                        "cell_past", "cell_now",
+                                                        "x_now", "y_now")))
 
 #### Implement pf_backward_killer()
 pfbk_folder <- file.path("inst", "extdata", "acpf", "backward", "killer")
