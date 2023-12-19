@@ -30,17 +30,3 @@ spatTemplate <- function(.xmin = 0, .xmax = 1000,
   terra::units(r) <- .units
   r
 }
-
-#' @title Spatial helper: normalise [`SpatRaster`]s
-#' @description This function normalises a [`SpatRaster`].
-#' @param x A [`SpatRaster`].
-#' @details
-#' # Warning
-#' * This function does not implement any internal checks.
-#' * `NA`s are ignored.
-#' @author Edward Lavender
-#' @export
-
-spatNormalise <- function(x) {
-  x / as.numeric(terra::global(x, "sum", na.rm = TRUE))
-}

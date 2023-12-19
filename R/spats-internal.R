@@ -99,3 +99,11 @@ spatIsEmpty <- function(.x) {
     length(.x) == 0
   }
 }
+
+#' @rdname spat
+#' @keywords internal
+
+# Normalise a SpatRaster, ignoring NAs
+spatNormalise <- function(x) {
+  x / as.numeric(terra::global(x, "sum", na.rm = TRUE))
+}
