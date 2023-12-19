@@ -29,7 +29,9 @@ test_that(".pf_history_dt() works", {
                         x_now = double(),
                         y_now = double(),
                         lik = double(),
-                        weight = double()
+                        weight = double(),
+                        bathy = double(),
+                        dens = double()
                       ))
 
   # Confirm each implementation option returns identical outputs
