@@ -6,6 +6,7 @@
 \alias{dat_pff}
 \alias{dat_pfbk}
 \alias{dat_pfp}
+\alias{dat_coa}
 \title{Datasets: example algorithm outputs}
 \source{
 For full details on the algorithm parameters used to generate these datasets, see \url{https://github.com/edwardlavender/patter/blob/main/data-raw/002-add-data-algorithms.R}.
@@ -18,6 +19,8 @@ dat_pff()
 dat_pfbk()
 
 dat_pfp()
+
+dat_coa()
 }
 \description{
 These functions load example outputs from key \code{\link{patter}} functions. They are included in the package to streamline function examples and tests.
@@ -28,6 +31,7 @@ These functions load example outputs from key \code{\link{patter}} functions. Th
 \item \code{\link[=dat_pff]{dat_pff()}} reads an example output from \code{\link[=pf_forward]{pf_forward()}};
 \item \code{\link[=dat_pfbk]{dat_pfbk()}} reads an example output from \code{\link[=pf_backward_killer]{pf_backward_killer()}};
 \item \code{\link[=dat_pfp]{dat_pfp()}} reads an example output from \code{\link[=pf_path]{pf_path()}};
+\item \code{\link[=dat_coa]{dat_coa()}} reads an example output from \code{\link[=coa]{coa()}};
 }
 }
 \examples{
@@ -35,6 +39,7 @@ dat_obs() |> summary()
 dat_pff() |> summary()
 dat_pfbk() |> summary()
 dat_pfp() |> summary()
+dat_coa() |> summary()
 
 }
 \author{
