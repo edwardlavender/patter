@@ -23,7 +23,7 @@ pf_files_size(.sink, .unit = c("MB", "GB", "TB"))
 }
 }
 \description{
-\code{\link[=pf_files]{pf_files()}} function creates an ordered \code{list} of the parquet files contains particle samples (e.g., from \code{\link[=pf_forward]{pf_forward()}} or \code{\link[=pf_backward_killer]{pf_backward_killer()}}). \code{\link[=pf_file_size]{pf_file_size()}} calculates the total size of all files.
+\code{\link[=pf_files]{pf_files()}} function creates an ordered \code{list} of the parquet files contains particle samples (e.g., from \code{\link[=pf_forward]{pf_forward()}} or \code{\link[=pf_backward_killer]{pf_backward_killer()}}). \code{\link[=pf_files_size]{pf_files_size()}} calculates the total size of all files.
 }
 \examples{
 # Use `pf_files()` to list files from `pf_forward()`
