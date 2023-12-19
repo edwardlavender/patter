@@ -81,6 +81,8 @@ out_pff <- pf_forward(.obs = obs,
 
 #### Implement pf_backward_killer()
 pfbk_folder <- file.path("inst", "extdata", "acpf", "backward", "killer")
+unlink(pfbk_folder, recursive = TRUE)
+dir.create(pfbk_folder, recursive = TRUE)
 out_pfbk <- pf_backward_killer(.history = out_pff$history,
                                .record = pf_opt_record(.save = TRUE, .sink = pfbk_folder))
 
