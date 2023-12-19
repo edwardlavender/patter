@@ -10,25 +10,3 @@
 \item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}
 }
 }
-\seealso{
-\itemize{
-\item The PF (forward simulation) is implemented by \code{\link[=pf_forward]{pf_forward()}}.
-\item PF is supported by:
-\itemize{
-\item Setup helpers, namely \code{\link[=pf_files]{pf_files()}};
-}
-\item The backward pass is implemented by \code{\link[=pf_backward_*]{pf_backward_*()}};
-\item Movement paths are built from PF outputs via \code{pf_path()} functions:
-\itemize{
-\item \code{\link[=pf_path]{pf_path()}} reconstructs paths;
-\item \code{\link[=pf_path_pivot]{pf_path_pivot()}} supports path reconstruction;
-}
-\item To reconstruct maps of space use, see:
-\itemize{
-\item \code{\link[=pf_coord]{pf_coord()}} to extract particle coordinates;
-\item \code{\link[=map_pou]{map_pou()}} for probability-of-use maps;
-\item \code{\link[=map_dens]{map_dens()}} for smooth utilisation distributions;
-\item \code{\link[=get_hr]{get_hr()}} for home range estimates;
-}
-}
-}

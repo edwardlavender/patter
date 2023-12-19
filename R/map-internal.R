@@ -10,7 +10,7 @@
 #'
 #' * If `.coord` is `NULL`, [`.map_coord.SpatRaster()`] is used. This function extracts a [`data.table`] of coordinates is extracted from `.map` (in non `NA` regions) via `terra::as.data.frame(..., na.rm = TRUE)`. The values on `.map` are taken as weights and must sum to one.
 #'
-#' * If `.coord` is supplied, [`.map_coord_dt()`] is used. `x` and `y` and/or `cell_x` and `cell_y` columns are expected. If `.discretise = TRUE`, `cell_x` and `cell_y` are used preferentially. Irrespective of whether or not `x` and `y` or `cell_x` and `cell_y` are specified, coordinates are redefined on `.map` and coordinate IDs are defined as grid cell IDs on `.map`. If `.discretise = FALSE`, `x` and `y` coordinates are used preferentially. Coordinates remain unchanged and IDs are defined from the set of unique coordinate pairs. For each ID, weights are calculated from [`.map_mark()`].
+#' * If `.coord` is supplied, [`.map_coord.dt()`] is used. `x` and `y` and/or `cell_x` and `cell_y` columns are expected. If `.discretise = TRUE`, `cell_x` and `cell_y` are used preferentially. Irrespective of whether or not `x` and `y` or `cell_x` and `cell_y` are specified, coordinates are redefined on `.map` and coordinate IDs are defined as grid cell IDs on `.map`. If `.discretise = FALSE`, `x` and `y` coordinates are used preferentially. Coordinates remain unchanged and IDs are defined from the set of unique coordinate pairs. For each ID, weights are calculated from [`.map_mark()`].
 #'
 #' @return The function returns a [`data.table`] with four columns:
 #' * `id`---an `integer` vector of coordinate IDs (if `.discretise = TRUE`, `id` represents grid cells on `.map`);
