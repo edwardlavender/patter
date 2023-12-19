@@ -30,7 +30,7 @@ acs_setup_detection_kernels(
 Using these inputs, the function must return a \code{\link{SpatRaster}} that defines the detection kernel around a specific receiver (see Examples).
 }}
 
-\item{.verbose}{Argument(s) to monitor function progress (see \code{\link{patter-progress}}).}
+\item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }
 \value{
 The function returns a named \code{list}, with the following elements:

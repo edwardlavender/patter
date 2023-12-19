@@ -446,7 +446,7 @@ acs_setup_detection_pr <- function(.mooring,
 #' * `.bathy`---A [`SpatRaster`] that defines the grid over which detection probability is calculated (see below);
 #' * `...` Additional arguments passed via [`acs_setup_detection_kernels()`].
 #' Using these inputs, the function must return a [`SpatRaster`] that defines the detection kernel around a specific receiver (see Examples).
-#' @param .verbose Argument(s) to monitor function progress (see [`patter-progress`]).
+#' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
 #' @details This function permits receiver-specific detection kernels.
 #'
