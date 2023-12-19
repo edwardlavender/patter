@@ -80,7 +80,7 @@
   # * If .discretise = FALSE:
   #   - We use x and y by default; and only if unavailable we use cell_x and cell_y
   #   - Coordinate IDs are defined as unique coordinates (and not moved onto .map)
-  x <- y <- cell_x <- cell_y <- NULL
+  id <- x <- y <- cell_x <- cell_y <- NULL
   if (.discretise) {
     if (contains_cell_xy) {
       .coord[, id := terra::cellFromXY(.map, cbind(cell_x, cell_y))]
