@@ -36,6 +36,7 @@ map_pou <-
     xym <- .map_coord(.map = .map, .coord = .coord, .discretise = TRUE)
 
     #### Build SpatRaster
+    cat_log("... Building SpatRaster...")
     map <- terra::setValues(.map, 0)
     map <- terra::mask(map, .map)
     map[xym$id] <- xym$mark
