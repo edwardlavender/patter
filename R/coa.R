@@ -3,7 +3,7 @@
 #' @param .dlist A named `list` of data and parameters from [`pat_setup_data()`]. This function requires:
 #' * `.dlist$data$acoustics`, with the following columns: `receiver_id` and `timestamp`;
 #' * `.dlist$data$moorings`, with the following columns: `receiver_id`, `receiver_x` and  `receiver_y`;
-#' * `.dlist$pars$lonlat`, which specifies the coordin
+#' * `.dlist$pars$lonlat`, which specifies the coordinate format (longitude/latitude or planar).
 #' @param .split (optional) A `character` that defines the name of the grouping factor in `.dlist$data$acoustics` (e.g., `individual_id` for [`dat_acoustics`]).
 #' @param .delta_t The time interval over which to calculate COAs. This can be specified in any way understood by [`cut.POSIXt()`] (see the `breaks` argument).
 #' @param .plot_weights A `logical` variable that defines whether or not to plot the frequency distribution of weights for each `.split` value.

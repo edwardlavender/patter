@@ -18,7 +18,7 @@ coa(
 \itemize{
 \item \code{.dlist$data$acoustics}, with the following columns: \code{receiver_id} and \code{timestamp};
 \item \code{.dlist$data$moorings}, with the following columns: \code{receiver_id}, \code{receiver_x} and  \code{receiver_y};
-\item \code{.dlist$pars$lonlat}, which specifies the coordin
+\item \code{.dlist$pars$lonlat}, which specifies the coordinate format (longitude/latitude or planar).
 }}
 
 \item{.delta_t}{The time interval over which to calculate COAs. This can be specified in any way understood by \code{\link[=cut.POSIXt]{cut.POSIXt()}} (see the \code{breaks} argument).}

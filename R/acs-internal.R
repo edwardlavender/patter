@@ -229,7 +229,7 @@
 #' @param .detections An `integer` vector of the receiver(s) that recorded detections at a given time step.
 #' @param .absences An `integer` vector of the remaining, overlapping receiver(s) that did not record a detection, from [`.acs_absences()`].
 #' @param .kernels A `list` from [`acs_setup_detection_kernels`].
-#' @param .particles A [`data.table`] witha `cell_now` column that defines particle locations on the grid.
+#' @param .particles A [`data.table`] with a `cell_now` column that defines particle locations on the grid.
 
 #' @details In the AC* algorithms, at the moment of detection, likelihood of the acoustic data given a particle sample depends on depends on both the receivers that record detections and those that did not (eqn S5 in Lavender et al., 2023). This function solves eqn S5.
 #'

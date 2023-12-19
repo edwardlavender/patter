@@ -14,7 +14,7 @@ pf_coord(.history, .bathy, .obs = NULL, .cols = NULL)
 \item{.obs, .cols}{(optional) A \code{\link{data.table}} and a character vector of column names in \code{.obs} to match onto the output. \code{.obs} must contain a \code{timestep} column for matching.}
 }
 \value{
-The function returns a \code{\link{data.table}} that defines timesteps, sampled locations and, optionally, information from \code{.obs}, with the following columns:
+The function returns a \code{\link{data.table}} that defines time steps, sampled locations and, optionally, information from \code{.obs}, with the following columns:
 \itemize{
 \item \code{timestep}---an \code{integer} vector that defines the time step;
 \item \code{cell_id}---an \code{integer} vector that defines the cell ID on \code{.bathy};

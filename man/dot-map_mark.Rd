@@ -21,7 +21,7 @@ The function returns a \code{\link{data.table}}. Columns match \code{.coord}, ex
 This function calculates coordinate weights for a dataset or time series.
 }
 \details{
-Equal weights are assumed unless specified in the \code{mark} column. Default or supplied weights are normalised to sum to one at each time step (if necessary). The total weight of each coordinate ID within time steps is calculated and then these weights are aggregated by coordinate ID across the whole time series (if applicable) and renomalised to sum to one.
+Equal weights are assumed unless specified in the \code{mark} column. Default or supplied weights are normalised to sum to one at each time step (if necessary). The total weight of each coordinate ID within time steps is calculated and then these weights are aggregated by coordinate ID across the whole time series (if applicable) and renormalised to sum to one.
 }
 \seealso{
 This function is used by \code{\link[=.map_coord]{.map_coord()}}.

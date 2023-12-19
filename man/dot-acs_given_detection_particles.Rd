@@ -13,7 +13,7 @@
 
 \item{.kernels}{A \code{list} from \code{\link{acs_setup_detection_kernels}}.}
 
-\item{.particles}{A \code{\link{data.table}} witha \code{cell_now} column that defines particle locations on the grid.}
+\item{.particles}{A \code{\link{data.table}} with a \code{cell_now} column that defines particle locations on the grid.}
 }
 \description{
 These function defines the relative plausibility possible locations of an individual given one or more detections or for selected particle positions (for \code{\link[=pf_forward]{pf_forward()}}).

@@ -115,7 +115,7 @@
 #' * (optional) `mark`---a `numeric` vector of coordinate weights;
 #'
 #' @details
-#' Equal weights are assumed unless specified in the `mark` column. Default or supplied weights are normalised to sum to one at each time step (if necessary). The total weight of each coordinate ID within time steps is calculated and then these weights are aggregated by coordinate ID across the whole time series (if applicable) and renomalised to sum to one.
+#' Equal weights are assumed unless specified in the `mark` column. Default or supplied weights are normalised to sum to one at each time step (if necessary). The total weight of each coordinate ID within time steps is calculated and then these weights are aggregated by coordinate ID across the whole time series (if applicable) and renormalised to sum to one.
 #'
 #' @return The function returns a [`data.table`]. Columns match `.coord`, excluding `timestep` if specified (since weights are summarised within and across time steps). There is one row for each unique coordinate ID and a `mark` column that defines the associated weights.
 #'

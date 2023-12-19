@@ -8,7 +8,7 @@
 #' @details
 #' This function is not memory safe.
 #'
-#' @return The function returns a [`data.table`] that defines timesteps, sampled locations and, optionally, information from `.obs`, with the following columns:
+#' @return The function returns a [`data.table`] that defines time steps, sampled locations and, optionally, information from `.obs`, with the following columns:
 #' * `timestep`---an `integer` vector that defines the time step;
 #' * `cell_id`---an `integer` vector that defines the cell ID on `.bathy`;
 #' * `cell_x`, `cell_y`, `cell_z`---`double`s that define cell coordinates;
