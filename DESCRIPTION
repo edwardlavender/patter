@@ -20,7 +20,7 @@ Imports:
     pbapply,
     rlang,
     terra
-Suggests: 
+Suggests:
     exactextractr,
     geosphere, 
     knitr,
@@ -29,6 +29,7 @@ Suggests:
     spatialEco, 
     spatstat.explore,
     spatstat.geom, 
+    spelling, 
     sf, 
     testthat (>= 3.0.0), 
     zoo
