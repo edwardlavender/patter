@@ -66,8 +66,6 @@ out_coa <- coa(dlist, .delta_t = "4 hours")
 
 #### Implement pf_forward()
 pff_folder <- file.path("inst", "extdata", "acpf", "forward")
-unlink(pff_folder, recursive = TRUE)
-dir.create(pff_folder, recursive = TRUE)
 out_pff <- pf_forward(.obs = obs,
                       .dlist = dlist,
                       .likelihood = list(acs_filter_land = acs_filter_land,
@@ -103,7 +101,7 @@ dat_pfp   <- out_pfp
 # Collate datasets
 datasets <-
   list(dat_obs = dat_obs,
-       out_coa = dat_coa,
+       dat_coa = dat_coa,
        dat_pff = dat_pff,
        dat_pfbk = dat_pfbk,
        dat_pfp = dat_pfp)

@@ -26,7 +26,7 @@ map_dens(pou)
 
 #### Example (2): Use coordinates from coa()
 # Use example dataset
-# TO DO
+dat_coa()
 
 #### Example (3): Use a time series of coordinates from pf_*()
 # Use example dataset
