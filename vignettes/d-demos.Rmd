@@ -30,7 +30,8 @@ library(dtplyr)
 library(dplyr)
 library(testthat)
 
-# Use reproducible simulations
+# Set global options
+op <- options(patter.verbose = FALSE)
 seed <- 1
 ```
 
