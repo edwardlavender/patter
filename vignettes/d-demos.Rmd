@@ -1,6 +1,9 @@
 ---
 title: "Demos"
-output: rmarkdown::html_vignette
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    number_sections: yes
 vignette: >
   %\VignetteIndexEntry{Demos}
   %\VignetteEngine{knitr::rmarkdown}
@@ -10,10 +13,335 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  message = FALSE
 )
 ```
 
+# Overview
+
+This vignette provides extended demonstrations of selected `patter` functions. 
+
 ```{r setup}
+# Essential packages 
 library(patter)
+library(data.table)
+library(dtplyr)
+library(dplyr)
+library(testthat)
+
+# Use reproducible simulations
+seed <- 1
+```
+
+# Convergence
+
+This demonstration illustrates convergence challenges in `pf_forward()`. Convergence is the complete reconstruction of possible locations for an individual from the start to the end of the time series. A convergence failure occurs when the simulation fails to reach the end of the time series; i.e. it reaches a time step at which, given previously sampled locations, there are no valid locations into which the algorithm can step next. Convergence failures can result from erroneous observations or assumptions but they are also dependent upon the sampling strategy. Assuming that our observations and assumptions are correct, this demonstration shows how we can improve efficiency and convergence by tuning selected algorithm parameters related to the sampling strategy. We simulate a hypothetical study area and movement time series. The parameters of the simulation are chosen such that the data uniquely define the individual's location with complete certainty. We then implement the forward simulation of individual movements via `pf_forward()`. Given the selected parameters, there is only one possible location for the individual at each time step and this makes convergence difficult, but we successfully achieve convergence by tuning the sampling strategy. At the end of the process, we validate the outputs and demonstrate successful reconstruction of the one true movement path. 
+
+## Simulate data
+
+```{r}
+#### Define study area
+# Define high-resolution grid
+gebco <- dat_gebco()
+gebco <- terra::crop(gebco, terra::ext(706828.9, 711135.5, 6256889, 6262960))
+gebco <- terra::disagg(gebco, fact = 50)
+# For demonstration purposes, modify depths to uniquely define grid cells
+set.seed(seed)
+gebco[] <- gebco[] + 10 + runif(length(gebco[]), 0, 15) + rnorm(length(gebco[]))
+table(duplicated(na.omit(gebco[])))
+stopifnot(!any(gebco[] < 0, na.rm = TRUE))
+
+#### Define study period
+period <- seq(as.POSIXct("2016-01-01", tz = "UTC"), by = "2 mins", length = 500L)
+
+#### Simulate array & path
+# Simulate array
+set.seed(seed)
+array <- sim_array(gebco,
+                   .n_receiver = 50,
+                   .receiver_range = 750,
+                   .receiver_start = as.Date("2016-01-01"),
+                   .receiver_end = as.Date("2017-01-01"))
+# Simulate movement path
+origin <- cbind(709144.3, 6261561)
+set.seed(seed)
+path <- sim_path_walk(.bathy = gebco,
+                      .origin = origin,
+                      .n_step = length(period),
+                      .timestamp = period)
+
+#### Simulate observations
+# Simulate detections
+acoustics           <- sim_detections(path, array)
+# Simulate archival observations
+# * For demonstration purposes, we assume depth is observed perfectly
+archival            <- data.table(timestep = path$timestep, depth = path$cell_z)
+archival$timestamp  <- period
+
+#### Collect datasets for `pf_forward()`
+dlist <- pat_setup_data(.acoustics = acoustics,
+                        .moorings = array,
+                        .archival = archival,
+                        .bathy = gebco,
+                        .lonlat = FALSE)
+# Include algorithm layers
+dlist$algorithm$detection_overlaps <-
+  acs_setup_detection_overlaps(dlist)
+dlist$algorithm$detection_kernels <-
+  acs_setup_detection_kernels(dlist)
+
+#### Collect observations for `pf_forward()`
+obs <- acs_setup_obs(.acoustics = acoustics,
+                     .archival = archival,
+                     .step = "2 mins",
+                     .mobility = 500,
+                     .detection_range = 750)
+obs[, depth_shallow := depth]
+obs[, depth_deep := depth]
+obs_sbt <- obs[1:10L, ]
+
+#### Define models for `pf_forward()`
+# Proposal functions (movement model)
+# * For speed, use use the defaults
+# Likelihood functions
+# * We use the default convenience functions for the ACPF and ACDCPF algorithms
+pf_lik_acpf <- list(acs_filter_land = acs_filter_land,
+                    acs_filter_container = acs_filter_container,
+                    pf_lik_ac = pf_lik_ac)
+pf_lik_acdcpf <- list(acs_filter_land = acs_filter_land,
+                      acs_filter_container = acs_filter_container,
+                      pf_lik_ac = pf_lik_ac,
+                      pf_lik_dc = pf_lik_dc)
+# Sampling function
+# * We use the defaults
+
+#### Define supporting arguments for `pf_forward()`
+record <- pf_opt_record(.save = TRUE)
+
+```
+
+## Forward simulation
+
+```{r}
+#### (1) ACPF forward simulation (default options)
+# > The algorithm easy converges
+# > This makes sense
+# > The combination of observations & the observation model is not very restrictive
+# > There are many routes across the landscape & it is easy to find possibilities
+set.seed(seed)
+out_pff <- pf_forward(.obs = obs_sbt,
+                      .dlist = dlist,
+                      .likelihood = pf_lik_acpf,
+                      .record = record)
+expect_true(out_pff$convergence)
+
+#### (2) ACDCPF forward simulation (enforce kick proposals only)
+
+# (A) Implement simulation with default options (apart from .trial_sampler)
+# > This fails to converge
+set.seed(seed)
+out_pff <- pf_forward(.obs = obs_sbt,
+                      .dlist = dlist,
+                      .likelihood = pf_lik_acdcpf,
+                      # Set `.trial_sampler` = 0L to suppress directed sampling
+                      .trial = pf_opt_trial(.trial_sampler = 0L),
+                      .record = record
+                      )
+expect_false(out_pff$convergence)
+
+# (B) Examine diagnostics to pin down the causes of convergence failures
+# > All particles are surviving the AC* filters
+# > (base n_u == pf_lik_ac).
+# > This makes sense b/c after the first time step detections weren't recorded
+# > and, in this sparse array, information in detection gaps is limited, see:
+# > obs_sbt[, detection]
+# > However, the depth likelihood term kills all but one proposal on each trial.
+# > This makes sense b/c we defined a v. stringent observation model.
+# > The obvious solution here is to enforce directed sampling, but
+# > for demonstration, we will explore some other options first.
+out_pff$diagnostics
+
+# (C) Increase the number of particles to improve convergence
+# > In general, ~1000 particles should be sufficient to represent a
+# > 2d distribution (even in the gaps between detections).
+# > We can boost this to improve convergence
+# > (but there are better ways to do this).
+set.seed(seed)
+out_pff <- pf_forward(.obs = obs_sbt,
+                      .dlist = dlist,
+                      .likelihood = pf_lik_acdcpf,
+                      # Boost number of particles
+                      .n = 1e6L,
+                      .trial = pf_opt_trial(.trial_sampler = 0L,
+                                            .trial_revert_crit = 1L),
+                      .record = record
+                      )
+expect_true(out_pff$convergence)
+
+# (D) Increase `.trial_kick` to improve convergence
+set.seed(seed)
+out_pff <- pf_forward(.obs = obs_sbt,
+                      .dlist = dlist,
+                      .likelihood = pf_lik_acdcpf,
+                      # Boost number of particles
+                      .n = 1e4L,
+                      .trial = pf_opt_trial(.trial_kick = 100L,
+                                            .trial_sampler = 0L,
+                                            .trial_revert_crit = 1L),
+                      .record = record
+                      )
+# > It takes ~2-50 kick attempts on each time step to achieve convergence
+expect_true(out_pff$convergence)
+head(out_pff$diagnostics, 50L)
+out_pff$diagnostics |>
+  group_by(.data$timestep) |>
+  summarise(n = max(.data$trial))
+
+# (D) Increase `.trial_revert` args to improve convergence
+# > `.trial_revert` forces the  algorithm to revert to an earlier
+# > time step if a convergence failure is identified
+# > This helps convergence
+# > (but with the selected parameters, convergence isn't achieved)
+set.seed(seed)
+out_pff <- pf_forward(.obs = obs_sbt,
+                      .dlist = dlist,
+                      .likelihood = pf_lik_acdcpf,
+                      .n = 5e4L,
+                      .trial = pf_opt_trial(
+                        # Use 1 kick per attempt
+                        .trial_kick = 1L,
+                        # Use 10 reverts
+                        .trial_revert = 10L,
+                        # Only revert if < 1 cell identified
+                        .trial_revert_crit = 1L,
+                        # Revert by `.trial_revert_steps` time step
+                        .trial_revert_steps = 1L,
+                        .trial_sampler = 0L,
+                      ),
+                      .record = record)
+expect_false(out_pff$convergence)
+out_pff$diagnostics
+
+# (E) Use .rerun to rerun the algorithm from an earlier time step
+set.seed(seed)
+out_pff_2 <- pf_forward(.obs = obs_sbt,
+                      .dlist = dlist,
+                      .likelihood = pf_lik_acdcpf,
+                      # Retain parameters of the previous run
+                      .n = 5e4L,
+                      .trial = pf_opt_trial(
+                        .trial_kick = 1L,
+                        .trial_revert = 10L,
+                        .trial_revert_crit = 1L,
+                        .trial_revert_steps = 1L,
+                        .trial_sampler = 0L,
+                      ),
+                      # Rerun from earlier outputs (e.g., t = 3L)
+                      .rerun = out_pff,
+                      .rerun_from = 3L,
+                      .record = record)
+# This helps but does not facilitate convergence in this example
+expect_false(out_pff_2$convergence)
+# The output contains successful particle samples:
+summary(out_pff_2$history)
+# But all diagnostics (from all runs):
+out_pff_2$diagnostics
+# And the complete set of timings:
+out_pff_2$time
+
+#### (3) ACDCPF forward simulation (default)
+# > The default implementation attempts <=.trial_kick kicks & then uses directed sampling
+set.seed(seed)
+out_pff <- pf_forward(.obs = obs_sbt,
+                      .dlist = dlist,
+                      .likelihood = pf_lik_acdcpf,
+                      .record = record,
+                      .control = pf_opt_control(.sampler_batch_size = 100L))
+# > This converges
+# > But, at each time step, we are wasting effort kicking particles
+expect_true(out_pff$convergence)
+out_pff$diagnostics
+
+#### (4) ACDCPF forward simulation (directed sampling)
+# > The diagnostics above suggest we should focus on directed sampling
+set.seed(seed)
+out_pff <- pf_forward(.obs = obs_sbt,
+                      .dlist = dlist,
+                      .likelihood = pf_lik_acdcpf,
+                      .record = record,
+                      .trial = pf_opt_trial(
+                        # Use `.trial_kick` = 0L to suppress kicks
+                        .trial_kick = 0L,
+                        .trial_revert_crit = 1L),
+                      .control = pf_opt_control(.sampler_batch_size = 100L))
+expect_true(out_pff$convergence)
+out_pff$diagnostics
+
+#### (5) Complete forward simulation using directed sampling
+# > Our exploratory analyses indicated directed sampling for this dataset.
+# > So we will implement this approach across the full time series.
+# > This is a fairly unique case where we know with certainty the location @
+# > each time step. In general, the default implementation which exploits
+# > two proposal mechanisms (kicking & direct sampling) is probably preferable.
+
+# Order likelihood functions efficiently
+pf_lik_acdcpf_2 <- list(pf_lik_dc = pf_lik_dc,
+                        acs_filter_container = acs_filter_container,
+                        pf_lik_ac = pf_lik_ac)
+
+# Run simulation
+set.seed(seed)
+out_pff <- pf_forward(.obs = obs,
+                      .dlist = dlist,
+                      .likelihood = pf_lik_acdcpf_2,
+                      .trial = pf_opt_trial(.trial_kick = 0L,
+                                            .trial_revert_crit = 1L),
+                      .control = pf_opt_control(.sampler_batch_size = 100L),
+                      .record = record
+                      )
+expect_true(out_pff$convergence)
+```
+
+## Validation 
+
+```{r}
+#### Validate output elements
+# Identify path segment between analysed observations
+path <-
+  path |>
+  filter(timestamp %in% obs$timestamp) |>
+  mutate(timestep = seq_len(n())) |>
+  as.data.table()
+# We have one set of particles for each time step
+expect_equal(path$timestep,
+             sapply(out_pff$history, \(d) d$timestep[1])
+             )
+# We have also recorded convergence diagnostics at each time step
+expect_true(all(path$timestep %in% out_pff$diagnostics$timestep))
+
+#### Validate reconstruction of the correct path
+# Identify particle samples from each time step
+ps <-
+  out_pff$history |>
+  rbindlist(fill = TRUE) |>
+  group_by(timestep) |>
+  summarise(cell_now = unique(cell_now)) |>
+  select(timestep, cell_id = cell_now) |>
+  as.data.table()
+# Confirm we have sampled the correct location at each time step
+expect_equal(path$cell_id, ps$cell_id)
+
+#### Examine maps of space use
+# Build map using path
+pp <- par(mfrow = c(1, 2))
+map_path <- map_dens(gebco, .coord = copy(path))
+points(path$x, path$y, cex = 0.1)
+# Build map using coordinates
+map_particles <- map_dens(gebco,
+                          .coord = pf_coord(out_pff$history, .bathy = gebco))
+terra::plot(map_particles)
+points(path$x, path$y, cex = 0.1)
+par(pp)
+expect_true(terra::all.equal(map_path, map_particles))
 ```
