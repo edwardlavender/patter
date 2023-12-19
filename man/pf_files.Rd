@@ -2,31 +2,44 @@
 % Please edit documentation in R/pf-helpers.R
 \name{pf_files}
 \alias{pf_files}
+\alias{pf_files_size}
 \title{PF: list files}
 \usage{
 pf_files(.sink, ...)
+
+pf_files_size(.sink, .unit = c("MB", "GB", "TB"))
 }
 \arguments{
 \item{.sink}{A \code{character} string that defines the directory in which files are located.}
 
-\item{...}{Additional arguments passed to \code{\link[=list.files]{list.files()}}, such as \code{pattern}, excluding \code{full.names}.}
+\item{...}{For \code{\link[=pf_files]{pf_files()}}, \code{...} is a placeholder for additional arguments passed to \code{\link[=list.files]{list.files()}}, such as \code{pattern}, excluding \code{full.names}.}
+
+\item{.unit}{For \code{\link[=pf_files_size]{pf_files_size()}}, \code{.unit} is a \code{character} string that defines the units of the output (\code{MB}, \code{GB}, \code{TB}).}
 }
 \value{
-The function returns an ordered \code{list} of file paths.
+\itemize{
+\item \code{\link[=pf_files]{pf_files()}} returns an ordered \code{list} of file paths.
+\item \code{\link[=pf_files_size]{pf_files_size()}} returns a number.
+}
 }
 \description{
-This function creates an ordered \code{list} of the parquet files contains particle samples (e.g., from \code{\link[=pf_forward]{pf_forward()}} or \code{\link[=pf_backward_killer]{pf_backward_killer()}}).
+\code{\link[=pf_files]{pf_files()}} function creates an ordered \code{list} of the parquet files contains particle samples (e.g., from \code{\link[=pf_forward]{pf_forward()}} or \code{\link[=pf_backward_killer]{pf_backward_killer()}}). \code{\link[=pf_file_size]{pf_file_size()}} calculates the total size of all files.
 }
 \examples{
-# List files from pf_forward()
+# Use `pf_files()` to list files from `pf_forward()`
 pff_folder <- system.file("extdata", "acpf", "forward", "history",
                           package = "patter", mustWork = TRUE)
 files <- pf_files(pff_folder)
 
-# List files from pf_backward_killer()
+# Use `pf_files()` to list files from `pf_backward_killer()`
 pfbk_folder <- system.file("extdata", "acpf", "backward", "killer",
                            package = "patter", mustWork = TRUE)
 files <- pf_files(pfbk_folder)
+
+# Use `pf_files_size()` to calculate file size
+pf_files_size(pfbk_folder)
+pf_files_size(pfbk_folder, .unit = "GB")
+pf_files_size(pfbk_folder, .unit = "TB")
 
 }
 \author{

@@ -1,25 +1,36 @@
 #' @title PF: list files
-#' @description This function creates an ordered `list` of the parquet files contains particle samples (e.g., from [`pf_forward()`] or [`pf_backward_killer()`]).
+#' @description [`pf_files()`] function creates an ordered `list` of the parquet files contains particle samples (e.g., from [`pf_forward()`] or [`pf_backward_killer()`]). [`pf_file_size()`] calculates the total size of all files.
 #'
 #' @param .sink A `character` string that defines the directory in which files are located.
-#' @param ... Additional arguments passed to [`list.files()`], such as `pattern`, excluding `full.names`.
+#' @param ... For [`pf_files()`], `...` is a placeholder for additional arguments passed to [`list.files()`], such as `pattern`, excluding `full.names`.
+#' @param .unit For [`pf_files_size()`], `.unit` is a `character` string that defines the units of the output (`MB`, `GB`, `TB`).
 #'
-#' @return The function returns an ordered `list` of file paths.
+#' @return
+#' * [`pf_files()`] returns an ordered `list` of file paths.
+#' * [`pf_files_size()`] returns a number.
 #'
 #' @examples
-#' # List files from pf_forward()
+#' # Use `pf_files()` to list files from `pf_forward()`
 #' pff_folder <- system.file("extdata", "acpf", "forward", "history",
 #'                           package = "patter", mustWork = TRUE)
 #' files <- pf_files(pff_folder)
 #'
-#' # List files from pf_backward_killer()
+#' # Use `pf_files()` to list files from `pf_backward_killer()`
 #' pfbk_folder <- system.file("extdata", "acpf", "backward", "killer",
 #'                            package = "patter", mustWork = TRUE)
 #' files <- pf_files(pfbk_folder)
 #'
+#' # Use `pf_files_size()` to calculate file size
+#' pf_files_size(pfbk_folder)
+#' pf_files_size(pfbk_folder, .unit = "GB")
+#' pf_files_size(pfbk_folder, .unit = "TB")
+#'
 #' @seealso
 #'
 #' @author Edward Lavender
+#' @name pf_files
+
+#' @rdname pf_files
 #' @export
 
 pf_files <- function(.sink, ...) {
@@ -49,4 +60,27 @@ pf_files <- function(.sink, ...) {
     arrange(.data$name) |>
     pull(.data$file) |>
     as.list()
+}
+
+#' @rdname pf_files
+#' @export
+
+pf_files_size <- function(.sink, .unit = c("MB", "GB", "TB")) {
+  # Get units
+  .unit <- match.arg(.unit)
+  # Define size in MB
+  size <-
+    .sink |>
+    pf_files() |>
+    unlist() |>
+    file.size() |>
+    sum() / 1e6L
+  # Convert size as requested
+  if (.unit == "GB") {
+    size <- size / 1e3L
+  }
+  if (.unit == "TB") {
+    size <- size / 1e6L
+  }
+  size
 }
