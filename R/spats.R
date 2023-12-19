@@ -21,6 +21,7 @@ spatTemplate <- function(.xmin = 0, .xmax = 1000,
                          .crs = "+proj=utm +zone=1 +datum=WGS84",
                          .value = 0,
                          .units = "m", ...) {
+  rlang::check_dots_used()
   r <- terra::rast(xmin = .xmin, xmax = .xmax,
                    ymin = .ymin, ymax = .ymax,
                    res = .res,

@@ -28,6 +28,7 @@ coa <- function(.dlist, .delta_t, .split = NULL,
              .dataset = c("acoustics", "moorings"),
              .par = "lonlat")
   check_dots_for_missing_period(formals(), list(...))
+  rlang::check_dots_used()
 
   #### Define datasets
   acoustics <- .dlist$data$acoustics

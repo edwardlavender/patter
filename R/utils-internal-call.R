@@ -44,6 +44,7 @@ call_duration <- function(.start, .end, ...) {
 #' @keywords internal
 
 call_timings <- function(.start, .end = Sys.time(), ...) {
+  rlang::check_dots_used()
   list(start = .start,
        end = .end,
        duration = difftime(.end, .start, ...))
