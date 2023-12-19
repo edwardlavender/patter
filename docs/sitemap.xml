@@ -115,6 +115,9 @@
     <loc>/reference/dot-is_lonlat.html</loc>
   </url>
   <url>
+    <loc>/reference/dot-map_mark.html</loc>
+  </url>
+  <url>
     <loc>/reference/dot-pf_backward_killer_outputs.html</loc>
   </url>
   <url>
@@ -137,6 +140,18 @@
   </url>
   <url>
     <loc>/reference/make_matrix_receivers.html</loc>
+  </url>
+  <url>
+    <loc>/reference/map_coord.html</loc>
+  </url>
+  <url>
+    <loc>/reference/map_dens.html</loc>
+  </url>
+  <url>
+    <loc>/reference/map_hr.html</loc>
+  </url>
+  <url>
+    <loc>/reference/map_pou.html</loc>
   </url>
   <url>
     <loc>/reference/mktempdir.html</loc>
@@ -178,6 +193,9 @@
     <loc>/reference/pf_coord.html</loc>
   </url>
   <url>
+    <loc>/reference/pf_coords.html</loc>
+  </url>
+  <url>
     <loc>/reference/pf_diag.html</loc>
   </url>
   <url>
@@ -202,10 +220,10 @@
     <loc>/reference/pf_lik.html</loc>
   </url>
   <url>
-    <loc>/reference/map_dens.html</loc>
+    <loc>/reference/pf_map_dens.html</loc>
   </url>
   <url>
-    <loc>/reference/map_pou.html</loc>
+    <loc>/reference/pf_map_pou.html</loc>
   </url>
   <url>
     <loc>/reference/pf_opt.html</loc>

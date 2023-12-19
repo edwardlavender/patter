@@ -78,7 +78,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">acs_setup_detection_kernels</span><span class="op">(</span></span>
 <span>  <span class="va">.dlist</span>,</span>
 <span>  .calc_detection_pr <span class="op">=</span> <span class="va">acs_setup_detection_pr</span>,</span>
-<span>  .verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  .verbose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"patter.verbose"</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -164,12 +164,12 @@ Using these inputs, the function must return a <code>SpatRaster</code> that defi
 <span class="r-in"><span>                       .services <span class="op">=</span> <span class="va">s</span>,</span></span>
 <span class="r-in"><span>                       .bathy <span class="op">=</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                       .lonlat <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`.moorings` coordinates coerced onto `.bathy` grid.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> `.moorings` coordinates coerced onto `.bathy` grid.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (1): Implement function using specified inputs</span></span></span>
 <span class="r-in"><span><span class="co"># Implement function</span></span></span>
 <span class="r-in"><span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu">acs_setup_detection_kernels</span><span class="op">(</span><span class="va">dlist</span>, .calc_detection_pr <span class="op">=</span> <span class="va">acs_setup_detection_pr</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::acs_setup_detection_kernels()` called @ 2023-12-18 15:09:53... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::acs_setup_detection_kernels()` called @ 2023-12-19 13:06:34... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting receiver-specific kernels (for detection)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting receiver-specific inverse kernels... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting area-wide kernels (for non-detection)... </span>
@@ -184,8 +184,8 @@ Using these inputs, the function must return a <code>SpatRaster</code> that defi
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... ... Extract detection probability kernels for active receivers... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Process detection probability kernels ... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... patter::acs_setup_detection_kernels() call completed (@ 2023-12-18 15:09:53.276691) after ~0 minutes. </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::acs_setup_detection_kernels()` call ended @ 2023-12-18 15:09:53 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... patter::acs_setup_detection_kernels() call completed (@ 2023-12-19 13:06:34.258452) after ~0 minutes. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::acs_setup_detection_kernels()` call ended @ 2023-12-19 13:06:34 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="co"># Examine list elements</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">k</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                               Length Class      Mode</span>

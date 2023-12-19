@@ -81,7 +81,9 @@
 <span></span>
 <span><span class="fu">dat_pfbk</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">dat_pfp</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">dat_pfp</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">dat_coa</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="source">
@@ -95,6 +97,7 @@
 <li><p><code>dat_pff()</code> reads an example output from <code><a href="pf_forward.html">pf_forward()</a></code>;</p></li>
 <li><p><code>dat_pfbk()</code> reads an example output from <code><a href="pf_backward_killer.html">pf_backward_killer()</a></code>;</p></li>
 <li><p><code>dat_pfp()</code> reads an example output from <code><a href="pf_path.html">pf_path()</a></code>;</p></li>
+<li><p><code>dat_coa()</code> reads an example output from <code><a href="coa.html">coa()</a></code>;</p></li>
 </ul></div>
     <div id="author">
     <h2>Author</h2>
@@ -423,19 +426,27 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> time     3     -none- list</span>
 <span class="r-in"><span><span class="fu">dat_pfp</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     path_id          timestep       cell_id          cell_x      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   :  1.00   Min.   : 1.0   Min.   :35857   Min.   :708242  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1st Qu.: 25.75   1st Qu.:13.0   1st Qu.:37943   1st Qu.:708842  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Median : 50.50   Median :25.5   Median :38512   Median :709142  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Mean   : 50.50   Mean   :25.5   Mean   :38411   Mean   :709125  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3rd Qu.: 75.25   3rd Qu.:38.0   3rd Qu.:38901   3rd Qu.:709442  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Max.   :100.00   Max.   :50.0   Max.   :39662   Max.   :709742  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   :  1.00   Min.   : 1.0   Min.   :36233   Min.   :708242  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1st Qu.: 25.75   1st Qu.:13.0   1st Qu.:37377   1st Qu.:708642  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Median : 50.50   Median :25.5   Median :37948   Median :708942  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Mean   : 50.50   Mean   :25.5   Mean   :37957   Mean   :708897  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3rd Qu.: 75.25   3rd Qu.:38.0   3rd Qu.:38511   3rd Qu.:709142  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Max.   :100.00   Max.   :50.0   Max.   :39653   Max.   :709442  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      cell_y            cell_z      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   :6252207   Min.   : 36.50  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1st Qu.:6252607   1st Qu.: 44.89  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Median :6252807   Median : 52.99  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Mean   :6252863   Mean   : 62.99  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3rd Qu.:6253107   3rd Qu.: 80.03  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Max.   :6254207   Max.   :140.85  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   :6252207   Min.   : 39.47  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1st Qu.:6252807   1st Qu.: 58.17  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Median :6253107   Median : 74.70  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Mean   :6253100   Mean   : 85.89  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3rd Qu.:6253407   3rd Qu.:111.24  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Max.   :6254007   Max.   :150.05  </span>
+<span class="r-in"><span><span class="fu">dat_coa</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    timestamp                       coa_x            coa_y        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   :2016-03-17 01:00:00   Min.   :702842   Min.   :6252991  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1st Qu.:2016-03-24 01:00:00   1st Qu.:706442   1st Qu.:6253107  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Median :2016-03-27 21:00:00   Median :709057   Median :6253174  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Mean   :2016-03-28 04:02:24   Mean   :707749   Mean   :6257412  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3rd Qu.:2016-03-29 13:00:00   3rd Qu.:709242   3rd Qu.:6265407  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Max.   :2016-04-16 05:00:00   Max.   :709430   Max.   :6267707  </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
