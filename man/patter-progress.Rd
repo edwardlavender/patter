@@ -14,7 +14,7 @@
 Only selected \code{\link{patter}} functions support these options but this may expand in the future, depending on user feedback.
 }
 \section{User outputs}{
-User output messages are controlled via the \code{.verbose} argument. There is a global option \code{patter.vebose} that can be set to suppress user output messages. See the internal \code{\link{cat_}} documentation for permitted inputs to \code{.verbose}.
+User output messages are controlled via the \code{.verbose} argument. There is a global option \code{patter.verbose} that can be set to suppress user output messages. See the internal \code{\link{cat_}} documentation for permitted inputs to \code{.verbose}.
 }
 
 \section{Progress bars}{
