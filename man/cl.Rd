@@ -61,7 +61,7 @@ A set of wrappers for \code{\link[parallel:parallel-package]{parallel::parallel}
 \itemize{
 \item \code{\link[=cl_check]{cl_check()}} checks \code{.cl} and \code{.varlist} arguments, as inputted to a parent function. For example, if \code{.cl = NULL}, \code{.varlist} should also be \code{NULL}.
 \item \code{\link[=cl_cores]{cl_cores()}} identifies the number of cores specified.
-\item \code{\link[=cl_chunks]{cl_chunks()}} defines a list, with one element for core specified, that contains an integer vector of the positions of an object over which to iterate serially in each chunk.
+\item \code{\link[=cl_chunks]{cl_chunks()}} defines a list, with one element for core specified x 4, that contains an integer vector of the positions of an object over which to iterate serially in each chunk.
 \item \code{\link[=cl_export]{cl_export()}} implements \code{\link[parallel:clusterApply]{parallel::clusterExport()}} if both \code{.cl} and \code{.varlist} are specified.
 \item \code{\link[=cl_stop]{cl_stop()}} implements \code{\link[parallel:makeCluster]{parallel::stopCluster}} if \code{.cl} is a \code{cluster} object from \code{\link[parallel:makeCluster]{parallel::makeCluster()}}.
 }

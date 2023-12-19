@@ -15,7 +15,7 @@
 #' [`cl_lapply()`] is a wrapper for [`pbapply::pblapply()`] that handles cluster checking, set up and closure, using the following functions:
 #' * [`cl_check()`] checks `.cl` and `.varlist` arguments, as inputted to a parent function. For example, if `.cl = NULL`, `.varlist` should also be `NULL`.
 #' * [`cl_cores()`] identifies the number of cores specified.
-#' * [`cl_chunks()`] defines a list, with one element for core specified, that contains an integer vector of the positions of an object over which to iterate serially in each chunk.
+#' * [`cl_chunks()`] defines a list, with one element for core specified x 4, that contains an integer vector of the positions of an object over which to iterate serially in each chunk.
 #' * [`cl_export()`] implements [`parallel::clusterExport()`] if both `.cl` and `.varlist` are specified.
 #' * [`cl_stop()`] implements [`parallel::stopCluster`] if `.cl` is a `cluster` object from [`parallel::makeCluster()`].
 #'
