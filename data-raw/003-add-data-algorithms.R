@@ -22,6 +22,9 @@ dv::clear()
 devtools::load_all()
 library(lubridate)
 
+#### Global variables
+overwrite <- TRUE
+
 
 #########################
 #########################
@@ -65,7 +68,6 @@ out_coa <- coa(dlist, .delta_t = "4 hours")
 
 #### Implement pf_forward()
 sink      <- NULL
-overwrite <- TRUE
 if (overwrite) {
   pff_folder <- file.path("inst", "extdata", "acpf", "forward")
   unlink(pff_folder, recursive = TRUE)
@@ -85,7 +87,6 @@ out_pff <- pf_forward(.obs = obs,
 
 #### Implement pf_backward_killer()
 sink      <- NULL
-overwrite <- TRUE
 if (overwrite) {
   pfbk_folder <- file.path("inst", "extdata", "acpf", "backward", "killer")
   unlink(pfbk_folder, recursive = TRUE)
@@ -142,7 +143,6 @@ list.files("inst", recursive = TRUE, full.names = TRUE) |>
 #### Write datasets to file
 # We will save all datasets in inst/ for consistency
 # and use functions to read (and, if necessary, unpack) datasets
-overwrite <- FALSE
 if (overwrite) {
   lapply(seq_len(length(datasets)), function(i) {
     saveRDS(datasets[[i]], here::here("inst", "extdata", paste0(names(datasets)[i], ".rds")))

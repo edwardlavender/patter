@@ -4,29 +4,40 @@
 \alias{pf_backward_killer_diagnostics}
 \title{PF: backward killer diagnostics}
 \usage{
-pf_backward_killer_diagnostics(
-  .sink,
-  .cl = NULL,
-  .cl_varlist = NULL,
-  .cl_chunks = TRUE
-)
+pf_backward_killer_diagnostics(.history, ...)
 }
 \arguments{
-\item{.sink}{A character string that defines the directory containing outputs.}
-
-\item{.cl, .cl_varlist, .cl_chunks}{(optional) Cluster options, passed to \code{\link[=cl_lapply]{cl_lapply()}}.}
+\item{.history}{Particle samples, provided in any format accepted by \code{\link[=.pf_history_dt]{.pf_history_dt()}}.}
 }
 \value{
 The function returns a \code{\link{data.table}} with the following columns:
 \itemize{
 \item \code{timestep}---an \code{integer} that defines the timestep;
 \item \code{n}---an \code{integer} that defines the number of particles;
-\item \code{n_u}---an \code{integer} that defines the number of unique location samples;
+\item \code{n_u}---an \code{integer} that defines the number of unique location samples (see \code{\link[=.pf_diag_unique]{.pf_diag_unique()}});
 \item \code{ess}---a \code{double} that defines the effective sample size (see \code{\link[=.pf_diag_ess]{.pf_diag_ess()}});
 }
 }
 \description{
-This function collates diagnostics from \code{\link[=pf_backward_killer]{pf_backward_killer()}} outputs.
+This function calculates diagnostics from particle samples from \code{\link[=pf_backward_killer]{pf_backward_killer()}}.
+}
+\details{
+This function calculates particle diagnostics from particle samples from \code{\link[=pf_backward_killer]{pf_backward_killer()}}. Unlike \code{\link[=pf_forward]{pf_forward()}}, diagnostics are calculated post-hoc from particle samples, rather than on-the-fly, since the former is more efficient.
+}
+\examples{
+# Calculate diagnostics from objects in memory
+diag <- dat_pfbk() |> pf_backward_killer_diagnostics()
+head(diag)
+
+# Calculate diagnostics from parquet files
+pfb_folder <- system.file("extdata", "acpf", "backward", "killer",
+                          package = "patter", mustWork = TRUE)
+diag_2 <- pf_backward_killer_diagnostics(pfb_folder)
+stopifnot(all.equal(diag, diag_2))
+
+# Analyse diagnostics
+
+
 }
 \author{
 Edward Lavender
