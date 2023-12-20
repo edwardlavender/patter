@@ -7,15 +7,36 @@
 dist_along_path(.xy, .lonlat = FALSE)
 }
 \arguments{
-\item{.xy}{A two-column matrix of coordinates.}
+\item{.xy}{A two-column \code{\link{matrix}}, \code{\link{data.frame}} or \code{\link{data.table}} of x, y coordinates. The input is coerced to a \code{\link{matrix}}.}
 
-\item{.lonlat}{A \code{logical} variable that defines whether or not the coordinates are in longitude/latitude format.}
+\item{.lonlat}{A \code{logical} variable that defines whether or not the coordinates are in longitude/latitude format (\code{TRUE}) or planar (\code{FALSE}).}
+}
+\value{
+The function returns a \code{numeric} vector. Each element (\code{i}) is the distance from the corresponding coordinates (\code{.xy[, i]}) to the next set of coordinates (\code{.xy[, i + 1]}). The final value is \code{NA_real_}.
 }
 \description{
 This function calculates distances between sequential coordinates in a matrix.
 }
 \details{
 This function is a simple wrapper for \code{\link[terra:distance]{terra::distance()}}.
+}
+\examples{
+require(data.table)
+require(dplyr)
+
+#### Example (1): Illustration with synthetic data
+p <- matrix(c(1, 2,
+              3, 4,
+              5, 6), ncol = 2, byrow = TRUE)
+
+dist_along_path(p)
+
+#### Example (2): illustration with a `patter` movement-path data.table
+dat_pfp() |>
+  group_by(path_id) |>
+  mutate(dist = dist_along_path(cbind(cell_x, cell_y))) |>
+  as.data.table()
+
 }
 \seealso{
 \itemize{
