@@ -2,7 +2,7 @@
 % Please edit documentation in R/acs-setup.R
 \name{acs_setup_detection_overlaps}
 \alias{acs_setup_detection_overlaps}
-\title{AC* set up: define detection container overlaps}
+\title{AC* set up: detection container overlaps}
 \source{
 This function supersedes the \href{https://edwardlavender.github.io/flapper/reference/get_detection_containers_overlap.html}{\code{get_detection_containers_overlaps}} function in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package.
 }
@@ -20,18 +20,35 @@ acs_setup_detection_overlaps(.dlist)
 The function returns a nested \code{list}, with one element for all integers from \code{1:max(.moorings$receiver_id)}. Any elements that do not correspond to receivers contain a \code{NULL} element. List elements that correspond to receivers contain a \code{NULL} or a \code{list} that defines, for each deployment date with overlapping receiver(s), a vector of overlapping receiver(s).
 }
 \description{
-This function identifies receivers with overlapping detection containers in space and time for the AC* algorithms.
+This function is part of a set of \verb{acs_setup_*()} functions that prepare the layers required to evaluate the likelihood of acoustic observations in an AC*PF algorithm. This function identifies receivers with overlapping detection containers in space and time.
 }
 \details{
-In the AC* algorithms, at the moment of detection, the set of possible locations depends on the receiver(s) at which an individual is, and is not, detected. The outputs of this function are used to restrict the probability calculations to the set of receivers that overlap with the receiver(s) at which an individual is detected for improved efficiency.
+An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual. In such an algorithm, at the moment of detection, the likelihood of detection(s) is evaluated, given particle samples. The outputs of this function are used to restrict the likelihood calculations to the set of receivers that overlap with the receiver(s) at which an individual is detected. This improves efficiency.
 }
 \examples{
-#### Example (1): Basic implementation
+# Set up data
 dlist <- pat_setup_data(.moorings = dat_moorings,
-                       .bathy = dat_gebco(),
-                       .lonlat = FALSE)
-overlaps <- acs_setup_detection_overlaps(dlist)
+                        .bathy = dat_gebco(),
+                        .lonlat = FALSE)
+# Prepare detection overlaps
+# * Store detection overlaps in dlist$algorithms
+# * It is expected in this slot by `pf_lik_ac()`
+dlist$algorithm$overlaps <- acs_setup_detection_overlaps(dlist)
 
+}
+\seealso{
+To implement such an algorithm, see:
+\enumerate{
+\item \code{\link[=pat_setup_data]{pat_setup_data()}} to set up datasets;
+\item \verb{acs_setup_*()} functions to prepare layers required for likelihood calculations, i.e.:
+\itemize{
+\item \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}}, which identifies detection overlaps;
+\item \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}, which prepares detection kernels;
+\item \code{\link[=acs_setup_detection_pr]{acs_setup_detection_pr()}}, which is an example detection probability model;
+}
+\item \code{\link[=pf_lik_ac]{pf_lik_ac()}} to define the likelihood of acoustic data;
+\item \code{\link[=pf_forward]{pf_forward()}} to run the simulation;
+}
 }
 \author{
 Edward Lavender

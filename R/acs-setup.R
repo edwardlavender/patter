@@ -1,24 +1,34 @@
-#' @title AC* set up: define detection container overlaps
-#' @description This function identifies receivers with overlapping detection containers in space and time for the AC* algorithms.
+#' @title AC* set up: detection container overlaps
+#' @description This function is part of a set of `acs_setup_*()` functions that prepare the layers required to evaluate the likelihood of acoustic observations in an AC*PF algorithm. This function identifies receivers with overlapping detection containers in space and time.
 #'
 #' @param .dlist A named `list` of data and parameters from [`pat_setup_data()`]. This function requires:
 #' * `.dlist$data$moorings`, with the following columns: `receiver_id`, `receiver_x`, `receiver_y`, `receiver_start`, `receiver_end` and `receiver_range`.
 #' *  (optional) `.dlist$data$services`, with the following columns: `receiver_id`, `service_start` and `service_end`.
 #'
-#' @details In the AC* algorithms, at the moment of detection, the set of possible locations depends on the receiver(s) at which an individual is, and is not, detected. The outputs of this function are used to restrict the probability calculations to the set of receivers that overlap with the receiver(s) at which an individual is detected for improved efficiency.
+#' @details An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual. In such an algorithm, at the moment of detection, the likelihood of detection(s) is evaluated, given particle samples. The outputs of this function are used to restrict the likelihood calculations to the set of receivers that overlap with the receiver(s) at which an individual is detected. This improves efficiency.
 #'
 #' @return The function returns a nested `list`, with one element for all integers from `1:max(.moorings$receiver_id)`. Any elements that do not correspond to receivers contain a `NULL` element. List elements that correspond to receivers contain a `NULL` or a `list` that defines, for each deployment date with overlapping receiver(s), a vector of overlapping receiver(s).
 #'
 #' @examples
-#' #### Example (1): Basic implementation
+#' # Set up data
 #' dlist <- pat_setup_data(.moorings = dat_moorings,
-#'                        .bathy = dat_gebco(),
-#'                        .lonlat = FALSE)
-#' overlaps <- acs_setup_detection_overlaps(dlist)
+#'                         .bathy = dat_gebco(),
+#'                         .lonlat = FALSE)
+#' # Prepare detection overlaps
+#' # * Store detection overlaps in dlist$algorithms
+#' # * It is expected in this slot by `pf_lik_ac()`
+#' dlist$algorithm$overlaps <- acs_setup_detection_overlaps(dlist)
 #'
 #' @source This function supersedes the [`get_detection_containers_overlaps`](https://edwardlavender.github.io/flapper/reference/get_detection_containers_overlap.html) function in the [`flapper`](https://github.com/edwardlavender/flapper) package.
 #'
-#' @seealso
+#' @seealso To implement such an algorithm, see:
+#' 1. [`pat_setup_data()`] to set up datasets;
+#' 2. `acs_setup_*()` functions to prepare layers required for likelihood calculations, i.e.:
+#'    * [`acs_setup_detection_overlaps()`], which identifies detection overlaps;
+#'    * [`acs_setup_detection_kernels()`], which prepares detection kernels;
+#'    * [`acs_setup_detection_pr()`], which is an example detection probability model;
+#' 3. [`pf_lik_ac()`] to define the likelihood of acoustic data;
+#' 4. [`pf_forward()`] to run the simulation;
 #'
 #' @author Edward Lavender
 #' @export
@@ -146,7 +156,7 @@ acs_setup_detection_overlaps <- function(.dlist) {
 
 }
 
-#' @title AC* set up: calculate detection probability around a receiver
+#' @title AC* set up: detection probability
 #' @description This function is an example detection probability function, of the kind required by [`acs_setup_detection_kernels()`].
 #' @param .mooring A one-row [`data.table`] that defines the location of the receiver and associated information used by the model of detection probability.
 #' @param .bathy A [`SpatRaster`] that defines the grid over which detection probability is calculated.
@@ -193,7 +203,7 @@ acs_setup_detection_pr <- function(.mooring,
 }
 
 
-#' @title AC* set up: define detection kernels
+#' @title AC* set up: detection kernels
 #' @description This function defines the detection kernels for the AC* algorithms.
 #' @param .dlist A named `list` of data and parameters from [`pat_setup_data()`]. This function requires:
 #' * `.dlist$data$moorings`, with the following columns: `receiver_id`, `receiver_start`, `receiver_end`, `receiver_x` and `receiver_y`, plus any columns used internally by `.calc_detection_pr` (see below).

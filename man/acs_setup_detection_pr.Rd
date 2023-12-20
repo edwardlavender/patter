@@ -2,7 +2,7 @@
 % Please edit documentation in R/acs-setup.R
 \name{acs_setup_detection_pr}
 \alias{acs_setup_detection_pr}
-\title{AC* set up: calculate detection probability around a receiver}
+\title{AC* set up: detection probability}
 \usage{
 acs_setup_detection_pr(
   .mooring,
