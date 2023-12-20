@@ -54,11 +54,10 @@ dlist <- pat_setup_data(.acoustics = acc,
 dlist$algorithm$detection_overlaps <- acs_setup_detection_overlaps(dlist)
 dlist$algorithm$detection_kernels  <- acs_setup_detection_kernels(dlist)
 # Collate observations
-obs       <- acs_setup_obs(.acoustics = acc,
-                           .archival = arc,
-                           .step = "2 mins",
-                           .mobility = 500,
-                           .detection_range = dat_moorings$receiver_range[1])
+obs <- pf_setup_obs(.dlist = dlist,
+                    .step = "2 mins",
+                    .mobility = 500,
+                    .detection_range = dat_moorings$receiver_range[1])
 obs <- obs[1:25, ]
 
 #### Implement coa()

@@ -21,7 +21,7 @@ pf_forward(
 )
 }
 \arguments{
-\item{.obs}{A \code{\link{data.table}} defining the timeline and associated observations, typically from \code{\link[=acs_setup_obs]{acs_setup_obs()}}.}
+\item{.obs}{A \code{\link{data.table}} defining the timeline and associated observations, typically from \code{\link[=pf_setup_obs]{pf_setup_obs()}}.}
 
 \item{.dlist}{A \code{named} list of data and parameters required propose samples and calculate likelihoods (see \code{\link[=pat_setup_data]{pat_setup_data()}}, \code{\link{pf_lik}} and \code{\link{pf_propose}}). At a minimum, this function requires \code{.dlist$spatial$bathy}. An \code{.dlist$spatial$origin} \code{\link{SpatRaster}} can be included to define the origin. Additional elements required by \code{.likelihood},\code{.rpropose} and \code{.dpropose} functions should be included (see below).}
 
@@ -108,12 +108,11 @@ dlist <- pat_setup_data(.acoustics = acc,
 dlist$algorithm$detection_overlaps <- acs_setup_detection_overlaps(dlist)
 dlist$algorithm$detection_kernels  <- acs_setup_detection_kernels(dlist)
 # Set up observations
-obs <- acs_setup_obs(.acoustics = dlist$data$acoustics,
-                     .archival = dlist$data$archival,
-                     .trim = TRUE,
-                     .step = "2 mins",
-                     .mobility = 500,
-                     .detection_range = 750)
+obs <- pf_setup_obs(.dlist = dlist,
+                    .trim = TRUE,
+                    .step = "2 mins",
+                    .mobility = 500,
+                    .detection_range = 750)
 # Subset observations for speed
 obs <- obs[1:100L, ]
 

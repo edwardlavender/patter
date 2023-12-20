@@ -31,11 +31,11 @@ For example datasets from the Movement Ecology of Flapper Skate project (\code{\
 
 For example algorithm outputs (\code{\link{datasets-algorithms}}), see:
 \itemize{
-\item \code{\link[=dat_obs]{dat_obs()}} for an example output dataset from \code{\link[=acs_setup_obs]{acs_setup_obs()}};
+\item \code{\link[=dat_obs]{dat_obs()}} for an example output dataset from \code{\link[=pf_setup_obs]{pf_setup_obs()}};
 \item \code{\link[=dat_pff]{dat_pff()}} for an example output from \code{\link[=pf_forward]{pf_forward()}};
 \item \code{\link[=dat_pfbk]{dat_pfbk()}} for an example output from \code{\link[=pf_backward_killer]{pf_backward_killer()}};
 \item \code{\link[=dat_pfp]{dat_pfp()}} for an example output from \code{\link[=pf_path]{pf_path()}};
-\item \code{\link[=dat_coa]{dat_coa()}} for an example output from \code{\link[=dat_coa]{dat_coa()}};
+\item \code{\link[=dat_coa]{dat_coa()}} for an example output from \code{\link[=coa]{coa()}};
 }
 }
 

@@ -173,11 +173,6 @@ acs_setup_detection_overlaps <- function(.dlist) {
 #' points(m$receiver_x, m$receiver_y, pch = ".")
 #'
 #' @seealso
-#' To implement an AC*PF algorithm, use:
-#'   1. [`acs_setup_obs()`] to set up observations;
-#'   2. [`acs_setup_detection_overlaps()`] to identify receiver overlaps (used in detection probability calculations);
-#'   3. [`acs_setup_detection_kernels()`] and [`acs_setup_detection_pr()`] to define detection probability kernels;
-#'   4. [`pf_forward()`] to run the simulation;
 #'
 #' @author Edward Lavender
 #' @export
@@ -230,11 +225,6 @@ acs_setup_detection_pr <- function(.mooring,
 #' @source This function is based on the [`acs_setup_detection_kernels`](https://edwardlavender.github.io/flapper/reference/acs_setup_detection_kernels.html) function in the [`flapper`](https://github.com/edwardlavender/flapper) package, where the role of detection kernels in the AC* algorithms is described extensively (see Details).
 #'
 #' @seealso
-#' To implement an AC*PF algorithm, use:
-#'   1. [`acs_setup_obs()`] to set up observations;
-#'   2. [`acs_setup_detection_overlaps()`] to identify receiver overlaps (used in detection probability calculations);
-#'   3. [`acs_setup_detection_kernels()`] and [`acs_setup_detection_pr()`] to define detection probability kernels;
-#'   4. [`pf_forward()`] to run the simulation;
 #'
 #' @author Edward Lavender
 #' @export

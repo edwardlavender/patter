@@ -12,12 +12,11 @@ dlist <- pat_setup_data(.acoustics = acc,
 dlist$algorithm$detection_overlaps <- acs_setup_detection_overlaps(dlist)
 dlist$algorithm$detection_kernels  <- acs_setup_detection_kernels(dlist)
 # Set up observations
-obs <- acs_setup_obs(.acoustics = dlist$data$acoustics,
-                     .archival = dlist$data$archival,
-                     .trim = TRUE,
-                     .step = "2 mins",
-                     .mobility = 500,
-                     .detection_range = 750)
+obs <- pf_setup_obs(.dlist = dlist,
+                    .trim = TRUE,
+                    .step = "2 mins",
+                    .mobility = 500,
+                    .detection_range = 750)
 # Subset observations for speed
 obs <- obs[1:100L, ]
 

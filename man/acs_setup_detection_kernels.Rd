@@ -112,15 +112,6 @@ lapply(k$bkg_inv_surface_by_design, \(bkg) {
 }) |> invisible()
 par(pp)
 }
-\seealso{
-To implement an AC*PF algorithm, use:
-\enumerate{
-\item \code{\link[=acs_setup_obs]{acs_setup_obs()}} to set up observations;
-\item \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}} to identify receiver overlaps (used in detection probability calculations);
-\item \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}} and \code{\link[=acs_setup_detection_pr]{acs_setup_detection_pr()}} to define detection probability kernels;
-\item \code{\link[=pf_forward]{pf_forward()}} to run the simulation;
-}
-}
 \author{
 Edward Lavender
 }

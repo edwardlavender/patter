@@ -120,11 +120,10 @@ dlist$algorithm$detection_kernels  <-
 To implement the algorithms, we require a single time series, along which observations are recorded. `pf_setup_obs()` is used for this purpose. At the time of writing, this accepts acoustic and, optionally, archival time series, in the format defined above. These data are matched onto a single, regular time series, with a resolution of `.step` units and additional columns are created as required for the analysis. 
 
 ```{r}
-obs <- acs_setup_obs(.acoustics = dlist$data$acoustics, 
-                     .archival = dlist$data$archival, 
-                     .step = "2 mins", 
-                     .mobility = 500, 
-                     .detection_range = moorings$receiver_range[1])
+obs <- pf_setup_obs(.dlist = dlist,
+                    .step = "2 mins", 
+                    .mobility = 500, 
+                    .detection_range = moorings$receiver_range[1])
 obs <- obs[1:100, ]
 head(obs)
 ```

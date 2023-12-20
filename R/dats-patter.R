@@ -3,7 +3,7 @@
 #' @description These functions load example outputs from key [`patter`] functions. They are included in the package to streamline function examples and tests.
 #'
 #' @details
-#' * [`dat_pff()`] reads an example output from [`acs_setup_obs()`];
+#' * [`dat_pff()`] reads an example output from [`pf_setup_obs()`];
 #' * [`dat_pff()`] reads an example output from [`pf_forward()`];
 #' * [`dat_pfbk()`] reads an example output from [`pf_backward_killer()`];
 #' * [`dat_pfp()`] reads an example output from [`pf_path()`];

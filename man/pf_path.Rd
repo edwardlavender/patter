@@ -46,12 +46,6 @@ This function implements the path-reconstruction algorithm.
 The path reconstruction algorithm 'chains' sequential particle samples into movement paths. This function evolved from \href{https://edwardlavender.github.io/flapper/reference/pf_simplify.html}{\code{pf_simplify()}} in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package. This implementation uses the fast \code{\link[collapse:join]{collapse::join()}} function.
 }
 \examples{
-#### Workflow
-# A. Define input datasets (see ?`acs_setup_obs()`)
-# B. Implement forward simulation (see ?`pf_forward()`)
-# C. Implement backwards pass (see ?`pf_backward_*()`)
-# D. Implement `pf_path()`, `map_pou()` etc.
-
 #### Set up examples using pre-defined datasets
 gebco       <- dat_gebco()
 obs         <- dat_obs()

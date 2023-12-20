@@ -24,11 +24,11 @@
 #'
 #' For example algorithm outputs ([`datasets-algorithms`]), see:
 #'
-#' * [`dat_obs()`] for an example output dataset from [`acs_setup_obs()`];
+#' * [`dat_obs()`] for an example output dataset from [`pf_setup_obs()`];
 #' * [`dat_pff()`] for an example output from [`pf_forward()`];
 #' * [`dat_pfbk()`] for an example output from [`pf_backward_killer()`];
 #' * [`dat_pfp()`] for an example output from [`pf_path()`];
-#' * [`dat_coa()`] for an example output from [`dat_coa()`];
+#' * [`dat_coa()`] for an example output from [`coa()`];
 #'
 #' # Simulation
 #'

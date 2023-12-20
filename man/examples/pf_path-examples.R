@@ -1,9 +1,3 @@
-#### Workflow
-# A. Define input datasets (see ?`acs_setup_obs()`)
-# B. Implement forward simulation (see ?`pf_forward()`)
-# C. Implement backwards pass (see ?`pf_backward_*()`)
-# D. Implement `pf_path()`, `map_pou()` etc.
-
 #### Set up examples using pre-defined datasets
 gebco       <- dat_gebco()
 obs         <- dat_obs()
