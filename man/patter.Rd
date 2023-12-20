@@ -5,20 +5,23 @@
 \alias{patter}
 \title{\code{\link{patter}} for passive acoustic telemetry}
 \description{
-\code{\link{patter}} is a re-implementation of the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} family of algorithms for passive acoustic telemetry that is simpler, faster and better tested than its \href{https://github.com/edwardlavender/flapper}{predecessor}. The aim of the package is to facilitate the reconstruction of movement paths and patterns of space use in passive acoustic telemetry systems.
+\code{\link{patter}} is a \code{R} implementation of a forward filtering--backward sampling algorithm for passive acoustic telemetry. This methodology enables the reconstruction of movement paths and patterns of space use in passive acoustic telemetry systems. \code{\link{patter}} unifies a suite of methods formerly known as the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} algorithms (Lavender et al., 2023) and supersedes the experimental \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package.
 }
 \section{Vignettes}{
 For an introduction to \code{\link{patter}}, use:
 \itemize{
-\item \code{vignette("workflow", package = "patter")} for an overview of the analytical workflow;
-\item \code{vignette("faqs", package = "patter")} for FAQs;
+\item \code{vignette("a-methodology", package = "patter")} for a conceptual introduction to the methodology;
+\item \code{vignette("b-workflow-outline", package = "patter")} for an overview of the workflow;
+\item \code{vignette("c-workflow-example", package = "patter")} for an example workflow;
+\item \code{vignette("d-demos", package = "patter")} for more involved demonstrations;
+\item \code{vignette("e-faqs", package = "patter")} for FAQs;
 }
 
-For a full list of all functions, see \code{help(package = "patter")}.
+For a full list of all functions, see \code{help(package = 'patter')}.
 }
 
 \section{Datasets}{
-For example datasets from the Movement Ecology of Flapper Skate project (\code{\link{datasets-mefs}}), see:
+For example datasets from the Movement Ecology of Flapper Skate project (\code{\link{datasets-mefs}}), which inspired \code{\link{patter}}, see:
 \itemize{
 \item \code{\link{dat_moorings}} for receiver locations and associated information;
 \item \code{\link{dat_acoustics}} for acoustic time series;
@@ -28,9 +31,11 @@ For example datasets from the Movement Ecology of Flapper Skate project (\code{\
 
 For example algorithm outputs (\code{\link{datasets-algorithms}}), see:
 \itemize{
+\item \code{\link[=dat_obs]{dat_obs()}} for an example output dataset from \code{\link[=acs_setup_obs]{acs_setup_obs()}};
 \item \code{\link[=dat_pff]{dat_pff()}} for an example output from \code{\link[=pf_forward]{pf_forward()}};
 \item \code{\link[=dat_pfbk]{dat_pfbk()}} for an example output from \code{\link[=pf_backward_killer]{pf_backward_killer()}};
 \item \code{\link[=dat_pfp]{dat_pfp()}} for an example output from \code{\link[=pf_path]{pf_path()}};
+\item \code{\link[=dat_coa]{dat_coa()}} for an example output from \code{\link[=dat_coa]{dat_coa()}};
 }
 }
 
@@ -38,18 +43,19 @@ For example algorithm outputs (\code{\link{datasets-algorithms}}), see:
 To simulate passive acoustic telemetry data, see:
 \itemize{
 \item \code{\link[=sim_array]{sim_array()}} to simulate an acoustic array;
-\item \code{\link[=sim_path_walk]{sim_path_walk()}} to simulate a movement path from a walk model, with the help of:
-\itemize{
-\item \code{\link[=rtruncgamma]{rtruncgamma()}} and \code{\link[=rlen]{rlen()}} to simulate step lengths;
-\item \code{\link[=rwn]{rwn()}}, \code{\link[=rangrw]{rangrw()}} and \code{\link[=rangcrw]{rangcrw()}} to simulate turning angles;
-}
-\item \code{\link[=sim_detections]{sim_detections()}} to simulate detections at receivers, with the help of:
-\itemize{
-\item \code{\link[=calc_detection_pr_logistic]{calc_detection_pr_logistic()}} and \code{\link[=calc_detection_pr]{calc_detection_pr()}}, which represent example detection probability models;
-}
+\item \code{\link[=sim_path_walk]{sim_path_walk()}} to simulate a movement path from a walk model;
+\item \code{\link[=sim_detections]{sim_detections()}} to simulate detections at receivers;
 }
 
-To evaluate model skill in reconstructing simulated patterns, see \code{skill_()} functions, specifically:
+These functions are supported by a set of simulation helpers, including:
+\itemize{
+\item \code{\link[=calc_detection_pr_logistic]{calc_detection_pr_logistic()}} and \code{\link[=calc_detection_pr]{calc_detection_pr()}}, which are example detection probability models;
+\item \code{\link[=dtruncgamma]{dtruncgamma()}} \code{\link[=rtruncgamma]{rtruncgamma()}} and \code{\link[=rlen]{rlen()}} for the simulation of step lengths;
+\item \code{\link[=rwn]{rwn()}}, \code{\link[=rangrw]{rangrw()}} and \code{\link[=rangcrw]{rangcrw()}} for the simulation of turning angles;
+\item \code{\link[=cstep]{cstep()}} and \code{\link[=dstep]{dstep()}} for the simulation of steps into new locations;
+}
+
+To evaluate model skill in reconstructing simulated patterns, see \code{\link[=skill_]{skill_()}} functions, specifically:
 \itemize{
 \item \code{\link[=skill_mb]{skill_mb()}} to calculate mean bias;
 \item \code{\link[=skill_me]{skill_me()}} to calculate mean error;
@@ -59,47 +65,106 @@ To evaluate model skill in reconstructing simulated patterns, see \code{skill_()
 }
 }
 
-\section{Data preparation}{
+\section{Data exploration}{
 For help with data acquisition, processing, checking and preliminary analyses, see the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package. This facilitates:
 \itemize{
-\item Simulation;
 \item Data preparation;
 \item Spatial operations;
 \item Distance calculations;
 \item Movement analyses;
 }
 
-Please submit a \href{https://github.com/edwardlavender/patter/issues}{feature request} if you would like functions from \href{https://github.com/edwardlavender/flapper}{\code{flapper}} in \href{https://github.com/edwardlavender/patter}{\code{patter}}.
+Please submit a \href{https://github.com/edwardlavender/patter/issues}{feature request} if you would like functions from \href{https://github.com/edwardlavender/flapper}{\code{flapper}} in \code{\link{patter}}.
 }
 
 \section{Modelling workflow}{
-The main thrust of \href{https://github.com/edwardlavender/patter}{\code{patter}} is the provision of an integrated modelling workflow for reconstructing animal movement paths and emergent patterns of space use in passive acoustic telemetry systems.
+The main thrust of \code{\link{patter}} is the provision of an integrated modelling workflow for reconstructing animal movement paths and emergent patterns of space use in passive acoustic telemetry systems.
 
-To implement the centre-of-activity algorithm use:
+\strong{To set up data for \code{\link{patter}}}, use
+\itemize{
+\item \code{\link[=pat_setup_data]{pat_setup_data()}} to set up data;
+}
+
+\strong{To implement the centre-of-activity algorithm}, use:
 \itemize{
 \item \code{\link[=coa]{coa()}} to calculate centres of activity;
 }
 
-To implement the acoustic-centroid* (AC*) algorithm(s) (e.g., AC and ACDC), use:
+\strong{To implement the particle filter (PF)}, use:
 \itemize{
-\item \code{\link[=acs_setup_obs]{acs_setup_obs()}} to set up observations;
-\item \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}} to set up detection overlaps;
-\item \code{\link[=acs_setup_detection_pr]{acs_setup_detection_pr()}} to define a detection probability model;
-\item \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}} to set up detection kernels;
-}
-
-To implement particle filtering (PF), use:
-\itemize{
-\item \code{\link[=pf_files]{pf_files()}} to set up files;
+\item \code{\link[=pf_setup_obs]{pf_setup_obs()}} to set up a timeline of observations;
 \item \code{\link[=pf_forward]{pf_forward()}} to implement the forward simulation;
-\item \code{\link[=pf_backward_*]{pf_backward_*()}} functions implement the backward pass;
-\item \code{\link[=pf_coord]{pf_coord()}} to collate particle coordinates;
-\item \code{\link[=pf_path]{pf_path()}} (and \code{\link[=pf_path_pivot]{pf_path_pivot()}}) to reconstruct movement paths;
-\item \code{\link[=map_pou]{map_pou()}} to map probability-of-use;
-\item \code{\link[=map_dens]{map_dens()}} to create smooth maps;
 }
 
-For home ranges, use:
+\strong{PF is supported by}:
+\itemize{
+\item Proposal functions (see \code{\link{pf_propose}}) for the generation of new (candidate) locations, including:
+\itemize{
+\item \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}}, which uses stochastic kicks;
+\item \code{\link[=pf_rpropose_reachable]{pf_rpropose_reachable()}}, which supports directed sampling;
+}
+\item Likelihood functions (see \code{\link{pf_lik}}) for evaluating the likelihood of the data, given proposal locations, including:
+\itemize{
+\item \code{\link{acs_filter_land}}, which filters proposals on land;
+\item \code{\link{acs_filter_container}}, which filters proposals incompatible with acoustic container dynamics;
+\item \code{\link{pf_lik_ac}}, which calculates the likelihood of acoustic data;
+\item \code{\link{pf_lik_dc}}, which calculates the likelihood of depth observations;
+}
+\item Likelihood helpers, including:
+\itemize{
+\item \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}}, which pre-calculates detection overlaps;
+\item \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}, which pre-calculates detection kernels;
+\item \code{\link[=acs_setup_detection_pr]{acs_setup_detection_pr()}}, which is an example detection probability model;
+}
+\item (Re)sampling functions (see \code{\link{pf_sample}}) for the (re)sampling of valid proposal locations, including:
+\itemize{
+\item \code{\link[=pf_sample_multinomial]{pf_sample_multinomial()}}, which implements multinomial resampling;
+\item \code{\link[=pf_sample_systematic]{pf_sample_systematic()}}, which implements systematic resampling;
+}
+\item Option functions (\code{\link{pf_opt}}) for tuning the forward simulation, including:
+\itemize{
+\item \code{\link[=pf_opt_trial]{pf_opt_trial()}}, which sets convergence parameters;
+\item \code{\link[=pf_opt_rerun_from]{pf_opt_rerun_from()}}, which sets re-run parameters;
+\item \code{\link[=pf_opt_control]{pf_opt_control()}}, which sets control parameters;
+\item \code{\link[=pf_opt_record]{pf_opt_record()}}, which sets output properties;
+}
+\item Downstream diagnostic functions, namely:
+\itemize{
+\item \code{\link[=pf_forward_diagnostics]{pf_forward_diagnostics()}}, which collates particle diagnostics;
+}
+}
+
+\strong{To implement the backward pass (\code{\link[=pf_backward_*]{pf_backward_*()}})}, use:
+\itemize{
+\item \code{\link[=pf_backward_killer]{pf_backward_killer()}} to prune dead-ends;
+\item \code{\link[=pf_backward_killer_diagnostics]{pf_backward_killer_diagnostics()}} to summarise particle diagnostics;
+\item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} to run the backward sampler;
+}
+
+\strong{For common utility functions}, see:
+\itemize{
+\item \code{\link[=pf_files]{pf_files()}} to list particle-sample files;
+\item \code{\link[=pf_files_size]{pf_files_size()}} to measure file size;
+}
+
+\strong{For downstream analyses}, use:
+\itemize{
+\item \code{\link[=pf_path]{pf_path()}} (and \code{\link[=pf_path_pivot]{pf_path_pivot()}}) to reconstruct movement paths;
+\item \code{\link[=pf_coord]{pf_coord()}} to collate particle coordinates for mapping;
+}
+
+\strong{To map utilisation distributions}, use:
+\itemize{
+\item \code{\link[=map_pou]{map_pou()}} to map probability-of-use;
+\item \code{\link[=map_dens]{map_dens()}} to create smooth maps using \code{\link{spatstat}}, plus the supporting functions:
+\itemize{
+\item \code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}}, to convert \code{\link{SpatRaster}}s to pixel images;
+\item \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}}, to convert  \code{\link{SpatRaster}}s to observation windows;
+\item \code{\link[=as.owin.sf]{as.owin.sf()}}, to convert \code{\link{sf}} objects to observation windows;
+}
+}
+
+\strong{For home ranges}, use:
 \itemize{
 \item \code{\link[=map_hr_prop]{map_hr_prop()}} for a custom range;
 \item \code{\link[=map_hr_core]{map_hr_core()}} for the 'core' range;
@@ -109,7 +174,7 @@ For home ranges, use:
 }
 
 \section{Miscellaneous helpers}{
-The following convenience functions are also made available to users of \href{https://github.com/edwardlavender/patter}{\code{patter}}:
+The following convenience functions are also made available to users of \code{\link{patter}}:
 \itemize{
 \item Operational statistics. See:
 \itemize{
@@ -120,16 +185,17 @@ The following convenience functions are also made available to users of \href{ht
 \item \code{\link[=dist_along_path]{dist_along_path()}} to calculate distances along a movement path;
 \item \code{\link[=degrees]{degrees()}} to create circular angles;
 }
-\item \code{terra} helpers. See:
+\item \code{\link{terra}} helpers. See:
 \itemize{
 \item \code{\link[=spatTemplate]{spatTemplate()}} to create a template \code{\link{SpatRaster}};
-\item \code{\link[=spatNormalise]{spatNormalise()}} to normalise a \code{\link{SpatRaster}};
-\item \code{\link{as.im.SpatRaster}} and \code{\link{as.owin.SpatRaster}} for interfaces to \code{spatstat} function(s);
 }
-\item Parallelisation. See:
+}
+}
+
+\section{Options}{
+For additional options in \code{\link{patter}}, see:
 \itemize{
-\item \code{\link[=cl_lapply]{cl_lapply()}} and associated \verb{cl_*() functions for parallelisation routines};
-}
+\item \code{\link{patter-progress}} to monitor function progress;
 }
 }
 
@@ -140,7 +206,7 @@ Lavender, E. et al. (2023). An integrative modelling framework for passive acous
 \itemize{
 \item For information on the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} algorithms, see Lavender et al. (\href{https://doi.org/10.1111/2041-210X.14193}{2023}).
 \item For information on \code{\link{patter}}'s predecessor, see \url{https://github.com/edwardlavender/flapper}.
-\item For further information on  \code{\link{patter}}, see \url{https://github.com/edwardlavender/patter}.
+\item For further information on  \code{\link{patter}}, including useful resources, see \url{https://github.com/edwardlavender/patter}.
 \item For feature requests and bug reports, see \url{https://github.com/edwardlavender/patter/issues}.
 \item For support, contact \href{mailto:edward.lavender@eawag.ch}{edward.lavender@eawag.ch}.
 }

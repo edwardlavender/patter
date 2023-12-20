@@ -1,18 +1,21 @@
 #' @title [`patter`] for passive acoustic telemetry
-#' @description [`patter`] is a re-implementation of the [`flapper`](https://github.com/edwardlavender/flapper) family of algorithms for passive acoustic telemetry that is simpler, faster and better tested than its [predecessor](https://github.com/edwardlavender/flapper). The aim of the package is to facilitate the reconstruction of movement paths and patterns of space use in passive acoustic telemetry systems.
+#' @description [`patter`] is a `R` implementation of a forward filtering--backward sampling algorithm for passive acoustic telemetry. This methodology enables the reconstruction of movement paths and patterns of space use in passive acoustic telemetry systems. [`patter`] unifies a suite of methods formerly known as the [`flapper`](https://github.com/edwardlavender/flapper) algorithms (Lavender et al., 2023) and supersedes the experimental [`flapper`](https://github.com/edwardlavender/flapper) package.
 #'
 #' # Vignettes
 #'
 #' For an introduction to [`patter`], use:
 #'
-#' * `vignette("workflow", package = "patter")` for an overview of the analytical workflow;
-#' * `vignette("faqs", package = "patter")` for FAQs;
+#' * `vignette("a-methodology", package = "patter")` for a conceptual introduction to the methodology;
+#' * `vignette("b-workflow-outline", package = "patter")` for an overview of the workflow;
+#' * `vignette("c-workflow-example", package = "patter")` for an example workflow;
+#' * `vignette("d-demos", package = "patter")` for more involved demonstrations;
+#' * `vignette("e-faqs", package = "patter")` for FAQs;
 #'
-#' For a full list of all functions, see `help(package = "patter")`.
+#' For a full list of all functions, see `help(package = 'patter')`.
 #'
 #' # Datasets
 #'
-#' For example datasets from the Movement Ecology of Flapper Skate project ([`datasets-mefs`]), see:
+#' For example datasets from the Movement Ecology of Flapper Skate project ([`datasets-mefs`]), which inspired [`patter`], see:
 #'
 #' * [`dat_moorings`] for receiver locations and associated information;
 #' * [`dat_acoustics`] for acoustic time series;
@@ -21,66 +24,118 @@
 #'
 #' For example algorithm outputs ([`datasets-algorithms`]), see:
 #'
+#' * [`dat_obs()`] for an example output dataset from [`acs_setup_obs()`];
 #' * [`dat_pff()`] for an example output from [`pf_forward()`];
 #' * [`dat_pfbk()`] for an example output from [`pf_backward_killer()`];
 #' * [`dat_pfp()`] for an example output from [`pf_path()`];
+#' * [`dat_coa()`] for an example output from [`dat_coa()`];
 #'
 #' # Simulation
 #'
 #' To simulate passive acoustic telemetry data, see:
 #'
 #' * [`sim_array()`] to simulate an acoustic array;
-#' * [`sim_path_walk()`] to simulate a movement path from a walk model, with the help of:
-#'    * [`rtruncgamma()`] and [`rlen()`] to simulate step lengths;
-#'    * [`rwn()`], [`rangrw()`] and [`rangcrw()`] to simulate turning angles;
-#' * [`sim_detections()`] to simulate detections at receivers, with the help of:
-#'    * [`calc_detection_pr_logistic()`] and [`calc_detection_pr()`], which represent example detection probability models;
+#' * [`sim_path_walk()`] to simulate a movement path from a walk model;
+#' * [`sim_detections()`] to simulate detections at receivers;
 #'
-#' To evaluate model skill in reconstructing simulated patterns, see `skill_()` functions, specifically:
+#' These functions are supported by a set of simulation helpers, including:
+#'
+#' * [`calc_detection_pr_logistic()`] and [`calc_detection_pr()`], which are example detection probability models;
+#' * [`dtruncgamma()`] [`rtruncgamma()`] and [`rlen()`] for the simulation of step lengths;
+#' * [`rwn()`], [`rangrw()`] and [`rangcrw()`] for the simulation of turning angles;
+#' * [`cstep()`] and [`dstep()`] for the simulation of steps into new locations;
+#'
+#' To evaluate model skill in reconstructing simulated patterns, see [`skill_()`] functions, specifically:
+#'
 #' * [`skill_mb()`] to calculate mean bias;
 #' * [`skill_me()`] to calculate mean error;
 #' * [`skill_rmse()`] to calculate root mean squared error;
 #' * [`skill_R()`] to calculate Spearman's rank correlation coefficient;
 #' * [`skill_d()`] to calculate the index of agreement;
 #'
-#' # Data preparation
+#' # Data exploration
 #'
 #' For help with data acquisition, processing, checking and preliminary analyses, see the [`flapper`](https://github.com/edwardlavender/flapper) package. This facilitates:
 #'
-#'    * Simulation;
 #'    * Data preparation;
 #'    * Spatial operations;
 #'    * Distance calculations;
 #'    * Movement analyses;
 #'
-#' Please submit a [feature request](https://github.com/edwardlavender/patter/issues) if you would like functions from [`flapper`](https://github.com/edwardlavender/flapper) in [`patter`](https://github.com/edwardlavender/patter).
+#' Please submit a [feature request](https://github.com/edwardlavender/patter/issues) if you would like functions from [`flapper`](https://github.com/edwardlavender/flapper) in [`patter`].
 #'
 #' # Modelling workflow
 #'
-#' The main thrust of [`patter`](https://github.com/edwardlavender/patter) is the provision of an integrated modelling workflow for reconstructing animal movement paths and emergent patterns of space use in passive acoustic telemetry systems.
+#' The main thrust of [`patter`] is the provision of an integrated modelling workflow for reconstructing animal movement paths and emergent patterns of space use in passive acoustic telemetry systems.
 #'
-#' To implement the centre-of-activity algorithm use:
+#' **To set up data for [`patter`]**, use
+#'
+#' * [`pat_setup_data()`] to set up data;
+#'
+#' **To implement the centre-of-activity algorithm**, use:
 #'
 #' * [`coa()`] to calculate centres of activity;
 #'
-#' To implement the acoustic-centroid* (AC*) algorithm(s) (e.g., AC and ACDC), use:
+#' **To implement the particle filter (PF)**, use:
 #'
-#' * [`acs_setup_obs()`] to set up observations;
-#' * [`acs_setup_detection_overlaps()`] to set up detection overlaps;
-#' * [`acs_setup_detection_pr()`] to define a detection probability model;
-#' * [`acs_setup_detection_kernels()`] to set up detection kernels;
-#'
-#' To implement particle filtering (PF), use:
-#'
-#' * [`pf_files()`] to set up files;
+#' * [`pf_setup_obs()`] to set up a timeline of observations;
 #' * [`pf_forward()`] to implement the forward simulation;
-#' * [`pf_backward_*()`] functions implement the backward pass;
-#' * [`pf_coord()`] to collate particle coordinates;
-#' * [`pf_path()`] (and [`pf_path_pivot()`]) to reconstruct movement paths;
-#' * [`map_pou()`] to map probability-of-use;
-#' * [`map_dens()`] to create smooth maps;
 #'
-#' For home ranges, use:
+#' **PF is supported by**:
+#'
+#' * Proposal functions (see [`pf_propose`]) for the generation of new (candidate) locations, including:
+#'     * [`pf_rpropose_kick()`], which uses stochastic kicks;
+#'     * [`pf_rpropose_reachable()`], which supports directed sampling;
+#'
+#' * Likelihood functions (see [`pf_lik`]) for evaluating the likelihood of the data, given proposal locations, including:
+#'     * [`acs_filter_land`], which filters proposals on land;
+#'     * [`acs_filter_container`], which filters proposals incompatible with acoustic container dynamics;
+#'     * [`pf_lik_ac`], which calculates the likelihood of acoustic data;
+#'     * [`pf_lik_dc`], which calculates the likelihood of depth observations;
+#'
+#' * Likelihood helpers, including:
+#'     * [`acs_setup_detection_overlaps()`], which pre-calculates detection overlaps;
+#'     * [`acs_setup_detection_kernels()`], which pre-calculates detection kernels;
+#'     * [`acs_setup_detection_pr()`], which is an example detection probability model;
+#'
+#' * (Re)sampling functions (see [`pf_sample`]) for the (re)sampling of valid proposal locations, including:
+#'     * [`pf_sample_multinomial()`], which implements multinomial resampling;
+#'     * [`pf_sample_systematic()`], which implements systematic resampling;
+#'
+#' * Option functions ([`pf_opt`]) for tuning the forward simulation, including:
+#'     * [`pf_opt_trial()`], which sets convergence parameters;
+#'     * [`pf_opt_rerun_from()`], which sets re-run parameters;
+#'     * [`pf_opt_control()`], which sets control parameters;
+#'     * [`pf_opt_record()`], which sets output properties;
+#'
+#' * Downstream diagnostic functions, namely:
+#'     * [`pf_forward_diagnostics()`], which collates particle diagnostics;
+#'
+#' **To implement the backward pass ([`pf_backward_*()`])**, use:
+#'
+#' * [`pf_backward_killer()`] to prune dead-ends;
+#' * [`pf_backward_killer_diagnostics()`] to summarise particle diagnostics;
+#' * [`pf_backward_sampler()`] to run the backward sampler;
+#'
+#' **For common utility functions**, see:
+#'
+#' * [`pf_files()`] to list particle-sample files;
+#' * [`pf_files_size()`] to measure file size;
+#'
+#' **For downstream analyses**, use:
+#'
+#' * [`pf_path()`] (and [`pf_path_pivot()`]) to reconstruct movement paths;
+#' * [`pf_coord()`] to collate particle coordinates for mapping;
+#'
+#' **To map utilisation distributions**, use:
+#'
+#' * [`map_pou()`] to map probability-of-use;
+#' * [`map_dens()`] to create smooth maps using [`spatstat`], plus the supporting functions:
+#'     * [`as.im.SpatRaster()`], to convert [`SpatRaster`]s to pixel images;
+#'     * [`as.owin.SpatRaster()`], to convert  [`SpatRaster`]s to observation windows;
+#'     * [`as.owin.sf()`], to convert [`sf`] objects to observation windows;
+#'
+#' **For home ranges**, use:
 #'
 #' * [`map_hr_prop()`] for a custom range;
 #' * [`map_hr_core()`] for the 'core' range;
@@ -89,28 +144,29 @@
 #'
 #' # Miscellaneous helpers
 #'
-#' The following convenience functions are also made available to users of [`patter`](https://github.com/edwardlavender/patter):
+#' The following convenience functions are also made available to users of [`patter`]:
 #'
 #' * Operational statistics. See:
-#'    * [`make_matrix_receivers()`] to matricise receiver deployment time series;
+#'     * [`make_matrix_receivers()`] to matricise receiver deployment time series;
 #'
 #' * Distance calculations. See:
-#'    * [`dist_along_path()`] to calculate distances along a movement path;
-#'    * [`degrees()`] to create circular angles;
+#'     * [`dist_along_path()`] to calculate distances along a movement path;
+#'     * [`degrees()`] to create circular angles;
 #'
-#' * `terra` helpers. See:
-#'    * [`spatTemplate()`] to create a template [`SpatRaster`];
-#'    * [`spatNormalise()`] to normalise a [`SpatRaster`];
-#'    * [`as.im.SpatRaster`] and [`as.owin.SpatRaster`] for interfaces to `spatstat` function(s);
+#' * [`terra`] helpers. See:
+#'     * [`spatTemplate()`] to create a template [`SpatRaster`];
 #'
-#' * Parallelisation. See:
-#'    * [`cl_lapply()`] and associated `cl_*() functions for parallelisation routines`;
+#' # Options
+#'
+#' For additional options in [`patter`], see:
+#'
+#' * [`patter-progress`] to monitor function progress;
 #'
 #' @author Edward Lavender ([ORCID](https://orcid.org/0000-0002-8040-7489))
 #' @seealso
 #' * For information on the [`flapper`](https://github.com/edwardlavender/flapper) algorithms, see Lavender et al. ([2023](https://doi.org/10.1111/2041-210X.14193)).
 #' * For information on [`patter`]'s predecessor, see \url{https://github.com/edwardlavender/flapper}.
-#' * For further information on  [`patter`], see \url{https://github.com/edwardlavender/patter}.
+#' * For further information on  [`patter`], including useful resources, see \url{https://github.com/edwardlavender/patter}.
 #' * For feature requests and bug reports, see \url{https://github.com/edwardlavender/patter/issues}.
 #' * For support, contact [edward.lavender@eawag.ch](mailto:edward.lavender@eawag.ch).
 #'
