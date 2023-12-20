@@ -1,7 +1,7 @@
 #' @title PF: simulation options
 #' @description These functions define selected function arguments for [`pf_forward()`].
 #'
-#' @param .trial_origin_crit,.trial_origin,.trial_kick_crit,.trial_kick,.trial_sampler_crit,.trial_sampler,.trial_revert_crit,.trial_revert_steps,.trial_revert Trial arguments used to tune convergence properties. All arguments expect `integer`s.
+#' @param .trial_origin_crit,.trial_origin,.trial_kick_crit,.trial_kick,.trial_sampler_crit,.trial_sampler,.trial_revert_crit,.trial_revert_steps,.trial_revert [`pf_opt_trial()`] arguments used to tune convergence properties. All arguments expect `integer`s.
 #' * `.trial_{step}` arguments define the number of times to trial a stochastic process at each time step (before giving up).
 #' * `.trial_{step}_crit` arguments define the number of valid, unique proposal locations (grid cells) required to trigger a repeated trial.
 #'
@@ -13,18 +13,18 @@
 #' * `.trial_revert_crit` is the critical threshold for a reversion. If the number of unique, valid proposal locations is <= `.trial_revert_crit`, the algorithm reverts by `.trial_revert_steps` time steps to an earlier time step (time step two or greater). `.trial_revert` is the total number of reversions permitted. This is reset on algorithm reruns (see `.rerun`).
 #'
 #' @param .save,.sink,.cols [`pf_opt_record()`] arguments, passed to `.record` in [`pf_forward()`].
-#' * `.save`---a `logical` variable that defines whether or not to save particle samples and diagnostics in memory. Use with caution.
-#' * `.sink`---a `character` string that defines a (usually) empty directory in which to write particle samples and diagnostics (see Value).
+#' * `.save`---a `logical` variable that defines whether or not to save particle samples and diagnostics in memory. Use `.save = TRUE` with caution.
+#' * `.sink`---a `character` string that defines a (usually) empty directory in which to write particle samples and diagnostics. `{.sink}/history/`and `{.sink}/diagnostics` directories are created (if necessary) to store particle samples and diagnostics respectively.
 #' * `.cols`---a `character` vector that defines the names of the columns in particle-sample [`data.table`]s to save and/or write to file at each time step. This reduces the space occupied by outputs. For [`pf_backward_killer()`], you need to retain `timestep`, `cell_past` and `cell_now`. For [`pf_backward_sampler()`], you need `timestep`, `cell_now`, `x_now` and `y_now` for the backward sampler. For calculation of effective sample size, `lik` is required. `NULL` retains all columns.
 #'
-#' At least one of `.save` and `.sink` must be provided.
+#' At least one of `.save = TRUE` and `.sink` must be set.
 #'
 #' @param .sampler_batch_size [`pf_opt_control()`] arguments, passed to `.control` in [`pf_forward()`].
-#' * `.sampler_batch_size`---an `integer` that controls the batch size (number of particles processed simultaneously) in directed sampling. Increase the batch size to improve speed; decrease the batch size to avoid memory constraints. The appropriate batch size depends on grid resolution and memory availability.
+#' * `.sampler_batch_size`---an `integer` that controls the batch size (the number of particles processed simultaneously) in directed sampling. Increase the batch size to improve speed; decrease the batch size to avoid memory constraints. The appropriate batch size depends on grid resolution and memory availability.
 #'
 #' @param .rerun,.revert [`pf_opt_rerun_from()`] arguments.
 #' * `.rerun` is a named `list` of algorithm outputs from a previous run.
-#' * `.revert.revert` is an `integer` that defines the number of steps to revert.
+#' * `.revert` is an `integer` that defines the number of steps to revert.
 #'
 #' @details These functions are defined separately for convenience of documentation. Note that they do not define global options and must be passed to [`pf_forward()`] arguments.
 #'

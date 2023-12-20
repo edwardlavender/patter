@@ -27,7 +27,7 @@ pf_opt_control(.sampler_batch_size = 2L)
 pf_opt_rerun_from(.rerun, .revert = 25L)
 }
 \arguments{
-\item{.trial_origin_crit, .trial_origin, .trial_kick_crit, .trial_kick, .trial_sampler_crit, .trial_sampler, .trial_revert_crit, .trial_revert_steps, .trial_revert}{Trial arguments used to tune convergence properties. All arguments expect \code{integer}s.
+\item{.trial_origin_crit, .trial_origin, .trial_kick_crit, .trial_kick, .trial_sampler_crit, .trial_sampler, .trial_revert_crit, .trial_revert_steps, .trial_revert}{\code{\link[=pf_opt_trial]{pf_opt_trial()}} arguments used to tune convergence properties. All arguments expect \code{integer}s.
 \itemize{
 \item \verb{.trial_\{step\}} arguments define the number of times to trial a stochastic process at each time step (before giving up).
 \item \verb{.trial_\{step\}_crit} arguments define the number of valid, unique proposal locations (grid cells) required to trigger a repeated trial.
@@ -43,22 +43,22 @@ For example, if after kicking previous particles into proposal locations and eva
 
 \item{.save, .sink, .cols}{\code{\link[=pf_opt_record]{pf_opt_record()}} arguments, passed to \code{.record} in \code{\link[=pf_forward]{pf_forward()}}.
 \itemize{
-\item \code{.save}---a \code{logical} variable that defines whether or not to save particle samples and diagnostics in memory. Use with caution.
-\item \code{.sink}---a \code{character} string that defines a (usually) empty directory in which to write particle samples and diagnostics (see Value).
+\item \code{.save}---a \code{logical} variable that defines whether or not to save particle samples and diagnostics in memory. Use \code{.save = TRUE} with caution.
+\item \code{.sink}---a \code{character} string that defines a (usually) empty directory in which to write particle samples and diagnostics. \verb{\{.sink\}/history/}and \code{{.sink}/diagnostics} directories are created (if necessary) to store particle samples and diagnostics respectively.
 \item \code{.cols}---a \code{character} vector that defines the names of the columns in particle-sample \code{\link{data.table}}s to save and/or write to file at each time step. This reduces the space occupied by outputs. For \code{\link[=pf_backward_killer]{pf_backward_killer()}}, you need to retain \code{timestep}, \code{cell_past} and \code{cell_now}. For \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}, you need \code{timestep}, \code{cell_now}, \code{x_now} and \code{y_now} for the backward sampler. For calculation of effective sample size, \code{lik} is required. \code{NULL} retains all columns.
 }
 
-At least one of \code{.save} and \code{.sink} must be provided.}
+At least one of \code{.save = TRUE} and \code{.sink} must be set.}
 
 \item{.sampler_batch_size}{\code{\link[=pf_opt_control]{pf_opt_control()}} arguments, passed to \code{.control} in \code{\link[=pf_forward]{pf_forward()}}.
 \itemize{
-\item \code{.sampler_batch_size}---an \code{integer} that controls the batch size (number of particles processed simultaneously) in directed sampling. Increase the batch size to improve speed; decrease the batch size to avoid memory constraints. The appropriate batch size depends on grid resolution and memory availability.
+\item \code{.sampler_batch_size}---an \code{integer} that controls the batch size (the number of particles processed simultaneously) in directed sampling. Increase the batch size to improve speed; decrease the batch size to avoid memory constraints. The appropriate batch size depends on grid resolution and memory availability.
 }}
 
 \item{.rerun, .revert}{\code{\link[=pf_opt_rerun_from]{pf_opt_rerun_from()}} arguments.
 \itemize{
 \item \code{.rerun} is a named \code{list} of algorithm outputs from a previous run.
-\item \code{.revert.revert} is an \code{integer} that defines the number of steps to revert.
+\item \code{.revert} is an \code{integer} that defines the number of steps to revert.
 }}
 }
 \value{
