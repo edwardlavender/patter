@@ -26,7 +26,7 @@
 These are internal functions that calculate diagnostic statistics from selected particle samples.
 }
 \section{Particle diagnostics}{
-#' Particle diagnostics measure how the diversity of particle samples evolves through time. Current diagnostics include the number of unique particle samples at each time step and the effective sample size. Particle diagnostics have multiple uses:
+Particle diagnostics measure how the diversity of particle samples evolves through time. Current diagnostics include the number of unique particle samples at each time step and the effective sample size. Particle diagnostics have multiple uses:
 \itemize{
 \item \strong{Convergence.} Diagnostics from the forward run can indicate the causes of convergence failures. This is possible because \code{\link[=pf_forward]{pf_forward()}} keeps track of diagnostics at every stage of the algorithm, recording at each time step the diversity of particle proposals, the diversity remaining after each likelihood function evaluation and the diversity following (re)-sampling. See \code{vignette("d-demos", package = "patter")} for an illustration.
 \item \strong{Sampling.} Diagnostics indicate sampling sufficiency. In general, a low ratio of the number of unique particles to the total number of particles indicates effective coverage of the possible locations of an individual.
