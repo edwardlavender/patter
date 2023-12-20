@@ -25,7 +25,6 @@ Suggests:
     knitr,
     Rfast,
     rmarkdown,
-    spatialEco, 
     spatstat.explore,
     spatstat.geom, 
     spelling, 

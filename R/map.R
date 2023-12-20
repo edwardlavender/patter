@@ -277,7 +277,7 @@ map_dens <- function(.map,
 #' @param .add A logical variable that defines whether or not to add a polygon of the range to an existing map.
 #' @param ... If `.add = TRUE`, `...` is a place holder for additional arguments passed to [`terra::plot()`].
 #'
-#' @details These functions are modelled on the [`map_hr_*()`](https://edwardlavender.github.io/flapper/reference/map_hr.html) functions in the [`flapper`](https://github.com/edwardlavender/flapper) package, where full details are provided. The `spatialEco` package is required.
+#' @details These functions are modelled on the [`map_hr_*()`](https://edwardlavender.github.io/flapper/reference/get_hr.html) functions in the [`flapper`](https://github.com/edwardlavender/flapper) package, where full details are provided.
 #'
 #' @return The functions return a [`SpatRaster`]. Cells with a value of one are inside the specified range boundaries; cells with a value of zero are beyond range boundaries. If `.add` is `TRUE`, the boundaries are added to an existing plot.
 #'
@@ -299,10 +299,18 @@ map_dens <- function(.map,
 #' map <- map_hr_core(r, .add = TRUE, border = "orange")
 #' map <- map_hr_prop(r, .prop = 0.2, .add = TRUE, border = "red")
 #'
-#' @seealso
-#' * For reconstructing movement paths and patterns of space use, see [`pf_forward()`];
-#' * For mapping utilisation distributions, see [`map_pou()`] and [`map_dens()`];
+#' @seealso `map_*()` functions build maps of space use:
+#' * [`map_pou()`] maps probability-of-use;
+#' * [`map_dens()`] maps point density;
+#' * [`map_hr`]`_*()` functions map home ranges;
 #'
+#' All maps are represented as [`SpatRaster`]s.
+#'
+#' To derive coordinates for mapping patterns of space use for tagged animals in passive acoustic telemetry systems, see:
+#' * [`coa()`] to calculate centre-of-activity;
+#' * [`pf_forward()`], [`pf_backward()`] and [`pf_coord()`] to sample locations using a forward-filtering backward-sampling algorithm;
+#'
+#' @inheritSection map_pou seealso
 #' @author Edward Lavender
 #' @name map_hr
 NULL
@@ -311,7 +319,6 @@ NULL
 #' @export
 
 map_hr_prop <- function(.map, .prop = 0.5, .add = FALSE, ...) {
-  rlang::check_installed("spatialEco")
   check_dots_for_missing_period(formals(), list(...))
   rlang::check_dots_used()
   if (length(.prop) != 1L) {
@@ -325,7 +332,7 @@ map_hr_prop <- function(.map, .prop = 0.5, .add = FALSE, ...) {
     }
   }
   .map <- terra::classify(.map, cbind(0, NA))
-  map <- spatialEco::raster.vol(.map, p = .prop, sample = FALSE)
+  map <- raster.vol(.map, p = .prop, sample = FALSE)
   if (.add) {
     poly <- terra::as.polygons(map == 1)
     if (any(poly[[1]] == 1)) {

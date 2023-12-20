@@ -32,7 +32,7 @@ The functions return a \code{\link{SpatRaster}}. Cells with a value of one are i
 These functions extract 'home range' estimates from a \code{\link{SpatRaster}} that describes the intensity of movements within an area.
 }
 \details{
-These functions are modelled on the \href{https://edwardlavender.github.io/flapper/reference/map_hr.html}{\verb{map_hr_*()}} functions in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package, where full details are provided. The \code{spatialEco} package is required.
+These functions are modelled on the \href{https://edwardlavender.github.io/flapper/reference/get_hr.html}{\verb{map_hr_*()}} functions in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package, where full details are provided.
 }
 \examples{
 #### Set up example
@@ -54,9 +54,19 @@ map <- map_hr_prop(r, .prop = 0.2, .add = TRUE, border = "red")
 
 }
 \seealso{
+\verb{map_*()} functions build maps of space use:
 \itemize{
-\item For reconstructing movement paths and patterns of space use, see \code{\link[=pf_forward]{pf_forward()}};
-\item For mapping utilisation distributions, see \code{\link[=map_pou]{map_pou()}} and \code{\link[=map_dens]{map_dens()}};
+\item \code{\link[=map_pou]{map_pou()}} maps probability-of-use;
+\item \code{\link[=map_dens]{map_dens()}} maps point density;
+\item \code{\link{map_hr}}\verb{_*()} functions map home ranges;
+}
+
+All maps are represented as \code{\link{SpatRaster}}s.
+
+To derive coordinates for mapping patterns of space use for tagged animals in passive acoustic telemetry systems, see:
+\itemize{
+\item \code{\link[=coa]{coa()}} to calculate centre-of-activity;
+\item \code{\link[=pf_forward]{pf_forward()}}, \code{\link[=pf_backward]{pf_backward()}} and \code{\link[=pf_coord]{pf_coord()}} to sample locations using a forward-filtering backward-sampling algorithm;
 }
 }
 \author{
