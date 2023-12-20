@@ -12,40 +12,54 @@ acs_setup_detection_pr(
 )
 }
 \arguments{
-\item{.mooring}{A one-row \code{\link{data.table}} that defines the location of the receiver and associated information used by the model of detection probability.}
+\item{.mooring}{A one-row \code{\link{data.table}} that defines the location of an acoustic receiver and associated information required to calculate detection probability via \code{.calc_detection_pr}. In this function, receiver coordinate columns (\code{receiver_x} and \code{receiver_y}) and the detection range (\code{receiver_range}) is required.}
 
 \item{.bathy}{A \code{\link{SpatRaster}} that defines the grid on which detection probability is calculated.}
 
 \item{.calc_detection_pr}{A function that calculates detection probability. In this implementation, the function is used to translate a \code{\link{SpatRaster}} of distances (m) (from each grid cell to the receiver in \code{.data}) via \code{\link[terra:app]{terra::app()}}.}
 
-\item{...}{Additional arguments passed to \code{.calc_detection_pr} (\code{\link[=calc_detection_pr_logistic]{calc_detection_pr_logistic()}}  by default.)}
+\item{...}{Additional arguments passed to \code{.calc_detection_pr}. These arguments as passed to (\code{\link[=calc_detection_pr_logistic]{calc_detection_pr_logistic()}}  by default. \code{.gamma} is set internally to \code{.mooring$receiver_range}.}
 }
 \value{
-The function returns a \code{\link{SpatRaster}} that defines the probability of detection in each cell, according to a pre-defined model.
+The function returns a \code{\link{SpatRaster}} that defines the detection kernel around a specific receiver.
 }
 \description{
-This function is an example detection probability function, of the kind required by \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}.
+This function is part of a set of \verb{acs_setup_*()} functions that prepare the layers required to evaluate the likelihood of acoustic observations in an AC*PF algorithm. The function is an example detection probability function, of the kind required by \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}.
 }
 \details{
-In the AC* algorithms, a model of the detection process informs the set of possible locations for an individual. The information provided by this model is represented in the form of kernels, which are created via \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}. For any one receiver, the form of the kernel depends on the input to \code{.calc_detection_pr}. This function exemplifies one possible input to this argument, which is a model in which detection probability declines logistically with distance from a receiver.
+An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual. At each time step in such an algorithm, we evaluate the likelihood of acoustic observations (the presence or absence of detections at each operational receiver, accounting for receiver placement) given particle samples. The likelihood of the acoustic observations depends upon how detection probability declines away from receiver(s) in space; i.e., the shape of a 'detection kernel' (see \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}). For any one receiver, the form of the kernel depends on the input to the \code{.calc_detection_pr} in \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}. This function exemplifies one possible input to this argument, which is a model in which detection probability declines logistically with distance from a receiver.
 }
 \section{Warning}{
 \itemize{
-\item This function is used to streamline examples and does not represent a generically suitable detection probability model.
+\item The default settings for this function are used to streamline examples and do not represent a generically suitable model.
 \item The function does not check user inputs.
 }
 }
 
 \examples{
-data <- pat_setup_data(.moorings = dat_moorings,
-                       .bathy = dat_gebco(),
-                       .lonlat = FALSE)
-m <- data$data$moorings[1, ]
-b <- data$spatial$bathy
+dlist <- pat_setup_data(.moorings = dat_moorings,
+                        .bathy = dat_gebco(),
+                        .lonlat = FALSE)
+m <- dlist$data$moorings[1, ]
+b <- dlist$spatial$bathy
 k <- acs_setup_detection_pr(m, b)
 terra::plot(k)
 points(m$receiver_x, m$receiver_y, pch = ".")
 
+}
+\seealso{
+To implement such an AC*PF algorithm, see:
+\enumerate{
+\item \code{\link[=pat_setup_data]{pat_setup_data()}} to set up datasets;
+\item \verb{acs_setup_*()} functions to prepare layers required for likelihood calculations, i.e.:
+\itemize{
+\item \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}}, which identifies detection overlaps;
+\item \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}, which prepares detection kernels;
+\item \code{\link[=acs_setup_detection_pr]{acs_setup_detection_pr()}}, which is an example detection probability model;
+}
+\item \code{\link[=pf_lik_ac]{pf_lik_ac()}} to define the likelihood of acoustic data;
+\item \code{\link[=pf_forward]{pf_forward()}} to run the simulation;
+}
 }
 \author{
 Edward Lavender

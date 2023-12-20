@@ -20,7 +20,7 @@ acs_setup_detection_overlaps(.dlist)
 The function returns a nested \code{list}, with one element for all integers from \code{1:max(.moorings$receiver_id)}. Any elements that do not correspond to receivers contain a \code{NULL} element. List elements that correspond to receivers contain a \code{NULL} or a \code{list} that defines, for each deployment date with overlapping receiver(s), a vector of overlapping receiver(s).
 }
 \description{
-This function is part of a set of \verb{acs_setup_*()} functions that prepare the layers required to evaluate the likelihood of acoustic observations in an AC*PF algorithm. This function identifies receivers with overlapping detection containers in space and time.
+This function is part of a set of \verb{acs_setup_*()} functions that prepare the layers required to evaluate the likelihood of acoustic observations in an AC*PF algorithm. The function identifies receivers with overlapping detection containers in space and time.
 }
 \details{
 An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual. In such an algorithm, at the moment of detection, the likelihood of detection(s) is evaluated, given particle samples. The outputs of this function are used to restrict the likelihood calculations to the set of receivers that overlap with the receiver(s) at which an individual is detected. This improves efficiency.
