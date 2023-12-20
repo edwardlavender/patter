@@ -7,46 +7,43 @@
 #' # Moorings
 #'
 #' [`dat_moorings`] defines passive acoustic telemetry receiver locations and associated information. This includes the following columns:
-#'   * `receiver_id`---an `integer` that distinguishes each unique receiver deployment.
-#'   * `receiver_start`---a `Date` that defines the start date of each receiver's deployment.
-#'   * `receiver_end`---a `Date` that defines the end date of each receiver's deployment.
-#'   * `receiver_easting`---a number that defines the receiver easting (UTM 29N).
-#'   * `receiver_northing`---a number that defines the receiver northing (UTM 29N).
-#'   * `receiver_lon`---a number that defines the longitude (decimal degrees) of each receiver.
-#'   * `receiver_lat`---a number that defines the latitude (decimal degrees) of each receiver.
-#'   * `receiver_range`---a number that defines the detection range, which was taken as a constant (750 m) across all receivers.
+#'   * `receiver_id`---an `integer` vector that defines unique receiver deployments;
+#'   * `receiver_start`, `receiver_end`---`Date` vectors that define receiver deployment start and end dates;
+#'   * `receiver_easting`, `receiver_northing`---`numeric` vectors that define receiver coordinates in UTM 29N;
+#'   * `receiver_lon`, `receiver_lat`---`numeric` vectors that define receiver coordinates in degrees longitude/latitude;
+#'   * `receiver_range`---a `numeric` vector that defines the detection range, which was taken as a constant (750 m) across all receivers;
 #'
 #' Data are arranged by `receiver_id`.
 #'
 #' # Acoustics
 #'
 #' [`dat_acoustics`] contains sample detection time series. This includes the following columns:
-#'   * `individual_id`---a unique identifier of the individual that was detected.
-#'   * `timestamp`---a `POSIXct` object that defines the time of each observation.
-#'   * `receiver_id`---a unique identifier of the receiver at which the individual was detected (see [`dat_moorings`]).
+#'   * `individual_id`---an `integer` vector that identifies individuals;
+#'   * `timestamp`---a `POSIXct` vector that defines the time of each observation;
+#'   * `receiver_id`---the receiver ID (see [`dat_moorings`]);
 #'
 #' Data are arranged by `individual_id`, `timestamp` and then `receiver_id`.
 #'
 #' # Archival
 #'
 #' [`dat_archival`] contains sample depth time series. Observations were sampled every 2 minutes. The data includes the following columns:
-#'   * `individual_id`---a number that defines each individual (as in [`dat_acoustics`]).
-#'   * `timestamp`---a `POSIXct` object that defines the time of each observation.
-#'   * `depth`---a number that defines the depth (m) of the individual at each time step.
+#'   * `individual_id`---an `integer` vector that identifies individuals (as in [`dat_acoustics`]);
+#'   * `timestamp`---a `POSIXct` vector that defines the time of each observation;
+#'   * `depth`---a `numeric` vector that defines the depth (m) of the individual at each time step;
 #'
 #' Data are arranged by `individual_id` and then `timestamp`.
 #'
 #' # Bathymetry
 #'
-#' [`dat_gebco()`] returns a bathymetry (m) dataset for the west coast of Scotland where MEFS data were collected. This dataset is a [`SpatRaster`] with 264, rows, 190 columns and 1 layer, and the following properties:
-#'   * `dimensions`---264, 190, 1 (nrow, ncol, nlyr)
-#'   * `resolution`---100, 100  (x, y)
-#'   * `extent`---695492.1, 714492.1, 6246657, 6273057  (xmin, xmax, ymin, ymax)
-#'   * `coord. ref.`---WGS 84 / UTM zone 29N (EPSG:32629)
+#' [`dat_gebco()`] returns a bathymetry (m) dataset for the west coast of Scotland where MEFS data were collected. This dataset is a [`SpatRaster`] with the following properties:
+#'   * `dimensions`---264, 190, 1 (`nrow`, `ncol`, `nlyr`);
+#'   * `resolution`---100, 100  (`x`, `y`);
+#'   * `extent`---695492.1, 714492.1, 6246657, 6273057  (`xmin`, `xmax`, `ymin`, `ymax`);
+#'   * `coord. ref.`---WGS 84 / UTM zone 29N (EPSG:32629);
 #'
 #' @source Biologging and biotelemetry data were collected by, and belong to, Marine Scotland Science and NatureScot. Data were processed by Lavender (2022). If you wish to use these data, please contact Marine Scotland Science and NatureScot for further information.
 #'
-#' Bathymetry data were sourced from GEBCO Compilation Group (2019) GEBCO 2019 Grid (doi:10.5285/836f016a-33be-6ddc-e053-6c86abc0788e)
+#' Bathymetry data were sourced from GEBCO Compilation Group (2019) GEBCO 2019 Grid. \url{https://www.doi.org/10.5285/836f016a-33be-6ddc-e053-6c86abc0788e}
 #'
 #' @references Data collection and processing are described in Lavender (2022). Modelling the movements of flapper skate (*Dipturus intermedius*) in relation to a Scottish Marine Protected Area. University of St Andrews. \url{https://www.doi.org/10.17630/sta/201}
 #'

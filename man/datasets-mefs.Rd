@@ -18,7 +18,7 @@ An object of class \code{data.table} (inherits from \code{data.frame}) with 7500
 \source{
 Biologging and biotelemetry data were collected by, and belong to, Marine Scotland Science and NatureScot. Data were processed by Lavender (2022). If you wish to use these data, please contact Marine Scotland Science and NatureScot for further information.
 
-Bathymetry data were sourced from GEBCO Compilation Group (2019) GEBCO 2019 Grid (doi:10.5285/836f016a-33be-6ddc-e053-6c86abc0788e)
+Bathymetry data were sourced from GEBCO Compilation Group (2019) GEBCO 2019 Grid. \url{https://www.doi.org/10.5285/836f016a-33be-6ddc-e053-6c86abc0788e}
 }
 \usage{
 dat_moorings
@@ -35,14 +35,11 @@ These are sample datasets collated by the Movement Ecology of Flapper Skate (MEF
 \section{Moorings}{
 \code{\link{dat_moorings}} defines passive acoustic telemetry receiver locations and associated information. This includes the following columns:
 \itemize{
-\item \code{receiver_id}---an \code{integer} that distinguishes each unique receiver deployment.
-\item \code{receiver_start}---a \code{Date} that defines the start date of each receiver's deployment.
-\item \code{receiver_end}---a \code{Date} that defines the end date of each receiver's deployment.
-\item \code{receiver_easting}---a number that defines the receiver easting (UTM 29N).
-\item \code{receiver_northing}---a number that defines the receiver northing (UTM 29N).
-\item \code{receiver_lon}---a number that defines the longitude (decimal degrees) of each receiver.
-\item \code{receiver_lat}---a number that defines the latitude (decimal degrees) of each receiver.
-\item \code{receiver_range}---a number that defines the detection range, which was taken as a constant (750 m) across all receivers.
+\item \code{receiver_id}---an \code{integer} vector that defines unique receiver deployments;
+\item \code{receiver_start}, \code{receiver_end}---\code{Date} vectors that define receiver deployment start and end dates;
+\item \code{receiver_easting}, \code{receiver_northing}---\code{numeric} vectors that define receiver coordinates in UTM 29N;
+\item \code{receiver_lon}, \code{receiver_lat}---\code{numeric} vectors that define receiver coordinates in degrees longitude/latitude;
+\item \code{receiver_range}---a \code{numeric} vector that defines the detection range, which was taken as a constant (750 m) across all receivers;
 }
 
 Data are arranged by \code{receiver_id}.
@@ -51,9 +48,9 @@ Data are arranged by \code{receiver_id}.
 \section{Acoustics}{
 \code{\link{dat_acoustics}} contains sample detection time series. This includes the following columns:
 \itemize{
-\item \code{individual_id}---a unique identifier of the individual that was detected.
-\item \code{timestamp}---a \code{POSIXct} object that defines the time of each observation.
-\item \code{receiver_id}---a unique identifier of the receiver at which the individual was detected (see \code{\link{dat_moorings}}).
+\item \code{individual_id}---an \code{integer} vector that identifies individuals;
+\item \code{timestamp}---a \code{POSIXct} vector that defines the time of each observation;
+\item \code{receiver_id}---the receiver ID (see \code{\link{dat_moorings}});
 }
 
 Data are arranged by \code{individual_id}, \code{timestamp} and then \code{receiver_id}.
@@ -62,21 +59,21 @@ Data are arranged by \code{individual_id}, \code{timestamp} and then \code{recei
 \section{Archival}{
 \code{\link{dat_archival}} contains sample depth time series. Observations were sampled every 2 minutes. The data includes the following columns:
 \itemize{
-\item \code{individual_id}---a number that defines each individual (as in \code{\link{dat_acoustics}}).
-\item \code{timestamp}---a \code{POSIXct} object that defines the time of each observation.
-\item \code{depth}---a number that defines the depth (m) of the individual at each time step.
+\item \code{individual_id}---an \code{integer} vector that identifies individuals (as in \code{\link{dat_acoustics}});
+\item \code{timestamp}---a \code{POSIXct} vector that defines the time of each observation;
+\item \code{depth}---a \code{numeric} vector that defines the depth (m) of the individual at each time step;
 }
 
 Data are arranged by \code{individual_id} and then \code{timestamp}.
 }
 
 \section{Bathymetry}{
-\code{\link[=dat_gebco]{dat_gebco()}} returns a bathymetry (m) dataset for the west coast of Scotland where MEFS data were collected. This dataset is a \code{\link{SpatRaster}} with 264, rows, 190 columns and 1 layer, and the following properties:
+\code{\link[=dat_gebco]{dat_gebco()}} returns a bathymetry (m) dataset for the west coast of Scotland where MEFS data were collected. This dataset is a \code{\link{SpatRaster}} with the following properties:
 \itemize{
-\item \code{dimensions}---264, 190, 1 (nrow, ncol, nlyr)
-\item \code{resolution}---100, 100  (x, y)
-\item \code{extent}---695492.1, 714492.1, 6246657, 6273057  (xmin, xmax, ymin, ymax)
-\item \verb{coord. ref.}---WGS 84 / UTM zone 29N (EPSG:32629)
+\item \code{dimensions}---264, 190, 1 (\code{nrow}, \code{ncol}, \code{nlyr});
+\item \code{resolution}---100, 100  (\code{x}, \code{y});
+\item \code{extent}---695492.1, 714492.1, 6246657, 6273057  (\code{xmin}, \code{xmax}, \code{ymin}, \code{ymax});
+\item \verb{coord. ref.}---WGS 84 / UTM zone 29N (EPSG:32629);
 }
 }
 
