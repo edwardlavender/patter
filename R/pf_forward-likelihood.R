@@ -10,7 +10,7 @@
 #' @param .dlist (optional) The `.dlist` `list` (from [`pf_forward()`]).
 #' * For [`acs_filter_land()`], `.dlist` should contain `.dlist$spatial$bathy` and `.dlist$pars$spatna`.
 #' * For [`acs_filter_container()`], `.dlist` should contain `.dlist$data$moorings` and `.dlist$pars$lonlat`.
-#' * For [`pf_lik_ac()`], `.dlist` should contain `.dlist$algorithm$detection_overlaps` and `.dlist$algorithm$detection_kernels`.
+#' * For [`pf_lik_ac()`], `.dlist` should contain `.dlist$algorithm$detection_overlaps` (from [`acs_setup_detection_overlaps()`]) and `.dlist$algorithm$detection_kernels` (from [`acs_setup_detection_kernels()`].
 #' * For [`pf_lik_dc()`], `.dlist` should contain `.dlist$spatial$bathy`.
 #' * For custom likelihood functions, `.dlist` may require other datasets.
 #'

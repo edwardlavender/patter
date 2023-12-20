@@ -31,7 +31,7 @@ pf_lik_dc(.particles, .obs, .t, .dlist)
 \itemize{
 \item For \code{\link[=acs_filter_land]{acs_filter_land()}}, \code{.dlist} should contain \code{.dlist$spatial$bathy} and \code{.dlist$pars$spatna}.
 \item For \code{\link[=acs_filter_container]{acs_filter_container()}}, \code{.dlist} should contain \code{.dlist$data$moorings} and \code{.dlist$pars$lonlat}.
-\item For \code{\link[=pf_lik_ac]{pf_lik_ac()}}, \code{.dlist} should contain \code{.dlist$algorithm$detection_overlaps} and \code{.dlist$algorithm$detection_kernels}.
+\item For \code{\link[=pf_lik_ac]{pf_lik_ac()}}, \code{.dlist} should contain \code{.dlist$algorithm$detection_overlaps} (from \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}}) and \code{.dlist$algorithm$detection_kernels} (from \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}.
 \item For \code{\link[=pf_lik_dc]{pf_lik_dc()}}, \code{.dlist} should contain \code{.dlist$spatial$bathy}.
 \item For custom likelihood functions, \code{.dlist} may require other datasets.
 }}
