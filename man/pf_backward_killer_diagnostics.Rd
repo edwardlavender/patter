@@ -12,7 +12,7 @@ pf_backward_killer_diagnostics(.history, ...)
 \value{
 The function returns a \code{\link{data.table}} with the following columns:
 \itemize{
-\item \code{timestep}---an \code{integer} that defines the timestep;
+\item \code{timestep}---an \code{integer} that defines the time step;
 \item \code{n}---an \code{integer} that defines the number of particles;
 \item \code{n_u}---an \code{integer} that defines the number of unique location samples (see \code{\link[=.pf_diag_unique]{.pf_diag_unique()}});
 \item \code{ess}---a \code{double} that defines the effective sample size (see \code{\link[=.pf_diag_ess]{.pf_diag_ess()}});
@@ -22,22 +22,14 @@ The function returns a \code{\link{data.table}} with the following columns:
 This function calculates diagnostics from particle samples from \code{\link[=pf_backward_killer]{pf_backward_killer()}}.
 }
 \details{
-This function calculates particle diagnostics from particle samples from \code{\link[=pf_backward_killer]{pf_backward_killer()}}. Unlike \code{\link[=pf_forward]{pf_forward()}}, diagnostics are calculated post-hoc from particle samples, rather than on-the-fly, since the former is more efficient.
+Particle diagnostics are fully described in \code{\link{pf_diag}}.
 }
-\examples{
-# Calculate diagnostics from objects in memory
-diag <- dat_pfbk() |> pf_backward_killer_diagnostics()
-head(diag)
-
-# Calculate diagnostics from parquet files
-pfb_folder <- system.file("extdata", "acpf", "backward", "killer",
-                          package = "patter", mustWork = TRUE)
-diag_2 <- pf_backward_killer_diagnostics(pfb_folder)
-stopifnot(all.equal(diag, diag_2))
-
-# Analyse diagnostics
-
-
+\seealso{
+\itemize{
+\item \code{\link[=pf_forward]{pf_forward()}}, \code{\link[=pf_backward_killer]{pf_backward_killer()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implement the forward simulation and the backward pass;
+\item \code{\link[=pf_forward_diagnostics]{pf_forward_diagnostics()}} and \code{\link[=pf_backward_killer_diagnostics]{pf_backward_killer_diagnostics()}} collect diagnostics;
+\item \code{\link{.pf_diag}}\verb{_()} functions are internal routines that calculate diagnostic statistics;
+}
 }
 \author{
 Edward Lavender

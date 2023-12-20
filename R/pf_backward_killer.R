@@ -101,32 +101,31 @@ pf_backward_killer <- function(.history,
 
 
 #' @title PF: backward killer diagnostics
-#' @description This function collates diagnostics from [`pf_backward_killer()`] outputs.
-#' @param .sink A character string that defines the directory containing outputs.
-#' @param .cl,.cl_varlist,.cl_chunks (optional) Cluster options, passed to [`cl_lapply()`].
+#' @description This function calculates diagnostics from particle samples from [`pf_backward_killer()`].
+#' @param .history Particle samples, provided in any format accepted by [`.pf_history_dt()`].
+#'
+#' @details Particle diagnostics are fully described in [`pf_diag`].
 #'
 #' @return The function returns a [`data.table`] with the following columns:
-#' * `timestep`---an `integer` that defines the timestep;
+#' * `timestep`---an `integer` that defines the time step;
 #' * `n`---an `integer` that defines the number of particles;
-#' * `n_u`---an `integer` that defines the number of unique location samples;
+#' * `n_u`---an `integer` that defines the number of unique location samples (see [`.pf_diag_unique()`]);
 #' * `ess`---a `double` that defines the effective sample size (see [`.pf_diag_ess()`]);
 #'
+#' @example man/examples/pf_backward_killer_diagnostics-examples.R
+#'
+#' @inherit pf_diag seealso
 #' @author Edward Lavender
 #' @export
 
-pf_backward_killer_diagnostics <- function(.sink,
-                                           .cl = NULL, .cl_varlist = NULL, .cl_chunks = TRUE) {
-  .history <- pf_files(.sink)
-  cl_lapply(.history,
-            .cl = .cl, .varlist = .cl_varlist,
-            .use_chunks = .cl_chunks,
-            .fun = function(f) {
-              d <- arrow::read_parquet(f)
-              data.table(timestep = d$timestep[1],
-                         n = fnrow(d),
-                         n_u = .pf_diag_unique(d$cell_now),
-                         ess = .pf_diag_ess(d$lik)
-              )
-            }) |>
-    rbindlist()
+pf_backward_killer_diagnostics <- function(.history, ...) {
+  .history |>
+    .pf_history_dt(..., .collect = TRUE) |>
+    group_by(.data$timestep) |>
+    summarise(timestep = .data$timestep[1],
+              n = n(),
+              n_u = .pf_diag_unique(.data$cell_now),
+              ess = .pf_diag_ess(.data$lik)
+    ) |>
+    as.data.table()
 }
