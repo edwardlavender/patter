@@ -97,7 +97,7 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.bathy</dt>
-<dd><p>A bathymetry <code>SpatRaster</code>. This is widely used as a generic grid in <code><a href="patter-package.html">patter</a></code> functions.</p></dd>
+<dd><p>A bathymetry <code>SpatRaster</code>. This is widely used as a generic grid in <code><a href="patter.html">patter</a></code> functions.</p></dd>
 
 
 <dt>.acoustics, .moorings, .services, .archival</dt>
@@ -116,11 +116,11 @@
     <h2>Value</h2>
     
 
-<p>Each function returns the input dataset, as described, formatted in line with <code><a href="patter-package.html">patter</a></code>'s requirements.</p>
+<p>Each function returns the input dataset, as described, formatted in line with <code><a href="patter.html">patter</a></code>'s requirements.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
-    <p>These are internal functions that ensure that input dataset(s) meet <code><a href="patter-package.html">patter</a></code> requirements. Users should implement <code><a href="pat_setup_data.html">pat_setup_data()</a></code> to prepare datasets for <code><a href="patter-package.html">patter</a></code> functions. Downstream functions silently assume that input datasets meet all requirements, without subsequent checks. This simplifies internal code and documentation.</p><ul><li><p><code>check_bathy()</code> checks the bathymetry <code>SpatRaster</code>:</p><ul><li><p>Class: <code>SpatRaster</code>;</p></li>
+    <p>These are internal functions that ensure that input dataset(s) meet <code><a href="patter.html">patter</a></code> requirements. Users should implement <code><a href="pat_setup_data.html">pat_setup_data()</a></code> to prepare datasets for <code><a href="patter.html">patter</a></code> functions. Downstream functions silently assume that input datasets meet all requirements, without subsequent checks. This simplifies internal code and documentation.</p><ul><li><p><code>check_bathy()</code> checks the bathymetry <code>SpatRaster</code>:</p><ul><li><p>Class: <code>SpatRaster</code>;</p></li>
 <li><p>Properties:</p><ul><li><p>A square grid is recommended;</p></li>
 <li><p>Absolute values (m) are recommended;</p></li>
 <li><p>At the time of writing (December 2023), planar grids are better tested;</p></li>
@@ -158,14 +158,14 @@
 <li><p>It is convenient if archival time stamps are regularly spaced;</p></li>
 </ul></li>
 </ul></li>
-<li><p><code>check_dlist()</code> is an internal function used to confirm that the data <code>list</code> passed to a <code><a href="patter-package.html">patter</a></code> function contains the elements required for that function.</p></li>
+<li><p><code>check_dlist()</code> is an internal function used to confirm that the data <code>list</code> passed to a <code><a href="patter.html">patter</a></code> function contains the elements required for that function.</p></li>
 </ul><p>For all datasets, <code>NA</code>s may cause unexpected errors and produce a <code><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></code>. <code>NAs</code> in columns other than those described above are safe.</p>
 <p><code>NULL</code> inputs are permitted in all <code>check_{data}</code> functions, in which case <code>NULL</code> is returned.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index">
-<ul><li><p>See <code><a href="datasets-mefs.html">datasets-mefs</a></code> for example datasets included in <code><a href="patter-package.html">patter</a></code>;</p></li>
+<ul><li><p>See <code><a href="datasets-mefs.html">datasets-mefs</a></code> for example datasets included in <code><a href="patter.html">patter</a></code>;</p></li>
 <li><p>See <code><a href="pat_setup_data.html">pat_setup_data()</a></code> for the front-end function;</p></li>
 </ul></div>
     </div>

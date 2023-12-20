@@ -109,6 +109,9 @@
     <loc>/reference/dot-pf_history_dt.html</loc>
   </url>
   <url>
+    <loc>/reference/dot-pf_setup_obs_receiver_id_next.html</loc>
+  </url>
+  <url>
     <loc>/reference/dot-st_invert.html</loc>
   </url>
   <url>
@@ -143,6 +146,9 @@
   </url>
   <url>
     <loc>/reference/patter-progress.html</loc>
+  </url>
+  <url>
+    <loc>/reference/patter.html</loc>
   </url>
   <url>
     <loc>/reference/pb_.html</loc>
@@ -203,6 +209,9 @@
   </url>
   <url>
     <loc>/reference/pf_sample.html</loc>
+  </url>
+  <url>
+    <loc>/reference/pf_setup_obs.html</loc>
   </url>
   <url>
     <loc>/reference/prettyGraphics.html</loc>

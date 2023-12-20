@@ -110,7 +110,7 @@
 
 
 <dt>.verbose</dt>
-<dd><p>Arguments to monitor function progress (see <code><a href="pf_forward.html">pf_forward()</a></code>).</p></dd>
+<dd><p>User output control (see <code><a href="patter-progress.html">patter-progress</a></code> for supported options)</p></dd>
 
 </dl></div>
     <div id="value">
@@ -134,13 +134,7 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#### Workflow</span></span></span>
-<span class="r-in"><span><span class="co"># A. Define input datasets (see ?`acs_setup_obs()`)</span></span></span>
-<span class="r-in"><span><span class="co"># B. Implement forward simulation (see ?`pf_forward()`)</span></span></span>
-<span class="r-in"><span><span class="co"># C. Implement backwards pass (see ?`pf_backward_*()`)</span></span></span>
-<span class="r-in"><span><span class="co"># D. Implement `pf_path()`, `map_pou()` etc.</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Set up examples using pre-defined datasets</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#### Set up examples using pre-defined datasets</span></span></span>
 <span class="r-in"><span><span class="va">gebco</span>       <span class="op">&lt;-</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">obs</span>         <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_obs</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">out_pfbk</span>    <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_pfbk</a></span><span class="op">(</span><span class="op">)</span></span></span>
@@ -149,34 +143,34 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (1): Implement pf_path() from `pf` object</span></span></span>
 <span class="r-in"><span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu">pf_path</span><span class="op">(</span><span class="va">out_pfbk</span><span class="op">$</span><span class="va">history</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` called @ 2023-12-19 14:02:39... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` called @ 2023-12-20 12:39:51... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing history[[1]]... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Evaluating chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Reorientating matrix via pf_path_pivot()... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` call ended @ 2023-12-19 14:02:39 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` call ended @ 2023-12-20 12:39:51 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (2): Implement pf_path from parquet files</span></span></span>
 <span class="r-in"><span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu">pf_path</span><span class="op">(</span><span class="fu"><a href="pf_files.html">pf_files</a></span><span class="op">(</span><span class="va">pfbk_folder</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` called @ 2023-12-19 14:02:39... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` called @ 2023-12-20 12:39:51... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing history[[1]]... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Evaluating chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Reorientating matrix via pf_path_pivot()... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` call ended @ 2023-12-19 14:02:39 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` call ended @ 2023-12-20 12:39:51 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (3): Include cell coordinates/obs columns</span></span></span>
 <span class="r-in"><span><span class="va">p3</span> <span class="op">&lt;-</span> <span class="fu">pf_path</span><span class="op">(</span><span class="va">out_pfbk</span><span class="op">$</span><span class="va">history</span>, <span class="va">gebco</span>, <span class="va">obs</span>, .cols <span class="op">=</span> <span class="st">"depth"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` called @ 2023-12-19 14:02:39... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` called @ 2023-12-20 12:39:51... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing history[[1]]... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Evaluating chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Reorientating matrix via pf_path_pivot()... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` call ended @ 2023-12-19 14:02:39 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` call ended @ 2023-12-20 12:39:51 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">p3</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    path_id timestep cell_id   cell_x  cell_y    cell_z depth</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:       1        1   37566 709042.1 6253307  91.54701 73.78</span>
@@ -193,13 +187,13 @@
 <span class="r-in"><span><span class="va">log.txt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".txt"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">p4</span> <span class="op">&lt;-</span> <span class="fu">pf_path</span><span class="op">(</span><span class="va">out_pfbk</span><span class="op">$</span><span class="va">history</span>, .verbose <span class="op">=</span> <span class="va">log.txt</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="va">log.txt</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "`patter::pf_path()` called @ 2023-12-19 14:02:39... "                        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "`patter::pf_path()` called @ 2023-12-20 12:39:51... "                        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2] "... Setting up... "                                                          </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [3] "... Processing history[[1]]... "                                             </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [4] "... Defining chain text... "                                                 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [5] "... Evaluating chain text... "                                               </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [6] "... Reorientating matrix via pf_path_pivot()... "                            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [7] "`patter::pf_path()` call ended @ 2023-12-19 14:02:39 (duration: ~0 sec(s)). "</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [7] "`patter::pf_path()` call ended @ 2023-12-20 12:39:51 (duration: ~0 sec(s)). "</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (5): Examine outputs</span></span></span>
 <span class="r-in"><span><span class="co"># Load packages</span></span></span>
@@ -228,12 +222,12 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (6): Change output format</span></span></span>
 <span class="r-in"><span><span class="va">p6</span> <span class="op">&lt;-</span> <span class="fu">pf_path</span><span class="op">(</span><span class="va">out_pfbk</span><span class="op">$</span><span class="va">history</span>, .return <span class="op">=</span> <span class="st">"wide"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` called @ 2023-12-19 14:02:39... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` called @ 2023-12-20 12:39:51... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing history[[1]]... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Evaluating chain text... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` call ended @ 2023-12-19 14:02:39 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` call ended @ 2023-12-20 12:39:51 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">p6</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Classes ‘data.table’ and 'data.frame':	100 obs. of  25 variables:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  $ x1 : int  37566 37951 37566 37568 37566 37951 37951 37951 37568 37568 ...</span>
