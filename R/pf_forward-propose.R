@@ -5,8 +5,10 @@
 #' * `.obs`---the `.obs` [`data.table`] from [`pf_forward()`];
 #' * `.t`---an `integer` that defines the time step;
 #' * `.dlist`---the `.dlist` `list` from [`pf_forward()`];
-#' @param .sim_length,.sim_angle Additional arguments for [`pf_rpropose_kick()`].
+#' @param .sim_length,.sim_angle Additional arguments for [`pf_rpropose_kick()`]. These are functions that simulate step lengths and turning angles respectively. Each function must accept a `.n` argument that defines the number of simulated values.
 #' @param ... Additional arguments.
+#' * For [`pf_rpropose_kick()`], `...` is passed to `.sim_length` and `.sim_angle`.
+#' * For [`pf_dpropose()`], `...` is passed to [`dstep()`].
 #'
 #' @details
 #' In [`pf_forward()`], proposal functions are used to generate (propose) new, candidate locations for the individual's position, contingent upon previous positions (particle samples). Proposal locations are generated from previous locations via stochastic kicks and directed sampling.
@@ -17,6 +19,7 @@
 #'
 #' [`pf_dpropose()`] calculates the probability density of movements into proposal locations and is required for directed sampling.
 #'
+#' @inherit pf_forward seealso
 #' @author Edward Lavender
 #' @name pf_propose
 
@@ -51,6 +54,10 @@ pf_rpropose_kick <- function(.particles, .obs, .t, .dlist,
 #' @export
 
 pf_rpropose_reachable <- function(.particles, .obs, .t, .dlist) {
+
+  if (.t == 1L) {
+    rlang::check_installed("exactextractr")
+  }
 
   # Isolate unique particles
   .particles <-

@@ -25,6 +25,7 @@
 #'
 #' @return Functions return the `.particle` [`data.table`] for valid proposal locations and updated likelihoods (in the `lik` column).
 #'
+#' @inherit pf_forward seealso
 #' @author Edward Lavender
 #' @name pf_lik
 

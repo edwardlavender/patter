@@ -30,9 +30,13 @@ pf_dpropose(.particles, .obs, .t, .dlist, ...)
 \item \code{.dlist}---the \code{.dlist} \code{list} from \code{\link[=pf_forward]{pf_forward()}};
 }}
 
-\item{.sim_length, .sim_angle}{Additional arguments for \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}}.}
+\item{.sim_length, .sim_angle}{Additional arguments for \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}}. These are functions that simulate step lengths and turning angles respectively. Each function must accept a \code{.n} argument that defines the number of simulated values.}
 
-\item{...}{Additional arguments.}
+\item{...}{Additional arguments.
+\itemize{
+\item For \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}}, \code{...} is passed to \code{.sim_length} and \code{.sim_angle}.
+\item For \code{\link[=pf_dpropose]{pf_dpropose()}}, \code{...} is passed to \code{\link[=dstep]{dstep()}}.
+}}
 }
 \description{
 These are proposal functions for \code{\link[=pf_forward]{pf_forward()}}.
@@ -45,6 +49,28 @@ The \code{.rpropose} argument in \code{\link[=pf_forward]{pf_forward()}} expects
 If stochastic kicks fail to produce a sufficient number of valid particle samples, \code{\link[=pf_rpropose_reachable]{pf_rpropose_reachable()}} may be called under-the-hood for directed sampling. For selected particles, this function identifies the set of reachable locations, for which likelihood calculations and sampling are then implemented (see \code{\link[=pf_forward]{pf_forward()}}).
 
 \code{\link[=pf_dpropose]{pf_dpropose()}} calculates the probability density of movements into proposal locations and is required for directed sampling.
+}
+\seealso{
+The forward filtering--backward sampling algorithm samples locations (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
+\itemize{
+\item To set up data, use \code{\link[=pat_setup_data]{pat_setup_data()}}.
+\item \code{\link[=pf_forward]{pf_forward()}} implements the forward filter:
+\itemize{
+\item To set up an observations timeline, use \code{\link[=pf_setup_obs]{pf_setup_obs()}}.
+\item For proposal (movement) models, see \code{\link{pf_propose}}.
+\item For likelihood functions, to evaluate the likelihood of the data at proposal locations, see \code{\link{pf_lik}}.
+\item For sampling functions, to (re)sample plausible proposal locations, see \code{\link{pf_sample}}.
+\item For tuning parameters, see \code{\link{pf_opt}}.
+}
+\item \code{\link[=pf_backward_*]{pf_backward_*()}} refines outputs from the forward filter:
+\itemize{
+\item \code{\link[=pf_backward_killer]{pf_backward_killer()}} removes dead-ends;
+\item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implements the backward sampler;
+}
+\item To reconstruct movement paths from particle samples, use \code{\link[=pf_path]{pf_path()}}.
+\item To map emergent patterns of space use, use \code{\link[=pf_coord]{pf_coord()}} plus a \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()}.
+\item For additional utilities, see supporting \verb{pf_*()} functions, such as \code{\link[=pf_files]{pf_files()}} and \code{\link[=pf_files_size]{pf_files_size()}}.
+}
 }
 \author{
 Edward Lavender

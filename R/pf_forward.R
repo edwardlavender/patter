@@ -41,6 +41,7 @@
 #' pf_opt_control()
 #' pf_opt_rerun_from(dat_pff(), .revert = 10L)
 #'
+#' @inherit pf_forward seealso
 #' @author Edward lavender
 #' @name pf_opt
 
@@ -369,8 +370,8 @@ pf_forward <- function(.obs,
 #'
 #' @details Particle diagnostics are fully described in [`pf_diag`].
 #'
-#' @inherit pf_diag seealso
 #' @return The function returns the diagnostics [`data.table`].
+#' @inherit pf_diag seealso
 #' @author Edward Lavender
 #' @export
 

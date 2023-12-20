@@ -22,6 +22,7 @@
 #' pf_sample_multinomial(p, .n = 10L)
 #' pf_sample_systematic(p, .n = 10L)
 #'
+#' @inherit pf_forward seealso
 #' @author Edward Lavender
 #' @name pf_sample
 
