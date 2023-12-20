@@ -55,7 +55,7 @@ These functions are supported by a set of simulation helpers, including:
 \item \code{\link[=cstep]{cstep()}} and \code{\link[=dstep]{dstep()}} for the simulation of steps into new locations;
 }
 
-To evaluate model skill in reconstructing simulated patterns, see \code{\link[=skill_]{skill_()}} functions, specifically:
+To evaluate model skill in reconstructing simulated patterns, see \code{skill_()} functions, specifically:
 \itemize{
 \item \code{\link[=skill_mb]{skill_mb()}} to calculate mean bias;
 \item \code{\link[=skill_me]{skill_me()}} to calculate mean error;
@@ -156,11 +156,11 @@ The main thrust of \code{\link{patter}} is the provision of an integrated modell
 \strong{To map utilisation distributions}, use:
 \itemize{
 \item \code{\link[=map_pou]{map_pou()}} to map probability-of-use;
-\item \code{\link[=map_dens]{map_dens()}} to create smooth maps using \code{\link{spatstat}}, plus the supporting functions:
+\item \code{\link[=map_dens]{map_dens()}} to create smooth maps using \code{spatstat}, plus the supporting functions:
 \itemize{
 \item \code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}}, to convert \code{\link{SpatRaster}}s to pixel images;
 \item \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}}, to convert  \code{\link{SpatRaster}}s to observation windows;
-\item \code{\link[=as.owin.sf]{as.owin.sf()}}, to convert \code{\link{sf}} objects to observation windows;
+\item \code{\link[=as.owin.sf]{as.owin.sf()}}, to convert \code{sf} objects to observation windows;
 }
 }
 

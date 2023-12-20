@@ -45,7 +45,7 @@
 #' * [`rwn()`], [`rangrw()`] and [`rangcrw()`] for the simulation of turning angles;
 #' * [`cstep()`] and [`dstep()`] for the simulation of steps into new locations;
 #'
-#' To evaluate model skill in reconstructing simulated patterns, see [`skill_()`] functions, specifically:
+#' To evaluate model skill in reconstructing simulated patterns, see `skill_()` functions, specifically:
 #'
 #' * [`skill_mb()`] to calculate mean bias;
 #' * [`skill_me()`] to calculate mean error;
@@ -130,10 +130,10 @@
 #' **To map utilisation distributions**, use:
 #'
 #' * [`map_pou()`] to map probability-of-use;
-#' * [`map_dens()`] to create smooth maps using [`spatstat`], plus the supporting functions:
+#' * [`map_dens()`] to create smooth maps using `spatstat`, plus the supporting functions:
 #'     * [`as.im.SpatRaster()`], to convert [`SpatRaster`]s to pixel images;
 #'     * [`as.owin.SpatRaster()`], to convert  [`SpatRaster`]s to observation windows;
-#'     * [`as.owin.sf()`], to convert [`sf`] objects to observation windows;
+#'     * [`as.owin.sf()`], to convert `sf` objects to observation windows;
 #'
 #' **For home ranges**, use:
 #'
