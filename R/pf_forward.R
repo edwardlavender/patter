@@ -159,7 +159,26 @@ pf_opt_rerun_from <- function(.rerun, .revert = 25L) {
 #'
 #' @example man/examples/pf_forward-examples.R
 #'
-#' @seealso
+#' @seealso The forward filtering--backward sampling algorithm samples locations (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
+#'
+#' * To set up data, use [`pat_setup_data()`].
+#'
+#' * [`pf_forward()`] implements the forward filter:
+#'    * To set up an observations timeline, use [`pf_setup_obs()`].
+#'    * For proposal (movement) models, see [`pf_propose`].
+#'    * For likelihood functions, to evaluate the likelihood of the data at proposal locations, see [`pf_lik`].
+#'    * For sampling functions, to (re)sample plausible proposal locations, see [`pf_sample`].
+#'    * For tuning parameters, see [`pf_opt`].
+#'
+#' * [`pf_backward_*()`] refines outputs from the forward filter:
+#'    * [`pf_backward_killer()`] removes dead-ends;
+#'    * [`pf_backward_sampler()`] implements the backward sampler;
+#'
+#' * To reconstruct movement paths from particle samples, use [`pf_path()`].
+#'
+#' * To map emergent patterns of space use, use [`pf_coord()`] plus a `map_*()` function, such as [`map_pou()`], [`map_dens()`] and/or [`map_hr`]`_()`.
+#'
+#' * For additional utilities, see supporting `pf_*()` functions, such as [`pf_files()`] and [`pf_files_size()`].
 #'
 #' @author Edward Lavender
 #' @export
