@@ -3,6 +3,7 @@
 #' @author Edward Lavender
 #' @keywords internal
 
+# Collate outputs for pf_backward_killer()
 .pf_backward_killer_outputs <- function(.start, .history, .record) {
   if (!.record$save) {
     .history <- list()
