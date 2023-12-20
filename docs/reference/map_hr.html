@@ -110,13 +110,16 @@
     </div>
     <div id="details">
     <h2>Details</h2>
-    <p>These functions are modelled on the <a href="https://edwardlavender.github.io/flapper/reference/map_hr.html" class="external-link"><code>map_hr_*()</code></a> functions in the <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a> package, where full details are provided. The <code>spatialEco</code> package is required.</p>
+    <p>These functions are modelled on the <a href="https://edwardlavender.github.io/flapper/reference/get_hr.html" class="external-link"><code>map_hr_*()</code></a> functions in the <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a> package, where full details are provided.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index">
-<ul><li><p>For reconstructing movement paths and patterns of space use, see <code><a href="pf_forward.html">pf_forward()</a></code>;</p></li>
-<li><p>For mapping utilisation distributions, see <code><a href="map_pou.html">map_pou()</a></code> and <code><a href="map_dens.html">map_dens()</a></code>;</p></li>
+    <div class="dont-index"><p><code>map_*()</code> functions build maps of space use:</p><ul><li><p><code><a href="map_pou.html">map_pou()</a></code> maps probability-of-use;</p></li>
+<li><p><code><a href="map_dens.html">map_dens()</a></code> maps point density;</p></li>
+<li><p><code>map_hr</code><code>_*()</code> functions map home ranges;</p></li>
+</ul><p>All maps are represented as <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code>s.</p>
+<p>To derive coordinates for mapping patterns of space use for tagged animals in passive acoustic telemetry systems, see:</p><ul><li><p><code><a href="coa.html">coa()</a></code> to calculate centre-of-activity;</p></li>
+<li><p><code><a href="pf_forward.html">pf_forward()</a></code>, <code><a href="pf_backward_-times.html">pf_backward_*()</a></code> and <code><a href="pf_coord.html">pf_coord()</a></code> to sample locations using a forward-filtering backward-sampling algorithm;</p></li>
 </ul></div>
     </div>
     <div id="author">

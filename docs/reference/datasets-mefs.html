@@ -93,40 +93,37 @@
     <div id="source">
     <h2>Source</h2>
     <p>Biologging and biotelemetry data were collected by, and belong to, Marine Scotland Science and NatureScot. Data were processed by Lavender (2022). If you wish to use these data, please contact Marine Scotland Science and NatureScot for further information.</p>
-<p>Bathymetry data were sourced from GEBCO Compilation Group (2019) GEBCO 2019 Grid (doi:10.5285/836f016a-33be-6ddc-e053-6c86abc0788e)</p>
+<p>Bathymetry data were sourced from GEBCO Compilation Group (2019) GEBCO 2019 Grid. <a href="https://www.doi.org/10.5285/836f016a-33be-6ddc-e053-6c86abc0788e" class="external-link">https://www.doi.org/10.5285/836f016a-33be-6ddc-e053-6c86abc0788e</a></p>
     </div>
     <div id="moorings">
     <h2>Moorings</h2>
-    <p><code>dat_moorings</code> defines passive acoustic telemetry receiver locations and associated information. This includes the following columns:</p><ul><li><p><code>receiver_id</code>---an <code>integer</code> that distinguishes each unique receiver deployment.</p></li>
-<li><p><code>receiver_start</code>---a <code>Date</code> that defines the start date of each receiver's deployment.</p></li>
-<li><p><code>receiver_end</code>---a <code>Date</code> that defines the end date of each receiver's deployment.</p></li>
-<li><p><code>receiver_easting</code>---a number that defines the receiver easting (UTM 29N).</p></li>
-<li><p><code>receiver_northing</code>---a number that defines the receiver northing (UTM 29N).</p></li>
-<li><p><code>receiver_lon</code>---a number that defines the longitude (decimal degrees) of each receiver.</p></li>
-<li><p><code>receiver_lat</code>---a number that defines the latitude (decimal degrees) of each receiver.</p></li>
-<li><p><code>receiver_range</code>---a number that defines the detection range, which was taken as a constant (750 m) across all receivers.</p></li>
+    <p><code>dat_moorings</code> defines passive acoustic telemetry receiver locations and associated information. This includes the following columns:</p><ul><li><p><code>receiver_id</code>---an <code>integer</code> vector that defines unique receiver deployments;</p></li>
+<li><p><code>receiver_start</code>, <code>receiver_end</code>---<code>Date</code> vectors that define receiver deployment start and end dates;</p></li>
+<li><p><code>receiver_easting</code>, <code>receiver_northing</code>---<code>numeric</code> vectors that define receiver coordinates in UTM 29N;</p></li>
+<li><p><code>receiver_lon</code>, <code>receiver_lat</code>---<code>numeric</code> vectors that define receiver coordinates in degrees longitude/latitude;</p></li>
+<li><p><code>receiver_range</code>---a <code>numeric</code> vector that defines the detection range, which was taken as a constant (750 m) across all receivers;</p></li>
 </ul><p>Data are arranged by <code>receiver_id</code>.</p>
     </div>
     <div id="acoustics">
     <h2>Acoustics</h2>
-    <p><code>dat_acoustics</code> contains sample detection time series. This includes the following columns:</p><ul><li><p><code>individual_id</code>---a unique identifier of the individual that was detected.</p></li>
-<li><p><code>timestamp</code>---a <code>POSIXct</code> object that defines the time of each observation.</p></li>
-<li><p><code>receiver_id</code>---a unique identifier of the receiver at which the individual was detected (see <code>dat_moorings</code>).</p></li>
+    <p><code>dat_acoustics</code> contains sample detection time series. This includes the following columns:</p><ul><li><p><code>individual_id</code>---an <code>integer</code> vector that identifies individuals;</p></li>
+<li><p><code>timestamp</code>---a <code>POSIXct</code> vector that defines the time of each observation;</p></li>
+<li><p><code>receiver_id</code>---the receiver ID (see <code>dat_moorings</code>);</p></li>
 </ul><p>Data are arranged by <code>individual_id</code>, <code>timestamp</code> and then <code>receiver_id</code>.</p>
     </div>
     <div id="archival">
     <h2>Archival</h2>
-    <p><code>dat_archival</code> contains sample depth time series. Observations were sampled every 2 minutes. The data includes the following columns:</p><ul><li><p><code>individual_id</code>---a number that defines each individual (as in <code>dat_acoustics</code>).</p></li>
-<li><p><code>timestamp</code>---a <code>POSIXct</code> object that defines the time of each observation.</p></li>
-<li><p><code>depth</code>---a number that defines the depth (m) of the individual at each time step.</p></li>
+    <p><code>dat_archival</code> contains sample depth time series. Observations were sampled every 2 minutes. The data includes the following columns:</p><ul><li><p><code>individual_id</code>---an <code>integer</code> vector that identifies individuals (as in <code>dat_acoustics</code>);</p></li>
+<li><p><code>timestamp</code>---a <code>POSIXct</code> vector that defines the time of each observation;</p></li>
+<li><p><code>depth</code>---a <code>numeric</code> vector that defines the depth (m) of the individual at each time step;</p></li>
 </ul><p>Data are arranged by <code>individual_id</code> and then <code>timestamp</code>.</p>
     </div>
     <div id="bathymetry">
     <h2>Bathymetry</h2>
-    <p><code>dat_gebco()</code> returns a bathymetry (m) dataset for the west coast of Scotland where MEFS data were collected. This dataset is a <code>SpatRaster</code> with 264, rows, 190 columns and 1 layer, and the following properties:</p><ul><li><p><code>dimensions</code>---264, 190, 1 (nrow, ncol, nlyr)</p></li>
-<li><p><code>resolution</code>---100, 100  (x, y)</p></li>
-<li><p><code>extent</code>---695492.1, 714492.1, 6246657, 6273057  (xmin, xmax, ymin, ymax)</p></li>
-<li><p><code>coord. ref.</code>---WGS 84 / UTM zone 29N (EPSG:32629)</p></li>
+    <p><code>dat_gebco()</code> returns a bathymetry (m) dataset for the west coast of Scotland where MEFS data were collected. This dataset is a <code>SpatRaster</code> with the following properties:</p><ul><li><p><code>dimensions</code>---264, 190, 1 (<code>nrow</code>, <code>ncol</code>, <code>nlyr</code>);</p></li>
+<li><p><code>resolution</code>---100, 100  (<code>x</code>, <code>y</code>);</p></li>
+<li><p><code>extent</code>---695492.1, 714492.1, 6246657, 6273057  (<code>xmin</code>, <code>xmax</code>, <code>ymin</code>, <code>ymax</code>);</p></li>
+<li><p><code>coord. ref.</code>---WGS 84 / UTM zone 29N (EPSG:32629);</p></li>
 </ul></div>
     <div id="references">
     <h2>References</h2>

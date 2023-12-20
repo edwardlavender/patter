@@ -88,7 +88,7 @@
 
     <div id="source">
     <h2>Source</h2>
-    <p>For full details on the algorithm parameters used to generate these datasets, see <a href="https://github.com/edwardlavender/patter/blob/main/data-raw/002-add-data-algorithms.R" class="external-link">https://github.com/edwardlavender/patter/blob/main/data-raw/002-add-data-algorithms.R</a>.</p>
+    <p>For full details on the algorithm parameters used to generate these datasets, see <a href="https://github.com/edwardlavender/patter/blob/main/data-raw/003-add-data-algorithms.R" class="external-link">https://github.com/edwardlavender/patter/blob/main/data-raw/003-add-data-algorithms.R</a>.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -106,137 +106,21 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">dat_obs</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     timestep    timestamp                       date            detection_id </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   : 1   Min.   :2016-03-17 01:50:00   Length:25          Min.   : 1.0  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1st Qu.: 7   1st Qu.:2016-03-17 02:02:00   Class :character   1st Qu.: 5.0  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Median :13   Median :2016-03-17 02:14:00   Mode  :character   Median :11.0  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Mean   :13   Mean   :2016-03-17 02:14:00                      Mean   :10.6  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3rd Qu.:19   3rd Qu.:2016-03-17 02:26:00                      3rd Qu.:16.0  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Max.   :25   Max.   :2016-03-17 02:38:00                      Max.   :18.0  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    detection    receiver_id.Length  receiver_id.Class  receiver_id.Mode</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   :0.00   1        -none-   numeric                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1st Qu.:0.00   1        -none-   numeric                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Median :1.00   1        -none-   numeric                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Mean   :0.72   0        -none-   NULL                                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3rd Qu.:1.00   1        -none-   numeric                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Max.   :1.00   1        -none-   numeric                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 0        -none-   NULL                                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 1        -none-   numeric                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 1        -none-   numeric                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 1        -none-   numeric                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 1        -none-   numeric                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 1        -none-   numeric                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 1        -none-   numeric                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 1        -none-   numeric                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 1        -none-   numeric                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 1        -none-   numeric                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 1        -none-   numeric                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 1        -none-   numeric                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 0        -none-   NULL                                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 0        -none-   NULL                                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 1        -none-   numeric                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 1        -none-   numeric                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 0        -none-   NULL                                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 0        -none-   NULL                                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 0        -none-   NULL                                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  receiver_id_next.Length  receiver_id_next.Class  receiver_id_next.Mode</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1        -none-   numeric                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1        -none-   numeric                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1        -none-   numeric                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1        -none-   numeric                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1        -none-   numeric                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1        -none-   numeric                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1        -none-   numeric                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1        -none-   numeric                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1        -none-   numeric                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1        -none-   numeric                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1        -none-   numeric                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1        -none-   numeric                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1        -none-   numeric                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1        -none-   numeric                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1        -none-   numeric                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1        -none-   numeric                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1        -none-   numeric                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1        -none-   numeric                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1        -none-   numeric                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1        -none-   numeric                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1        -none-   numeric                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1        -none-   numeric                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1        -none-   numeric                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1        -none-   numeric                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1        -none-   numeric                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     mobility    buffer_past  buffer_future  buffer_future_incl_gamma</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   :500   Min.   :500   Min.   : 500   Min.   :1250            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1st Qu.:500   1st Qu.:500   1st Qu.: 500   1st Qu.:1250            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Median :500   Median :500   Median : 500   Median :1250            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Mean   :500   Mean   :500   Mean   :1200   Mean   :1950            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3rd Qu.:500   3rd Qu.:500   3rd Qu.:1000   3rd Qu.:1750            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Max.   :500   Max.   :500   Max.   :5000   Max.   :5750            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      depth      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   :65.23  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1st Qu.:72.39  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Median :73.32  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Mean   :72.79  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3rd Qu.:73.55  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Max.   :76.78  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 </span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">dat_obs</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Rows: 25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Columns: 12</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ timestep                 <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ timestamp                <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span> 2016-03-17 01:50:00, 2016-03-17 01:52:00, 20…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ date                     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "2016-03-17", "2016-03-17", "2016-03-17", "20…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ detection_id             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 3, 3, 4, 5, 5, 6, 7, 8, 9, 10, 11, 12, …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ detection                <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ receiver_id              <span style="color: #949494; font-style: italic;">&lt;list&gt;</span> 26, 26, 26, &lt;NULL&gt;, 26, 26, &lt;NULL&gt;, 26, 26, …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ receiver_id_next         <span style="color: #949494; font-style: italic;">&lt;list&gt;</span> 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ mobility                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 500, 500, 500, 500, 500, 500, 500, 500, 500, …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ buffer_past              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 500, 500, 500, 500, 500, 500, 500, 500, 500, …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ buffer_future            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 500, 500, 1000, 500, 500, 1000, 500, 500, 500…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ buffer_future_incl_gamma <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1250, 1250, 1750, 1250, 1250, 1750, 1250, 125…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ depth                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 73.78, 73.32, 73.32, 73.32, 73.55, 68.70, 72.…</span>
 <span class="r-in"><span><span class="fu">dat_pff</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             Length Class      Mode   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> history     25     -none-     list   </span>
@@ -250,19 +134,19 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> time     3     -none- list</span>
 <span class="r-in"><span><span class="fu">dat_pfp</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     path_id          timestep     cell_id          cell_x      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   :  1.00   Min.   : 1   Min.   :35668   Min.   :708342  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1st Qu.: 25.75   1st Qu.: 7   1st Qu.:37377   1st Qu.:709142  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Median : 50.50   Median :13   Median :37757   Median :709242  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Mean   : 50.50   Mean   :13   Mean   :37827   Mean   :709224  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3rd Qu.: 75.25   3rd Qu.:19   3rd Qu.:38328   3rd Qu.:709342  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Max.   :100.00   Max.   :25   Max.   :39850   Max.   :709942  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   :  1.00   Min.   : 1   Min.   :35665   Min.   :708342  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1st Qu.: 25.75   1st Qu.: 7   1st Qu.:37376   1st Qu.:709042  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Median : 50.50   Median :13   Median :37757   Median :709142  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Mean   : 50.50   Mean   :13   Mean   :37736   Mean   :709129  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3rd Qu.: 75.25   3rd Qu.:19   3rd Qu.:38137   3rd Qu.:709242  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Max.   :100.00   Max.   :25   Max.   :39467   Max.   :709942  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      cell_y            cell_z      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   :6252107   Min.   : 35.75  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1st Qu.:6252907   1st Qu.: 45.88  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Median :6253207   Median : 66.55  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Mean   :6253171   Mean   : 71.82  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3rd Qu.:6253407   3rd Qu.: 87.55  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Max.   :6254307   Max.   :147.95  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   :6252307   Min.   : 35.75  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1st Qu.:6253007   1st Qu.: 53.03  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Median :6253207   Median : 73.28  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Mean   :6253218   Mean   : 79.36  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3rd Qu.:6253407   3rd Qu.:102.60  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Max.   :6254307   Max.   :150.05  </span>
 <span class="r-in"><span><span class="fu">dat_coa</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    timestamp                       coa_x            coa_y        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   :2016-03-17 01:00:00   Min.   :702842   Min.   :6252991  </span>

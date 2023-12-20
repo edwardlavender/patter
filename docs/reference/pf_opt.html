@@ -97,7 +97,7 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.trial_origin_crit, .trial_origin, .trial_kick_crit, .trial_kick, .trial_sampler_crit, .trial_sampler, .trial_revert_crit, .trial_revert_steps, .trial_revert</dt>
-<dd><p>Trial arguments used to tune convergence properties. All arguments expect <code>integer</code>s.</p><ul><li><p><code>.trial_{step}</code> arguments define the number of times to trial a stochastic process at each time step (before giving up).</p></li>
+<dd><p><code>pf_opt_trial()</code> arguments used to tune convergence properties. All arguments expect <code>integer</code>s.</p><ul><li><p><code>.trial_{step}</code> arguments define the number of times to trial a stochastic process at each time step (before giving up).</p></li>
 <li><p><code>.trial_{step}_crit</code> arguments define the number of valid, unique proposal locations (grid cells) required to trigger a repeated trial.</p></li>
 </ul><p>For example, if after kicking previous particles into proposal locations and evaluating the likelihood of each location only 10 unique particles remain, the stochastic process is repeated up to <code>.trial_kick</code> times or until the number of valid proposals exceeds <code>.trial_kick_crit</code> (see Details). In full:</p><ul><li><p><code>.trial_origin_crit</code> is the critical threshold for the starting samples. If the number of unique, valid starting locations is &lt;= <code>.trial_origin_crit</code>, sampling is repeated up to <code>.trial_origin</code> times.</p></li>
 <li><p><code>trial_kick_crit</code> is the critical threshold for stochastic kicks. If the number of unique, valid proposals is &lt;= <code>trial_kick_crit</code>, the process of kicking and sampling particles (via <code>.rpropose</code> and <code>.sample</code>) is repeated up to <code>.trial_kick</code> times. Use <code>.trial_kick = 0L</code> to suppress stochastic kicks.</p></li>
@@ -107,20 +107,20 @@
 
 
 <dt>.save, .sink, .cols</dt>
-<dd><p><code>pf_opt_record()</code> arguments, passed to <code>.record</code> in <code><a href="pf_forward.html">pf_forward()</a></code>.</p><ul><li><p><code>.save</code>---a <code>logical</code> variable that defines whether or not to save particle samples and diagnostics in memory. Use with caution.</p></li>
-<li><p><code>.sink</code>---a <code>character</code> string that defines a (usually) empty directory in which to write particle samples and diagnostics (see Value).</p></li>
-<li><p><code>.cols</code>---a <code>character</code> vector that defines the names of the columns in particle-sample <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>s to save and/or write to file at each time step. This reduces the space occupied by outputs. At a minimum, you should retain <code>timestep</code>, <code>cell_now</code>, <code>x_now</code> and <code>y_now</code> for the backward sampler (see <code>pf_backward_sampler()</code>). <code>NULL</code> retains all columns.</p></li>
-</ul><p>At least one of <code>.save</code> and <code>.sink</code> must be provided.</p></dd>
+<dd><p><code>pf_opt_record()</code> arguments, passed to <code>.record</code> in <code><a href="pf_forward.html">pf_forward()</a></code>.</p><ul><li><p><code>.save</code>---a <code>logical</code> variable that defines whether or not to save particle samples and diagnostics in memory. Use <code>.save = TRUE</code> with caution.</p></li>
+<li><p><code>.sink</code>---a <code>character</code> string that defines a (usually) empty directory in which to write particle samples and diagnostics. <code>{.sink}/history/</code>and <code>{.sink}/diagnostics</code> directories are created (if necessary) to store particle samples and diagnostics respectively.</p></li>
+<li><p><code>.cols</code>---a <code>character</code> vector that defines the names of the columns in particle-sample <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>s to save and/or write to file at each time step. This reduces the space occupied by outputs. For <code><a href="pf_backward_killer.html">pf_backward_killer()</a></code>, you need to retain <code>timestep</code>, <code>cell_past</code> and <code>cell_now</code>. For <code>pf_backward_sampler()</code>, you need <code>timestep</code>, <code>cell_now</code>, <code>x_now</code> and <code>y_now</code> for the backward sampler. For calculation of effective sample size, <code>lik</code> is required. <code>NULL</code> retains all columns.</p></li>
+</ul><p>At least one of <code>.save = TRUE</code> and <code>.sink</code> must be set.</p></dd>
 
 
 <dt>.sampler_batch_size</dt>
-<dd><p><code>pf_opt_control()</code> arguments, passed to <code>.control</code> in <code><a href="pf_forward.html">pf_forward()</a></code>.</p><ul><li><p><code>.sampler_batch_size</code>---an <code>integer</code> that controls the batch size (number of particles processed simultaneously) in directed sampling. Increase the batch size to improve speed; decrease the batch size to avoid memory constraints. The appropriate batch size depends on grid resolution and memory availability.</p></li>
+<dd><p><code>pf_opt_control()</code> arguments, passed to <code>.control</code> in <code><a href="pf_forward.html">pf_forward()</a></code>.</p><ul><li><p><code>.sampler_batch_size</code>---an <code>integer</code> that controls the batch size (the number of particles processed simultaneously) in directed sampling. Increase the batch size to improve speed; decrease the batch size to avoid memory constraints. The appropriate batch size depends on grid resolution and memory availability.</p></li>
 </ul></dd>
 
 
 <dt>.rerun, .revert</dt>
 <dd><p><code>pf_opt_rerun_from()</code> arguments.</p><ul><li><p><code>.rerun</code> is a named <code>list</code> of algorithm outputs from a previous run.</p></li>
-<li><p><code>.revert.revert</code> is an <code>integer</code> that defines the number of steps to revert.</p></li>
+<li><p><code>.revert</code> is an <code>integer</code> that defines the number of steps to revert.</p></li>
 </ul></dd>
 
 </dl></div>
@@ -136,6 +136,23 @@
     <div id="details">
     <h2>Details</h2>
     <p>These functions are defined separately for convenience of documentation. Note that they do not define global options and must be passed to <code><a href="pf_forward.html">pf_forward()</a></code> arguments.</p>
+    </div>
+    <div id="see-also">
+    <h2>See also</h2>
+    <div class="dont-index"><p>The forward filtering--backward sampling algorithm samples locations (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.</p><ul><li><p>To set up data, use <code><a href="pat_setup_data.html">pat_setup_data()</a></code>.</p></li>
+<li><p><code><a href="pf_forward.html">pf_forward()</a></code> implements the forward filter:</p><ul><li><p>To set up an observations timeline, use <code><a href="pf_setup_obs.html">pf_setup_obs()</a></code>.</p></li>
+<li><p>For proposal (movement) models, see <code><a href="pf_propose.html">pf_propose</a></code>.</p></li>
+<li><p>For likelihood functions, to evaluate the likelihood of the data at proposal locations, see <code><a href="pf_lik.html">pf_lik</a></code>.</p></li>
+<li><p>For sampling functions, to (re)sample plausible proposal locations, see <code><a href="pf_sample.html">pf_sample</a></code>.</p></li>
+<li><p>For tuning parameters, see <code>pf_opt</code>.</p></li>
+</ul></li>
+<li><p><code><a href="pf_backward_-times.html">pf_backward_*()</a></code> refines outputs from the forward filter:</p><ul><li><p><code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> removes dead-ends;</p></li>
+<li><p><code>pf_backward_sampler()</code> implements the backward sampler;</p></li>
+</ul></li>
+<li><p>To reconstruct movement paths from particle samples, use <code><a href="pf_path.html">pf_path()</a></code>.</p></li>
+<li><p>To map emergent patterns of space use, use <code><a href="pf_coord.html">pf_coord()</a></code> plus a <code>map_*()</code> function, such as <code><a href="map_pou.html">map_pou()</a></code>, <code><a href="map_dens.html">map_dens()</a></code> and/or <code><a href="map_hr.html">map_hr</a></code><code>_()</code>.</p></li>
+<li><p>For additional utilities, see supporting <code>pf_*()</code> functions, such as <code><a href="pf_files.html">pf_files()</a></code> and <code><a href="pf_files.html">pf_files_size()</a></code>.</p></li>
+</ul></div>
     </div>
     <div id="author">
     <h2>Author</h2>

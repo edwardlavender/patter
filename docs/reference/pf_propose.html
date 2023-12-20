@@ -101,11 +101,13 @@
 
 
 <dt>.sim_length, .sim_angle</dt>
-<dd><p>Additional arguments for <code>pf_rpropose_kick()</code>.</p></dd>
+<dd><p>Additional arguments for <code>pf_rpropose_kick()</code>. These are functions that simulate step lengths and turning angles respectively. Each function must accept a <code>.n</code> argument that defines the number of simulated values.</p></dd>
 
 
 <dt>...</dt>
-<dd><p>Additional arguments.</p></dd>
+<dd><p>Additional arguments.</p><ul><li><p>For <code>pf_rpropose_kick()</code>, <code>...</code> is passed to <code>.sim_length</code> and <code>.sim_angle</code>.</p></li>
+<li><p>For <code>pf_dpropose()</code>, <code>...</code> is passed to <code><a href="sim_helpers.html">dstep()</a></code>.</p></li>
+</ul></dd>
 
 </dl></div>
     <div id="details">
@@ -114,6 +116,23 @@
 <p>The <code>.rpropose</code> argument in <code><a href="pf_forward.html">pf_forward()</a></code> expects a stochastic-kick routine and <code>pf_rpropose_kick()</code> is the default. This is used to simulate proposal locations by 'kicking' particles into new locations as specified by a movement model. Custom functions that accept the <code>.particles</code>, <code>.obs</code>, <code>.t</code> and <code>.dlist</code> arguments can be provided.</p>
 <p>If stochastic kicks fail to produce a sufficient number of valid particle samples, <code>pf_rpropose_reachable()</code> may be called under-the-hood for directed sampling. For selected particles, this function identifies the set of reachable locations, for which likelihood calculations and sampling are then implemented (see <code><a href="pf_forward.html">pf_forward()</a></code>).</p>
 <p><code>pf_dpropose()</code> calculates the probability density of movements into proposal locations and is required for directed sampling.</p>
+    </div>
+    <div id="see-also">
+    <h2>See also</h2>
+    <div class="dont-index"><p>The forward filtering--backward sampling algorithm samples locations (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.</p><ul><li><p>To set up data, use <code><a href="pat_setup_data.html">pat_setup_data()</a></code>.</p></li>
+<li><p><code><a href="pf_forward.html">pf_forward()</a></code> implements the forward filter:</p><ul><li><p>To set up an observations timeline, use <code><a href="pf_setup_obs.html">pf_setup_obs()</a></code>.</p></li>
+<li><p>For proposal (movement) models, see <code>pf_propose</code>.</p></li>
+<li><p>For likelihood functions, to evaluate the likelihood of the data at proposal locations, see <code><a href="pf_lik.html">pf_lik</a></code>.</p></li>
+<li><p>For sampling functions, to (re)sample plausible proposal locations, see <code><a href="pf_sample.html">pf_sample</a></code>.</p></li>
+<li><p>For tuning parameters, see <code><a href="pf_opt.html">pf_opt</a></code>.</p></li>
+</ul></li>
+<li><p><code><a href="pf_backward_-times.html">pf_backward_*()</a></code> refines outputs from the forward filter:</p><ul><li><p><code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> removes dead-ends;</p></li>
+<li><p><code>pf_backward_sampler()</code> implements the backward sampler;</p></li>
+</ul></li>
+<li><p>To reconstruct movement paths from particle samples, use <code><a href="pf_path.html">pf_path()</a></code>.</p></li>
+<li><p>To map emergent patterns of space use, use <code><a href="pf_coord.html">pf_coord()</a></code> plus a <code>map_*()</code> function, such as <code><a href="map_pou.html">map_pou()</a></code>, <code><a href="map_dens.html">map_dens()</a></code> and/or <code><a href="map_hr.html">map_hr</a></code><code>_()</code>.</p></li>
+<li><p>For additional utilities, see supporting <code>pf_*()</code> functions, such as <code><a href="pf_files.html">pf_files()</a></code> and <code><a href="pf_files.html">pf_files_size()</a></code>.</p></li>
+</ul></div>
     </div>
     <div id="author">
     <h2>Author</h2>

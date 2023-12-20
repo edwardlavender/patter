@@ -66,7 +66,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>PF: particle internals</h1>
-    <small class="dont-index">Source: <a href="https://github.com/edwardlavender/patter/blob/HEAD/R/pf_forward-internal.R" class="external-link"><code>R/pf_forward-internal.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/edwardlavender/patter/blob/HEAD/R/pf_forward-internal-particles.R" class="external-link"><code>R/pf_forward-internal-particles.R</code></a></small>
     <div class="hidden name"><code>pf_particle.Rd</code></div>
     </div>
 
@@ -149,8 +149,9 @@
 <li><p><code>.dlist</code></p></li>
 </ul><p><code>.pf_lik()</code> is a wrapper for specified likelihood functions (see <code><a href="pf_lik.html">pf_lik</a></code>). The function returns a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines valid proposal locations, likelihoods and weights. A <code>diagnostics</code> attribute contains proposal diagnostics. This also requires:</p><ul><li><p><code>.stack</code>---a named <code>list</code> of likelihood functions (see <code><a href="pf_lik.html">pf_lik</a></code>).</p></li>
 <li><p><code>.diagnostics</code>---an empty <code>list</code> used to store likelihood diagnostics, or <code>NULL</code>.</p></li>
-<li><p><code>.trial</code> An <code>integer</code> that distinguishes trials.</p></li>
-</ul><p>Sampling functions must accept:</p><ul><li><p><code>.particles</code></p></li>
+<li><p><code>.trial</code>---an <code>integer</code> that distinguishes trials.</p></li>
+</ul><p>Most likelihood functions are directly exported but some internals routines are also documented here for convenience, namely <code>pf_lik_ac_detection()</code>. See also <code>acs_*()</code> functions.</p>
+<p>Sampling functions must accept:</p><ul><li><p><code>.particles</code></p></li>
 <li><p><code>.n</code></p></li>
 </ul><p>Wrapper functions must accept:</p><ul><li><p>Proposal function arguments (<code>.particles</code>, <code>.obs</code>, <code>.t</code>, <code>.dlist</code>);</p></li>
 <li><p>Proposal functions (<code>.rpropose</code>,<code>.dpropose</code>);</p></li>
@@ -165,7 +166,7 @@
 <li><p><code>.pf_particles_origin()</code> integrates <code>.pf_rpropose_origin()</code>, <code>.pf_lik()</code> and <code>.pf_particles_origin()</code>;</p></li>
 </ul><p>At subsequent time steps:</p><ul><li><p>The exported functions <code><a href="pf_propose.html">pf_rpropose_kick()</a></code> and <code><a href="pf_propose.html">pf_rpropose_reachable</a></code> propose locations;</p></li>
 <li><p><code>.pf_lik()</code> calculates likelihoods;</p></li>
-<li><p><code>.pf_particles_kick()</code> and <code>.pf_particles_sampler()</code> are the integration function;</p></li>
+<li><p><code>.pf_particles_kick()</code> and <code>.pf_particles_sampler()</code> are the integration functions;</p></li>
 </ul><p><code>pf_particles_*()</code> functions are similar internally, but currently separated for convenience.</p>
     </div>
     <div id="author">

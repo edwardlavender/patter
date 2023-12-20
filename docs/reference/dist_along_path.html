@@ -81,13 +81,19 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.xy</dt>
-<dd><p>A two-column matrix of coordinates.</p></dd>
+<dd><p>A two-column <code><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></code>, <code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></code> or <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of x, y coordinates. The input is coerced to a <code><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></code>.</p></dd>
 
 
 <dt>.lonlat</dt>
-<dd><p>A <code>logical</code> variable that defines whether or not the coordinates are in longitude/latitude format.</p></dd>
+<dd><p>A <code>logical</code> variable that defines whether or not the coordinates are in longitude/latitude format (<code>TRUE</code>) or planar (<code>FALSE</code>).</p></dd>
 
 </dl></div>
+    <div id="value">
+    <h2>Value</h2>
+    
+
+<p>The function returns a <code>numeric</code> vector. Each element (<code>i</code>) is the distance from the corresponding coordinates (<code>.xy[, i]</code>) to the next set of coordinates (<code>.xy[, i + 1]</code>). The final value is <code>NA_real_</code>.</p>
+    </div>
     <div id="details">
     <h2>Details</h2>
     <p>This function is a simple wrapper for <code><a href="https://rdrr.io/pkg/terra/man/distance.html" class="external-link">terra::distance()</a></code>.</p>
@@ -99,6 +105,51 @@
 </ul></div>
     </div>
 
+    <div id="ref-examples">
+    <h2>Examples</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: dplyr</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Attaching package: ‘dplyr’</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The following objects are masked from ‘package:data.table’:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     between, first, last</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The following objects are masked from ‘package:stats’:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     filter, lag</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The following objects are masked from ‘package:base’:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     intersect, setdiff, setequal, union</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#### Example (1): Illustration with synthetic data</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>,</span></span>
+<span class="r-in"><span>              <span class="fl">3</span>, <span class="fl">4</span>,</span></span>
+<span class="r-in"><span>              <span class="fl">5</span>, <span class="fl">6</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">dist_along_path</span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2.828427 2.828427       NA</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#### Example (2): illustration with a `patter` movement-path data.table</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="datasets-algorithms.html">dat_pfp</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">path_id</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>dist <span class="op">=</span> <span class="fu">dist_along_path</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">cell_x</span>, <span class="va">cell_y</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       path_id timestep cell_id   cell_x  cell_y    cell_z     dist</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1:       1        1   38328 709242.1 6252907  47.83468 223.6068</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2:       1        2   38707 709142.1 6252707  48.40016 200.0000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3:       1        3   38709 709342.1 6252707  43.05228 223.6068</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4:       1        4   38328 709242.1 6252907  47.83468 316.2278</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5:       1        5   37759 709342.1 6253207  56.53801 200.0000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2496:     100       21   36997 709142.1 6253607 105.22495 200.0000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2497:     100       22   36995 708942.1 6253607 126.04160 223.6068</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2498:     100       23   36616 709042.1 6253807 133.50708 141.4214</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2499:     100       24   36425 708942.1 6253907 141.14836 200.0000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2500:     100       25   36805 708942.1 6253707 133.44473       NA</span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>
