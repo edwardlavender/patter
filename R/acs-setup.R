@@ -182,14 +182,7 @@ acs_setup_detection_overlaps <- function(.dlist) {
 #' terra::plot(k)
 #' points(m$receiver_x, m$receiver_y, pch = ".")
 #'
-#' @seealso To implement such an AC*PF algorithm, see:
-#' 1. [`pat_setup_data()`] to set up datasets;
-#' 2. `acs_setup_*()` functions to prepare layers required for likelihood calculations, i.e.:
-#'    * [`acs_setup_detection_overlaps()`], which identifies detection overlaps;
-#'    * [`acs_setup_detection_kernels()`], which prepares detection kernels;
-#'    * [`acs_setup_detection_pr()`], which is an example detection probability model;
-#' 3. [`pf_lik_ac()`] to define the likelihood of acoustic data;
-#' 4. [`pf_forward()`] to run the simulation;
+#' @inherit acs_setup_detection_overlaps seealso
 #'
 #' @author Edward Lavender
 #' @export
@@ -239,15 +232,7 @@ acs_setup_detection_pr <- function(.mooring,
 #'
 #' @source This function is based on the [`acs_setup_detection_kernels`](https://edwardlavender.github.io/flapper/reference/acs_setup_detection_kernels.html) function in the [`flapper`](https://github.com/edwardlavender/flapper) package.
 #'
-#' @seealso To implement such an AC*PF algorithm, see:
-#' 1. [`pat_setup_data()`] to set up datasets;
-#' 2. `acs_setup_*()` functions to prepare layers required for likelihood calculations, i.e.:
-#'    * [`acs_setup_detection_overlaps()`], which identifies detection overlaps;
-#'    * [`acs_setup_detection_kernels()`], which prepares detection kernels;
-#'    * [`acs_setup_detection_pr()`], which is an example detection probability model;
-#' 3. [`pf_lik_ac()`] to define the likelihood of acoustic data;
-#' 4. [`pf_forward()`] to run the simulation;
-#'
+#' @inherit acs_setup_detection_overlaps seealso
 #' @author Edward Lavender
 #' @export
 

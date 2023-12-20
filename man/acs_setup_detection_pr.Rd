@@ -48,7 +48,7 @@ points(m$receiver_x, m$receiver_y, pch = ".")
 
 }
 \seealso{
-To implement such an AC*PF algorithm, see:
+To implement such an algorithm, see:
 \enumerate{
 \item \code{\link[=pat_setup_data]{pat_setup_data()}} to set up datasets;
 \item \verb{acs_setup_*()} functions to prepare layers required for likelihood calculations, i.e.:

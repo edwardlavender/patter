@@ -93,17 +93,7 @@ map_pou <-
 #'
 #' @example man/examples/map_dens-examples.R
 #'
-#' @seealso `map_*()` functions build maps of space use:
-#' * [`map_pou()`] maps probability-of-use;
-#' * [`map_dens()`] maps point density;
-#' * [`map_hr`]`_*()` functions map home ranges;
-#'
-#' All maps are represented as [`SpatRaster`]s.
-#'
-#' To derive coordinates for mapping patterns of space use for tagged animals in passive acoustic telemetry systems, see:
-#' * [`coa()`] to calculate centre-of-activity;
-#' * [`pf_forward()`], [`pf_backward()`] and [`pf_coord()`] to sample locations using a forward-filtering backward-sampling algorithm;
-#'
+#' @inherit map_pou seealso
 #' @rdname map_dens
 #' @export
 
@@ -299,18 +289,7 @@ map_dens <- function(.map,
 #' map <- map_hr_core(r, .add = TRUE, border = "orange")
 #' map <- map_hr_prop(r, .prop = 0.2, .add = TRUE, border = "red")
 #'
-#' @seealso `map_*()` functions build maps of space use:
-#' * [`map_pou()`] maps probability-of-use;
-#' * [`map_dens()`] maps point density;
-#' * [`map_hr`]`_*()` functions map home ranges;
-#'
-#' All maps are represented as [`SpatRaster`]s.
-#'
-#' To derive coordinates for mapping patterns of space use for tagged animals in passive acoustic telemetry systems, see:
-#' * [`coa()`] to calculate centre-of-activity;
-#' * [`pf_forward()`], [`pf_backward()`] and [`pf_coord()`] to sample locations using a forward-filtering backward-sampling algorithm;
-#'
-#' @inheritSection map_pou seealso
+#' @inherit map_pou seealso
 #' @author Edward Lavender
 #' @name map_hr
 NULL
