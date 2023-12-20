@@ -8,6 +8,7 @@ NULL
 #' @keywords internal
 
 check_dir <- function(input) {
+  check_inherits(input, "character")
   if (!dir.exists(input)) {
     abort("The directory '{input}' does not exist.",
           .envir = environment())
