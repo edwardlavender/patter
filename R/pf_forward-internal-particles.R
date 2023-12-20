@@ -18,7 +18,9 @@
 #' [`.pf_lik()`] is a wrapper for specified likelihood functions (see [`pf_lik`]). The function returns a [`data.table`] that defines valid proposal locations, likelihoods and weights. A `diagnostics` attribute contains proposal diagnostics. This also requires:
 #' * `.stack`---a named `list` of likelihood functions (see [`pf_lik`]).
 #' * `.diagnostics`---an empty `list` used to store likelihood diagnostics, or `NULL`.
-#' * `.trial` An `integer` that distinguishes trials.
+#' * `.trial`---an `integer` that distinguishes trials.
+#'
+#' Most likelihood functions are directly exported but some internals routines are also documented here for convenience, namely [`pf_lik_ac_detection()`]. See also `acs_*()` functions.
 #'
 #' Sampling functions must accept:
 #' * `.particles`
@@ -43,7 +45,7 @@
 #' At subsequent time steps:
 #' * The exported functions [`pf_rpropose_kick()`] and [`pf_rpropose_reachable`] propose locations;
 #' * [`.pf_lik()`] calculates likelihoods;
-#' * [`.pf_particles_kick()`] and [`.pf_particles_sampler()`] are the integration function;
+#' * [`.pf_particles_kick()`] and [`.pf_particles_sampler()`] are the integration functions;
 #'
 #' `pf_particles_*()` functions are similar internally, but currently separated for convenience.
 #'
