@@ -3,10 +3,40 @@
 \name{pf_backward_*}
 \alias{pf_backward_*}
 \title{PF: backward pass}
-\description{
-\code{\link{patter}} provides two options for the backward simulation:
-\itemize{
-\item \code{\link[=pf_backward_killer]{pf_backward_killer()}}
-\item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}
+\value{
+\code{\link[=pf_backward_*]{pf_backward_*()}} functions return \code{\linkS4class{pf_particles}} objects.
 }
+\description{
+The forward filtering--backward sampling algorithm implemented by \code{\link{patter}} that reconstructs animal movements in passive acoustic telemetry systems comprises a forward filter and a backward pass. The forward filter runs a simulation forwards in time, sampling locations (particles) that are consistent with the data up to and including each time point and a movement model (see \code{\link[=pf_forward]{pf_forward()}}). The backward pass refines outputs from the forward filter. \code{\link{patter}} provides two options for the backward pass:
+\itemize{
+\item \code{\link[=pf_backward_killer]{pf_backward_killer()}} prunes 'dead-ends' from the time series. This function is simple but fast.
+\item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implements a backward sampler. This function samples from the joint distribution of particles, given all of the data---both from the past and the future. This is much more expensive.
+}
+
+See \code{\link[=pf_backward_killer_diagnostics]{pf_backward_killer_diagnostics()}} to compare particle diagnostics for the two approaches.
+}
+\seealso{
+The forward filtering--backward sampling algorithm samples locations (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
+\itemize{
+\item To set up data, use \code{\link[=pat_setup_data]{pat_setup_data()}}.
+\item \code{\link[=pf_forward]{pf_forward()}} implements the forward filter:
+\itemize{
+\item To set up an observations timeline, use \code{\link[=pf_setup_obs]{pf_setup_obs()}}.
+\item For proposal (movement) models, see \code{\link{pf_propose}}.
+\item For likelihood functions, to evaluate the likelihood of the data at proposal locations, see \code{\link{pf_lik}}.
+\item For sampling functions, to (re)sample plausible proposal locations, see \code{\link{pf_sample}}.
+\item For tuning parameters, see \code{\link{pf_opt}}.
+}
+\item \code{\link[=pf_backward_*]{pf_backward_*()}} refines outputs from the forward filter:
+\itemize{
+\item \code{\link[=pf_backward_killer]{pf_backward_killer()}} removes dead-ends;
+\item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implements the backward sampler;
+}
+\item To reconstruct movement paths from particle samples, use \code{\link[=pf_path]{pf_path()}}.
+\item To map emergent patterns of space use, use \code{\link[=pf_coord]{pf_coord()}} plus a \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()}.
+\item For additional utilities, see supporting \verb{pf_*()} functions, such as \code{\link[=pf_files]{pf_files()}} and \code{\link[=pf_files_size]{pf_files_size()}}.
+}
+}
+\author{
+Edward Lavender
 }
