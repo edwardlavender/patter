@@ -10,13 +10,13 @@
 #' * [`dat_coa()`] reads an example output from [`coa()`];
 #'
 #' @examples
-#' dat_obs() |> summary()
+#' dat_obs() |> dplyr::glimpse()
 #' dat_pff() |> summary()
 #' dat_pfbk() |> summary()
 #' dat_pfp() |> summary()
 #' dat_coa() |> summary()
 #'
-#' @source For full details on the algorithm parameters used to generate these datasets, see \url{https://github.com/edwardlavender/patter/blob/main/data-raw/002-add-data-algorithms.R}.
+#' @source For full details on the algorithm parameters used to generate these datasets, see \url{https://github.com/edwardlavender/patter/blob/main/data-raw/003-add-data-algorithms.R}.
 #'
 #' @author Edward Lavender
 #' @name datasets-algorithms

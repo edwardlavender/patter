@@ -9,7 +9,7 @@
 \alias{dat_coa}
 \title{Datasets: example algorithm outputs}
 \source{
-For full details on the algorithm parameters used to generate these datasets, see \url{https://github.com/edwardlavender/patter/blob/main/data-raw/002-add-data-algorithms.R}.
+For full details on the algorithm parameters used to generate these datasets, see \url{https://github.com/edwardlavender/patter/blob/main/data-raw/003-add-data-algorithms.R}.
 }
 \usage{
 dat_obs()
@@ -35,7 +35,7 @@ These functions load example outputs from key \code{\link{patter}} functions. Th
 }
 }
 \examples{
-dat_obs() |> summary()
+dat_obs() |> dplyr::glimpse()
 dat_pff() |> summary()
 dat_pfbk() |> summary()
 dat_pfp() |> summary()
