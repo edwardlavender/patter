@@ -64,26 +64,36 @@ obs <- obs[1:25, ]
 out_coa <- coa(dlist, .delta_t = "4 hours")
 
 #### Implement pf_forward()
-pff_folder <- file.path("inst", "extdata", "acpf", "forward")
-unlink(pff_folder, recursive = TRUE)
-dir.create(pff_folder, recursive = TRUE)
+sink      <- NULL
+overwrite <- TRUE
+if (overwrite) {
+  pff_folder <- file.path("inst", "extdata", "acpf", "forward")
+  unlink(pff_folder, recursive = TRUE)
+  dir.create(pff_folder, recursive = TRUE)
+  sink <- pff_folder
+}
 out_pff <- pf_forward(.obs = obs,
                       .dlist = dlist,
                       .likelihood = list(acs_filter_land = acs_filter_land,
                                          acs_filter_container = acs_filter_container,
                                          pf_lik_ac = pf_lik_ac),
                       .record = pf_opt_record(.save = TRUE,
-                                              .sink = pff_folder,
+                                              .sink = sink,
                                               .cols = c("timestep",
                                                         "cell_past", "cell_now",
-                                                        "x_now", "y_now")))
+                                                        "x_now", "y_now", "lik")))
 
 #### Implement pf_backward_killer()
-pfbk_folder <- file.path("inst", "extdata", "acpf", "backward", "killer")
-unlink(pfbk_folder, recursive = TRUE)
-dir.create(pfbk_folder, recursive = TRUE)
+sink      <- NULL
+overwrite <- TRUE
+if (overwrite) {
+  pfbk_folder <- file.path("inst", "extdata", "acpf", "backward", "killer")
+  unlink(pfbk_folder, recursive = TRUE)
+  dir.create(pfbk_folder, recursive = TRUE)
+  sink <- pfbk_folder
+}
 out_pfbk <- pf_backward_killer(.history = out_pff$history,
-                               .record = pf_opt_record(.save = TRUE, .sink = pfbk_folder))
+                               .record = pf_opt_record(.save = TRUE, .sink = sink))
 
 #### Implement pf_path()
 out_pfp <- pf_path(out_pfbk$history, .bathy = dlist$spatial$bathy)
@@ -132,9 +142,12 @@ list.files("inst", recursive = TRUE, full.names = TRUE) |>
 #### Write datasets to file
 # We will save all datasets in inst/ for consistency
 # and use functions to read (and, if necessary, unpack) datasets
-lapply(seq_len(length(datasets)), function(i) {
-  saveRDS(datasets[[i]], here::here("inst", "extdata", paste0(names(datasets)[i], ".rds")))
-}) |> invisible()
+overwrite <- FALSE
+if (overwrite) {
+  lapply(seq_len(length(datasets)), function(i) {
+    saveRDS(datasets[[i]], here::here("inst", "extdata", paste0(names(datasets)[i], ".rds")))
+  }) |> invisible()
+}
 
 
 #### End of code.
