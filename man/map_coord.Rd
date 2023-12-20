@@ -5,7 +5,7 @@
 \alias{.map_coord}
 \alias{.map_coord.SpatRaster}
 \alias{.map_coord.dt}
-\title{Map: location coordinates (id, x, y, mark)}
+\title{Map: location coordinates (\code{id}, \code{x}, \code{y}, \code{mark})}
 \usage{
 .map_coord(.map, .coord, .discretise)
 
@@ -16,14 +16,14 @@
 \arguments{
 \item{.map}{The \code{\link{SpatRaster}} used to represent the UD. This can be \code{NULL} if \code{.coord} is provided and \code{.discretise = FALSE}.}
 
-\item{.coord}{A \code{\link{matrix}}, \code{\link{data.frame}} or \code{\link{data.table}} with x and y coordinates, in columns named \code{x} and \code{y} or \code{cell_x} and \code{cell_y} (see Details). (\code{.coord} is coerced to a \code{\link{data.table}}). Additional columns (\code{timestep} and \code{mark}), as supported by \code{\link[=.map_mark]{.map_mark()}} are supported. Other columns are ignored.}
+\item{.coord}{A \code{\link{matrix}}, \code{\link{data.frame}} or \code{\link{data.table}} with x and y coordinates, in columns named \code{x} and \code{y} or \code{cell_x} and \code{cell_y} (see Details). (\code{.coord} is coerced to a \code{\link{data.table}}.) Additional columns (\code{timestep} and \code{mark}), as supported by \code{\link[=.map_mark]{.map_mark()}} are permitted. Other columns are ignored.}
 
 \item{.discretise}{A \code{logical} variable that defines whether or not to discretise coordinates (i.e., redefine coordinates on \code{.map}). This is necessarily \code{TRUE} in the wrapper function \code{\link[=map_pou]{map_pou()}} but optional for \code{\link[=map_dens]{map_dens()}}.}
 }
 \value{
 The function returns a \code{\link{data.table}} with four columns:
 \itemize{
-\item \code{id}---an \code{integer} vector of coordinate IDs (if \code{.discretise = TRUE}, \code{id} represents grid cells on \code{.map});
+\item \code{id}---a vector of coordinate IDs (if \code{.discretise = TRUE}, \code{id} represents grid cells on \code{.map});
 \item \code{x},\code{y}---\code{numeric} vectors that define coordinates (if \code{.discretise = TRUE}, \code{x} and \code{y} represent cell coordinates on \code{.map});
 \item \code{mark}---a \code{numeric} vector of weights, normalised to sum to one;
 }
@@ -34,8 +34,8 @@ The function returns a \code{\link{data.table}} with four columns:
 \details{
 \code{\link[=.map_coord]{.map_coord()}} function defines a \code{\link{data.table}} that includes coordinate IDs (\code{id}), coordinates (\code{x} and \code{y}) and associated weights (\code{mark}) for UD estimation. The function wraps \code{\link[=.map_coord.SpatRaster]{.map_coord.SpatRaster()}} and \code{\link[=.map_coord.dt]{.map_coord.dt()}}.
 \itemize{
-\item If \code{.coord} is \code{NULL}, \code{\link[=.map_coord.SpatRaster]{.map_coord.SpatRaster()}} is used. This function extracts a \code{\link{data.table}} of coordinates is extracted from \code{.map} (in non \code{NA} regions) via \code{terra::as.data.frame(..., na.rm = TRUE)}. The values on \code{.map} are taken as weights and must sum to one.
-\item If \code{.coord} is supplied, \code{\link[=.map_coord.dt]{.map_coord.dt()}} is used. \code{x} and \code{y} and/or \code{cell_x} and \code{cell_y} columns are expected. If \code{.discretise = TRUE}, \code{cell_x} and \code{cell_y} are used preferentially. Irrespective of whether or not \code{x} and \code{y} or \code{cell_x} and \code{cell_y} are specified, coordinates are redefined on \code{.map} and coordinate IDs are defined as grid cell IDs on \code{.map}. If \code{.discretise = FALSE}, \code{x} and \code{y} coordinates are used preferentially. Coordinates remain unchanged and IDs are defined from the set of unique coordinate pairs. For each ID, weights are calculated from \code{\link[=.map_mark]{.map_mark()}}.
+\item If \code{.coord} is \code{NULL}, \code{\link[=.map_coord.SpatRaster]{.map_coord.SpatRaster()}} is used. This function extracts a \code{\link{data.table}} of coordinates from \code{.map} (in non \code{NA} regions) via \code{terra::as.data.frame(..., na.rm = TRUE)}. The values on \code{.map} are taken as weights and must sum to one.
+\item If \code{.coord} is supplied, \code{\link[=.map_coord.dt]{.map_coord.dt()}} is used. \code{x} and \code{y} and/or \code{cell_x} and \code{cell_y} columns are expected. If \code{.discretise = TRUE}, \code{cell_x} and \code{cell_y} are used preferentially. Irrespective of whether or not \code{x} and \code{y} or \code{cell_x} and \code{cell_y} are specified, coordinates are redefined on \code{.map} and coordinate IDs are defined as grid cell IDs on \code{.map}. If \code{.discretise = FALSE}, \code{x} and \code{y} coordinates are used preferentially. Coordinates remain unchanged and IDs are defined from the set of unique coordinate pairs. For each ID, weights are calculated by \code{\link[=.map_mark]{.map_mark()}}.
 }
 }
 \seealso{
