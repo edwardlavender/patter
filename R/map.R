@@ -83,7 +83,7 @@ map_pou <-
 #' * If `.coords` is `NULL`, `.map` cell coordinates are used for density estimation and cell values are used as weights.
 #' * If coordinates are supplied, coordinates are optionally re-expressed on `.map` and then used for density estimation. This option is generally faster. Coordinate weights are defined by [`.map_mark()`].
 #'
-#' Cell coordinates are converted to a [`spatstat.geom::ppp()`] object, which is passed, alongside the observation window (`.owin`) and an image of the weights to [`spatstat.explore::density.ppp()`] for the estimation. Weights must sum to one.
+#' Cell coordinates are converted to a [`spatstat.geom::ppp()`] object, which is passed, alongside the observation window (`.owin`) and a pixel-image representation of the weights to [`spatstat.explore::density.ppp()`] for the estimation. Weights must sum to one.
 #'
 #' [`as.im.SpatRaster()`], [`as.owin.SpatRaster()`] and [`as.owin.sf()`] are helper functions that convert a [`SpatRaster`] to a pixel image and an observation window (see [`spatstat.geom::owin()`]). [`as.im.SpatRaster`] is based on `maptools::as.im.RasterLayer()`. [`as.owin.SpatRaster()`] either defines a rectangular window, if there are no NAs on `.map`, or converts `.map` directly to an `owin` object. Gridded observation windows, especially if high resolution, considerably slow down density estimation and may exhaust vector memory. Use rectangular windows, or convert `sf` objects to polygon windows (via [`as.owin.sf()`]) if possible.
 #'
@@ -93,7 +93,16 @@ map_pou <-
 #'
 #' @example man/examples/map_dens-examples.R
 #'
-#' @seealso
+#' @seealso `map_*()` functions build maps of space use:
+#' * [`map_pou()`] maps probability-of-use;
+#' * [`map_dens()`] maps point density;
+#' * [`map_hr`]`_*()` functions map home ranges;
+#'
+#' All maps are represented as [`SpatRaster`]s.
+#'
+#' To derive coordinates for mapping patterns of space use for tagged animals in passive acoustic telemetry systems, see:
+#' * [`coa()`] to calculate centre-of-activity;
+#' * [`pf_forward()`], [`pf_backward()`] and [`pf_coord()`] to sample locations using a forward-filtering backward-sampling algorithm;
 #'
 #' @rdname map_dens
 #' @export

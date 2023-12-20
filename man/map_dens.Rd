@@ -68,7 +68,7 @@ The function returns a normalised \code{\link{SpatRaster}} (or \code{NULL} if \c
 \item If coordinates are supplied, coordinates are optionally re-expressed on \code{.map} and then used for density estimation. This option is generally faster. Coordinate weights are defined by \code{\link[=.map_mark]{.map_mark()}}.
 }
 
-Cell coordinates are converted to a \code{\link[spatstat.geom:ppp]{spatstat.geom::ppp()}} object, which is passed, alongside the observation window (\code{.owin}) and an image of the weights to \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} for the estimation. Weights must sum to one.
+Cell coordinates are converted to a \code{\link[spatstat.geom:ppp]{spatstat.geom::ppp()}} object, which is passed, alongside the observation window (\code{.owin}) and a pixel-image representation of the weights to \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} for the estimation. Weights must sum to one.
 
 \code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}}, \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}} and \code{\link[=as.owin.sf]{as.owin.sf()}} are helper functions that convert a \code{\link{SpatRaster}} to a pixel image and an observation window (see \code{\link[spatstat.geom:owin]{spatstat.geom::owin()}}). \code{\link{as.im.SpatRaster}} is based on \code{maptools::as.im.RasterLayer()}. \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}} either defines a rectangular window, if there are no NAs on \code{.map}, or converts \code{.map} directly to an \code{owin} object. Gridded observation windows, especially if high resolution, considerably slow down density estimation and may exhaust vector memory. Use rectangular windows, or convert \code{sf} objects to polygon windows (via \code{\link[=as.owin.sf]{as.owin.sf()}}) if possible.
 
@@ -120,4 +120,20 @@ map_dens(gebco, .coord = coord, sigma = bw.diggle)
 map_dens(gebco, .coord = coord, sigma = bw.scott)
 map_dens(gebco, .coord = coord, sigma = bw.ppl)
 map_dens(gebco, .coord = coord, sigma = bw.CvL)
+}
+\seealso{
+\verb{map_*()} functions build maps of space use:
+\itemize{
+\item \code{\link[=map_pou]{map_pou()}} maps probability-of-use;
+\item \code{\link[=map_dens]{map_dens()}} maps point density;
+\item \code{\link{map_hr}}\verb{_*()} functions map home ranges;
+}
+
+All maps are represented as \code{\link{SpatRaster}}s.
+
+To derive coordinates for mapping patterns of space use for tagged animals in passive acoustic telemetry systems, see:
+\itemize{
+\item \code{\link[=coa]{coa()}} to calculate centre-of-activity;
+\item \code{\link[=pf_forward]{pf_forward()}}, \code{\link[=pf_backward]{pf_backward()}} and \code{\link[=pf_coord]{pf_coord()}} to sample locations using a forward-filtering backward-sampling algorithm;
+}
 }
