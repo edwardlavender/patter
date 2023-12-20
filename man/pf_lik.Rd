@@ -22,7 +22,7 @@ pf_lik_dc(.particles, .obs, .t, .dlist)
 \item \code{timestep}---an \code{integer} that defines the time step;
 \item \code{cell_now}---an \code{integer} that defines the grid cell(s) of proposal location(s);
 \item \code{x_now},\code{y_now}---\code{double}s that define proposal location coordinates;
-\item \code{lik}---a \code{double} that defines the likelihood. At each time step, this begins as a vector of \code{1}s that should be progressively updated by each likelihood function.
+\item \code{lik}---a \code{double} that defines the likelihood. At each time step, this begins as a vector of \code{1}s \strong{that should be progressively updated by each likelihood function}.
 }}
 
 \item{.obs, .t}{(optional) The \code{.obs} \code{\link{data.table}} (from \code{\link[=pf_forward]{pf_forward()}}) and an \code{integer} that defines the time step (used to index \code{.obs}).}
@@ -37,13 +37,13 @@ pf_lik_dc(.particles, .obs, .t, .dlist)
 }}
 }
 \value{
-Functions return an updated \code{.particle} \code{\link{data.table}} for valid proposal locations and updated likelihoods (in the \code{.lik} column).
+Functions return the \code{.particle} \code{\link{data.table}} for valid proposal locations and updated likelihoods (in the \code{lik} column).
 }
 \description{
-These are likelihood functions for \code{\link[=pf_forward]{pf_forward()}}. This function expects a named \code{list} of likelihood functions that evaluate the likelihood of each dataset given location proposals. Convenience functions are provided that calculate the likelihood of acoustic and archival data, given location proposals, as resolved by the acoustic-container and depth-contour algorithms presented by Lavender et al. (2023).
+These are likelihood functions for the forward simulation. \code{\link[=pf_forward]{pf_forward()}} function expects a named \code{list} of likelihood functions that evaluate the likelihood of each dataset given location proposals. Convenience functions are provided that calculate the likelihood of acoustic and archival data, given location proposals, as resolved by the acoustic-container and depth-contour algorithms presented by Lavender et al. (2023).
 }
 \details{
-In \code{\link[=pf_forward]{pf_forward()}}, the likelihood of the data given proposal locations is evaluated using a named \code{list} of user-defined functions (one for each dataset). Each function must accept a \code{\link{data.table}} of proposal locations (\code{.particles}) alongside the arguments named above (even if they are ignored), evaluate the likelihood of the data and return an updated \code{\link{data.table}} for the subset of valid proposals and \emph{updated} likelihoods (in the \code{.lik}). For computational efficiency, is is desirable that functions are ordered by the extent to which they invalidate proposal locations and that each function drops invalid proposals (since this reduces the number of subsequent likelihood calculations).
+In \code{\link[=pf_forward]{pf_forward()}}, the likelihood of the data given proposal locations is evaluated using a named \code{list} of user-defined functions (one for each dataset). Each function must accept a \code{\link{data.table}} of proposal locations (\code{.particles}) alongside the arguments named above (even if they are ignored), evaluate the likelihood of the data and return an updated \code{\link{data.table}} for the subset of valid proposals and \emph{updated} likelihoods (in the \code{lik} column). For computational efficiency, is is desirable that functions are ordered by the extent to which they invalidate proposal locations and that each function drops invalid proposals (since this reduces the number of subsequent likelihood calculations).
 
 The following convenience functions are provided:
 \itemize{

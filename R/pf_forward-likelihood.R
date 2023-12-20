@@ -1,11 +1,11 @@
 #' @title PF: likelihood functions
-#' @description These are likelihood functions for [`pf_forward()`]. This function expects a named `list` of likelihood functions that evaluate the likelihood of each dataset given location proposals. Convenience functions are provided that calculate the likelihood of acoustic and archival data, given location proposals, as resolved by the acoustic-container and depth-contour algorithms presented by Lavender et al. (2023).
+#' @description These are likelihood functions for the forward simulation. [`pf_forward()`] function expects a named `list` of likelihood functions that evaluate the likelihood of each dataset given location proposals. Convenience functions are provided that calculate the likelihood of acoustic and archival data, given location proposals, as resolved by the acoustic-container and depth-contour algorithms presented by Lavender et al. (2023).
 #'
 #' @param .particles A [`data.table`] that defines proposal locations. This contains the following columns:
 #' * `timestep`---an `integer` that defines the time step;
 #' * `cell_now`---an `integer` that defines the grid cell(s) of proposal location(s);
 #' * `x_now`,`y_now`---`double`s that define proposal location coordinates;
-#' * `lik`---a `double` that defines the likelihood. At each time step, this begins as a vector of `1`s that should be progressively updated by each likelihood function.
+#' * `lik`---a `double` that defines the likelihood. At each time step, this begins as a vector of `1`s **that should be progressively updated by each likelihood function**.
 #' @param .obs,.t (optional) The `.obs` [`data.table`] (from [`pf_forward()`]) and an `integer` that defines the time step (used to index `.obs`).
 #' @param .dlist (optional) The `.dlist` `list` (from [`pf_forward()`]).
 #' * For [`acs_filter_land()`], `.dlist` should contain `.dlist$spatial$bathy` and `.dlist$pars$spatna`.
@@ -15,7 +15,7 @@
 #' * For custom likelihood functions, `.dlist` may require other datasets.
 #'
 #' @details
-#' In [`pf_forward()`], the likelihood of the data given proposal locations is evaluated using a named `list` of user-defined functions (one for each dataset). Each function must accept a [`data.table`] of proposal locations (`.particles`) alongside the arguments named above (even if they are ignored), evaluate the likelihood of the data and return an updated [`data.table`] for the subset of valid proposals and _updated_ likelihoods (in the `.lik`). For computational efficiency, is is desirable that functions are ordered by the extent to which they invalidate proposal locations and that each function drops invalid proposals (since this reduces the number of subsequent likelihood calculations).
+#' In [`pf_forward()`], the likelihood of the data given proposal locations is evaluated using a named `list` of user-defined functions (one for each dataset). Each function must accept a [`data.table`] of proposal locations (`.particles`) alongside the arguments named above (even if they are ignored), evaluate the likelihood of the data and return an updated [`data.table`] for the subset of valid proposals and _updated_ likelihoods (in the `lik` column). For computational efficiency, is is desirable that functions are ordered by the extent to which they invalidate proposal locations and that each function drops invalid proposals (since this reduces the number of subsequent likelihood calculations).
 #'
 #' The following convenience functions are provided:
 #' * [`acs_filter_land()`] is a binary 'habitability' (land/water) filter. This is useful when the 'stochastic kick' methodology is used to generate proposal locations in systems that include inhospitable habitats. The function calculates the likelihood (0, 1) of the 'hospitable' data given sampled particles. Location proposals in `NA` cells on the bathymetry grid (`.dlist$spatial$bathy`) are dropped.
@@ -23,7 +23,7 @@
 #' * [`pf_lik_ac()`] calculates the likelihood of acoustic data (detection or non detection at each operational receiver), given location proposals.
 #' * [`pf_lik_dc()`] calculates the likelihood of archival (depth) data, given particle proposals. This is based on Lavender et al.'s (2023) depth-contour algorithm in which depth observations are considered valid in locations whose depth's lie between a shallow and deep limit (`.obs$depth_shallow[.t]` and `.obs$depth_deep[.t]`) but impossible otherwise.
 #'
-#' @return Functions return an updated `.particle` [`data.table`] for valid proposal locations and updated likelihoods (in the `.lik` column).
+#' @return Functions return the `.particle` [`data.table`] for valid proposal locations and updated likelihoods (in the `lik` column).
 #'
 #' @author Edward Lavender
 #' @name pf_lik
@@ -82,6 +82,7 @@ acs_filter_container <- function(.particles, .obs, .t, .dlist) {
 #' @rdname pf_lik
 #' @export
 
+# Evaluate likelihood of acoustic data
 pf_lik_ac <- function(.particles, .obs, .t, .dlist) {
 
   #### Checks
