@@ -13,7 +13,7 @@
 #'
 #' * [`.pf_diag_any()`] identifies whether or not any particle samples remain;
 #' * [`.pf_diag_ess()`] calculates effective sample size;
-#' * [`.pf_diag_unique()`] counts the number of unique particle samples;
+#' * [`.pf_diag_nu()`] counts the number of unique particle samples;
 #' * [`.pf_diag()`] is a wrapper function that collates diagnostics;
 #'
 #' # Exported wrappers
@@ -47,7 +47,7 @@
 #' @rdname pf_diag
 #' @keywords internal
 
-.pf_diag_unique <- function(.cells) {
+.pf_diag_nu <- function(.cells) {
   length(collapse::funique(.cells))
 }
 
@@ -63,7 +63,7 @@
                     ess = 0L)
   if (out$n > 0) {
     n_u <- ess <- NULL
-    out[, n_u := .pf_diag_unique(.particles$cell_now)]
+    out[, n_u := .pf_diag_nu(.particles$cell_now)]
     out[, ess := .pf_diag_ess(.particles$lik)]
   }
   out

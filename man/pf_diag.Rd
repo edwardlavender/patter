@@ -4,7 +4,7 @@
 \alias{pf_diag}
 \alias{.pf_diag_any}
 \alias{.pf_diag_ess}
-\alias{.pf_diag_unique}
+\alias{.pf_diag_nu}
 \alias{.pf_diag}
 \alias{.pf_diag_bind}
 \alias{.pf_diag_collect}
@@ -14,7 +14,7 @@
 
 .pf_diag_ess(.likelihood)
 
-.pf_diag_unique(.cells)
+.pf_diag_nu(.cells)
 
 .pf_diag(.particles, .t, .trial = NA_integer_, .label)
 
@@ -38,7 +38,7 @@ Particle diagnostics measure how the diversity of particle samples evolves throu
 \itemize{
 \item \code{\link[=.pf_diag_any]{.pf_diag_any()}} identifies whether or not any particle samples remain;
 \item \code{\link[=.pf_diag_ess]{.pf_diag_ess()}} calculates effective sample size;
-\item \code{\link[=.pf_diag_unique]{.pf_diag_unique()}} counts the number of unique particle samples;
+\item \code{\link[=.pf_diag_nu]{.pf_diag_nu()}} counts the number of unique particle samples;
 \item \code{\link[=.pf_diag]{.pf_diag()}} is a wrapper function that collates diagnostics;
 }
 }

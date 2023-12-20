@@ -14,7 +14,7 @@ The function returns a \code{\link{data.table}} with the following columns:
 \itemize{
 \item \code{timestep}---an \code{integer} that defines the time step;
 \item \code{n}---an \code{integer} that defines the number of particles;
-\item \code{n_u}---an \code{integer} that defines the number of unique location samples (see \code{\link[=.pf_diag_unique]{.pf_diag_unique()}});
+\item \code{n_u}---an \code{integer} that defines the number of unique location samples (see \code{\link[=.pf_diag_nu]{.pf_diag_nu()}});
 \item \code{ess}---a \code{double} that defines the effective sample size (see \code{\link[=.pf_diag_ess]{.pf_diag_ess()}});
 }
 }

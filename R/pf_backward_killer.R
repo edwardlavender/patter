@@ -108,7 +108,7 @@ pf_backward_killer <- function(.history,
 #' @return The function returns a [`data.table`] with the following columns:
 #' * `timestep`---an `integer` that defines the time step;
 #' * `n`---an `integer` that defines the number of particles;
-#' * `n_u`---an `integer` that defines the number of unique location samples (see [`.pf_diag_unique()`]);
+#' * `n_u`---an `integer` that defines the number of unique location samples (see [`.pf_diag_nu()`]);
 #' * `ess`---a `double` that defines the effective sample size (see [`.pf_diag_ess()`]);
 #'
 #' @example man/examples/pf_backward_killer_diagnostics-examples.R
@@ -123,7 +123,7 @@ pf_backward_killer_diagnostics <- function(.history, ...) {
     group_by(.data$timestep) |>
     summarise(timestep = .data$timestep[1],
               n = n(),
-              n_u = .pf_diag_unique(.data$cell_now),
+              n_u = .pf_diag_nu(.data$cell_now),
               ess = .pf_diag_ess(.data$lik)
     ) |>
     as.data.table()
