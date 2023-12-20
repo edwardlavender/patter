@@ -14,7 +14,7 @@ acs_setup_detection_pr(
 \arguments{
 \item{.mooring}{A one-row \code{\link{data.table}} that defines the location of the receiver and associated information used by the model of detection probability.}
 
-\item{.bathy}{A \code{\link{SpatRaster}} that defines the grid over which detection probability is calculated.}
+\item{.bathy}{A \code{\link{SpatRaster}} that defines the grid on which detection probability is calculated.}
 
 \item{.calc_detection_pr}{A function that calculates detection probability. In this implementation, the function is used to translate a \code{\link{SpatRaster}} of distances (m) (from each grid cell to the receiver in \code{.data}) via \code{\link[terra:app]{terra::app()}}.}
 

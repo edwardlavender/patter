@@ -159,7 +159,7 @@ acs_setup_detection_overlaps <- function(.dlist) {
 #' @title AC* set up: detection probability
 #' @description This function is an example detection probability function, of the kind required by [`acs_setup_detection_kernels()`].
 #' @param .mooring A one-row [`data.table`] that defines the location of the receiver and associated information used by the model of detection probability.
-#' @param .bathy A [`SpatRaster`] that defines the grid over which detection probability is calculated.
+#' @param .bathy A [`SpatRaster`] that defines the grid on which detection probability is calculated.
 #' @param .calc_detection_pr A function that calculates detection probability. In this implementation, the function is used to translate a [`SpatRaster`] of distances (m) (from each grid cell to the receiver in `.data`) via [`terra::app()`].
 #' @param ... Additional arguments passed to `.calc_detection_pr` ([`calc_detection_pr_logistic()`]  by default.)
 #'
@@ -204,37 +204,43 @@ acs_setup_detection_pr <- function(.mooring,
 
 
 #' @title AC* set up: detection kernels
-#' @description This function defines the detection kernels for the AC* algorithms.
+#' @description This function is part of a set of `acs_setup_*()` functions that prepare the layers required to evaluate the likelihood of acoustic observations in an AC*PF algorithm. This function prepares the detection kernels.
 #' @param .dlist A named `list` of data and parameters from [`pat_setup_data()`]. This function requires:
 #' * `.dlist$data$moorings`, with the following columns: `receiver_id`, `receiver_start`, `receiver_end`, `receiver_x` and `receiver_y`, plus any columns used internally by `.calc_detection_pr` (see below).
 #' * `.dlist$data$services`, with the following columns: `receiver_id`, `service_start` and `service_end` (see [`make_matrix_receivers()`]).
-#' * `.dlist$spatial$bathy`, which defines the grid over which detection kernels are defined.
-#' @param .calc_detection_pr,... A function that defines a receiver-specific detection kernel (see [`acs_setup_detection_pr()`] for an example). This must accept three arguments (even if they are ignored):
-#' * `.mooring`---A one-row [`data.table`] that contains the information in `.moorings` for a specific receiver;
-#' * `.bathy`---A [`SpatRaster`] that defines the grid over which detection probability is calculated (see below);
-#' * `...` Additional arguments passed via [`acs_setup_detection_kernels()`].
-#' Using these inputs, the function must return a [`SpatRaster`] that defines the detection kernel around a specific receiver (see Examples).
+#' * `.dlist$spatial$bathy`, which defines the grid on which detection kernels are represented. `NA`s are used as a mask.
+#' @param .calc_detection_pr,... A function that defines the detection kernel as a [`SpatRaster`] around a receiver (see [`acs_setup_detection_pr()`] for an example). This must accept three arguments (even if they are ignored):
+#' * `.mooring`---A one-row [`data.table`] that contains the information in `.dlist$data$moorings` for a specific receiver;
+#' * `.bathy`---the `.dlist$spatial$bathy` [`SpatRaster`];
+#' * `...` Additional arguments passed via [`acs_setup_detection_kernels()`];
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
-#' @details This function permits receiver-specific detection kernels.
+#' @details An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual. At each time step in such an algorithm, we evaluate the likelihood of acoustic observations (the presence or absence of detections at each operational receiver, accounting for receiver placement) given particle samples. A detection kernel is a spatial representation of the likelihood of a detection _around a specific receiver_. This typically declines with distance around a receiver, hence the default formulation of the `.calc_detection_pr` function. This function permits receiver-specific kernels, if required. Pre-calculating detection kernels is a potentially slow operation, especially for large and/or high-resolution grids (and we would like to improve this in future). However, this penalty is only required once and greatly improves the speed of downstream likelihood calculations in [`pf_lik_ac()`] in [`pf_forward()`], which only needs to appropriately combine the relevant values at each time step.
 #'
 #' @return The function returns a named `list`, with the following elements:
-#' * **`receiver_specific_kernels`**. A `list`, with one element for all integers from 1 to the maximum receiver number. Any elements that do not correspond to receivers contain a `NULL` element. List elements that correspond to receivers contain a [`SpatRaster`] of the detection probability kernel around the relevant receiver. Cells values define the detection probability around a receiver, given `.calc_detection_pr` In the AC* algorithm(s), these kernels are used to up-weight location probabilities near to a receiver when it is detected (following modification to account for overlapping areas, if necessary).
-#' * **`receiver_specific_inv_kernels`**. A `list`, as for `receiver_specific_kernels`, but in which elements contain the inverse detection probability kernels (i.e., 1 - detection probability). In the AC* algorithm(s), these is used to down-weight-weight location probabilities in the overlapping regions between a receiver that recorded detections and others that did not at the same time.
-#' * **`array_design`**. A `data.frame` that defines the number and deployment times of each unique array design, resulting from receiver deployment, servicing and removal. In the times between detections, this is used to select the appropriate 'background' detection probability surface (see below). This contains the following columns:
-#'   * `array_id`. An integer vector that defines each unique array design.
-#'   * `array_start_date`. A Date that defines the start date of each array design.
-#'   * `array_end_date`. A Date that defines the end date of each array design.
+#' * **`receiver_specific_kernels`**. A `list`, with one element for all integers from 1 to the maximum receiver number. Any elements that do not correspond to receivers contain a `NULL` element. List elements that correspond to receivers contain a [`SpatRaster`] of the detection kernel around the relevant receiver. Cells values define the likelihood of a detection in that location, as modelled by `.calc_detection_pr`. In an AC*PF algorithm, at the moment of detection, these kernels effectively up-weight particles near to the receiver(s) that recorded detections.
+#' * **`receiver_specific_inv_kernels`**. A `list`, as for `receiver_specific_kernels`, but in which elements contain the inverse detection kernels (i.e., 1 - detection kernel). In an AC*PF algorithm, at the moment of detection, inverse detection kernels effectively down-weight particles in the overlapping regions between the receiver(s) that recorded detections those that did not.
+#' * **`array_design`**. A `data.frame` that defines the number and deployment times of each unique array design, resulting from receiver deployment, servicing and removal. In the times between detections, this is used to select the appropriate 'background' likelihood surface (see below). This contains the following columns:
+#'   * `array_id`. An `integer` vector that defines each unique array design.
+#'   * `array_start_date`. A `Date` that defines the start date of each array design.
+#'   * `array_end_date`. A `Date` that defines the end date of each array design.
 #'   * `array_interval`. A [`lubridate::Interval-class`] vector that defines the deployment period of each array design.
 #' * **`array_design_by_date`**. A named `list` that defines, for each date (list element), the array design on that date (based on `array_id` in `array_design`).
-#' * **`bkg_surface_by_design`**. A `list`, with one element for each array design, that defines the detection probability surface across all receivers deployed in that phase of the study. In areas that are covered by the detection probability kernel of a single receiver, the detection probability depends only on distance to that receiver (via `.calc_detection_pr`). In areas covered by multiple, overlapping kernels, detection probability represents the combined detection probability across all overlapping kernels (see Details).
-#' * **`bkg_inv_surface_by_design`**. A `list`, as above for `bkg_surface_by_design`, but which contains the inverse detection probability surface (i.e., 1 - `bkg_surface_by_design`). In the AC* algorithm(s), this is used to up-weight areas away from receivers (or, equivalently, down-weight areas near to receivers) in the time steps between detections.
+#' * **`bkg_surface_by_design`**. A `list`, with one element for each array design, that defines the detection surface across all receivers deployed in that phase of the study. In areas that are covered by the detection kernel of a single receiver, the detection surface depends only on the kernel for that receiver (via `.calc_detection_pr`). In areas covered by multiple, overlapping kernels, the surface is influenced by the combination of overlapping kernels.
+#' * **`bkg_inv_surface_by_design`**. A `list`, as above for `bkg_surface_by_design`, but which contains the inverse detection surface (i.e., 1 - `bkg_surface_by_design`). In the AC*PF algorithm(s), in the gaps between detections, this effectively up-weights particles away from receivers (or, equivalently, down-weights particles near to receivers).
 #'
 #' @example man/examples/acs_setup_detection_kernels-examples.R
 #'
-#' @source This function is based on the [`acs_setup_detection_kernels`](https://edwardlavender.github.io/flapper/reference/acs_setup_detection_kernels.html) function in the [`flapper`](https://github.com/edwardlavender/flapper) package, where the role of detection kernels in the AC* algorithms is described extensively (see Details).
+#' @source This function is based on the [`acs_setup_detection_kernels`](https://edwardlavender.github.io/flapper/reference/acs_setup_detection_kernels.html) function in the [`flapper`](https://github.com/edwardlavender/flapper) package.
 #'
-#' @seealso
+#' @seealso To implement such an AC*PF algorithm, see:
+#' 1. [`pat_setup_data()`] to set up datasets;
+#' 2. `acs_setup_*()` functions to prepare layers required for likelihood calculations, i.e.:
+#'    * [`acs_setup_detection_overlaps()`], which identifies detection overlaps;
+#'    * [`acs_setup_detection_kernels()`], which prepares detection kernels;
+#'    * [`acs_setup_detection_pr()`], which is an example detection probability model;
+#' 3. [`pf_lik_ac()`] to define the likelihood of acoustic data;
+#' 4. [`pf_forward()`] to run the simulation;
 #'
 #' @author Edward Lavender
 #' @export
@@ -379,7 +385,6 @@ acs_setup_detection_kernels <-
     })
 
     #### Return outputs
-    # Define outputs
     out <- list()
     out$receiver_specific_kernels     <- receiver_specific_kernels
     out$receiver_specific_inv_kernels <- receiver_specific_inv_kernels
@@ -387,10 +392,5 @@ acs_setup_detection_kernels <-
     out$array_design_by_date          <- array_design_by_date
     out$bkg_surface_by_design         <- bkg_by_design
     out$bkg_inv_surface_by_design     <- bkg_inv_by_design
-    # Check function duration
-    t_end <- Sys.time()
-    total_duration <- difftime(t_end, t_onset, units = "mins")
-    cat_log(paste0("... patter::acs_setup_detection_kernels() call completed (@ ", t_end, ") after ~", round(total_duration, digits = 2), " minutes."))
-    # Return outputs
     out
   }
