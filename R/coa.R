@@ -1,22 +1,31 @@
 #' @title COA: centres of activity
-#' @description This function calculates centres of activity (COAs).
+#' @description This function calculates centres of activity (COAs) from detections at acoustic receivers.
 #' @param .dlist A named `list` of data and parameters from [`pat_setup_data()`]. This function requires:
 #' * `.dlist$data$acoustics`, with the following columns: `receiver_id` and `timestamp`;
 #' * `.dlist$data$moorings`, with the following columns: `receiver_id`, `receiver_x` and  `receiver_y`;
-#' * `.dlist$pars$lonlat`, which specifies the coordinate format (longitude/latitude or planar).
+#' * `.dlist$pars$lonlat`, which specifies the coordinate format (longitude/latitude or planar);
 #' @param .split (optional) A `character` that defines the name of the grouping factor in `.dlist$data$acoustics` (e.g., `individual_id` for [`dat_acoustics`]).
 #' @param .delta_t The time interval over which to calculate COAs. This can be specified in any way understood by [`cut.POSIXt()`] (see the `breaks` argument).
-#' @param .plot_weights A `logical` variable that defines whether or not to plot the frequency distribution of weights for each `.split` value.
-#' @param .one_page A `logical` variable that defines whether or not to plot all histograms on one page.
-#' @param ... Additional arguments passed to [`graphics::hist()`].
+#' @param .plot_weights,...,.one_page Plot arguments.
+#' * `.plot_weights` is a `logical` variable that defines whether or not to plot the frequency distribution of weights for each `.split` value (i.e., the frequency distribution of the number of detections at each receiver in each time interval, excluding time intervals without detections).
+#' * `...` is a placeholder for arguments passed to [`graphics::hist()`].
+#' * `.one_page` A `logical` variable that defines whether or not to plot all histograms on one page.
 #'
 #' @details COAs are calculated as a weighted mean of the locations of receivers at which individuals are detected over consecutive time intervals, weighted by the frequency of detections at each of those receivers. COAs are calculated via [`stats::weighted.mean()`] (for planar coordinates) or [`geosphere::geomean()`] (for longitude/latitude coordinates).
 #'
+#' @return The function returns a [`data.table`] with the following columns:
+#' * `.split`---a `character` vector that distinguishes groups, if applicable;
+#' * `timestamp`---a `POSIXt` vector of time stamps;
+#' * `coa_x`,`coa_y`---the coordinates of the COAs;
+#'
 #' @seealso
-#' * For reconstructing movement paths and patterns of space use, see [`pf_forward()`];
-#' * For mapping utilisation distributions, see [`map_dens()`];
+#' * To derive location samples from the forward-filter backward-sampler, see [`pf_forward()`], [`pf_backward_sampler()`] and [`pf_coord()`];
+#' * For mapping utilisation distributions from coordinates, see `map_*()` functions (i.e., [`map_pou()`] and [`map_dens()`];
+#'
+#' @source This function replaces the [`coa()`](https://edwardlavender.github.io/flapper/reference/coa.html) function in the [`flapper`](https://edwardlavender.github.io/flapper/) package. See the [`coa_setup_delta_t()`](https://edwardlavender.github.io/flapper/reference/coa_setup_delta_t.html) function to evaluate alternative time internals.
 #'
 #' @example man/examples/coa-examples.R
+#'
 #' @author Edward Lavender
 #' @export
 
@@ -31,9 +40,9 @@ coa <- function(.dlist, .delta_t, .split = NULL,
   rlang::check_dots_used()
 
   #### Define datasets
-  acoustics <- .dlist$data$acoustics
-  moorings  <- .dlist$data$moorings
-  ind       <- match(acoustics$receiver_id, moorings$receiver_id)
+  acoustics  <- .dlist$data$acoustics
+  moorings   <- .dlist$data$moorings
+  ind        <- match(acoustics$receiver_id, moorings$receiver_id)
   receiver_x <- receiver_y <- NULL
   acoustics[, receiver_x := moorings$receiver_x[ind]]
   acoustics[, receiver_y := moorings$receiver_y[ind]]

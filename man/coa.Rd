@@ -18,21 +18,30 @@ coa(
 \itemize{
 \item \code{.dlist$data$acoustics}, with the following columns: \code{receiver_id} and \code{timestamp};
 \item \code{.dlist$data$moorings}, with the following columns: \code{receiver_id}, \code{receiver_x} and  \code{receiver_y};
-\item \code{.dlist$pars$lonlat}, which specifies the coordinate format (longitude/latitude or planar).
+\item \code{.dlist$pars$lonlat}, which specifies the coordinate format (longitude/latitude or planar);
 }}
 
 \item{.delta_t}{The time interval over which to calculate COAs. This can be specified in any way understood by \code{\link[=cut.POSIXt]{cut.POSIXt()}} (see the \code{breaks} argument).}
 
 \item{.split}{(optional) A \code{character} that defines the name of the grouping factor in \code{.dlist$data$acoustics} (e.g., \code{individual_id} for \code{\link{dat_acoustics}}).}
 
-\item{.plot_weights}{A \code{logical} variable that defines whether or not to plot the frequency distribution of weights for each \code{.split} value.}
-
-\item{...}{Additional arguments passed to \code{\link[graphics:hist]{graphics::hist()}}.}
-
-\item{.one_page}{A \code{logical} variable that defines whether or not to plot all histograms on one page.}
+\item{.plot_weights, ..., .one_page}{Plot arguments.
+\itemize{
+\item \code{.plot_weights} is a \code{logical} variable that defines whether or not to plot the frequency distribution of weights for each \code{.split} value (i.e., the frequency distribution of the number of detections at each receiver in each time interval, excluding time intervals without detections).
+\item \code{...} is a placeholder for arguments passed to \code{\link[graphics:hist]{graphics::hist()}}.
+\item \code{.one_page} A \code{logical} variable that defines whether or not to plot all histograms on one page.
+}}
+}
+\value{
+The function returns a \code{\link{data.table}} with the following columns:
+\itemize{
+\item \code{.split}---a \code{character} vector that distinguishes groups, if applicable;
+\item \code{timestamp}---a \code{POSIXt} vector of time stamps;
+\item \code{coa_x},\code{coa_y}---the coordinates of the COAs;
+}
 }
 \description{
-This function calculates centres of activity (COAs).
+This function calculates centres of activity (COAs) from detections at acoustic receivers.
 }
 \details{
 COAs are calculated as a weighted mean of the locations of receivers at which individuals are detected over consecutive time intervals, weighted by the frequency of detections at each of those receivers. COAs are calculated via \code{\link[stats:weighted.mean]{stats::weighted.mean()}} (for planar coordinates) or \code{\link[geosphere:geomean]{geosphere::geomean()}} (for longitude/latitude coordinates).
@@ -68,9 +77,11 @@ coa(dlist, .delta_t = "6 hours", .split = "individual_id")
 }
 \seealso{
 \itemize{
-\item For reconstructing movement paths and patterns of space use, see \code{\link[=pf_forward]{pf_forward()}};
-\item For mapping utilisation distributions, see \code{\link[=map_dens]{map_dens()}};
+\item To derive location samples from the forward-filter backward-sampler, see \code{\link[=pf_forward]{pf_forward()}}, \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} and \code{\link[=pf_coord]{pf_coord()}};
+\item For mapping utilisation distributions from coordinates, see \verb{map_*()} functions (i.e., \code{\link[=map_pou]{map_pou()}} and \code{\link[=map_dens]{map_dens()}};
 }
+
+This function replaces the \href{https://edwardlavender.github.io/flapper/reference/coa.html}{\code{coa()}} function in the \href{https://edwardlavender.github.io/flapper/}{\code{flapper}} package. See the \href{https://edwardlavender.github.io/flapper/reference/coa_setup_delta_t.html}{\code{coa_setup_delta_t()}} function to evaluate alternative time internals.
 }
 \author{
 Edward Lavender
