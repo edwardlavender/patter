@@ -364,17 +364,17 @@ pf_forward <- function(.obs,
 }
 
 #' @title PF: forward run diagnostics
-#' @description This function collates diagnostics from the forward run.
+#' @description This function collates particle diagnostics from [`pf_forward()`].
 #' @param .sink A character string that defines the directory in which [`pf_forward()`] outputs are saved. `.sink` should contain the `diagnostics/` directory that is created by [`pf_forward()`].
-#' @details This function is not memory safe.
+#'
+#' @details Particle diagnostics are fully described in [`pf_diag`].
+#'
+#' @inherit pf_diag seealso
 #' @return The function returns the diagnostics [`data.table`].
 #' @author Edward Lavender
 #' @export
 
 pf_forward_diagnostics <- function(.sink) {
-  # TO DO
-  # * Consider use of .pf_history_dt() here
-  # * But note that file ordering with arrow::open_dataset() may be problematic
   check_dir(.sink)
   if (basename(.sink) != "diagnostics") {
     .sink <- file.path(.sink, "diagnostics")

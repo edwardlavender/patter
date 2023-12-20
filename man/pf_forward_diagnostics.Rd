@@ -13,10 +13,17 @@ pf_forward_diagnostics(.sink)
 The function returns the diagnostics \code{\link{data.table}}.
 }
 \description{
-This function collates diagnostics from the forward run.
+This function collates particle diagnostics from \code{\link[=pf_forward]{pf_forward()}}.
 }
 \details{
-This function is not memory safe.
+Particle diagnostics are fully described in \code{\link{pf_diag}}.
+}
+\seealso{
+\itemize{
+\item \code{\link[=pf_forward]{pf_forward()}}, \code{\link[=pf_backward_killer]{pf_backward_killer()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implement the forward simulation and the backward pass;
+\item \code{\link[=pf_forward_diagnostics]{pf_forward_diagnostics()}} and \code{\link[=pf_backward_killer_diagnostics]{pf_backward_killer_diagnostics()}} collect diagnostics;
+\item \code{\link{.pf_diag}}\verb{_()} functions are internal routines that calculate diagnostic statistics;
+}
 }
 \author{
 Edward Lavender

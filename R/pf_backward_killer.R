@@ -103,7 +103,7 @@ pf_backward_killer <- function(.history,
 #' @description This function calculates diagnostics from particle samples from [`pf_backward_killer()`].
 #' @param .history Particle samples, provided in any format accepted by [`.pf_history_dt()`].
 #'
-#' @details Particle diagnostics are fully described in [`pf_diag`].
+#' @inherit pf_forward_diagnostics details
 #'
 #' @return The function returns a [`data.table`] with the following columns:
 #' * `timestep`---an `integer` that defines the time step;
