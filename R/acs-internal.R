@@ -1,14 +1,10 @@
-#' @title AC* helper: define AC* container(s)
-#' @description [`.acs_container_1()`] defines the first AC* container in [`pf_forward()`] (specifically [`.pf_rpropose_origin()`].
-#' @param .obs The `.obs` [`data.table`].
-#' @param .detection_kernels A [`list`] of detection kernels.
-#' @param .moorings The `.moorings` [`data.table`], including `receiver_x` and `receiver_y` columns.
+#' @title AC* helper: AC* container(s)
+#' @description [`.acs_container_1()`] is designed for implementations of the AC*PF algorithm by [`pf_forward()`]. The function defines the first AC* container in [`.pf_rpropose_origin()`].
 #'
 #' @details
+#' At the first time step, the acoustic container is the intersection between the container(s) around the receivers that recorded the first detection (if applicable) and the container(s) around the receivers that recorded the next detection.
 #'
-#' These functions are used in [`pf_forward()`]. [`.acs_container_1()`] defines the acoustic container at the first time step, which is the intersection between the container(s) around the receivers that recorded the first detection (if applicable) and the container(s) around the receivers that recorded the next detection.
-#'
-#' @return The function returns a [`SpatRaster`] or a [`SpatVector`].
+#' @return The functions return a [`SpatRaster`] or a [`SpatVector`].
 #'
 #' @author Edward Lavender
 #' @name acs_container
@@ -167,7 +163,7 @@
   container
 }
 
-#' @title AC* helper: define active, overlapping receivers with absences
+#' @title AC* helper: detection absences
 #' @description Given a detection at one or more receivers on a given date, this function defines the set of remaining, active, overlapping receivers that did not record detections.
 #' @param .date A `character` that defines the date.
 #' @param .detections An `integer` vector that defines the receiver(s) that recorded detection(s) at the current time step.
@@ -178,7 +174,7 @@
 #' For speed, this function performs no internal checks.
 #'
 #' @return The function returns an `integer` vector that defines the set of receivers that overlap with `.detections` but did not record detections. `NULL` indicates no overlapping receivers.
-#' @seealso This function defines the `absences` argument for [`.acs_given_detection_particles()`].
+#' @seealso This function defines the `absences` argument for [`.pf_lik_ac_detection()`].
 #' @author Edward Lavender
 #' @keywords internal
 

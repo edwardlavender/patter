@@ -2,7 +2,7 @@
 % Please edit documentation in R/acs-internal.R
 \name{.acs_absences}
 \alias{.acs_absences}
-\title{AC* helper: define active, overlapping receivers with absences}
+\title{AC* helper: detection absences}
 \usage{
 .acs_absences(.date, .detections, .overlaps)
 }
@@ -27,7 +27,7 @@ For speed, this function performs no internal checks.
 }
 
 \seealso{
-This function defines the \code{absences} argument for \code{\link[=.acs_given_detection_particles]{.acs_given_detection_particles()}}.
+This function defines the \code{absences} argument for \code{\link[=.pf_lik_ac_detection]{.pf_lik_ac_detection()}}.
 }
 \author{
 Edward Lavender

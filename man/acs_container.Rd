@@ -9,7 +9,7 @@
 \alias{.acs_container_future.SpatVector}
 \alias{.acs_container_future}
 \alias{.acs_container_1}
-\title{AC* helper: define AC* container(s)}
+\title{AC* helper: AC* container(s)}
 \usage{
 .acs_container_detection.SpatRaster(.receivers, .detection_kernels)
 
@@ -25,21 +25,14 @@
 
 .acs_container_1(.obs, .detection_kernels, .moorings)
 }
-\arguments{
-\item{.detection_kernels}{A \code{\link{list}} of detection kernels.}
-
-\item{.moorings}{The \code{.moorings} \code{\link{data.table}}, including \code{receiver_x} and \code{receiver_y} columns.}
-
-\item{.obs}{The \code{.obs} \code{\link{data.table}}.}
-}
 \value{
-The function returns a \code{\link{SpatRaster}} or a \code{\link{SpatVector}}.
+The functions return a \code{\link{SpatRaster}} or a \code{\link{SpatVector}}.
 }
 \description{
-\code{\link[=.acs_container_1]{.acs_container_1()}} defines the first AC* container in \code{\link[=pf_forward]{pf_forward()}} (specifically \code{\link[=.pf_rpropose_origin]{.pf_rpropose_origin()}}.
+\code{\link[=.acs_container_1]{.acs_container_1()}} is designed for implementations of the AC\emph{PF algorithm by \code{\link[=pf_forward]{pf_forward()}}. The function defines the first AC} container in \code{\link[=.pf_rpropose_origin]{.pf_rpropose_origin()}}.
 }
 \details{
-These functions are used in \code{\link[=pf_forward]{pf_forward()}}. \code{\link[=.acs_container_1]{.acs_container_1()}} defines the acoustic container at the first time step, which is the intersection between the container(s) around the receivers that recorded the first detection (if applicable) and the container(s) around the receivers that recorded the next detection.
+At the first time step, the acoustic container is the intersection between the container(s) around the receivers that recorded the first detection (if applicable) and the container(s) around the receivers that recorded the next detection.
 }
 \author{
 Edward Lavender
