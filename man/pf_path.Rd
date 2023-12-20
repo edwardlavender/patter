@@ -17,7 +17,7 @@ pf_path(
 \item{.history}{Particle samples from the particle filter, provided either as:
 \itemize{
 \item A \code{list} of \code{\link{data.table}}s that define particle samples; i.e., the \code{history} element of a \code{\linkS4class{pf_particles}} object. This must contain columns that define sampled cells at each time step (\code{cell_now}) alongside previous samples (\code{cell_past}).
-\item An ordered \code{list} of file paths (from \code{\link[=pf_files]{pf_files()}}) that define the directories in which particle samples are located (as parquet files).
+\item An ordered \code{list} of file paths (from \code{\link[=pf_files]{pf_files()}}) that defines the directories in which particle samples are located (as parquet files).
 }}
 
 \item{.bathy}{(optional) If \code{.return = "long"}, a bathymetry \code{\link{SpatRaster}} can be supplied to define cell coordinates (see \code{\link[=pf_path_pivot]{pf_path_pivot()}}).}
