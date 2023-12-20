@@ -101,7 +101,7 @@ pf_lik_ac <- function(.particles, .obs, .t, .dlist) {
                                       .detections = detections_current,
                                       .overlaps = .dlist$algorithm$detection_overlaps)
     # Calculate weights
-    .particles[, lik := lik * .pf_lik_ac_detection(particles = .particles,
+    .particles[, lik := lik * .pf_lik_ac_detection(.particles = .particles,
                                                    .kernels = .dlist$algorithm$detection_kernels,
                                                    .detections = detections_current,
                                                    .absences = absences_current)]
