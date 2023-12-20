@@ -2,7 +2,7 @@
 % Please edit documentation in R/pf_backward_killer.R
 \name{pf_backward_killer}
 \alias{pf_backward_killer}
-\title{PF: backward pass}
+\title{PF: backward pruning}
 \usage{
 pf_backward_killer(
   .history,
@@ -13,8 +13,8 @@ pf_backward_killer(
 \arguments{
 \item{.history}{Particle samples from the forward simulation, provided either as:
 \itemize{
-\item A \code{list} of \code{\link{data.table}}s that define cell samples; i.e., the \code{history} element of a \code{\linkS4class{pf_particles}} object. This must contain columns that define cell samples at each time step (\code{cell_now}) alongside previous samples (\code{cell_past}).
-\item An ordered list of file paths (from \code{\link[=pf_files]{pf_files()}}) that define the directories in which particle samples were written from the forward simulation (as parquet files).
+\item A \code{list} of \code{\link{data.table}}s that define particle samples; i.e., the \code{history} element of a \code{\linkS4class{pf_particles}} object. This must contain columns that define sampled cells at each time step (\code{cell_now}) alongside previous samples (\code{cell_past}).
+\item An ordered \code{list} of file paths (from \code{\link[=pf_files]{pf_files()}}) that defines the directories in which particle samples were written from the forward simulation (as parquet files).
 }}
 
 \item{.record}{A named \code{list} of output options, from \code{\link[=pf_opt_record]{pf_opt_record()}}.}
@@ -25,24 +25,28 @@ pf_backward_killer(
 The function returns a \code{\linkS4class{pf_particles}} object.
 }
 \description{
-This function implements the backward correction of particle samples.
+This function implements backward pruning of particle samples.
 }
 \details{
-This function removes 'dead ends' from particle samples.
+This function removes 'dead ends' from particle samples. If you imagine the forward simulation, as implemented by \code{\link[=pf_forward]{pf_forward()}}, as a branching process, like the growth of a fungal network between two points in space (representing the start and end of the time series), dead ends are the side branches that emerge during this process that do not reach the destination (because sooner-or-later they are rendered incompatible with the data). This function prunes dead-ends from the time series by running a fast \code{match}ing process backwards in time and retaining the subset of particle samples that lead to the destination particle samples. This process is very fast, and you can use the results to reconstruct movement paths (via \code{\link[=pf_path]{pf_path()}}) and maps of space use (via \verb{map_*()} functions), but crude.
+
+There are two, related limitations with the 'prune' methodology. The first is that the removal of dead ends tends to bias particle samples, because early samples (which invariably sooner-or-later end up on a dead-end) are more likely to get killed than later samples. This is known as particle degeneracy. Use the \code{\link[=pf_backward_killer_diagnostics]{pf_backward_killer_diagnostics()}} function to evaluate trends in the effective sample size through time and examine whether this is an issue. The second is that while particles from the forward simulation are contingent upon the past (a marginal distribution), they do not embody information from the future (the joint distribution).
+
+To reconstruct the joint distribution of particle samples given all data (i.e., 'proper' movement trajectories), the backward sampler is required instead (\code{\link[=pf_backward_sampler]{pf_backward_sampler()}}). However, this is much more expensive.
 }
 \examples{
 #### Set up examples
 # Run the forward simulation (see ?`pf_forward()`)
-# We will use example outputs objects:
+# We will use example output objects:
 out_pff    <- dat_pff()
 pff_folder <- system.file("extdata", "acpf", "forward",
                           package = "patter", mustWork = TRUE)
 
-#### Example (1): Implement backward simulation from object in memory
+#### Example (1): Implement backward pass from object in memory
 out_pfb <- pf_backward_killer(.history = out_pff$history,
                               .record = pf_opt_record(.save = TRUE))
 
-#### Example (2): Implement backward simulation from parquet files
+#### Example (2): Implement backward pass from parquet files
 pff_folder_h <- file.path(pff_folder, "history")
 out_pfb <- pf_backward_killer(.history = pf_files(pff_folder_h),
                               .record = pf_opt_record(.save = TRUE))
@@ -74,6 +78,28 @@ out_pfb <- pf_backward_killer(pf_files(pff_folder_h),
 
 # Clean up
 unlink(con, recursive = TRUE)
+}
+\seealso{
+The forward filtering--backward sampling algorithm samples locations (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
+\itemize{
+\item To set up data, use \code{\link[=pat_setup_data]{pat_setup_data()}}.
+\item \code{\link[=pf_forward]{pf_forward()}} implements the forward filter:
+\itemize{
+\item To set up an observations timeline, use \code{\link[=pf_setup_obs]{pf_setup_obs()}}.
+\item For proposal (movement) models, see \code{\link{pf_propose}}.
+\item For likelihood functions, to evaluate the likelihood of the data at proposal locations, see \code{\link{pf_lik}}.
+\item For sampling functions, to (re)sample plausible proposal locations, see \code{\link{pf_sample}}.
+\item For tuning parameters, see \code{\link{pf_opt}}.
+}
+\item \code{\link[=pf_backward_*]{pf_backward_*()}} refines outputs from the forward filter:
+\itemize{
+\item \code{\link[=pf_backward_killer]{pf_backward_killer()}} removes dead-ends;
+\item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implements the backward sampler;
+}
+\item To reconstruct movement paths from particle samples, use \code{\link[=pf_path]{pf_path()}}.
+\item To map emergent patterns of space use, use \code{\link[=pf_coord]{pf_coord()}} plus a \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()}.
+\item For additional utilities, see supporting \verb{pf_*()} functions, such as \code{\link[=pf_files]{pf_files()}} and \code{\link[=pf_files_size]{pf_files_size()}}.
+}
 }
 \author{
 Edward Lavender

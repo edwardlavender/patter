@@ -1,20 +1,23 @@
-#' @title PF: backward pass
-#' @description This function implements the backward correction of particle samples.
+#' @title PF: backward pruning
+#' @description This function implements backward pruning of particle samples.
 #'
 #' @param .history Particle samples from the forward simulation, provided either as:
-#' * A `list` of [`data.table`]s that define cell samples; i.e., the `history` element of a [`pf_particles-class`] object. This must contain columns that define cell samples at each time step (`cell_now`) alongside previous samples (`cell_past`).
-#' * An ordered list of file paths (from [`pf_files()`]) that define the directories in which particle samples were written from the forward simulation (as parquet files).
+#' * A `list` of [`data.table`]s that define particle samples; i.e., the `history` element of a [`pf_particles-class`] object. This must contain columns that define sampled cells at each time step (`cell_now`) alongside previous samples (`cell_past`).
+#' * An ordered `list` of file paths (from [`pf_files()`]) that defines the directories in which particle samples were written from the forward simulation (as parquet files).
 #' @param .record A named `list` of output options, from [`pf_opt_record()`].
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
-#' @details This function removes 'dead ends' from particle samples.
+#' @details This function removes 'dead ends' from particle samples. If you imagine the forward simulation, as implemented by [`pf_forward()`], as a branching process, like the growth of a fungal network between two points in space (representing the start and end of the time series), dead ends are the side branches that emerge during this process that do not reach the destination (because sooner-or-later they are rendered incompatible with the data). This function prunes dead-ends from the time series by running a fast `match`ing process backwards in time and retaining the subset of particle samples that lead to the destination particle samples. This process is very fast, and you can use the results to reconstruct movement paths (via [`pf_path()`]) and maps of space use (via `map_*()` functions), but crude.
+#'
+#' There are two, related limitations with the 'prune' methodology. The first is that the removal of dead ends tends to bias particle samples, because early samples (which invariably sooner-or-later end up on a dead-end) are more likely to get killed than later samples. This is known as particle degeneracy. Use the [`pf_backward_killer_diagnostics()`] function to evaluate trends in the effective sample size through time and examine whether this is an issue. The second is that while particles from the forward simulation are contingent upon the past (a marginal distribution), they do not embody information from the future (the joint distribution).
+#'
+#' To reconstruct the joint distribution of particle samples given all data (i.e., 'proper' movement trajectories), the backward sampler is required instead ([`pf_backward_sampler()`]). However, this is much more expensive.
 #'
 #' @example man/examples/pf_backward_killer-examples.R
 #'
 #' @return The function returns a [`pf_particles-class`] object.
 #'
-#' @seealso
-#'
+#' @inherit pf_forward seealso
 #' @author Edward Lavender
 #' @export
 

@@ -1,15 +1,15 @@
 #### Set up examples
 # Run the forward simulation (see ?`pf_forward()`)
-# We will use example outputs objects:
+# We will use example output objects:
 out_pff    <- dat_pff()
 pff_folder <- system.file("extdata", "acpf", "forward",
                           package = "patter", mustWork = TRUE)
 
-#### Example (1): Implement backward simulation from object in memory
+#### Example (1): Implement backward pass from object in memory
 out_pfb <- pf_backward_killer(.history = out_pff$history,
                               .record = pf_opt_record(.save = TRUE))
 
-#### Example (2): Implement backward simulation from parquet files
+#### Example (2): Implement backward pass from parquet files
 pff_folder_h <- file.path(pff_folder, "history")
 out_pfb <- pf_backward_killer(.history = pf_files(pff_folder_h),
                               .record = pf_opt_record(.save = TRUE))
