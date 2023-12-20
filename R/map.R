@@ -4,16 +4,24 @@
 #' @param .map A [`SpatRaster`] that defines the grid for probability-of-use estimation.
 #' @param .coord Coordinates, provided in any format accepted by [`.map_coord()`]
 #'
-#' @param .plot A logical input that defines whether or not to plot the [`SpatRaster`].
-#' @param ... If `.plot = TRUE`, `...` is a place holder for additional arguments passed to [`terra::plot()`].
+#' @param .plot,... A logical input that defines whether or not to plot the [`SpatRaster`] and additional arguments passed to [`terra::plot()`].
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
-#' @details Probability-of-use is calculated via [`.map_coord()`] (and [`.map_mark()`]). If a single dataset of unweighted coordinates is provided, probability-of-use is simply the proportion of records in each grid cell. If a time series of unweighted coordinates is provided, probability-of-use is effectively the average proportion of records in each grid cell. This becomes a weighted average if coordinates are weighted. Weights are normalised to sum to one and the result can be interpreted as a utilisation distribution in which cell values define probability-of-use.
+#' @details Probability-of-use is calculated via [`.map_coord()`] (and [`.map_mark()`]). If a single dataset of unweighted coordinates is provided, probability-of-use is simply the proportion of records in each grid cell. If a time series of unweighted coordinates is provided, probability-of-use is effectively the average proportion of records in each grid cell. This becomes a weighted average if coordinates are weighted. Weights are normalised to sum to one and the result can be interpreted as a utilisation distribution in which cell values define probability-of-use. Maps are sensitive to grid resolution.
 #'
 #' @return The function returns a [`SpatRaster`].
 #' @example man/examples/map_pou-examples.R
 #'
-#' @seealso
+#' @seealso `map_*()` functions build maps of space use:
+#' * [`map_pou()`] maps probability-of-use;
+#' * [`map_dens()`] maps point density;
+#' * [`map_hr`]`_*()` functions map home ranges;
+#'
+#' All maps are represented as [`SpatRaster`]s.
+#'
+#' To derive coordinates for mapping patterns of space use for tagged animals in passive acoustic telemetry systems, see:
+#' * [`coa()`] to calculate centre-of-activity;
+#' * [`pf_forward()`], [`pf_backward()`] and [`pf_coord()`] to sample locations using a forward-filtering backward-sampling algorithm;
 #'
 #' @author Edward Lavender
 #' @export

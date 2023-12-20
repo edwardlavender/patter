@@ -17,9 +17,7 @@ map_pou(
 
 \item{.coord}{Coordinates, provided in any format accepted by \code{\link[=.map_coord]{.map_coord()}}}
 
-\item{.plot}{A logical input that defines whether or not to plot the \code{\link{SpatRaster}}.}
-
-\item{...}{If \code{.plot = TRUE}, \code{...} is a place holder for additional arguments passed to \code{\link[terra:plot]{terra::plot()}}.}
+\item{.plot, ...}{A logical input that defines whether or not to plot the \code{\link{SpatRaster}} and additional arguments passed to \code{\link[terra:plot]{terra::plot()}}.}
 
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }
@@ -30,7 +28,7 @@ The function returns a \code{\link{SpatRaster}}.
 This function builds a 'probability-of-use' utilisation distribution.
 }
 \details{
-Probability-of-use is calculated via \code{\link[=.map_coord]{.map_coord()}} (and \code{\link[=.map_mark]{.map_mark()}}). If a single dataset of unweighted coordinates is provided, probability-of-use is simply the proportion of records in each grid cell. If a time series of unweighted coordinates is provided, probability-of-use is effectively the average proportion of records in each grid cell. This becomes a weighted average if coordinates are weighted. Weights are normalised to sum to one and the result can be interpreted as a utilisation distribution in which cell values define probability-of-use.
+Probability-of-use is calculated via \code{\link[=.map_coord]{.map_coord()}} (and \code{\link[=.map_mark]{.map_mark()}}). If a single dataset of unweighted coordinates is provided, probability-of-use is simply the proportion of records in each grid cell. If a time series of unweighted coordinates is provided, probability-of-use is effectively the average proportion of records in each grid cell. This becomes a weighted average if coordinates are weighted. Weights are normalised to sum to one and the result can be interpreted as a utilisation distribution in which cell values define probability-of-use. Maps are sensitive to grid resolution.
 }
 \examples{
 #### Set up examples
@@ -64,6 +62,22 @@ map_pou(gebco, .coord = out_coa[, .(x = coa_x, y = coa_y)])
 # Use example dataset
 coord <- pf_coord(dat_pfbk(), .bathy = gebco)
 map_pou(gebco, .coord = coord)
+}
+\seealso{
+\verb{map_*()} functions build maps of space use:
+\itemize{
+\item \code{\link[=map_pou]{map_pou()}} maps probability-of-use;
+\item \code{\link[=map_dens]{map_dens()}} maps point density;
+\item \code{\link{map_hr}}\verb{_*()} functions map home ranges;
+}
+
+All maps are represented as \code{\link{SpatRaster}}s.
+
+To derive coordinates for mapping patterns of space use for tagged animals in passive acoustic telemetry systems, see:
+\itemize{
+\item \code{\link[=coa]{coa()}} to calculate centre-of-activity;
+\item \code{\link[=pf_forward]{pf_forward()}}, \code{\link[=pf_backward]{pf_backward()}} and \code{\link[=pf_coord]{pf_coord()}} to sample locations using a forward-filtering backward-sampling algorithm;
+}
 }
 \author{
 Edward Lavender
