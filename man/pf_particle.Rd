@@ -6,6 +6,7 @@
 \alias{.pf_sample_origin}
 \alias{.pf_particles_origin}
 \alias{.pf_lik}
+\alias{.pf_lik_ac_detection}
 \alias{.pf_particles_kick}
 \alias{.pf_particles_sampler}
 \title{PF: particle internals}
@@ -38,6 +39,8 @@
   .diagnostics = list(),
   .trial = NA_integer_
 )
+
+.pf_lik_ac_detection(.particles, .kernels, .detections, .absences)
 
 .pf_particles_kick(
   .particles,

@@ -201,6 +201,37 @@
 #' @rdname pf_particle
 #' @keywords internal
 
+# Calculate the likelihood of detection(s)
+.pf_lik_ac_detection <- function(.particles, .kernels, .detections, .absences) {
+
+  # Arguments:
+  # * .particles - the particles data.table
+  # * .kernels - the list of detection kernels
+  # * .detections - an `integer` vector of the receiver(s) that recorded detections at a given time step
+  # * .absences - an `integer` vector of the remaining, overlapping receiver(s) that did not record a detection, from [`.acs_absences()`]
+
+  # Calculate Pr (detection | position) at each relevant receiver
+  ldc <- length(.detections)
+  mat <- matrix(NA, nrow(.particles), ncol = ldc)
+  for (i in seq_len(ldc)) {
+    mat[, i] <- terra::extract(.kernels$receiver_specific_kernels[[.detections[i]]], .particles$cell_now)[, 1]
+  }
+  # Calculate Pr (non detection | position) at each relevant receiver
+  if (!is.null(.absences)) {
+    mat_2 <- matrix(NA, nrow(.particles), ncol = length(.absences))
+    lac <- length(.absences)
+    for (i in seq_len(lac)) {
+      mat_2[, i] <- terra::extract(.kernels$receiver_specific_inv_kernels[[.absences[i]]], .particles$cell_now)[, 1]
+    }
+    mat <- cbind(mat, mat_2)
+  }
+  # Calculate Pr (all data | position)
+  colProds.matrix(mat)
+}
+
+#' @rdname pf_particle
+#' @keywords internal
+
 .pf_particles_kick <- function(.particles, .obs, .t, .dlist,
                                .rpropose, .dpropose = NULL,
                                .likelihood,

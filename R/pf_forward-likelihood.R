@@ -101,10 +101,10 @@ pf_lik_ac <- function(.particles, .obs, .t, .dlist) {
                                       .detections = detections_current,
                                       .overlaps = .dlist$algorithm$detection_overlaps)
     # Calculate weights
-    .particles[, lik := lik * .acs_given_detection_particles(.detections = detections_current,
-                                                             .absences = absences_current,
-                                                             .kernels = .dlist$algorithm$detection_kernels,
-                                                             .particles = .particles)]
+    .particles[, lik := lik * .pf_lik_ac_detection(particles = .particles,
+                                                   .kernels = .dlist$algorithm$detection_kernels,
+                                                   .detections = detections_current,
+                                                   .absences = absences_current)]
 
     #### Calculate likelihood given _non detection_
   } else {

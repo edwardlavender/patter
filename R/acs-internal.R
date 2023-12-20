@@ -1,28 +1,5 @@
-#' @title AC* helper: define the receiver(s) at which the next detection was recorded
-#' @description This function defines, for each time step, the receiver(s) at which the next detection was recorded.
-#' @param .receiver_id A `list` column.
-#' @return The function returns a `list` column that defines, for each time step, the receiver(s) that recorded the next detection.
-#' @author Edward Lavender
-#' @seealso The `receiver_id_next` column is required by [`pf_forward()`].
-#' @keywords internal
-
-.acs_setup_obs_receiver_id_next <- function(.receiver_id) {
-  rlang::check_installed("zoo")
-  dt <- data.table(receiver_id = .receiver_id)
-  dt$receiver_id[sapply(dt$receiver_id, is.null)] <- list(NA_integer_)
-  out <-
-    dt |>
-    mutate(receiver_id_next = lead(.data$receiver_id),
-           receiver_id_next = zoo::na.locf(.data$receiver_id_next,
-                                           fromLast = TRUE,
-                                           na.rm = FALSE)) |>
-    as.data.table()
-  out$receiver_id_next[nrow(out)][[1]] <- NA_integer_
-  out$receiver_id_next
-}
-
 #' @title AC* helper: define AC* container(s)
-#' @description [`.acs_container_1()`] defines the first AC* container in [`pf_forward()`].
+#' @description [`.acs_container_1()`] defines the first AC* container in [`pf_forward()`] (specifically [`.pf_rpropose_origin()`].
 #' @param .obs The `.obs` [`data.table`].
 #' @param .detection_kernels A [`list`] of detection kernels.
 #' @param .moorings The `.moorings` [`data.table`], including `receiver_x` and `receiver_y` columns.
@@ -222,39 +199,4 @@
     }
   }
   absences
-}
-
-#' @title AC* helper: define the individual's location given detection(s)
-#' @description These function defines the relative plausibility possible locations of an individual given one or more detections or for selected particle positions (for [`pf_forward()`]).
-#' @param .detections An `integer` vector of the receiver(s) that recorded detections at a given time step.
-#' @param .absences An `integer` vector of the remaining, overlapping receiver(s) that did not record a detection, from [`.acs_absences()`].
-#' @param .kernels A `list` from [`acs_setup_detection_kernels`].
-#' @param .particles A [`data.table`] with a `cell_now` column that defines particle locations on the grid.
-
-#' @details In the AC* algorithms, at the moment of detection, likelihood of the acoustic data given a particle sample depends on depends on both the receivers that record detections and those that did not (eqn S5 in Lavender et al., 2023). This function solves eqn S5.
-#'
-#' # Warning
-#' For speed, these functions performs no internal checks.
-#'
-#' @author Edward Lavender
-#' @keywords internal
-
-.acs_given_detection_particles <- function(.detections, .absences, .kernels, .particles) {
-  # Calculate Pr (detection | position) at each relevant receiver
-  ldc <- length(.detections)
-  mat <- matrix(NA, nrow(.particles), ncol = ldc)
-  for (i in seq_len(ldc)) {
-    mat[, i] <- terra::extract(.kernels$receiver_specific_kernels[[.detections[i]]], .particles$cell_now)[, 1]
-  }
-  # Calculate Pr (non detection | position) at each relevant receiver
-  if (!is.null(.absences)) {
-    mat_2 <- matrix(NA, nrow(.particles), ncol = length(.absences))
-    lac <- length(.absences)
-    for (i in seq_len(lac)) {
-      mat_2[, i] <- terra::extract(.kernels$receiver_specific_inv_kernels[[.absences[i]]], .particles$cell_now)[, 1]
-    }
-    mat <- cbind(mat, mat_2)
-  }
-  # Calculate Pr (all data | position)
-  colProds.matrix(mat)
 }

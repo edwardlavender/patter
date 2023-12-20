@@ -166,7 +166,7 @@ pf_setup_obs <- function(.dlist,
       ungroup() |>
       arrange(.data$timestamp) |>
       mutate(timestep = as.integer(row_number()),
-             receiver_id_next = .acs_setup_obs_receiver_id_next(.data$receiver_id)
+             receiver_id_next = .pf_setup_obs_receiver_id_next(.data$receiver_id)
       ) |>
       as.data.table()
   }
