@@ -25,10 +25,9 @@ This methodology enables the reconstruction of movement paths and
 patterns of space use in passive acoustic telemetry systems.
 [`patter`](https://github.com/edwardlavender/patter) unifies a suite of
 methods formerly known as the
-[`flapper`](https://github.com/edwardlavender/flapper) algorithms and
-supersedes the experimental
-[`flapper`](https://github.com/edwardlavender/flapper) package (Lavender
-et al., 2023).
+[`flapper`](https://github.com/edwardlavender/flapper) algorithms
+(Lavender et al., 2023) and supersedes the experimental
+[`flapper`](https://github.com/edwardlavender/flapper) package.
 
 # Features
 
@@ -79,10 +78,10 @@ you would like to see additional functionality brought into
 # Installation
 
 This package requires [R](https://www.r-project.org) version ≥ 4.1 (but
-the most recent version is recommended). You can check your version with
-`R.version.string`. Subsequent installation steps (may) require the
-`devtools` and `pkgbuild` packages, which can be installed with
-`install.packages(c("devtools", "pkgbuild"))`. On Windows, package
+the most recent version is strongly recommended). You can check your
+version with `R.version.string`. Subsequent installation steps (may)
+require the `devtools` and `pkgbuild` packages, which can be installed
+with `install.packages(c("devtools", "pkgbuild"))`. On Windows, package
 building requires `Rtools`. You can check whether `Rtools` is installed
 with `pkgbuild::has_rtools()`. If `Rtools` is not installed, it is
 necessary to download and install the appropriate version of `Rtools`
@@ -248,7 +247,7 @@ acoustic telemetry systems.
 - `pf_files()` to list particle-sample files;
 - `pf_files_size()` to measure file size;
 
-**For downstream analysis**, use:
+**For downstream analyses**, use:
 
 - `pf_path()` (and `pf_path_pivot()`) to reconstruct movement paths;
 - `pf_coord()` to collate particle coordinates for mapping;
