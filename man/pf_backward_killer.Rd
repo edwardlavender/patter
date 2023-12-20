@@ -2,7 +2,7 @@
 % Please edit documentation in R/pf_backward_killer.R
 \name{pf_backward_killer}
 \alias{pf_backward_killer}
-\title{PF: backward pruning}
+\title{PF: backward killer}
 \usage{
 pf_backward_killer(
   .history,
@@ -25,7 +25,7 @@ pf_backward_killer(
 The function returns a \code{\linkS4class{pf_particles}} object.
 }
 \description{
-This function implements backward pruning of particle samples.
+This function implements backward pruning (killing) of particle samples.
 }
 \details{
 This function removes 'dead ends' from particle samples. If you imagine the forward simulation, as implemented by \code{\link[=pf_forward]{pf_forward()}}, as a branching process, like the growth of a fungal network between two points in space (representing the start and end of the time series), dead ends are the side branches that emerge during this process that do not reach the destination (because sooner-or-later they are rendered incompatible with the data). This function prunes dead-ends from the time series by running a fast \code{match}ing process backwards in time and retaining the subset of particle samples that lead to the destination particle samples. This process is very fast, and you can use the results to reconstruct movement paths (via \code{\link[=pf_path]{pf_path()}}) and maps of space use (via \verb{map_*()} functions), but crude.

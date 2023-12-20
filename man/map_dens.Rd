@@ -134,6 +134,6 @@ All maps are represented as \code{\link{SpatRaster}}s.
 To derive coordinates for mapping patterns of space use for tagged animals in passive acoustic telemetry systems, see:
 \itemize{
 \item \code{\link[=coa]{coa()}} to calculate centre-of-activity;
-\item \code{\link[=pf_forward]{pf_forward()}}, \code{\link[=pf_backward]{pf_backward()}} and \code{\link[=pf_coord]{pf_coord()}} to sample locations using a forward-filtering backward-sampling algorithm;
+\item \code{\link[=pf_forward]{pf_forward()}}, \code{\link[=pf_backward_*]{pf_backward_*()}} and \code{\link[=pf_coord]{pf_coord()}} to sample locations using a forward-filtering backward-sampling algorithm;
 }
 }

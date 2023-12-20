@@ -1,5 +1,5 @@
-#' @title PF: backward pruning
-#' @description This function implements backward pruning of particle samples.
+#' @title PF: backward killer
+#' @description This function implements backward pruning (killing) of particle samples.
 #'
 #' @param .history Particle samples from the forward simulation, provided either as:
 #' * A `list` of [`data.table`]s that define particle samples; i.e., the `history` element of a [`pf_particles-class`] object. This must contain columns that define sampled cells at each time step (`cell_now`) alongside previous samples (`cell_past`).

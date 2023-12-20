@@ -15,7 +15,7 @@
 #' @param .save,.sink,.cols [`pf_opt_record()`] arguments, passed to `.record` in [`pf_forward()`].
 #' * `.save`---a `logical` variable that defines whether or not to save particle samples and diagnostics in memory. Use with caution.
 #' * `.sink`---a `character` string that defines a (usually) empty directory in which to write particle samples and diagnostics (see Value).
-#' * `.cols`---a `character` vector that defines the names of the columns in particle-sample [`data.table`]s to save and/or write to file at each time step. This reduces the space occupied by outputs. At a minimum, you should retain `timestep`, `cell_now`, `x_now` and `y_now` for the backward sampler (see [`pf_backward_sampler()`]). `NULL` retains all columns.
+#' * `.cols`---a `character` vector that defines the names of the columns in particle-sample [`data.table`]s to save and/or write to file at each time step. This reduces the space occupied by outputs. For [`pf_backward_killer()`], you need to retain `timestep`, `cell_past` and `cell_now`. For [`pf_backward_sampler()`], you need `timestep`, `cell_now`, `x_now` and `y_now` for the backward sampler. For calculation of effective sample size, `lik` is required. `NULL` retains all columns.
 #'
 #' At least one of `.save` and `.sink` must be provided.
 #'
