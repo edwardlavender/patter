@@ -102,6 +102,7 @@ pf_backward_killer <- function(.history,
 #' @title PF: backward killer diagnostics
 #' @description This function calculates diagnostics from particle samples from [`pf_backward_killer()`].
 #' @param .history Particle samples, provided in any format accepted by [`.pf_history_dt()`].
+#' @param ... Arguments passed to [`.pf_history_dt()`], excluding `.collect` with is necessarily `TRUE`.
 #'
 #' @inherit pf_forward_diagnostics details
 #'

@@ -99,7 +99,7 @@ Proposal and likelihood functions must accept the following arguments:
 \item \code{.trial}---an \code{integer} that distinguishes trials.
 }
 
-Most likelihood functions are directly exported but some internals routines are also documented here for convenience, namely \code{\link[=pf_lik_ac_detection]{pf_lik_ac_detection()}}. See also \verb{acs_*()} functions.
+Most likelihood functions are directly exported but some internals routines are also documented here for convenience, namely \code{\link[=.pf_lik_ac_detection]{.pf_lik_ac_detection()}}. See also \verb{acs_*()} functions.
 
 Sampling functions must accept:
 \itemize{

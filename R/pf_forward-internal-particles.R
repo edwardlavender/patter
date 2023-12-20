@@ -20,7 +20,7 @@
 #' * `.diagnostics`---an empty `list` used to store likelihood diagnostics, or `NULL`.
 #' * `.trial`---an `integer` that distinguishes trials.
 #'
-#' Most likelihood functions are directly exported but some internals routines are also documented here for convenience, namely [`pf_lik_ac_detection()`]. See also `acs_*()` functions.
+#' Most likelihood functions are directly exported but some internals routines are also documented here for convenience, namely [`.pf_lik_ac_detection()`]. See also `acs_*()` functions.
 #'
 #' Sampling functions must accept:
 #' * `.particles`

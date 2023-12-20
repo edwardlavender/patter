@@ -8,6 +8,8 @@ pf_backward_killer_diagnostics(.history, ...)
 }
 \arguments{
 \item{.history}{Particle samples, provided in any format accepted by \code{\link[=.pf_history_dt]{.pf_history_dt()}}.}
+
+\item{...}{Arguments passed to \code{\link[=.pf_history_dt]{.pf_history_dt()}}, excluding \code{.collect} with is necessarily \code{TRUE}.}
 }
 \value{
 The function returns a \code{\link{data.table}} with the following columns:
