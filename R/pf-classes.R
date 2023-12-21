@@ -15,7 +15,7 @@
 #'
 #' # `history`
 #'
-#' `history` is a `list` with one element for each time step. Each element is a [`data.table`] that contains location (particle) samples. Each row is a specific sample. The columns in this table depend on [`pf_forward()`]'s `.likelihood` function(s) and the `.return$cols` argument (see [`pf_opt_return()`]). By default, the following columns are computed:
+#' `history` is a `list` with one element for each time step. Each element is a [`data.table`] that contains location (particle) samples. Each row is a specific sample. The columns in this table depend on [`pf_forward()`]'s `.likelihood` function(s) and the `.record$cols` argument (see [`pf_opt_record()`]). By default, the following columns are computed:
 #'
 #' * `timestep`---an `integer` vector that defines the time step;
 #' * `cell_past`---an `integer` vector that identifies the grid cells of previous particle samples;

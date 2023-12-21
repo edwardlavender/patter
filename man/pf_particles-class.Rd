@@ -18,7 +18,7 @@ An S3 class that defines the named \code{list} returned by \code{\link[=pf_forwa
 }
 
 \section{\code{history}}{
-\code{history} is a \code{list} with one element for each time step. Each element is a \code{\link{data.table}} that contains location (particle) samples. Each row is a specific sample. The columns in this table depend on \code{\link[=pf_forward]{pf_forward()}}'s \code{.likelihood} function(s) and the \code{.return$cols} argument (see \code{\link[=pf_opt_return]{pf_opt_return()}}). By default, the following columns are computed:
+\code{history} is a \code{list} with one element for each time step. Each element is a \code{\link{data.table}} that contains location (particle) samples. Each row is a specific sample. The columns in this table depend on \code{\link[=pf_forward]{pf_forward()}}'s \code{.likelihood} function(s) and the \code{.record$cols} argument (see \code{\link[=pf_opt_record]{pf_opt_record()}}). By default, the following columns are computed:
 \itemize{
 \item \code{timestep}---an \code{integer} vector that defines the time step;
 \item \code{cell_past}---an \code{integer} vector that identifies the grid cells of previous particle samples;

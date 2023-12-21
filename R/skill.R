@@ -36,7 +36,7 @@
 #' * To translate observations into coordinates for mapping patterns of space use, see:
 #'     * [`coa()`] to calculate centres of activity;
 #'     * [`pf_forward()`] and [`pf_backward_*()`] to implement the forward filtering--backward sampling algorithm and [`pf_coord()`] extracts coordinates from particle samples;
-#' * To estimate utilisation distributions from simulated data and algorithm outputs, use `map_*()` functions (see [`pf_map_pou()`], [`pf_map_dens()`] and [`pf_map_hr()`]);
+#' * To estimate utilisation distributions from simulated data and algorithm outputs, use `map_*()` functions (see [`map_pou()`], [`map_dens()`] and [`map_hr()`]);
 #' @author Edward Lavender
 #' @name skill
 

@@ -56,7 +56,7 @@ Algorithm parameters should remain consistent on algorithm reruns.}
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }
 \value{
-The function returns a \code{\linkS4class{pf_particles}} object. If \code{.return$sink} is specified, two directories, \verb{\{.return$sink\}/history/} and \code{{.return$sink}/diagnostics}, are also created that contain particle samples and diagnostics. Particle samples are labelled \verb{1.parquet, 2.parquet, ..., T.parquet}, where \code{T} is the number of time steps. Diagnostics are labelled \code{A-B-C}, where \code{A}, \code{B} and \code{C} are the number of manual restarts, internal reversions and time steps. Use \code{\link[=pf_forward_diagnostics]{pf_forward_diagnostics()}} to collate diagnostics.
+The function returns a \code{\linkS4class{pf_particles}} object. If \code{.record$sink} is specified, two directories, \verb{\{.record$sink\}/history/} and \code{{.record$sink}/diagnostics}, are also created that contain particle samples and diagnostics. Particle samples are labelled \verb{1.parquet, 2.parquet, ..., T.parquet}, where \code{T} is the number of time steps. Diagnostics are labelled \code{A-B-C}, where \code{A}, \code{B} and \code{C} are the number of manual restarts, internal reversions and time steps. Use \code{\link[=pf_forward_diagnostics]{pf_forward_diagnostics()}} to collate diagnostics.
 }
 \description{
 This function runs the forward simulation of the forward filtering--backward smoothing algorithm. The forward simulation samples possible locations (particles) of an animal at each time point given the data up to (and including) that time point and a movement model.
