@@ -38,10 +38,10 @@ dstep(.data_now, .data_past, ...)
 \item{.n, .x, .shape, .scale, .mobility}{Arguments for \code{\link[=rtruncgamma]{rtruncgamma()}} and \code{\link[=dtruncgamma]{dtruncgamma()}}:
 \itemize{
 \item \code{.n} is an \code{integer} that defines the number of simulated outcome(s);
-\item \code{.x} is a \code{numeric} vector that defines step length(s);
+\item \code{.x} is a \code{numeric} vector that defines step length(s) (in the context of animal movement);
 \item \code{.shape} is a \code{numeric} value that defines the shape parameter of a Gamma distribution (see \code{\link[stats:GammaDist]{stats::rgamma()}}).
 \item \code{.scale} is a \code{numeric} value that defines the scale parameter of a Gamma distribution (see \code{\link[stats:GammaDist]{stats::rgamma()}}).
-\item \code{.mobility} is a \code{numeric} value that defines the maximum length (see \code{truncdist::rtrunc()}).
+\item \code{.mobility} is a \code{numeric} value that defines the maximum possible value (step length) (see \code{truncdist::rtrunc()}).
 }}
 
 \item{...}{Arguments passed to/from functions.}
@@ -81,7 +81,7 @@ These convenience functions support the generation of animal movement paths and 
 
 \verb{r*()} and \verb{c*()} functions are used in \emph{de novo} simulations (via \verb{sim_*()} functions such as \code{\link[=sim_path_walk]{sim_path_walk()}}) and the forward simulation-based reconstruction of movement paths (in \code{\link[=pf_forward]{pf_forward()}}).
 
-\verb{d*()} functions are used in the simulation-based reconstruction of movement paths as part of the backward sampler via \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}.
+\verb{d*()} functions are primarily used in the simulation-based reconstruction of movement paths as part of the backward sampler via \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}.
 }
 \section{Movement}{
 \subsection{Core functions}{
@@ -105,7 +105,7 @@ These convenience functions support the generation of animal movement paths and 
 
 The following wrapper functions are provided in the form required by front-end functions (e.g., \code{\link[=sim_path_walk]{sim_path_walk()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}):
 \itemize{
-\item \code{\link[=rlen]{rlen()}} is a wrapper for \code{\link[=rtruncgamma]{rtruncgamma()}}. The corresponding function \code{dlen} is not currently implemented.
+\item \code{\link[=rlen]{rlen()}} is a wrapper for \code{\link[=rtruncgamma]{rtruncgamma()}}. The corresponding function \code{dlen()} is not currently implemented.
 \item \code{\link[=rangrw]{rangrw()}}, \code{\link[=rangcrw]{rangcrw()}} are wrappers for \code{\link[=rwn]{rwn()}} for random walks and correlated random walks. The corresponding functions \code{dangrw()} and \code{dangcrw()} are not currently implemented.
 }
 }
@@ -120,9 +120,16 @@ The following wrapper functions are provided in the form required by front-end f
 
 \seealso{
 \itemize{
-\item \verb{sim_*} functions implement \emph{de novo} simulation of movements and observations;
+\item \verb{sim_*} functions implement \emph{de novo} simulation of movements and observations:
+\itemize{
+\item \code{\link{sim_helpers}} are convenience functions for simulations;
+\item \code{\link[=sim_array]{sim_array()}} simulates acoustic array(s);
+\item \code{\link[=sim_path_walk]{sim_path_walk()}} simulates movement path(s) via a walk model;
+\item \code{\link[=sim_detections]{sim_detections()}} simulates detection(s) at receivers;
+}
 \item \code{\link[=pf_forward]{pf_forward()}} implements forward simulation-based reconstruction of movement paths;
 \item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implements backward simulation-based reconstruction of movement paths;
+\item \code{\link{skill}} functions compared simulated and reconstructed patterns to evaluate model skill;
 }
 }
 \author{

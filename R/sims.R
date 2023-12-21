@@ -7,14 +7,14 @@
 #'
 #' `r*()` and `c*()` functions are used in _de novo_ simulations (via `sim_*()` functions such as [`sim_path_walk()`]) and the forward simulation-based reconstruction of movement paths (in [`pf_forward()`]).
 #'
-#' `d*()` functions are used in the simulation-based reconstruction of movement paths as part of the backward sampler via [`pf_backward_sampler()`].
+#' `d*()` functions are primarily used in the simulation-based reconstruction of movement paths as part of the backward sampler via [`pf_backward_sampler()`].
 #'
 #' @param .n,.x,.shape,.scale,.mobility Arguments for [`rtruncgamma()`] and [`dtruncgamma()`]:
 #' * `.n` is an `integer` that defines the number of simulated outcome(s);
-#' * `.x` is a `numeric` vector that defines step length(s);
+#' * `.x` is a `numeric` vector that defines step length(s) (in the context of animal movement);
 #' * `.shape` is a `numeric` value that defines the shape parameter of a Gamma distribution (see [`stats::rgamma()`]).
 #' * `.scale` is a `numeric` value that defines the scale parameter of a Gamma distribution (see [`stats::rgamma()`]).
-#' * `.mobility` is a `numeric` value that defines the maximum length (see `truncdist::rtrunc()`).
+#' * `.mobility` is a `numeric` value that defines the maximum possible value (step length) (see `truncdist::rtrunc()`).
 #'
 #' @param .mu,.rho,.sd Arguments for [`rwn()`] for the simulation of turning angles, passed to the `mu`, `rho` and `sd` arguments of [`circular::rwrappednormal()`].
 #'
@@ -57,7 +57,7 @@
 #'
 #' The following wrapper functions are provided in the form required by front-end functions (e.g., [`sim_path_walk()`] and [`pf_backward_sampler()`]):
 #'
-#' * [`rlen()`] is a wrapper for [`rtruncgamma()`]. The corresponding function `dlen` is not currently implemented.
+#' * [`rlen()`] is a wrapper for [`rtruncgamma()`]. The corresponding function `dlen()` is not currently implemented.
 #' * [`rangrw()`], [`rangcrw()`] are wrappers for [`rwn()`] for random walks and correlated random walks. The corresponding functions `dangrw()` and `dangcrw()` are not currently implemented.
 #'
 #' ## Extensions
@@ -66,9 +66,15 @@
 #' * [`dstep()`] returns the density of steps between two locations. This is only suitable for random walks (it wraps [`dtruncgamma()`] but corresponding functions for turning angles are not yet implemented).
 #'
 #' @seealso
-#' * `sim_*` functions implement _de novo_ simulation of movements and observations;
+#' * `sim_*` functions implement _de novo_ simulation of movements and observations:
+#'    * [`sim_helpers`] are convenience functions for simulations;
+#'    * [`sim_array()`] simulates acoustic array(s);
+#'    * [`sim_path_walk()`] simulates movement path(s) via a walk model;
+#'    * [`sim_detections()`] simulates detection(s) at receivers;
+#'
 #' * [`pf_forward()`] implements forward simulation-based reconstruction of movement paths;
 #' * [`pf_backward_sampler()`] implements backward simulation-based reconstruction of movement paths;
+#' * [`skill`] functions compared simulated and reconstructed patterns to evaluate model skill;
 #'
 #' @author Edward Lavender
 #' @name sim_helpers
@@ -222,11 +228,7 @@ dstep <- function(.data_now, .data_past, ...) {
 #' sim_array(.n_array = 5L, .plot = TRUE, .one_page = TRUE)
 #' sim_array(.n_array = 5L, .plot = TRUE, .one_page = FALSE)
 #'
-#' @seealso
-#' * [`sim_array()`] simulates acoustic array(s);
-#' * [`sim_path_walk()`] simulates movement path(s) via a walk model;
-#' * [`sim_detections()`] simulates detection(s) at receivers;
-#' * [`skill`] functions compared simulated and reconstructed patterns to evaluate model skill;
+#' @inherit sim_helpers seealso
 #' @author Edward Lavender
 #' @export
 
@@ -358,14 +360,10 @@ sim_array <- function(.bathy = spatTemplate(), .lonlat = FALSE,
 #' * `cell_id`, `cell_x`, `cell_y`, `cell_z`---`integer`/`numeric` vectors that define the locations of the simulated positions on `.bathy`;
 #' * `x`,`y`---`numeric` vectors that define simulated x and y coordinates;
 #' * `length`,`angle`---`numeric` vectors that define simulated step lengths and angles (for the movement from timestep `t` to time step `t + 1`);
+#'
 #' @example man/examples/sim_path_walk-examples.R
 #'
-#' @seealso
-#' * [`sim_array()`] simulates acoustic array(s);
-#' * [`sim_path_walk()`] simulates movement path(s) via a walk model;
-#' * [`sim_detections()`] simulates detection(s) at receivers;
-#' * [`skill`] functions compared simulated and reconstructed patterns to evaluate model skill;
-#'
+#' @inherit sim_helpers seealso
 #' @author Edward Lavender
 #' @name sim_path_walk
 NULL
@@ -478,12 +476,7 @@ sim_path_walk <- function(.bathy = spatTemplate(), .lonlat = FALSE,
 #'
 #' @example man/examples/sim_detections-examples.R
 #'
-#' @seealso
-#' * [`sim_array()`] simulates acoustic array(s);
-#' * [`sim_path_walk()`] simulates movement path(s) via a walk model;
-#' * [`sim_detections()`] simulates detection(s) at receivers;
-#' * [`skill`] functions compared simulated and reconstructed patterns to evaluate model skill;
-#'
+#' @inherit sim_helpers seealso
 #' @author Edward Lavender
 #' @name sim_detections
 NULL
