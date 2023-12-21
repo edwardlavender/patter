@@ -176,19 +176,9 @@ The main thrust of \code{\link{patter}} is the provision of an integrated modell
 \section{Miscellaneous helpers}{
 The following convenience functions are also made available to users of \code{\link{patter}}:
 \itemize{
-\item Operational statistics. See:
-\itemize{
-\item \code{\link[=make_matrix_receivers]{make_matrix_receivers()}} to matricise receiver deployment time series;
-}
-\item Distance calculations. See:
-\itemize{
 \item \code{\link[=dist_along_path]{dist_along_path()}} to calculate distances along a movement path;
 \item \code{\link[=degrees]{degrees()}} to create circular angles;
-}
-\item \code{\link{terra}} helpers. See:
-\itemize{
 \item \code{\link[=spatTemplate]{spatTemplate()}} to create a template \code{\link{SpatRaster}};
-}
 }
 }
 

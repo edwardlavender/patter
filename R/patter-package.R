@@ -146,15 +146,9 @@
 #'
 #' The following convenience functions are also made available to users of [`patter`]:
 #'
-#' * Operational statistics. See:
-#'     * [`make_matrix_receivers()`] to matricise receiver deployment time series;
-#'
-#' * Distance calculations. See:
-#'     * [`dist_along_path()`] to calculate distances along a movement path;
-#'     * [`degrees()`] to create circular angles;
-#'
-#' * [`terra`] helpers. See:
-#'     * [`spatTemplate()`] to create a template [`SpatRaster`];
+#' * [`dist_along_path()`] to calculate distances along a movement path;
+#' * [`degrees()`] to create circular angles;
+#' * [`spatTemplate()`] to create a template [`SpatRaster`];
 #'
 #' # Options
 #'

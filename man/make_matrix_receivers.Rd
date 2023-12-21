@@ -25,78 +25,17 @@ make_matrix_receivers(
 
 \item{.start, .end}{\code{Date} or \code{POSIXct} objects that define the start and end time. If unspecified, these are taken from the range of deployment times in \code{.moorings}.}
 
-\item{.delta_t}{A number or character that defines the time interval between successive time steps. This is passed to the \code{by} argument of \code{\link[base:seq.POSIXt]{base::seq.POSIXt()}} or \code{\link[base:seq.Date]{base::seq.Date()}} (depending on \code{as_POSIXct}, below).}
+\item{.delta_t}{A \code{numeric} or \code{character} input that defines the time interval between successive time steps. This is passed to the \code{by} argument of \code{\link[base:seq.POSIXt]{base::seq.POSIXt()}} or \code{\link[base:seq.Date]{base::seq.Date()}} (depending on \code{.as_POSIXct}, below).}
 
-\item{.as_POSIXct}{(optional) A function that coerces supplied any supplied times (\code{.dlist$data$moorings$receiver_start}, \verb{.dlist$data$$moorings$receiver_end}, \code{.dlist$data$services$service_start}, \code{.dlist$data$services$service_end}, \code{start} and \code{end}) that are not \code{POSIXct} objects to \code{POSIXct} objects. This can be suppressed via \code{as_POSIXct = NULL} if supplied times are Date objects and \code{delta_t} is not less than one day.}
+\item{.as_POSIXct}{(optional) A \code{function} that coerces supplied any supplied times (\code{.dlist$data$moorings$receiver_start}, \verb{.dlist$data$$moorings$receiver_end}, \code{.dlist$data$services$service_start}, \code{.dlist$data$services$service_end}, \code{start} and \code{end}) that are not \code{POSIXct} objects to \code{POSIXct} objects. This can be suppressed via \code{.as_POSIXct = NULL} if supplied times are \code{Date} objects and \code{.delta_t} >= one day.}
 
-\item{.set_names}{A logical variable that defines whether or not to set the row and column names of the matrix to the time steps and the receiver IDs respectively.}
+\item{.set_names}{A \code{logical} variable that defines whether or not to set the row and column names of the matrix to the time steps and the receiver IDs respectively.}
 }
 \value{
-The function returns a matrix with one row for each time step and one column for each receiver. Each cell defines whether (1) or not (0) each receiver was at active during that time step. A \code{bins} attribute is included, which defines the time steps as a Date or \code{POSIXct} vector.
+The function returns a \code{\link{matrix}} with one row for each time step and one column for each receiver. Each cell defines whether (1) or not (0) each receiver was at active during that time step. A \code{bins} attribute is included, which defines the time steps as a \code{Date} or \code{POSIXct} vector.
 }
 \description{
-This function creates a matrix that, for each time step (matrix row) in a sequence of user-defined times, defines whether or not each receiver (matrix column) was active, optionally accounting for servicing dates. The times for which to express whether or not each receiver was active are provided by optionally defining a \code{start} and \code{end} date (these can be taken from the range of deployment times in the input data if unspecified) and the interval (\code{.delta_t}) between time steps.
-}
-\examples{
-require(data.table)
-
-#### Example (1): Illustration using fake data
-# Define some example 'moorings' data with receiver IDs and deployment times
-moorings <- data.table(
-  receiver_id = c(1, 2, 3, 4, 5),
-  receiver_start = as.Date(c(
-    "2016-01-01",
-    "2016-01-02",
-    "2016-01-03",
-    "2016-01-04",
-    "2016-01-05"
-  )),
-  receiver_end = as.Date(c(
-    "2016-01-06",
-    "2016-01-07",
-    "2016-01-08",
-    "2016-01-09",
-    "2016-01-09"
-  )),
-  receiver_range = 750
-)
-## Define some example 'servicing' data with receiver IDs and servicing times
-# ... Here, receiver 1 was serviced twice
-# ... ... from 2016-01-02--3 and 2016-01-04--5
-# ... and receiver 5 was serviced
-# ... ... on 2016-01-08.
-services <- data.table(
-  receiver_id = c(1, 1, 5),
-  service_start = as.Date(c(
-    "2016-01-02",
-    "2016-01-04",
-    "2016-01-08"
-  )),
-  service_end = as.Date(c(
-    "2016-01-03",
-    "2016-01-05",
-    "2016-01-08"
-  ))
-)
-# Collect data
-dlist <- pat_setup_data(.moorings = moorings, .services = services)
-
-## Get daily receiver status (0, 1) matrix
-make_matrix_receivers(dlist, .delta_t = "days")
-
-## Get daily receiver status (0, 1) matrix
-# ... accounting for servicing dates
-make_matrix_receivers(dlist, .delta_t = "days")
-
-#### Example (2): Illustration using actual data for different time windows
-dlist      <- pat_setup_data(.moorings = dat_moorings)
-mat_days  <- make_matrix_receivers(dlist, .delta_t = "days")
-mat_hours <-
-  make_matrix_receivers(dlist,
-                        .delta_t = "hours",
-                        .as_POSIXct = \(x) as.POSIXct(paste(x, "00:00:00"), tz = "UTC"))
-str(mat_days)
-str(mat_hours)
+This function creates a matrix that, for each time step (matrix row) in a sequence of user-defined times, defines whether or not each receiver (matrix column) was active, optionally accounting for servicing dates. The timeline is defined from a user-provided \code{start} and \code{end} date (or the range of deployment times in the input data) and an interval (\code{.delta_t}) parameter that defines the duration between successive time steps.
 }
 \seealso{
 This function is used internally in \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}.
@@ -104,3 +43,4 @@ This function is used internally in \code{\link[=acs_setup_detection_kernels]{ac
 \author{
 Edward Lavender
 }
+\keyword{internal}
