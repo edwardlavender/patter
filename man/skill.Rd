@@ -30,12 +30,13 @@ skill_d(.obs, .mod)
 The functions return a number.
 }
 \description{
-These function are designed to support comparisons of simulated and reconstructed patterns of space use.
+These functions are standard model skill metrics. In \code{\link{patter}}, they support comparisons of simulated and reconstructed patterns of space use.
 }
 \details{
+We follow the mathematical definitions in Lavender et al. (2022) Supplementary Information Sect. 3.2 (see \href{https://static-content.springer.com/esm/art\%3A10.1038\%2Fs41598-022-20254-z/MediaObjects/41598_2022_20254_MOESM2_ESM.pdf}{here}).
 \itemize{
-\item \code{\link[=skill_mb]{skill_mb()}} computes mean bias.
-\item \code{\link[=skill_me]{skill_me()}} computes mean error.
+\item \code{\link[=skill_mb]{skill_mb()}} computes mean bias (if \code{.summarise = "mean"}).
+\item \code{\link[=skill_me]{skill_me()}} computes mean error (if \code{.summarise = "mean"}).
 \item \code{\link[=skill_rmse]{skill_rmse()}} computes root mean squared error.
 \item \code{\link[=skill_R]{skill_R()}} computes Spearman's rank correlation coefficient.
 \item \code{\link[=skill_d]{skill_d()}} computes the index of agreement.
@@ -55,6 +56,20 @@ skill_rmse(mod, obs)
 skill_R(mod, obs)
 skill_d(mod, obs)
 
+}
+\references{
+Lavender, E. et al. (2022). Benthic animal-borne sensors and citizen science combine to validate ocean modelling. Sci. Rep. 12: 16613. \url{https://www.doi.org/1038/s41598-022-20254-z}
+}
+\seealso{
+\itemize{
+\item To simulate observations in passive acoustic telemetry systems, see \verb{sim_*()} functions (especially \code{\link[=sim_array]{sim_array()}}, \code{\link[=sim_path_walk]{sim_path_walk()}} and \code{\link[=sim_detections]{sim_detections()}});
+\item To translate observations into coordinates for mapping patterns of space use, see:
+\itemize{
+\item \code{\link[=coa]{coa()}} to calculate centres of activity;
+\item \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_*]{pf_backward_*()}} to implement the forward filtering--backward sampling algorithm and \code{\link[=pf_coord]{pf_coord()}} extracts coordinates from particle samples;
+}
+\item To estimate utilisation distributions from simulated data and algorithm outputs, use \verb{map_*()} functions (see \code{\link[=pf_map_pou]{pf_map_pou()}}, \code{\link[=pf_map_dens]{pf_map_dens()}} and \code{\link[=pf_map_hr]{pf_map_hr()}});
+}
 }
 \author{
 Edward Lavender
