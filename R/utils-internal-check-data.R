@@ -1,13 +1,13 @@
 #' @title Utilities: check data
-#' @description These functions validate user datasets.
+#' @description These functions validate user datasets. See Details for [`patter`] requirements.
 #'
-#' @param .bathy A bathymetry [`SpatRaster`]. This is widely used as a generic grid in [`patter`] functions.
-#' @param .lonlat A `logical` variable that defines whether spatial data is in longitude/latitude format. If unsupplied, this is defined (if possible) based on the columns in `.moorings`.
+#' @param .bathy A (bathymetry) [`SpatRaster`]. This is widely used as a generic grid in [`patter`] functions.
+#' @param .lonlat A `logical` variable that defines whether spatial data is in longitude/latitude or planar format. If unsupplied, this is defined (if possible) based on the columns in `.moorings` (via [`is.lonlat()`]).
 #' @param .acoustics,.moorings,.services,.archival Movement [`data.table`]s.
-#' @param .dlist,.dataset,.spatial,.par Arguments for [`check_dlist()`].
+#' @param .dlist,.dataset,.spatial,.par,.algorithm Arguments for [`check_dlist()`].
 #'
 #' @details
-#' These are internal functions that ensure that input dataset(s) meet [`patter`] requirements. Users should implement [`pat_setup_data()`] to prepare datasets for [`patter`] functions. Downstream functions silently assume that input datasets meet all requirements, without subsequent checks. This simplifies internal code and documentation.
+#' These are internal functions that ensure that input dataset(s) meet [`patter`] requirements. Users should implement [`pat_setup_data()`] to prepare datasets for [`patter`] functions. Downstream functions (often) silently assume that input datasets meet all requirements, without subsequent checks. This simplifies internal code and documentation.
 #'
 #' * `check_bathy()` checks the bathymetry [`SpatRaster`]:
 #'    - Class: [`SpatRaster`];
@@ -20,7 +20,7 @@
 #'    - Class: [`data.table`];
 #'    - Columns:
 #'        * `timestamp`---an ordered, `POSIXct` vector of time stamps with a defined `tzone` attribute;
-#'        * `receiver_id---see `.moorings$receiver_id`;
+#'        * `receiver_id`---see `.moorings$receiver_id`;
 #'    - Properties:
 #'        * Functions assume accurate clock alignment between receivers;
 #'        * For most functions, a single time series (for one individual) is required;
@@ -28,7 +28,7 @@
 #' * `check_services()` checks acoustic servicing records:
 #'    - Class: [`data.table`];
 #'    - Columns:
-#'        * `receiver_id`---a `integer` vector of unique receiver deployments;
+#'        * `receiver_id`---see `.moorings$receiver_id`;
 #'        * `receiver_start`,`receiver_end`---`Date` vectors of service start and end dates. Before/after service events, receivers are assumed to have been deployed in the same locations; receiver deployments in different locations before/after servicing should be treated as distinct deployments in `.moorings`.
 #'    - Properties:
 #'        * Serviced receivers should be found in the `.moorings` dataset;
@@ -278,7 +278,11 @@ check_archival <- function(.archival) {
 #' @rdname check_dlist
 #' @keywords internal
 
-check_dlist <- function(.dlist, .dataset = NULL, .spatial = NULL, .par = NULL, .algorithm = NULL) {
+check_dlist <- function(.dlist,
+                        .dataset = NULL,
+                        .spatial = NULL,
+                        .par = NULL,
+                        .algorithm = NULL) {
   check_named_list(.dlist)
   check_names(.dlist, c("data", "spatial", "pars", "algorithm"))
   check_not_null(input = .dlist$data, req = .dataset)

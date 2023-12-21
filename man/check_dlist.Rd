@@ -28,22 +28,22 @@ check_dlist(
 )
 }
 \arguments{
-\item{.bathy}{A bathymetry \code{\link{SpatRaster}}. This is widely used as a generic grid in \code{\link{patter}} functions.}
+\item{.bathy}{A (bathymetry) \code{\link{SpatRaster}}. This is widely used as a generic grid in \code{\link{patter}} functions.}
 
 \item{.acoustics, .moorings, .services, .archival}{Movement \code{\link{data.table}}s.}
 
-\item{.lonlat}{A \code{logical} variable that defines whether spatial data is in longitude/latitude format. If unsupplied, this is defined (if possible) based on the columns in \code{.moorings}.}
+\item{.lonlat}{A \code{logical} variable that defines whether spatial data is in longitude/latitude or planar format. If unsupplied, this is defined (if possible) based on the columns in \code{.moorings} (via \code{\link[=is.lonlat]{is.lonlat()}}).}
 
-\item{.dlist, .dataset, .spatial, .par}{Arguments for \code{\link[=check_dlist]{check_dlist()}}.}
+\item{.dlist, .dataset, .spatial, .par, .algorithm}{Arguments for \code{\link[=check_dlist]{check_dlist()}}.}
 }
 \value{
 Each function returns the input dataset, as described, formatted in line with \code{\link{patter}}'s requirements.
 }
 \description{
-These functions validate user datasets.
+These functions validate user datasets. See Details for \code{\link{patter}} requirements.
 }
 \details{
-These are internal functions that ensure that input dataset(s) meet \code{\link{patter}} requirements. Users should implement \code{\link[=pat_setup_data]{pat_setup_data()}} to prepare datasets for \code{\link{patter}} functions. Downstream functions silently assume that input datasets meet all requirements, without subsequent checks. This simplifies internal code and documentation.
+These are internal functions that ensure that input dataset(s) meet \code{\link{patter}} requirements. Users should implement \code{\link[=pat_setup_data]{pat_setup_data()}} to prepare datasets for \code{\link{patter}} functions. Downstream functions (often) silently assume that input datasets meet all requirements, without subsequent checks. This simplifies internal code and documentation.
 \itemize{
 \item \code{check_bathy()} checks the bathymetry \code{\link{SpatRaster}}:
 \itemize{
@@ -61,7 +61,7 @@ These are internal functions that ensure that input dataset(s) meet \code{\link{
 \item Columns:
 \itemize{
 \item \code{timestamp}---an ordered, \code{POSIXct} vector of time stamps with a defined \code{tzone} attribute;
-\item \code{receiver_id---see }.moorings$receiver_id`;
+\item \code{receiver_id}---see \code{.moorings$receiver_id};
 }
 \item Properties:
 \itemize{
@@ -74,7 +74,7 @@ These are internal functions that ensure that input dataset(s) meet \code{\link{
 \item Class: \code{\link{data.table}};
 \item Columns:
 \itemize{
-\item \code{receiver_id}---a \code{integer} vector of unique receiver deployments;
+\item \code{receiver_id}---see \code{.moorings$receiver_id};
 \item \code{receiver_start},\code{receiver_end}---\code{Date} vectors of service start and end dates. Before/after service events, receivers are assumed to have been deployed in the same locations; receiver deployments in different locations before/after servicing should be treated as distinct deployments in \code{.moorings}.
 }
 \item Properties:
