@@ -34,7 +34,7 @@ pf_path(
 }
 }}
 
-\item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options)}
+\item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }
 \value{
 The function returns a long- or wide-format \code{\link{data.table}} (see \code{.return}).
