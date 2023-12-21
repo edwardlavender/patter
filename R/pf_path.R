@@ -18,8 +18,7 @@
 #'
 #' @example man/examples/pf_path-examples.R
 #'
-#' @seealso
-#' TO DO
+#' @inherit pf_forward seealso
 #'
 #' @author Edward Lavender
 #' @export

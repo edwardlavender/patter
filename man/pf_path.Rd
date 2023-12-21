@@ -64,13 +64,18 @@ stopifnot(all.equal(p1, p2))
 p3 <- pf_path(out_pfbk$history, gebco, obs, .cols = "depth")
 head(p3)
 
-#### Example (4): Control messages
-# Suppress messages
-p4 <- pf_path(out_pfbk$history, .verbose = FALSE)
-# Write messages to log
+#### Example (4): Adjust standard `patter-progress` options
+# Use a log.txt file
 log.txt <- tempfile(fileext = ".txt")
 p4 <- pf_path(out_pfbk$history, .verbose = log.txt)
 readLines(log.txt)
+unlink(log.txt)
+# Suppress `.verbose`
+p4 <- pf_path(out_pfbk$history, .verbose = FALSE)
+# Suppress progress bar
+pbo <- pbapply::pboptions(type = "n")
+p4 <- pf_path(out_pfbk$history)
+pbapply::pboptions(pbo)
 
 #### Example (5): Examine outputs
 # Load packages
@@ -82,24 +87,42 @@ gebco <- dat_gebco()
 p5 <-
   p3 |>
   group_by(path_id) |>
-  mutate(
-    dist = terra::distance(cbind(cell_x, cell_y),
-                           lonlat = FALSE, sequential = TRUE))
+  mutate(dist = dist_along_path(cbind(cell_x, cell_y))) |>
+  as.data.table()
 max(p5$dist, na.rm = TRUE)
 # Visualise example path
 terra::plot(gebco)
 path_1 <- p5[p5$path_id == 1, ]
 s <- seq_len(nrow(path_1))
-graphics::arrows(x0 = path_1$cell_x[s], x1 = path_1$cell_x[s + 1],
-                 y0 = path_1$cell_y[s], y1 = path_1$cell_y[s + 1],
-                 length = 0.02)
+arrows(x0 = path_1$cell_x[s], x1 = path_1$cell_x[s + 1],
+       y0 = path_1$cell_y[s], y1 = path_1$cell_y[s + 1],
+       length = 0.02)
 
 #### Example (6): Change output format
 p6 <- pf_path(out_pfbk$history, .return = "wide")
 str(p6)
 }
 \seealso{
-TO DO
+The forward filtering--backward sampling algorithm samples locations (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
+\itemize{
+\item To set up data, use \code{\link[=pat_setup_data]{pat_setup_data()}}.
+\item \code{\link[=pf_forward]{pf_forward()}} implements the forward filter:
+\itemize{
+\item To set up an observations timeline, use \code{\link[=pf_setup_obs]{pf_setup_obs()}}.
+\item For proposal (movement) models, see \code{\link{pf_propose}}.
+\item For likelihood functions, to evaluate the likelihood of the data at proposal locations, see \code{\link{pf_lik}}.
+\item For sampling functions, to (re)sample plausible proposal locations, see \code{\link{pf_sample}}.
+\item For tuning parameters, see \code{\link{pf_opt}}.
+}
+\item \code{\link[=pf_backward_*]{pf_backward_*()}} refines outputs from the forward filter:
+\itemize{
+\item \code{\link[=pf_backward_killer]{pf_backward_killer()}} removes dead-ends;
+\item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implements the backward sampler;
+}
+\item To reconstruct movement paths from particle samples, use \code{\link[=pf_path]{pf_path()}}.
+\item To map emergent patterns of space use, use \code{\link[=pf_coord]{pf_coord()}} plus a \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()}.
+\item For additional utilities, see supporting \verb{pf_*()} functions, such as \code{\link[=pf_files]{pf_files()}} and \code{\link[=pf_files_size]{pf_files_size()}}.
+}
 }
 \author{
 Edward Lavender

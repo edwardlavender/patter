@@ -16,13 +16,18 @@ stopifnot(all.equal(p1, p2))
 p3 <- pf_path(out_pfbk$history, gebco, obs, .cols = "depth")
 head(p3)
 
-#### Example (4): Control messages
-# Suppress messages
-p4 <- pf_path(out_pfbk$history, .verbose = FALSE)
-# Write messages to log
+#### Example (4): Adjust standard `patter-progress` options
+# Use a log.txt file
 log.txt <- tempfile(fileext = ".txt")
 p4 <- pf_path(out_pfbk$history, .verbose = log.txt)
 readLines(log.txt)
+unlink(log.txt)
+# Suppress `.verbose`
+p4 <- pf_path(out_pfbk$history, .verbose = FALSE)
+# Suppress progress bar
+pbo <- pbapply::pboptions(type = "n")
+p4 <- pf_path(out_pfbk$history)
+pbapply::pboptions(pbo)
 
 #### Example (5): Examine outputs
 # Load packages
@@ -34,17 +39,16 @@ gebco <- dat_gebco()
 p5 <-
   p3 |>
   group_by(path_id) |>
-  mutate(
-    dist = terra::distance(cbind(cell_x, cell_y),
-                           lonlat = FALSE, sequential = TRUE))
+  mutate(dist = dist_along_path(cbind(cell_x, cell_y))) |>
+  as.data.table()
 max(p5$dist, na.rm = TRUE)
 # Visualise example path
 terra::plot(gebco)
 path_1 <- p5[p5$path_id == 1, ]
 s <- seq_len(nrow(path_1))
-graphics::arrows(x0 = path_1$cell_x[s], x1 = path_1$cell_x[s + 1],
-                 y0 = path_1$cell_y[s], y1 = path_1$cell_y[s + 1],
-                 length = 0.02)
+arrows(x0 = path_1$cell_x[s], x1 = path_1$cell_x[s + 1],
+       y0 = path_1$cell_y[s], y1 = path_1$cell_y[s + 1],
+       length = 0.02)
 
 #### Example (6): Change output format
 p6 <- pf_path(out_pfbk$history, .return = "wide")
