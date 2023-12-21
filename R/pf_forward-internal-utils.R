@@ -227,13 +227,13 @@ NULL
 
 # Choose whether or not to implement directed sampling
 .pf_trial_sampler <- function(.diagnostics, .trial_crit) {
-  opt_1 <- length(.diagnostics) == 0L
-  if (opt_1) {
-    return(TRUE)
-  }
-  pos  <- fnrow(.diagnostics[["kick"]])
-  crit <- .diagnostics[["kick"]]$n_u[pos]
-  crit < .trial_crit
+ if (!rlang::has_name(.diagnostics, "kick")) {
+   return(TRUE)
+ } else {
+   pos  <- fnrow(.diagnostics[["kick"]])
+   crit <- .diagnostics[["kick"]]$n_u[pos]
+   return(crit < .trial_crit)
+ }
 }
 
 #' @rdname pf_forward-utils
