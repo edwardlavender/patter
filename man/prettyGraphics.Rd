@@ -5,7 +5,7 @@
 \alias{one_page}
 \alias{par_mf}
 \alias{add_sp_path}
-\title{\code{prettyGraphics} helpers in \code{\link{patter}}}
+\title{\href{https://github.com/edwardlavender/prettyGraphics}{\code{prettyGraphics}} helpers in \code{\link{patter}}}
 \usage{
 one_page(.one_page, .n = 1L)
 
@@ -14,11 +14,13 @@ par_mf(.n)
 add_sp_path(x, y = NULL, ...)
 }
 \description{
-\code{prettyGraphics} helpers in \code{\link{patter}}
+These functions are internal plotting routines in \code{\link{patter}} taken or modified from the \href{https://github.com/edwardlavender/prettyGraphics}{\code{prettyGraphics}} package.
+}
+\details{
+Unlike the predecessor \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package, \code{\link{patter}} does not import \code{\link{prettyGraphics}}, so the default plotting routines are much less advanced. This may be improved in future, depending on user feedback.
 }
 \examples{
 \dontrun{
-
 #### Example (1): one_page() implementation
 f <- function() {
   pp <- one_page(TRUE, 2)
@@ -29,5 +31,8 @@ f <- function() {
 f()
 plot(1)
 }
+}
+\author{
+Edward Lavender
 }
 \keyword{internal}

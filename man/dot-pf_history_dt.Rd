@@ -15,7 +15,7 @@
 \item A \code{list} of file paths (e.g., from \code{\link[=pf_files]{pf_files()}});
 }}
 
-\item{...}{If \code{.history} is a directory, \code{...} additional arguments can be passed to \code{\link[arrow:open_dataset]{arrow::open_dataset()}} via \code{...}.}
+\item{...}{If \code{.history} is a directory, additional arguments can be passed to \code{\link[arrow:open_dataset]{arrow::open_dataset()}} via \code{...}.}
 
 \item{.collect}{If \code{.history} is a directory, \code{.collect} is a \code{logical} variable that defines whether or not to collect the dataset in memory.}
 }
@@ -27,7 +27,7 @@ This function collates particle histories into a single \code{\link{data.table}}
 }
 \details{
 \enumerate{
-\item If \code{.history} is a \code{\linkS4class{pf_particles}} object, or the history element of such an object, \code{data.table::rbindlist(..., fill = TRUE)} is used to combine particle samples.
+\item If \code{.history} is a \code{\linkS4class{pf_particles}} object, or the \code{history} element of such an object, \code{data.table::rbindlist(..., fill = TRUE)} is used to combine particle samples.
 \item If \code{.history} is a folder, \code{\link[arrow:open_dataset]{arrow::open_dataset()}} plus (optionally) \code{\link[dplyr:compute]{dplyr::collect()}} is used. Additional arguments, such as \code{schema} can be passed to \code{\link[arrow:open_dataset]{arrow::open_dataset()}} via \code{...}.
 \item If \code{.history} is a \code{list} of parquet files, files are iteratively read into memory (via \code{\link[arrow:read_parquet]{arrow::read_parquet()}}) and combined (via \code{data.table::rbindlist(..., fill = TRUE)}. This option is much slower than option 2.
 }

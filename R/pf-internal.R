@@ -5,12 +5,12 @@
 #' * The `history` element of a [`pf_particles-class`] object;
 #' * A `character` string that defines the directory containing parquet files;
 #' * A `list` of file paths (e.g., from [`pf_files()`]);
-#' @param ... If `.history` is a directory, `...` additional arguments can be passed to [`arrow::open_dataset()`] via `...`.
+#' @param ... If `.history` is a directory, additional arguments can be passed to [`arrow::open_dataset()`] via `...`.
 #' @param .collect If `.history` is a directory, `.collect` is a `logical` variable that defines whether or not to collect the dataset in memory.
 #'
 #' @details
 #'
-#' 1. If `.history` is a [`pf_particles-class`] object, or the history element of such an object, `data.table::rbindlist(..., fill = TRUE)` is used to combine particle samples.
+#' 1. If `.history` is a [`pf_particles-class`] object, or the `history` element of such an object, `data.table::rbindlist(..., fill = TRUE)` is used to combine particle samples.
 #'
 #' 2. If `.history` is a folder, [`arrow::open_dataset()`] plus (optionally) [`dplyr::collect()`] is used. Additional arguments, such as `schema` can be passed to [`arrow::open_dataset()`] via `...`.
 #'
