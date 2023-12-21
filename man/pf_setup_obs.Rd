@@ -26,11 +26,17 @@ At least one dataset must be provided. Data should be given \strong{for a single
 
 \item{.step}{An character, passed to \code{\link[lubridate:period]{lubridate::period()}}, \code{\link[lubridate:round_date]{lubridate::round_date()}} and \code{\link[=seq]{seq()}} that defines the duration between sequential time steps (e.g., \code{"2 mins"}).}
 
-\item{.period}{(optional) A length-two \code{POSIXct} vector that defines the start and end time of the observations. If unprovided, this is defined internally according to inputted movement datasets and \code{.trim}.}
+\item{.period}{(optional) A length-two \code{POSIXct} vector that defines the start and end time for the timeline. If unprovided, this is defined internally according to inputted movement datasets and \code{.trim}::
+\itemize{
+\item If only \code{acoustics = .dlist$data$acoustics} is provided, \code{.period} is taken as \code{range(acoustics$timestamp)}.
+\item If only \code{archival = .dlist$data$archival} is provided, \code{.period} is taken as \code{range(archival$timestamp)}.
+\item If both datasets are provided and \code{.trim = FALSE}, \code{.period} is defined as \code{range(c(acoustics$timestamp, archival$timestamp))}.
+\item If both datasets are provided and \code{.trim = TRUE}, \code{.period} is defined as the range in timestamps for the overlapping region.
+}}
 
 \item{.mobility}{A constant that defines the maximum (Euclidean) distance the individual could move in \code{.step}.}
 
-\item{.detection_range}{A constant that defines the detection range. A constant value across all receivers and time steps is assumed.}
+\item{.detection_range}{A constant that defines the detection range. A constant value across all receivers and time steps is currently assumed (although receiver-specific detection kernels within this range are supported by \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}).}
 }
 \value{
 The function returns a \code{\link{data.table}} with the following columns:
@@ -62,10 +68,10 @@ If archival data is provided, the following column(s) are also included:
 To calculate the likelihood of archival observations in \code{\link[=pf_forward]{pf_forward()}} by the default \code{\link[=pf_lik_dc]{pf_lik_dc()}} routine, a depth envelope (as defined by \code{depth_deep} and \code{depth_shallow} columns) is also required (see \code{\link[=pf_lik_dc]{pf_lik_dc()}}).
 }
 \description{
-This function builds a timeline of observations for particle filtering. The forward filter (\code{\link[=pf_forward]{pf_forward()}}) iterates over this timeline. At each time step, the algorithm proposes candidate locations for an individual, evaluates the likelihood of each observation in the timeline (e.g., acoustic and/or archival observations) and (re)samples valid locations using likelihood-based weights.
+This function builds a timeline of observations for particle filtering. The forward filter (\code{\link[=pf_forward]{pf_forward()}}) iterates over this timeline. At each time step, the algorithm proposes candidate locations for an individual, evaluates the likelihood of each observation (e.g., acoustic and/or archival data) in the timeline at the current time step  and (re)samples valid locations using likelihood-based weights.
 }
 \details{
-This function defines the timeline of observations over which \code{\link[=pf_forward]{pf_forward()}} is implemented.The function implements the following routines:
+This function defines the timeline of observations over which \code{\link[=pf_forward]{pf_forward()}} is implemented. The function implements the following routines:
 \itemize{
 \item Acoustic progressing (if applicable);
 \itemize{
@@ -76,7 +82,7 @@ This function defines the timeline of observations over which \code{\link[=pf_fo
 \item Archival processing (if applicable);
 \itemize{
 \item Archival time series are rounded to the nearest \code{.step};
-\item Duplicate records (in the same time interval) are not permitted;
+\item Multiple records (in the same time interval) are not permitted (in this instance, you need to aggregate observations manually or reduce \code{.step});
 }
 \item Alignment (if applicable)
 \itemize{
@@ -139,9 +145,25 @@ head(obs)
 tail(obs)
 }
 \seealso{
-For \code{\link[=pf_setup_obs]{pf_setup_obs()}} specifically:
+The forward filtering--backward sampling algorithm samples locations (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
 \itemize{
-\item \href{https://edwardlavender.github.io/flapper/reference/process_receiver_id.html}{\code{process_receiver_ids}} in the \href{https://edwardlavender.github.io/flapper/reference/process_receiver_id.html}{\code{flapper}} package can be used to define receiver deployments using an integer vector.
+\item To set up data, use \code{\link[=pat_setup_data]{pat_setup_data()}}.
+\item \code{\link[=pf_forward]{pf_forward()}} implements the forward filter:
+\itemize{
+\item To set up an observations timeline, use \code{\link[=pf_setup_obs]{pf_setup_obs()}}.
+\item For proposal (movement) models, see \code{\link{pf_propose}}.
+\item For likelihood functions, to evaluate the likelihood of the data at proposal locations, see \code{\link{pf_lik}}.
+\item For sampling functions, to (re)sample plausible proposal locations, see \code{\link{pf_sample}}.
+\item For tuning parameters, see \code{\link{pf_opt}}.
+}
+\item \code{\link[=pf_backward_*]{pf_backward_*()}} refines outputs from the forward filter:
+\itemize{
+\item \code{\link[=pf_backward_killer]{pf_backward_killer()}} removes dead-ends;
+\item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implements the backward sampler;
+}
+\item To reconstruct movement paths from particle samples, use \code{\link[=pf_path]{pf_path()}}.
+\item To map emergent patterns of space use, use \code{\link[=pf_coord]{pf_coord()}} plus a \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()}.
+\item For additional utilities, see supporting \verb{pf_*()} functions, such as \code{\link[=pf_files]{pf_files()}} and \code{\link[=pf_files_size]{pf_files_size()}}.
 }
 }
 \author{

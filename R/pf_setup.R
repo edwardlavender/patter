@@ -1,5 +1,5 @@
 #' @title PF: set up movement datasets
-#' @description This function builds a timeline of observations for particle filtering. The forward filter ([`pf_forward()`]) iterates over this timeline. At each time step, the algorithm proposes candidate locations for an individual, evaluates the likelihood of each observation in the timeline (e.g., acoustic and/or archival observations) and (re)samples valid locations using likelihood-based weights.
+#' @description This function builds a timeline of observations for particle filtering. The forward filter ([`pf_forward()`]) iterates over this timeline. At each time step, the algorithm proposes candidate locations for an individual, evaluates the likelihood of each observation (e.g., acoustic and/or archival data) in the timeline at the current time step  and (re)samples valid locations using likelihood-based weights.
 #'
 #' @param .dlist A named `list` of data and parameters from [`pat_setup_data()`]. This function requires:
 #' * (optional) `.dlist$data$acoustics`, with the following columns: `timestamp` and `receiver_id`.
@@ -9,12 +9,16 @@
 #'
 #' @param .trim If both acoustic and archival data are supplied, `.trim` is `logical` variable that defines whether or not to trim the time series to the time period for which they overlap.
 #' @param .step An character, passed to [`lubridate::period()`], [`lubridate::round_date()`] and [`seq()`] that defines the duration between sequential time steps (e.g., `"2 mins"`).
-#' @param .period (optional) A length-two `POSIXct` vector that defines the start and end time of the observations. If unprovided, this is defined internally according to inputted movement datasets and `.trim`.
+#' @param .period (optional) A length-two `POSIXct` vector that defines the start and end time for the timeline. If unprovided, this is defined internally according to inputted movement datasets and `.trim`::
+#' * If only `acoustics = .dlist$data$acoustics` is provided, `.period` is taken as `range(acoustics$timestamp)`.
+#' * If only `archival = .dlist$data$archival` is provided, `.period` is taken as `range(archival$timestamp)`.
+#' * If both datasets are provided and `.trim = FALSE`, `.period` is defined as `range(c(acoustics$timestamp, archival$timestamp))`.
+#' * If both datasets are provided and `.trim = TRUE`, `.period` is defined as the range in timestamps for the overlapping region.
 #' @param .mobility A constant that defines the maximum (Euclidean) distance the individual could move in `.step`.
-#' @param .detection_range A constant that defines the detection range. A constant value across all receivers and time steps is assumed.
+#' @param .detection_range A constant that defines the detection range. A constant value across all receivers and time steps is currently assumed (although receiver-specific detection kernels within this range are supported by [`acs_setup_detection_kernels()`]).
 #'
 #' @details
-#' This function defines the timeline of observations over which [`pf_forward()`] is implemented.The function implements the following routines:
+#' This function defines the timeline of observations over which [`pf_forward()`] is implemented. The function implements the following routines:
 #'
 #' * Acoustic progressing (if applicable);
 #'    - Acoustic time series are rounded to the nearest `.step`;
@@ -23,7 +27,7 @@
 #'
 #' * Archival processing (if applicable);
 #'    - Archival time series are rounded to the nearest `.step`;
-#'    - Duplicate records (in the same time interval) are not permitted;
+#'    - Multiple records (in the same time interval) are not permitted (in this instance, you need to aggregate observations manually or reduce `.step`);
 #'
 #' * Alignment (if applicable)
 #'    - Acoustic and archival time series are optionally trimmed to the time period for which they overlap;
@@ -58,10 +62,7 @@
 #'
 #' @example man/examples/pf_setup_obs-examples.R
 #'
-#' @seealso
-#' For [`pf_setup_obs()`] specifically:
-#'  * [`process_receiver_ids`](https://edwardlavender.github.io/flapper/reference/process_receiver_id.html) in the [`flapper`](https://edwardlavender.github.io/flapper/reference/process_receiver_id.html) package can be used to define receiver deployments using an integer vector.
-#'
+#' @inherit pf_forward seealso
 #' @author Edward Lavender
 #' @export
 
@@ -107,6 +108,11 @@ pf_setup_obs <- function(.dlist,
   if (!is.null(archival)) {
     timestamp <- NULL
     archival[, timestamp := lubridate::round_date(timestamp, .step)]
+    # Validate duplicate observations
+    tbl <- table(archival$timestamp)
+    if (any(tbl > 1L)) {
+      abort("Multiple observations per `.step` in archival data are not currently supported. Are there multiple individuals in the archival data?")
+    }
   }
 
   #### Align time series
