@@ -33,7 +33,7 @@ The functions return a number.
 These functions are standard model skill metrics. In \code{\link{patter}}, they support comparisons of simulated and reconstructed patterns of space use.
 }
 \details{
-We follow the mathematical definitions in Lavender et al. (2022) Supplementary Information Sect. 3.2 (see \href{https://static-content.springer.com/esm/art\%3A10.1038\%2Fs41598-022-20254-z/MediaObjects/41598_2022_20254_MOESM2_ESM.pdf}{here}).
+We follow the mathematical definitions in Lavender et al. (2022) Supplementary Information Sect. 3.2.1 (see \href{https://static-content.springer.com/esm/art\%3A10.1038\%2Fs41598-022-20254-z/MediaObjects/41598_2022_20254_MOESM2_ESM.pdf}{here}).
 \itemize{
 \item \code{\link[=skill_mb]{skill_mb()}} computes mean bias (if \code{.summarise = "mean"}).
 \item \code{\link[=skill_me]{skill_me()}} computes mean error (if \code{.summarise = "mean"}).

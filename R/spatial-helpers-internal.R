@@ -1,10 +1,12 @@
-#' @title Spatial helper: identify lon/lat moorings
-#' @description This function identifies moorings data in lon/lat format.
-#' @param .data A [`data.table`] with `receiver_easting` and `receiver_northing` or `receiver_lon` and `receiver_lat` columns (i.e., [`dat_moorings`]).
-#' @return A logical variable that defines whether or not to use longitude/latitude coordinates.
+#' @title Spatial helper: internals
+#' @description These functions are internal spatial helpers.
 #' @author Edward Lavender
+#' @name spatial_helpers
+
+#' @rdname spatial_helpers
 #' @keywords internal
 
+# Check if .moorings data are in lon/lat format
 .is_lonlat <- function(.data) {
   is_utm <- is_lonlat <- FALSE
   if (all(c("receiver_easting", "receiver_northing") %in% colnames(.data))) {
@@ -35,13 +37,11 @@
   is_lonlat
 }
 
-#' @title Spatial helper: calculate the centre of mass of weighted coordinates
-#' @description This is a wrapper for `geosphere::geomean()` that handles one-row matrices.
-#' @param xy,w Arguments passed to `geosphere::geomean()`.
-#' @details This function uses the internal code of `geosphere::geomean()` without the checks of the `.pointsToMatrix()` function.
-#' @author Edward Lavender
+#' @rdname spatial_helpers
 #' @keywords internal
 
+# An internal definition of `geosphere::geomean()`
+# (without the checks of the `.pointsToMatrix()` function)
 geomean <- function(xy, w = NULL) {
   if (nrow(xy) == 1L) {
     xy
