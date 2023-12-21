@@ -196,7 +196,7 @@ expect_true(out_pff$convergence)
 head(out_pff$diagnostics, 50L)
 out_pff$diagnostics |>
   group_by(.data$timestep) |>
-  summarise(n = max(.data$trial))
+  summarise(n = max(.data$trial, na.rm = TRUE))
 
 # (D) Increase `.trial_revert` args to improve convergence
 # > `.trial_revert` forces the  algorithm to revert to an earlier
