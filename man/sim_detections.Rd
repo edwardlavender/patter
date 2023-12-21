@@ -50,7 +50,7 @@ calc_detection_pr_logistic(.distance, .alpha = 4, .beta = -0.01, .gamma = 750)
 
 \item{.sim_obs}{A function that simulates detections (0, 1), such as \code{\link[stats:Binomial]{stats::rbinom()}}. This must accept three arguments:
 \itemize{
-\item \code{n}---an \code{integer} that defines the number of outcomes to simulate
+\item \code{n}---an \code{integer} that defines the number of outcomes to simulate;
 \item \code{size}---an \code{integer} that defines the number of trials (\code{size = 1});
 \item \code{prob}---a \code{numeric} vector that defines detection probabilities;
 }}

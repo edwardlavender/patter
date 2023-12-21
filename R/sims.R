@@ -317,12 +317,12 @@ sim_array <- function(.bathy = spatTemplate(), .lonlat = FALSE,
 #' @title Simulation: movement walks
 #' @description [`sim_path_walk()`] facilitates the simulation of discrete-time animal movement paths from walk models (e.g., random walks, biased random walks, correlated random walks).
 #'
-#' @param .bathy A [`SpatRaster`] that defines the region within which movements are simulated. Movements are simulated in continuous space but restricted within the boundaries defined by `.bathy` and non-NA regions.
-#' @param .lonlat A `logical` variable that defines whether or not `.bathy` uses longitude/latitude coordinates.
+#' @param .bathy A [`SpatRaster`] that defines the region within which movements are simulated. Movements are simulated in continuous space but restricted within the boundaries defined by `.bathy` and non-`NA` regions.
+#' @param .lonlat A `logical` variable that defines whether or not `.bathy` uses longitude/latitude or planar coordinates.
 #' @param .origin (optional) A one-row, two-column matrix that defines the origin. If unsupplied, `.origin` is sampled at random from `.bathy`. One origin is used for all simulated paths (see `.n_path`).
 #' @param .n_step An `integer` that defines the number of time steps.
 #' @param .timestamp (optional) A vector of time stamps, one for each time step, for inclusion in the output [`data.table`] as a `timestamp` column.
-#' @param .sim_length,.sim_angle,... Functions and accompanying arguments that simulate step lengths and turning angle. Simulated step lengths should be in map units (e.g., metres) if `.lonlat = FALSE` or metres if `.lonlat = TRUE`. Turning angles should be in degrees. The functions must accept four named arguments, even if unused:
+#' @param .sim_length,.sim_angle,... Functions and accompanying arguments that simulate step lengths and turning angles. Simulated step lengths should be in map units (e.g., metres) if `.lonlat = FALSE` or metres if `.lonlat = TRUE`. Turning angles should be in degrees. The functions must accept four named arguments, even if unused:
 #' * `.n`---an `integer` that defines the number of simulated outcome(s);
 #' * `.prior`---a `numeric` vector that defines the simulated value(s) from the previous time step;
 #' * `.t`---an `integer` that defines the time step;
@@ -330,7 +330,7 @@ sim_array <- function(.bathy = spatTemplate(), .lonlat = FALSE,
 #'
 #' If `.prior` is used, the function should be able to handle the first time step (when `.prior` is set to `NULL`). See [`rangcrw()`] (below) for an example.
 #'
-#' Note that `...` is passed down from [`sim_path_walk()`] to both `.sim_length` and `.sim_angle` so care is required to ensure that `...` parameters are handled correctly).
+#' Note that `...` is passed down from [`sim_path_walk()`] to both `.sim_length` and `.sim_angle` so care is required to ensure that `...` parameters are handled correctly.
 #'
 #' The following template functions are provided:
 #' * [`rlen()`] is an example `.sim_length` function that simulates step lengths from a truncated Gamma distribution (via [`rtruncgamma()`]);
@@ -356,8 +356,8 @@ sim_array <- function(.bathy = spatTemplate(), .lonlat = FALSE,
 #' `.lonlat` support is experimental. Be especially careful with correlated random walks if `lonlat = TRUE`. On an ellipsoid, the initial (simulated) bearing is not the same as the final bearing, but is not currently updated.
 #'
 #' @return [`sim_path_walk()`] returns a [`data.table`] with 10 columns:
-#' * `path_id`--- an `integer` that identifies each path;
-#' * `timestep`---an `integer` that defines the time step;
+#' * `path_id`--- an `integer` vector that identifies each path;
+#' * `timestep`---an `integer` vector that defines the time step;
 #' * `cell_id`, `cell_x`, `cell_y`, `cell_z`---`integer`/`numeric` vectors that define the locations of the simulated positions on `.bathy`;
 #' * `x`,`y`---`numeric` vectors that define simulated x and y coordinates;
 #' * `length`,`angle`---`numeric` vectors that define simulated step lengths and angles (for the movement from timestep `t` to time step `t + 1`);
@@ -450,7 +450,7 @@ sim_path_walk <- function(.bathy = spatTemplate(), .lonlat = FALSE,
 #' * `lonlat`, a `logical` variable that defines whether or not path/array coordinates are in longitude/latitude format (defined by `.lonlat`);
 #' @param .calc_detection_pr,... A function that calculates detection probabilities. A [`data.table`] is passed to this function that defines, for each path point, the distance to each corresponding receiver (in a column called `dist`). All other variables in `.paths` and `.arrays` are also available in this [`data.table`]. This makes it possible to specify a wide variety of detection probability models (see Examples). [`calc_detection_pr()`] function is an example that wraps [`calc_detection_pr_logistic()`], which implements a standard, distance-dependent logistic detection probability model. Other arguments can be passed to `.calc_detection_pr` via `...`.
 #' @param .sim_obs A function that simulates detections (0, 1), such as [`stats::rbinom()`]. This must accept three arguments:
-#' * `n`---an `integer` that defines the number of outcomes to simulate
+#' * `n`---an `integer` that defines the number of outcomes to simulate;
 #' * `size`---an `integer` that defines the number of trials (`size = 1`);
 #' * `prob`---a `numeric` vector that defines detection probabilities;
 #' @param .type If `.paths` and `.arrays` contain multiple paths/arrays, `.type` is a `character` that defines whether or not to simulate detections for each path/array pair (`.type = "pairwise"`) or for all combinations of paths/arrays (`type = "combinations"`).

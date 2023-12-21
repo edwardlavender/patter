@@ -19,9 +19,9 @@ sim_path_walk(
 )
 }
 \arguments{
-\item{.bathy}{A \code{\link{SpatRaster}} that defines the region within which movements are simulated. Movements are simulated in continuous space but restricted within the boundaries defined by \code{.bathy} and non-NA regions.}
+\item{.bathy}{A \code{\link{SpatRaster}} that defines the region within which movements are simulated. Movements are simulated in continuous space but restricted within the boundaries defined by \code{.bathy} and non-\code{NA} regions.}
 
-\item{.lonlat}{A \code{logical} variable that defines whether or not \code{.bathy} uses longitude/latitude coordinates.}
+\item{.lonlat}{A \code{logical} variable that defines whether or not \code{.bathy} uses longitude/latitude or planar coordinates.}
 
 \item{.origin}{(optional) A one-row, two-column matrix that defines the origin. If unsupplied, \code{.origin} is sampled at random from \code{.bathy}. One origin is used for all simulated paths (see \code{.n_path}).}
 
@@ -29,7 +29,7 @@ sim_path_walk(
 
 \item{.timestamp}{(optional) A vector of time stamps, one for each time step, for inclusion in the output \code{\link{data.table}} as a \code{timestamp} column.}
 
-\item{.sim_length, .sim_angle, ...}{Functions and accompanying arguments that simulate step lengths and turning angle. Simulated step lengths should be in map units (e.g., metres) if \code{.lonlat = FALSE} or metres if \code{.lonlat = TRUE}. Turning angles should be in degrees. The functions must accept four named arguments, even if unused:
+\item{.sim_length, .sim_angle, ...}{Functions and accompanying arguments that simulate step lengths and turning angles. Simulated step lengths should be in map units (e.g., metres) if \code{.lonlat = FALSE} or metres if \code{.lonlat = TRUE}. Turning angles should be in degrees. The functions must accept four named arguments, even if unused:
 \itemize{
 \item \code{.n}---an \code{integer} that defines the number of simulated outcome(s);
 \item \code{.prior}---a \code{numeric} vector that defines the simulated value(s) from the previous time step;
@@ -39,7 +39,7 @@ sim_path_walk(
 
 If \code{.prior} is used, the function should be able to handle the first time step (when \code{.prior} is set to \code{NULL}). See \code{\link[=rangcrw]{rangcrw()}} (below) for an example.
 
-Note that \code{...} is passed down from \code{\link[=sim_path_walk]{sim_path_walk()}} to both \code{.sim_length} and \code{.sim_angle} so care is required to ensure that \code{...} parameters are handled correctly).
+Note that \code{...} is passed down from \code{\link[=sim_path_walk]{sim_path_walk()}} to both \code{.sim_length} and \code{.sim_angle} so care is required to ensure that \code{...} parameters are handled correctly.
 
 The following template functions are provided:
 \itemize{
@@ -59,8 +59,8 @@ The following template functions are provided:
 \value{
 \code{\link[=sim_path_walk]{sim_path_walk()}} returns a \code{\link{data.table}} with 10 columns:
 \itemize{
-\item \code{path_id}--- an \code{integer} that identifies each path;
-\item \code{timestep}---an \code{integer} that defines the time step;
+\item \code{path_id}--- an \code{integer} vector that identifies each path;
+\item \code{timestep}---an \code{integer} vector that defines the time step;
 \item \code{cell_id}, \code{cell_x}, \code{cell_y}, \code{cell_z}---\code{integer}/\code{numeric} vectors that define the locations of the simulated positions on \code{.bathy};
 \item \code{x},\code{y}---\code{numeric} vectors that define simulated x and y coordinates;
 \item \code{length},\code{angle}---\code{numeric} vectors that define simulated step lengths and angles (for the movement from timestep \code{t} to time step \code{t + 1});
