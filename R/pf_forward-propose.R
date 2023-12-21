@@ -56,6 +56,7 @@ pf_rpropose_kick <- function(.particles, .obs, .t, .dlist,
 pf_rpropose_reachable <- function(.particles, .obs, .t, .dlist) {
 
   if (.t == 1L) {
+    rlang::check_installed("sf")
     rlang::check_installed("exactextractr")
   }
 
