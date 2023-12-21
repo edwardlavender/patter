@@ -45,7 +45,7 @@ check_new_colnames(.data, .new)
 check_not_null(input, req)
 }
 \description{
-These functions check user inputs.
+These internal functions perform generic checks on user inputs.
 }
 \author{
 Edward Lavender

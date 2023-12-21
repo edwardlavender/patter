@@ -1,5 +1,5 @@
 #' @title Utilities: check functions
-#' @description These functions check user inputs.
+#' @description These internal functions perform generic checks on user inputs.
 #' @author Edward Lavender
 #' @name check_utils
 NULL
@@ -42,7 +42,6 @@ check_contents_ext <- function(input, ext, ...) {
   }
   invisible(input)
 }
-
 
 #' @rdname check_utils
 #' @keywords internal
