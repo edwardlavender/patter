@@ -339,8 +339,8 @@ map_path <- map_dens(gebco, .coord = copy(path))
 points(path$x, path$y, cex = 0.1)
 # Build map using coordinates
 map_particles <- map_dens(gebco,
-                          .coord = pf_coord(out_pff$history, .bathy = gebco))
-terra::plot(map_particles)
+                          .coord = pf_coord(out_pff$history, .bathy = gebco), 
+                          .plot = TRUE)
 points(path$x, path$y, cex = 0.1)
 par(pp)
 expect_true(terra::all.equal(map_path, map_particles))
