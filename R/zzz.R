@@ -1,7 +1,7 @@
 .onLoad <- function(libname, pkgname) {
   # Collect options
   op <- options()
-  # Define pater options
+  # Define patter options
   op_patter <- list(patter.verbose = TRUE)
   # Set necessary patter options
   bool <- !(names(op_patter) %in% names(op))
