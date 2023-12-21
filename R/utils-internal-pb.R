@@ -1,6 +1,6 @@
 #' @title Progress bar wrappers
 #'
-#' @description Progress bars in [`patter`] are implemented via the `pbapply` package. These can be customised or suppressed before the implementation of `patter` functions that use progress bars via [`pbapply::pboptions()`]. These simple wrappers facilitate the internal implementation of progress bars via `pbapply` functions.
+#' @description Progress bars in [`patter`] are implemented via the `pbapply` package. These can be customised or suppressed before the implementation of [`patter`] functions that use progress bars via [`pbapply::pboptions()`]. These simple wrappers facilitate the internal implementation of progress bars via `pbapply` functions.
 #'
 #' @examples
 #' \dontrun{

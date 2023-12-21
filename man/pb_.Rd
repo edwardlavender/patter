@@ -14,7 +14,7 @@ pb_tick(.pb, .t)
 pb_close(.pb)
 }
 \description{
-Progress bars in \code{\link{patter}} are implemented via the \code{pbapply} package. These can be customised or suppressed before the implementation of \code{patter} functions that use progress bars via \code{\link[pbapply:pboptions]{pbapply::pboptions()}}. These simple wrappers facilitate the internal implementation of progress bars via \code{pbapply} functions.
+Progress bars in \code{\link{patter}} are implemented via the \code{pbapply} package. These can be customised or suppressed before the implementation of \code{\link{patter}} functions that use progress bars via \code{\link[pbapply:pboptions]{pbapply::pboptions()}}. These simple wrappers facilitate the internal implementation of progress bars via \code{pbapply} functions.
 }
 \examples{
 \dontrun{
