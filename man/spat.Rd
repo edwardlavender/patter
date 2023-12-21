@@ -26,6 +26,9 @@ spatIsEmpty(.x)
 spatNormalise(x)
 }
 \description{
-Internal \code{terra} helpers for \href{s}{\code{SpatRaster}} and \href{s}{\code{SpatVector}}.
+Internal helpers for \code{terra} \code{\link{SpatRaster}} and \code{\link{SpatVector}} objects.
+}
+\author{
+Edward Lavender
 }
 \keyword{internal}

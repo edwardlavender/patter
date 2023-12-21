@@ -17,9 +17,9 @@ spatTemplate(
 )
 }
 \arguments{
-\item{.xmin, .xmax, .ymin, .ymax}{Numbers that define the \code{\link{SpatRaster}} limits.}
+\item{.xmin, .xmax, .ymin, .ymax}{Numbers that define the \code{\link{SpatRaster}}'s extent.}
 
-\item{.res}{A \code{numeric} vector that defines \code{\link{SpatRaster}} resolution.}
+\item{.res}{A \code{numeric} vector that defines the \code{\link{SpatRaster}}'s resolution.}
 
 \item{.crs}{A \code{character} that defines the Coordinate Reference System.}
 
