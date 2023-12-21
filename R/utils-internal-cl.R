@@ -1,24 +1,28 @@
 #' @title Parallelisation helpers
 #'
-#' @description A set of wrappers for [`parallel::parallel`] functions that facilitate the implementation of parallel routines in functions via [`pbapply::pblapply()`].
+#' @description A set of internal wrappers for [`parallel::parallel`] functions that facilitate the implementation of parallel routines in functions via [`pbapply::pblapply()`].
 #'
 #' @param .x A `list` over which to iterate.
-#' @param .fun,... A function that is applied to elements of `.x` alongside any optional arguments to `.fun`.
-#' @param .cl (optional) A cluster from [`parallel::makeCluster()`] or an integer that defines the number of child processes (see [`pbapply::pblapply()`]).
-#' @param .varlist (optional) A character vector of objects for export (see [`parallel::clusterExport()`]). If `.cl` is a cluster, this may be required. Exported objects must be located in the global environment.
-#' @param .envir The environment from which to export variables (see [`parallel::clusterExport()`]).
-#' @param .use_chunks A logical vector that defines whether to parallelise over 'chunks' (`TRUE`) or over the elements of `.x` (`FALSE`). If `.use_chunks = TRUE`, `.x` is split into \emph{n} chunks (one per core) that are processed in parallel; within each chunk `.x` is updated iteratively.
-#' @param .combine A `function` that defines how to combine the results for each chunk. `NULL` is permitted, in which case chunkwise results are not combined.
-#' @param .length An integer that defines the number of elements in the iteration.
+#' @param .fun,... A function that is applied to elements of `.x` and any additional named arguments.
+#' @param .cl (optional) The cluster argument passed to [`pbapply::pblapply()`], supplied as:
+#' * A `cluster` object from [`parallel::makeCluster()`] or a sister function;
+#' * An `integer` that defines the number of child processes;
+#' @param .varlist (optional) A `character` vector of objects for export (see [`parallel::clusterExport()`]).
+#' @param .envir The `environment` from which to export variables (see [`parallel::clusterExport()`]).
+#' @param .use_chunks A `logical` vector that defines whether to parallelise or `.x` or batches of `.x` (chunks).
+#' * If `.use_chunks = FALSE`, function behaviour matches [`pbapply::pblapply()`].
+#' * If `.use_chunks = TRUE`, `.x` is split into a series of chunks that are processed in parallel; within each chunk `.x` is updated iteratively. This reduces the parallelisation overhead.
+#' @param .combine If `.use_chunks = TRUE`, `.combine` is `function` that defines how to combine the results for each chunk (e.g., `purrr::list_flatten()`). `NULL` is permitted, in which case the chunk-specific outputs are not combined.
+#' @param .length For [`cl_chunks()`], `.length` is an `integer` that defines the number of elements in the iteration.
 #'
 #' @details
 #'
-#' [`cl_lapply()`] is a wrapper for [`pbapply::pblapply()`] that handles cluster checking, set up and closure, using the following functions:
+#' [`cl_lapply()`] is a wrapper for [`pbapply::pblapply()`] that handles cluster checking, set up, batch processing and cluster closure, using the following functions:
 #' * [`cl_check()`] checks `.cl` and `.varlist` arguments, as inputted to a parent function. For example, if `.cl = NULL`, `.varlist` should also be `NULL`.
 #' * [`cl_cores()`] identifies the number of cores specified.
-#' * [`cl_chunks()`] defines a list, with one element for core specified x 4, that contains an integer vector of the positions of an object over which to iterate serially in each chunk.
+#' * [`cl_chunks()`] defines a `list`, with one element for core specified x 4, that contains an `integer` vector of the positions of an object over which to iterate serially in each chunk.
 #' * [`cl_export()`] implements [`parallel::clusterExport()`] if both `.cl` and `.varlist` are specified.
-#' * [`cl_stop()`] implements [`parallel::stopCluster`] if `.cl` is a `cluster` object from [`parallel::makeCluster()`].
+#' * [`cl_stop()`] implements [`parallel::stopCluster()`] if `.cl` is a `cluster` object from [`parallel::makeCluster()`].
 #'
 #' These routines evolved from the [`cl_*()`](https://edwardlavender.github.io/flapper/reference/cl.html) functions in [`flapper`](https://github.com/edwardlavender/flapper).
 #'
@@ -28,7 +32,7 @@
 #' * [`cl_chunks()`] returns a list of `integer`s.
 #' * [`cl_check()`], [`cl_export()`] and [`cl_stop()`] return `invisible(NULL)`.
 #'
-#' @seealso See [`flapper-tips-parallel`](https://edwardlavender.github.io/flapper/reference/flapper-tips-parallel.html) for further information about parallelisation.
+#' @seealso See [`flapper-tips-parallel`](https://edwardlavender.github.io/flapper/reference/flapper-tips-parallel.html) for further information about parallelisation, including the differences between socket clusters and forking.
 #'
 #' @author Edward Lavender
 #' @name cl

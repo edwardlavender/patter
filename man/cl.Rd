@@ -34,19 +34,27 @@ cl_stop(.cl = NULL)
 \arguments{
 \item{.x}{A \code{list} over which to iterate.}
 
-\item{.fun, ...}{A function that is applied to elements of \code{.x} alongside any optional arguments to \code{.fun}.}
+\item{.fun, ...}{A function that is applied to elements of \code{.x} and any additional named arguments.}
 
-\item{.cl}{(optional) A cluster from \code{\link[parallel:makeCluster]{parallel::makeCluster()}} or an integer that defines the number of child processes (see \code{\link[pbapply:pbapply]{pbapply::pblapply()}}).}
+\item{.cl}{(optional) The cluster argument passed to \code{\link[pbapply:pbapply]{pbapply::pblapply()}}, supplied as:
+\itemize{
+\item A \code{cluster} object from \code{\link[parallel:makeCluster]{parallel::makeCluster()}} or a sister function;
+\item An \code{integer} that defines the number of child processes;
+}}
 
-\item{.varlist}{(optional) A character vector of objects for export (see \code{\link[parallel:clusterApply]{parallel::clusterExport()}}). If \code{.cl} is a cluster, this may be required. Exported objects must be located in the global environment.}
+\item{.varlist}{(optional) A \code{character} vector of objects for export (see \code{\link[parallel:clusterApply]{parallel::clusterExport()}}).}
 
-\item{.envir}{The environment from which to export variables (see \code{\link[parallel:clusterApply]{parallel::clusterExport()}}).}
+\item{.envir}{The \code{environment} from which to export variables (see \code{\link[parallel:clusterApply]{parallel::clusterExport()}}).}
 
-\item{.use_chunks}{A logical vector that defines whether to parallelise over 'chunks' (\code{TRUE}) or over the elements of \code{.x} (\code{FALSE}). If \code{.use_chunks = TRUE}, \code{.x} is split into \emph{n} chunks (one per core) that are processed in parallel; within each chunk \code{.x} is updated iteratively.}
+\item{.use_chunks}{A \code{logical} vector that defines whether to parallelise or \code{.x} or batches of \code{.x} (chunks).
+\itemize{
+\item If \code{.use_chunks = FALSE}, function behaviour matches \code{\link[pbapply:pbapply]{pbapply::pblapply()}}.
+\item If \code{.use_chunks = TRUE}, \code{.x} is split into a series of chunks that are processed in parallel; within each chunk \code{.x} is updated iteratively. This reduces the parallelisation overhead.
+}}
 
-\item{.combine}{A \code{function} that defines how to combine the results for each chunk. \code{NULL} is permitted, in which case chunkwise results are not combined.}
+\item{.combine}{If \code{.use_chunks = TRUE}, \code{.combine} is \code{function} that defines how to combine the results for each chunk (e.g., \code{purrr::list_flatten()}). \code{NULL} is permitted, in which case the chunk-specific outputs are not combined.}
 
-\item{.length}{An integer that defines the number of elements in the iteration.}
+\item{.length}{For \code{\link[=cl_chunks]{cl_chunks()}}, \code{.length} is an \code{integer} that defines the number of elements in the iteration.}
 }
 \value{
 \itemize{
@@ -57,22 +65,22 @@ cl_stop(.cl = NULL)
 }
 }
 \description{
-A set of wrappers for \code{\link[parallel:parallel-package]{parallel::parallel}} functions that facilitate the implementation of parallel routines in functions via \code{\link[pbapply:pbapply]{pbapply::pblapply()}}.
+A set of internal wrappers for \code{\link[parallel:parallel-package]{parallel::parallel}} functions that facilitate the implementation of parallel routines in functions via \code{\link[pbapply:pbapply]{pbapply::pblapply()}}.
 }
 \details{
-\code{\link[=cl_lapply]{cl_lapply()}} is a wrapper for \code{\link[pbapply:pbapply]{pbapply::pblapply()}} that handles cluster checking, set up and closure, using the following functions:
+\code{\link[=cl_lapply]{cl_lapply()}} is a wrapper for \code{\link[pbapply:pbapply]{pbapply::pblapply()}} that handles cluster checking, set up, batch processing and cluster closure, using the following functions:
 \itemize{
 \item \code{\link[=cl_check]{cl_check()}} checks \code{.cl} and \code{.varlist} arguments, as inputted to a parent function. For example, if \code{.cl = NULL}, \code{.varlist} should also be \code{NULL}.
 \item \code{\link[=cl_cores]{cl_cores()}} identifies the number of cores specified.
-\item \code{\link[=cl_chunks]{cl_chunks()}} defines a list, with one element for core specified x 4, that contains an integer vector of the positions of an object over which to iterate serially in each chunk.
+\item \code{\link[=cl_chunks]{cl_chunks()}} defines a \code{list}, with one element for core specified x 4, that contains an \code{integer} vector of the positions of an object over which to iterate serially in each chunk.
 \item \code{\link[=cl_export]{cl_export()}} implements \code{\link[parallel:clusterApply]{parallel::clusterExport()}} if both \code{.cl} and \code{.varlist} are specified.
-\item \code{\link[=cl_stop]{cl_stop()}} implements \code{\link[parallel:makeCluster]{parallel::stopCluster}} if \code{.cl} is a \code{cluster} object from \code{\link[parallel:makeCluster]{parallel::makeCluster()}}.
+\item \code{\link[=cl_stop]{cl_stop()}} implements \code{\link[parallel:makeCluster]{parallel::stopCluster()}} if \code{.cl} is a \code{cluster} object from \code{\link[parallel:makeCluster]{parallel::makeCluster()}}.
 }
 
 These routines evolved from the \href{https://edwardlavender.github.io/flapper/reference/cl.html}{\verb{cl_*()}} functions in \href{https://github.com/edwardlavender/flapper}{\code{flapper}}.
 }
 \seealso{
-See \href{https://edwardlavender.github.io/flapper/reference/flapper-tips-parallel.html}{\code{flapper-tips-parallel}} for further information about parallelisation.
+See \href{https://edwardlavender.github.io/flapper/reference/flapper-tips-parallel.html}{\code{flapper-tips-parallel}} for further information about parallelisation, including the differences between socket clusters and forking.
 }
 \author{
 Edward Lavender
