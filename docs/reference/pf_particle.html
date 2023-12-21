@@ -150,7 +150,7 @@
 </ul><p><code>.pf_lik()</code> is a wrapper for specified likelihood functions (see <code><a href="pf_lik.html">pf_lik</a></code>). The function returns a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines valid proposal locations, likelihoods and weights. A <code>diagnostics</code> attribute contains proposal diagnostics. This also requires:</p><ul><li><p><code>.stack</code>---a named <code>list</code> of likelihood functions (see <code><a href="pf_lik.html">pf_lik</a></code>).</p></li>
 <li><p><code>.diagnostics</code>---an empty <code>list</code> used to store likelihood diagnostics, or <code>NULL</code>.</p></li>
 <li><p><code>.trial</code>---an <code>integer</code> that distinguishes trials.</p></li>
-</ul><p>Most likelihood functions are directly exported but some internals routines are also documented here for convenience, namely <code>pf_lik_ac_detection()</code>. See also <code>acs_*()</code> functions.</p>
+</ul><p>Most likelihood functions are directly exported but some internals routines are also documented here for convenience, namely <code>.pf_lik_ac_detection()</code>. See also <code>acs_*()</code> functions.</p>
 <p>Sampling functions must accept:</p><ul><li><p><code>.particles</code></p></li>
 <li><p><code>.n</code></p></li>
 </ul><p>Wrapper functions must accept:</p><ul><li><p>Proposal function arguments (<code>.particles</code>, <code>.obs</code>, <code>.t</code>, <code>.dlist</code>);</p></li>
