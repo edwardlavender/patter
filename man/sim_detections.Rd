@@ -24,7 +24,7 @@ calc_detection_pr(.data, ...)
 calc_detection_pr_logistic(.distance, .alpha = 4, .beta = -0.01, .gamma = 750)
 }
 \arguments{
-\item{.paths}{A \code{\link{data.table}} that defines movement path(s) (e.g., from \code{\link[=sim_path_walk]{sim_path_walk()}}. This should contain the following columns:
+\item{.paths}{A \code{\link{data.table}} that defines movement path(s) (e.g., from \code{\link[=sim_path_walk]{sim_path_walk()}}). This should contain the following columns:
 \itemize{
 \item (optional) \code{path_id}---an \code{integer} vector that identifies paths (if the number of paths > 1);
 \item \code{timestep}---an \code{integer} vector that defines time steps;

@@ -181,19 +181,20 @@ dstep <- function(.data_now, .data_past, ...) {
 }
 
 #' @title Simulation: acoustic arrays
-#' @description This function simulates acoustic receivers on a grid.
-#' @param .bathy A [`SpatRaster`] that defines the region of interest.
-#' @param .lonlat A `logical` variable that defines whether or not coordinates on `.bathy` are longitudes/latitudes. This input controls the output name of the coordinates column (see Value).
-#' @param .arrangement A character that defines the receiver arrangement (passed to the `method` argument of [`terra::spatSample()`]).
-#' @param .n_receiver An `integer` that defines the number of receivers (passed to the `size` argument of [`terra::spatSample()`]).
-#' @param ... Additional arguments passed to [`terra::spatSample()`].
+#' @description This function simulates acoustic arrays (i.e., networks of acoustic receiver(s)) on a grid.
+#' @param .bathy A [`SpatRaster`] that defines the region of interest. Receivers are not simulated in `NA` regions.
+#' @param .lonlat A `logical` variable that defines whether or not coordinates on `.bathy` are in longitudes/latitude or planar format. This input controls the output name of the coordinate columns (see Value).
+#' @param .arrangement,.n_receiver,... Arguments passed to [`terra::spatSample()`].
+#' * `.arrangement` is a `character` that defines the receiver arrangement (passed to the `method` argument).
+#' * `.n_receiver` is an `integer` that defines the number of receivers to simulate (passed to the `size` argument).
+#' * `...` ... Additional arguments.
 #' @param .receiver_start,.receiver_end,.receiver_range (optional) Additional columns to include in the output:
 #'  * `.receiver_start` and `.receiver_end` are `Date` or `POSIXct` inputs that specify the deployment time period;
 #'  * `.receiver_range` is a `numeric` input that defines the detection range;
 #'
 #'  Single inputs are expected to these arguments, which are constant across all receivers.
 #'
-#' @param .n_array An `integer` that defines the number of array designs to simulate.
+#' @param .n_array An `integer` that defines the number of array designs to simulate with the aforementioned parameters.
 #' @param .plot A `logical` variable that defines whether or not to plot simulated arrays.
 #' @param .one_page If `.plot = TRUE`, `.one_page` is a `logical` variable that defines whether or not to produce plots on a single page.
 #'
@@ -434,7 +435,7 @@ sim_path_walk <- function(.bathy = spatTemplate(), .lonlat = FALSE,
 #' @title Simulation: acoustic detections
 #' @description These functions facilitate the simulation of detections, arising from animal movement path(s), at passive acoustic telemetry receiver(s).
 #'
-#' @param .paths A [`data.table`] that defines movement path(s) (e.g., from [`sim_path_walk()`]. This should contain the following columns:
+#' @param .paths A [`data.table`] that defines movement path(s) (e.g., from [`sim_path_walk()`]). This should contain the following columns:
 #' * (optional) `path_id`---an `integer` vector that identifies paths (if the number of paths > 1);
 #' * `timestep`---an `integer` vector that defines time steps;
 #' * `x`,`y`---`numeric` vectors that define path coordinates;

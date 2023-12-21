@@ -19,15 +19,16 @@ sim_array(
 )
 }
 \arguments{
-\item{.bathy}{A \code{\link{SpatRaster}} that defines the region of interest.}
+\item{.bathy}{A \code{\link{SpatRaster}} that defines the region of interest. Receivers are not simulated in \code{NA} regions.}
 
-\item{.lonlat}{A \code{logical} variable that defines whether or not coordinates on \code{.bathy} are longitudes/latitudes. This input controls the output name of the coordinates column (see Value).}
+\item{.lonlat}{A \code{logical} variable that defines whether or not coordinates on \code{.bathy} are in longitudes/latitude or planar format. This input controls the output name of the coordinate columns (see Value).}
 
-\item{.arrangement}{A character that defines the receiver arrangement (passed to the \code{method} argument of \code{\link[terra:sample]{terra::spatSample()}}).}
-
-\item{.n_receiver}{An \code{integer} that defines the number of receivers (passed to the \code{size} argument of \code{\link[terra:sample]{terra::spatSample()}}).}
-
-\item{...}{Additional arguments passed to \code{\link[terra:sample]{terra::spatSample()}}.}
+\item{.arrangement, .n_receiver, ...}{Arguments passed to \code{\link[terra:sample]{terra::spatSample()}}.
+\itemize{
+\item \code{.arrangement} is a \code{character} that defines the receiver arrangement (passed to the \code{method} argument).
+\item \code{.n_receiver} is an \code{integer} that defines the number of receivers to simulate (passed to the \code{size} argument).
+\item \code{...} ... Additional arguments.
+}}
 
 \item{.receiver_start, .receiver_end, .receiver_range}{(optional) Additional columns to include in the output:
 \itemize{
@@ -37,7 +38,7 @@ sim_array(
 
 Single inputs are expected to these arguments, which are constant across all receivers.}
 
-\item{.n_array}{An \code{integer} that defines the number of array designs to simulate.}
+\item{.n_array}{An \code{integer} that defines the number of array designs to simulate with the aforementioned parameters.}
 
 \item{.plot}{A \code{logical} variable that defines whether or not to plot simulated arrays.}
 
@@ -56,7 +57,7 @@ The function returns a \code{data.table} with the following columns:
 }
 }
 \description{
-This function simulates acoustic receivers on a grid.
+This function simulates acoustic arrays (i.e., networks of acoustic receiver(s)) on a grid.
 }
 \details{
 Receiver locations are simulated using \code{\link[terra:sample]{terra::spatSample()}}.
