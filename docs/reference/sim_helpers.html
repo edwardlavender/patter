@@ -6,7 +6,7 @@ d*() functions return densities;
 
 
 r*() and c*() functions are used in de novo simulations (via sim_*() functions such as sim_path_walk()) and the forward simulation-based reconstruction of movement paths (in pf_forward()).
-d*() functions are used in the simulation-based reconstruction of movement paths as part of the backward sampler via pf_backward_sampler()."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
+d*() functions are primarily used in the simulation-based reconstruction of movement paths as part of the backward sampler via pf_backward_sampler()."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
@@ -82,7 +82,7 @@ d*() functions are used in the simulation-based reconstruction of movement paths
 <li><p><code>c*()</code> functions calculate outcomes from random-variate inputs;</p></li>
 <li><p><code>d*()</code> functions return densities;</p></li>
 </ul><p><code>r*()</code> and <code>c*()</code> functions are used in <em>de novo</em> simulations (via <code>sim_*()</code> functions such as <code><a href="sim_path_walk.html">sim_path_walk()</a></code>) and the forward simulation-based reconstruction of movement paths (in <code><a href="pf_forward.html">pf_forward()</a></code>).</p>
-<p><code>d*()</code> functions are used in the simulation-based reconstruction of movement paths as part of the backward sampler via <code>pf_backward_sampler()</code>.</p>
+<p><code>d*()</code> functions are primarily used in the simulation-based reconstruction of movement paths as part of the backward sampler via <code>pf_backward_sampler()</code>.</p>
     </div>
 
     <div id="ref-usage">
@@ -113,10 +113,10 @@ d*() functions are used in the simulation-based reconstruction of movement paths
     <h2>Arguments</h2>
     <dl><dt>.n, .x, .shape, .scale, .mobility</dt>
 <dd><p>Arguments for <code>rtruncgamma()</code> and <code>dtruncgamma()</code>:</p><ul><li><p><code>.n</code> is an <code>integer</code> that defines the number of simulated outcome(s);</p></li>
-<li><p><code>.x</code> is a <code>numeric</code> vector that defines step length(s);</p></li>
+<li><p><code>.x</code> is a <code>numeric</code> vector that defines step length(s) (in the context of animal movement);</p></li>
 <li><p><code>.shape</code> is a <code>numeric</code> value that defines the shape parameter of a Gamma distribution (see <code><a href="https://rdrr.io/r/stats/GammaDist.html" class="external-link">stats::rgamma()</a></code>).</p></li>
 <li><p><code>.scale</code> is a <code>numeric</code> value that defines the scale parameter of a Gamma distribution (see <code><a href="https://rdrr.io/r/stats/GammaDist.html" class="external-link">stats::rgamma()</a></code>).</p></li>
-<li><p><code>.mobility</code> is a <code>numeric</code> value that defines the maximum length (see <code><a href="https://rdrr.io/pkg/truncdist/man/rtrunc.html" class="external-link">truncdist::rtrunc()</a></code>).</p></li>
+<li><p><code>.mobility</code> is a <code>numeric</code> value that defines the maximum possible value (step length) (see <code><a href="https://rdrr.io/pkg/truncdist/man/rtrunc.html" class="external-link">truncdist::rtrunc()</a></code>).</p></li>
 </ul></dd>
 
 
@@ -178,7 +178,7 @@ d*() functions are used in the simulation-based reconstruction of movement paths
 <h3 id="wrappers">Wrappers<a class="anchor" aria-label="anchor" href="#wrappers"></a></h3>
 
 
-<p>The following wrapper functions are provided in the form required by front-end functions (e.g., <code><a href="sim_path_walk.html">sim_path_walk()</a></code> and <code>pf_backward_sampler()</code>):</p><ul><li><p><code>rlen()</code> is a wrapper for <code>rtruncgamma()</code>. The corresponding function <code>dlen</code> is not currently implemented.</p></li>
+<p>The following wrapper functions are provided in the form required by front-end functions (e.g., <code><a href="sim_path_walk.html">sim_path_walk()</a></code> and <code>pf_backward_sampler()</code>):</p><ul><li><p><code>rlen()</code> is a wrapper for <code>rtruncgamma()</code>. The corresponding function <code>dlen()</code> is not currently implemented.</p></li>
 <li><p><code>rangrw()</code>, <code>rangcrw()</code> are wrappers for <code>rwn()</code> for random walks and correlated random walks. The corresponding functions <code>dangrw()</code> and <code>dangcrw()</code> are not currently implemented.</p></li>
 </ul></div>
 
@@ -193,9 +193,14 @@ d*() functions are used in the simulation-based reconstruction of movement paths
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index">
-<ul><li><p><code>sim_*</code> functions implement <em>de novo</em> simulation of movements and observations;</p></li>
+<ul><li><p><code>sim_*</code> functions implement <em>de novo</em> simulation of movements and observations:</p><ul><li><p><code>sim_helpers</code> are convenience functions for simulations;</p></li>
+<li><p><code><a href="sim_array.html">sim_array()</a></code> simulates acoustic array(s);</p></li>
+<li><p><code><a href="sim_path_walk.html">sim_path_walk()</a></code> simulates movement path(s) via a walk model;</p></li>
+<li><p><code><a href="sim_detections.html">sim_detections()</a></code> simulates detection(s) at receivers;</p></li>
+</ul></li>
 <li><p><code><a href="pf_forward.html">pf_forward()</a></code> implements forward simulation-based reconstruction of movement paths;</p></li>
 <li><p><code>pf_backward_sampler()</code> implements backward simulation-based reconstruction of movement paths;</p></li>
+<li><p><code><a href="skill.html">skill</a></code> functions compared simulated and reconstructed patterns to evaluate model skill;</p></li>
 </ul></div>
     </div>
     <div id="author">

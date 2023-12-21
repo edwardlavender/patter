@@ -103,11 +103,25 @@
     </div>
     <div id="details">
     <h2>Details</h2>
-    <p>This function is not memory safe.</p>
+    <p>The <code>timestep</code> and <code>cell_now</code> columns in <code><a href="pf_forward.html">pf_forward()</a></code> outputs are required to extract coordinates. <code>cell_now</code> is used to extract coordinates on <code>.bathy</code>.</p>
+<p>This function is not memory safe, since the entire time series of coordinates is collected in memory.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index"><p>TO DO</p></div>
+    <div class="dont-index"><p>The forward filtering--backward sampling algorithm samples locations (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.</p><ul><li><p>To set up data, use <code><a href="pat_setup_data.html">pat_setup_data()</a></code>.</p></li>
+<li><p><code><a href="pf_forward.html">pf_forward()</a></code> implements the forward filter:</p><ul><li><p>To set up an observations timeline, use <code><a href="pf_setup_obs.html">pf_setup_obs()</a></code>.</p></li>
+<li><p>For proposal (movement) models, see <code><a href="pf_propose.html">pf_propose</a></code>.</p></li>
+<li><p>For likelihood functions, to evaluate the likelihood of the data at proposal locations, see <code><a href="pf_lik.html">pf_lik</a></code>.</p></li>
+<li><p>For sampling functions, to (re)sample plausible proposal locations, see <code><a href="pf_sample.html">pf_sample</a></code>.</p></li>
+<li><p>For tuning parameters, see <code><a href="pf_opt.html">pf_opt</a></code>.</p></li>
+</ul></li>
+<li><p><code><a href="pf_backward_-times.html">pf_backward_*()</a></code> refines outputs from the forward filter:</p><ul><li><p><code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> removes dead-ends;</p></li>
+<li><p><code>pf_backward_sampler()</code> implements the backward sampler;</p></li>
+</ul></li>
+<li><p>To reconstruct movement paths from particle samples, use <code><a href="pf_path.html">pf_path()</a></code>.</p></li>
+<li><p>To map emergent patterns of space use, use <code>pf_coord()</code> plus a <code>map_*()</code> function, such as <code><a href="map_pou.html">map_pou()</a></code>, <code><a href="map_dens.html">map_dens()</a></code> and/or <code><a href="map_hr.html">map_hr</a></code><code>_()</code>.</p></li>
+<li><p>For additional utilities, see supporting <code>pf_*()</code> functions, such as <code><a href="pf_files.html">pf_files()</a></code> and <code><a href="pf_files.html">pf_files_size()</a></code>.</p></li>
+</ul></div>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -117,19 +131,13 @@
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_pfbk</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">pf_coord</span><span class="op">(</span><span class="va">p</span><span class="op">$</span><span class="va">history</span>, <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       timestep cell_id   cell_x  cell_y    cell_z</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:        1   37378 709242.1 6253407  75.20494</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:        1   37945 708942.1 6253107  83.91008</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:        1   37376 709042.1 6253407  99.90396</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:        1   37379 709342.1 6253407  65.31673</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:        1   38709 709342.1 6252707  43.05228</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1580:       25   36993 708742.1 6253607 138.91106</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1581:       25   36616 709042.1 6253807 133.50708</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1582:       25   35857 709142.1 6254207 134.88246</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1583:       25   36045 708942.1 6254107 136.62772</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1584:       25   36805 708942.1 6253707 133.44473</span>
+<span class="r-in"><span><span class="va">pxy_1</span> <span class="op">&lt;-</span> <span class="fu">pf_coord</span><span class="op">(</span><span class="va">p</span><span class="op">$</span><span class="va">history</span>, <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">pfbk_folder</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"acpf"</span>, <span class="st">"backward"</span>, <span class="st">"killer"</span>,</span></span>
+<span class="r-in"><span>                           package <span class="op">=</span> <span class="st">"patter"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pxy_2</span> <span class="op">&lt;-</span> <span class="fu">pf_coord</span><span class="op">(</span><span class="va">pfbk_folder</span>, <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">pxy_1</span>, <span class="va">pxy_2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

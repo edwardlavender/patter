@@ -77,35 +77,37 @@
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">.pf_diag_any</span><span class="op">(</span><span class="va">.particles</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.pf_diag_ess</span><span class="op">(</span><span class="va">.likelihood</span><span class="op">)</span></span>
-<span></span>
 <span><span class="fu">.pf_diag_nu</span><span class="op">(</span><span class="va">.cells</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">.pf_diag_ess</span><span class="op">(</span><span class="va">.likelihood</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">.pf_diag</span><span class="op">(</span><span class="va">.particles</span>, <span class="va">.t</span>, .trial <span class="op">=</span> <span class="cn">NA_integer_</span>, <span class="va">.label</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.pf_diag_bind</span><span class="op">(</span><span class="va">.diag</span><span class="op">)</span></span>
+<span><span class="fu">.pf_diag_bind</span><span class="op">(</span><span class="va">.diagnostics</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">.pf_diag_collect</span><span class="op">(</span><span class="va">.diagnostics</span>, <span class="va">.iter_m</span>, <span class="va">.iter_i</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="particle-diagnostics">
     <h2>Particle diagnostics</h2>
-    <p>Particle diagnostics measure how the diversity of particle samples evolves through time. Current diagnostics include the number of unique particle samples at each time step and the effective sample size. Particle diagnostics have multiple uses:</p><ul><li><p><strong>Convergence.</strong> Diagnostics from the forward run can indicate the causes of convergence failures. This is possible because <code><a href="pf_forward.html">pf_forward()</a></code> keeps track of diagnostics at every stage of the algorithm, recording at each time step the diversity of particle proposals, the diversity remaining after each likelihood function evaluation and the diversity following (re)-sampling. See <code><a href="../articles/d-demos.html">vignette("d-demos", package = "patter")</a></code> for an illustration.</p></li>
+    <p>Particle diagnostics measure how the diversity of particle samples evolves through time. Current diagnostic metrics include the number of unique particle samples at each time step and the effective sample size. Particle diagnostics have multiple uses:</p><ul><li><p><strong>Convergence.</strong> Diagnostics from the forward run can indicate the causes of convergence failures. This is possible because <code><a href="pf_forward.html">pf_forward()</a></code> keeps track of diagnostics at every stage of the algorithm, recording at each time step the diversity of particle proposals, the diversity remaining after each likelihood function evaluation and the diversity following (re)-sampling. See <code>pf_particles</code> and vignette("d-demos", package = "patter")` for an illustration.</p></li>
 <li><p><strong>Sampling.</strong> Diagnostics indicate sampling sufficiency. In general, a low ratio of the number of unique particles to the total number of particles indicates effective coverage of the possible locations of an individual.</p></li>
-<li><p><strong>Particle degeneracy.</strong> Diagnostics measure particle degeneracy, i.e., the decay in the number of unique particles through time as trajectories are sooner-or-later rendered invalid by observations. Comparison of particle diagnostics between <code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> and <code>pf_backward_sampler()</code> is particular valuable in this context. Both functions perform a backward refinement of particles from the forward sampler, but the former is crude but fast while the latter is sophisticated but expensive. Tracking particle diagnostics can indicate whether <code>pf_backward_sampler()</code> is worth the cost.</p></li>
+<li><p><strong>Particle degeneracy.</strong> Diagnostics measure particle degeneracy, i.e., the decay in the number of unique particles through time as trajectories are rendered invalid by observations. Comparison of particle diagnostics between <code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> and <code>pf_backward_sampler()</code> is particularly valuable in this context. Both functions perform a backward refinement of particles from <code><a href="pf_forward.html">pf_forward()</a></code>; however, the former is simple but fast, while the latter is sophisticated but expensive. Tracking particle diagnostics can indicate whether <code>pf_backward_sampler()</code> is worth the cost.</p></li>
 </ul></div>
     <div id="internal-routines">
     <h2>Internal routines</h2>
     
 <ul><li><p><code>.pf_diag_any()</code> identifies whether or not any particle samples remain;</p></li>
-<li><p><code>.pf_diag_ess()</code> calculates effective sample size;</p></li>
-<li><p><code>.pf_diag_nu()</code> counts the number of unique particle samples;</p></li>
-<li><p><code>.pf_diag()</code> is a wrapper function that collates diagnostics;</p></li>
+<li><p><code>.pf_diag_nu()</code> counts the number of unique particle samples (grid cells);</p></li>
+<li><p><code>.pf_diag_ess()</code> calculates effective sample size from particle likelihoods;</p></li>
+<li><p><code>.pf_diag()</code> is a wrapper function that calculates diagnostics;</p></li>
+<li><p><code>.pf_diag_bind()</code> binds <code>list</code>s of diagnostics together;</p></li>
+<li><p><code>.pf_diag_collect()</code> wraps <code>.pf_diag_bind()</code> and assigns required columns;</p></li>
 </ul></div>
     <div id="exported-wrappers">
     <h2>Exported wrappers</h2>
     <p>In <code><a href="pf_forward.html">pf_forward</a></code>, diagnostics are necessarily calculated on the fly by <code>.pf_diag</code><code>_()</code> functions and simply require extraction from outputs via <code><a href="pf_forward_diagnostics.html">pf_forward_diagnostics()</a></code>. However, note that the forward simulation necessitates the calculation of multiple diagnostics at each time step and <code><a href="pf_forward_diagnostics.html">pf_forward_diagnostics()</a></code> attempts to collate all diagnostics in memory, which is not memory safe.</p>
-<p><code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> only tracks particle samples and it is therefore necessary to calculate diagnostics from particle samples post-hoc. A single set of diagnostics is calculated for each time step, so this function is (effectively) memory safe.</p>
+<p><code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> only tracks particle samples and it is therefore necessary to calculate diagnostics from particle samples post-hoc via <code><a href="pf_backward_killer_diagnostics.html">pf_backward_killer_diagnostics()</a></code>. A single set of diagnostics is calculated for each time step, so this function is (effectively) memory safe.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>

@@ -89,7 +89,7 @@
 
 
 <dt>...</dt>
-<dd><p>If <code>.history</code> is a directory, <code>...</code> additional arguments can be passed to <code><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html" class="external-link">arrow::open_dataset()</a></code> via <code>...</code>.</p></dd>
+<dd><p>If <code>.history</code> is a directory, additional arguments can be passed to <code><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html" class="external-link">arrow::open_dataset()</a></code> via <code>...</code>.</p></dd>
 
 
 <dt>.collect</dt>
@@ -105,7 +105,7 @@
     <div id="details">
     <h2>Details</h2>
     
-<ol><li><p>If <code>.history</code> is a <code><a href="pf_particles-class.html">pf_particles</a></code> object, or the history element of such an object, <code>data.table::rbindlist(..., fill = TRUE)</code> is used to combine particle samples.</p></li>
+<ol><li><p>If <code>.history</code> is a <code><a href="pf_particles-class.html">pf_particles</a></code> object, or the <code>history</code> element of such an object, <code>data.table::rbindlist(..., fill = TRUE)</code> is used to combine particle samples.</p></li>
 <li><p>If <code>.history</code> is a folder, <code><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html" class="external-link">arrow::open_dataset()</a></code> plus (optionally) <code><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">dplyr::collect()</a></code> is used. Additional arguments, such as <code>schema</code> can be passed to <code><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html" class="external-link">arrow::open_dataset()</a></code> via <code>...</code>.</p></li>
 <li><p>If <code>.history</code> is a <code>list</code> of parquet files, files are iteratively read into memory (via <code><a href="https://arrow.apache.org/docs/r/reference/read_parquet.html" class="external-link">arrow::read_parquet()</a></code>) and combined (via <code>data.table::rbindlist(..., fill = TRUE)</code>. This option is much slower than option 2.</p></li>
 </ol></div>
