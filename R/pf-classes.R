@@ -39,6 +39,8 @@
 #'
 #' If `.record$save = FALSE`, `.history` is an empty `list` and the individual [`data.table`]s are written to file in `{.record$sink}/history/` (see [`pf_opt_record()`]).
 #'
+#' [`pf_backward_killer()`] simply drops dead-ends (rows) from the time series and leaves the columns from [`pf_forward()`] intact (unless `.record$cols` is supplied).
+#'
 #' # `diagnostics`
 #'
 #' In [`pf_forward()`], we track metrics of particle diversity (hereafter, 'particle diagnostics') through time for analysis of convergence issues, sampling sufficiency and other properties (see [`pf_diag`]). Particle diagnostics are recorded for each trial and component of a stochastic process.
@@ -62,8 +64,8 @@
 #' * `iter_i`---an `integer` that identifies 'internal' iterations. `iter_i` is incremented when the algorithm jumps back to an earlier time step (see [`pf_opt_record()`]).
 #' * `timestep`---an `integer` vector that defines time steps.
 #' * `component`---a `character` vector that defines algorithm components:
-#'    * `base`---the start of each time step (a baseline);
-#'    * `proposal`---the proposal step (for stochastic kicks only);
+#'    * `base`---the start of each time step (a baseline), after the first time step;
+#'    * `proposal`---the proposal step (at the first time step and for stochastic kicks only);
 #'    * `lik_*`---the likelihood step;
 #'        * For stochastic kicks, particle diagnostics are given following each (`i`) likelihood evaluation and the components are named by `paste0("lik-", names(.likelihood)[i])`;
 #'        * For directed sampling, particle diagnostics for the proposal and likelihood stages are combined under a single `lik-sampler` label and not split by likelihood component;

@@ -41,6 +41,8 @@ If directed sampling is used, \code{bathy} and \code{dens} columns are included 
 Since columns are recorded only when required, not all columns are recorded at each time step. To combine \code{\link{data.table}}s, use \code{\link[=.pf_history_dt]{.pf_history_dt()}}.
 
 If \code{.record$save = FALSE}, \code{.history} is an empty \code{list} and the individual \code{\link{data.table}}s are written to file in \verb{\{.record$sink\}/history/} (see \code{\link[=pf_opt_record]{pf_opt_record()}}).
+
+\code{\link[=pf_backward_killer]{pf_backward_killer()}} simply drops dead-ends (rows) from the time series and leaves the columns from \code{\link[=pf_forward]{pf_forward()}} intact (unless \code{.record$cols} is supplied).
 }
 
 \section{\code{diagnostics}}{
@@ -70,8 +72,8 @@ If \code{.record$save = TRUE}, particle diagnostics are collated in a single \co
 \item \code{timestep}---an \code{integer} vector that defines time steps.
 \item \code{component}---a \code{character} vector that defines algorithm components:
 \itemize{
-\item \code{base}---the start of each time step (a baseline);
-\item \code{proposal}---the proposal step (for stochastic kicks only);
+\item \code{base}---the start of each time step (a baseline), after the first time step;
+\item \code{proposal}---the proposal step (at the first time step and for stochastic kicks only);
 \item \verb{lik_*}---the likelihood step;
 \itemize{
 \item For stochastic kicks, particle diagnostics are given following each (\code{i}) likelihood evaluation and the components are named by \code{paste0("lik-", names(.likelihood)[i])};

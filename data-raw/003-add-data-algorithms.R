@@ -86,6 +86,7 @@ out_pff <- pf_forward(.obs = obs,
                                                         "x_now", "y_now", "lik")))
 
 #### Implement pf_backward_killer()
+# NB: If pf_forward() is re-run, pf_backward() must also be re-run.
 sink      <- NULL
 if (overwrite) {
   pfbk_folder <- file.path("inst", "extdata", "acpf", "backward", "killer")
