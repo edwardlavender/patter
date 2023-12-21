@@ -1,11 +1,11 @@
 ---
-title: "A revised implementation of the `flapper` algorithms"
+title: "Example workflow"
 output: 
   rmarkdown::html_vignette:
     toc: true
     number_sections: yes
 vignette: >
-  %\VignetteIndexEntry{A revised implementation of the `flapper` algorithms}
+  %\VignetteIndexEntry{Example workflow}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -22,14 +22,14 @@ knitr::opts_chunk$set(
 
 # Introduction 
 
-The `patter` package is a revised implementation of the 'flapper' algorithms for reconstructing movements and patterns of space use for tagged animals in passive acoustic telemetry systems (Lavender et al., 2023). For a introduction to the methodology, see the methodology vignette (type `vignette("a-methodology", package = "patter")`). This vignette outlines the basic workflow via `patter`. Its purpose is simply to illustrate how functions fit together. For full details and additional functionality, see the package/function documentation. 
+The `patter` package is a forward filtering--backward sampling algorithm for reconstructing movements and patterns of space use for tagged animals in passive acoustic telemetry systems (Lavender et al., 2023). For a introduction to the methodology, see the methodology vignette (type `vignette("a-methodology", package = "patter")`). This vignette exemplifies the basic workflow via `patter`. Its purpose is simply to illustrate how functions fit together. For full details and additional functionality, see the package/function documentation. 
 
 <img src="workflow.png" width="100%" />
 **Figure 1. The workflow for `patter`.** This comprises four main steps: data preparation, forward filtering, backward sampling and analysis. In data preparation, we prepare the data for analysis and pre-compute necessary algorithm inputs. In forward filtering, we simulate possible locations of an individual, given the data and a movement model, moving forwards in time. In backwards sampling, we further refine the set of simulated locations. We can then analyse reconstructed movement paths and patterns of space use. 
 
 # Packages
 
-Let's start by loading and attaching some essential `R` packages. 
+Let's start by loading and attaching some essential `R` packages.
 
 ```{r setup, message = FALSE, warning = FALSE}
 library(patter)
@@ -37,6 +37,8 @@ library(data.table)
 library(dtplyr)
 library(dplyr)
 library(lubridate)
+library(spatstat.explore)
+op <- options(patter.verbose = FALSE)
 ```
 
 # Preparation
@@ -50,7 +52,7 @@ The first step is to define a grid over the study area. Here, we use an in-built
 terra::plot(gebco, main = "Study area")
 ```
 
-## Example data
+## Prepare movement datasets
 
 The next step is to prepare the movement datasets. In this vignette, we use a small sample of acoustic and archival (depth) time series from flapper skate (_Dipturus intermedius_) to reconstruct movement paths and patterns of space use. However, these choices are not mandatory and in fact you can include other datasets easily in existing routines. See the `sim_*()` functions to simulate data instead. For real-world analyses, start with a short (e.g., one day) time series and a single individual to develop the workflow. 
 
@@ -67,14 +69,16 @@ arc  <- dat_archival[individual_id == 25, ]
 head(arc)
 
 # (optional) Align datasets for convenience 
-start <- max(c(min(acc$timestamp), min(arc$timestamp)))
-end   <- min(c(max(acc$timestamp), max(arc$timestamp)))
+start  <- max(c(min(acc$timestamp), min(arc$timestamp)))
+end    <- min(c(max(acc$timestamp), max(arc$timestamp)))
 period <- lubridate::interval(start, end)
-acc   <- acc[timestamp %within% period, ]
-arc   <- arc[timestamp %within% period, ]
+acc    <- acc[timestamp %within% period, ]
+arc    <- arc[timestamp %within% period, ]
 
 # Define passive acoustic telemetry receiver locations 
 # * (optional) For speed, we focus on relevant receivers
+# * Note the receiver_range column that defines detection range
+# * This is a key piece of information we have to provide
 moorings  <-
   dat_moorings |>
   mutate(int = lubridate::interval(receiver_start, receiver_end)) |>
@@ -94,26 +98,73 @@ dlist <- pat_setup_data(.acoustics = acc,
 
 To simplify the user-interface in patter, downstream patter often expect this data list as the data (`.dlist`) argument and extract the required elements. This also provides a flexible means to extend existing functionality because you can include new elements in `dlist` which are automatically available under-the-hood. We will use this trick below to store additional layers for likelihood functions. 
 
-## Prepare likelihood inputs
+## Prepare movement and observation models 
 
-`patter` reconstructs movement paths and patterns of space use, accounting for observations (such as acoustic detections and archival data) and movement (see the `a-methodology` vignette). Observations are handled by likelihood functions and movement is handled by a movement model. `patter` includes convenience likelihood functions for acoustic and archival data. For ease of computation, the acoustic likelihood function(s) require us to pre-calculate the following objects: 
+`patter` reconstructs movement paths and patterns of space use, accounting for movement and observations, such as acoustic detections and archival data (see the `a-methodology` vignette). Movement is handled by a movement model and observations are handled by likelihood functions. 
+
+The movement model describes the probability of moving between two locations. In `patter`, we need to specify a `mobility` parameter, which is the maximum distance an individual could move in a single time step, alongside random generation functions (that simulate movements into new locations) and probability density functions (that calculate the probability density of movements between locations). Typically, we assume that the probability of movement between two locations depends on the distance between them, but it may also depend on the individual's behavioural state and other variables. 
+
+The observation models are used to evaluate the likelihood of the data in proposal locations. The observation model for acoustic data requires us to estimate detection range (i.e., the  distance beyond a receiver at which detection probability becomes zero) and describe how detection probability is distributed around a receiver. Observation models for other datasets will require additional models. 
+
+In `patter`, the observation models are taken as given. Parameters are not estimated.
+
+See Lavender et al. (2023) and Lavender et al., in prep for commentary on algorithm sensitivity to parameter values.
+
+### Prepare movement model 
+
+TO DO 
+
+### Prepare observation models
+
+`patter` includes convenience likelihood functions for acoustic and archival data. For ease of computation, the acoustic likelihood function(s) require us to pre-calculate the following objects: 
 
 * Detection overlaps, which inform the distribution of detection probability;
 * Detection kernels, which describe how detection probability is distributed around receivers;
 
 We store them in `dlist$algorithm`, as required by the relevant routines. 
 
+To compute detection overlaps, you need to have a record of receiver deployment timing and receiver locations. You also need to know (or guess) receiver detection ranges, which we  specified in `dlist$data$moorings`. 
+
 ```{r}
 # Define detection overlaps from detection containers 
 dlist$algorithm$detection_overlaps <- acs_setup_detection_overlaps(dlist)
+```
+
+To compute detection kernels, we need a model that describes that shape of the detection likelihood function around a receiver. Typically, we assume that detection probability declines logistically with distance as you move away from a receiver. Ideally, you will have some data from drift tests or sentinel tags that will guide the form of this model. Here, we use a model formulation designed for the flapper skate system:
+
+```{r}
+# Visualise an example detection probability model 
+# * We use the default parameters here, 
+# * ... but you should customise them for your system
+calc_detection_pr_logistic(.distance = 1:1000, 
+                           .alpha = 4,    # intercept parameter
+                           .beta = -0.01, # gradient parameter
+                           .gamma = moorings$receiver_range[1]
+                           ) |> 
+  plot( xlab = "Distance (m)", 
+        ylab = "Detection probability", 
+        type = "l")
+
+# Visualise the spatial representation of the model around an example receiver
+k <- acs_setup_detection_pr(.mooring = dlist$data$moorings[1, ],
+                            .bathy = gebco, 
+                            .calc_detection_pr = calc_detection_pr_logistic,
+                            .alpha = 4, .beta = -0.01)
+terra::plot(k)
+```
+
+Once you have a model, this is plugged into `acs_setup_detection_kernels()` which sets up the detection kernel objects as required.
+
+```{r}
 # Define detection kernels 
-# * For convenience, we simplify use the default detection probability model
-# * But this should be adjusted as required for your study system;
+# * We use the default detection probability model here
+# * But this should be adjusted as required for your study system
 dlist$algorithm$detection_kernels  <-
   acs_setup_detection_kernels(dlist, 
-                              .calc_detection_pr = acs_setup_detection_pr, 
-                              .verbose = FALSE)
+                              .calc_detection_pr = acs_setup_detection_pr)
 ```
+
+To incorporate ancillary datasets, you need to be able to write down a model (`function`) for likelihood of the data, given particle samples (see `pf_lik` for guidance).
 
 ## Prepare timeline 
 
@@ -164,11 +215,12 @@ lines(obs$timestep[p], obs$depth_deep[p] * -1, col = "darkblue")
 The forward simulation samples set of locations (termed particles) at each time point, given the data up to (and including) that time point, and a movement model. This is implemented via `pf_forward()`. 
 
 The main inputs to this function are:
+
 * The observations timeline;
-* A named list of datasets, as required to calculate likelihoods and simulate movement;
-* Two proposal functions (the movement model), used to generate proposal locations;
-* A named list of likelihood functions, used to evaluate the likelihood of the data given proposal locations;
-* A sampling function, used to (re)sample locations with replacement;
+* A named `list` of datasets, as required to calculate likelihoods and simulate movement;
+* Two proposal `function`s (the movement model), used to generate proposal locations;
+* A named `list` of likelihood functions, used to evaluate the likelihood of the data given proposal locations;
+* A sampling `function`, used to (re)sample locations with replacement;
 
 For brevity, here we use a template movement model specified by `pf_rpropose_kick()` and in-built likelihood and sampling functions.
 
@@ -189,11 +241,10 @@ out_pff <- pf_forward(
   # The sampler
   .sample = pf_sample_multinomial, 
   # Other settings
-  .record = pf_opt_record(.save = TRUE),
-  .verbose = FALSE)
+  .record = pf_opt_record(.save = TRUE))
 ```
 
-Particle samples are stored in the `history` element of the output. We can plot the first few samples as follows:
+`pf_forward()` returns a `pf_particles-class` object. Particle samples are stored in the `history` element of the output. We can plot the first few samples as follows:
 
 ```{r}
 pp <- par(mfrow = c(2, 3))
@@ -211,8 +262,7 @@ par(pp)
 
 ```{r}
 out_pfb <- pf_backward_killer(.history = out_pff$history, 
-                              .record = pf_opt_record(.save = TRUE), 
-                              .verbose = FALSE)
+                              .record = pf_opt_record(.save = TRUE))
 ```
 
 # Outputs
@@ -225,8 +275,7 @@ Particle samples can be used to reconstruct movement paths and build utilisation
 out_pfp <- pf_path(out_pfb$history, 
                    .bathy = gebco, 
                    .obs = obs, 
-                   .cols = "depth",
-                   .verbose = FALSE)
+                   .cols = "depth")
 head(out_pfp)
 ```
 
@@ -243,16 +292,53 @@ arrows(x0 = p1$cell_x[s], x1 = p1$cell_x[s + 1],
 
 ## Utilisation distribution
 
-To build a utilisation distribution, we simply sum (and renormalise) the number of copies of each location, via `map_pou()`:
+To build a utilisation distribution, we can use `map_pou()` and/or `map_dens()`. We can also compute home range estimates via `map_hr_*()` functions. 
 
 ```{r}
-# Map POU 
+## Define particle coordinates
 coord <- pf_coord(.history = out_pfb$history, .bathy = gebco)
-pou   <- map_pou(.map = gebco, .coord = coord, .plot = TRUE)
-# Draw full range 
-map_hr_full(.map = pou, .add = TRUE, border = "dimgrey")
-# Highlight home/core range via map_hr_home() or map_hr_core()
+
+## Map POU (plus home range contours)
+pou <- map_pou(.map = gebco, .coord = coord, .plot = TRUE)
+mtext(side = 3, "map_pou()", line = 2)
 map_hr_home(.map = pou, .add = TRUE)
+
+## Map point density (plus home range contours)
+dens <- map_dens(.map = gebco, .coord = coord, 
+                 .plot = TRUE, 
+                 sigma = bw.diggle)
+mtext(side = 3, "map_dens()", line = 2)
+map_hr_home(.map = dens, .add = TRUE)
+
+## Map point density for centres of activity as comparison
+# Extract acoustic detections for modelled observations 
+obs_acc <- 
+  obs |> 
+  select(timestamp, receiver_id, detection) |>
+  filter(detection == 1L) |> 
+  as.data.table()
+obs_acc <- obs_acc[, .(receiver_id = unlist(receiver_id)), by = .(timestamp)]
+dlist_coa <- pat_setup_data(.acoustics = obs_acc, 
+                            .moorings = moorings, 
+                            .bathy = gebco, 
+                            .lonlat = FALSE)
+# Calculate COAs
+coord_coa <- 
+  coa(.dlist = dlist_coa, 
+      .delta_t = "2 hours", 
+      .plot_weights = FALSE) |> 
+  select(x = coa_x, y = coa_y) |> 
+  as.data.table()
+# Map
+dens_coa  <- map_dens(.map = gebco, .coord = coord_coa, 
+                      .plot = TRUE, 
+                      sigma = bw.diggle)
+mtext(side = 3, "COA map_dens()", line = 2)
+map_hr_home(.map = dens_coa, .add = TRUE)
+```
+
+```{r, include = FALSE}
+options(op)
 ```
 
 # References
