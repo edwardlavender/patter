@@ -17,7 +17,8 @@ cl_lapply(
   .cl = NULL,
   .varlist = NULL,
   .envir = .GlobalEnv,
-  .use_chunks = FALSE
+  .use_chunks = FALSE,
+  .combine = NULL
 )
 
 cl_check(.cl = NULL, .varlist = NULL)

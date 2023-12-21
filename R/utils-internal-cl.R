@@ -39,7 +39,8 @@ NULL
 
 cl_lapply <- function(.x, .fun, ...,
                       .cl = NULL, .varlist = NULL, .envir = .GlobalEnv,
-                      .use_chunks = FALSE) {
+                      .use_chunks = FALSE,
+                      .combine = NULL) {
   # Check cluster
   cl_check(.cl, .varlist)
   cores <- cl_cores(.cl)
@@ -61,7 +62,11 @@ cl_lapply <- function(.x, .fun, ...,
     # Close cluster
     cl_stop(.cl)
     # Flatten list-by-chunk into a single level list
-    y <- purrr::flatten(y_by_chunks)
+    if (!is.null(.combine)) {
+      y <- .combine(y_by_chunks)
+    } else {
+      y <- y_by_chunks
+    }
   } else {
     # Loop over x elements in parallel
     cl_export(.cl, .varlist, .envir)
