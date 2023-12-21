@@ -113,11 +113,11 @@
   # Implement iterative sampling
   while (crit < .trial_crit & count <= .trial_count) {
     # Sample particles for the current time step (pnow)
-    label <- paste0("sample-", count)
+    label <- paste0("sample-origin-", count)
     pnow  <- .sample(.particles = .particles, .n = .n)
     # Calculate diagnostics of sample
     diagnostics[[label]] <-
-      .pf_diag(.particles = pnow, .t = 1L, .trial = count, .label = "sample")
+      .pf_diag(.particles = pnow, .t = 1L, .trial = count, .label = "sample-origin")
     # Update loop
     crit  <- diagnostics[[label]]$n_u
     count <- count + 1L
@@ -173,9 +173,9 @@
   .particles[, lik := 1]
   # Define baseline diagnostics
   if (!is.null(.diagnostics)) {
-    .diagnostics[["base"]] <-
+    .diagnostics[["proposal"]] <-
       .pf_diag(.particles = .particles, .t = .t,
-               .trial = .trial, .label = "base")
+               .trial = .trial, .label = "proposal")
   }
 
   #### Calculate likelihoods
@@ -188,7 +188,7 @@
       if (!is.null(.diagnostics)) {
         .diagnostics[[names(.stack)[i]]] <-
           .pf_diag(.particles = .particles, .t = .t,
-                   .trial = .trial, .label = names(.stack)[i])
+                   .trial = .trial, .label = paste0("lik-", names(.stack)[i]))
       }
     }
   }
@@ -259,9 +259,9 @@
     diagnostics[[paste0("kick-", count)]] <- attr(proposals, "diagnostics")
     # Sample particles
     pnow  <- .sample(.particles = proposals, .n = .n)
-    label <- paste0("kick-sample-", count)
+    label <- paste0("sample-kick-", count)
     diagnostics[[label]] <-
-      .pf_diag(pnow, .t = .t, .label = "kick-sample", .trial = count)
+      .pf_diag(pnow, .t = .t, .label = "sample-kick", .trial = count)
     # Update loop
     crit  <- diagnostics[[label]]$n_u
     count <- count + 1L
@@ -281,9 +281,6 @@
                                   .trial_crit, .trial_count, .control) {
   #### Set variables
   diagnostics <- list()
-  diagnostics[["sampler-base"]] <-
-    .pf_diag(.particles = .particles, .t = .t,
-             .trial = NA_integer_, .label = "base")
   chunks <- parallel::splitIndices(nrow(.particles),
                                    nrow(.particles) / .control$sampler_batch_size)
 
@@ -305,8 +302,8 @@
   # Get summary diagnostics
   # * TO DO
   # * Provide a more detailed breakdown (include diagnostics in lapply())
-  diagnostics[["sampler-lik"]] <- .pf_diag(.particles = .particles, .t = .t,
-                                           .trial = NA_integer_, .label = "sampler-lik")
+  diagnostics[["lik-sampler"]] <- .pf_diag(.particles = .particles, .t = .t,
+                                           .trial = NA_integer_, .label = "lik-sampler")
 
   #### Implement sampler
   pnow <- proposals
@@ -326,16 +323,16 @@
 
     #### Sample particles (from the set of allowed particles)
     pnow  <- .sample(.particles = proposals, .n = .n)
-    diagnostics[["sampler-sample-1"]] <-
-      .pf_diag(.particles = proposals, .t = .t, .label = "sampler-sample", .trial = 1L)
+    diagnostics[["sample-directed-1"]] <-
+      .pf_diag(.particles = proposals, .t = .t, .label = "sample-directed", .trial = 1L)
     # Repeat sampling, if required
     count <- 2L
-    crit  <- diagnostics[["sampler-sample-1"]]$n_u
+    crit  <- diagnostics[["sample-directed-1"]]$n_u
     while (crit < .trial_crit & count <= .trial_count) {
       pnow <- .sample(.particles = proposals, .n = .n)
-      label <- paste0("sampler-sample-", count)
+      label <- paste0("sample-directed-", count)
       diagnostics[[label]] <-
-        .pf_diag(pnow, .t = .t, .label = "sampler-sample", .trial = count)
+        .pf_diag(pnow, .t = .t, .label = "sample-directed", .trial = count)
       crit  <- diagnostics[[label]]$n_u
       count <- count + 1L
     }

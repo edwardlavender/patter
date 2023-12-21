@@ -268,6 +268,10 @@ pf_forward <- function(.obs,
     cat_log(paste0("... ... Time step ", t, ":"))
     pb_tick(.pb = pb, .t = t)
     diagnostics_t <- list()
+    # Baseline diagnostics @ the start of the time step
+    diagnostics_t[["base"]] <-
+      .pf_diag(.particles = ppast, .t = t,
+               .trial = NA_integer_, .label = "base")
 
     #### (1) Propose new particles (using kicks)
     if (.trial$trial_kick > 0L) {
