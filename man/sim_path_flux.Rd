@@ -8,7 +8,7 @@
 \alias{.cstep_iter}
 \alias{.sim_path_pivot}
 \alias{.flux_pivot}
-\title{Simulate movement paths}
+\title{Simulation: movement paths}
 \usage{
 .sim_path_flux(
   .bathy = spatTemplate(),

@@ -1,4 +1,4 @@
-#' @title Simulate movement paths
+#' @title Simulation: movement paths
 #' @description Internal functions that support the simulation of movement paths.
 #' * [`.sim_path_flux()`] simulates the movement path(s) from flux parameters that are generated dynamically at each time step. This is supported by the following helpers:
 #'    * [`.flux_template()`] defines a list of [`data.table`] objects in which the simulated 'flux' parameters (e.g., step lengths and turning angles) for each step are stored;
@@ -186,7 +186,12 @@ NULL
 }
 
 
-#' @title Simulate detections
+#' @title Simulation: acoustic detections
+#' @description Internal functions that support the simulation of acoustic detections at receivers.
+#' @details
+#' * [`.sim_detections()`] simulates detections for a single path/array.
+#' * [`.sim_detections_call()`] is a [`do.call()`] wrapper for [`.sim_detections()`].
+#' @author Edward Lavender
 #' @name sim_detections_internals
 #' @keywords internal
 

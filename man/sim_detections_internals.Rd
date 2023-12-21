@@ -4,7 +4,7 @@
 \alias{sim_detections_internals}
 \alias{.sim_detections}
 \alias{.sim_detections_call}
-\title{Simulate detections}
+\title{Simulation: acoustic detections}
 \usage{
 .sim_detections(
   .path,
@@ -21,6 +21,15 @@
 .sim_detections_call(.path, .array, .args)
 }
 \description{
-Simulate detections
+Internal functions that support the simulation of acoustic detections at receivers.
+}
+\details{
+\itemize{
+\item \code{\link[=.sim_detections]{.sim_detections()}} simulates detections for a single path/array.
+\item \code{\link[=.sim_detections_call]{.sim_detections_call()}} is a \code{\link[=do.call]{do.call()}} wrapper for \code{\link[=.sim_detections]{.sim_detections()}}.
+}
+}
+\author{
+Edward Lavender
 }
 \keyword{internal}
