@@ -3,7 +3,7 @@
 #' @param .receiver_id A `list` column.
 #' @return The function returns a `list` column that defines, for each time step, the receiver(s) that recorded the next detection.
 #' @author Edward Lavender
-#' @seealso The `receiver_id_next` column is required by [`pf_forward()`].
+#' @seealso The `receiver_id_next` column is required by [`acs_filter_container()`].
 #' @keywords internal
 
 .pf_setup_obs_receiver_id_next <- function(.receiver_id) {

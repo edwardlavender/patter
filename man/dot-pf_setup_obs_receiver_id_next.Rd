@@ -16,7 +16,7 @@ The function returns a \code{list} column that defines, for each time step, the 
 \code{\link[=.pf_setup_obs_receiver_id_next]{.pf_setup_obs_receiver_id_next()}} defines, for each time step, the receiver(s) at which the next detection was recorded.
 }
 \seealso{
-The \code{receiver_id_next} column is required by \code{\link[=pf_forward]{pf_forward()}}.
+The \code{receiver_id_next} column is required by \code{\link[=acs_filter_container]{acs_filter_container()}}.
 }
 \author{
 Edward Lavender
