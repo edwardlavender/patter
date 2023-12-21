@@ -1,16 +1,16 @@
 ---
-title: "Workflow"
+title: "Workflow outline"
 output: 
   rmarkdown::html_vignette:
     toc: true
     number_sections: yes
 vignette: >
-  %\VignetteIndexEntry{Workflow}
+  %\VignetteIndexEntry{Workflow outline}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-This vignette lists the steps required to use `patter` to reconstruct movement paths and utilisation distributions. This includes important data preparation and validation steps that are straightforward in `R` but for which `patter` convenience functions are currently lacking. Use it as a reference. See `vignette("c-workflow", package = "patter")` for a streamlined example workflow. See the [`patter-flapper`](https://github.com/edwardlavender/patter-flapper) project for a complete, real-world analysis.
+This vignette lists the steps required to use `patter` to reconstruct movement paths and utilisation distributions. This includes important data preparation and validation steps that are straightforward in `R` but for which `patter` convenience functions are currently lacking. Use it as a reference. See `vignette("c-workflow-example", package = "patter")` for a streamlined example workflow. See the [`patter-flapper`](https://github.com/edwardlavender/patter-flapper) project for a complete, real-world analysis.
 
 # Preparation
 
@@ -58,7 +58,7 @@ This vignette lists the steps required to use `patter` to reconstruct movement p
 
 ## Prepare observations timeline
 
-1. Select single individuals 
+1. Select the data for a single individual
 2. Collate observations via `pf_setup_obs()`
 
 # Forward filter
