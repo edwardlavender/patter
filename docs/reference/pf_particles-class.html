@@ -35,10 +35,10 @@
       <a href="../articles/a-methodology.html">Methodology</a>
     </li>
     <li>
-      <a href="../articles/b-workflow-outline.html">Workflow</a>
+      <a href="../articles/b-workflow-outline.html">Workflow outline</a>
     </li>
     <li>
-      <a href="../articles/c-workflow-example.html">A revised implementation of the `flapper` algorithms</a>
+      <a href="../articles/c-workflow-example.html">Example workflow</a>
     </li>
     <li>
       <a href="../articles/d-demos.html">Demos</a>
@@ -85,7 +85,7 @@
 </ul></div>
     <div id="history">
     <h2><code>history</code></h2>
-    <p><code>history</code> is a <code>list</code> with one element for each time step. Each element is a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that contains location (particle) samples. Each row is a specific sample. The columns in this table depend on <code><a href="pf_forward.html">pf_forward()</a></code>'s <code>.likelihood</code> function(s) and the <code>.return$cols</code> argument (see <code>pf_opt_return()</code>). By default, the following columns are computed:</p><ul><li><p><code>timestep</code>---an <code>integer</code> vector that defines the time step;</p></li>
+    <p><code>history</code> is a <code>list</code> with one element for each time step. Each element is a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that contains location (particle) samples. Each row is a specific sample. The columns in this table depend on <code><a href="pf_forward.html">pf_forward()</a></code>'s <code>.likelihood</code> function(s) and the <code>.record$cols</code> argument (see <code><a href="pf_opt.html">pf_opt_record()</a></code>). By default, the following columns are computed:</p><ul><li><p><code>timestep</code>---an <code>integer</code> vector that defines the time step;</p></li>
 <li><p><code>cell_past</code>---an <code>integer</code> vector that identifies the grid cells of previous particle samples;</p></li>
 <li><p><code>x_past</code>, <code>y_past</code>---<code>numeric</code> vectors that define the coordinates of previous particle samples;</p></li>
 <li><p><code>cell_now</code>---an <code>integer</code> vector that identifies the grid cells of current particle samples;</p></li>

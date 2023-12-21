@@ -53,10 +53,10 @@
       <a href="../articles/a-methodology.html">Methodology</a>
     </li>
     <li>
-      <a href="../articles/b-workflow-outline.html">Workflow</a>
+      <a href="../articles/b-workflow-outline.html">Workflow outline</a>
     </li>
     <li>
-      <a href="../articles/c-workflow-example.html">A revised implementation of the `flapper` algorithms</a>
+      <a href="../articles/c-workflow-example.html">Example workflow</a>
     </li>
     <li>
       <a href="../articles/d-demos.html">Demos</a>
@@ -103,30 +103,34 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>The <code>patter</code> package is a revised implementation of the
-‘flapper’ algorithms for passive acoustic telemetry (Lavender et al.,
-2023). These algorithms integrate observations and movement in a
+<p>The <code>patter</code> package is a <code>R</code> implementation of
+a forward filtering–backward sampling algorithm for passive acoustic
+telemetry. The algorithm integrates observations and movement in a
 process-based framework that accounts for all available information to
 reconstruct movement paths and emergent patterns of space use from
-detections at receivers (and/or ancillary datasets) (Lavender et al.,
-2023). This vignette outlines the methodology, providing an entry point
-to the literature (Lavender et al., in prep) and the package (Lavender
-et al., in prep). See the <code>002-workflow</code> vignette to learn
-how to implement the methodology using <code>patter</code> (type
-<code>vignette("002-workflow", package = "patter")</code>).</p>
+detections at receivers (and/or ancillary datasets). This vignette
+qualitatively outlines the methodology, providing an entry point to the
+literature (Lavender et al., in prep) and the package (Lavender et al.,
+in prep). See the <code>b-workflow-outline</code> and
+<code>c-workflow-example</code> vignettes to learn how to implement the
+methodology using <code>patter</code> (type
+<code><a href="../articles/b-workflow-outline.html">vignette("b-workflow-outline", package = "patter")</a></code> and
+<code><a href="../articles/c-workflow-example.html">vignette("c-workflow-example", package = "patter")</a></code>).</p>
 </div>
 <div class="section level2">
 <h2 id="the-flapper-algorithms">The flapper algorithms<a class="anchor" aria-label="anchor" href="#the-flapper-algorithms"></a>
 </h2>
-<p>In Lavender et al.’s original (2023) presentation, the flapper
-algorithms were introduced as an integrated framework comprised of two
-branches: an acoustic-container (AC) branch and a particle-filtering
-(PF) branch. AC-branch algorithms define the set of possible locations
-of an individual <em>given the data</em>. The AC algorithm handles the
-information from acoustic observations and the DC algorithm handles the
-information from depth observations (which are often collected alongside
-acoustic data). PF-branch algorithms refine AC-branch outputs <em>given
-a movement model</em>. In the predecessor <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a>
+<p>The forward filtering–backward sampling algorithm in
+<code>patter</code> unifies (and refines) a suite of methods known as
+the flapper algorithms (Lavender et al., 2023). In their original
+presentation, the flapper algorithms were presented in two parts: an
+acoustic-container (AC) branch and a particle-filtering (PF) branch.
+AC-branch algorithms define the set of possible locations of an
+individual <em>given the data at each time step</em>. The AC algorithm
+handles the information from acoustic observations and the DC algorithm
+handles the information from depth observations (which are often
+collected alongside acoustic data). PF-branch algorithms refine
+AC-branch outputs <em>given a movement model</em>. In the predecessor <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a>
 package, AC-branch algorithms were implemented via <code>ac()</code>,
 <code>dc()</code> and <code>acdc()</code> and their outputs were refined
 through PF via <code><a href="https://rdrr.io/r/stats/Fdist.html" class="external-link">pf()</a></code> and <code>pf_simplify()</code>.</p>
@@ -143,15 +147,31 @@ simulation, we simulate the set of possible locations of an individual
 moving forwards in time, given the data and contingent upon the past.
 Each location sample is termed a ‘particle’. In <code>patter</code>,
 this is achieved with a single function (<code><a href="../reference/pf_forward.html">pf_forward()</a></code>) that
-integrates the AC- and PF-branch algorithms.</p>
+integrates the functions of the AC- and PF-branch algorithms.</p>
+<p>We continue to use the terms <code>acs_*</code>, <code>AC*PF</code>
+and <code>*DCPF</code>:</p>
+<ul>
+<li>
+<code>acs_*()</code> is a prefix for functions that support
+likelihood calculations for acoustic data (the core of the original AC*
+algorithm);</li>
+<li>
+<code>AC*PF</code> is the generic term for a particle filtering
+algorithm that incorporates acoustic data (via a likelihood term based
+on the original AC* algorithm);</li>
+<li>
+<code>*DCPF</code> is the generic term for a particle filtering
+algorithm that incorporates depth data (via a likelihood term based on
+the original DC algorithm);</li>
+</ul>
 <p>The forward simulation is followed by a backward pass. In the
-original implementation, the backward pass was implemented by
-<code>pf_simplify()</code> and involved pruning ‘dead ends’ from the
-forward simulation. If you imagine the forward simulation like a growing
-fungal network between two points in space (representing the start and
-end of a time series), dead ends are the side branches of the
-(simulated) fungal network that fail to reach the end. The corresponding
-(and much improved) routine in <code>patter</code> is
+original <code>flapper</code> implementation, the backward pass was
+implemented by <code>pf_simplify()</code> and involved pruning ‘dead
+ends’ from the forward simulation. If you imagine the forward simulation
+as a growing fungal network between two points in space (representing
+the start and end of a time series), dead ends are the side branches of
+the (simulated) fungal network that fail to reach the end. The
+corresponding (and much improved) routine in <code>patter</code> is
 <code><a href="../reference/pf_backward_killer.html">pf_backward_killer()</a></code>.</p>
 <p>There are two, related limitations with the ‘prune’ methodology. The
 first is that the removal of dead ends tends to bias particle samples,
@@ -163,6 +183,8 @@ information from the future (the joint distribution). In
 <code>patter</code>, a backward sampling algorithm mitigates these issue
 to reconstruct movement trajectories (see
 <code>pf_backward_sampler()</code>).</p>
+<p>See <code>NEWS</code> for a summary of the differences between
+<code>flapper</code> and <code>patter</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="forward-simulation">Forward simulation<a class="anchor" aria-label="anchor" href="#forward-simulation"></a>
@@ -193,10 +215,11 @@ locations around a previous location.</li>
 <li>
 <strong>Likelihood.</strong> Calculate the likelihood of the data,
 given each proposal. The likelihoods of acoustic and archival data given
-each proposal are resolved by the AC and DC algorithms. For example, the
-AC algorithm calculates the likelihood of acoustic observations (the
-presence or absence of detections at each receiver), given a model of
-detection probability.</li>
+each proposal are resolved by the equations of the AC and DC algorithms.
+For example, the AC algorithm calculates the likelihood of acoustic
+observations (the presence or absence of detections at each receiver)
+according a model of detection probability, given proposal
+locations.</li>
 <li>
 <strong>Weights.</strong> Translate likelihoods into sampling
 weights that encapsulate the information in the data and the movement
@@ -223,29 +246,35 @@ step.</p>
 is a four step process:</p>
 <ul>
 <li>
-<code>pf_setup_data()</code> is used to setup data (TO DO);</li>
+<code>pf_setup_data()</code> is used to set up a data list;</li>
+<li>
+<code>acs_()</code> functions set up AC* algorithm inputs (if
+required);</li>
 <li>
 <code><a href="../reference/pf_setup_obs.html">pf_setup_obs()</a></code> is used to collate observations;</li>
-<li>
-<code>acs_()</code> functions setup AC* algorithm inputs (if
-required);</li>
 <li>
 <code><a href="../reference/pf_forward.html">pf_forward()</a></code> implements the forward simulation;</li>
 </ul>
 <p>In <code><a href="../reference/pf_forward.html">pf_forward()</a></code>, the key arguments are as follows:</p>
 <ul>
 <li>
-<code>.rpropose</code> is a function that generates proposal
-locations (e.g., <code><a href="../reference/pf_propose.html">pf_rpropose_kick()</a></code>);</li>
+<code>.obs</code> is a timeline of observations;</li>
 <li>
-<code>.dpropose</code> is the corresponding function that calculates
-the density of movements into proposal locations;</li>
+<code>.dlist</code> is a <code>list</code> of datasets required to
+calculate likelihoods;</li>
 <li>
-<code>.moorings</code> and co. are input datasets required to
-calculate the likelihood;</li>
+<code>.rpropose</code> is a <code>function</code> that generates
+proposal locations (e.g., <code><a href="../reference/pf_propose.html">pf_rpropose_kick()</a></code>);</li>
 <li>
-<code>.sample</code> is the sampling function used to sample
-proposal locations (e.g., <code><a href="../reference/pf_sample.html">pf_sample_systematic()</a></code>);</li>
+<code>.dpropose</code> is the corresponding <code>function</code>
+that calculates the density of movements into proposal locations;</li>
+<li>
+<code>.likelihood</code> is a <code>list</code> of functions that
+evaluate the likelihood of the data given proposal locations;</li>
+<li>
+<code>.sample</code> is the sampling <code>function</code> used to
+sample proposal locations (e.g.,
+<code><a href="../reference/pf_sample.html">pf_sample_systematic()</a></code>);</li>
 </ul>
 <p>Most of the complexity in <code><a href="../reference/pf_forward.html">pf_forward()</a></code> is about handling
 particle degeneracy and convergence. In a standard PF, we ‘kick’ the
@@ -261,15 +290,16 @@ convergence. Quick options are to boost the number of particles and the
 number of kick attempts at each time step. If this fails, directed
 sampling is implemented. Under this approach, we propose the complete
 set of reachable locations and location weights are assigned from the
-normalised product of proposal likelihoods and movement densities (given
-the movement model). We then sample from the set of valid proposals, in
-line with the weights (there is no filtering stage). Other tricks are
-also available—see <code>?pf_forward()</code> for full details.</p>
+normalised product of proposal likelihoods and movement densities. We
+then sample from the set of valid proposals, in line with the weights
+(there is no filtering stage). Other tricks are also available—see
+<code>?pf_forward()</code> for full details.</p>
 <p><code><a href="../reference/pf_forward.html">pf_forward()</a></code> records <code>diagnostics</code> related to
 particle degeneracy that can guide more efficient algorithm
-implementations. See the <code>003-demos</code> vignette for an
-illustration of convergence challenges and diagnostics (type
-<code>vignette("003-demo", package = "patter")</code>).</p>
+implementations. See <code><a href="../reference/pf_diag.html">?pf_diag</a></code>,
+<code><a href="../reference/pf_particles-class.html">?`pf_particles-class`</a></code> and the <code>d-demos</code> vignette
+for further details (type
+<code><a href="../articles/d-demos.html">vignette("d-demos", package = "patter")</a></code>).</p>
 </div>
 </div>
 <div class="section level2">
@@ -307,8 +337,8 @@ of space use. Movement paths can be reconstructed in two ways:</p>
 </ul>
 <p>Patterns of space use (utilisation distributions) can be
 reconstructed using standard statistical techniques (see
-<code><a href="../reference/map_pou.html">map_pou()</a></code> and <code><a href="../reference/map_dens.html">map_dens()</a></code> for inbuilt
-functions).</p>
+<code><a href="../reference/map_pou.html">map_pou()</a></code>, <code><a href="../reference/map_dens.html">map_dens()</a></code> and
+<code>map_hr_*()</code> for inbuilt functions).</p>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>

@@ -53,10 +53,10 @@
       <a href="../articles/a-methodology.html">Methodology</a>
     </li>
     <li>
-      <a href="../articles/b-workflow-outline.html">Workflow</a>
+      <a href="../articles/b-workflow-outline.html">Workflow outline</a>
     </li>
     <li>
-      <a href="../articles/c-workflow-example.html">A revised implementation of the `flapper` algorithms</a>
+      <a href="../articles/c-workflow-example.html">Example workflow</a>
     </li>
     <li>
       <a href="../articles/d-demos.html">Demos</a>
@@ -477,7 +477,7 @@ movement path.</p>
 <span>                      <span class="op">)</span></span>
 <span><span class="co"># &gt; It takes ~2-50 kick attempts on each time step to achieve convergence</span></span>
 <span><span class="fu"><a href="https://testthat.r-lib.org/reference/logical-expectations.html" class="external-link">expect_true</a></span><span class="op">(</span><span class="va">out_pff</span><span class="op">$</span><span class="va">convergence</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">out_pff</span><span class="op">$</span><span class="va">diagnostics</span>, <span class="fl">50L</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">out_pff</span><span class="op">$</span><span class="va">diagnostics</span>, <span class="fl">50L</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     iter_m iter_i timestep                component trial      n    n_u</span></span>
 <span><span class="co">#&gt;  1:      1      1        1                 proposal    NA 230509 230509</span></span>
 <span><span class="co">#&gt;  2:      1      1        1      lik-acs_filter_land    NA 230509 230509</span></span>
@@ -885,24 +885,24 @@ movement path.</p>
 <span><span class="va">out_pff_2</span><span class="op">$</span><span class="va">time</span></span>
 <span><span class="co">#&gt; [[1]]</span></span>
 <span><span class="co">#&gt; [[1]]$start</span></span>
-<span><span class="co">#&gt; [1] "2023-12-21 14:03:49 GMT"</span></span>
+<span><span class="co">#&gt; [1] "2023-12-21 22:21:34 GMT"</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; [[1]]$end</span></span>
-<span><span class="co">#&gt; [1] "2023-12-21 14:03:51 GMT"</span></span>
+<span><span class="co">#&gt; [1] "2023-12-21 22:21:35 GMT"</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; [[1]]$duration</span></span>
-<span><span class="co">#&gt; Time difference of 1.050272 secs</span></span>
+<span><span class="co">#&gt; Time difference of 1.040339 secs</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; [[2]]</span></span>
 <span><span class="co">#&gt; [[2]]$start</span></span>
-<span><span class="co">#&gt; [1] "2023-12-21 14:03:51 GMT"</span></span>
+<span><span class="co">#&gt; [1] "2023-12-21 22:21:35 GMT"</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; [[2]]$end</span></span>
-<span><span class="co">#&gt; [1] "2023-12-21 14:03:52 GMT"</span></span>
+<span><span class="co">#&gt; [1] "2023-12-21 22:21:36 GMT"</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; [[2]]$duration</span></span>
-<span><span class="co">#&gt; Time difference of 1.233278 secs</span></span>
+<span><span class="co">#&gt; Time difference of 1.208698 secs</span></span>
 <span></span>
 <span><span class="co">#### (3) ACDCPF forward simulation (default)</span></span>
 <span><span class="co"># &gt; The default implementation attempts &lt;=.trial_kick kicks &amp; then uses directed sampling</span></span>
@@ -1102,18 +1102,16 @@ movement path.</p>
 <span><span class="co"># Build map using path</span></span>
 <span><span class="va">pp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">map_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/map_dens.html">map_dens</a></span><span class="op">(</span><span class="va">gebco</span>, .coord <span class="op">=</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/lines.html" class="external-link">points</a></span><span class="op">(</span><span class="va">path</span><span class="op">$</span><span class="va">x</span>, <span class="va">path</span><span class="op">$</span><span class="va">y</span>, cex <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">path</span><span class="op">$</span><span class="va">x</span>, <span class="va">path</span><span class="op">$</span><span class="va">y</span>, cex <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
 <span><span class="co"># Build map using coordinates</span></span>
 <span><span class="va">map_particles</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/map_dens.html">map_dens</a></span><span class="op">(</span><span class="va">gebco</span>,</span>
-<span>                          .coord <span class="op">=</span> <span class="fu"><a href="../reference/pf_coord.html">pf_coord</a></span><span class="op">(</span><span class="va">out_pff</span><span class="op">$</span><span class="va">history</span>, .bathy <span class="op">=</span> <span class="va">gebco</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>                          .coord <span class="op">=</span> <span class="fu"><a href="../reference/pf_coord.html">pf_coord</a></span><span class="op">(</span><span class="va">out_pff</span><span class="op">$</span><span class="va">history</span>, .bathy <span class="op">=</span> <span class="va">gebco</span><span class="op">)</span>, </span>
+<span>                          .plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">path</span><span class="op">$</span><span class="va">x</span>, <span class="va">path</span><span class="op">$</span><span class="va">y</span>, cex <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span></code></pre></div>
 <p><img src="d-demos_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">map_particles</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/lines.html" class="external-link">points</a></span><span class="op">(</span><span class="va">path</span><span class="op">$</span><span class="va">x</span>, <span class="va">path</span><span class="op">$</span><span class="va">y</span>, cex <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">pp</span><span class="op">)</span></span></code></pre></div>
-<p><img src="d-demos_files/figure-html/unnamed-chunk-4-2.png" width="700"></p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://testthat.r-lib.org/reference/logical-expectations.html" class="external-link">expect_true</a></span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">map_path</span>, <span class="va">map_particles</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">pp</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://testthat.r-lib.org/reference/logical-expectations.html" class="external-link">expect_true</a></span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">map_path</span>, <span class="va">map_particles</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
   </div>

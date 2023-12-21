@@ -35,10 +35,10 @@
       <a href="../articles/a-methodology.html">Methodology</a>
     </li>
     <li>
-      <a href="../articles/b-workflow-outline.html">Workflow</a>
+      <a href="../articles/b-workflow-outline.html">Workflow outline</a>
     </li>
     <li>
-      <a href="../articles/c-workflow-example.html">A revised implementation of the `flapper` algorithms</a>
+      <a href="../articles/c-workflow-example.html">Example workflow</a>
     </li>
     <li>
       <a href="../articles/d-demos.html">Demos</a>
@@ -93,11 +93,11 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.bathy</dt>
-<dd><p>A <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code> that defines the region within which movements are simulated. Movements are simulated in continuous space but restricted within the boundaries defined by <code>.bathy</code> and non-NA regions.</p></dd>
+<dd><p>A <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code> that defines the region within which movements are simulated. Movements are simulated in continuous space but restricted within the boundaries defined by <code>.bathy</code> and non-<code>NA</code> regions.</p></dd>
 
 
 <dt>.lonlat</dt>
-<dd><p>A <code>logical</code> variable that defines whether or not <code>.bathy</code> uses longitude/latitude coordinates.</p></dd>
+<dd><p>A <code>logical</code> variable that defines whether or not <code>.bathy</code> uses longitude/latitude or planar coordinates.</p></dd>
 
 
 <dt>.origin</dt>
@@ -113,12 +113,12 @@
 
 
 <dt>.sim_length, .sim_angle, ...</dt>
-<dd><p>Functions and accompanying arguments that simulate step lengths and turning angle. Simulated step lengths should be in map units (e.g., metres) if <code>.lonlat = FALSE</code> or metres if <code>.lonlat = TRUE</code>. Turning angles should be in degrees. The functions must accept four named arguments, even if unused:</p><ul><li><p><code>.n</code>---an <code>integer</code> that defines the number of simulated outcome(s);</p></li>
+<dd><p>Functions and accompanying arguments that simulate step lengths and turning angles. Simulated step lengths should be in map units (e.g., metres) if <code>.lonlat = FALSE</code> or metres if <code>.lonlat = TRUE</code>. Turning angles should be in degrees. The functions must accept four named arguments, even if unused:</p><ul><li><p><code>.n</code>---an <code>integer</code> that defines the number of simulated outcome(s);</p></li>
 <li><p><code>.prior</code>---a <code>numeric</code> vector that defines the simulated value(s) from the previous time step;</p></li>
 <li><p><code>.t</code>---an <code>integer</code> that defines the time step;</p></li>
 <li><p><code>...</code>---additional arguments, if needed;</p></li>
 </ul><p>If <code>.prior</code> is used, the function should be able to handle the first time step (when <code>.prior</code> is set to <code>NULL</code>). See <code><a href="sim_helpers.html">rangcrw()</a></code> (below) for an example.</p>
-<p>Note that <code>...</code> is passed down from <code>sim_path_walk()</code> to both <code>.sim_length</code> and <code>.sim_angle</code> so care is required to ensure that <code>...</code> parameters are handled correctly).</p>
+<p>Note that <code>...</code> is passed down from <code>sim_path_walk()</code> to both <code>.sim_length</code> and <code>.sim_angle</code> so care is required to ensure that <code>...</code> parameters are handled correctly.</p>
 <p>The following template functions are provided:</p><ul><li><p><code><a href="sim_helpers.html">rlen()</a></code> is an example <code>.sim_length</code> function that simulates step lengths from a truncated Gamma distribution (via <code><a href="sim_helpers.html">rtruncgamma()</a></code>);</p></li>
 <li><p><code><a href="sim_helpers.html">rangrw()</a></code> is an example <code>.sim_angle</code> function that simulates uncorrelated turning angles from a wrapped normal distribution (via <code><a href="sim_helpers.html">rwn()</a></code>);</p></li>
 <li><p><code><a href="sim_helpers.html">rangcrw()</a></code> is an example <code>.sim_angle</code> function that can simulate correlated turning angles (via <code><a href="sim_helpers.html">rwn()</a></code>);</p></li>
@@ -139,8 +139,8 @@
     <h2>Value</h2>
     
 
-<p><code>sim_path_walk()</code> returns a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> with 10 columns:</p><ul><li><p><code>path_id</code>--- an <code>integer</code> that identifies each path;</p></li>
-<li><p><code>timestep</code>---an <code>integer</code> that defines the time step;</p></li>
+<p><code>sim_path_walk()</code> returns a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> with 10 columns:</p><ul><li><p><code>path_id</code>--- an <code>integer</code> vector that identifies each path;</p></li>
+<li><p><code>timestep</code>---an <code>integer</code> vector that defines the time step;</p></li>
 <li><p><code>cell_id</code>, <code>cell_x</code>, <code>cell_y</code>, <code>cell_z</code>---<code>integer</code>/<code>numeric</code> vectors that define the locations of the simulated positions on <code>.bathy</code>;</p></li>
 <li><p><code>x</code>,<code>y</code>---<code>numeric</code> vectors that define simulated x and y coordinates;</p></li>
 <li><p><code>length</code>,<code>angle</code>---<code>numeric</code> vectors that define simulated step lengths and angles (for the movement from timestep <code>t</code> to time step <code>t + 1</code>);</p></li>
