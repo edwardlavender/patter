@@ -8,6 +8,9 @@
 list_compact(l)
 }
 \description{
-Utilities: list helpers
+These are internal list helpers in \code{\link{patter}}.
+}
+\author{
+Edward Lavender
 }
 \keyword{internal}

@@ -124,6 +124,8 @@ cat_init <- function(.verbose) {
 }
 
 #' @title Utilities: list helpers
+#' @description These are internal list helpers in [`patter`].
+#' @author Edward Lavender
 #' @name utils-lists
 
 #' @rdname utils-lists
@@ -132,7 +134,7 @@ cat_init <- function(.verbose) {
 # plyr::compact()
 list_compact <- function(l) l[which(!sapply(l, is.null))]
 
-#' @title Utilities: calculate column products
+#' @title Utilities: column products
 #' @description This function calculates column products for each row in a [`matrix`].
 #' @param .data A [`matrix`].
 #' @param .cols A vector that defines the columns in `.data` to multiply.
@@ -146,4 +148,3 @@ colProds.matrix <- function(.data, .cols = seq_col(.data)) {
   }
   eval(parse(text = paste0(".data[, ", .cols, "]", collapse = " * ")))
 }
-
