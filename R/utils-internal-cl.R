@@ -8,6 +8,7 @@
 #' @param .varlist (optional) A character vector of objects for export (see [`parallel::clusterExport()`]). If `.cl` is a cluster, this may be required. Exported objects must be located in the global environment.
 #' @param .envir The environment from which to export variables (see [`parallel::clusterExport()`]).
 #' @param .use_chunks A logical vector that defines whether to parallelise over 'chunks' (`TRUE`) or over the elements of `.x` (`FALSE`). If `.use_chunks = TRUE`, `.x` is split into \emph{n} chunks (one per core) that are processed in parallel; within each chunk `.x` is updated iteratively.
+#' @param .combine A `function` that defines how to combine the results for each chunk. `NULL` is permitted, in which case chunkwise results are not combined.
 #' @param .length An integer that defines the number of elements in the iteration.
 #'
 #' @details
@@ -46,7 +47,6 @@ cl_lapply <- function(.x, .fun, ...,
   cores <- cl_cores(.cl)
   if (.use_chunks && cores > 1L) {
     # Define list of indices by chunk
-    rlang::check_installed("purrr")
     index_by_chunk <- cl_chunks(.cl, length(.x))
     # Loop over chunks in parallel
     cl_export(.cl, .varlist)

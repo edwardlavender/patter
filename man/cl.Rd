@@ -44,6 +44,8 @@ cl_stop(.cl = NULL)
 
 \item{.use_chunks}{A logical vector that defines whether to parallelise over 'chunks' (\code{TRUE}) or over the elements of \code{.x} (\code{FALSE}). If \code{.use_chunks = TRUE}, \code{.x} is split into \emph{n} chunks (one per core) that are processed in parallel; within each chunk \code{.x} is updated iteratively.}
 
+\item{.combine}{A \code{function} that defines how to combine the results for each chunk. \code{NULL} is permitted, in which case chunkwise results are not combined.}
+
 \item{.length}{An integer that defines the number of elements in the iteration.}
 }
 \value{
