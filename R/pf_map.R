@@ -6,7 +6,9 @@
 #' @param .obs,.cols (optional) A [`data.table`] and a character vector of column names in `.obs` to match onto the output. `.obs` must contain a `timestep` column for matching.
 #'
 #' @details
-#' This function is not memory safe.
+#' The `timestep` and `cell_now` columns in [`pf_forward()`] outputs are required to extract coordinates. `cell_now` is used to extract coordinates on `.bathy`.
+#'
+#' This function is not memory safe, since the entire time series of coordinates is collected in memory.
 #'
 #' @return The function returns a [`data.table`] that defines time steps, sampled locations and, optionally, information from `.obs`, with the following columns:
 #' * `timestep`---an `integer` vector that defines the time step;
@@ -17,10 +19,15 @@
 #'
 #' @examples
 #' p <- dat_pfbk()
-#' pf_coord(p$history, dat_gebco())
+#' pxy_1 <- pf_coord(p$history, dat_gebco())
 #'
-#' @seealso
-#' TO DO
+#' pfbk_folder <- system.file("extdata", "acpf", "backward", "killer",
+#'                            package = "patter", mustWork = TRUE)
+#' pxy_2 <- pf_coord(pfbk_folder, dat_gebco())
+#'
+#' stopifnot(all.equal(pxy_1, pxy_2))
+#'
+#' @inherit pf_forward seealso
 #'
 #' @author Edward Lavender
 #' @export
@@ -42,17 +49,16 @@ pf_coord <- function(.history, .bathy, .obs = NULL, .cols = NULL) {
                 y_now = double())
   p <-
     .history |>
-    .pf_history_dt(schema = sch, .collect = FALSE) |>
-    rename(cell_id = .data$cell_now) |>
-    collect() |>
+    .pf_history_dt(schema = sch, .collect = TRUE) |>
+    rename(cell_id = "cell_now") |>
     as.data.table()
 
   # Add grid cell coordinates
   p <-
     p |>
     mutate(cell_xy = terra::xyFromCell(.bathy, .data$cell_id),
-           cell_x = .data$cell_xy[, 1],
-           cell_y = .data$cell_xy[, 2],
+           cell_x = as.numeric(.data$cell_xy[, 1]),
+           cell_y = as.numeric(.data$cell_xy[, 2]),
            cell_z = terra::extract(.bathy, .data$cell_id)) |>
     select(any_of("timestep"), "cell_id", "cell_x", "cell_y", "cell_z", any_of("mark")) |>
     as.data.table()
