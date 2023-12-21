@@ -1,5 +1,7 @@
 #' @title PF: list files
-#' @description [`pf_files()`] function creates an ordered `list` of the parquet files contains particle samples (e.g., from [`pf_forward()`] or [`pf_backward_killer()`]). [`pf_files_size()`] calculates the total size of all files.
+#' @description [`pf_files()`] creates an ordered `list` of the parquet files that contain particle samples (e.g., from [`pf_forward()`] or [`pf_backward_killer()`]).
+#'
+#' [`pf_files_size()`] calculates the total size of all files.
 #'
 #' @param .sink A `character` string that defines the directory in which files are located.
 #' @param ... For [`pf_files()`], `...` is a placeholder for additional arguments passed to [`list.files()`], such as `pattern`, excluding `full.names`.
@@ -25,7 +27,7 @@
 #' pf_files_size(pfbk_folder, .unit = "GB")
 #' pf_files_size(pfbk_folder, .unit = "TB")
 #'
-#' @seealso
+#' @inherit pf_forward seealso
 #'
 #' @author Edward Lavender
 #' @name pf_files
