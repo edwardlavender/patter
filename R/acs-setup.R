@@ -192,6 +192,7 @@ acs_setup_detection_pr <- function(.mooring,
                                    .calc_detection_pr = calc_detection_pr_logistic, ...) {
   # Calculate Euclidean distance around receiver
   rlang::check_dots_used()
+  check_dots_allowed(".gamma")
   rxy  <- matrix(c(.mooring$receiver_x, .mooring$receiver_y), ncol = 2)
   cell <- terra::cellFromXY(.bathy, rxy)
   grid <- terra::setValues(.bathy, NA)
@@ -199,7 +200,7 @@ acs_setup_detection_pr <- function(.mooring,
   dist <- terra::distance(grid, unit = "m")
   dist <- terra::mask(dist, .bathy)
   # Convert distances to detection pr
-  terra::app(dist, calc_detection_pr_logistic, .gamma = .mooring$receiver_range)
+  terra::app(dist, calc_detection_pr_logistic, .gamma = .mooring$receiver_range, ...)
 }
 
 #' @title AC* set up: detection kernels
