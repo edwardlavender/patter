@@ -1,10 +1,12 @@
 #' @title Utilities: function call properties
 #' @description These functions collate information related to function calls.
+#' @author Edward Lavender
 #' @name call_
 
 #' @rdname call_
 #' @keywords internal
 
+# Format a time for cat()
 call_time <- function(.time, form = "%Y-%m-%d %H:%M:%S") {
   format(.time, "%Y-%m-%d %H:%M:%S")
 }
@@ -12,6 +14,7 @@ call_time <- function(.time, form = "%Y-%m-%d %H:%M:%S") {
 #' @rdname call_
 #' @keywords internal
 
+# patter::foo() start statement
 call_start <- function(.fun = as.character(sys.call(-1L)), .start = Sys.time()) {
   .fun  <- .fun[1]
   .start <- call_time(.start)
@@ -22,6 +25,7 @@ call_start <- function(.fun = as.character(sys.call(-1L)), .start = Sys.time()) 
 #' @rdname call_
 #' @keywords internal
 
+# patter::foo() end statement
 call_end <- function(.fun = as.character(sys.call(-1L)), .start, .end = Sys.time()) {
   .fun   <- .fun[1]
   .start <- call_time(.start)
@@ -30,7 +34,12 @@ call_end <- function(.fun = as.character(sys.call(-1L)), .start, .end = Sys.time
              .envir = environment())
 }
 
+#' @rdname call_
+#' @keywords internal
+
+# Format call duration (difftime) statement for cat()
 call_duration <- function(.start, .end, ...) {
+  rlang::check_dots_used(...)
   dft      <- difftime(.end, .start, ...)
   duration <- round(as.numeric(dft), digits = 2)
   units    <- attr(dft, "units")
@@ -43,6 +52,7 @@ call_duration <- function(.start, .end, ...) {
 #' @rdname call_
 #' @keywords internal
 
+# Record call timings in a list
 call_timings <- function(.start, .end = Sys.time(), ...) {
   rlang::check_dots_used()
   list(start = .start,
