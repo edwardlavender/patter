@@ -1,10 +1,12 @@
 Package: patter
-Title: Movement Modelling For Passive Acoustic Telemetry
+Title: Particle Filters For Passive Acoustic Telemetry
 Version: 0.0.0.9000
 Authors@R: 
-    person("Edward", "Lavender", email = "edward.lavender@eawag.ch", role = c("aut", "cre"),
+    person("Edward", "Lavender", 
+           email = "edward.lavender@eawag.ch", 
+           role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-8040-7489"))
-Description: A new implementation of the 'flapper' family of algorithms for passive acoustic telemetry. 
+Description: A forward filtering--backward sampling algorithm for passive acoustic telemetry. This methodology enables the reconstruction of movement paths and patterns of space use in passive acoustic telemetry systems. The methodology unifies a suite of methods formerly known as the flapper algorithms and supersedes the {flapper} package.
 License: MIT + file LICENSE
 Imports:
     arrow,
@@ -15,7 +17,6 @@ Imports:
     dtplyr,
     glue,
     lubridate,
-    purrr, 
     pbapply,
     rlang,
     terra
