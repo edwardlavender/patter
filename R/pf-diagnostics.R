@@ -4,23 +4,25 @@
 #' @details
 #' # Particle diagnostics
 #'
-#' Particle diagnostics measure how the diversity of particle samples evolves through time. Current diagnostics include the number of unique particle samples at each time step and the effective sample size. Particle diagnostics have multiple uses:
-#' * **Convergence.** Diagnostics from the forward run can indicate the causes of convergence failures. This is possible because [`pf_forward()`] keeps track of diagnostics at every stage of the algorithm, recording at each time step the diversity of particle proposals, the diversity remaining after each likelihood function evaluation and the diversity following (re)-sampling. See `vignette("d-demos", package = "patter")` for an illustration.
+#' Particle diagnostics measure how the diversity of particle samples evolves through time. Current diagnostic metrics include the number of unique particle samples at each time step and the effective sample size. Particle diagnostics have multiple uses:
+#' * **Convergence.** Diagnostics from the forward run can indicate the causes of convergence failures. This is possible because [`pf_forward()`] keeps track of diagnostics at every stage of the algorithm, recording at each time step the diversity of particle proposals, the diversity remaining after each likelihood function evaluation and the diversity following (re)-sampling. See [`pf_particles`] and vignette("d-demos", package = "patter")` for an illustration.
 #' * **Sampling.** Diagnostics indicate sampling sufficiency. In general, a low ratio of the number of unique particles to the total number of particles indicates effective coverage of the possible locations of an individual.
-#' * **Particle degeneracy.** Diagnostics measure particle degeneracy, i.e., the decay in the number of unique particles through time as trajectories are sooner-or-later rendered invalid by observations. Comparison of particle diagnostics between [`pf_backward_killer()`] and [`pf_backward_sampler()`] is particular valuable in this context. Both functions perform a backward refinement of particles from the forward sampler, but the former is crude but fast while the latter is sophisticated but expensive. Tracking particle diagnostics can indicate whether [`pf_backward_sampler()`] is worth the cost.
+#' * **Particle degeneracy.** Diagnostics measure particle degeneracy, i.e., the decay in the number of unique particles through time as trajectories are rendered invalid by observations. Comparison of particle diagnostics between [`pf_backward_killer()`] and [`pf_backward_sampler()`] is particularly valuable in this context. Both functions perform a backward refinement of particles from [`pf_forward()`]; however, the former is simple but fast, while the latter is sophisticated but expensive. Tracking particle diagnostics can indicate whether [`pf_backward_sampler()`] is worth the cost.
 #'
 #' # Internal routines
 #'
 #' * [`.pf_diag_any()`] identifies whether or not any particle samples remain;
-#' * [`.pf_diag_ess()`] calculates effective sample size;
-#' * [`.pf_diag_nu()`] counts the number of unique particle samples;
-#' * [`.pf_diag()`] is a wrapper function that collates diagnostics;
+#' * [`.pf_diag_nu()`] counts the number of unique particle samples (grid cells);
+#' * [`.pf_diag_ess()`] calculates effective sample size from particle likelihoods;
+#' * [`.pf_diag()`] is a wrapper function that calculates diagnostics;
+#' * [`.pf_diag_bind()`] binds `list`s of diagnostics together;
+#' * [`.pf_diag_collect()`] wraps [`.pf_diag_bind()`] and assigns required columns;
 #'
 #' # Exported wrappers
 #'
 #' In [`pf_forward`], diagnostics are necessarily calculated on the fly by [`.pf_diag`]`_()` functions and simply require extraction from outputs via [`pf_forward_diagnostics()`]. However, note that the forward simulation necessitates the calculation of multiple diagnostics at each time step and [`pf_forward_diagnostics()`] attempts to collate all diagnostics in memory, which is not memory safe.
 #'
-#' [`pf_backward_killer()`] only tracks particle samples and it is therefore necessary to calculate diagnostics from particle samples post-hoc. A single set of diagnostics is calculated for each time step, so this function is (effectively) memory safe.
+#' [`pf_backward_killer()`] only tracks particle samples and it is therefore necessary to calculate diagnostics from particle samples post-hoc via [`pf_backward_killer_diagnostics()`]. A single set of diagnostics is calculated for each time step, so this function is (effectively) memory safe.
 #'
 #' @seealso
 #' * [`pf_forward()`], [`pf_backward_killer()`] and [`pf_backward_sampler()`] implement the forward simulation and the backward pass;
@@ -40,15 +42,15 @@
 #' @rdname pf_diag
 #' @keywords internal
 
-.pf_diag_ess <- function(.likelihood) {
-  1 / sum(.likelihood ^ 2)
+.pf_diag_nu <- function(.cells) {
+  length(collapse::funique(.cells))
 }
 
 #' @rdname pf_diag
 #' @keywords internal
 
-.pf_diag_nu <- function(.cells) {
-  length(collapse::funique(.cells))
+.pf_diag_ess <- function(.likelihood) {
+  1 / sum(.likelihood ^ 2)
 }
 
 #' @rdname pf_diag
@@ -72,11 +74,11 @@
 #' @rdname pf_diag
 #' @keywords internal
 
-.pf_diag_bind <- function(.diag) {
-  if (length(.diag) == 0L) {
-    .diag <- NULL
+.pf_diag_bind <- function(.diagnostics) {
+  if (length(.diagnostics) == 0L) {
+    .diagnostics <- NULL
   } else {
-    collapse::unlist2d(.diag, idcols = FALSE, DT = TRUE)
+    collapse::unlist2d(.diagnostics, idcols = FALSE, DT = TRUE)
   }
 }
 
@@ -92,6 +94,8 @@
   # Define number of internal iterations
   iter_i <- NULL
   diagnostics[, iter_i := .iter_i]
-  setcolorder(diagnostics, c("iter_m", "iter_i", "timestep", "component", "trial", "n", "n_u", "ess"))
+  setcolorder(diagnostics, c("iter_m", "iter_i",
+                             "timestep", "component", "trial",
+                             "n", "n_u", "ess"))
   diagnostics
 }

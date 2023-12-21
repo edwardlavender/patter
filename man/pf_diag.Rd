@@ -3,8 +3,8 @@
 \name{pf_diag}
 \alias{pf_diag}
 \alias{.pf_diag_any}
-\alias{.pf_diag_ess}
 \alias{.pf_diag_nu}
+\alias{.pf_diag_ess}
 \alias{.pf_diag}
 \alias{.pf_diag_bind}
 \alias{.pf_diag_collect}
@@ -12,13 +12,13 @@
 \usage{
 .pf_diag_any(.particles)
 
-.pf_diag_ess(.likelihood)
-
 .pf_diag_nu(.cells)
+
+.pf_diag_ess(.likelihood)
 
 .pf_diag(.particles, .t, .trial = NA_integer_, .label)
 
-.pf_diag_bind(.diag)
+.pf_diag_bind(.diagnostics)
 
 .pf_diag_collect(.diagnostics, .iter_m, .iter_i)
 }
@@ -26,27 +26,29 @@
 These are internal functions that calculate diagnostic statistics from selected particle samples.
 }
 \section{Particle diagnostics}{
-Particle diagnostics measure how the diversity of particle samples evolves through time. Current diagnostics include the number of unique particle samples at each time step and the effective sample size. Particle diagnostics have multiple uses:
+Particle diagnostics measure how the diversity of particle samples evolves through time. Current diagnostic metrics include the number of unique particle samples at each time step and the effective sample size. Particle diagnostics have multiple uses:
 \itemize{
-\item \strong{Convergence.} Diagnostics from the forward run can indicate the causes of convergence failures. This is possible because \code{\link[=pf_forward]{pf_forward()}} keeps track of diagnostics at every stage of the algorithm, recording at each time step the diversity of particle proposals, the diversity remaining after each likelihood function evaluation and the diversity following (re)-sampling. See \code{vignette("d-demos", package = "patter")} for an illustration.
+\item \strong{Convergence.} Diagnostics from the forward run can indicate the causes of convergence failures. This is possible because \code{\link[=pf_forward]{pf_forward()}} keeps track of diagnostics at every stage of the algorithm, recording at each time step the diversity of particle proposals, the diversity remaining after each likelihood function evaluation and the diversity following (re)-sampling. See \code{\link{pf_particles}} and vignette("d-demos", package = "patter")` for an illustration.
 \item \strong{Sampling.} Diagnostics indicate sampling sufficiency. In general, a low ratio of the number of unique particles to the total number of particles indicates effective coverage of the possible locations of an individual.
-\item \strong{Particle degeneracy.} Diagnostics measure particle degeneracy, i.e., the decay in the number of unique particles through time as trajectories are sooner-or-later rendered invalid by observations. Comparison of particle diagnostics between \code{\link[=pf_backward_killer]{pf_backward_killer()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} is particular valuable in this context. Both functions perform a backward refinement of particles from the forward sampler, but the former is crude but fast while the latter is sophisticated but expensive. Tracking particle diagnostics can indicate whether \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} is worth the cost.
+\item \strong{Particle degeneracy.} Diagnostics measure particle degeneracy, i.e., the decay in the number of unique particles through time as trajectories are rendered invalid by observations. Comparison of particle diagnostics between \code{\link[=pf_backward_killer]{pf_backward_killer()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} is particularly valuable in this context. Both functions perform a backward refinement of particles from \code{\link[=pf_forward]{pf_forward()}}; however, the former is simple but fast, while the latter is sophisticated but expensive. Tracking particle diagnostics can indicate whether \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} is worth the cost.
 }
 }
 
 \section{Internal routines}{
 \itemize{
 \item \code{\link[=.pf_diag_any]{.pf_diag_any()}} identifies whether or not any particle samples remain;
-\item \code{\link[=.pf_diag_ess]{.pf_diag_ess()}} calculates effective sample size;
-\item \code{\link[=.pf_diag_nu]{.pf_diag_nu()}} counts the number of unique particle samples;
-\item \code{\link[=.pf_diag]{.pf_diag()}} is a wrapper function that collates diagnostics;
+\item \code{\link[=.pf_diag_nu]{.pf_diag_nu()}} counts the number of unique particle samples (grid cells);
+\item \code{\link[=.pf_diag_ess]{.pf_diag_ess()}} calculates effective sample size from particle likelihoods;
+\item \code{\link[=.pf_diag]{.pf_diag()}} is a wrapper function that calculates diagnostics;
+\item \code{\link[=.pf_diag_bind]{.pf_diag_bind()}} binds \code{list}s of diagnostics together;
+\item \code{\link[=.pf_diag_collect]{.pf_diag_collect()}} wraps \code{\link[=.pf_diag_bind]{.pf_diag_bind()}} and assigns required columns;
 }
 }
 
 \section{Exported wrappers}{
 In \code{\link{pf_forward}}, diagnostics are necessarily calculated on the fly by \code{\link{.pf_diag}}\verb{_()} functions and simply require extraction from outputs via \code{\link[=pf_forward_diagnostics]{pf_forward_diagnostics()}}. However, note that the forward simulation necessitates the calculation of multiple diagnostics at each time step and \code{\link[=pf_forward_diagnostics]{pf_forward_diagnostics()}} attempts to collate all diagnostics in memory, which is not memory safe.
 
-\code{\link[=pf_backward_killer]{pf_backward_killer()}} only tracks particle samples and it is therefore necessary to calculate diagnostics from particle samples post-hoc. A single set of diagnostics is calculated for each time step, so this function is (effectively) memory safe.
+\code{\link[=pf_backward_killer]{pf_backward_killer()}} only tracks particle samples and it is therefore necessary to calculate diagnostics from particle samples post-hoc via \code{\link[=pf_backward_killer_diagnostics]{pf_backward_killer_diagnostics()}}. A single set of diagnostics is calculated for each time step, so this function is (effectively) memory safe.
 }
 
 \seealso{
