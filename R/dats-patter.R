@@ -2,7 +2,7 @@
 #'
 #' @description These functions load example outputs from key [`patter`] functions, including those required to implement the forward filtering–backward sampling algorithm. They are included in the package to streamline function examples and tests.
 #'
-#' @param .folder For [`dat_pff_src()`], `.folder` is a `character` that defines the name of the folder in which outputs are stored (`history` for particle samples or `diagnostics` for particle diagnostics). See the documentation for [`pf_forward()`] and [`pf_particles-class`] objects.
+#' @param .folder For [`dat_pff_src()`], `.folder` is `NULL` or a `character` that defines the name of the folder in which outputs are stored (`history` for particle samples or `diagnostics` for particle diagnostics). `NULL` returns the path to the directory containing both `history/` and `diagnostics/`. See the documentation for [`pf_forward()`] and [`pf_particles-class`] objects for further details.
 #'
 #' @details
 #' * [`dat_pff()`] reads an example output from [`pf_setup_obs()`];
@@ -60,9 +60,14 @@ dat_pff <- function() {
 #' @export
 
 dat_pff_src <- function(.folder = c("history", "diagnostics")) {
-  .folder <- match.arg(.folder)
-  system.file("extdata", "acpf", "forward", .folder,
-              package = "patter", mustWork = TRUE)
+  if (is.null(.folder)) {
+    system.file("extdata", "acpf", "forward",
+                package = "patter", mustWork = TRUE)
+  } else {
+    .folder <- match.arg(.folder)
+    system.file("extdata", "acpf", "forward", .folder,
+                package = "patter", mustWork = TRUE)
+  }
 }
 
 #' @rdname datasets-algorithms
