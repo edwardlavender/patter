@@ -34,7 +34,7 @@ At least one dataset must be provided. Data should be given \strong{for a single
 \item If both datasets are provided and \code{.trim = TRUE}, \code{.period} is defined as the range in timestamps for the overlapping region.
 }}
 
-\item{.mobility}{A constant that defines the maximum (Euclidean) distance the individual could move in \code{.step}. See the \href{https://edwardlavender.github.io/flapper/reference/get_mvt_mobility.html}{\verb{get_mvt_mobility_*()}} functions in the \href{https://edwardlavender.github.io/flapper/}{\code{flapper}} package to estimate \code{.mobility} from acoustic and/or archival data.}
+\item{.mobility}{A constant that defines the maximum (Euclidean) distance the individual could move in \code{.step}. See the \href{https://edwardlavender.github.io/flapper/reference/get_mvt_mobility.html}{\verb{flapper::get_mvt_mobility_*()}} functions to estimate \code{.mobility} from acoustic and/or archival data.}
 
 \item{.receiver_range}{A constant that defines the receiver detection range. At the time of writing, a constant value across all receivers and time steps is currently assumed (although receiver-specific detection kernels within this range are supported by \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}).}
 }

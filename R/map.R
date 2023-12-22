@@ -271,7 +271,7 @@ map_dens <- function(.map,
 #' @param .add A logical variable that defines whether or not to add a polygon of the range to an existing map.
 #' @param ... If `.add = TRUE`, `...` is a place holder for additional arguments passed to [`terra::plot()`].
 #'
-#' @details These functions are modelled on the [`map_hr_*()`](https://edwardlavender.github.io/flapper/reference/get_hr.html) functions in the [`flapper`](https://github.com/edwardlavender/flapper) package, where full details are provided.
+#' @details These functions are modelled on [`flapper::map_hr_*()`](https://edwardlavender.github.io/flapper/reference/get_hr.html) functions, where full details are provided.
 #'
 #' @return The functions return a [`SpatRaster`]. Cells with a value of one are inside the specified range boundaries; cells with a value of zero are beyond range boundaries. If `.add` is `TRUE`, the boundaries are added to an existing plot.
 #'

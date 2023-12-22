@@ -43,7 +43,7 @@ The function returns a long- or wide-format \code{\link{data.table}} (see \code{
 This function implements the path-reconstruction algorithm.
 }
 \details{
-The path reconstruction algorithm 'chains' sequential particle samples into movement paths. This function evolved from \href{https://edwardlavender.github.io/flapper/reference/pf_simplify.html}{\code{pf_simplify()}} in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package. This implementation uses the fast \code{\link[collapse:join]{collapse::join()}} function.
+The path reconstruction algorithm 'chains' sequential particle samples into movement paths. This function evolved from \href{https://edwardlavender.github.io/flapper/reference/pf_simplify.html}{\code{flapper::pf_simplify()}}. This implementation uses the fast \code{\link[collapse:join]{collapse::join()}} function.
 }
 \examples{
 #### Set up examples using pre-defined datasets

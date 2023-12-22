@@ -12,7 +12,7 @@
 #'    * one row for each path;
 #'    * one column for each time step (named `x1`, `x2`, etc.);
 #'
-#' @details The path reconstruction algorithm 'chains' sequential particle samples into movement paths. This function evolved from [`pf_simplify()`](https://edwardlavender.github.io/flapper/reference/pf_simplify.html) in the [`flapper`](https://github.com/edwardlavender/flapper) package. This implementation uses the fast [`collapse::join()`] function.
+#' @details The path reconstruction algorithm 'chains' sequential particle samples into movement paths. This function evolved from [`flapper::pf_simplify()`](https://edwardlavender.github.io/flapper/reference/pf_simplify.html). This implementation uses the fast [`collapse::join()`] function.
 #'
 #' @return The function returns a long- or wide-format [`data.table`] (see `.return`).
 #'

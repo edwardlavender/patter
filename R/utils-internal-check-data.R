@@ -61,7 +61,7 @@
 #' @return Each function returns the input dataset, as described, formatted in line with [`patter`]'s requirements.
 #'
 #' @seealso
-#' * See the [`process_receiver_ids`](https://edwardlavender.github.io/flapper/reference/process_receiver_id.html) function in the [`flapper`](https://edwardlavender.github.io/flapper/reference/process_receiver_id.html) package to define unique receiver IDs;
+#' * See the [`flapper::process_receiver_ids`](https://edwardlavender.github.io/flapper/reference/process_receiver_id.html) to define unique receiver IDs;
 #' * See [`datasets-mefs`] for example datasets included in [`patter`];
 #' * See [`pat_setup_data()`] for the front-end function;
 #'

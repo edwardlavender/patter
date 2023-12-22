@@ -4,7 +4,7 @@
 \alias{make_matrix_receivers}
 \title{Study metrics: receiver deployments}
 \source{
-This function is based on the \href{https://edwardlavender.github.io/flapper/reference/make_matrix_receivers.html}{\code{make_matrix_receivers}} function in the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package. Other \verb{flapper::make_matrix_*()} routines are not currently available in \code{\link{patter}}.
+This function is based on \href{https://edwardlavender.github.io/flapper/reference/make_matrix_receivers.html}{\code{flapper::make_matrix_receivers}}. Other \verb{flapper::make_matrix_*()} routines are not currently available in \code{\link{patter}}.
 }
 \usage{
 make_matrix_receivers(

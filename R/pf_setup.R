@@ -14,7 +14,7 @@
 #' * If only `archival = .dlist$data$archival` is provided, `.period` is taken as `range(archival$timestamp)`.
 #' * If both datasets are provided and `.trim = FALSE`, `.period` is defined as `range(c(acoustics$timestamp, archival$timestamp))`.
 #' * If both datasets are provided and `.trim = TRUE`, `.period` is defined as the range in timestamps for the overlapping region.
-#' @param .mobility A constant that defines the maximum (Euclidean) distance the individual could move in `.step`. See the [`get_mvt_mobility_*()`](https://edwardlavender.github.io/flapper/reference/get_mvt_mobility.html) functions in the [`flapper`](https://edwardlavender.github.io/flapper/) package to estimate `.mobility` from acoustic and/or archival data.
+#' @param .mobility A constant that defines the maximum (Euclidean) distance the individual could move in `.step`. See the [`flapper::get_mvt_mobility_*()`](https://edwardlavender.github.io/flapper/reference/get_mvt_mobility.html) functions to estimate `.mobility` from acoustic and/or archival data.
 #' @param .receiver_range A constant that defines the receiver detection range. At the time of writing, a constant value across all receivers and time steps is currently assumed (although receiver-specific detection kernels within this range are supported by [`acs_setup_detection_kernels()`]).
 #'
 #' @details

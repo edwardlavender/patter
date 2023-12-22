@@ -3,9 +3,6 @@
 \name{coa}
 \alias{coa}
 \title{COA: centres of activity}
-\source{
-This function replaces the \href{https://edwardlavender.github.io/flapper/reference/coa.html}{\code{coa()}} function in the \href{https://edwardlavender.github.io/flapper/}{\code{flapper}} package. See the \href{https://edwardlavender.github.io/flapper/reference/coa_setup_delta_t.html}{\code{coa_setup_delta_t()}} function to evaluate alternative time internals.
-}
 \usage{
 coa(
   .dlist,
@@ -50,6 +47,8 @@ This function calculates centres of activity (COAs) from detections at acoustic 
 }
 \details{
 COAs are calculated as a weighted mean of the locations of receivers at which individuals are detected over consecutive time intervals, weighted by the frequency of detections at each of those receivers. COAs are calculated via \code{\link[stats:weighted.mean]{stats::weighted.mean()}} (for planar coordinates) or \code{\link[geosphere:geomean]{geosphere::geomean()}} (for longitude/latitude coordinates).
+
+This function replaces \href{https://edwardlavender.github.io/flapper/reference/coa.html}{\code{flapper::coa()}}. See  \href{https://edwardlavender.github.io/flapper/reference/coa_setup_delta_t.html}{\code{flapper::coa_setup_delta_t()}} to evaluate alternative time internals.
 }
 \examples{
 require(data.table)

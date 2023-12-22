@@ -13,6 +13,8 @@
 #'
 #' @details COAs are calculated as a weighted mean of the locations of receivers at which individuals are detected over consecutive time intervals, weighted by the frequency of detections at each of those receivers. COAs are calculated via [`stats::weighted.mean()`] (for planar coordinates) or [`geosphere::geomean()`] (for longitude/latitude coordinates).
 #'
+#' This function replaces [`flapper::coa()`](https://edwardlavender.github.io/flapper/reference/coa.html). See  [`flapper::coa_setup_delta_t()`](https://edwardlavender.github.io/flapper/reference/coa_setup_delta_t.html) to evaluate alternative time internals.
+#'
 #' @return The function returns a [`data.table`] with the following columns:
 #' * `.split`---a `character` vector that distinguishes groups, if applicable;
 #' * `timestamp`---a `POSIXt` vector of time stamps;
@@ -23,8 +25,6 @@
 #' @seealso
 #' * To derive location samples from the forward-filter backward-sampler, see [`pf_forward()`], [`pf_backward_sampler()`] and [`pf_coord()`];
 #' * For mapping utilisation distributions from coordinates, see `map_*()` functions (i.e., [`map_pou()`] and [`map_dens()`];
-#'
-#' @source This function replaces the [`coa()`](https://edwardlavender.github.io/flapper/reference/coa.html) function in the [`flapper`](https://edwardlavender.github.io/flapper/) package. See the [`coa_setup_delta_t()`](https://edwardlavender.github.io/flapper/reference/coa_setup_delta_t.html) function to evaluate alternative time internals.
 #'
 #' @example man/examples/coa-examples.R
 #'
