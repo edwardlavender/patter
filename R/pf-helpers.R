@@ -7,13 +7,17 @@
 #' @param ... For [`pf_files()`], `...` is a placeholder for additional arguments passed to [`list.files()`], such as `pattern`, excluding `full.names`.
 #' @param .unit For [`pf_files_size()`], `.unit` is a `character` string that defines the units of the output (`MB`, `GB`, `TB`).
 #'
+#' @details
+#' # Warning
+#' At the time of writing, [`pf_files()`] cannot be used to list particle-diagnostic files from [`pf_forward()`] and should only be used for particle samples.
+#'
 #' @return
 #' * [`pf_files()`] returns an ordered `list` of file paths.
 #' * [`pf_files_size()`] returns a number.
 #'
 #' @examples
 #' # Use `pf_files()` to list files from `pf_forward()`
-#' pff_folder <- dat_pff_src()
+#' pff_folder <- dat_pff_src(.folder = "history")
 #' files <- pf_files(pff_folder)
 #'
 #' # Use `pf_files()` to list files from `pf_backward_killer()`
@@ -34,11 +38,14 @@
 #' @export
 
 pf_files <- function(.sink, ...) {
-  # Check inputs
+
+  #### Check inputs
   check_dir(input = .sink)
   check_dots_allowed("full.names", ...)
   check_dots_for_missing_period(formals(), list(...))
   rlang::check_dots_used()
+
+  #### List files & validate
   files <- list.files(.sink, full.names = TRUE, ...)
   if (length(files) == 0L) {
     abort("No files identified in `.sink`.")
@@ -50,16 +57,29 @@ pf_files <- function(.sink, ...) {
   if (!all(exts == "parquet")) {
     abort(".parquet files are expected.")
   }
-  bsname <- basename(files)
-  # Define ordered vector of files
-  data.table(file = files,
-             name = tools::file_path_sans_ext(bsname),
-             ext = exts) |>
+
+  #### Define ordered vector of files
+  # Define file names
+  names   <- as.integer(tools::file_path_sans_ext(basename(files)))
+  # Check file names are integers (1, 2, etc.) by coercion
+  if (any(is.na(names))) {
+    abort("File names should be '1.parquet', '2.parquet', etc.")
+  }
+  # Order file paths by number
+  out <-
+    data.table(file = files,
+               name = names,
+               ext = exts) |>
     lazy_dt(immutable = TRUE) |>
     mutate(name = as.integer(.data$name)) |>
     arrange(.data$name) |>
-    pull(.data$file) |>
-    as.list()
+    as.data.table()
+  # Validate ordered list (e.g., to check there are no gaps)
+  if (!all.equal(paste0(seq_row(out), ".parquet"),
+                 basename(out$file))) {
+    abort("File names should be '1.parquet', '2.parquet', etc.")
+  }
+  as.list(out$file)
 }
 
 #' @rdname pf_files

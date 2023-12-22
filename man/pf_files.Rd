@@ -27,9 +27,13 @@ pf_files_size(.sink, .unit = c("MB", "GB", "TB"))
 
 \code{\link[=pf_files_size]{pf_files_size()}} calculates the total size of all files.
 }
+\section{Warning}{
+At the time of writing, \code{\link[=pf_files]{pf_files()}} cannot be used to list particle-diagnostic files from \code{\link[=pf_forward]{pf_forward()}} and should only be used for particle samples.
+}
+
 \examples{
 # Use `pf_files()` to list files from `pf_forward()`
-pff_folder <- dat_pff_src()
+pff_folder <- dat_pff_src(.folder = "history")
 files <- pf_files(pff_folder)
 
 # Use `pf_files()` to list files from `pf_backward_killer()`
