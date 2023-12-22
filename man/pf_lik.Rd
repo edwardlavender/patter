@@ -52,6 +52,8 @@ The following convenience functions are provided:
 \item \code{\link[=pf_lik_ac]{pf_lik_ac()}} calculates the likelihood of acoustic data (detection or non detection at each operational receiver), given location proposals.
 \item \code{\link[=pf_lik_dc]{pf_lik_dc()}} calculates the likelihood of archival (depth) data, given particle proposals. This is based on Lavender et al.'s (2023) depth-contour algorithm in which depth observations are considered valid in locations whose depth's lie between a shallow and deep limit (\code{.obs$depth_shallow[.t]} and \code{.obs$depth_deep[.t]}) but impossible otherwise.
 }
+
+In \code{\link[=pf_forward]{pf_forward()}}, \code{\link[=acs_filter_container]{acs_filter_container()}} and \code{\link[=pf_lik_ac]{pf_lik_ac()}} effectively replace the role of \href{https://edwardlavender.github.io/flapper/reference/ac.html}{\code{flapper::ac()}} function. \code{\link[=pf_lik_dc]{pf_lik_dc()}} effectively replaces the role of \href{https://edwardlavender.github.io/flapper/reference/dc.html}{\code{flapper::dc()}}.
 }
 \seealso{
 The forward filtering--backward sampling algorithm samples locations (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.

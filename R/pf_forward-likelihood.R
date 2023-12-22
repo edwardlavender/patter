@@ -23,6 +23,8 @@
 #' * [`pf_lik_ac()`] calculates the likelihood of acoustic data (detection or non detection at each operational receiver), given location proposals.
 #' * [`pf_lik_dc()`] calculates the likelihood of archival (depth) data, given particle proposals. This is based on Lavender et al.'s (2023) depth-contour algorithm in which depth observations are considered valid in locations whose depth's lie between a shallow and deep limit (`.obs$depth_shallow[.t]` and `.obs$depth_deep[.t]`) but impossible otherwise.
 #'
+#' In [`pf_forward()`], [`acs_filter_container()`] and [`pf_lik_ac()`] effectively replace the role of [`flapper::ac()`](https://edwardlavender.github.io/flapper/reference/ac.html) function. [`pf_lik_dc()`] effectively replaces the role of [`flapper::dc()`](https://edwardlavender.github.io/flapper/reference/dc.html).
+#'
 #' @return Functions return the `.particle` [`data.table`] for valid proposal locations and updated likelihoods (in the `lik` column).
 #'
 #' @inherit pf_forward seealso
