@@ -7,6 +7,8 @@
 #'
 #' @details An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual. In such an algorithm, at the moment of detection, the likelihood of detection(s) is evaluated, given particle samples. The outputs of this function are used to restrict the likelihood calculations to the set of receivers that overlap with the receiver(s) at which an individual is detected. This improves efficiency.
 #'
+#' In this function, receiver deployments that overlap in time (accounting for deployment and servicing dates) are identified by [`make_matrix_detections()`]. Spatially overlapping receiver pairs are defined as those for which the Euclidean distance between receiver coordinates is less than the combined detection range. This approach is fast but crude because it ignores the influence of other variables, such as land barriers, on detectability. This means that some 'overlapping receivers' may not in reality overlap. In this situation, downstream calculations may be a little less efficient. However, since overlapping receivers tend to be few in number, the efficiency penalty for this approximation should be negligible. We formerly used detection kernels (see [`acs_setup_detection_kernels()`]) to identify receiver overlaps, but this is much more expensive in situations with large numbers of receivers and high-resolution grids and this approach is no longer used.
+#'
 #' @return The function returns a nested `list`, with one element for all integers from `1:max(.moorings$receiver_id)`. Any elements that do not correspond to receivers contain a `NULL` element. List elements that correspond to receivers contain a `NULL` or a `list` that defines, for each deployment date with overlapping receiver(s), a vector of overlapping receiver(s).
 #'
 #' @examples
@@ -46,7 +48,7 @@ acs_setup_detection_overlaps <- function(.dlist) {
   #### Define receiver pairs
   receivers <- unique(moorings$receiver_id)
   pairs <-
-    expand.grid(r1 = receivers, r2 = receivers) |>
+    CJ(r1 = receivers, r2 = receivers) |>
     filter(.data$r1 != .data$r2) |>
     as.data.frame()
 
@@ -116,7 +118,7 @@ acs_setup_detection_overlaps <- function(.dlist) {
       # For each date, identify overlapping receivers
       # * Dates must be _within_ active deployment intervals of other receivers
       overlaps <-
-        expand.grid(r1 = r, date = active, r2 = r_pairs$r2) |>
+        CJ(r1 = r, date = active, r2 = r_pairs$r2) |>
         mutate(r2_active = moorings$int[match(.data$r2, moorings$receiver_id)]) |>
         filter(date %within% .data$r2_active) |>
         select("r1", "date", "r2") |>

@@ -218,6 +218,7 @@ NULL
 #' @importFrom data.table .NGRP
 #' @importFrom data.table .SD
 #' @importFrom data.table copy
+#' @importFrom data.table CJ
 #'
 #' @importFrom collapse fnrow
 #' @importFrom collapse seq_col
