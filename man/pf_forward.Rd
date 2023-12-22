@@ -112,7 +112,7 @@ obs <- pf_setup_obs(.dlist = dlist,
                     .trim = TRUE,
                     .step = "2 mins",
                     .mobility = 500,
-                    .detection_range = 750)
+                    .receiver_range = 750)
 # Subset observations for speed
 obs <- obs[1:100L, ]
 

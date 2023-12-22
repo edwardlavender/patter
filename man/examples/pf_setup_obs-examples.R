@@ -18,21 +18,21 @@ dlist_acpf$data$archival <- NULL
 obs <- pf_setup_obs(.dlist = dlist_acpf,
                     .step = "2 mins",
                     .mobility = 500,
-                    .detection_range = 750)
+                    .receiver_range = 750)
 head(obs)
 
 #### Example (2): Use alternative parameters
 obs <- pf_setup_obs(.dlist = dlist_acpf,
                     .step = "2 mins",
                     .mobility = 1000,
-                    .detection_range = 500)
+                    .receiver_range = 500)
 head(obs)
 
 #### Example (3): Implement the function for acoustic & archival time series
 obs <- pf_setup_obs(.dlist = dlist,
                     .step = "2 mins",
                     .mobility = 500,
-                    .detection_range = 750)
+                    .receiver_range = 750)
 head(obs)
 
 #### Example (4): Include full acoustic & archival time series
@@ -40,6 +40,6 @@ obs <- pf_setup_obs(.dlist = dlist,
                     .trim = FALSE,
                     .step = "2 mins",
                     .mobility = 500,
-                    .detection_range = 750)
+                    .receiver_range = 750)
 head(obs)
 tail(obs)

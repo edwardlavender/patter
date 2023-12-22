@@ -10,7 +10,7 @@ pf_setup_obs(
   .step,
   .period = NULL,
   .mobility,
-  .detection_range
+  .receiver_range
 )
 }
 \arguments{
@@ -36,7 +36,7 @@ At least one dataset must be provided. Data should be given \strong{for a single
 
 \item{.mobility}{A constant that defines the maximum (Euclidean) distance the individual could move in \code{.step}.}
 
-\item{.detection_range}{A constant that defines the detection range. At the time of writing, a constant value across all receivers and time steps is currently assumed (although receiver-specific detection kernels within this range are supported by \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}).}
+\item{.receiver_range}{A constant that defines the receiver detection range. At the time of writing, a constant value across all receivers and time steps is currently assumed (although receiver-specific detection kernels within this range are supported by \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}).}
 }
 \value{
 The function returns a \code{\link{data.table}} with the following columns:
@@ -55,7 +55,7 @@ If acoustic data is provided, the following column(s) are also included:
 \item \code{receiver_id_next}---a \code{list} that defines the receiver(s) that recorded the next detection(s);
 \item \code{buffer_past}---a \code{double} that controls container growth from the past to the present;
 \item \code{buffer_future}---a \code{double} that controls container shrinkage from the future to the present;
-\item \code{buffer_future_incl_gamma}---a \code{double} (\code{buffer_future} + \code{.detection_range}) that controls container shrinkage for \code{\link[=pf_forward]{pf_forward()}};
+\item \code{buffer_future_incl_gamma}---a \code{double} (\code{buffer_future} + \code{.receiver_range}) that controls container shrinkage for \code{\link[=pf_forward]{pf_forward()}};
 }
 
 These columns are required to calculate the likelihood of acoustic observations (the detection or lack thereof at each operational receiver) in \code{\link[=pf_forward]{pf_forward()}} by the default \code{\link{pf_lik}} routines.
@@ -118,21 +118,21 @@ dlist_acpf$data$archival <- NULL
 obs <- pf_setup_obs(.dlist = dlist_acpf,
                     .step = "2 mins",
                     .mobility = 500,
-                    .detection_range = 750)
+                    .receiver_range = 750)
 head(obs)
 
 #### Example (2): Use alternative parameters
 obs <- pf_setup_obs(.dlist = dlist_acpf,
                     .step = "2 mins",
                     .mobility = 1000,
-                    .detection_range = 500)
+                    .receiver_range = 500)
 head(obs)
 
 #### Example (3): Implement the function for acoustic & archival time series
 obs <- pf_setup_obs(.dlist = dlist,
                     .step = "2 mins",
                     .mobility = 500,
-                    .detection_range = 750)
+                    .receiver_range = 750)
 head(obs)
 
 #### Example (4): Include full acoustic & archival time series
@@ -140,7 +140,7 @@ obs <- pf_setup_obs(.dlist = dlist,
                     .trim = FALSE,
                     .step = "2 mins",
                     .mobility = 500,
-                    .detection_range = 750)
+                    .receiver_range = 750)
 head(obs)
 tail(obs)
 }

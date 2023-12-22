@@ -174,7 +174,7 @@ To implement the algorithms, we require a single time series, along which observ
 obs <- pf_setup_obs(.dlist = dlist,
                     .step = "2 mins", 
                     .mobility = 500, 
-                    .detection_range = moorings$receiver_range[1])
+                    .receiver_range = moorings$receiver_range[1])
 obs <- obs[1:100, ]
 head(obs)
 ```

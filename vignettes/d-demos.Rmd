@@ -96,7 +96,7 @@ dlist$algorithm$detection_kernels <-
 obs <- pf_setup_obs(.dlist = dlist,
                     .step = "2 mins",
                     .mobility = 500,
-                    .detection_range = 750)
+                    .receiver_range = 750)
 obs[, depth_shallow := depth]
 obs[, depth_deep := depth]
 obs_sbt <- obs[1:10L, ]

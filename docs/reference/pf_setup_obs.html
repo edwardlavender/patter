@@ -81,7 +81,7 @@
 <span>  <span class="va">.step</span>,</span>
 <span>  .period <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">.mobility</span>,</span>
-<span>  <span class="va">.detection_range</span></span>
+<span>  <span class="va">.receiver_range</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -113,7 +113,7 @@
 <dd><p>A constant that defines the maximum (Euclidean) distance the individual could move in <code>.step</code>.</p></dd>
 
 
-<dt>.detection_range</dt>
+<dt>.receiver_range</dt>
 <dd><p>A constant that defines the detection range. A constant value across all receivers and time steps is currently assumed (although receiver-specific detection kernels within this range are supported by <code><a href="acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code>).</p></dd>
 
 </dl></div>
@@ -131,7 +131,7 @@
 <li><p><code>receiver_id_next</code>---a <code>list</code> that defines the receiver(s) that recorded the next detection(s);</p></li>
 <li><p><code>buffer_past</code>---a <code>double</code> that controls container growth from the past to the present;</p></li>
 <li><p><code>buffer_future</code>---a <code>double</code> that controls container shrinkage from the future to the present;</p></li>
-<li><p><code>buffer_future_incl_gamma</code>---a <code>double</code> (<code>buffer_future</code> + <code>.detection_range</code>) that controls container shrinkage for <code><a href="pf_forward.html">pf_forward()</a></code>;</p></li>
+<li><p><code>buffer_future_incl_gamma</code>---a <code>double</code> (<code>buffer_future</code> + <code>.receiver_range</code>) that controls container shrinkage for <code><a href="pf_forward.html">pf_forward()</a></code>;</p></li>
 </ul><p>These columns are required to calculate the likelihood of acoustic observations (the detection or lack thereof at each operational receiver) in <code><a href="pf_forward.html">pf_forward()</a></code> by the default <code><a href="pf_lik.html">pf_lik</a></code> routines.</p>
 
 
@@ -198,7 +198,7 @@
 <span class="r-in"><span><span class="va">obs</span> <span class="op">&lt;-</span> <span class="fu">pf_setup_obs</span><span class="op">(</span>.dlist <span class="op">=</span> <span class="va">dlist_acpf</span>,</span></span>
 <span class="r-in"><span>                    .step <span class="op">=</span> <span class="st">"2 mins"</span>,</span></span>
 <span class="r-in"><span>                    .mobility <span class="op">=</span> <span class="fl">500</span>,</span></span>
-<span class="r-in"><span>                    .detection_range <span class="op">=</span> <span class="fl">750</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                    .receiver_range <span class="op">=</span> <span class="fl">750</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">obs</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    timestep           timestamp       date detection_id detection receiver_id</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:        1 2016-03-17 01:50:00 2016-03-17            1         1          26</span>
@@ -219,7 +219,7 @@
 <span class="r-in"><span><span class="va">obs</span> <span class="op">&lt;-</span> <span class="fu">pf_setup_obs</span><span class="op">(</span>.dlist <span class="op">=</span> <span class="va">dlist_acpf</span>,</span></span>
 <span class="r-in"><span>                    .step <span class="op">=</span> <span class="st">"2 mins"</span>,</span></span>
 <span class="r-in"><span>                    .mobility <span class="op">=</span> <span class="fl">1000</span>,</span></span>
-<span class="r-in"><span>                    .detection_range <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                    .receiver_range <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">obs</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    timestep           timestamp       date detection_id detection receiver_id</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:        1 2016-03-17 01:50:00 2016-03-17            1         1          26</span>
@@ -240,7 +240,7 @@
 <span class="r-in"><span><span class="va">obs</span> <span class="op">&lt;-</span> <span class="fu">pf_setup_obs</span><span class="op">(</span>.dlist <span class="op">=</span> <span class="va">dlist</span>,</span></span>
 <span class="r-in"><span>                    .step <span class="op">=</span> <span class="st">"2 mins"</span>,</span></span>
 <span class="r-in"><span>                    .mobility <span class="op">=</span> <span class="fl">500</span>,</span></span>
-<span class="r-in"><span>                    .detection_range <span class="op">=</span> <span class="fl">750</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                    .receiver_range <span class="op">=</span> <span class="fl">750</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">obs</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    timestep           timestamp       date detection_id detection receiver_id</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:        1 2016-03-17 01:50:00 2016-03-17            1         1          26</span>
@@ -269,7 +269,7 @@
 <span class="r-in"><span>                    .trim <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>                    .step <span class="op">=</span> <span class="st">"2 mins"</span>,</span></span>
 <span class="r-in"><span>                    .mobility <span class="op">=</span> <span class="fl">500</span>,</span></span>
-<span class="r-in"><span>                    .detection_range <span class="op">=</span> <span class="fl">750</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                    .receiver_range <span class="op">=</span> <span class="fl">750</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">obs</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    timestep           timestamp       date detection_id detection receiver_id</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:        1 2016-03-17 00:00:00 2016-03-17           NA         0            </span>

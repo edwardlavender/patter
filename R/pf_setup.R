@@ -15,7 +15,7 @@
 #' * If both datasets are provided and `.trim = FALSE`, `.period` is defined as `range(c(acoustics$timestamp, archival$timestamp))`.
 #' * If both datasets are provided and `.trim = TRUE`, `.period` is defined as the range in timestamps for the overlapping region.
 #' @param .mobility A constant that defines the maximum (Euclidean) distance the individual could move in `.step`.
-#' @param .detection_range A constant that defines the detection range. At the time of writing, a constant value across all receivers and time steps is currently assumed (although receiver-specific detection kernels within this range are supported by [`acs_setup_detection_kernels()`]).
+#' @param .receiver_range A constant that defines the receiver detection range. At the time of writing, a constant value across all receivers and time steps is currently assumed (although receiver-specific detection kernels within this range are supported by [`acs_setup_detection_kernels()`]).
 #'
 #' @details
 #' This function defines the timeline of observations over which [`pf_forward()`] is implemented. The function implements the following routines:
@@ -51,7 +51,7 @@
 #' * `receiver_id_next`---a `list` that defines the receiver(s) that recorded the next detection(s);
 #' * `buffer_past`---a `double` that controls container growth from the past to the present;
 #' * `buffer_future`---a `double` that controls container shrinkage from the future to the present;
-#' * `buffer_future_incl_gamma`---a `double` (`buffer_future` + `.detection_range`) that controls container shrinkage for [`pf_forward()`];
+#' * `buffer_future_incl_gamma`---a `double` (`buffer_future` + `.receiver_range`) that controls container shrinkage for [`pf_forward()`];
 #'
 #' These columns are required to calculate the likelihood of acoustic observations (the detection or lack thereof at each operational receiver) in [`pf_forward()`] by the default [`pf_lik`] routines.
 #'
@@ -71,7 +71,7 @@ pf_setup_obs <- function(.dlist,
                          .step,
                          .period = NULL,
                          .mobility,
-                         .detection_range) {
+                         .receiver_range) {
 
   #### Check user inputs
   check_dlist(.dlist = .dlist)
@@ -168,7 +168,7 @@ pf_setup_obs <- function(.dlist,
              buffer_past = .mobility,
              # We shrink the future
              buffer_future = .mobility * .data$step_backwards,
-             buffer_future_incl_gamma = .data$buffer_future + .detection_range) |>
+             buffer_future_incl_gamma = .data$buffer_future + .receiver_range) |>
       ungroup() |>
       arrange(.data$timestamp) |>
       mutate(timestep = as.integer(row_number()),
