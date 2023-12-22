@@ -15,7 +15,7 @@
 #' * If both datasets are provided and `.trim = FALSE`, `.period` is defined as `range(c(acoustics$timestamp, archival$timestamp))`.
 #' * If both datasets are provided and `.trim = TRUE`, `.period` is defined as the range in timestamps for the overlapping region.
 #' @param .mobility A constant that defines the maximum (Euclidean) distance the individual could move in `.step`.
-#' @param .detection_range A constant that defines the detection range. A constant value across all receivers and time steps is currently assumed (although receiver-specific detection kernels within this range are supported by [`acs_setup_detection_kernels()`]).
+#' @param .detection_range A constant that defines the detection range. At the time of writing, a constant value across all receivers and time steps is currently assumed (although receiver-specific detection kernels within this range are supported by [`acs_setup_detection_kernels()`]).
 #'
 #' @details
 #' This function defines the timeline of observations over which [`pf_forward()`] is implemented. The function implements the following routines:
