@@ -29,13 +29,11 @@ pf_files_size(.sink, .unit = c("MB", "GB", "TB"))
 }
 \examples{
 # Use `pf_files()` to list files from `pf_forward()`
-pff_folder <- system.file("extdata", "acpf", "forward", "history",
-                          package = "patter", mustWork = TRUE)
+pff_folder <- dat_pff_src()
 files <- pf_files(pff_folder)
 
 # Use `pf_files()` to list files from `pf_backward_killer()`
-pfbk_folder <- system.file("extdata", "acpf", "backward", "killer",
-                           package = "patter", mustWork = TRUE)
+pfbk_folder <- dat_pfbk_src()
 files <- pf_files(pfbk_folder)
 
 # Use `pf_files_size()` to calculate file size

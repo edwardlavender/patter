@@ -43,8 +43,7 @@ require(arrow)
 .pf_history_dt(dat_pfbk()$history)
 
 # Use directory (and optionally select a subset of columns)
-pfbk_folder <- system.file("extdata", "acpf", "backward", "killer",
-                           package = "patter", mustWork = TRUE)
+pfbk_folder <- dat_pfbk_
 sch <- schema(timestep = int32(),
               cell_now = int32(),
               x_now = double(),

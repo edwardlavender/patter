@@ -2,8 +2,7 @@
 gebco       <- dat_gebco()
 obs         <- dat_obs()
 out_pfbk    <- dat_pfbk()
-pfbk_folder <- system.file("extdata", "acpf", "backward", "killer",
-                           package = "patter", mustWork = TRUE)
+pfbk_folder <- dat_pfbk_src()
 
 #### Example (1): Implement pf_path() from `pf` object
 p1 <- pf_path(out_pfbk$history)

@@ -32,8 +32,7 @@ diag <- dat_pfbk() |> pf_backward_killer_diagnostics()
 head(diag)
 
 #### Example (2): Calculate diagnostics from parquet files
-pfb_folder <- system.file("extdata", "acpf", "backward", "killer",
-                          package = "patter", mustWork = TRUE)
+pfb_folder <- dat_pfbk_src()
 diag_2 <- pf_backward_killer_diagnostics(pfb_folder)
 stopifnot(all.equal(diag, diag_2))
 

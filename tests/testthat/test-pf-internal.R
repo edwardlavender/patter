@@ -11,8 +11,7 @@ test_that(".pf_check_*() functions work", {
 test_that(".pf_history_dt() works", {
 
   # Define inputs
-  pfbk_folder <- system.file("extdata", "acpf", "backward", "killer",
-                             package = "patter", mustWork = TRUE)
+  pfbk_folder <- dat_pfbk_src()
   out_pfbk    <- dat_pfbk()
 
   # Implement .pf_history_dt()

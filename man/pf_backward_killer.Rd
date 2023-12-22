@@ -39,8 +39,7 @@ To reconstruct the joint distribution of particle samples given all data (i.e., 
 # Run the forward simulation (see ?`pf_forward()`)
 # We will use example output objects:
 out_pff    <- dat_pff()
-pff_folder <- system.file("extdata", "acpf", "forward",
-                          package = "patter", mustWork = TRUE)
+pff_folder <- dat_pff_src()
 
 #### Example (1): Implement backward pass from object in memory
 out_pfb <- pf_backward_killer(.history = out_pff$history,
