@@ -86,7 +86,7 @@ The algorithm iterates over the time series, proposing and sampling particles as
 }
 
 \section{Algorithms}{
-This is highly flexible routine for the reconstruction of the possible locations of an individual through time, given the data up to that time point. By modifying the likelihood functions, it is straightforward to implement the ACPF, DCPF and ACDCPF algorithms introduced by Lavender et al. (2023) for reconstructing movements using (a) acoustic time series, (b) archival time series and (c) acoustic and archival time series.
+This is highly flexible routine for the reconstruction of the possible locations of an individual through time, given the data up to that time point. By modifying the likelihood functions, it is straightforward to implement the ACPF, DCPF and ACDCPF algorithms introduced by Lavender et al. (2023) for reconstructing movements using (a) acoustic time series, (b) archival time series and (c) acoustic and archival time series. \code{\link[=pf_forward]{pf_forward()}} thus replaces (and enhances) the \href{https://edwardlavender.github.io/flapper/reference/ac.html}{\code{ac()}}, \href{https://edwardlavender.github.io/flapper/reference/dc.html}{\code{dc()}}, \href{https://edwardlavender.github.io/flapper/reference/acdc.html}{\code{acdc()}} and \href{https://edwardlavender.github.io/flapper/reference/pf.html}{\code{pf()}} functions in the \href{https://edwardlavender.github.io/flapper}{\code{flapper}} package.
 }
 
 \section{Convergence and diagnostics}{
