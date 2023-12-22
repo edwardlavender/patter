@@ -153,6 +153,7 @@
 </ul><p>Within <code>sim_path_walk()</code>, at each time step, if <code>.lonlat = FALSE</code>, current locations (x, y) are updated via <code>x + length * cos(angle)</code> and <code>y + length * sin(angle)</code>.</p>
 <p>If <code>.lonlat = TRUE</code>, current locations are updated via <code><a href="https://rdrr.io/pkg/geosphere/man/destPoint.html" class="external-link">geosphere::destPoint()</a></code>.</p>
 <p><code>.lonlat</code> support is experimental. Be especially careful with correlated random walks if <code>lonlat = TRUE</code>. On an ellipsoid, the initial (simulated) bearing is not the same as the final bearing, but is not currently updated.</p>
+<p><code>sim_path_walk()</code> replaces <a href="https://edwardlavender.github.io/flapper/reference/sim_path_sa.html" class="external-link"><code>flapper::sim_path_sa()</code></a>. Other <a href="https://edwardlavender.github.io/flapper/reference/sim_path_-times.html" class="external-link"><code>flapper::sim_path_*()</code></a> functions are not currently implemented in <code><a href="patter.html">patter</a></code>.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>

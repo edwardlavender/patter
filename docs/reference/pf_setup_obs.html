@@ -102,7 +102,7 @@
 
 
 <dt>.period</dt>
-<dd><p>(optional) A length-two <code>POSIXct</code> vector that defines the start and end time for the timeline. If unprovided, this is defined internally according to inputted movement datasets and <code>.trim</code>::</p><ul><li><p>If only <code>acoustics = .dlist$data$acoustics</code> is provided, <code>.period</code> is taken as <code>range(acoustics$timestamp)</code>.</p></li>
+<dd><p>(optional) A length-two <code>POSIXct</code> vector that defines the start and end time for the timeline. If unprovided, this is defined internally according to inputted movement datasets and <code>.trim</code>:</p><ul><li><p>If only <code>acoustics = .dlist$data$acoustics</code> is provided, <code>.period</code> is taken as <code>range(acoustics$timestamp)</code>.</p></li>
 <li><p>If only <code>archival = .dlist$data$archival</code> is provided, <code>.period</code> is taken as <code>range(archival$timestamp)</code>.</p></li>
 <li><p>If both datasets are provided and <code>.trim = FALSE</code>, <code>.period</code> is defined as <code>range(c(acoustics$timestamp, archival$timestamp))</code>.</p></li>
 <li><p>If both datasets are provided and <code>.trim = TRUE</code>, <code>.period</code> is defined as the range in timestamps for the overlapping region.</p></li>
@@ -110,11 +110,11 @@
 
 
 <dt>.mobility</dt>
-<dd><p>A constant that defines the maximum (Euclidean) distance the individual could move in <code>.step</code>.</p></dd>
+<dd><p>A constant that defines the maximum (Euclidean) distance the individual could move in <code>.step</code>. See the <a href="https://edwardlavender.github.io/flapper/reference/get_mvt_mobility.html" class="external-link"><code>flapper::get_mvt_mobility_*()</code></a> functions to estimate <code>.mobility</code> from acoustic and/or archival data.</p></dd>
 
 
 <dt>.receiver_range</dt>
-<dd><p>A constant that defines the detection range. A constant value across all receivers and time steps is currently assumed (although receiver-specific detection kernels within this range are supported by <code><a href="acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code>).</p></dd>
+<dd><p>A constant that defines the receiver detection range. At the time of writing, a constant value across all receivers and time steps is currently assumed (although receiver-specific detection kernels within this range are supported by <code><a href="acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code>).</p></dd>
 
 </dl></div>
     <div id="value">

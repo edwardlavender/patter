@@ -103,6 +103,10 @@ pf_files_size() calculates the total size of all files."><!-- mathjax --><script
 <ul><li><p><code>pf_files()</code> returns an ordered <code>list</code> of file paths.</p></li>
 <li><p><code>pf_files_size()</code> returns a number.</p></li>
 </ul></div>
+    <div id="warning">
+    <h2>Warning</h2>
+    <p>At the time of writing, <code>pf_files()</code> cannot be used to list particle-diagnostic files from <code><a href="pf_forward.html">pf_forward()</a></code> and should only be used for particle samples.</p>
+    </div>
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index"><p>The forward filtering--backward sampling algorithm samples locations (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.</p><ul><li><p>To set up data, use <code><a href="pat_setup_data.html">pat_setup_data()</a></code>.</p></li>
@@ -128,13 +132,11 @@ pf_files_size() calculates the total size of all files."><!-- mathjax --><script
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Use `pf_files()` to list files from `pf_forward()`</span></span></span>
-<span class="r-in"><span><span class="va">pff_folder</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"acpf"</span>, <span class="st">"forward"</span>, <span class="st">"history"</span>,</span></span>
-<span class="r-in"><span>                          package <span class="op">=</span> <span class="st">"patter"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pff_folder</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_pff_src</a></span><span class="op">(</span>.folder <span class="op">=</span> <span class="st">"history"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">files</span> <span class="op">&lt;-</span> <span class="fu">pf_files</span><span class="op">(</span><span class="va">pff_folder</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Use `pf_files()` to list files from `pf_backward_killer()`</span></span></span>
-<span class="r-in"><span><span class="va">pfbk_folder</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"acpf"</span>, <span class="st">"backward"</span>, <span class="st">"killer"</span>,</span></span>
-<span class="r-in"><span>                           package <span class="op">=</span> <span class="st">"patter"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pfbk_folder</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_pfbk_src</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">files</span> <span class="op">&lt;-</span> <span class="fu">pf_files</span><span class="op">(</span><span class="va">pfbk_folder</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Use `pf_files_size()` to calculate file size</span></span></span>

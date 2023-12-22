@@ -78,10 +78,6 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">acs_setup_detection_overlaps</span><span class="op">(</span><span class="va">.dlist</span><span class="op">)</span></span></code></pre></div>
     </div>
 
-    <div id="source">
-    <h2>Source</h2>
-    <p>This function supersedes the <a href="https://edwardlavender.github.io/flapper/reference/get_detection_containers_overlap.html" class="external-link"><code>get_detection_containers_overlaps</code></a> function in the <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a> package.</p>
-    </div>
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.dlist</dt>
@@ -99,6 +95,8 @@
     <div id="details">
     <h2>Details</h2>
     <p>An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual. In such an algorithm, at the moment of detection, the likelihood of detection(s) is evaluated, given particle samples. The outputs of this function are used to restrict the likelihood calculations to the set of receivers that overlap with the receiver(s) at which an individual is detected. This improves efficiency.</p>
+<p>In this function, receiver deployments that overlap in time (accounting for deployment and servicing dates) are identified by <code>make_matrix_detections()</code>. Spatially overlapping receiver pairs are defined as those for which the Euclidean distance between receiver coordinates is less than the combined detection range. This approach is fast but crude because it ignores the influence of other variables, such as land barriers, on detectability. This means that some 'overlapping receivers' may not in reality overlap. In this situation, downstream calculations may be a little less efficient. However, since overlapping receivers tend to be few in number, the efficiency penalty for this approximation should be negligible. We formerly used detection kernels (see <code><a href="acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code>) to identify receiver overlaps, but this is much more expensive in situations with large numbers of receivers and high-resolution grids and this approach is no longer used.</p>
+<p>This function replaces <a href="https://edwardlavender.github.io/flapper/reference/get_detection_containers_overlap.html" class="external-link"><code>flapper::get_detection_containers_overlaps</code></a>.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>

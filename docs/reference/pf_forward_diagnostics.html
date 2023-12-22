@@ -75,24 +75,31 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pf_forward_diagnostics</span><span class="op">(</span><span class="va">.sink</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pf_forward_diagnostics</span><span class="op">(</span><span class="va">.sink</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.sink</dt>
-<dd><p>A character string that defines the directory in which <code><a href="pf_forward.html">pf_forward()</a></code> outputs are saved. <code>.sink</code> should contain the <code>diagnostics/</code> directory that is created by <code><a href="pf_forward.html">pf_forward()</a></code>.</p></dd>
+<dd><p>A <code>character</code> string that defines the directory in which <code><a href="pf_forward.html">pf_forward()</a></code> outputs are located. Either <code>{.record$sink}</code>, as specified in <code><a href="pf_forward.html">pf_forward()</a></code>, or <code>{.record$sink}/diagnostics/</code> is acceptable. A <code><a href="pf_particles-class.html">pf_particles</a></code> object is also accepted.</p></dd>
+
+
+<dt>...</dt>
+<dd><p>Arguments passed to <code><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html" class="external-link">arrow::open_dataset()</a></code>.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     
 
-<p>The function returns the diagnostics <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>.</p>
+<p>The function returns the diagnostics <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> (see <code>pf_particles</code>).</p>
     </div>
     <div id="details">
     <h2>Details</h2>
     <p>Particle diagnostics are fully described in <code><a href="pf_diag.html">pf_diag</a></code>.</p>
+<p><code>pf_forward_diagnostics()</code> is designed to collate particle diagnostics on file. <code><a href="pf_forward.html">pf_forward()</a></code> writes particle diagnostics to <code>{.record$sink}/diagnostics</code> (see <code><a href="pf_opt.html">pf_opt_record()</a></code>). You can supply <code>{.record$sink}</code> or <code>{.record$sink}/diagnostics/</code> to this function. The individual <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>s are collated to match the form in which they are provided by <code><a href="pf_forward.html">pf_forward()</a></code> when <code>.record$save = TRUE</code>.</p>
+<p>If <code><a href="pf_forward.html">pf_forward()</a></code> is implemented with <code>.record$save = TRUE</code>, the outputted <code><a href="pf_particles-class.html">pf_particles</a></code> object from <code><a href="pf_forward.html">pf_forward()</a></code> includes a pre-compiled <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of diagnostics (see <code><a href="pf_opt.html">pf_opt_record()</a></code>). <code>pf_forward_diagnostics()</code> accepts a <code><a href="pf_particles-class.html">pf_particles</a></code> object, but there is really no need for this, as a <code>diagnostics</code> element is already present in this object.</p>
+<p>To calculate particle diagnostics for the backward pass, see <code><a href="pf_backward_killer_diagnostics.html">pf_backward_killer_diagnostics()</a></code>.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -107,6 +114,74 @@
     <p>Edward Lavender</p>
     </div>
 
+    <div id="ref-examples">
+    <h2>Examples</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># For outputs stored in memory, extract the diagnostics element</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="datasets-algorithms.html">dat_pff</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">diagnostics</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      iter_m iter_i timestep                component trial   n n_u         ess</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:      1      1        1                 proposal    NA 203 203 0.004926108</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2:      1      1        1      lik-acs_filter_land    NA 203 203 0.004926108</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:      1      1        1 lik-acs_filter_container    NA 203 203 0.004926108</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:      1      1        1            lik-pf_lik_ac    NA 177 177 0.078771993</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:      1      1        1            sample-origin     1 100  57 0.050732899</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 145:      1      1       25                 proposal     1 100  80 0.010000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 146:      1      1       25      lik-acs_filter_land     1 100  80 0.010000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 147:      1      1       25 lik-acs_filter_container     1 100  80 0.010000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 148:      1      1       25            lik-pf_lik_ac     1 100  80 0.015502579</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 149:      1      1       25              sample-kick     1 100  47 0.013213661</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># pf_forward_diagnostics() also works but is unnecessary</span></span></span>
+<span class="r-in"><span><span class="fu">pf_forward_diagnostics</span><span class="op">(</span><span class="fu"><a href="datasets-algorithms.html">dat_pff</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      iter_m iter_i timestep                component trial   n n_u         ess</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:      1      1        1                 proposal    NA 203 203 0.004926108</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2:      1      1        1      lik-acs_filter_land    NA 203 203 0.004926108</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:      1      1        1 lik-acs_filter_container    NA 203 203 0.004926108</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:      1      1        1            lik-pf_lik_ac    NA 177 177 0.078771993</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:      1      1        1            sample-origin     1 100  57 0.050732899</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 145:      1      1       25                 proposal     1 100  80 0.010000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 146:      1      1       25      lik-acs_filter_land     1 100  80 0.010000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 147:      1      1       25 lik-acs_filter_container     1 100  80 0.010000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 148:      1      1       25            lik-pf_lik_ac     1 100  80 0.015502579</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 149:      1      1       25              sample-kick     1 100  47 0.013213661</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># For outputs stored on file, use pf_forward_diagnostics()</span></span></span>
+<span class="r-in"><span><span class="va">pff_folder</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_pff_src</a></span><span class="op">(</span>.folder <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">pf_forward_diagnostics</span><span class="op">(</span><span class="va">pff_folder</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      iter_m iter_i timestep                component trial   n n_u         ess</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:      1      1        1                 proposal    NA 203 203 0.004926108</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2:      1      1        1      lik-acs_filter_land    NA 203 203 0.004926108</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:      1      1        1 lik-acs_filter_container    NA 203 203 0.004926108</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:      1      1        1            lik-pf_lik_ac    NA 177 177 0.078771993</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:      1      1        1            sample-origin     1 100  57 0.050732899</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 145:      1      1       25                 proposal     1 100  80 0.010000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 146:      1      1       25      lik-acs_filter_land     1 100  80 0.010000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 147:      1      1       25 lik-acs_filter_container     1 100  80 0.010000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 148:      1      1       25            lik-pf_lik_ac     1 100  80 0.015502579</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 149:      1      1       25              sample-kick     1 100  47 0.013213661</span>
+<span class="r-in"><span><span class="fu">pf_forward_diagnostics</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">pff_folder</span>, <span class="st">"diagnostics"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      iter_m iter_i timestep                component trial   n n_u         ess</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:      1      1        1                 proposal    NA 203 203 0.004926108</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2:      1      1        1      lik-acs_filter_land    NA 203 203 0.004926108</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:      1      1        1 lik-acs_filter_container    NA 203 203 0.004926108</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:      1      1        1            lik-pf_lik_ac    NA 177 177 0.078771993</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:      1      1        1            sample-origin     1 100  57 0.050732899</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 145:      1      1       25                 proposal     1 100  80 0.010000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 146:      1      1       25      lik-acs_filter_land     1 100  80 0.010000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 147:      1      1       25 lik-acs_filter_container     1 100  80 0.010000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 148:      1      1       25            lik-pf_lik_ac     1 100  80 0.015502579</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 149:      1      1       25              sample-kick     1 100  47 0.013213661</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Outputs are identical</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="datasets-algorithms.html">dat_pff</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">diagnostics</span>,</span></span>
+<span class="r-in"><span>  <span class="fu">pf_forward_diagnostics</span><span class="op">(</span><span class="va">pff_folder</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span><span class="op">)</span></span></span>
+</code></pre></div>
+    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>

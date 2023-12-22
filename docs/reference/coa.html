@@ -85,10 +85,6 @@
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
-    <div id="source">
-    <h2>Source</h2>
-    <p>This function replaces the <a href="https://edwardlavender.github.io/flapper/reference/coa.html" class="external-link"><code>coa()</code></a> function in the <a href="https://edwardlavender.github.io/flapper/" class="external-link"><code>flapper</code></a> package. See the <a href="https://edwardlavender.github.io/flapper/reference/coa_setup_delta_t.html" class="external-link"><code>coa_setup_delta_t()</code></a> function to evaluate alternative time internals.</p>
-    </div>
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.dlist</dt>
@@ -125,6 +121,7 @@
     <div id="details">
     <h2>Details</h2>
     <p>COAs are calculated as a weighted mean of the locations of receivers at which individuals are detected over consecutive time intervals, weighted by the frequency of detections at each of those receivers. COAs are calculated via <code><a href="https://rdrr.io/r/stats/weighted.mean.html" class="external-link">stats::weighted.mean()</a></code> (for planar coordinates) or <code><a href="https://rdrr.io/pkg/geosphere/man/geomean.html" class="external-link">geosphere::geomean()</a></code> (for longitude/latitude coordinates).</p>
+<p>This function replaces <a href="https://edwardlavender.github.io/flapper/reference/coa.html" class="external-link"><code>flapper::coa()</code></a>. See  <a href="https://edwardlavender.github.io/flapper/reference/coa_setup_delta_t.html" class="external-link"><code>flapper::coa_setup_delta_t()</code></a> to evaluate alternative time internals.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>

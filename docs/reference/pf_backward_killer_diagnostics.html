@@ -128,8 +128,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6:        6 60  13 0.05712730</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (2): Calculate diagnostics from parquet files</span></span></span>
-<span class="r-in"><span><span class="va">pfb_folder</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"acpf"</span>, <span class="st">"backward"</span>, <span class="st">"killer"</span>,</span></span>
-<span class="r-in"><span>                          package <span class="op">=</span> <span class="st">"patter"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pfb_folder</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_pfbk_src</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">diag_2</span> <span class="op">&lt;-</span> <span class="fu">pf_backward_killer_diagnostics</span><span class="op">(</span><span class="va">pfb_folder</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">diag</span>, <span class="va">diag_2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>

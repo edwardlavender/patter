@@ -81,11 +81,11 @@
 <em>De-novo</em> simulation<a class="anchor" aria-label="anchor" href="#de-novo-simulation-0-0-0-9000"></a></h3>
 <p>The <code>sim_*()</code> functions in <code>flapper</code> have been replaced with faster and more flexible alternatives, including:</p>
 <ul><li>
-<code><a href="../reference/sim_array.html">sim_array()</a></code>, which replaces <code><a href="https://edwardlavender.github.io/flapper/reference/sim_array.html" class="external-link">flapper::sim_array()</a></code>;</li>
+<code><a href="../reference/sim_array.html">sim_array()</a></code>, which replaces <code>flapper::sim_array()</code>;</li>
 <li>
-<code><a href="../reference/sim_path_walk.html">sim_path_walk()</a></code>, which replaces <code><a href="https://edwardlavender.github.io/flapper/reference/sim_path_sa.html" class="external-link">flapper::sim_path_sa()</a></code>;</li>
+<code><a href="../reference/sim_path_walk.html">sim_path_walk()</a></code>, which replaces <code>flapper::sim_path_sa()</code>;</li>
 <li>
-<code><a href="../reference/sim_detections.html">sim_detections()</a></code>, which replaces <code><a href="https://edwardlavender.github.io/flapper/reference/sim_detections.html" class="external-link">flapper::sim_detections()</a></code>;</li>
+<code><a href="../reference/sim_detections.html">sim_detections()</a></code>, which replaces <code>flapper::sim_detections()</code>;</li>
 </ul></div>
 <div class="section level3">
 <h3 id="forward-simulation-0-0-0-9000">Forward simulation<a class="anchor" aria-label="anchor" href="#forward-simulation-0-0-0-9000"></a></h3>
@@ -99,7 +99,7 @@
 <div class="section level3">
 <h3 id="analysis-0-0-0-9000">Analysis<a class="anchor" aria-label="anchor" href="#analysis-0-0-0-9000"></a></h3>
 <p>For the reconstruction of movement paths, <code><a href="../reference/pf_path.html">pf_path()</a></code> has been completely re-written and is massively faster, thanks to routines from <code>collapse</code>.</p>
-<p>For the reconstruction of movement paths, <code><a href="../reference/map_pou.html">map_pou()</a></code> replaces <code><a href="https://edwardlavender.github.io/flapper/reference/pf_plot_map.html" class="external-link">flapper::pf_plot_map()</a></code> and resolves an issue with the calculation of particle weights. <code><a href="../reference/map_dens.html">map_dens()</a></code> is a new function for the reconstruction of maps is based on <code>spatstat</code> routines. This function accounts for particle weights and fits smooth utilisation distributions using cross validation, superseding approaches in <code>flapper</code> based on <code>adehabitatHR</code>. Both approaches can be flexibly implemented using a <code>data.table</code> of coordinates and are not restricted to particle samples. The <code>map_hr_*()</code> routines for the reconstruction of home ranges are re-implementations of the <code>get_hr_*()</code> functions in <code>flapper</code>.</p>
+<p>For the reconstruction of movement paths, <code><a href="../reference/map_pou.html">map_pou()</a></code> replaces <code>flapper::pf_plot_map()</code> and resolves an issue with the calculation of particle weights. <code><a href="../reference/map_dens.html">map_dens()</a></code> is a new function for the reconstruction of maps is based on <code>spatstat</code> routines. This function accounts for particle weights and fits smooth utilisation distributions using cross validation, superseding approaches in <code>flapper</code> based on <code>adehabitatHR</code>. Both approaches can be flexibly implemented using a <code>data.table</code> of coordinates and are not restricted to particle samples. The <code>map_hr_*()</code> routines for the reconstruction of home ranges are re-implementations of the <code>get_hr_*()</code> functions in <code>flapper</code>.</p>
 <p>For the comparison of simulated and reconstructed patterns, the new <code>skill_*()</code> functions can be used.</p>
 </div>
 </div>
