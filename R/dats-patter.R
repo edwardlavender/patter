@@ -1,23 +1,40 @@
 #' @title Datasets: example algorithm outputs
 #'
-#' @description These functions load example outputs from key [`patter`] functions. They are included in the package to streamline function examples and tests.
+#' @description These functions load example outputs from key [`patter`] functions, including those required to implement the forward filtering–backward sampling algorithm. They are included in the package to streamline function examples and tests.
+#'
+#' @param .folder For [`dat_pff_src()`], `.folder` is a `character` that defines the name of the folder in which outputs are stored (`history` for particle samples or `diagnostics` for particle diagnostics). See the documentation for [`pf_forward()`] and [`pf_particles-class`] objects.
 #'
 #' @details
 #' * [`dat_pff()`] reads an example output from [`pf_setup_obs()`];
 #' * [`dat_pff()`] reads an example output from [`pf_forward()`];
+#' * [`dat_pff_src()`] is the directory in which example `.parquet` files from [`pf_forward()`] are stored;
 #' * [`dat_pfbk()`] reads an example output from [`pf_backward_killer()`];
+#' * [`dat_pff_src()`] is the directory in which example `.parquet` files from [`pf_backward_killer()`] are stored;
 #' * [`dat_pfp()`] reads an example output from [`pf_path()`];
 #' * [`dat_coa()`] reads an example output from [`coa()`];
 #'
 #' @examples
+#' # Load inbuilt datasets
 #' dat_obs() |> dplyr::glimpse()
 #' dat_pff() |> summary()
 #' dat_pfbk() |> summary()
 #' dat_pfp() |> summary()
 #' dat_coa() |> summary()
 #'
+#' # Directory of inbuilt parquet files from `pf_forward()`
+#' dat_pff_src()
+#' dat_pff_src(.folder = "history")
+#' dat_pff_src(.folder = "diagnostics")
+#' pf_files(dat_pff_src())
+#'
+#' # Directory of inbuilt parquet files from `pf_backward_killer()`
+#' dat_pfbk_src()
+#'
 #' @source For full details on the algorithm parameters used to generate these datasets, see \url{https://github.com/edwardlavender/patter/blob/main/data-raw/003-add-data-algorithms.R}.
 #'
+#' @return The functions return a dataset or a `character` string that defines the path to a dataset. See the corresponding function documentation for full details.
+#'
+#' @inherit pf_forward seealso
 #' @author Edward Lavender
 #' @name datasets-algorithms
 
@@ -42,10 +59,27 @@ dat_pff <- function() {
 #' @rdname datasets-algorithms
 #' @export
 
+dat_pff_src <- function(.folder = c("history", "diagnostics")) {
+  .folder <- match.arg(.folder)
+  system.file("extdata", "acpf", "forward", .folder,
+              package = "patter", mustWork = TRUE)
+}
+
+#' @rdname datasets-algorithms
+#' @export
+
 dat_pfbk <- function() {
   data <- system.file("extdata", "dat_pfbk.rds",
                       package = "patter", mustWork = TRUE)
   readRDS(data)
+}
+
+#' @rdname datasets-algorithms
+#' @export
+
+dat_pfbk_src <- function() {
+  system.file("extdata", "acpf", "backward", "killer",
+              package = "patter", mustWork = TRUE)
 }
 
 #' @rdname datasets-algorithms

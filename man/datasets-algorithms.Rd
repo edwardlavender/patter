@@ -4,7 +4,9 @@
 \alias{datasets-algorithms}
 \alias{dat_obs}
 \alias{dat_pff}
+\alias{dat_pff_src}
 \alias{dat_pfbk}
+\alias{dat_pfbk_src}
 \alias{dat_pfp}
 \alias{dat_coa}
 \title{Datasets: example algorithm outputs}
@@ -16,31 +18,75 @@ dat_obs()
 
 dat_pff()
 
+dat_pff_src(.folder = c("history", "diagnostics"))
+
 dat_pfbk()
+
+dat_pfbk_src()
 
 dat_pfp()
 
 dat_coa()
 }
+\arguments{
+\item{.folder}{For \code{\link[=dat_pff_src]{dat_pff_src()}}, \code{.folder} is a \code{character} that defines the name of the folder in which outputs are stored (\code{history} for particle samples or \code{diagnostics} for particle diagnostics). See the documentation for \code{\link[=pf_forward]{pf_forward()}} and \code{\linkS4class{pf_particles}} objects.}
+}
+\value{
+The functions return a dataset or a \code{character} string that defines the path to a dataset. See the corresponding function documentation for full details.
+}
 \description{
-These functions load example outputs from key \code{\link{patter}} functions. They are included in the package to streamline function examples and tests.
+These functions load example outputs from key \code{\link{patter}} functions, including those required to implement the forward filtering–backward sampling algorithm. They are included in the package to streamline function examples and tests.
 }
 \details{
 \itemize{
 \item \code{\link[=dat_pff]{dat_pff()}} reads an example output from \code{\link[=pf_setup_obs]{pf_setup_obs()}};
 \item \code{\link[=dat_pff]{dat_pff()}} reads an example output from \code{\link[=pf_forward]{pf_forward()}};
+\item \code{\link[=dat_pff_src]{dat_pff_src()}} is the directory in which example \code{.parquet} files from \code{\link[=pf_forward]{pf_forward()}} are stored;
 \item \code{\link[=dat_pfbk]{dat_pfbk()}} reads an example output from \code{\link[=pf_backward_killer]{pf_backward_killer()}};
+\item \code{\link[=dat_pff_src]{dat_pff_src()}} is the directory in which example \code{.parquet} files from \code{\link[=pf_backward_killer]{pf_backward_killer()}} are stored;
 \item \code{\link[=dat_pfp]{dat_pfp()}} reads an example output from \code{\link[=pf_path]{pf_path()}};
 \item \code{\link[=dat_coa]{dat_coa()}} reads an example output from \code{\link[=coa]{coa()}};
 }
 }
 \examples{
+# Load inbuilt datasets
 dat_obs() |> dplyr::glimpse()
 dat_pff() |> summary()
 dat_pfbk() |> summary()
 dat_pfp() |> summary()
 dat_coa() |> summary()
 
+# Directory of inbuilt parquet files from `pf_forward()`
+dat_pff_src()
+dat_pff_src(.folder = "history")
+dat_pff_src(.folder = "diagnostics")
+pf_files(dat_pff_src())
+
+# Directory of inbuilt parquet files from `pf_backward_killer()`
+dat_pfbk_src()
+
+}
+\seealso{
+The forward filtering--backward sampling algorithm samples locations (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
+\itemize{
+\item To set up data, use \code{\link[=pat_setup_data]{pat_setup_data()}}.
+\item \code{\link[=pf_forward]{pf_forward()}} implements the forward filter:
+\itemize{
+\item To set up an observations timeline, use \code{\link[=pf_setup_obs]{pf_setup_obs()}}.
+\item For proposal (movement) models, see \code{\link{pf_propose}}.
+\item For likelihood functions, to evaluate the likelihood of the data at proposal locations, see \code{\link{pf_lik}}.
+\item For sampling functions, to (re)sample plausible proposal locations, see \code{\link{pf_sample}}.
+\item For tuning parameters, see \code{\link{pf_opt}}.
+}
+\item \code{\link[=pf_backward_*]{pf_backward_*()}} refines outputs from the forward filter:
+\itemize{
+\item \code{\link[=pf_backward_killer]{pf_backward_killer()}} removes dead-ends;
+\item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implements the backward sampler;
+}
+\item To reconstruct movement paths from particle samples, use \code{\link[=pf_path]{pf_path()}}.
+\item To map emergent patterns of space use, use \code{\link[=pf_coord]{pf_coord()}} plus a \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()}.
+\item For additional utilities, see supporting \verb{pf_*()} functions, such as \code{\link[=pf_files]{pf_files()}} and \code{\link[=pf_files_size]{pf_files_size()}}.
+}
 }
 \author{
 Edward Lavender
