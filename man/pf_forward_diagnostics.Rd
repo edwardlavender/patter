@@ -4,19 +4,45 @@
 \alias{pf_forward_diagnostics}
 \title{PF: forward run diagnostics}
 \usage{
-pf_forward_diagnostics(.sink)
+pf_forward_diagnostics(.sink, ...)
 }
 \arguments{
-\item{.sink}{A character string that defines the directory in which \code{\link[=pf_forward]{pf_forward()}} outputs are saved. \code{.sink} should contain the \verb{diagnostics/} directory that is created by \code{\link[=pf_forward]{pf_forward()}}.}
+\item{.sink}{A \code{character} string that defines the directory in which \code{\link[=pf_forward]{pf_forward()}} outputs are located. Either \code{{.record$sink}}, as specified in \code{\link[=pf_forward]{pf_forward()}}, or \verb{\{.record$sink\}/diagnostics/} is acceptable. A \code{\linkS4class{pf_particles}} object is also accepted.}
+
+\item{...}{Arguments passed to \code{\link[arrow:open_dataset]{arrow::open_dataset()}}.}
 }
 \value{
-The function returns the diagnostics \code{\link{data.table}}.
+The function returns the diagnostics \code{\link{data.table}} (see \code{pf_particles}).
 }
 \description{
 This function collates particle diagnostics from \code{\link[=pf_forward]{pf_forward()}}.
 }
 \details{
 Particle diagnostics are fully described in \code{\link{pf_diag}}.
+
+\code{\link[=pf_forward_diagnostics]{pf_forward_diagnostics()}} is designed to collate particle diagnostics on file. \code{\link[=pf_forward]{pf_forward()}} writes particle diagnostics to \code{{.record$sink}/diagnostics} (see \code{\link[=pf_opt_record]{pf_opt_record()}}). You can supply \code{{.record$sink}} or \verb{\{.record$sink\}/diagnostics/} to this function. The individual \code{\link{data.table}}s are collated to match the form in which they are provided by \code{\link[=pf_forward]{pf_forward()}} when \code{.record$save = TRUE}.
+
+If \code{\link[=pf_forward]{pf_forward()}} is implemented with \code{.record$save = TRUE}, the outputted \code{\linkS4class{pf_particles}} object from \code{\link[=pf_forward]{pf_forward()}} includes a pre-compiled \code{\link{data.table}} of diagnostics (see \code{\link[=pf_opt_record]{pf_opt_record()}}). \code{\link[=pf_forward_diagnostics]{pf_forward_diagnostics()}} accepts a \code{\linkS4class{pf_particles}} object, but there is really no need for this, as a \code{diagnostics} element is already present in this object.
+
+To calculate particle diagnostics for the backward pass, see \code{\link[=pf_backward_killer_diagnostics]{pf_backward_killer_diagnostics()}}.
+}
+\examples{
+# For outputs stored in memory, extract the diagnostics element
+dat_pff()$diagnostics
+
+# pf_forward_diagnostics() also works but is unnecessary
+pf_forward_diagnostics(dat_pff())
+
+# For outputs stored on file, use pf_forward_diagnostics()
+pff_folder <- dat_pff_src(.folder = NULL)
+pf_forward_diagnostics(pff_folder)
+pf_forward_diagnostics(file.path(pff_folder, "diagnostics"))
+
+# Outputs are identical
+stopifnot(all.equal(
+  dat_pff()$diagnostics,
+  pf_forward_diagnostics(pff_folder)
+))
 }
 \seealso{
 \itemize{

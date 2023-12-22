@@ -370,23 +370,35 @@ pf_forward <- function(.obs,
 
 #' @title PF: forward run diagnostics
 #' @description This function collates particle diagnostics from [`pf_forward()`].
-#' @param .sink A character string that defines the directory in which [`pf_forward()`] outputs are saved. `.sink` should contain the `diagnostics/` directory that is created by [`pf_forward()`].
-#'
+#' @param .sink A `character` string that defines the directory in which [`pf_forward()`] outputs are located. Either `{.record$sink}`, as specified in [`pf_forward()`], or `{.record$sink}/diagnostics/` is acceptable. A [`pf_particles-class`] object is also accepted.
+#' @param ... Arguments passed to [`arrow::open_dataset()`].
 #' @details Particle diagnostics are fully described in [`pf_diag`].
 #'
-#' @return The function returns the diagnostics [`data.table`].
+#' [`pf_forward_diagnostics()`] is designed to collate particle diagnostics on file. [`pf_forward()`] writes particle diagnostics to `{.record$sink}/diagnostics` (see [`pf_opt_record()`]). You can supply `{.record$sink}` or `{.record$sink}/diagnostics/` to this function. The individual [`data.table`]s are collated to match the form in which they are provided by [`pf_forward()`] when `.record$save = TRUE`.
+#'
+#' If [`pf_forward()`] is implemented with `.record$save = TRUE`, the outputted [`pf_particles-class`] object from [`pf_forward()`] includes a pre-compiled [`data.table`] of diagnostics (see [`pf_opt_record()`]). [`pf_forward_diagnostics()`] accepts a [`pf_particles-class`] object, but there is really no need for this, as a `diagnostics` element is already present in this object.
+#'
+#' To calculate particle diagnostics for the backward pass, see [`pf_backward_killer_diagnostics()`].
+#'
+#' @example man/examples/pf_forward_diagnostics-examples.R
+#'
+#' @return The function returns the diagnostics [`data.table`] (see `pf_particles`).
 #' @inherit pf_diag seealso
 #' @author Edward Lavender
 #' @export
 
-pf_forward_diagnostics <- function(.sink) {
+pf_forward_diagnostics <- function(.sink, ...) {
+  if (inherits(.sink, pf_class)) {
+    return(.sink$diagnostics)
+  }
   check_dir(.sink)
   if (basename(.sink) != "diagnostics") {
     .sink <- file.path(.sink, "diagnostics")
-    check_dir(.sink)
   }
+  check_dir(.sink)
   .sink |>
-    pf_files() |>
-    pbapply::pblapply(arrow::read_parquet) |>
-    rbindlist()
+    arrow::open_dataset(...) |>
+    arrange(.data$iter_m, .data$iter_i, .data$timestep) |>
+    collect() |>
+    as.data.table()
 }
