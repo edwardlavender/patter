@@ -26,7 +26,7 @@ At least one dataset must be provided. Data should be given \strong{for a single
 
 \item{.step}{An character, passed to \code{\link[lubridate:period]{lubridate::period()}}, \code{\link[lubridate:round_date]{lubridate::round_date()}} and \code{\link[=seq]{seq()}} that defines the duration between sequential time steps (e.g., \code{"2 mins"}).}
 
-\item{.period}{(optional) A length-two \code{POSIXct} vector that defines the start and end time for the timeline. If unprovided, this is defined internally according to inputted movement datasets and \code{.trim}::
+\item{.period}{(optional) A length-two \code{POSIXct} vector that defines the start and end time for the timeline. If unprovided, this is defined internally according to inputted movement datasets and \code{.trim}:
 \itemize{
 \item If only \code{acoustics = .dlist$data$acoustics} is provided, \code{.period} is taken as \code{range(acoustics$timestamp)}.
 \item If only \code{archival = .dlist$data$archival} is provided, \code{.period} is taken as \code{range(archival$timestamp)}.
@@ -34,7 +34,7 @@ At least one dataset must be provided. Data should be given \strong{for a single
 \item If both datasets are provided and \code{.trim = TRUE}, \code{.period} is defined as the range in timestamps for the overlapping region.
 }}
 
-\item{.mobility}{A constant that defines the maximum (Euclidean) distance the individual could move in \code{.step}.}
+\item{.mobility}{A constant that defines the maximum (Euclidean) distance the individual could move in \code{.step}. See the \href{https://edwardlavender.github.io/flapper/reference/get_mvt_mobility.html}{\verb{get_mvt_mobility_*()}} functions in the \href{https://edwardlavender.github.io/flapper/}{\code{flapper}} package to estimate \code{.mobility} from acoustic and/or archival data.}
 
 \item{.receiver_range}{A constant that defines the receiver detection range. At the time of writing, a constant value across all receivers and time steps is currently assumed (although receiver-specific detection kernels within this range are supported by \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}).}
 }

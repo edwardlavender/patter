@@ -9,12 +9,12 @@
 #'
 #' @param .trim If both acoustic and archival data are supplied, `.trim` is `logical` variable that defines whether or not to trim the time series to the time period for which they overlap.
 #' @param .step An character, passed to [`lubridate::period()`], [`lubridate::round_date()`] and [`seq()`] that defines the duration between sequential time steps (e.g., `"2 mins"`).
-#' @param .period (optional) A length-two `POSIXct` vector that defines the start and end time for the timeline. If unprovided, this is defined internally according to inputted movement datasets and `.trim`::
+#' @param .period (optional) A length-two `POSIXct` vector that defines the start and end time for the timeline. If unprovided, this is defined internally according to inputted movement datasets and `.trim`:
 #' * If only `acoustics = .dlist$data$acoustics` is provided, `.period` is taken as `range(acoustics$timestamp)`.
 #' * If only `archival = .dlist$data$archival` is provided, `.period` is taken as `range(archival$timestamp)`.
 #' * If both datasets are provided and `.trim = FALSE`, `.period` is defined as `range(c(acoustics$timestamp, archival$timestamp))`.
 #' * If both datasets are provided and `.trim = TRUE`, `.period` is defined as the range in timestamps for the overlapping region.
-#' @param .mobility A constant that defines the maximum (Euclidean) distance the individual could move in `.step`.
+#' @param .mobility A constant that defines the maximum (Euclidean) distance the individual could move in `.step`. See the [`get_mvt_mobility_*()`](https://edwardlavender.github.io/flapper/reference/get_mvt_mobility.html) functions in the [`flapper`](https://edwardlavender.github.io/flapper/) package to estimate `.mobility` from acoustic and/or archival data.
 #' @param .receiver_range A constant that defines the receiver detection range. At the time of writing, a constant value across all receivers and time steps is currently assumed (although receiver-specific detection kernels within this range are supported by [`acs_setup_detection_kernels()`]).
 #'
 #' @details
