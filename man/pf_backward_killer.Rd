@@ -33,6 +33,8 @@ This function removes 'dead ends' from particle samples. If you imagine the forw
 There are two, related limitations with the 'prune' methodology. The first is that the removal of dead ends tends to bias particle samples, because early samples (which invariably sooner-or-later end up on a dead-end) are more likely to get killed than later samples. This is known as particle degeneracy. Use the \code{\link[=pf_backward_killer_diagnostics]{pf_backward_killer_diagnostics()}} function to evaluate trends in the effective sample size through time and examine whether this is an issue. The second is that while particles from the forward simulation are contingent upon the past (a marginal distribution), they do not embody information from the future (the joint distribution).
 
 To reconstruct the joint distribution of particle samples given all data (i.e., 'proper' movement trajectories), the backward sampler is required instead (\code{\link[=pf_backward_sampler]{pf_backward_sampler()}}). However, this is much more expensive.
+
+This function replaces functionality in \href{https://edwardlavender.github.io/flapper/reference/pf_simplify.html}{\code{flapper::pf_simplify()}}.
 }
 \examples{
 #### Set up examples

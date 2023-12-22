@@ -40,6 +40,7 @@ dat_pfp() |>
 }
 \seealso{
 \itemize{
-\item \verb{dist_*} functions in \href{https://github.com/edwardlavender/flapper}{\code{flapper}};
+\item See \href{https://edwardlavender.github.io/flapper/reference/}{\verb{flapper::dist_*()}} functions for other distance routines;
+\item See \href{https://edwardlavender.github.io/flapper/reference/}{\verb{flapper::lcp_*()}} functions for least-cost distance routines;
 }
 }

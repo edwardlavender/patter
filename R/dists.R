@@ -24,7 +24,8 @@
 #'   as.data.table()
 #'
 #' @seealso
-#' * `dist_*` functions in [`flapper`](https://github.com/edwardlavender/flapper);
+#' * See [`flapper::dist_*()`](https://edwardlavender.github.io/flapper/reference/) functions for other distance routines;
+#' * See [`flapper::lcp_*()`](https://edwardlavender.github.io/flapper/reference/) functions for least-cost distance routines;
 #' @export
 
 dist_along_path <- function(.xy, .lonlat = FALSE) {

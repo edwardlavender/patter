@@ -201,6 +201,8 @@ dstep <- function(.data_now, .data_past, ...) {
 #' @details
 #' Receiver locations are simulated using [`terra::spatSample()`].
 #'
+#' This function replaces [`flapper::sim_array()`](https://edwardlavender.github.io/flapper/reference/sim_array.html).
+#'
 #' @return The function returns a `data.table` with the following columns:
 #' * `array_id`---an `integer` vector of array IDs,
 #' * `receiver_id`---an `integer` vector of receiver IDs;
@@ -355,6 +357,8 @@ sim_array <- function(.bathy = spatTemplate(), .lonlat = FALSE,
 #'
 #' `.lonlat` support is experimental. Be especially careful with correlated random walks if `lonlat = TRUE`. On an ellipsoid, the initial (simulated) bearing is not the same as the final bearing, but is not currently updated.
 #'
+#' [`sim_path_walk()`] replaces [`flapper::sim_path_sa()`](https://edwardlavender.github.io/flapper/reference/sim_path_sa.html). Other [`flapper::sim_path_*()`](https://edwardlavender.github.io/flapper/reference/sim_path_-times.html) functions are not currently implemented in [`patter`].
+#'
 #' @return [`sim_path_walk()`] returns a [`data.table`] with 10 columns:
 #' * `path_id`--- an `integer` vector that identifies each path;
 #' * `timestep`---an `integer` vector that defines the time step;
@@ -472,6 +476,8 @@ sim_path_walk <- function(.bathy = spatTemplate(), .lonlat = FALSE,
 #' * A random generation function (`.sim_obs`) is used to simulate detections (0, 1) at receivers;
 #'
 #' In the output, only detections are retained (as in 'real-world' datasets).
+#'
+#' These functions replace [`flapper::sim_detections()`](https://edwardlavender.github.io/flapper/reference/sim_detections.html) and [`flapper::get_detection_pr()`](https://edwardlavender.github.io/flapper/reference/get_detection_pr.html).
 #'
 #' @return [`sim_detections()`] returns a [`data.table`] with columns specified by `.return`.
 #'

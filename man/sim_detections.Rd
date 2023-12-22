@@ -88,6 +88,8 @@ These functions facilitate the simulation of detections, arising from animal mov
 }
 
 In the output, only detections are retained (as in 'real-world' datasets).
+
+These functions replace \href{https://edwardlavender.github.io/flapper/reference/sim_detections.html}{\code{flapper::sim_detections()}} and \href{https://edwardlavender.github.io/flapper/reference/get_detection_pr.html}{\code{flapper::get_detection_pr()}}.
 }
 \examples{
 #### Example (1): Implement function for a single path/array

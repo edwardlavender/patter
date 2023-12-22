@@ -13,6 +13,8 @@
 #'
 #' To reconstruct the joint distribution of particle samples given all data (i.e., 'proper' movement trajectories), the backward sampler is required instead ([`pf_backward_sampler()`]). However, this is much more expensive.
 #'
+#' This function replaces functionality in [`flapper::pf_simplify()`](https://edwardlavender.github.io/flapper/reference/pf_simplify.html).
+#'
 #' @example man/examples/pf_backward_killer-examples.R
 #'
 #' @return The function returns a [`pf_particles-class`] object.

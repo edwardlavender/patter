@@ -61,6 +61,8 @@ This function simulates acoustic arrays (i.e., networks of acoustic receiver(s))
 }
 \details{
 Receiver locations are simulated using \code{\link[terra:sample]{terra::spatSample()}}.
+
+This function replaces \href{https://edwardlavender.github.io/flapper/reference/sim_array.html}{\code{flapper::sim_array()}}.
 }
 \examples{
 #### Example (1): The default implementation

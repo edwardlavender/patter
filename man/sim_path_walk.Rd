@@ -82,6 +82,8 @@ Within \code{\link[=sim_path_walk]{sim_path_walk()}}, at each time step, if \cod
 If \code{.lonlat = TRUE}, current locations are updated via \code{\link[geosphere:destPoint]{geosphere::destPoint()}}.
 
 \code{.lonlat} support is experimental. Be especially careful with correlated random walks if \code{lonlat = TRUE}. On an ellipsoid, the initial (simulated) bearing is not the same as the final bearing, but is not currently updated.
+
+\code{\link[=sim_path_walk]{sim_path_walk()}} replaces \href{https://edwardlavender.github.io/flapper/reference/sim_path_sa.html}{\code{flapper::sim_path_sa()}}. Other \href{https://edwardlavender.github.io/flapper/reference/sim_path_-times.html}{\verb{flapper::sim_path_*()}} functions are not currently implemented in \code{\link{patter}}.
 }
 \examples{
 if (rlang::is_installed(c("circular", "truncdist"))) {
