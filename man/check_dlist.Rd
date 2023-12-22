@@ -120,7 +120,7 @@ For all datasets, \code{NA}s may cause unexpected errors and produce a \code{\li
 }
 \seealso{
 \itemize{
-\item See the \href{https://edwardlavender.github.io/flapper/reference/process_receiver_id.html}{\code{flapper::process_receiver_ids}} to define unique receiver IDs;
+\item See the \href{https://edwardlavender.github.io/flapper/reference/process_receiver_id.html}{\code{flapper::process_receiver_ids()}} to define unique receiver IDs;
 \item See \code{\link{datasets-mefs}} for example datasets included in \code{\link{patter}};
 \item See \code{\link[=pat_setup_data]{pat_setup_data()}} for the front-end function;
 }

@@ -12,7 +12,7 @@
 #'
 #' @return The function returns a [`matrix`] with one row for each time step and one column for each receiver. Each cell defines whether (1) or not (0) each receiver was at active during that time step. A `bins` attribute is included, which defines the time steps as a `Date` or `POSIXct` vector.
 #'
-#' @source This function is based on [`flapper::make_matrix_receivers`](https://edwardlavender.github.io/flapper/reference/make_matrix_receivers.html). Other `flapper::make_matrix_*()` routines are not currently available in [`patter`].
+#' @source This function is based on [`flapper::make_matrix_receivers()`](https://edwardlavender.github.io/flapper/reference/make_matrix_receivers.html). Other `flapper::make_matrix_*()` routines are not currently available in [`patter`].
 #'
 #' @seealso This function is used internally in [`acs_setup_detection_kernels()`].
 #'
