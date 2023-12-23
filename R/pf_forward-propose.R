@@ -1,23 +1,33 @@
 #' @title PF: proposal functions
 #' @description These are proposal functions for [`pf_forward()`].
-#' @param .particles,.obs,.t,.dlist Required arguments for all `propose` functions.
+#' @param .particles,.obs,.t,.dlist Required arguments for all `.propose` functions.
 #' * `.particles`---a [`data.table`] of particle samples from the previous time step;
 #' * `.obs`---the `.obs` [`data.table`] from [`pf_forward()`];
 #' * `.t`---an `integer` that defines the time step;
 #' * `.dlist`---the `.dlist` `list` from [`pf_forward()`];
-#' @param .sim_length,.sim_angle Additional arguments for [`pf_rpropose_kick()`]. These are functions that simulate step lengths and turning angles respectively. Each function must accept a `.n` argument that defines the number of simulated values.
-#' @param ... Additional arguments.
-#' * For [`pf_rpropose_kick()`], `...` is passed to `.sim_length` and `.sim_angle`.
-#' * For [`pf_dpropose()`], `...` is passed to [`dstep()`].
+#'      * For [`pf_rpropose_kick()`], `.dlist` must contain `.dlist$spatial$bathy` and `.dlist$pars$lonlat`;
+#'      * For [`pf_rpropose_reachable()`], `.dlist` must contain `.dlist$spatial$bathy`;
+#'      * for [pf_dpropose()], `.dlist` must contain `.dlist$pars$lonlat`;
+#' @param .rstep,.dkick,... Additional arguments for [`pf_rpropose_kick()`] and [`pf_dpropose()`] respectively. By default, in [`pf_forward()`] arguments passed via `...` are passed to these arguments.
+#' * `.rstep()` is a `function`, like [`rstep()`], that simulates new locations;
+#' * `.dstep()` is a `function`, like [`dstep()`], that calculates the probability density of movements between locations;
+#'
+#' At the time of writing, these functions must accept the following named arguments:
+#' * `.xy0`---a two-column object ([`matrix`], [`data.frame`], [`data.table`]) of accepted (x, y) coordinates from the previous time step. In `.rstep`, movement is simulated from `.xy0` into new locations;
+#' * `.xy1`---For `.dstep` only, `.xy1` is a two-column matrix of accepted coordinates for the current time step;
+#' * `.lonlat`---A `logical` variable that defines whether or not coordinates are in longitude/latitude format or planar;
+#' * `...`---Additional arguments
 #'
 #' @details
 #' In [`pf_forward()`], proposal functions are used to generate (propose) new, candidate locations for the individual's position, contingent upon previous positions (particle samples). Proposal locations are generated from previous locations via stochastic kicks and directed sampling.
 #'
-#' The `.rpropose` argument in [`pf_forward()`] expects a stochastic-kick routine and [`pf_rpropose_kick()`] is the default. This is used to simulate proposal locations by 'kicking' particles into new locations as specified by a movement model. Custom functions that accept the `.particles`, `.obs`, `.t` and `.dlist` arguments can be provided.
+#' The `.rpropose` argument in [`pf_forward()`] expects a stochastic-kick routine and [`pf_rpropose_kick()`] is the default. This is used to simulate proposal locations by 'kicking' particles into new locations as specified by a movement model (`.rstep`).
 #'
-#' If stochastic kicks fail to produce a sufficient number of valid particle samples, [`pf_rpropose_reachable()`] may be called under-the-hood for directed sampling. For selected particles, this function identifies the set of reachable locations, for which likelihood calculations and sampling are then implemented (see [`pf_forward()`]).
+#' [`pf_rpropose_kick`] is a simple wrapper for [`rstep()`] that passes the `.particles` [`data.table`] to the function as required and then updates `.particles` with simulated locations. Simulated coordinates are redefined on the grid (`.dlist$spatial$bathy`) and grid cell IDs are included in the output. Argument passed via `...` arguments are passed to `.rstep`, which under default settings means [`rstep()`]'s `.rlen` and `.rang` arguments, or additional arguments passed to those functions. This facilitates simulation of a wide variety of random walks. At the time of writing, correlated random walks are not easy for users to implement, but this should improve in future.
 #'
-#' [`pf_dpropose()`] calculates the probability density of movements into proposal locations and is required for directed sampling.
+#' In [`pf_forward()`], if stochastic kicks fail to produce a sufficient number of valid particle samples, [`pf_rpropose_reachable()`] may be called under-the-hood for directed sampling (see [`pf_opt_trial()`]). For selected particles, this function identifies the set of reachable locations. We evaluate the likelihood of reachable locations and the probability density of moving into each location and then sample locations according to the (normalised) product of these two variables. The `.dpropose` argument is required to calculate the probability density of moving between locations. This function must accept the usual `.particles`, `.obs`, `.t`, `.dlist` and `...` arguments and return a [`data.table`], for the subset of valid locations, with a `dens` column that defines probability densities. The function must be able to handle empty [`data.table`]s, which are passed down the call stack if all proposal (reachable) locations have zero likelihood.
+#'
+#' [`pf_dpropose()`] is the default `.dpropose` routine. Under default settings, this is a simple wrapper for [`dstep()`] that handles empty [data.table]s or passes the relevant coordinate columns, for the accepted locations from the previous time step ((`x_past`, `y_past`) in `.particles`) and the proposal locations for the current time step ((`x_now`, `y_now`) in `.particles`) to [`dstep()`]. In this situation, `...` arguments are passed to [`dstep()`].
 #'
 #' @inherit pf_forward seealso
 #' @author Edward Lavender
@@ -26,27 +36,27 @@
 #' @rdname pf_propose
 #' @export
 
-pf_rpropose_kick <- function(.particles, .obs, .t, .dlist,
-                             .sim_length = rlen,
-                             .sim_angle = rangrw, ...
-                             ) {
-  # Simulate step length & turning angle
-  n    <- nrow(.particles)
-  rlen <- .sim_length(n, ...)
-  rang <- .sim_angle(n, ...)
+pf_rpropose_kick <- function(.particles, .obs, .t, .dlist, .rstep, ...) {
+  # Check inputs once
+  # * The loop in pf_forward() starts on .t = 2L
+  # * We assume pf_rpropose_kick() is activated on this step
+  if (.t == 2L) {
+    check_dlist(.dlist = .dlist,
+                .par = "lonlat",
+                .spatial = "bathy")
+  }
   # Kick each particle from previous location into new proposal locations
   x_past <- y_past <- NULL
-  xy_next <- cstep(.xy_now = as.matrix(.particles[, list(x_past, y_past)]),
-                   .lonlat = .dlist$pars$lonlat,
-                   .length = rlen,
-                   .angle = rang)
-  # Update data.table
+  xy_now <- .rstep(.xy0 = .particles[, list(x_past, y_past)], ...,
+                    .lonlat = .dlist$pars$lonlat)
+  # Update data.table with cell IDs
   cell_now <- NULL
-  .particles[, cell_now := as.integer(terra::cellFromXY(.dlist$spatial$bathy, xy_next))]
-  xy_next <- terra::xyFromCell(.dlist$spatial$bathy, .particles$cell_now)
+  .particles[, cell_now := as.integer(terra::cellFromXY(.dlist$spatial$bathy, xy_now))]
+  # Update data.table with coordinates on grid
+  xy_now <- terra::xyFromCell(.dlist$spatial$bathy, .particles$cell_now)
   x_now <- y_now <- NULL
-  .particles[, x_now := as.numeric(xy_next[, 1])]
-  .particles[, y_now := as.numeric(xy_next[, 2])]
+  .particles[, x_now := as.numeric(xy_now[, 1])]
+  .particles[, y_now := as.numeric(xy_now[, 2])]
   .particles
 }
 
@@ -55,9 +65,15 @@ pf_rpropose_kick <- function(.particles, .obs, .t, .dlist,
 
 pf_rpropose_reachable <- function(.particles, .obs, .t, .dlist) {
 
-  if (.t == 1L) {
+  # Check inputs placeholder
+  # * TO DO
+  # * The loop in pf_forward() starts on .t = 2L
+  # * We check inputs assuming pf_rpropose_kick() is activated on this step
+  # * (But this is unlikely)
+  if (.t == 2L) {
     rlang::check_installed("sf")
     rlang::check_installed("exactextractr")
+    check_dlist(.dlist = .dlist, .spatial = "bathy")
   }
 
   # Isolate unique particles
@@ -106,7 +122,17 @@ pf_rpropose_reachable <- function(.particles, .obs, .t, .dlist) {
 #' @rdname pf_propose
 #' @export
 
-pf_dpropose <- function(.particles, .obs, .t, .dlist, ...) {
+pf_dpropose <- function(.particles, .obs, .t, .dlist, .dstep, ...) {
+
+  # Check inputs placeholder
+  # * TO DO
+  # * The loop in pf_forward() starts on .t = 2L
+  # * We check inputs assuming pf_dpropose() is activated on this step
+  # * (But this is unlikely)
+  if (.t == 2L) {
+    check_dlist(.dlist = .dlist, .spatial = "lonlat")
+  }
+
   # Handle empty data.tables
   # * These result when all proposals have zero likelihood
   if (fnrow(.particles) == 0L) {
@@ -115,10 +141,10 @@ pf_dpropose <- function(.particles, .obs, .t, .dlist, ...) {
   } else {
     # Calculate densities
     x_past <- y_past <- x_now <- y_now <- NULL
-    .particles[, dens := dstep(.data_now = .particles[, list(x_now = x_past, y_now = y_past)],
-                               .data_past = .particles[, list(x_now, y_now)],
-                               pairwise = TRUE,
-                               lonlat = .dlist$pars$lonlat, ...)]
+    .particles[, dens := .dstep(.xy0 = .particles[, list(x_past, y_past)],
+                                .xy1 = .particles[, list(x_now, y_now)],
+                                ...,
+                                .lonlat = .dlist$pars$lonlat)]
     # Isolate particles with positive densities
     .particles |>
       filter(dens > 0) |>
