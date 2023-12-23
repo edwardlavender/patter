@@ -1,4 +1,4 @@
-#' @title Simulation: helper functions
+#' @title Simulation: distribution functions
 #' @description These convenience functions support the generation of animal movement paths and observations in _de novo_ simulations (`sim_*()` functions) and simulation-based reconstructions of movement paths ([`pf_forward()`] and [`pf_backward_sampler()`]).
 #'
 #' * `r*()` functions simulate random variates;
@@ -18,52 +18,85 @@
 #'
 #' @param .mu,.rho,.sd Arguments for [`rwn()`] for the simulation of turning angles, passed to the `mu`, `rho` and `sd` arguments of [`circular::rwrappednormal()`].
 #'
-#' @param .prior,.t Arguments for [`rlen()`], [`rangrw()`] and [`rangcrw()`], as used in top-level functions (e.g, [`sim_path_walk()`]):
+#' @param .prior,.t Arguments for [`rlen()`], [`rangrw()`] and [`rangcrw()`], as used in top-level functions (i.e., [`sim_path_walk()`]):
 #' * `.n`---an `integer` that defines the number of simulated outcome(s);
 #' * `.prior`---a `numeric` vector that defines the simulated value(s) from the previous time step;
 #' * `.t`---an `integer` that defines the time step;
 #' * `...`---additional arguments, if needed;
 #'
-#' @param .xy_now,.xy_next,.lonlat,.length,.angle Arguments for [`cstep()`].
-#' * `.xy_now` is a two-column matrix of x and y coordinates;
-#' * (optional) `.xy_next` is a blank two-column matrix that is updated with future coordinates;
-#' * `.lonlat` is a `logical` variable that defines whether or not coordinates are in longitude/latitude;
-#' * `.length` is `numeric` vector of step lengths;
-#' * `.angle` is a `numeric` vector of turning angles;
+#' @param .xy0,.xy1,.lonlat Shared arguments for `*step()` functions and `c*()` functions.
+#' * `.xy0`---a two-column object ([`matrix`], [`data.frame`], [`data.table`]) of (x, y) coordinates;
+#' * `.xy1`---a two-column object of (x, y) coordinates;
+#' * `.lonlat`---a `logical` variable that defines whether or not coordinates are in longitude/latitude or planar coordinates;
 #'
-#' @param .data_now,.data_past Arguments for [`dstep()`].
-#' * `.data_now` is a [`data.table`] with coordinates in `x_now` and `y_now` columns;
-#' * `.data_past` is a [`data.table`] as above;
+#' @param .rlen,.rang Additional arguments for [`rstep()`].
+#' * `.rlen`---A `function` that simulates step lengths (metres);
+#' * `.rang`---A `function` that simulates turning angles (degrees);
+#'
+#' The first argument to both functions must be the number of values to simulate. Other arguments are passed via `...`.
+#'
+#' @param .len,.ang Additional arguments for [`cstep()`].
+#' * `.len`---A `numeric` vector of lengths (e.g., from [`rlen()`]);
+#' * `.ang`---A `numeric` vector of turning angles (e.g., from [`rangrw()`]);
+#'
+#' @param .clen,.cang,.dlen,.dang Additional arguments for [`dstep()`].
+#' * `.clen`---A `function` that calculates step lengths between coordinate pairs, such as [`.clen()`];
+#' * `.cang`---(ignored);
+#' * `.dlen`---A `function` that calculates the probability density of step lengths, such as [`dtruncgamma()`];
+#' * `.dang`---(ignored);
+#'
+#' `.cang` and `.dang` arguments are not yet implemented and must be [`missing`].
 #'
 #' @param ... Arguments passed to/from functions.
+#' * [`rtruncgamma()`]: silently ignored;
+#' * [`dtruncgamma()`]: silently ignored;
+#' * [`rwn()`]: silently ignored;
+#' * [`rlen()`]: passed to [`rtruncgamma()`];
+#' * [`rangrw()`]: passed to [`rwn()`];
+#' * [`rangcrw()`]: passed to [`rwn()`], excluding `.mu`;
+#' * [`rstep()`]: passed to `.rlen` and `.rang`;
+#' * [`dstep()`]: not used;
+#' * [`dstep()`]: passed to `.dlen` and `.cang`;
+#' * [`clen()`]: not used;
+#' * [`cang()`]: not used;
 #'
 #' @details
 #'
 #' # Movement
 #'
-#' ## Core functions
+#' ## Distribution functions
 #'
-#' ### Step lengths
+#' * `*truncgamma()` functions are distribution functions for the truncated Gamma distribution:
+#'    * [`rtruncgamma()`] simulates values from a truncated gamma distribution with a `.mobility` parameter that truncates the right-hand side of the distribution;
+#'    * [`dtruncgamma()`] returns the densit(ies) of specified values(s);
+#
+#' * `*wn()` functions are distribution functions for the wrapped normal distribution:
+#'    * [`rwn()`] wraps [`circular::rwrappednormal()`] and simulates turning angle(s).
+#'    * `dwn()` is not currently implemented.
 #'
-#' * [`rtruncgamma()`] simulates step length(s) from a truncated gamma distribution with a `.mobility` parameter.
-#' * [`dtruncgamma()`] returns the densit(ies) of specified step length(s).
+#' ## Step length and turning angle wrappers
 #'
-#' ### Turning angles
+#' * `*len()` functions wrap `*truncgamma()` for the simulation of movement step lengths:
+#'    * [`rlen()`] wraps [`rtruncgamma()`];
+#'    * `dlen()` is not currently implemented;
+#'    * [`clen()`] calculates the distance (step length) between coordinate pair(s) for [`dstep()`];
 #'
-#' * [`rwn()`] simulates turning angle(s) from a wrapped normal distribution.
-#' * `dwn()` is not currently implemented.
+#' * `*ang*()` functions wrap `*rw()` for turning angles:
+#'    * [`rangrw()`] wraps [`rwn()`] and is used to simulate random-walk turning angles;
+#'    * [`rangcrw()`] wraps [`rwn()`] with `.mu = .prior` (if specified) and is used to simulate correlated random walks;
+#'    * `dangrw` and `dangcrw()` are not currently implemented;
+#'    * [`cang()`] calculates turning angles between coordinate pairs;
 #'
-#' ## Wrappers
+#' ## Step wrappers
 #'
-#' The following wrapper functions are provided in the form required by front-end functions (e.g., [`sim_path_walk()`] and [`pf_backward_sampler()`]):
+#' * [`rstep()`] wraps `.rlen =` [`rlen`] and `.rang =` [`rangrw`] to simulate coordinates (via [`cstep()`]);
+#' * [`cstep()`] used (simulated) step lengths and turning angles to calculate coordinates;
+#' * [`dstep()`] evaluates the probability density of movements between locations. At the time of writing, this only evaluates the density of step lengths and is only suitable for random walks;
 #'
-#' * [`rlen()`] is a wrapper for [`rtruncgamma()`]. The corresponding function `dlen()` is not currently implemented.
-#' * [`rangrw()`], [`rangcrw()`] are wrappers for [`rwn()`] for random walks and correlated random walks. The corresponding functions `dangrw()` and `dangcrw()` are not currently implemented.
+#' # Warnings
 #'
-#' ## Extensions
-#'
-#' * [`cstep()`] steps from previous location(s) into future location(s), given simulated step length(s) and turning angle(s).
-#' * [`dstep()`] returns the density of steps between two locations. This is only suitable for random walks (it wraps [`dtruncgamma()`] but corresponding functions for turning angles are not yet implemented).
+#' * All angles are in degrees.
+#' * It is possible to simulate correlated random walks in [`sim_walk_path()`] but at the time of writing this is not supported [`pf_forward()`]. Probability density functions for correlated random walks, as required for [`pf_forward()`] and [`pf_backward_sampler()`] (e.g., `dangrw()`, `dangcrw()`) are not implemented.
 #'
 #' @seealso
 #' * `sim_*` functions implement _de novo_ simulation of movements and observations:
@@ -152,32 +185,77 @@ rangcrw <- function(.n = 1,
 #' @rdname sim_helpers
 #' @export
 
-cstep <- function(.xy_now,
-                  .xy_next = matrix(NA, nrow = nrow(.xy_now), ncol = 2L),
-                  .lonlat = FALSE,
-                  .length = rtruncgamma(nrow(.xy_now)),
-                  .angle = rwn(nrow(.xy_now))) {
-  if (.lonlat) {
-    .xy_next <- geosphere::destPoint(p = .xy_now, b = .angle, d = .length)
-  } else {
-    .xy_next[, 1] <- .xy_now[, 1] + .length * cos(.angle)
-    .xy_next[, 2] <- .xy_now[, 2] + .length * sin(.angle)
-  }
-  .xy_next
+rstep <- function(.xy0,
+                  .xy1 = matrix(NA, nrow = fnrow(.xy0), ncol = 2L),
+                  .rlen = rlen, .rang = rangrw, ..., .lonlat) {
+  # Simulate step lengths and turning angles
+  n    <- fnrow(.xy0)
+  rlen <- .rlen(n, ...)
+  rang <- .rang(n, ...)
+  # Step into new locations
+  cstep(.xy0 = .xy0,
+        .xy1 = .xy1,
+        .len = rlen,
+        .ang = rang,
+        .lonlat = .lonlat)
 }
 
 #' @rdname sim_helpers
 #' @export
 
-dstep <- function(.data_now, .data_past, ...) {
+cstep <- function(.xy0,
+                  .xy1 = matrix(NA, nrow = fnrow(.xy0), ncol = 2L),
+                  .len,
+                  .ang,
+                  .lonlat) {
+  if (.lonlat) {
+    .xy1 <- geosphere::destPoint(p = .xy0, b = .ang, d = .len)
+  } else {
+    # Convert angles to north = 0 degrees to match geosphere & then to radians
+    .ang <- (90 - .ang) * (pi / 180)
+    # Calculate new locations
+    .xy1[, 1] <- .xy0[, 1] + .len * cos(.ang)
+    .xy1[, 2] <- .xy0[, 2] + .len * sin(.ang)
+  }
+  unname(.xy1)
+}
+
+#' @rdname sim_helpers
+#' @export
+
+dstep <- function(.xy0, .xy1,
+                  .clen = clen, .cang,
+                  .dlen = dtruncgamma, .dang, ...,
+                  .lonlat) {
+  stopifnot(missing(.cang))
+  stopifnot(missing(.dang))
   # Calculate step length between selected location and all previous locations
-  rlen <- terra::distance(cbind(.data_now$x_now, .data_now$y_now),
-                          cbind(.data_past$x_now, .data_past$y_now),
-                          ...)
+  rlen <- .clen(.xy0 = .xy0, .xy1 = .xy1, .lonlat = .lonlat)
   # Calculate turning angle
-  # (optional)
-  # Translate step lengths and turning angles into movement Prs
-  dtruncgamma(.x = rlen, ...)
+  # rang <- .cang(.data_past = .data_past, .data_now = .data_now, .lonlat = .lonlat)
+  # Translate step lengths and turning angles into probability densities
+  .dlen(.x = rlen, ...) # * .rang(.x = rang, ...)
+}
+
+#' @rdname sim_helpers
+#' @export
+
+clen <- function(.xy0, .xy1, .lonlat) {
+  terra::distance(.xy0,
+                  .xy1,
+                  lonlat = .lonlat,
+                  pairwise = TRUE)
+}
+
+#' @rdname sim_helpers
+#' @export
+
+cang <- function(.xy0, .xy1, .lonlat) {
+  if (.lonlat) {
+    geosphere::bearing(p1 = .xy0, p2 = .xy1)
+  } else {
+    cang_planar(.xy0 = .xy0, .xy1 = .xy1, .convention = "180")
+  }
 }
 
 #' @title Simulation: acoustic arrays

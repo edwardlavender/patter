@@ -1,3 +1,20 @@
+#' @title Simulation: internal distribution functions
+#' @description These are internal distribution function helpers.
+#' @author Edward Lavender
+#' @keywords internal
+
+cang_planar <- function(.xy0, .xy1, .convention = c("180", "360")) {
+  .convention <- match.arg(.convention)
+  ang_rad <- atan2(.xy1[, 2] - .xy0[, 2], .xy1[, 1] - .xy0[, 1])
+  # Adjust for UTM reference direction [0, 360]
+  ang_deg <- (90 - ang_rad * (180 / pi))
+  if (.convention == "180") {
+    # Convert to [-180, 180]
+    ang_deg <- (ang_deg + 180) %% 360 - 180
+  }
+  ang_deg
+}
+
 #' @title Simulation: movement paths
 #' @description Internal functions that support the simulation of movement paths.
 #' * [`.sim_path_flux()`] simulates the movement path(s) from flux parameters that are generated dynamically at each time step. This is supported by the following helpers:

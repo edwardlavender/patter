@@ -8,9 +8,12 @@
 \alias{rlen}
 \alias{rangrw}
 \alias{rangcrw}
+\alias{rstep}
 \alias{cstep}
 \alias{dstep}
-\title{Simulation: helper functions}
+\alias{clen}
+\alias{cang}
+\title{Simulation: distribution functions}
 \usage{
 rtruncgamma(.n = 1, .shape = 15, .scale = 15, .mobility = 500, ...)
 
@@ -24,15 +27,37 @@ rangrw(.n = 1, .prior = NULL, .t = NULL, ...)
 
 rangcrw(.n = 1, .prior = NULL, .t = NULL, ...)
 
-cstep(
-  .xy_now,
-  .xy_next = matrix(NA, nrow = nrow(.xy_now), ncol = 2L),
-  .lonlat = FALSE,
-  .length = rtruncgamma(nrow(.xy_now)),
-  .angle = rwn(nrow(.xy_now))
+rstep(
+  .xy0,
+  .xy1 = matrix(NA, nrow = fnrow(.xy0), ncol = 2L),
+  .rlen = rlen,
+  .rang = rangrw,
+  ...,
+  .lonlat
 )
 
-dstep(.data_now, .data_past, ...)
+cstep(
+  .xy0,
+  .xy1 = matrix(NA, nrow = fnrow(.xy0), ncol = 2L),
+  .len,
+  .ang,
+  .lonlat
+)
+
+dstep(
+  .xy0,
+  .xy1,
+  .clen = clen,
+  .cang,
+  .dlen = dtruncgamma,
+  .dang,
+  ...,
+  .lonlat
+)
+
+clen(.xy0, .xy1, .lonlat)
+
+cang(.xy0, .xy1, .lonlat)
 }
 \arguments{
 \item{.n, .x, .shape, .scale, .mobility}{Arguments for \code{\link[=rtruncgamma]{rtruncgamma()}} and \code{\link[=dtruncgamma]{dtruncgamma()}}:
@@ -44,11 +69,23 @@ dstep(.data_now, .data_past, ...)
 \item \code{.mobility} is a \code{numeric} value that defines the maximum possible value (step length) (see \code{truncdist::rtrunc()}).
 }}
 
-\item{...}{Arguments passed to/from functions.}
+\item{...}{Arguments passed to/from functions.
+\itemize{
+\item \code{\link[=rtruncgamma]{rtruncgamma()}}: silently ignored;
+\item \code{\link[=dtruncgamma]{dtruncgamma()}}: silently ignored;
+\item \code{\link[=rwn]{rwn()}}: silently ignored;
+\item \code{\link[=rlen]{rlen()}}: passed to \code{\link[=rtruncgamma]{rtruncgamma()}}
+\item \code{\link[=rangrw]{rangrw()}}: passed to \code{\link[=rwn]{rwn()}};
+\item \code{\link[=rangcrw]{rangcrw()}}: passed to \code{\link[=rwn]{rwn()}}, excluding \code{.mu};
+\item \code{\link[=rstep]{rstep()}}: passed to \code{.rlen} and \code{.rang};
+\item \code{\link[=dstep]{dstep()}}: not used;
+\item \code{\link[=dstep]{dstep()}}: passed to \code{.dlen} and \code{.cang};
+\item \code{\link[=clen]{clen()}}: not used
+}}
 
 \item{.mu, .rho, .sd}{Arguments for \code{\link[=rwn]{rwn()}} for the simulation of turning angles, passed to the \code{mu}, \code{rho} and \code{sd} arguments of \code{\link[circular:wrappednormal]{circular::rwrappednormal()}}.}
 
-\item{.prior, .t}{Arguments for \code{\link[=rlen]{rlen()}}, \code{\link[=rangrw]{rangrw()}} and \code{\link[=rangcrw]{rangcrw()}}, as used in top-level functions (e.g, \code{\link[=sim_path_walk]{sim_path_walk()}}):
+\item{.prior, .t}{Arguments for \code{\link[=rlen]{rlen()}}, \code{\link[=rangrw]{rangrw()}} and \code{\link[=rangcrw]{rangcrw()}}, as used in top-level functions (i.e., \code{\link[=sim_path_walk]{sim_path_walk()}}):
 \itemize{
 \item \code{.n}---an \code{integer} that defines the number of simulated outcome(s);
 \item \code{.prior}---a \code{numeric} vector that defines the simulated value(s) from the previous time step;
@@ -56,20 +93,36 @@ dstep(.data_now, .data_past, ...)
 \item \code{...}---additional arguments, if needed;
 }}
 
-\item{.xy_now, .xy_next, .lonlat, .length, .angle}{Arguments for \code{\link[=cstep]{cstep()}}.
+\item{.xy0, .xy1, .lonlat}{Shared arguments for \verb{*step()} functions and \verb{c*()} functions.
 \itemize{
-\item \code{.xy_now} is a two-column matrix of x and y coordinates;
-\item (optional) \code{.xy_next} is a blank two-column matrix that is updated with future coordinates;
-\item \code{.lonlat} is a \code{logical} variable that defines whether or not coordinates are in longitude/latitude;
-\item \code{.length} is \code{numeric} vector of step lengths;
-\item \code{.angle} is a \code{numeric} vector of turning angles;
+\item \code{.xy0}---a two-column object (\code{\link{matrix}}, \code{\link{data.frame}}, \code{\link{data.table}}) of (x, y) coordinates;
+\item \code{.xy1}---a two-column object of (x, y) coordinates;
+\item \code{.lonlat}---a \code{logical} variable that defines whether or not coordinates are in longitude/latitude or planar coordinates;
 }}
 
-\item{.data_now, .data_past}{Arguments for \code{\link[=dstep]{dstep()}}.
+\item{.rlen, .rang}{Additional arguments for \code{\link[=rstep]{rstep()}}.
 \itemize{
-\item \code{.data_now} is a \code{\link{data.table}} with coordinates in \code{x_now} and \code{y_now} columns;
-\item \code{.data_past} is a \code{\link{data.table}} as above;
+\item \code{.rlen}---A \code{function} that simulates step lengths (metres);
+\item \code{.rang}---A \code{function} that simulates turning angles (degrees);
+}
+
+The first argument to both functions must be the number of values to simulate. Other arguments are passed via \code{...}.}
+
+\item{.len, .ang}{Additional arguments for \code{\link[=cstep]{cstep()}}.
+\itemize{
+\item \code{.len}---A \code{numeric} vector of lengths (e.g., from \code{\link[=rlen]{rlen()}});
+\item \code{.ang}---A \code{numeric} vector of turning angles (e.g., from \code{\link[=rangrw]{rangrw()}});
 }}
+
+\item{.clen, .cang, .dlen, .dang}{Additional arguments for \code{\link[=dstep]{dstep()}}.
+\itemize{
+\item \code{.clen}---A \code{function} that calculates step lengths between coordinate pairs, such as \code{\link[=.clen]{.clen()}};
+\item \code{.cang}---(ignored);
+\item \code{.dlen}---A \code{function} that calculates the probability density of step lengths, such as \code{\link[=dtruncgamma]{dtruncgamma()}};
+\item \code{.dang}---(ignored);
+}
+
+\code{.cang} and \code{.dang} arguments are not yet implemented and must be \code{\link{missing}}.}
 }
 \description{
 These convenience functions support the generation of animal movement paths and observations in \emph{de novo} simulations (\verb{sim_*()} functions) and simulation-based reconstructions of movement paths (\code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}).
@@ -84,37 +137,52 @@ These convenience functions support the generation of animal movement paths and 
 \verb{d*()} functions are primarily used in the simulation-based reconstruction of movement paths as part of the backward sampler via \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}.
 }
 \section{Movement}{
-\subsection{Core functions}{
-\subsection{Step lengths}{
+\subsection{Distribution functions}{
 \itemize{
-\item \code{\link[=rtruncgamma]{rtruncgamma()}} simulates step length(s) from a truncated gamma distribution with a \code{.mobility} parameter.
-\item \code{\link[=dtruncgamma]{dtruncgamma()}} returns the densit(ies) of specified step length(s).
-}
-}
-
-\subsection{Turning angles}{
+\item \verb{*truncgamma()} functions are distribution functions for the truncated Gamma distribution:
 \itemize{
-\item \code{\link[=rwn]{rwn()}} simulates turning angle(s) from a wrapped normal distribution.
+\item \code{\link[=rtruncgamma]{rtruncgamma()}} simulates values from a truncated gamma distribution with a \code{.mobility} parameter that truncates the right-hand side of the distribution;
+\item \code{\link[=dtruncgamma]{dtruncgamma()}} returns the densit(ies) of specified values(s);
+}
+\item \verb{*wn()} functions are distribution functions for the wrapped normal distribution:
+\itemize{
+\item \code{\link[=rwn]{rwn()}} wraps \code{\link[circular:wrappednormal]{circular::rwrappednormal()}} and simulates turning angle(s).
 \item \code{dwn()} is not currently implemented.
 }
 }
-
 }
 
-\subsection{Wrappers}{
-
-The following wrapper functions are provided in the form required by front-end functions (e.g., \code{\link[=sim_path_walk]{sim_path_walk()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}):
+\subsection{Step length and turning angle wrappers}{
 \itemize{
-\item \code{\link[=rlen]{rlen()}} is a wrapper for \code{\link[=rtruncgamma]{rtruncgamma()}}. The corresponding function \code{dlen()} is not currently implemented.
-\item \code{\link[=rangrw]{rangrw()}}, \code{\link[=rangcrw]{rangcrw()}} are wrappers for \code{\link[=rwn]{rwn()}} for random walks and correlated random walks. The corresponding functions \code{dangrw()} and \code{dangcrw()} are not currently implemented.
+\item \verb{*len()} functions wrap \verb{*truncgamma()} for the simulation of movement step lengths:
+\itemize{
+\item \code{\link[=rlen]{rlen()}} wraps \code{\link[=rtruncgamma]{rtruncgamma()}};
+\item \code{dlen()} is not currently implemented;
+\item \code{\link[=clen]{clen()}} calculates the distance (step length) between coordinate pair(s) for \code{\link[=dstep]{dstep()}};
+}
+\item \verb{*ang*()} functions wrap \verb{*rw()} for turning angles:
+\itemize{
+\item \code{\link[=rangrw]{rangrw()}} wraps \code{\link[=rwn]{rwn()}} and is used to simulate random-walk turning angles;
+\item \code{\link[=rangcrw]{rangcrw()}} wraps \code{\link[=rwn]{rwn()}} with \code{.mu = .prior} (if specified) and is used to simulate correlated random walks;
+\item \code{dangrw} and \code{dangcrw()} are not currently implemented;
+\item \code{\link[=cang]{cang()}} calculates turning angles between coordinate pairs;
+}
 }
 }
 
-\subsection{Extensions}{
+\subsection{Step wrappers}{
 \itemize{
-\item \code{\link[=cstep]{cstep()}} steps from previous location(s) into future location(s), given simulated step length(s) and turning angle(s).
-\item \code{\link[=dstep]{dstep()}} returns the density of steps between two locations. This is only suitable for random walks (it wraps \code{\link[=dtruncgamma]{dtruncgamma()}} but corresponding functions for turning angles are not yet implemented).
+\item \code{\link[=rstep]{rstep()}} wraps \verb{.rlen =} \code{\link{rlen}} and \verb{.rang =} \code{\link{rangrw}} to simulate coordinates (via \code{\link[=cstep]{cstep()}});
+\item \code{\link[=cstep]{cstep()}} used (simulated) step lengths and turning angles to calculate coordinates;
+\item \code{\link[=dstep]{dstep()}} evaluates the probability density of movements between locations. At the time of writing, this only evaluates the density of step lengths and is only suitable for random walks;
 }
+}
+}
+
+\section{Warnings}{
+\itemize{
+\item All angles are in degrees.
+\item It is possible to simulate correlated random walks in \code{\link[=sim_walk_path]{sim_walk_path()}} but at the time of writing this is not supported \code{\link[=pf_forward]{pf_forward()}}. Probability density functions for correlated random walks, as required for \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} (e.g., \code{dangrw()}, \code{dangcrw()}) are not implemented.
 }
 }
 
