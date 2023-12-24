@@ -171,23 +171,60 @@ out_pff <- pf_forward(.obs = obs,
                       .record = pf_opt_record(.save = TRUE))
 
 #### Example (4): Customise movement model via `.rpropose` and `.dpropose`
-# Pass arguments to the default models via ...
-# > TO DO
+# Pass arguments to the default models via `.rargs` & `.dargs`
+# * For `.rpropose` = `pf_rpropose_kick()`, `.rargs` get passed to
+# * ... `.rstep` = `rstep()` e.g., `.rlen` = rlen() and `.rang` = rang()
+# * ... and associated args
+# * For `.dpropose` = `pf_dpropose()`, `.dargs` gets passed to
+# * ... `.dstep = dstep()` e.g., `.dlen` = `dtruncgamma()`
 
+# E.g., customise rlen() shape and scale parameters
+hist(rlen(.n = 1e5L, .shape = 1, .scale = 100), xlim = c(0, 500))
+out_pff <- pf_forward(.obs = obs,
+                      .dlist = dlist,
+                      .rpropose = pf_rpropose_kick,
+                      .rargs = list(.shape = 1, .scale = 100),
+                      .dpropose = pf_dpropose,
+                      .dargs = list(.shape = 1, .scale = 100),
+                      .likelihood = pf_lik_acdcpf,
+                      .record = pf_opt_record(.save = TRUE),
+                      .control = pf_opt_control(.sampler_batch_size = 100L))
+
+# E.g., customise rlen() .mobility parameter
+# > Restricted mobility leads to convergence failure
+out_pff <- pf_forward(.obs = obs,
+                      .dlist = dlist,
+                      .rpropose = pf_rpropose_kick,
+                      .rargs = list(.mobility = 100),
+                      .dpropose = pf_dpropose,
+                      .dargs = list(.mobility = 100),
+                      .likelihood = pf_lik_acdcpf,
+                      .record = pf_opt_record(.save = TRUE),
+                      .control = pf_opt_control(.sampler_batch_size = 100L))
+# > Sequential steps are < .mobility + grid resolution/2
+out_pfbk <- pf_backward_killer(out_pff$history,
+                               .record = pf_opt_record(.save = TRUE))
+out_path <-
+  pf_path(out_pfbk$history, .bathy = dlist$spatial$bathy) |>
+  group_by(path_id) |>
+  mutate(dist = dist_along_path(cbind(cell_x, cell_y), .lonlat = FALSE)) |>
+  ungroup() |>
+  as.data.table()
+stopifnot(max(out_path$dist, na.rm = TRUE) <
+  100 + terra::res(dlist$spatial$bathy)[1] / 2)
+
+## E.g. customise rlen() and dlen() models
 # Write a new model with step lengths simulated from a lognormal distribution
 hist(rlnorm(1e6L, meanlog = 5, sdlog = 0.25), xlim = c(0, 500))
-pf_rpropose_lnorm <- function(.particles, .obs, .t, .dlist) {
-  pf_rpropose_kick(.particles = .particles,
-                   .obs = .obs,
-                   .t = .t,
-                   .dlist = .dlist,
-                   .sim_length = function(.n) rlnorm(.n, meanlog = 5, sdlog = 0.25))
-}
-pf_dpropose_lnorm <- function(.particles, .obs, .t, .dist) {
-
-}
-# TO DO
-# * Revise functions to make this easier
+out_pff <- pf_forward(.obs = obs,
+                      .dlist = dlist,
+                      .rpropose = pf_rpropose_kick,
+                      .dpropose = pf_dpropose,
+                      .rargs = list(.rlen = rlnorm, meanlog = 5, sdlog = 0.25),
+                      .dargs = list(.dlen = dlnorm, meanlog = 5, sdlog = 0.25),
+                      .likelihood = pf_lik_acdcpf,
+                      .record = pf_opt_record(.save = TRUE),
+                      .control = pf_opt_control(.sampler_batch_size = 100L))
 
 #### Example (5): Customise likelihood
 # We can implement different algorithms by modifying the .likelihood list (above)
