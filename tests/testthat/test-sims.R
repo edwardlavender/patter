@@ -1,42 +1,157 @@
-test_that("sim_helper functions work", {
+test_that("Distribution functions work", {
 
-  # Test rtruncgamma()
+  ss()
+  n <- 1e5L
+
+  #### Test rtruncgamma()
   x <- rtruncgamma(.n = 1e5, .mobility = 10)
   expect_true(max(x) < 10)
 
-  # Test dtruncgamma()
+  #### Test dtruncgamma()
   data <- readRDS(system.file("testdata", "dtruncgamma.rds",
                               package = "patter", mustWork = TRUE))
   expect_equal(data$dens, dtruncgamma(data$dist))
 
-  # Test rwn()
+  #### Test rwn()
   x <- rwn(.n = 1e5, .mu = 0, .rho = 1)
   expect_true(all(x == 0))
 
-  # Test rlen()
+  #### Test rlen()
   ss()
   a <- rlen(.n = 10)
   ss()
   b <- rtruncgamma(.n = 10)
   expect_equal(a, b)
 
-  # Test rangrw()
+  #### Test rangrw()
   ss()
   a <- rangrw(.n = 10)
   ss()
   b <- rwn(.n = 10)
   expect_equal(a, b)
 
-  # Test rangcrw()
+  #### Test rangcrw()
   rangcrw(.n = 1, .prior = 1, .rho = 1) |> expect_equal(1)
   rangcrw(.n = 1, .prior = 10, .rho = 1) |> expect_equal(10)
 
-  # Test rangcrw() returns correct correlation (with some error)
+  #### Test rangcrw() returns correct correlation (with some error)
   a1 <- rangcrw(.n = 1e6)
   a2 <- rangcrw(.n = 1e6, .prior = a1, .rho = 0.999)
   rho <- circular::cor.circular(degrees(a1), degrees(a2))
   expect_true(all.equal(0.999, rho, tolerance = 0.01))
 
+})
+
+test_that("cang() works and is consistent", {
+
+  ss()
+  n <- 1e5L
+
+  #### Define planar and lon/lat grids
+  g   <- dat_gebco()
+  gll <- terra::project(g, "EPSG:4326")
+
+  #### Define lon/lat coordinates
+  centre <- cbind(-5.614005, 56.43463)
+  north  <- cstep(centre, .len = 2e5, .ang = 0, .lonlat = TRUE)
+  east   <- cstep(centre, .len = 2e5, .ang = 90, .lonlat = TRUE)
+  south  <- cstep(centre, .len = 2e5, .ang = 180, .lonlat = TRUE)
+  west   <- cstep(centre, .len = 2e5, .ang = -90, .lonlat = TRUE)
+
+  #### Define planar coordinates
+  proj_utm <- function(.xy) {
+    terra::project(.xy, from = terra::crs(gll), to = terra::crs(g))
+  }
+  centre_utm <- proj_utm(centre)
+  north_utm  <- proj_utm(north)
+  east_utm   <- proj_utm(east)
+  south_utm  <- proj_utm(south)
+  west_utm   <- proj_utm(west)
+
+  #### test cang(..., .lonlat = TRUE) matches geosphere::bearing()
+  expect_equal(
+    geosphere::bearing(centre, north),
+    cang(centre, north, .lonlat = TRUE)
+  )
+  expect_equal(
+    geosphere::bearing(centre, east),
+    cang(centre, east, .lonlat = TRUE)
+  )
+  expect_equal(
+    geosphere::bearing(centre, south),
+    cang(centre, south, .lonlat = TRUE)
+  )
+  expect_equal(
+    geosphere::bearing(centre, west),
+    cang(centre, west, .lonlat = TRUE)
+  )
+
+  #### Test cang(..., lonlat = FALSE) behaviour is consistent
+  expect_equal(
+    0,
+    cang(centre_utm, north_utm, .lonlat = FALSE),
+    tolerance = 3
+  )
+  expect_equal(
+    90,
+    cang(centre_utm, east_utm, .lonlat = FALSE),
+    tolerance = 3
+  )
+  expect_equal(
+    180,
+    cang(centre_utm, south_utm, .lonlat = FALSE),
+    tolerance = 3
+  )
+  expect_equal(
+    -90,
+    cang(centre_utm, west_utm, .lonlat = FALSE),
+    tolerance = 3
+  )
+
+})
+
+test_that("cstep() works", {
+  n <- 1e5L
+  m0  <- cbind(runif(n), runif(n))
+  m1  <- rstep(m0, .lonlat = FALSE)
+  len <- clen(m0, m1, .lonlat = FALSE)
+  ang <- cang(m0, m1, .lonlat = FALSE)
+  expect_equal(
+    m1,
+    cstep(m0, m1,
+          .len = len,
+          .ang = ang,
+          .lonlat = FALSE)
+  )
+})
+
+test_that("clen(), cang() and cstep() are consistent with .lonlat = FALSE/TRUE", {
+
+  #### Test planar versus lon/lat
+  # Simulate coordinates
+  gebco <- dat_gebco()
+  m0    <- terra::spatSample(gebco, size = terra::ncell(gebco),
+                             xy = TRUE, values = FALSE) |> unname()
+  m1    <- rstep(m0, .lonlat = FALSE)
+  m0_ll <- terra::project(m0, from = terra::crs(gebco), to = "EPSG:4326")
+  m1_ll <- terra::project(m1, from = terra::crs(gebco), to = "EPSG:4326")
+  # Validate length calculations
+  len    <- clen(m0, m1, .lonlat = FALSE)
+  len_ll <- clen(m0_ll, m1_ll, .lonlat = TRUE)
+  expect_equal(len, len_ll, tolerance = 0.1)
+  # Validate angle calculations
+  ang    <- cang(m0, m1, .lonlat = FALSE)
+  ang_ll <- cang(m0_ll, m1_ll, .lonlat = TRUE)
+  expect_equal(ang, ang_ll, tolerance = 0.1)
+  # Validate cstep()
+  expect_equal(
+    m1,
+    cstep(m0, .len = len, .ang = ang, .lonlat = FALSE)
+  )
+  expect_equal(
+    m1_ll,
+    cstep(m0_ll, .len = len_ll, .ang = ang_ll, .lonlat = TRUE)
+  )
 })
 
 test_that("calc_detection_pr*() functions work", {

@@ -129,7 +129,7 @@ west   <- cstep(centre, .len = 2e5, .ang = -90, .lonlat = TRUE)
 
 #### Define planar coordinates
 proj_utm <- function(.xy) {
-  terra::project(centre, from = crs(gll), to = crs(g))
+  terra::project(.xy, from = crs(gll), to = crs(g))
 }
 centre_utm <- proj_utm(centre)
 north_utm  <- proj_utm(north)

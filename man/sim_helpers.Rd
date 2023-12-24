@@ -191,9 +191,20 @@ These convenience functions support the generation of animal movement paths and 
 }
 }
 
+\section{Properties}{
+\itemize{
+\item All angles are in degrees (-180, 180):
+\itemize{
+\item North = 0 degrees
+\item East = 90 degrees
+\item South = 180 degrees
+\item West = -90 degrees
+}
+}
+}
+
 \section{Warnings}{
 \itemize{
-\item All angles are in degrees.
 \item It is possible to simulate correlated random walks in \code{\link[=sim_path_walk]{sim_path_walk()}} but at the time of writing this is not supported \code{\link[=pf_forward]{pf_forward()}}. Probability density functions for correlated random walks, as required for \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} (e.g., \code{dangrw()}, \code{dangcrw()}) are not implemented.
 }
 }
@@ -330,7 +341,7 @@ west   <- cstep(centre, .len = 2e5, .ang = -90, .lonlat = TRUE)
 
 #### Define planar coordinates
 proj_utm <- function(.xy) {
-  terra::project(centre, from = crs(gll), to = crs(g))
+  terra::project(.xy, from = crs(gll), to = crs(g))
 }
 centre_utm <- proj_utm(centre)
 north_utm  <- proj_utm(north)

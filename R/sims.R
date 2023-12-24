@@ -99,9 +99,16 @@
 #' * [`cstep()`] used (simulated) step lengths and turning angles to calculate coordinates;
 #' * [`dstep()`] evaluates the probability density of movements between locations. At the time of writing, this only evaluates the density of step lengths and is only suitable for random walks;
 #'
+#' # Properties
+#'
+#' * All angles are in degrees (-180, 180):
+#'    * North = 0 degrees
+#'    * East = 90 degrees
+#'    * South = 180 degrees
+#'    * West = -90 degrees
+#'
 #' # Warnings
 #'
-#' * All angles are in degrees.
 #' * It is possible to simulate correlated random walks in [`sim_path_walk()`] but at the time of writing this is not supported [`pf_forward()`]. Probability density functions for correlated random walks, as required for [`pf_forward()`] and [`pf_backward_sampler()`] (e.g., `dangrw()`, `dangcrw()`) are not implemented.
 #'
 #' @example man/examples/sim_helpers-examples.R
