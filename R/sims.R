@@ -40,7 +40,7 @@
 #' * `.ang`---A `numeric` vector of turning angles (e.g., from [`rangrw()`]);
 #'
 #' @param .clen,.cang,.dlen,.dang Additional arguments for [`dstep()`].
-#' * `.clen`---A `function` that calculates step lengths between coordinate pairs, such as [`.clen()`];
+#' * `.clen`---A `function` that calculates step lengths between coordinate pairs, such as [`clen()`];
 #' * `.cang`---(ignored);
 #' * `.dlen`---A `function` that calculates the probability density of step lengths, such as [`dtruncgamma()`];
 #' * `.dang`---(ignored);
@@ -96,7 +96,7 @@
 #' # Warnings
 #'
 #' * All angles are in degrees.
-#' * It is possible to simulate correlated random walks in [`sim_walk_path()`] but at the time of writing this is not supported [`pf_forward()`]. Probability density functions for correlated random walks, as required for [`pf_forward()`] and [`pf_backward_sampler()`] (e.g., `dangrw()`, `dangcrw()`) are not implemented.
+#' * It is possible to simulate correlated random walks in [`sim_path_walk()`] but at the time of writing this is not supported [`pf_forward()`]. Probability density functions for correlated random walks, as required for [`pf_forward()`] and [`pf_backward_sampler()`] (e.g., `dangrw()`, `dangcrw()`) are not implemented.
 #'
 #' @example man/examples/sim_helpers-examples.R
 #' @seealso
@@ -209,6 +209,8 @@ cstep <- function(.xy0,
                   .len,
                   .ang,
                   .lonlat) {
+  .xy0 <- as.matrix(.xy0)
+  .xy1 <- as.matrix(.xy1)
   if (.lonlat) {
     .xy1 <- geosphere::destPoint(p = .xy0, b = .ang, d = .len)
   } else {
@@ -230,6 +232,8 @@ dstep <- function(.xy0, .xy1,
                   .lonlat) {
   stopifnot(missing(.cang))
   stopifnot(missing(.dang))
+  .xy0 <- as.matrix(.xy0)
+  .xy1 <- as.matrix(.xy1)
   # Calculate step length between selected location and all previous locations
   rlen <- .clen(.xy0 = .xy0, .xy1 = .xy1, .lonlat = .lonlat)
   # Calculate turning angle
@@ -242,13 +246,9 @@ dstep <- function(.xy0, .xy1,
 #' @export
 
 clen <- function(.xy0, .xy1, .lonlat) {
+  .xy0 <- as.matrix(.xy0)
+  .xy1 <- as.matrix(.xy1)
   if (.lonlat) {
-    if (!inherits(.xy0, "matrix")) {
-      .xy0 <- as.matrix(.xy0)
-    }
-    if (!inherits(.xy1, "matrix")) {
-      .xy1 <- as.matrix(.xy1)
-    }
     terra::distance(.xy0,
                     .xy1,
                     lonlat = .lonlat,
@@ -263,6 +263,8 @@ clen <- function(.xy0, .xy1, .lonlat) {
 #' @export
 
 cang <- function(.xy0, .xy1, .lonlat) {
+  .xy0 <- as.matrix(.xy0)
+  .xy1 <- as.matrix(.xy1)
   if (.lonlat) {
     geosphere::bearing(p1 = .xy0, p2 = .xy1)
   } else {

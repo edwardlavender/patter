@@ -9,11 +9,15 @@
 #' * `pf_sample_*()` functions sample proposals;
 #' * `pf_particle_*()` functions wrap proposals, likelihood calculations and sampling in an iterative framework;
 #'
-#' Proposal and likelihood functions must accept the following arguments:
+#' Proposal and likelihood functions must accept the following core arguments:
 #' * `.particles`
 #' * `.obs`
 #' * `.t`
 #' * `.dlist`
+#'
+#' Proposal functions must also accept:
+#' * `.rargs`
+#' * `.dargs`
 #'
 #' [`.pf_lik()`] is a wrapper for specified likelihood functions (see [`pf_lik`]). The function returns a [`data.table`] that defines valid proposal locations, likelihoods and weights. A `diagnostics` attribute contains proposal diagnostics. This also requires:
 #' * `.stack`---a named `list` of likelihood functions (see [`pf_lik`]).
@@ -28,7 +32,7 @@
 #'
 #' Wrapper functions must accept:
 #' * Proposal function arguments (`.particles`, `.obs`, `.t`, `.dlist`);
-#' * Proposal functions (`.rpropose`,`.dpropose`);
+#' * Proposal functions (`.rpropose`,`.dpropose`) and argument lists (`.rargs`, `.dargs`);
 #' * Additional likelihood arguments (`.likelihood`);
 #' * Sampling arguments (`.sample`, `.n`);
 #' * Iteration arguments (`.trial_crit`, `.trial_count`);
@@ -56,7 +60,8 @@
 #' @keywords internal
 
 # Propose origin locations
-.pf_rpropose_origin <- function(.particles = NULL, .obs, .t = 1L, .dlist) {
+.pf_rpropose_origin <- function(.particles = NULL, .obs, .t = 1L, .dlist,
+                                .rargs = NULL, .dargs = NULL){
 
   # Extract required objects from .dlist
   if (is.null(.dlist$spatial$origin)) {
@@ -135,6 +140,7 @@
 
 .pf_particles_origin <- function(.particles = NULL, .obs, .t = 1L, .dlist,
                                  .rpropose = NULL, .dpropose = NULL,
+                                 .rargs = NULL, .dargs = NULL,
                                  .likelihood,
                                  .sample, .n,
                                  .trial_crit, .trial_count, .control) {
@@ -236,6 +242,7 @@
 
 .pf_particles_kick <- function(.particles, .obs, .t, .dlist,
                                .rpropose, .dpropose = NULL,
+                               .rargs = list(), .dargs = NULL,
                                .likelihood,
                                .sample, .n,
                                .trial_crit, .trial_count, .control) {
@@ -243,13 +250,11 @@
   diagnostics <- list()
   crit  <- 0
   count <- 1L
+  .rargs$.particles <- .particles
   # Implement iterative sampling
   while (crit < .trial_crit & count <= .trial_count) {
     # Propose particles
-    proposals <- .rpropose(.particles = .particles,
-                           .obs = .obs,
-                           .t = .t,
-                           .dlist = .dlist)
+    proposals <- do.call(.rpropose, .rargs)
     # Calculate likelihood & weights (likelihood = weights)
     proposals <- .pf_lik(.particles = proposals,
                          .obs = .obs, .t = .t, # .particles$timestep[1]
@@ -276,6 +281,7 @@
 
 .pf_particles_sampler <- function(.particles, .obs, .t, .dlist,
                                   .rpropose = NULL, .dpropose,
+                                  .rargs = NULL, .dargs = list(),
                                   .likelihood,
                                   .sample, .n,
                                   .trial_crit, .trial_count, .control) {
@@ -310,12 +316,10 @@
   if (fnrow(pnow) > 0L) {
 
     ### Calculate movement densities & weights (likelihood * movement densities)
+    .dargs$.particles <- proposals
     proposals <-
       # Calculate movement densities
-      .dpropose(.particles = proposals,
-                .obs = .obs,
-                .t = .t,
-                .dlist = .dlist) |>
+      do.call(.dpropose, .dargs) |>
       # Calculate weights & normalise
       mutate(weight = .data$lik * .data$dens,
              weight = .data$weight / sum(.data$weight)) |>

@@ -8,7 +8,9 @@ pf_forward(
   .obs,
   .dlist,
   .rpropose = pf_rpropose_kick,
+  .rargs = list(),
   .dpropose = pf_dpropose,
+  .dargs = list(),
   .likelihood = list(),
   .n = 100L,
   .sample = pf_sample_multinomial,
@@ -25,10 +27,11 @@ pf_forward(
 
 \item{.dlist}{A \code{named} list of data and parameters required propose locations and calculate likelihoods (see \code{\link[=pat_setup_data]{pat_setup_data()}}, \code{\link{pf_lik}} and \code{\link{pf_propose}}). At a minimum, this function requires \code{.dlist$spatial$bathy}. An \code{.dlist$spatial$origin} \code{\link{SpatRaster}} can be included to define the origin. Additional elements required by \code{.likelihood},\code{.rpropose} and \code{.dpropose} functions should be included (see below).}
 
-\item{.rpropose, .dpropose}{Proposal functions (see \code{\link{pf_propose}}).
+\item{.rpropose, .dpropose, .rargs, .dargs}{Proposal functions and associated argument lists (see \code{\link{pf_propose}}).
 \itemize{
 \item \code{.rpropose} is a function that proposes new locations for the individual, given previous locations. By default, this is a 'stochastic kick' function that simulates new locations by randomly kicking previous particles (see \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}} and Details).
 \item \code{.dpropose} is a function that evaluates the probability density of movements between location pairs (see \code{\link[=pf_dpropose]{pf_dpropose()}}). This is required for directed sampling (see Details).
+\item \code{.rargs} and \code{.dargs} are named \code{list}s of arguments passed to \code{.rpropose} and \code{.dpropose} respectively.
 }}
 
 \item{.likelihood}{A named \code{list} of likelihood functions. These are used to calculate the likelihood of each dataset at proposal locations. See \code{\link{pf_lik}} for required arguments, convenience functions and advice.}

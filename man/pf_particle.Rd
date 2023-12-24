@@ -11,7 +11,14 @@
 \alias{.pf_particles_sampler}
 \title{PF: particle internals}
 \usage{
-.pf_rpropose_origin(.particles = NULL, .obs, .t = 1L, .dlist)
+.pf_rpropose_origin(
+  .particles = NULL,
+  .obs,
+  .t = 1L,
+  .dlist,
+  .rargs = NULL,
+  .dargs = NULL
+)
 
 .pf_sample_origin(.particles, .n, .sample, .trial_crit, .trial_count)
 
@@ -22,6 +29,8 @@
   .dlist,
   .rpropose = NULL,
   .dpropose = NULL,
+  .rargs = NULL,
+  .dargs = NULL,
   .likelihood,
   .sample,
   .n,
@@ -49,6 +58,8 @@
   .dlist,
   .rpropose,
   .dpropose = NULL,
+  .rargs = list(),
+  .dargs = NULL,
   .likelihood,
   .sample,
   .n,
@@ -64,6 +75,8 @@
   .dlist,
   .rpropose = NULL,
   .dpropose,
+  .rargs = NULL,
+  .dargs = list(),
   .likelihood,
   .sample,
   .n,
@@ -84,12 +97,18 @@ Function hierarchy is as follows:
 \item \verb{pf_particle_*()} functions wrap proposals, likelihood calculations and sampling in an iterative framework;
 }
 
-Proposal and likelihood functions must accept the following arguments:
+Proposal and likelihood functions must accept the following core arguments:
 \itemize{
 \item \code{.particles}
 \item \code{.obs}
 \item \code{.t}
 \item \code{.dlist}
+}
+
+Proposal functions must also accept:
+\itemize{
+\item \code{.rargs}
+\item \code{.dargs}
 }
 
 \code{\link[=.pf_lik]{.pf_lik()}} is a wrapper for specified likelihood functions (see \code{\link{pf_lik}}). The function returns a \code{\link{data.table}} that defines valid proposal locations, likelihoods and weights. A \code{diagnostics} attribute contains proposal diagnostics. This also requires:
@@ -110,7 +129,7 @@ Sampling functions must accept:
 Wrapper functions must accept:
 \itemize{
 \item Proposal function arguments (\code{.particles}, \code{.obs}, \code{.t}, \code{.dlist});
-\item Proposal functions (\code{.rpropose},\code{.dpropose});
+\item Proposal functions (\code{.rpropose},\code{.dpropose}) and argument lists (\code{.rargs}, \code{.dargs});
 \item Additional likelihood arguments (\code{.likelihood});
 \item Sampling arguments (\code{.sample}, \code{.n});
 \item Iteration arguments (\code{.trial_crit}, \code{.trial_count});

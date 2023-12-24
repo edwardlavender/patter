@@ -1,6 +1,7 @@
 require(circular)
 require(terra)
 require(geosphere)
+require(testthat)
 
 #### --------------------------------------------------
 # Detection examples
@@ -57,13 +58,13 @@ m1  <- rstep(m0, .lonlat = FALSE)
 len <- clen(m0, m1, .lonlat = FALSE)
 ang <- cang(m0, m1, .lonlat = FALSE)
 # Show that cstep(m0, m1) = m1
-stopifnot(all.equal(
+expect_equal(
   m1,
   cstep(m0, m1,
         .len = len,
         .ang = ang,
         .lonlat = FALSE)
-  ))
+  )
 # Show alignment between simulated lengths and probability densities
 hist(len, freq = FALSE)
 points(len,
@@ -91,14 +92,14 @@ head(cbind(ang, ang_ll))
 max(abs((ang - ang_ll + 180) %% 360 - 180))
 expect_equal(ang, ang_ll, tolerance = 0.1)
 # Validate cstep()
-stopifnot(all.equal(
+expect_equal(
   m1,
   cstep(m0, .len = len, .ang = ang, .lonlat = FALSE)
-))
-stopifnot(all.equal(
+)
+expect_equal(
   m1_ll,
   cstep(m0_ll, .len = len_ll, .ang = ang_ll, .lonlat = TRUE)
-))
+)
 # Validate dstep()
 hist(len, freq = FALSE)
 points(len, dstep(m0, m1, .lonlat = FALSE))

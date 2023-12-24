@@ -99,13 +99,14 @@ test_that("sim_path_*() helper functions work", {
   flux_vals$angle[, V3 := 30]
 
   # Test cstep() function uses flux values to update starting locations correctly
+  geoangle <- function(.ang) (90 - .ang) * (pi / 180)
   xy_now <- matrix(c(1, 2,
                      3, 4), ncol = 2)
   expect_equal(
     cstep(.xy0 = xy_now, .len = flux_vals$length$V1, .ang = flux_vals$angle$V1, .lonlat = FALSE),
     cbind(
-      xy_now[, 1] + flux_vals$length$V1 * cos(flux_vals$angle$V1),
-      xy_now[, 2] + flux_vals$length$V1 * sin(flux_vals$angle$V1)
+      xy_now[, 1] + flux_vals$length$V1 * cos(geoangle(flux_vals$angle$V1)),
+      xy_now[, 2] + flux_vals$length$V1 * sin(geoangle(flux_vals$angle$V1))
     )
   )
 
@@ -114,16 +115,16 @@ test_that("sim_path_*() helper functions work", {
     .cstep_using_flux(xy_now, xy_now, .lonlat = FALSE,
                      .fv = flux_vals, .t = 1),
     cbind(
-      xy_now[, 1] + flux_vals$length$V1 * cos(flux_vals$angle$V1),
-      xy_now[, 2] + flux_vals$length$V1 * sin(flux_vals$angle$V1)
+      xy_now[, 1] + flux_vals$length$V1 * cos(geoangle(flux_vals$angle$V1)),
+      xy_now[, 2] + flux_vals$length$V1 * sin(geoangle(flux_vals$angle$V1))
     )
   )
   expect_equal(
     .cstep_using_flux(xy_now, xy_now, .lonlat = FALSE,
                      .fv = flux_vals, .t = 2),
     cbind(
-      xy_now[, 1] + flux_vals$length$V2 * cos(flux_vals$angle$V2),
-      xy_now[, 2] + flux_vals$length$V2 * sin(flux_vals$angle$V2)
+      xy_now[, 1] + flux_vals$length$V2 * cos(geoangle(flux_vals$angle$V2)),
+      xy_now[, 2] + flux_vals$length$V2 * sin(geoangle(flux_vals$angle$V2))
     )
   )
 
@@ -296,16 +297,17 @@ test_that("sim_path_walk() works", {
     expect_equal(a, -99)
   })
   # Test correlated model
+  set.seed(123)
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
-                     .n_step = 1000L,
-                     .sim_angle = rangcrw, .rho = 0.8,
+                     .n_step = 2000L,
+                     .sim_angle = rangcrw, .rho = 0.5,
                      .one_page = FALSE)
   angle <- p$angle |> na.omit()
   expect_equal(
     circular::cor.circular(degrees(angle[-length(angle)]),
                            degrees(angle[-1])),
-    0.8, tolerance = 0.1
+    0.5, tolerance = 0.05
   )
 })
 

@@ -102,9 +102,10 @@ pf_opt_rerun_from <- function(.rerun, .revert = 25L) {
 #'
 #' @param .obs A [`data.table`] defining the timeline and associated observations, typically from [`pf_setup_obs()`].
 #' @param .dlist A `named` list of data and parameters required propose locations and calculate likelihoods (see [`pat_setup_data()`], [`pf_lik`] and [`pf_propose`]). At a minimum, this function requires `.dlist$spatial$bathy`. An `.dlist$spatial$origin` [`SpatRaster`] can be included to define the origin. Additional elements required by `.likelihood`,`.rpropose` and `.dpropose` functions should be included (see below).
-#' @param .rpropose,.dpropose Proposal functions (see [`pf_propose`]).
+#' @param .rpropose,.dpropose,.rargs,.dargs Proposal functions and associated argument lists (see [`pf_propose`]).
 #' * `.rpropose` is a function that proposes new locations for the individual, given previous locations. By default, this is a 'stochastic kick' function that simulates new locations by randomly kicking previous particles (see [`pf_rpropose_kick()`] and Details).
 #' * `.dpropose` is a function that evaluates the probability density of movements between location pairs (see [`pf_dpropose()`]). This is required for directed sampling (see Details).
+#' * `.rargs` and `.dargs` are named `list`s of arguments passed to `.rpropose` and `.dpropose` respectively.
 #'
 #' @param .likelihood A named `list` of likelihood functions. These are used to calculate the likelihood of each dataset at proposal locations. See [`pf_lik`] for required arguments, convenience functions and advice.
 #' @param .n,.sample Sampling arguments.
@@ -186,8 +187,8 @@ pf_opt_rerun_from <- function(.rerun, .revert = 25L) {
 
 pf_forward <- function(.obs,
                        .dlist,
-                       .rpropose = pf_rpropose_kick,
-                       .dpropose = pf_dpropose,
+                       .rpropose = pf_rpropose_kick, .rargs = list(),
+                       .dpropose = pf_dpropose, .dargs = list(),
                        .likelihood = list(),
                        .n = 100L,
                        .sample = pf_sample_multinomial,
@@ -211,19 +212,24 @@ pf_forward <- function(.obs,
   cat_log("... Setting up simulation...")
   startup <- .pf_startup(.obs = .obs,
                          .dlist = .dlist,
+                         .rargs = .rargs,
+                         .dargs = .dargs,
                          .rerun = .rerun,
                          .record = .record)
-  # Output objects
-  .record        <- startup$output$.record
-  select_cols    <- startup$output$select_cols
-  history        <- startup$output$history
-  diagnostics    <- startup$output$diagnostics
+  # Arguments
+  .rargs <- startup$args$.rargs
+  .dargs <- startup$args$.dargs
   # Controls
   iter_i         <- startup$control$iter_i
   iter_m         <- startup$control$iter_m
   # Wrappers
   .pf_write_particles_abbr   <- startup$wrapper$.pf_write_particles_abbr
   .pf_write_diagnostics_abbr <- startup$wrapper$.pf_write_diagnostics_abbr
+  # Output objects
+  .record        <- startup$output$.record
+  select_cols    <- startup$output$select_cols
+  history        <- startup$output$history
+  diagnostics    <- startup$output$diagnostics
 
   #### Define origin
   pnow <- NULL
@@ -232,6 +238,7 @@ pf_forward <- function(.obs,
     pnow <- .pf_particles_origin(.particles = NULL,
                                  .obs = .obs, .t = 1L, .dlist = .dlist,
                                  .rpropose = NULL, .dpropose = NULL,
+                                 .rargs = NULL, .dargs = NULL,
                                  .likelihood = .likelihood,
                                  .sample = .sample, .n = .n,
                                  .trial_crit = .trial$trial_origin_crit,
@@ -268,6 +275,9 @@ pf_forward <- function(.obs,
     cat_log(paste0("... ... Time step ", t, ":"))
     pb_tick(.pb = pb, .t = t)
     diagnostics_t <- list()
+    # Argument lists
+    .rargs$.t <- t
+    .dargs$.t <- t
     # Baseline diagnostics @ the start of the time step
     diagnostics_t[["base"]] <-
       .pf_diag(.particles = ppast, .t = t,
@@ -279,6 +289,7 @@ pf_forward <- function(.obs,
       pnow <- .pf_particles_kick(.particles = copy(ppast),
                                  .obs = .obs, .t = t, .dlist = .dlist,
                                  .rpropose = .rpropose, .dpropose = NULL,
+                                 .rargs = .rargs, .dargs = NULL,
                                  .likelihood = .likelihood,
                                  .sample = .sample, .n = .n,
                                  .trial_crit = .trial$trial_kick_crit,
@@ -297,6 +308,7 @@ pf_forward <- function(.obs,
         pnow <- .pf_particles_sampler(.particles = copy(ppast),
                                       .obs = .obs, .t = t, .dlist = .dlist,
                                       .rpropose = NULL, .dpropose = .dpropose,
+                                      .rargs = NULL, .dargs = .dargs,
                                       .likelihood = .likelihood,
                                       .sample = .sample, .n = .n,
                                       .trial_crit = .trial$trial_sampler_crit,

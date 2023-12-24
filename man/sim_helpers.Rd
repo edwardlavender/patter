@@ -117,7 +117,7 @@ The first argument to both functions must be the number of values to simulate. O
 
 \item{.clen, .cang, .dlen, .dang}{Additional arguments for \code{\link[=dstep]{dstep()}}.
 \itemize{
-\item \code{.clen}---A \code{function} that calculates step lengths between coordinate pairs, such as \code{\link[=.clen]{.clen()}};
+\item \code{.clen}---A \code{function} that calculates step lengths between coordinate pairs, such as \code{\link[=clen]{clen()}};
 \item \code{.cang}---(ignored);
 \item \code{.dlen}---A \code{function} that calculates the probability density of step lengths, such as \code{\link[=dtruncgamma]{dtruncgamma()}};
 \item \code{.dang}---(ignored);
@@ -183,7 +183,7 @@ These convenience functions support the generation of animal movement paths and 
 \section{Warnings}{
 \itemize{
 \item All angles are in degrees.
-\item It is possible to simulate correlated random walks in \code{\link[=sim_walk_path]{sim_walk_path()}} but at the time of writing this is not supported \code{\link[=pf_forward]{pf_forward()}}. Probability density functions for correlated random walks, as required for \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} (e.g., \code{dangrw()}, \code{dangcrw()}) are not implemented.
+\item It is possible to simulate correlated random walks in \code{\link[=sim_path_walk]{sim_path_walk()}} but at the time of writing this is not supported \code{\link[=pf_forward]{pf_forward()}}. Probability density functions for correlated random walks, as required for \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} (e.g., \code{dangrw()}, \code{dangcrw()}) are not implemented.
 }
 }
 
@@ -191,6 +191,7 @@ These convenience functions support the generation of animal movement paths and 
 require(circular)
 require(terra)
 require(geosphere)
+require(testthat)
 
 #### --------------------------------------------------
 # Detection examples
@@ -247,13 +248,13 @@ m1  <- rstep(m0, .lonlat = FALSE)
 len <- clen(m0, m1, .lonlat = FALSE)
 ang <- cang(m0, m1, .lonlat = FALSE)
 # Show that cstep(m0, m1) = m1
-stopifnot(all.equal(
+expect_equal(
   m1,
   cstep(m0, m1,
         .len = len,
         .ang = ang,
         .lonlat = FALSE)
-  ))
+  )
 # Show alignment between simulated lengths and probability densities
 hist(len, freq = FALSE)
 points(len,
@@ -281,14 +282,14 @@ head(cbind(ang, ang_ll))
 max(abs((ang - ang_ll + 180) \%\% 360 - 180))
 expect_equal(ang, ang_ll, tolerance = 0.1)
 # Validate cstep()
-stopifnot(all.equal(
+expect_equal(
   m1,
   cstep(m0, .len = len, .ang = ang, .lonlat = FALSE)
-))
-stopifnot(all.equal(
+)
+expect_equal(
   m1_ll,
   cstep(m0_ll, .len = len_ll, .ang = ang_ll, .lonlat = TRUE)
-))
+)
 # Validate dstep()
 hist(len, freq = FALSE)
 points(len, dstep(m0, m1, .lonlat = FALSE))

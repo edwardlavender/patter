@@ -7,11 +7,11 @@
 \alias{pf_dpropose}
 \title{PF: proposal functions}
 \usage{
-pf_rpropose_kick(.particles, .obs, .t, .dlist, .rstep, ...)
+pf_rpropose_kick(.particles, .obs, .t, .dlist, .rstep = rstep, ...)
 
 pf_rpropose_reachable(.particles, .obs, .t, .dlist)
 
-pf_dpropose(.particles, .obs, .t, .dlist, .dstep, ...)
+pf_dpropose(.particles, .obs, .t, .dlist, .dstep = dstep, ...)
 }
 \arguments{
 \item{.particles, .obs, .t, .dlist}{Required arguments for all \code{.propose} functions.
@@ -27,10 +27,10 @@ pf_dpropose(.particles, .obs, .t, .dlist, .dstep, ...)
 }
 }}
 
-\item{.rstep, .dkick, ...}{Additional arguments for \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}} and \code{\link[=pf_dpropose]{pf_dpropose()}} respectively. By default, in \code{\link[=pf_forward]{pf_forward()}} arguments passed via \code{...} are passed to these arguments.
+\item{.rstep, .dstep, ...}{Additional arguments for \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}} and \code{\link[=pf_dpropose]{pf_dpropose()}} respectively. By default, in \code{\link[=pf_forward]{pf_forward()}} arguments passed via \code{...} are passed to these arguments.
 \itemize{
-\item \code{.rstep()} is a \code{function}, like \code{\link[=rstep]{rstep()}}, that simulates new locations;
-\item \code{.dstep()} is a \code{function}, like \code{\link[=dstep]{dstep()}}, that calculates the probability density of movements between locations;
+\item \code{.rstep} is a \code{function}, like \code{\link[=rstep]{rstep()}}, that simulates new locations;
+\item \code{.dstep} is a \code{function}, like \code{\link[=dstep]{dstep()}}, that calculates the probability density of movements between locations;
 }
 
 At the time of writing, these functions must accept the following named arguments:
@@ -38,7 +38,7 @@ At the time of writing, these functions must accept the following named argument
 \item \code{.xy0}---a two-column object (\code{\link{matrix}}, \code{\link{data.frame}}, \code{\link{data.table}}) of accepted (x, y) coordinates from the previous time step. In \code{.rstep}, movement is simulated from \code{.xy0} into new locations;
 \item \code{.xy1}---For \code{.dstep} only, \code{.xy1} is a two-column matrix of accepted coordinates for the current time step;
 \item \code{.lonlat}---A \code{logical} variable that defines whether or not coordinates are in longitude/latitude format or planar;
-\item \code{...}---Additional arguments
+\item \code{...}---Additional arguments;
 }}
 }
 \description{

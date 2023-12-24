@@ -89,7 +89,7 @@ NULL
 #' @keywords internal
 
 # Implement startup checks and operations
-.pf_startup <- function(.obs, .dlist, .rerun, .record) {
+.pf_startup <- function(.obs, .dlist, .rargs, .dargs, .rerun, .record) {
 
   #### Use .rerun, if specified
   # Currently, we assume that input arguments (e.g., .record_opts) are the same on reruns
@@ -107,6 +107,18 @@ NULL
   #### Validate inputs
   # TO DO, use .pf_check()
 
+  #### Define argument lists
+  .rargs$.obs   <- .obs
+  .rargs$.dlist <- .dlist
+  .dargs$.obs   <- .obs
+  .dargs$.dlist <- .dlist
+
+  #### Prepare controls
+  # Number of manual iterations
+  iter_m <- 1L
+  # Number of internal iterations
+  iter_i <- 1L
+
   #### Define output containers
   # Lists to hold outputs
   history     <- list()
@@ -115,14 +127,6 @@ NULL
   folders            <- .pf_dirs(.record)
   folder_history     <- folders[["history"]]
   folder_diagnostics <- folders[["diagnostics"]]
-
-  #### Prepare controls
-  # Number of manual iterations
-  iter_m <- 1L
-  # Number of internal iterations
-  iter_i <- 1L
-  # Prepare land filter
-  is_land <- spatContainsNA(.dlist$spatial$.bathy)
 
   #### Define wrapper functions
   .pf_write_particles_abbr <- function(.particles) {
@@ -134,6 +138,14 @@ NULL
 
   #### Collate outputs
   list(
+    args = list(
+      .rargs = .rargs,
+      .dargs = .dargs
+    ),
+    control = list(
+      iter_m = iter_m,
+      iter_i = iter_i
+    ),
     output = list(
       .record = .record,
       select_cols = !is.null(.record$cols),
@@ -142,16 +154,10 @@ NULL
       folder_history = folder_history,
       folder_diagnostics = folder_diagnostics
     ),
-    control = list(
-      iter_m = iter_m,
-      iter_i = iter_i,
-      is_land = is_land
-    ),
     wrapper = list(.pf_write_particles_abbr = .pf_write_particles_abbr,
                    .pf_write_diagnostics_abbr = .pf_write_diagnostics_abbr)
   )
 }
-
 
 #' @rdname pf_forward-utils
 #' @keywords internal
