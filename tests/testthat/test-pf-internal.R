@@ -1,13 +1,3 @@
-test_that(".pf_check_*() functions work", {
-
-  .pf_check_obs(data.frame(timestep = 1))
-  .pf_check_obs(data.table(timestep = 1))
-  .pf_check_obs(data.table()) |>
-    expect_error("`.obs` should be a data.table with a `timestep` column.",
-                 fixed = TRUE)
-
-})
-
 test_that(".pf_history_dt() works", {
 
   # Define inputs

@@ -1,3 +1,63 @@
+test_that("sim_helper functions work", {
+
+  # Test rtruncgamma()
+  x <- rtruncgamma(.n = 1e5, .mobility = 10)
+  expect_true(max(x) < 10)
+
+  # Test dtruncgamma()
+  data <- readRDS(system.file("testdata", "dtruncgamma.rds",
+                              package = "patter", mustWork = TRUE))
+  expect_equal(data$dens, dtruncgamma(data$dist))
+
+  # Test rwn()
+  x <- rwn(.n = 1e5, .mu = 0, .rho = 1)
+  expect_true(all(x == 0))
+
+  # Test rlen()
+  ss()
+  a <- rlen(.n = 10)
+  ss()
+  b <- rtruncgamma(.n = 10)
+  expect_equal(a, b)
+
+  # Test rangrw()
+  ss()
+  a <- rangrw(.n = 10)
+  ss()
+  b <- rwn(.n = 10)
+  expect_equal(a, b)
+
+  # Test rangcrw()
+  rangcrw(.n = 1, .prior = 1, .rho = 1) |> expect_equal(1)
+  rangcrw(.n = 1, .prior = 10, .rho = 1) |> expect_equal(10)
+
+  # Test rangcrw() returns correct correlation (with some error)
+  a1 <- rangcrw(.n = 1e6)
+  a2 <- rangcrw(.n = 1e6, .prior = a1, .rho = 0.999)
+  rho <- circular::cor.circular(degrees(a1), degrees(a2))
+  expect_true(all.equal(0.999, rho, tolerance = 0.01))
+
+})
+
+test_that("calc_detection_pr*() functions work", {
+  expect_equal(
+    calc_detection_pr(data.table(distance = 100)),
+    calc_detection_pr_logistic(100)
+  )
+  expect_equal(
+    calc_detection_pr(data.table(distance = 100), .beta = -0.03),
+    calc_detection_pr_logistic(100, .beta = -0.03)
+  )
+
+  calc_dpr <- function(.data) {
+    calc_detection_pr_logistic(.distance = .data$dist, .gamma = .data$receiver_range)
+  }
+  expect_equal(
+    calc_dpr(data.table(distance = c(50, 100), receiver_range = c(20, 150))),
+    c(0, calc_detection_pr_logistic(100, .gamma = 150))
+  )
+})
+
 test_that("sim_array() works", {
 
   #### Test checks
@@ -42,162 +102,6 @@ test_that("sim_array() works", {
   ss()
   b <- sim_array()
   expect_equal(a, b)
-
-})
-
-test_that("sim_path_*() helper functions work", {
-
-  # Test rtruncgamma()
-  x <- rtruncgamma(.n = 1e5, .mobility = 10)
-  expect_true(max(x) < 10)
-
-  # Test rwn()
-  x <- rwn(.n = 1e5, .mu = 0, .rho = 1)
-  expect_true(all(x == 0))
-
-  # Test rlen()
-  ss()
-  a <- rlen(.n = 10)
-  ss()
-  b <- rtruncgamma(.n = 10)
-  expect_equal(a, b)
-
-  # Test rangrw()
-  ss()
-  a <- rangrw(.n = 10)
-  ss()
-  b <- rwn(.n = 10)
-  expect_equal(a, b)
-
-  # Test rangcrw()
-  rangcrw(.n = 1, .prior = 1, .rho = 1) |> expect_equal(1)
-  rangcrw(.n = 1, .prior = 10, .rho = 1) |> expect_equal(10)
-
-  # Test rangcrw() returns correct correlation (with some error)
-  a1 <- rangcrw(.n = 1e6)
-  a2 <- rangcrw(.n = 1e6, .prior = a1, .rho = 0.999)
-  rho <- circular::cor.circular(degrees(a1), degrees(a2))
-  expect_true(all.equal(0.999, rho, tolerance = 0.01))
-
-  # Test .flux_template()
-  flux_vals <- .flux_template(3, 2)
-  expect_equal(flux_vals,
-               list(
-                 length = data.table(matrix(NA_real_, ncol = 3, nrow = 2)),
-                 angle = data.table(matrix(NA_real_, ncol = 3, nrow = 2))
-               )
-  )
-
-  # Define example flux values
-  flux_vals$length[, V1 := 1:2]
-  flux_vals$length[, V2 := 3:4]
-  flux_vals$length[, V3 := 5:6]
-  flux_vals$angle[, V1 := 10]
-  flux_vals$angle[, V2 := 20]
-  flux_vals$angle[, V3 := 30]
-
-  # Test cstep() function uses flux values to update starting locations correctly
-  geoangle <- function(.ang) (90 - .ang) * (pi / 180)
-  xy_now <- matrix(c(1, 2,
-                     3, 4), ncol = 2)
-  expect_equal(
-    cstep(.xy0 = xy_now, .len = flux_vals$length$V1, .ang = flux_vals$angle$V1, .lonlat = FALSE),
-    cbind(
-      xy_now[, 1] + flux_vals$length$V1 * cos(geoangle(flux_vals$angle$V1)),
-      xy_now[, 2] + flux_vals$length$V1 * sin(geoangle(flux_vals$angle$V1))
-    )
-  )
-
-  # Test .cstep_using_flux() wrapper works
-  expect_equal(
-    .cstep_using_flux(xy_now, xy_now, .lonlat = FALSE,
-                     .fv = flux_vals, .t = 1),
-    cbind(
-      xy_now[, 1] + flux_vals$length$V1 * cos(geoangle(flux_vals$angle$V1)),
-      xy_now[, 2] + flux_vals$length$V1 * sin(geoangle(flux_vals$angle$V1))
-    )
-  )
-  expect_equal(
-    .cstep_using_flux(xy_now, xy_now, .lonlat = FALSE,
-                     .fv = flux_vals, .t = 2),
-    cbind(
-      xy_now[, 1] + flux_vals$length$V2 * cos(geoangle(flux_vals$angle$V2)),
-      xy_now[, 2] + flux_vals$length$V2 * sin(geoangle(flux_vals$angle$V2))
-    )
-  )
-
-  #### Test .cstep_iter() iterative approach
-  # * Tested separately since flux_vals are updated by reference
-
-  #### Test data re-orientation functions
-  # Test .flux_pivot()
-  expect_equal(
-    .flux_pivot(flux_vals$length),
-    data.table(path_id = c(1, 1, 1, 2, 2, 2),
-               timestep = c(1, 2, 3, 1, 2, 3),
-               value = c(1, 3, 5, 2, 4, 6))
-  )
-  # Test .sim_path_pivot()
-  # * NB: two columns (x, y) for each step
-  mat <- matrix(1:12, ncol = 6L, nrow = 2L, byrow = TRUE)
-  expect_equal(
-    .sim_path_pivot(mat, .n_step = 6L/2L, .n_path = 2L),
-    data.table(path_id = c(1, 1, 1, 2, 2, 2),
-               timestep = c(1, 2, 3, 1, 2, 3),
-               x = c(1, 3, 5, 7, 9, 11),
-               y = c(2, 4, 6, 8, 10, 12))
-  )
-
-})
-
-test_that(".cstep_iter() works", {
-
-  #### Define starting locations
-  # * We will define two points far from land & one point on land
-  gebco <- dat_gebco()
-  if (FALSE) {
-    terra::plot(gebco)
-    locator()
-  }
-  pts <- cbind(c(707770.1, 708329.4, 699790.5),
-                c(6265170, 6251560, 6260509))
-  if (FALSE) {
-    terra::plot(gebco)
-    points(pts)
-  }
-
-  #### Define the flux template & updating function
-  # * the flux template is defined below
-  # * the flux() function is as follows:
-  flux <- function(.fv, .row, .col) {
-    print(.row)
-    .fv$length[.row, (colnames(.fv$length)[.col]) := rlen(length(.row))]
-    .fv$angle[.row, (colnames(.fv$length)[.col]) := rangrw(length(.row))]
-  }
-
-  # Implement .cstep_iter() for the first two points
-  # * This should work
-  # * We expect the flux function to print 1,2 once
-  ss()
-  p <- 1:2
-  .cstep_iter(.xy0 = pts[p, ], .lonlat = FALSE,
-             .flux = flux, .fv = .flux_template(.n_step = 2, .n_path = length(p)),
-             .t = 1,
-             .move = .cstep_using_flux,
-             .bathy = dat_gebco())
-
-  # Implement .cstep_iter() for all points
-  # * We expect the flux function print 1,2 once then 3 for 99 times
-  # * Then the function will fail
-  ss()
-  p <- 1:3
-  .cstep_iter(.xy0 = pts[p, ], .lonlat = FALSE,
-             .flux = flux, .fv = .flux_template(.n_step = 2, .n_path = length(p)),
-             .t = 1,
-             .move = .cstep_using_flux,
-             .bathy = dat_gebco()) |>
-    expect_error("Failed to generate 1/3 path(s) (33.33 %) at time 1.",
-                 fixed = TRUE)
 
 })
 
@@ -306,25 +210,6 @@ test_that("sim_path_walk() works", {
     circular::cor.circular(degrees(angle[-length(angle)]),
                            degrees(angle[-1])),
     0.5, tolerance = 0.05
-  )
-})
-
-test_that("calc_detection_pr*() functions work", {
-  expect_equal(
-    calc_detection_pr(data.table(distance = 100)),
-    calc_detection_pr_logistic(100)
-  )
-  expect_equal(
-    calc_detection_pr(data.table(distance = 100), .beta = -0.03),
-    calc_detection_pr_logistic(100, .beta = -0.03)
-  )
-
-  calc_dpr <- function(.data) {
-    calc_detection_pr_logistic(.distance = .data$dist, .gamma = .data$receiver_range)
-  }
-  expect_equal(
-    calc_dpr(data.table(distance = c(50, 100), receiver_range = c(20, 150))),
-    c(0, calc_detection_pr_logistic(100, .gamma = 150))
   )
 })
 
