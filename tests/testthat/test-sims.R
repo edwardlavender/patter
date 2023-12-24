@@ -37,17 +37,15 @@ test_that("sim_array() works", {
   expect_equal(a$receiver_id, c(1, 2, 1, 2))
 
   #### Test reproducibility
-  set.seed(1)
+  ss()
   a <- sim_array()
-  set.seed(1)
+  ss()
   b <- sim_array()
   expect_equal(a, b)
 
 })
 
 test_that("sim_path_*() helper functions work", {
-
-  set.seed(1)
 
   # Test rtruncgamma()
   x <- rtruncgamma(.n = 1e5, .mobility = 10)
@@ -58,16 +56,16 @@ test_that("sim_path_*() helper functions work", {
   expect_true(all(x == 0))
 
   # Test rlen()
-  set.seed(1)
+  ss()
   a <- rlen(.n = 10)
-  set.seed(1)
+  ss()
   b <- rtruncgamma(.n = 10)
   expect_equal(a, b)
 
   # Test rangrw()
-  set.seed(1)
+  ss()
   a <- rangrw(.n = 10)
-  set.seed(1)
+  ss()
   b <- rwn(.n = 10)
   expect_equal(a, b)
 
@@ -180,7 +178,7 @@ test_that(".cstep_iter() works", {
   # Implement .cstep_iter() for the first two points
   # * This should work
   # * We expect the flux function to print 1,2 once
-  set.seed(1)
+  ss()
   p <- 1:2
   .cstep_iter(.xy0 = pts[p, ], .lonlat = FALSE,
              .flux = flux, .fv = .flux_template(.n_step = 2, .n_path = length(p)),
@@ -191,7 +189,7 @@ test_that(".cstep_iter() works", {
   # Implement .cstep_iter() for all points
   # * We expect the flux function print 1,2 once then 3 for 99 times
   # * Then the function will fail
-  set.seed(1)
+  ss()
   p <- 1:3
   .cstep_iter(.xy0 = pts[p, ], .lonlat = FALSE,
              .flux = flux, .fv = .flux_template(.n_step = 2, .n_path = length(p)),
@@ -206,7 +204,7 @@ test_that(".cstep_iter() works", {
 test_that("sim_path_walk() works", {
 
   #### Basic validation
-  set.seed(1)
+  ss()
   n_step <- 1e3
   gebco <- dat_gebco()
   p <- sim_path_walk(.bathy = gebco, .n_step = n_step)
@@ -233,9 +231,9 @@ test_that("sim_path_walk() works", {
   expect_true(all(!is.na(p$cell_z)))
 
   #### Test reproducibility
-  set.seed(1)
+  ss()
   a <- sim_path_walk()
-  set.seed(1)
+  ss()
   b <- sim_path_walk()
   expect_equal(a, b)
 
@@ -297,7 +295,7 @@ test_that("sim_path_walk() works", {
     expect_equal(a, -99)
   })
   # Test correlated model
-  set.seed(123)
+  ss()
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = 2000L,

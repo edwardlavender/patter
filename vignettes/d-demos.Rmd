@@ -32,7 +32,6 @@ library(testthat)
 
 # Set global options
 op <- options(patter.verbose = FALSE)
-seed <- 1
 ```
 
 # Convergence
@@ -48,7 +47,7 @@ gebco <- dat_gebco()
 gebco <- terra::crop(gebco, terra::ext(706828.9, 711135.5, 6256889, 6262960))
 gebco <- terra::disagg(gebco, fact = 50)
 # For demonstration purposes, modify depths to uniquely define grid cells
-set.seed(seed)
+ss()
 gebco[] <- gebco[] + 10 + runif(length(gebco[]), 0, 15) + rnorm(length(gebco[]))
 table(duplicated(na.omit(gebco[])))
 stopifnot(!any(gebco[] < 0, na.rm = TRUE))
@@ -58,7 +57,7 @@ period <- seq(as.POSIXct("2016-01-01", tz = "UTC"), by = "2 mins", length = 500L
 
 #### Simulate array & path
 # Simulate array
-set.seed(seed)
+ss()
 array <- sim_array(gebco,
                    .n_receiver = 50,
                    .receiver_range = 750,
@@ -66,7 +65,7 @@ array <- sim_array(gebco,
                    .receiver_end = as.Date("2017-01-01"))
 # Simulate movement path
 origin <- cbind(709144.3, 6261561)
-set.seed(seed)
+ss()
 path <- sim_path_walk(.bathy = gebco,
                       .origin = origin,
                       .n_step = length(period),
@@ -129,7 +128,7 @@ record <- pf_opt_record(.save = TRUE)
 # > This makes sense
 # > The combination of observations & the observation model is not very restrictive
 # > There are many routes across the landscape & it is easy to find possibilities
-set.seed(seed)
+ss()
 out_pff <- pf_forward(.obs = obs_sbt,
                       .dlist = dlist,
                       .likelihood = pf_lik_acpf,
@@ -140,7 +139,7 @@ expect_true(out_pff$convergence)
 
 # (A) Implement simulation with default options (apart from .trial_sampler)
 # > This fails to converge
-set.seed(seed)
+ss()
 out_pff <- pf_forward(.obs = obs_sbt,
                       .dlist = dlist,
                       .likelihood = pf_lik_acdcpf,
@@ -167,7 +166,7 @@ out_pff$diagnostics
 # > 2d distribution (even in the gaps between detections).
 # > We can boost this to improve convergence
 # > (but there are better ways to do this).
-set.seed(seed)
+ss()
 out_pff <- pf_forward(.obs = obs_sbt,
                       .dlist = dlist,
                       .likelihood = pf_lik_acdcpf,
@@ -180,7 +179,7 @@ out_pff <- pf_forward(.obs = obs_sbt,
 expect_true(out_pff$convergence)
 
 # (D) Increase `.trial_kick` to improve convergence
-set.seed(seed)
+ss()
 out_pff <- pf_forward(.obs = obs_sbt,
                       .dlist = dlist,
                       .likelihood = pf_lik_acdcpf,
@@ -203,7 +202,7 @@ out_pff$diagnostics |>
 # > time step if a convergence failure is identified
 # > This helps convergence
 # > (but with the selected parameters, convergence isn't achieved)
-set.seed(seed)
+ss()
 out_pff <- pf_forward(.obs = obs_sbt,
                       .dlist = dlist,
                       .likelihood = pf_lik_acdcpf,
@@ -224,7 +223,7 @@ expect_false(out_pff$convergence)
 out_pff$diagnostics
 
 # (E) Use .rerun to rerun the algorithm from an earlier time step
-set.seed(seed)
+ss()
 out_pff_2 <- pf_forward(.obs = obs_sbt,
                       .dlist = dlist,
                       .likelihood = pf_lik_acdcpf,
@@ -252,7 +251,7 @@ out_pff_2$time
 
 #### (3) ACDCPF forward simulation (default)
 # > The default implementation attempts <=.trial_kick kicks & then uses directed sampling
-set.seed(seed)
+ss()
 out_pff <- pf_forward(.obs = obs_sbt,
                       .dlist = dlist,
                       .likelihood = pf_lik_acdcpf,
@@ -265,7 +264,7 @@ out_pff$diagnostics
 
 #### (4) ACDCPF forward simulation (directed sampling)
 # > The diagnostics above suggest we should focus on directed sampling
-set.seed(seed)
+ss()
 out_pff <- pf_forward(.obs = obs_sbt,
                       .dlist = dlist,
                       .likelihood = pf_lik_acdcpf,
@@ -291,7 +290,7 @@ pf_lik_acdcpf_2 <- list(pf_lik_dc = pf_lik_dc,
                         pf_lik_ac = pf_lik_ac)
 
 # Run simulation
-set.seed(seed)
+ss()
 out_pff <- pf_forward(.obs = obs,
                       .dlist = dlist,
                       .likelihood = pf_lik_acdcpf_2,

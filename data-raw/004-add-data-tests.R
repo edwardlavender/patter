@@ -40,11 +40,11 @@ saveRDS(list(dist = dist, dens = dens),
         here::here("inst", "testdata", "dtruncgamma.rds"))
 
 # rtruncgamma()
-set.seed(1)
+ss()
 hist(rtruncgamma(1e6),
      xlim = c(0, 700),
      xlab = "dist", main = "rtruncgamma")
-set.seed(1)
+ss()
 hist(truncdist::rtrunc(1e6, "gamma", 0, 500, shape = 15, scale = 15),
      xlim = c(0, 700),
      xlab = "dist", main = "rtrunc")
