@@ -48,7 +48,7 @@ pf_rpropose_kick <- function(.particles, .obs, .t, .dlist, .rstep, ...) {
   # Kick each particle from previous location into new proposal locations
   x_past <- y_past <- NULL
   xy_now <- .rstep(.xy0 = .particles[, list(x_past, y_past)], ...,
-                    .lonlat = .dlist$pars$lonlat)
+                   .lonlat = .dlist$pars$lonlat)
   # Update data.table with cell IDs
   cell_now <- NULL
   .particles[, cell_now := as.integer(terra::cellFromXY(.dlist$spatial$bathy, xy_now))]

@@ -102,7 +102,7 @@ test_that("sim_path_*() helper functions work", {
   xy_now <- matrix(c(1, 2,
                      3, 4), ncol = 2)
   expect_equal(
-    cstep(xy_now, xy_now, .length = flux_vals$length$V1, .angle = flux_vals$angle$V1),
+    cstep(.xy0 = xy_now, .len = flux_vals$length$V1, .ang = flux_vals$angle$V1, .lonlat = FALSE),
     cbind(
       xy_now[, 1] + flux_vals$length$V1 * cos(flux_vals$angle$V1),
       xy_now[, 2] + flux_vals$length$V1 * sin(flux_vals$angle$V1)
@@ -181,7 +181,7 @@ test_that(".cstep_iter() works", {
   # * We expect the flux function to print 1,2 once
   set.seed(1)
   p <- 1:2
-  .cstep_iter(.xy_now = pts[p, ], .lonlat = FALSE,
+  .cstep_iter(.xy0 = pts[p, ], .lonlat = FALSE,
              .flux = flux, .fv = .flux_template(.n_step = 2, .n_path = length(p)),
              .t = 1,
              .move = .cstep_using_flux,
@@ -192,7 +192,7 @@ test_that(".cstep_iter() works", {
   # * Then the function will fail
   set.seed(1)
   p <- 1:3
-  .cstep_iter(.xy_now = pts[p, ], .lonlat = FALSE,
+  .cstep_iter(.xy0 = pts[p, ], .lonlat = FALSE,
              .flux = flux, .fv = .flux_template(.n_step = 2, .n_path = length(p)),
              .t = 1,
              .move = .cstep_using_flux,

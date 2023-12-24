@@ -25,11 +25,11 @@
 
 .flux_template(.n_step, .n_path)
 
-.cstep_using_flux(.xy_now, .xy_next, .lonlat, .fv, .t)
+.cstep_using_flux(.xy0, .xy1, .lonlat, .fv, .t)
 
 .cstep_iter(
-  .xy_now,
-  .xy_next = matrix(NA, nrow = nrow(.xy_now), ncol = ncol(.xy_now)),
+  .xy0,
+  .xy1 = matrix(NA, nrow = nrow(.xy0), ncol = ncol(.xy0)),
   .lonlat,
   .flux,
   .fv,

@@ -76,8 +76,8 @@ NULL
   pb <- pb_init(.min = 0L, .max = .n_step - 1L)
   for (t in seq_len(.n_step - 1)) {
     pb_tick(.pb = pb, .t = t)
-    mat[, lookup[[t + 1]]] <- .cstep_iter(.xy_now = mat[, lookup[[t]], drop = FALSE],
-                                          .xy_next = mat[, lookup[[t + 1]], drop = FALSE],
+    mat[, lookup[[t + 1]]] <- .cstep_iter(.xy0 = mat[, lookup[[t]], drop = FALSE],
+                                          .xy1 = mat[, lookup[[t + 1]], drop = FALSE],
                                           .lonlat = .lonlat,
                                           .flux = .flux, .fv = .flux_vals,
                                           .move = .move, .t = t,
@@ -126,16 +126,17 @@ NULL
 #' @rdname sim_path_flux
 #' @keywords internal
 
-.cstep_using_flux <- function(.xy_now, .xy_next, .lonlat, .fv, .t) {
-  cstep(.xy_now = .xy_now, .xy_next = .xy_next, .lonlat = .lonlat,
-        .length = .fv$length[[.t]], .angle = .fv$angle[[.t]])
+.cstep_using_flux <- function(.xy0, .xy1, .lonlat, .fv, .t) {
+  cstep(.xy0 = .xy0, .xy1 = .xy1,
+        .len = .fv$length[[.t]], .ang = .fv$angle[[.t]],
+        .lonlat = .lonlat)
 }
 
 #' @rdname sim_path_flux
 #' @keywords internal
 
-.cstep_iter <- function(.xy_now,
-                        .xy_next = matrix(NA, nrow = nrow(.xy_now), ncol = ncol(.xy_now)),
+.cstep_iter <- function(.xy0,
+                        .xy1 = matrix(NA, nrow = nrow(.xy0), ncol = ncol(.xy0)),
                         .lonlat,
                         .flux, .fv, .t,
                         .move,
@@ -143,33 +144,33 @@ NULL
   counter <- 0
   run     <- TRUE
   while (run && counter < 100) {
-    # Identify .xy_next positions that need to be updated
+    # Identify .xy1 positions that need to be updated
     if (counter == 0) {
-      pos <- seq_len(nrow(.xy_now))
+      pos <- seq_len(nrow(.xy0))
     } else{
-      pos <- which(is.na(.xy_next[, 1]))
+      pos <- which(is.na(.xy1[, 1]))
     }
     # Simulate proposal locations
     .flux(.fv, .row = pos, .col = .t)
-    .xy_next <- .move(.xy_now = .xy_now,
-                      .xy_next = .xy_next,
-                      .lonlat = .lonlat,
-                      .fv = .fv, .t = .t)
+    .xy1 <- .move(.xy0 = .xy0,
+                  .xy1 = .xy1,
+                  .lonlat = .lonlat,
+                  .fv = .fv, .t = .t)
     # Validate simulated positions
-    vals <- terra::extract(.bathy, .xy_next[pos, , drop = FALSE])
-    .xy_next[pos[which(is.na(vals))], ] <- NA
+    vals <- terra::extract(.bathy, .xy1[pos, , drop = FALSE])
+    .xy1[pos[which(is.na(vals))], ] <- NA
     # Specify whether or not to rerun simulation
-    run <- any(is.na(.xy_next))
+    run <- any(is.na(.xy1))
     if (run) {
       counter <- counter + 1
     }
   }
-  if (any(is.na(.xy_next))) {
-    n_invalid <- length(which(is.na(.xy_next[, 1])))
-    pc_invalid <- round((n_invalid / nrow(.xy_next)) * 100, digits = 2)
-    abort("Failed to generate {n_invalid}/{nrow(.xy_next)} path(s) ({pc_invalid} %) at time {.t}.", .envir = environment())
+  if (any(is.na(.xy1))) {
+    n_invalid <- length(which(is.na(.xy1[, 1])))
+    pc_invalid <- round((n_invalid / nrow(.xy1)) * 100, digits = 2)
+    abort("Failed to generate {n_invalid}/{nrow(.xy1)} path(s) ({pc_invalid} %) at time {.t}.", .envir = environment())
   }
-  .xy_next
+  .xy1
 }
 
 #' @rdname sim_path_flux
