@@ -40,6 +40,10 @@ dat_pfp() |>
 }
 \seealso{
 \itemize{
+\item For \code{\link{patter}} \verb{dist_*()} functions, see:
+\itemize{
+\item \code{\link[=dist_along_path]{dist_along_path()}} to calculate distances along a path;
+}
 \item See \href{https://edwardlavender.github.io/flapper/reference/}{\verb{flapper::dist_*()}} functions for other distance routines;
 \item See \href{https://edwardlavender.github.io/flapper/reference/}{\verb{flapper::lcp_*()}} functions for least-cost distance routines;
 }

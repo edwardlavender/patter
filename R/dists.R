@@ -24,6 +24,8 @@
 #'   as.data.table()
 #'
 #' @seealso
+#' * For [`patter`] `dist_*()` functions, see:
+#'     * [`dist_along_path()`] to calculate distances along a path;
 #' * See [`flapper::dist_*()`](https://edwardlavender.github.io/flapper/reference/) functions for other distance routines;
 #' * See [`flapper::lcp_*()`](https://edwardlavender.github.io/flapper/reference/) functions for least-cost distance routines;
 #' @export
@@ -39,4 +41,14 @@ dist_along_path <- function(.xy, .lonlat = FALSE) {
                           lonlat = .lonlat,
                           sequential = TRUE)
   c(dist[2:length(dist)], NA_real_)
+}
+
+#' @title Distances: line transects
+#' @description This function calculates the distance between coordinate pairs. For planar coordinates, it is faster than `terra::distance(..., lonlat = FALSE, pairwise = TRUE)`.
+#' @param .x0,.y0,.x1,.y1 Coordinates.
+#' @details Planar coordinates are assumed.
+#' @keywords internal
+
+dist_2d <- function(.x0, .y0, .x1, .y1) {
+  sqrt((.x0 - .x1)^2 + (.y0 - .y1)^2)
 }
