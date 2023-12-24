@@ -243,7 +243,7 @@ dstep <- function(.xy0, .xy1,
 
 clen <- function(.xy0, .xy1, .lonlat) {
   if (.lonlat) {
-    if (!inherits(.xy0)) {
+    if (!inherits(.xy0, "matrix")) {
       .xy0 <- as.matrix(.xy0)
     }
     if (!inherits(.xy1, "matrix")) {
