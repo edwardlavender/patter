@@ -260,7 +260,7 @@ dstep <- function(.xy0, .xy1,
   # Calculate turning angle
   # rang <- .cang(.data_past = .data_past, .data_now = .data_now, .lonlat = .lonlat)
   # Translate step lengths and turning angles into probability densities
-  .dlen(.x = rlen, ...) # * .rang(.x = rang, ...)
+  .dlen(rlen, ...) # * .rang(.x = rang, ...)
 }
 
 #' @rdname sim_helpers
