@@ -2,6 +2,7 @@
 % Please edit documentation in R/sims.R
 \name{sim_helpers}
 \alias{sim_helpers}
+\alias{ss}
 \alias{rtruncgamma}
 \alias{dtruncgamma}
 \alias{rwn}
@@ -15,6 +16,8 @@
 \alias{cang}
 \title{Simulation: distribution functions}
 \usage{
+ss()
+
 rtruncgamma(.n = 1L, .shape = 15, .scale = 15, .mobility = 500, ...)
 
 dtruncgamma(.x, .shape = 15, .scale = 15, .mobility = 500, ...)
@@ -71,6 +74,7 @@ cang(.xy0, .xy1, .lonlat)
 
 \item{...}{Arguments passed to/from functions.
 \itemize{
+\item \code{\link[=ss]{ss()}}: not used;
 \item \code{\link[=rtruncgamma]{rtruncgamma()}}: silently ignored;
 \item \code{\link[=dtruncgamma]{dtruncgamma()}}: silently ignored;
 \item \code{\link[=rwn]{rwn()}}: silently ignored;
@@ -128,6 +132,7 @@ The first argument to both functions must be the number of values to simulate. O
 \description{
 These convenience functions support the generation of animal movement paths and observations in \emph{de novo} simulations (\verb{sim_*()} functions) and simulation-based reconstructions of movement paths (\code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}).
 \itemize{
+\item \code{\link[=ss]{ss()}} sets a seed;
 \item \verb{r*()} functions simulate random variates;
 \item \verb{c*()} functions calculate outcomes from random-variate inputs;
 \item \verb{d*()} functions return densities;
@@ -137,6 +142,12 @@ These convenience functions support the generation of animal movement paths and 
 
 \verb{d*()} functions are primarily used in the simulation-based reconstruction of movement paths as part of the backward sampler via \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}.
 }
+\section{Reproducibility}{
+\itemize{
+\item \code{\link[=ss]{ss()}} wraps \code{\link[=set.seed]{set.seed()}} and is used for reproducible simulations;
+}
+}
+
 \section{Movement}{
 \subsection{Distribution functions}{
 \itemize{

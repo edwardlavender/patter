@@ -1,6 +1,7 @@
 #' @title Simulation: distribution functions
 #' @description These convenience functions support the generation of animal movement paths and observations in _de novo_ simulations (`sim_*()` functions) and simulation-based reconstructions of movement paths ([`pf_forward()`] and [`pf_backward_sampler()`]).
 #'
+#' * [`ss()`] sets a seed;
 #' * `r*()` functions simulate random variates;
 #' * `c*()` functions calculate outcomes from random-variate inputs;
 #' * `d*()` functions return densities;
@@ -48,6 +49,7 @@
 #' `.cang` and `.dang` arguments are not yet implemented and must be [`missing`].
 #'
 #' @param ... Arguments passed to/from functions.
+#' * [`ss()`]: not used;
 #' * [`rtruncgamma()`]: silently ignored;
 #' * [`dtruncgamma()`]: silently ignored;
 #' * [`rwn()`]: silently ignored;
@@ -61,6 +63,10 @@
 #' * [`cang()`]: not used;
 #'
 #' @details
+#'
+#' # Reproducibility
+#'
+#' * [`ss()`] wraps [`set.seed()`] and is used for reproducible simulations;
 #'
 #' # Movement
 #'
@@ -112,6 +118,14 @@
 #'
 #' @author Edward Lavender
 #' @name sim_helpers
+
+#' @rdname sim_helpers
+#' @export
+
+ss <- function() {
+  # set.seed(123L)
+  set.seed(as.integer(as.Date(Sys.time())))
+}
 
 #' @rdname sim_helpers
 #' @export
