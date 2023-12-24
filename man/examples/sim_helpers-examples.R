@@ -14,6 +14,7 @@ require(testthat)
 #### --------------------------------------------------
 # Movement examples
 
+ss()
 n <- 1e5L
 
 #### Truncated gamma random generation

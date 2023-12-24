@@ -25,6 +25,7 @@ obs <- obs[1:100L, ]
 pf_lik_acpf <- list(acs_filter_land = acs_filter_land,
                     acs_filter_container = acs_filter_container,
                     pf_lik_ac = pf_lik_ac)
+ss()
 out_pff <- pf_forward(.obs = obs,
                       .dlist = dlist,
                       .likelihood = pf_lik_acpf,
@@ -54,6 +55,7 @@ origin <- terra::clamp(origin,
 dlist$spatial$origin <- origin
 # Implement DCPF algorithm
 pf_lik_dcpf <- list(pf_lik_dc = pf_lik_dc)
+ss()
 out_pff <- pf_forward(.obs = obs,
                       .dlist = dlist,
                       .likelihood = pf_lik_dcpf,
@@ -63,6 +65,7 @@ out_pff <- pf_forward(.obs = obs,
 pf_lik_acdcpf <- list(pf_lik_dc = pf_lik_dc,
                       acs_filter_container = acs_filter_container,
                       pf_lik_ac = pf_lik_ac)
+ss()
 out_pff <- pf_forward(.obs = obs,
                       .dlist = dlist,
                       .likelihood = pf_lik_acdcpf,
@@ -131,12 +134,13 @@ pf_lik_temp <- function(.particles, .obs, .t, .dlist) {
 }
 # Run simulation accounting for temperature data only
 dlist$spatial$origin <- NULL
+ss()
 out_pff <- pf_forward(.obs = obs,
                       .dlist = dlist,
                       .likelihood = list(pf_lik_temp = pf_lik_temp),
                       .record = pf_opt_record(.save = TRUE))
 # Run simulation accounting for multiple datasets
-set.seed(1)
+ss()
 out_pff <- pf_forward(.obs = obs,
                       .dlist = dlist,
                       .likelihood = list(pf_lik_ac = pf_lik_ac,
@@ -147,6 +151,7 @@ out_pff$diagnostics
 
 #### Example (6): Customise (re)sampling
 # Adjust the number of particles
+ss()
 out_pff <- pf_forward(.obs = obs,
                       .dlist = dlist,
                       .likelihood = pf_lik_acpf,
@@ -155,6 +160,7 @@ out_pff <- pf_forward(.obs = obs,
 nrow(out_pff$history[[1]])
 # Use systematic resampling
 # * This triggers directed sampling, so we boost sampler_batch_size for improved speed
+ss()
 out_pff <- pf_forward(.obs = obs,
                       .dlist = dlist,
                       .likelihood = pf_lik_acpf,
@@ -168,10 +174,12 @@ out_pff <- pf_forward(.obs = obs,
 #### Example (8): Rerun the algorithm from an earlier time step
 # This is only sensible in the case of a convergence failure,
 # but for demonstration purposes:
+ss()
 out_pff_1 <- pf_forward(.obs = obs,
                       .dlist = dlist,
                       .likelihood = pf_lik_acpf,
                       .record = pf_opt_record(.save = TRUE))
+ss()
 out_pff_2 <- pf_forward(.obs = obs,
                         .dlist = dlist,
                         .likelihood = pf_lik_acpf,
@@ -182,6 +190,7 @@ out_pff_2 <- pf_forward(.obs = obs,
 # Use `sink` to write to particles to file (recommended)
 pff_folder <- file.path(tempdir(), "forward")
 dir.create(pff_folder)
+ss()
 out_pff <- pf_forward(.obs = obs,
                       .dlist = dlist,
                       .likelihood = pf_lik_acpf,
@@ -196,6 +205,7 @@ head(pf_files(file.path(pff_folder, "history")))
 pf_files_size(file.path(pff_folder, "history"))
 # Use `cols` to restrict the output columns
 cols <- c("timestep", "cell_now", "x_now", "y_now")
+ss()
 out_pff <- pf_forward(.obs = obs,
                       .dlist = dlist,
                       .likelihood = pf_lik_acpf,
@@ -208,6 +218,7 @@ unlink(pff_folder, recursive = TRUE)
 #### Example (10): Adjust standard `patter-progress` options
 # Use a log.txt file
 log.txt <- tempfile(fileext = ".txt")
+ss()
 out_pff <- pf_forward(.obs = obs,
                       .dlist = dlist,
                       .likelihood = pf_lik_acpf,
@@ -216,6 +227,7 @@ out_pff <- pf_forward(.obs = obs,
 readLines(log.txt)
 unlink(log.txt)
 # Suppress `.verbose`
+ss()
 out_pff <- pf_forward(.obs = obs,
                       .dlist = dlist,
                       .likelihood = pf_lik_acpf,
@@ -223,6 +235,7 @@ out_pff <- pf_forward(.obs = obs,
                       .verbose = FALSE)
 # Suppress progress bar
 pbo <- pbapply::pboptions(type = "n")
+ss()
 out_pff <- pf_forward(.obs = obs,
                       .dlist = dlist,
                       .likelihood = pf_lik_acpf,

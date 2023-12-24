@@ -1,3 +1,5 @@
+ss()
+
 #### Example (1): Implement function for a single path/array
 # Simulate an example array & path
 a <- sim_array(.n_array = 1L)
