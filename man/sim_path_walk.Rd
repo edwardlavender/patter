@@ -162,7 +162,7 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = 1000L, .n_path = 1L,
-                     .sim_angle = rangcrw, .rho = 0.9,
+                     .sim_angle = rangcrw, .rho = 0.5,
                      .one_page = FALSE)
   # The correlation between sequential angles is close to the simulated value:
   adt <- data.table(a0 = p$angle, a1 = lead(p$angle)) |> na.omit()
