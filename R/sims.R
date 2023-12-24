@@ -254,7 +254,8 @@ clen <- function(.xy0, .xy1, .lonlat) {
                     lonlat = .lonlat,
                     pairwise = TRUE)
   } else {
-    dist_2d(.xy0[, 1], .xy0[, 2], .xy1[, 1], .xy1[, 2])
+    dist_2d(.x0 = .xy0[, 1], .y0 = .xy0[, 2],
+            .x1 = .xy1[, 1], .y1 = .xy1[, 2])
   }
 }
 
