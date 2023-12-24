@@ -98,6 +98,7 @@
 #' * All angles are in degrees.
 #' * It is possible to simulate correlated random walks in [`sim_walk_path()`] but at the time of writing this is not supported [`pf_forward()`]. Probability density functions for correlated random walks, as required for [`pf_forward()`] and [`pf_backward_sampler()`] (e.g., `dangrw()`, `dangcrw()`) are not implemented.
 #'
+#' @example man/examples/sim_helpers-examples.R
 #' @seealso
 #' * `sim_*` functions implement _de novo_ simulation of movements and observations:
 #'    * [`sim_helpers`] are convenience functions for simulations;
@@ -115,7 +116,7 @@
 #' @rdname sim_helpers
 #' @export
 
-rtruncgamma <- function(.n = 1, .shape = 15, .scale = 15, .mobility = 500, ...) {
+rtruncgamma <- function(.n = 1L, .shape = 15, .scale = 15, .mobility = 500, ...) {
   u <- stats::runif(.n, min = 0, max = 1)
   pmin(
     stats::qgamma(u * stats::pgamma(.mobility, shape = .shape, scale = .scale),
@@ -141,7 +142,7 @@ dtruncgamma <- function(.x,
 #' @rdname sim_helpers
 #' @export
 
-rwn <- function(.n = 1, .mu = 0, .rho = 0, .sd = 1, ...) {
+rwn <- function(.n = 1L, .mu = 0, .rho = 0, .sd = 1, ...) {
   as.numeric(
     circular::rwrappednormal(
       n = .n,
@@ -156,7 +157,7 @@ rwn <- function(.n = 1, .mu = 0, .rho = 0, .sd = 1, ...) {
 #' @rdname sim_helpers
 #' @export
 
-rlen <- function(.n = 1,
+rlen <- function(.n = 1L,
                  .prior = NULL, .t = NULL, ...) {
   rtruncgamma(.n = .n, ...)
 }
@@ -164,7 +165,7 @@ rlen <- function(.n = 1,
 #' @rdname sim_helpers
 #' @export
 
-rangrw <- function(.n = 1,
+rangrw <- function(.n = 1L,
                    .prior = NULL, .t = NULL, ...) {
   rwn(.n = .n, ...)
 }
@@ -172,7 +173,7 @@ rangrw <- function(.n = 1,
 #' @rdname sim_helpers
 #' @export
 
-rangcrw <- function(.n = 1,
+rangcrw <- function(.n = 1L,
                     .prior = NULL, .t = NULL, ...) {
   if (is.null(.prior)) {
     .mu <- 0
@@ -241,10 +242,20 @@ dstep <- function(.xy0, .xy1,
 #' @export
 
 clen <- function(.xy0, .xy1, .lonlat) {
-  terra::distance(.xy0,
-                  .xy1,
-                  lonlat = .lonlat,
-                  pairwise = TRUE)
+  if (.lonlat) {
+    if (!inherits(.xy0)) {
+      .xy0 <- as.matrix(.xy0)
+    }
+    if (!inherits(.xy1, "matrix")) {
+      .xy1 <- as.matrix(.xy1)
+    }
+    terra::distance(.xy0,
+                    .xy1,
+                    lonlat = .lonlat,
+                    pairwise = TRUE)
+  } else {
+    dist_2d(.xy0[, 1], .xy0[, 2], .xy1[, 1], .xy1[, 2])
+  }
 }
 
 #' @rdname sim_helpers
