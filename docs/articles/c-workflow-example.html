@@ -317,7 +317,7 @@ system:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Visualise the spatial representation of the model around an example receiver</span></span>
-<span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/acs_setup_detection_pr.html">acs_setup_detection_pr</a></span><span class="op">(</span>.mooring <span class="op">=</span> <span class="va">dlist</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">moorings</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>,</span>
+<span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/acs_setup_detection_kernel.html">acs_setup_detection_kernel</a></span><span class="op">(</span>.mooring <span class="op">=</span> <span class="va">dlist</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">moorings</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>,</span>
 <span>                            .bathy <span class="op">=</span> <span class="va">gebco</span>, </span>
 <span>                            .calc_detection_pr <span class="op">=</span> <span class="va">calc_detection_pr_logistic</span>,</span>
 <span>                            .alpha <span class="op">=</span> <span class="fl">4</span>, .beta <span class="op">=</span> <span class="op">-</span><span class="fl">0.01</span><span class="op">)</span></span>
@@ -332,7 +332,7 @@ kernel objects as required.</p>
 <span><span class="co"># * But this should be adjusted as required for your study system</span></span>
 <span><span class="va">dlist</span><span class="op">$</span><span class="va">algorithm</span><span class="op">$</span><span class="va">detection_kernels</span>  <span class="op">&lt;-</span></span>
 <span>  <span class="fu"><a href="../reference/acs_setup_detection_kernels.html">acs_setup_detection_kernels</a></span><span class="op">(</span><span class="va">dlist</span>, </span>
-<span>                              .calc_detection_pr <span class="op">=</span> <span class="va">acs_setup_detection_pr</span><span class="op">)</span></span></code></pre></div>
+<span>                              .calc_detection_pr <span class="op">=</span> <span class="va">acs_setup_detection_kernel</span><span class="op">)</span></span></code></pre></div>
 <p>To incorporate ancillary datasets, you need to be able to write down
 a model (<code>function</code>) for likelihood of the data, given
 particle samples (see <code>pf_lik</code> for guidance).</p>

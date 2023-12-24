@@ -27,8 +27,8 @@
 #' 1. [`pat_setup_data()`] to set up datasets;
 #' 2. `acs_setup_*()` functions to prepare layers required for likelihood calculations, i.e.:
 #'    * [`acs_setup_detection_overlaps()`], which identifies detection overlaps;
+#'    * [`acs_setup_detection_kernel()`], which prepares a detection kernel;
 #'    * [`acs_setup_detection_kernels()`], which prepares detection kernels;
-#'    * [`acs_setup_detection_pr()`], which is an example detection probability model;
 #' 3. [`pf_lik_ac()`] to define the likelihood of acoustic data;
 #' 4. [`pf_forward()`] to run the simulation;
 #'
@@ -180,7 +180,7 @@ acs_setup_detection_overlaps <- function(.dlist) {
 #'                         .lonlat = FALSE)
 #' m <- dlist$data$moorings[1, ]
 #' b <- dlist$spatial$bathy
-#' k <- acs_setup_detection_pr(m, b)
+#' k <- acs_setup_detection_kernel(m, b)
 #' terra::plot(k)
 #' points(m$receiver_x, m$receiver_y, pch = ".")
 #'
@@ -189,7 +189,7 @@ acs_setup_detection_overlaps <- function(.dlist) {
 #' @author Edward Lavender
 #' @export
 
-acs_setup_detection_pr <- function(.mooring,
+acs_setup_detection_kernel <- function(.mooring,
                                    .bathy,
                                    .calc_detection_pr = calc_detection_pr_logistic, ...) {
   # Calculate Euclidean distance around receiver
@@ -211,7 +211,7 @@ acs_setup_detection_pr <- function(.mooring,
 #' * `.dlist$data$moorings`, with the following columns: `receiver_id`, `receiver_start`, `receiver_end`, `receiver_x` and `receiver_y`, plus any columns used internally by `.calc_detection_pr` (see below).
 #' * `.dlist$data$services`, with the following columns: `receiver_id`, `service_start` and `service_end` (see [`make_matrix_receivers()`]).
 #' * `.dlist$spatial$bathy`, which defines the grid on which detection kernels are represented. `NA`s are used as a mask.
-#' @param .calc_detection_pr,... A function that defines the detection kernel as a [`SpatRaster`] around a receiver (see [`acs_setup_detection_pr()`] for an example). This must accept three arguments (even if they are ignored):
+#' @param .calc_detection_pr,... A function that defines the detection kernel as a [`SpatRaster`] around a receiver (see [`acs_setup_detection_kernel()`] for an example). This must accept three arguments (even if they are ignored):
 #' * `.mooring`---A one-row [`data.table`] that contains the information in `.dlist$data$moorings` for a specific receiver;
 #' * `.bathy`---the `.dlist$spatial$bathy` [`SpatRaster`];
 #' * `...` Additional arguments passed via [`acs_setup_detection_kernels()`];
@@ -241,7 +241,7 @@ acs_setup_detection_pr <- function(.mooring,
 
 acs_setup_detection_kernels <-
   function(.dlist,
-           .calc_detection_pr = acs_setup_detection_pr,
+           .calc_detection_pr = acs_setup_detection_kernel,
            .verbose = getOption("patter.verbose"), ...) {
 
 

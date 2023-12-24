@@ -22,7 +22,7 @@ dlist <- pat_setup_data(.moorings = m,
 #### Example (1): Implement function using specified inputs
 # Implement function
 k <- acs_setup_detection_kernels(dlist,
-                                 .calc_detection_pr = acs_setup_detection_pr)
+                                 .calc_detection_pr = acs_setup_detection_kernel)
 # Examine list elements
 summary(k)
 # Examine example receiver-specific kernels

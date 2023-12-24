@@ -45,9 +45,9 @@ test_that("acs_setup_detection_overlaps() work", {
   expect_true(is.null(out[[5]]))
 })
 
-test_that("acs_setup_detection_pr() works", {
+test_that("acs_setup_detection_kernel() works", {
   m <- dat_moorings[1, .(receiver_x = receiver_easting, receiver_y = receiver_northing)]
-  p <- acs_setup_detection_pr(m, dat_gebco())
+  p <- acs_setup_detection_kernel(m, dat_gebco())
   expect_equal(terra::extract(p, data.frame(m$receiver_x, m$receiver_y))[1, 2],
                calc_detection_pr_logistic(0))
 
@@ -76,11 +76,11 @@ test_that("acs_setup_detection_kernels() works", {
   m <- dlist$data$moorings
   pr <- lapply(seq_len(max(m$receiver_id)), function(id) {
     if (!(id %in% m$receiver_id)) return(NULL)
-    acs_setup_detection_pr(m[m$receiver_id == id, , drop = FALSE], dat_gebco())
+    acs_setup_detection_kernel(m[m$receiver_id == id, , drop = FALSE], dat_gebco())
   })
   # Define kernels
   k <- acs_setup_detection_kernels(dlist,
-                                   .calc_detection_pr = acs_setup_detection_pr)
+                                   .calc_detection_pr = acs_setup_detection_kernel)
 
   #### Check array designs
   expect_true(all.equal(

@@ -77,7 +77,7 @@
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">acs_setup_detection_kernels</span><span class="op">(</span></span>
 <span>  <span class="va">.dlist</span>,</span>
-<span>  .calc_detection_pr <span class="op">=</span> <span class="va">acs_setup_detection_pr</span>,</span>
+<span>  .calc_detection_pr <span class="op">=</span> <span class="va">acs_setup_detection_kernel</span>,</span>
 <span>  .verbose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"patter.verbose"</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -97,7 +97,7 @@
 
 
 <dt>.calc_detection_pr, ...</dt>
-<dd><p>A function that defines the detection kernel as a <code>SpatRaster</code> around a receiver (see <code><a href="acs_setup_detection_pr.html">acs_setup_detection_pr()</a></code> for an example). This must accept three arguments (even if they are ignored):</p><ul><li><p><code>.mooring</code>---A one-row <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that contains the information in <code>.dlist$data$moorings</code> for a specific receiver;</p></li>
+<dd><p>A function that defines the detection kernel as a <code>SpatRaster</code> around a receiver (see <code><a href="acs_setup_detection_kernel.html">acs_setup_detection_kernel()</a></code> for an example). This must accept three arguments (even if they are ignored):</p><ul><li><p><code>.mooring</code>---A one-row <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that contains the information in <code>.dlist$data$moorings</code> for a specific receiver;</p></li>
 <li><p><code>.bathy</code>---the <code>.dlist$spatial$bathy</code> <code>SpatRaster</code>;</p></li>
 <li><p><code>...</code> Additional arguments passed via <code>acs_setup_detection_kernels()</code>;</p></li>
 </ul></dd>
@@ -131,7 +131,7 @@
     <div class="dont-index"><p>To implement such an algorithm, see:</p><ol><li><p><code><a href="pat_setup_data.html">pat_setup_data()</a></code> to set up datasets;</p></li>
 <li><p><code>acs_setup_*()</code> functions to prepare layers required for likelihood calculations, i.e.:</p><ul><li><p><code><a href="acs_setup_detection_overlaps.html">acs_setup_detection_overlaps()</a></code>, which identifies detection overlaps;</p></li>
 <li><p><code>acs_setup_detection_kernels()</code>, which prepares detection kernels;</p></li>
-<li><p><code><a href="acs_setup_detection_pr.html">acs_setup_detection_pr()</a></code>, which is an example detection probability model;</p></li>
+<li><p><code><a href="acs_setup_detection_kernel.html">acs_setup_detection_kernel()</a></code>, which is an example detection probability model;</p></li>
 </ul></li>
 <li><p><code><a href="pf_lik.html">pf_lik_ac()</a></code> to define the likelihood of acoustic data;</p></li>
 <li><p><code><a href="pf_forward.html">pf_forward()</a></code> to run the simulation;</p></li>
@@ -170,7 +170,7 @@
 <span class="r-in"><span><span class="co">#### Example (1): Implement function using specified inputs</span></span></span>
 <span class="r-in"><span><span class="co"># Implement function</span></span></span>
 <span class="r-in"><span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu">acs_setup_detection_kernels</span><span class="op">(</span><span class="va">dlist</span>,</span></span>
-<span class="r-in"><span>                                 .calc_detection_pr <span class="op">=</span> <span class="va">acs_setup_detection_pr</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                                 .calc_detection_pr <span class="op">=</span> <span class="va">acs_setup_detection_kernel</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> `patter::acs_setup_detection_kernels()` called @ 2023-12-22 12:32:22... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting receiver-specific kernels (for detection)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting receiver-specific inverse kernels... </span>

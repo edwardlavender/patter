@@ -95,8 +95,8 @@
 #'
 #' * Likelihood helpers, including:
 #'     * [`acs_setup_detection_overlaps()`], which pre-calculates detection overlaps;
+#'     * [`acs_setup_detection_kernel()`], which prepares a detection kernel;
 #'     * [`acs_setup_detection_kernels()`], which pre-calculates detection kernels;
-#'     * [`acs_setup_detection_pr()`], which is an example detection probability model;
 #'
 #' * (Re)sampling functions (see [`pf_sample`]) for the (re)sampling of valid proposal locations, including:
 #'     * [`pf_sample_multinomial()`], which implements multinomial resampling;

@@ -2,9 +2,9 @@
 
 export(acs_filter_container)
 export(acs_filter_land)
+export(acs_setup_detection_kernel)
 export(acs_setup_detection_kernels)
 export(acs_setup_detection_overlaps)
-export(acs_setup_detection_pr)
 export(as.im.SpatRaster)
 export(as.owin.SpatRaster)
 export(as.owin.sf)

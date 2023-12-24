@@ -67,7 +67,7 @@
     <div class="page-header">
     <h1>AC* set up: detection probability</h1>
     <small class="dont-index">Source: <a href="https://github.com/edwardlavender/patter/blob/HEAD/R/acs-setup.R" class="external-link"><code>R/acs-setup.R</code></a></small>
-    <div class="hidden name"><code>acs_setup_detection_pr.Rd</code></div>
+    <div class="hidden name"><code>acs_setup_detection_kernel.Rd</code></div>
     </div>
 
     <div class="ref-description">
@@ -75,7 +75,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">acs_setup_detection_pr</span><span class="op">(</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">acs_setup_detection_kernel</span><span class="op">(</span></span>
 <span>  <span class="va">.mooring</span>,</span>
 <span>  <span class="va">.bathy</span>,</span>
 <span>  .calc_detection_pr <span class="op">=</span> <span class="va">calc_detection_pr_logistic</span>,</span>
@@ -122,7 +122,7 @@
     <div class="dont-index"><p>To implement such an algorithm, see:</p><ol><li><p><code><a href="pat_setup_data.html">pat_setup_data()</a></code> to set up datasets;</p></li>
 <li><p><code>acs_setup_*()</code> functions to prepare layers required for likelihood calculations, i.e.:</p><ul><li><p><code><a href="acs_setup_detection_overlaps.html">acs_setup_detection_overlaps()</a></code>, which identifies detection overlaps;</p></li>
 <li><p><code><a href="acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code>, which prepares detection kernels;</p></li>
-<li><p><code>acs_setup_detection_pr()</code>, which is an example detection probability model;</p></li>
+<li><p><code>acs_setup_detection_kernel()</code>, which is an example detection probability model;</p></li>
 </ul></li>
 <li><p><code><a href="pf_lik.html">pf_lik_ac()</a></code> to define the likelihood of acoustic data;</p></li>
 <li><p><code><a href="pf_forward.html">pf_forward()</a></code> to run the simulation;</p></li>
@@ -140,10 +140,10 @@
 <span class="r-in"><span>                        .lonlat <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="va">dlist</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">moorings</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">b</span> <span class="op">&lt;-</span> <span class="va">dlist</span><span class="op">$</span><span class="va">spatial</span><span class="op">$</span><span class="va">bathy</span></span></span>
-<span class="r-in"><span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu">acs_setup_detection_pr</span><span class="op">(</span><span class="va">m</span>, <span class="va">b</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu">acs_setup_detection_kernel</span><span class="op">(</span><span class="va">m</span>, <span class="va">b</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">k</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">m</span><span class="op">$</span><span class="va">receiver_x</span>, <span class="va">m</span><span class="op">$</span><span class="va">receiver_y</span>, pch <span class="op">=</span> <span class="st">"."</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="acs_setup_detection_pr-1.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="acs_setup_detection_kernel-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

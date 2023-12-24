@@ -113,8 +113,8 @@ The main thrust of \code{\link{patter}} is the provision of an integrated modell
 \item Likelihood helpers, including:
 \itemize{
 \item \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}}, which pre-calculates detection overlaps;
+\item \code{\link[=acs_setup_detection_kernel]{acs_setup_detection_kernel()}}, which prepares a detection kernel;
 \item \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}, which pre-calculates detection kernels;
-\item \code{\link[=acs_setup_detection_pr]{acs_setup_detection_pr()}}, which is an example detection probability model;
 }
 \item (Re)sampling functions (see \code{\link{pf_sample}}) for the (re)sampling of valid proposal locations, including:
 \itemize{

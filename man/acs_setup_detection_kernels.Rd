@@ -9,7 +9,7 @@ This function is based on the \href{https://edwardlavender.github.io/flapper/ref
 \usage{
 acs_setup_detection_kernels(
   .dlist,
-  .calc_detection_pr = acs_setup_detection_pr,
+  .calc_detection_pr = acs_setup_detection_kernel,
   .verbose = getOption("patter.verbose"),
   ...
 )
@@ -22,7 +22,7 @@ acs_setup_detection_kernels(
 \item \code{.dlist$spatial$bathy}, which defines the grid on which detection kernels are represented. \code{NA}s are used as a mask.
 }}
 
-\item{.calc_detection_pr, ...}{A function that defines the detection kernel as a \code{\link{SpatRaster}} around a receiver (see \code{\link[=acs_setup_detection_pr]{acs_setup_detection_pr()}} for an example). This must accept three arguments (even if they are ignored):
+\item{.calc_detection_pr, ...}{A function that defines the detection kernel as a \code{\link{SpatRaster}} around a receiver (see \code{\link[=acs_setup_detection_kernel]{acs_setup_detection_kernel()}} for an example). This must accept three arguments (even if they are ignored):
 \itemize{
 \item \code{.mooring}---A one-row \code{\link{data.table}} that contains the information in \code{.dlist$data$moorings} for a specific receiver;
 \item \code{.bathy}---the \code{.dlist$spatial$bathy} \code{\link{SpatRaster}};
@@ -79,7 +79,7 @@ dlist <- pat_setup_data(.moorings = m,
 #### Example (1): Implement function using specified inputs
 # Implement function
 k <- acs_setup_detection_kernels(dlist,
-                                 .calc_detection_pr = acs_setup_detection_pr)
+                                 .calc_detection_pr = acs_setup_detection_kernel)
 # Examine list elements
 summary(k)
 # Examine example receiver-specific kernels
@@ -121,8 +121,8 @@ To implement such an algorithm, see:
 \item \verb{acs_setup_*()} functions to prepare layers required for likelihood calculations, i.e.:
 \itemize{
 \item \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}}, which identifies detection overlaps;
+\item \code{\link[=acs_setup_detection_kernel]{acs_setup_detection_kernel()}}, which prepares a detection kernel;
 \item \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}, which prepares detection kernels;
-\item \code{\link[=acs_setup_detection_pr]{acs_setup_detection_pr()}}, which is an example detection probability model;
 }
 \item \code{\link[=pf_lik_ac]{pf_lik_ac()}} to define the likelihood of acoustic data;
 \item \code{\link[=pf_forward]{pf_forward()}} to run the simulation;

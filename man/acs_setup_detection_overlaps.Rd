@@ -44,8 +44,8 @@ To implement such an algorithm, see:
 \item \verb{acs_setup_*()} functions to prepare layers required for likelihood calculations, i.e.:
 \itemize{
 \item \code{\link[=acs_setup_detection_overlaps]{acs_setup_detection_overlaps()}}, which identifies detection overlaps;
+\item \code{\link[=acs_setup_detection_kernel]{acs_setup_detection_kernel()}}, which prepares a detection kernel;
 \item \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}, which prepares detection kernels;
-\item \code{\link[=acs_setup_detection_pr]{acs_setup_detection_pr()}}, which is an example detection probability model;
 }
 \item \code{\link[=pf_lik_ac]{pf_lik_ac()}} to define the likelihood of acoustic data;
 \item \code{\link[=pf_forward]{pf_forward()}} to run the simulation;
