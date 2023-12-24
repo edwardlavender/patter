@@ -40,6 +40,18 @@
 #' @rdname spatial_helpers
 #' @keywords internal
 
+# Invert a spatial polygon
+.st_invert <- function(.x, .bbox = sf::st_bbox(.x)) {
+  rlang::check_installed("sf")
+  .x <- sf::st_union(.x)
+  .bbox |>
+    sf::st_as_sfc() |>
+    sf::st_difference(.x)
+}
+
+#' @rdname spatial_helpers
+#' @keywords internal
+
 # An internal definition of `geosphere::geomean()`
 # (without the checks of the `.pointsToMatrix()` function)
 geomean <- function(xy, w = NULL) {

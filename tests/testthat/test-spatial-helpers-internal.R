@@ -1,3 +1,4 @@
+# .is_lonlat()
 test_that(".is_lonlat() works", {
 
   # Check TRUE/FALSE
@@ -35,6 +36,10 @@ test_that(".is_lonlat() works", {
 
 })
 
+# .st_invert()
+
+
+# geomean()
 test_that("geomean() works", {
   # Verify weights
   xy <- cbind(x = c(-179, 179, 177), y = c(12, 14, 16))

@@ -1,3 +1,4 @@
+#### Signals
 test_that("msg(), warn() and abort() work", {
   m <- function(.x) msg("{.x}", .envir = environment())
   w <- function(.x) warn("{.x}", .envir = environment())
@@ -8,6 +9,7 @@ test_that("msg(), warn() and abort() work", {
   e(x) |> expect_error("hello world", fixed = TRUE)
 })
 
+#### cat_*() functions
 test_that("cat_log_file() works", {
 
   cat_log_file(.verbose = "some-folder") |>
@@ -30,6 +32,9 @@ test_that("cat_log_file() works", {
 
 })
 
+#### list_*() functions
 test_that("list_compact() works", {
   expect_equal(list_compact(list(a = 1, NULL)), list(a = 1))
 })
+
+#### colProds.matrix()

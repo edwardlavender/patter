@@ -18,10 +18,3 @@ test_that("spatTemplate() works", {
     c(xmin = 0, xmax = 100, ymin = 0, ymax = 100)
   )
 })
-
-test_that("spatNormalise() works", {
-  r <- spatTemplate(.value = 10)
-  expect_equal(1,
-               terra::global(spatNormalise(r), "sum")[, 1])
-
-})

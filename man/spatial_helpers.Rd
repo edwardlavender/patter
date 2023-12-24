@@ -3,10 +3,13 @@
 \name{spatial_helpers}
 \alias{spatial_helpers}
 \alias{.is_lonlat}
+\alias{.st_invert}
 \alias{geomean}
 \title{Spatial helper: internals}
 \usage{
 .is_lonlat(.data)
+
+.st_invert(.x, .bbox = sf::st_bbox(.x))
 
 geomean(xy, w = NULL)
 }

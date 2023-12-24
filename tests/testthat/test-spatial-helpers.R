@@ -1,3 +1,4 @@
+# degrees()
 test_that("degrees() works", {
   expect_equal(
     degrees(10),
@@ -8,3 +9,6 @@ test_that("degrees() works", {
     circular::circular(100, units = "degrees")
   )
 })
+
+# .st_invert()
+
