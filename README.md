@@ -101,6 +101,16 @@ also installed, which are required for some functions and to build
 vignettes. This process may take several minutes. Set
 `build_vignettes = FALSE` for a faster installation.
 
+We strongly recommend using
+[`renv`](https://rstudio.github.io/renv/articles/renv.html) (or similar)
+and [RStudio Projects](https://r4ds.had.co.nz/workflow-projects.html) to
+track the version of
+[`patter`](https://github.com/edwardlavender/patter) that you use in
+your projects. This will ensure that your code continues to work, even
+if we have to make breaking changes to
+[`patter`](https://github.com/edwardlavender/patter) as the package
+evolves in response to user feedback.
+
 # Vignettes
 
 For an introduction to
