@@ -20,8 +20,11 @@ test_that(".sim_path_flux() functions work", {
   flux_vals$angle[, V3 := 30]
 
   # Test .cstep_using_flux() wrapper works
+  xy_now <- cbind(runif(10), runif(10))
   expect_equal(
-    .cstep_using_flux(xy_now, xy_now, .lonlat = FALSE,
+    .cstep_using_flux(.xy0 = xy_now,
+                      .xy1 = xy_now,
+                      .lonlat = FALSE,
                       .fv = flux_vals, .t = 1),
     cbind(
       xy_now[, 1] + flux_vals$length$V1 * cos(geoangle(flux_vals$angle$V1)),
@@ -29,7 +32,9 @@ test_that(".sim_path_flux() functions work", {
     )
   )
   expect_equal(
-    .cstep_using_flux(xy_now, xy_now, .lonlat = FALSE,
+    .cstep_using_flux(.xy0 = xy_now,
+                      .xy1 = xy_now,
+                      .lonlat = FALSE,
                       .fv = flux_vals, .t = 2),
     cbind(
       xy_now[, 1] + flux_vals$length$V2 * cos(geoangle(flux_vals$angle$V2)),
@@ -114,3 +119,4 @@ test_that(".cstep_iter() works", {
 
 # .sim_detections
 # .sim_detections_call
+

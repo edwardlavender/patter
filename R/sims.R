@@ -235,9 +235,7 @@ cstep <- function(.xy0,
   if (.lonlat) {
     .xy1 <- geosphere::destPoint(p = .xy0, b = .ang, d = .len)
   } else {
-    # Convert angles to north = 0 degrees to match geosphere & then to radians
-    .ang <- (90 - .ang) * (pi / 180)
-    # Calculate new locations
+    .ang <- geoangle(.ang)
     .xy1[, 1] <- .xy0[, 1] + .len * cos(.ang)
     .xy1[, 2] <- .xy0[, 2] + .len * sin(.ang)
   }

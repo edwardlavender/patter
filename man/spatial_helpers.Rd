@@ -4,12 +4,18 @@
 \alias{spatial_helpers}
 \alias{.is_lonlat}
 \alias{.st_invert}
+\alias{cang_planar}
+\alias{geoangle}
 \alias{geomean}
 \title{Spatial helper: internals}
 \usage{
 .is_lonlat(.data)
 
 .st_invert(.x, .bbox = sf::st_bbox(.x))
+
+cang_planar(.xy0, .xy1, .convention = c("180", "360"))
+
+geoangle(.ang)
 
 geomean(xy, w = NULL)
 }

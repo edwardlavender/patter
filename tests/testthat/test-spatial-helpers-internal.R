@@ -38,6 +38,7 @@ test_that(".is_lonlat() works", {
 
 # .st_invert()
 
+# geoangle()
 
 # geomean()
 test_that("geomean() works", {

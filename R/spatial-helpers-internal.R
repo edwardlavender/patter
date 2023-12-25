@@ -52,6 +52,33 @@
 #' @rdname spatial_helpers
 #' @keywords internal
 
+# Calculate angles between two planar coordinate matrices
+cang_planar <- function(.xy0, .xy1, .convention = c("180", "360")) {
+  .convention <- match.arg(.convention)
+  ang_rad <- atan2(.xy1[, 2] - .xy0[, 2], .xy1[, 1] - .xy0[, 1])
+  # Adjust for UTM reference direction [0, 360]
+  ang_deg <- (90 - ang_rad * (180 / pi))
+  if (.convention == "180") {
+    # Convert to [-180, 180]
+    ang_deg <- (ang_deg + 180) %% 360 - 180
+  }
+  ang_deg
+}
+
+#' @rdname spatial_helpers
+#' @keywords internal
+
+# Convert degrees to radians for cstep()
+# * clang_planar() returns angles in degrees, for cstep()
+# * geoangle() converts clang_planar angles to radians
+# * This is necessary to ensure consistency between lon/lat and planar coordinates
+geoangle <- function(.ang) {
+  .ang <- (90 - .ang) * (pi / 180)
+}
+
+#' @rdname spatial_helpers
+#' @keywords internal
+
 # An internal definition of `geosphere::geomean()`
 # (without the checks of the `.pointsToMatrix()` function)
 geomean <- function(xy, w = NULL) {
