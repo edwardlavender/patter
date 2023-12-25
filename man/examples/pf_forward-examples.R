@@ -1,3 +1,7 @@
+require(data.table)
+require(dtplyr)
+require(dplyr, warn.conflicts = FALSE)
+
 #### Set up forward simulation
 # Select example acoustic & archival datasets
 acc <- dat_acoustics[individual_id == dat_acoustics$individual_id[1], ]
