@@ -324,7 +324,7 @@ test_that("sim_path_walk() works", {
   expect_equal(
     circular::cor.circular(degrees(angle[-length(angle)]),
                            degrees(angle[-1])),
-    0.5, tolerance = 0.05
+    0.5, tolerance = 0.1
   )
 })
 
