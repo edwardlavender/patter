@@ -7,12 +7,14 @@
 \usage{
 pf_files(.sink, ...)
 
-pf_files_size(.sink, .unit = c("MB", "GB", "TB"))
+pf_files_size(.sink, .folder = NULL, ..., .unit = c("MB", "GB", "TB"))
 }
 \arguments{
 \item{.sink}{A \code{character} string that defines the directory in which files are located.}
 
-\item{...}{For \code{\link[=pf_files]{pf_files()}}, \code{...} is a placeholder for additional arguments passed to \code{\link[=list.files]{list.files()}}, such as \code{pattern}, excluding \code{full.names}.}
+\item{...}{A placeholder for additional arguments passed to \code{\link[=list.files]{list.files()}}, such as \code{pattern}, excluding \code{full.names}.}
+
+\item{.folder}{(optional) For \code{\link[=pf_files_size]{pf_files_size()}}, a \code{character} string that defines the name of a sub-folder for which to summarise file sizes.}
 
 \item{.unit}{For \code{\link[=pf_files_size]{pf_files_size()}}, \code{.unit} is a \code{character} string that defines the units of the output (\code{MB}, \code{GB}, \code{TB}).}
 }
@@ -28,7 +30,7 @@ pf_files_size(.sink, .unit = c("MB", "GB", "TB"))
 \code{\link[=pf_files_size]{pf_files_size()}} calculates the total size of all files.
 }
 \section{Warning}{
-At the time of writing, \code{\link[=pf_files]{pf_files()}} cannot be used to list particle-diagnostic files from \code{\link[=pf_forward]{pf_forward()}} and should only be used for particle samples.
+At the time of writing, \code{\link[=pf_files]{pf_files()}} cannot be used to list particle-diagnostic files from \code{\link[=pf_forward]{pf_forward()}} and should only be used for particle samples. However, \code{\link[=pf_files_size]{pf_files_size()}} can be used to estimate the total file size in any directory.
 }
 
 \examples{

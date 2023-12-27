@@ -4,12 +4,13 @@
 #' [`pf_files_size()`] calculates the total size of all files.
 #'
 #' @param .sink A `character` string that defines the directory in which files are located.
-#' @param ... For [`pf_files()`], `...` is a placeholder for additional arguments passed to [`list.files()`], such as `pattern`, excluding `full.names`.
+#' @param .folder (optional) For [`pf_files_size()`], a `character` string that defines the name of a sub-folder for which to summarise file sizes.
+#' @param ... A placeholder for additional arguments passed to [`list.files()`], such as `pattern`, excluding `full.names`.
 #' @param .unit For [`pf_files_size()`], `.unit` is a `character` string that defines the units of the output (`MB`, `GB`, `TB`).
 #'
 #' @details
 #' # Warning
-#' At the time of writing, [`pf_files()`] cannot be used to list particle-diagnostic files from [`pf_forward()`] and should only be used for particle samples.
+#' At the time of writing, [`pf_files()`] cannot be used to list particle-diagnostic files from [`pf_forward()`] and should only be used for particle samples. However, [`pf_files_size()`] can be used to estimate the total file size in any directory.
 #'
 #' @return
 #' * [`pf_files()`] returns an ordered `list` of file paths.
@@ -85,13 +86,23 @@ pf_files <- function(.sink, ...) {
 #' @rdname pf_files
 #' @export
 
-pf_files_size <- function(.sink, .unit = c("MB", "GB", "TB")) {
+pf_files_size <- function(.sink,
+                          .folder = NULL, ...,
+                          .unit = c("MB", "GB", "TB")) {
+  # Check inputs
+  check_dots_allowed("full.names")
+  rlang::check_dots_used()
   # Get units
   .unit <- match.arg(.unit)
   # Define size in MB
+  if (!is.null(.folder)) {
+    check_inherits(.folder, "character")
+    stopifnot(length(.folder) == 1L)
+    .sink <- file.path(.sink, .folder)
+  }
   size <-
     .sink |>
-    pf_files() |>
+    list.files(..., full.names = TRUE) |>
     unlist() |>
     file.size() |>
     sum() / 1e6L
