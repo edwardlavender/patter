@@ -308,7 +308,7 @@
   # Get summary diagnostics
   # * TO DO
   # * Provide a more detailed breakdown (include diagnostics in lapply())
-  diagnostics[["lik-sampler"]] <- .pf_diag(.particles = .particles, .t = .t,
+  diagnostics[["lik-sampler"]] <- .pf_diag(.particles = proposals, .t = .t,
                                            .trial = NA_integer_, .label = "lik-sampler")
 
   #### Implement sampler
@@ -328,7 +328,7 @@
     #### Sample particles (from the set of allowed particles)
     pnow  <- .sample(.particles = proposals, .n = .n)
     diagnostics[["sample-directed-1"]] <-
-      .pf_diag(.particles = proposals, .t = .t, .label = "sample-directed", .trial = 1L)
+      .pf_diag(.particles = pnow, .t = .t, .label = "sample-directed", .trial = 1L)
     # Repeat sampling, if required
     count <- 2L
     crit  <- diagnostics[["sample-directed-1"]]$n_u
@@ -336,7 +336,7 @@
       pnow <- .sample(.particles = proposals, .n = .n)
       label <- paste0("sample-directed-", count)
       diagnostics[[label]] <-
-        .pf_diag(pnow, .t = .t, .label = "sample-directed", .trial = count)
+        .pf_diag(.particles = pnow, .t = .t, .label = "sample-directed", .trial = count)
       crit  <- diagnostics[[label]]$n_u
       count <- count + 1L
     }
