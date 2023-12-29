@@ -177,7 +177,7 @@
   # Define global variables
   lik <- weight <- NULL
   .particles[, lik := 1]
-  # Define baseline diagnostics
+  # Define baseline (proposal) diagnostics
   if (!is.null(.diagnostics)) {
     .diagnostics[["proposal"]] <-
       .pf_diag(.particles = .particles, .t = .t,

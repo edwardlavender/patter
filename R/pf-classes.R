@@ -45,9 +45,7 @@
 #'
 #' In [`pf_forward()`], we track metrics of particle diversity (hereafter, 'particle diagnostics') through time for analysis of convergence issues, sampling sufficiency and other properties (see [`pf_diag`]). Particle diagnostics are recorded for each trial and component of a stochastic process.
 #'
-#' In all cases, at the start of each time step, we calculate baseline diagnostics.
-#'
-#' Thereafter, for stochastic kicks (implemented via [`.pf_particles_kick()`]), we record:
+#' For stochastic kicks (implemented via [`.pf_particles_kick()`]), we record:
 #' * Proposal diagnostics, following stochastic kicks;
 #' * Likelihood diagnostics, following the evaluation of each likelihood function;
 #' * Sampling diagnostics, following sampling;
@@ -64,7 +62,6 @@
 #' * `iter_i`---an `integer` that identifies 'internal' iterations. `iter_i` is incremented when the algorithm jumps back to an earlier time step (see [`pf_opt_record()`]).
 #' * `timestep`---an `integer` vector that defines time steps.
 #' * `component`---a `character` vector that defines algorithm components:
-#'    * `base`---the start of each time step (a baseline), after the first time step;
 #'    * `proposal`---the proposal step (at the first time step and for stochastic kicks only);
 #'    * `lik_*`---the likelihood step;
 #'        * For stochastic kicks, particle diagnostics are given following each (`i`) likelihood evaluation and the components are named by `paste0("lik-", names(.likelihood)[i])`;

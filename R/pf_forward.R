@@ -278,10 +278,6 @@ pf_forward <- function(.obs,
     # Argument lists
     .rargs$.t <- t
     .dargs$.t <- t
-    # Baseline diagnostics @ the start of the time step
-    diagnostics_t[["base"]] <-
-      .pf_diag(.particles = ppast, .t = t,
-               .trial = NA_integer_, .label = "base")
 
     #### (1) Propose new particles (using kicks)
     if (.trial$trial_kick > 0L) {
