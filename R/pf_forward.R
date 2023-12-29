@@ -253,7 +253,7 @@ pf_forward <- function(.obs,
       history[[1L]]     <- snapshot
       diagnostics[[1L]] <- diagnostics_1
     }
-    .pf_write_particles_abbr(data.table(pnow))
+    .pf_write_particles_abbr(snapshot)
     .pf_write_diagnostics_abbr(diagnostics_1)
   }
 
