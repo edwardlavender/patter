@@ -54,6 +54,8 @@ acs_filter_land <- function(.particles, .obs, .t, .dlist) {
 
 # Eliminate particles incompatible with container dynamics
 acs_filter_container <- function(.particles, .obs, .t, .dlist) {
+
+  #### Checks
   if (.t == 1L) {
     check_names(.obs, req = c("receiver_id_next", "buffer_future_incl_gamma"))
     check_dlist(.dlist,
@@ -61,6 +63,8 @@ acs_filter_container <- function(.particles, .obs, .t, .dlist) {
                .par = "lonlat")
     rlang::check_installed("Rfast")
   }
+
+  #### Filter
   if (.t > 1 && .t < max(.obs$timestep)) {
     # Calculate distances between particle samples & the receivers that recorded the next detection
     dist <- terra::distance(.particles |>
