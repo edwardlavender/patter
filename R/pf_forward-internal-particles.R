@@ -308,8 +308,8 @@
   # Get summary diagnostics
   # * TO DO
   # * Provide a more detailed breakdown (include diagnostics in lapply())
-  diagnostics[["lik-sampler"]] <- .pf_diag(.particles = proposals, .t = .t,
-                                           .trial = NA_integer_, .label = "lik-sampler")
+  diagnostics[["lik-directed"]] <- .pf_diag(.particles = proposals, .t = .t,
+                                           .trial = NA_integer_, .label = "lik-directed")
 
   #### Implement sampler
   pnow <- proposals

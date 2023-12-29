@@ -68,7 +68,7 @@
 #'    * `proposal`---the proposal step (at the first time step and for stochastic kicks only);
 #'    * `lik_*`---the likelihood step;
 #'        * For stochastic kicks, particle diagnostics are given following each (`i`) likelihood evaluation and the components are named by `paste0("lik-", names(.likelihood)[i])`;
-#'        * For directed sampling, particle diagnostics for the proposal and likelihood stages are combined under a single `lik-sampler` label and not split by likelihood component;
+#'        * For directed sampling, particle diagnostics for the proposal and likelihood stages are combined under a single `lik-directed` label and not split by likelihood component;
 #'    * `sample_*`---the sampling step, denoted as:
 #'        * `sample-origin` at the first time step;
 #'        * `sample-kick` for stochastic kick-based sampling;
