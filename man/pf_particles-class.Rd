@@ -48,9 +48,7 @@ If \code{.record$save = FALSE}, \code{.history} is an empty \code{list} and the 
 \section{\code{diagnostics}}{
 In \code{\link[=pf_forward]{pf_forward()}}, we track metrics of particle diversity (hereafter, 'particle diagnostics') through time for analysis of convergence issues, sampling sufficiency and other properties (see \code{\link{pf_diag}}). Particle diagnostics are recorded for each trial and component of a stochastic process.
 
-In all cases, at the start of each time step, we calculate baseline diagnostics.
-
-Thereafter, for stochastic kicks (implemented via \code{\link[=.pf_particles_kick]{.pf_particles_kick()}}), we record:
+For stochastic kicks (implemented via \code{\link[=.pf_particles_kick]{.pf_particles_kick()}}), we record:
 \itemize{
 \item Proposal diagnostics, following stochastic kicks;
 \item Likelihood diagnostics, following the evaluation of each likelihood function;
@@ -72,12 +70,11 @@ If \code{.record$save = TRUE}, particle diagnostics are collated in a single \co
 \item \code{timestep}---an \code{integer} vector that defines time steps.
 \item \code{component}---a \code{character} vector that defines algorithm components:
 \itemize{
-\item \code{base}---the start of each time step (a baseline), after the first time step;
 \item \code{proposal}---the proposal step (at the first time step and for stochastic kicks only);
 \item \verb{lik_*}---the likelihood step;
 \itemize{
 \item For stochastic kicks, particle diagnostics are given following each (\code{i}) likelihood evaluation and the components are named by \code{paste0("lik-", names(.likelihood)[i])};
-\item For directed sampling, particle diagnostics for the proposal and likelihood stages are combined under a single \code{lik-sampler} label and not split by likelihood component;
+\item For directed sampling, particle diagnostics for the proposal and likelihood stages are combined under a single \code{lik-directed} label and not split by likelihood component;
 }
 \item \verb{sample_*}---the sampling step, denoted as:
 \itemize{
