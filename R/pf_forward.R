@@ -233,7 +233,7 @@ pf_forward <- function(.obs,
 
   #### Define origin
   pnow <- NULL
-  if (length(history) == 0L | .rerun_from == 1L) {
+  if (.rerun_from == 1L) {
     cat_log("... Defining origin...")
     pnow <- .pf_particles_origin(.particles = NULL,
                                  .obs = .obs, .t = 1L, .dlist = .dlist,
