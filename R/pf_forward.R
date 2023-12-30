@@ -212,13 +212,16 @@ pf_forward <- function(.obs,
   cat_log("... Setting up simulation...")
   startup <- .pf_startup(.obs = .obs,
                          .dlist = .dlist,
-                         .rargs = .rargs,
-                         .dargs = .dargs,
                          .rerun = .rerun,
                          .record = .record)
   # Arguments
-  .rargs <- startup$args$.rargs
-  .dargs <- startup$args$.dargs
+  # * Define these options outside of .pf_startup() so that
+  # * .rerun works even if the output list is written to file.
+  # * (Otherwise, SpatRasters in startup aren't saved/reloaded properly.)
+  .rargs$.obs   <- .obs
+  .rargs$.dlist <- .dlist
+  .dargs$.obs   <- .obs
+  .dargs$.dlist <- .dlist
   # Controls
   iter_i         <- startup$control$iter_i
   iter_m         <- startup$control$iter_m

@@ -107,12 +107,6 @@ NULL
   #### Validate inputs
   # TO DO, use .pf_check()
 
-  #### Define argument lists
-  .rargs$.obs   <- .obs
-  .rargs$.dlist <- .dlist
-  .dargs$.obs   <- .obs
-  .dargs$.dlist <- .dlist
-
   #### Prepare controls
   # Number of manual iterations
   iter_m <- 1L
@@ -138,10 +132,6 @@ NULL
 
   #### Collate outputs
   list(
-    args = list(
-      .rargs = .rargs,
-      .dargs = .dargs
-    ),
     control = list(
       iter_m = iter_m,
       iter_i = iter_i
