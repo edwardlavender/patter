@@ -102,11 +102,11 @@
 <span></span>
 <span><span class="fu">.flux_template</span><span class="op">(</span><span class="va">.n_step</span>, <span class="va">.n_path</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.cstep_using_flux</span><span class="op">(</span><span class="va">.xy_now</span>, <span class="va">.xy_next</span>, <span class="va">.lonlat</span>, <span class="va">.fv</span>, <span class="va">.t</span><span class="op">)</span></span>
+<span><span class="fu">.cstep_using_flux</span><span class="op">(</span><span class="va">.xy0</span>, <span class="va">.xy1</span>, <span class="va">.lonlat</span>, <span class="va">.fv</span>, <span class="va">.t</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">.cstep_iter</span><span class="op">(</span></span>
-<span>  <span class="va">.xy_now</span>,</span>
-<span>  .xy_next <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="cn">NA</span>, nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">.xy_now</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">.xy_now</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="va">.xy0</span>,</span>
+<span>  .xy1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="cn">NA</span>, nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">.xy0</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">.xy0</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  <span class="va">.lonlat</span>,</span>
 <span>  <span class="va">.flux</span>,</span>
 <span>  <span class="va">.fv</span>,</span>

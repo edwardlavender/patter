@@ -79,7 +79,7 @@ pf_files_size() calculates the total size of all files."><!-- mathjax --><script
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pf_files</span><span class="op">(</span><span class="va">.sink</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">pf_files_size</span><span class="op">(</span><span class="va">.sink</span>, .unit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MB"</span>, <span class="st">"GB"</span>, <span class="st">"TB"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">pf_files_size</span><span class="op">(</span><span class="va">.sink</span>, .folder <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span>, .unit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MB"</span>, <span class="st">"GB"</span>, <span class="st">"TB"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -89,7 +89,11 @@ pf_files_size() calculates the total size of all files."><!-- mathjax --><script
 
 
 <dt>...</dt>
-<dd><p>For <code>pf_files()</code>, <code>...</code> is a placeholder for additional arguments passed to <code><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files()</a></code>, such as <code>pattern</code>, excluding <code>full.names</code>.</p></dd>
+<dd><p>A placeholder for additional arguments passed to <code><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files()</a></code>, such as <code>pattern</code>, excluding <code>full.names</code>.</p></dd>
+
+
+<dt>.folder</dt>
+<dd><p>(optional) For <code>pf_files_size()</code>, a <code>character</code> string that defines the name of a sub-folder for which to summarise file sizes.</p></dd>
 
 
 <dt>.unit</dt>
@@ -105,7 +109,7 @@ pf_files_size() calculates the total size of all files."><!-- mathjax --><script
 </ul></div>
     <div id="warning">
     <h2>Warning</h2>
-    <p>At the time of writing, <code>pf_files()</code> cannot be used to list particle-diagnostic files from <code><a href="pf_forward.html">pf_forward()</a></code> and should only be used for particle samples.</p>
+    <p>At the time of writing, <code>pf_files()</code> cannot be used to list particle-diagnostic files from <code><a href="pf_forward.html">pf_forward()</a></code> and should only be used for particle samples. However, <code>pf_files_size()</code> can be used to estimate the total file size in any directory.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>

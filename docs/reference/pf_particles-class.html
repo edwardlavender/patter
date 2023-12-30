@@ -104,8 +104,7 @@ If directed sampling is used, <code>bathy</code> and <code>dens</code> columns a
     <div id="diagnostics">
     <h2><code>diagnostics</code></h2>
     <p>In <code><a href="pf_forward.html">pf_forward()</a></code>, we track metrics of particle diversity (hereafter, 'particle diagnostics') through time for analysis of convergence issues, sampling sufficiency and other properties (see <code><a href="pf_diag.html">pf_diag</a></code>). Particle diagnostics are recorded for each trial and component of a stochastic process.</p>
-<p>In all cases, at the start of each time step, we calculate baseline diagnostics.</p>
-<p>Thereafter, for stochastic kicks (implemented via <code><a href="pf_particle.html">.pf_particles_kick()</a></code>), we record:</p><ul><li><p>Proposal diagnostics, following stochastic kicks;</p></li>
+<p>For stochastic kicks (implemented via <code><a href="pf_particle.html">.pf_particles_kick()</a></code>), we record:</p><ul><li><p>Proposal diagnostics, following stochastic kicks;</p></li>
 <li><p>Likelihood diagnostics, following the evaluation of each likelihood function;</p></li>
 <li><p>Sampling diagnostics, following sampling;</p></li>
 </ul><p>For directed sampling (implemented via <code><a href="pf_particle.html">.pf_particles_sampler()</a></code>), we record:</p><ul><li><p>Proposal/likelihood diagnostics, following a combined proposal plus likelihood step;</p></li>
@@ -114,10 +113,9 @@ If directed sampling is used, <code>bathy</code> and <code>dens</code> columns a
 <p>If <code>.record$save = TRUE</code>, particle diagnostics are collated in a single <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>, with the following columns:</p><ul><li><p><code>iter_m</code>---an <code>integer</code> that identifies 'manual' iterations. <code>iter_m</code> is incremented when <code>.rerun</code> is used.</p></li>
 <li><p><code>iter_i</code>---an <code>integer</code> that identifies 'internal' iterations. <code>iter_i</code> is incremented when the algorithm jumps back to an earlier time step (see <code><a href="pf_opt.html">pf_opt_record()</a></code>).</p></li>
 <li><p><code>timestep</code>---an <code>integer</code> vector that defines time steps.</p></li>
-<li><p><code>component</code>---a <code>character</code> vector that defines algorithm components:</p><ul><li><p><code>base</code>---the start of each time step (a baseline), after the first time step;</p></li>
-<li><p><code>proposal</code>---the proposal step (at the first time step and for stochastic kicks only);</p></li>
+<li><p><code>component</code>---a <code>character</code> vector that defines algorithm components:</p><ul><li><p><code>proposal</code>---the proposal step (at the first time step and for stochastic kicks only);</p></li>
 <li><p><code>lik_*</code>---the likelihood step;</p><ul><li><p>For stochastic kicks, particle diagnostics are given following each (<code>i</code>) likelihood evaluation and the components are named by <code>paste0("lik-", names(.likelihood)[i])</code>;</p></li>
-<li><p>For directed sampling, particle diagnostics for the proposal and likelihood stages are combined under a single <code>lik-sampler</code> label and not split by likelihood component;</p></li>
+<li><p>For directed sampling, particle diagnostics for the proposal and likelihood stages are combined under a single <code>lik-directed</code> label and not split by likelihood component;</p></li>
 </ul></li>
 <li><p><code>sample_*</code>---the sampling step, denoted as:</p><ul><li><p><code>sample-origin</code> at the first time step;</p></li>
 <li><p><code>sample-kick</code> for stochastic kick-based sampling;</p></li>

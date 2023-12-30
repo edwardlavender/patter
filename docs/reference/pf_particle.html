@@ -75,7 +75,14 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">.pf_rpropose_origin</span><span class="op">(</span>.particles <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">.obs</span>, .t <span class="op">=</span> <span class="fl">1L</span>, <span class="va">.dlist</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">.pf_rpropose_origin</span><span class="op">(</span></span>
+<span>  .particles <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">.obs</span>,</span>
+<span>  .t <span class="op">=</span> <span class="fl">1L</span>,</span>
+<span>  <span class="va">.dlist</span>,</span>
+<span>  .rargs <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .dargs <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">.pf_sample_origin</span><span class="op">(</span><span class="va">.particles</span>, <span class="va">.n</span>, <span class="va">.sample</span>, <span class="va">.trial_crit</span>, <span class="va">.trial_count</span><span class="op">)</span></span>
 <span></span>
@@ -86,6 +93,8 @@
 <span>  <span class="va">.dlist</span>,</span>
 <span>  .rpropose <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  .dpropose <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .rargs <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .dargs <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">.likelihood</span>,</span>
 <span>  <span class="va">.sample</span>,</span>
 <span>  <span class="va">.n</span>,</span>
@@ -113,6 +122,8 @@
 <span>  <span class="va">.dlist</span>,</span>
 <span>  <span class="va">.rpropose</span>,</span>
 <span>  .dpropose <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .rargs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  .dargs <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">.likelihood</span>,</span>
 <span>  <span class="va">.sample</span>,</span>
 <span>  <span class="va">.n</span>,</span>
@@ -128,6 +139,8 @@
 <span>  <span class="va">.dlist</span>,</span>
 <span>  .rpropose <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">.dpropose</span>,</span>
+<span>  .rargs <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .dargs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">.likelihood</span>,</span>
 <span>  <span class="va">.sample</span>,</span>
 <span>  <span class="va">.n</span>,</span>
@@ -143,10 +156,12 @@
 <li><p><code>pf_lik_*()</code> functions calculate likelihoods;</p></li>
 <li><p><code>pf_sample_*()</code> functions sample proposals;</p></li>
 <li><p><code>pf_particle_*()</code> functions wrap proposals, likelihood calculations and sampling in an iterative framework;</p></li>
-</ul><p>Proposal and likelihood functions must accept the following arguments:</p><ul><li><p><code>.particles</code></p></li>
+</ul><p>Proposal and likelihood functions must accept the following core arguments:</p><ul><li><p><code>.particles</code></p></li>
 <li><p><code>.obs</code></p></li>
 <li><p><code>.t</code></p></li>
 <li><p><code>.dlist</code></p></li>
+</ul><p>Proposal functions must also accept:</p><ul><li><p><code>.rargs</code></p></li>
+<li><p><code>.dargs</code></p></li>
 </ul><p><code>.pf_lik()</code> is a wrapper for specified likelihood functions (see <code><a href="pf_lik.html">pf_lik</a></code>). The function returns a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines valid proposal locations, likelihoods and weights. A <code>diagnostics</code> attribute contains proposal diagnostics. This also requires:</p><ul><li><p><code>.stack</code>---a named <code>list</code> of likelihood functions (see <code><a href="pf_lik.html">pf_lik</a></code>).</p></li>
 <li><p><code>.diagnostics</code>---an empty <code>list</code> used to store likelihood diagnostics, or <code>NULL</code>.</p></li>
 <li><p><code>.trial</code>---an <code>integer</code> that distinguishes trials.</p></li>
@@ -154,7 +169,7 @@
 <p>Sampling functions must accept:</p><ul><li><p><code>.particles</code></p></li>
 <li><p><code>.n</code></p></li>
 </ul><p>Wrapper functions must accept:</p><ul><li><p>Proposal function arguments (<code>.particles</code>, <code>.obs</code>, <code>.t</code>, <code>.dlist</code>);</p></li>
-<li><p>Proposal functions (<code>.rpropose</code>,<code>.dpropose</code>);</p></li>
+<li><p>Proposal functions (<code>.rpropose</code>,<code>.dpropose</code>) and argument lists (<code>.rargs</code>, <code>.dargs</code>);</p></li>
 <li><p>Additional likelihood arguments (<code>.likelihood</code>);</p></li>
 <li><p>Sampling arguments (<code>.sample</code>, <code>.n</code>);</p></li>
 <li><p>Iteration arguments (<code>.trial_crit</code>, <code>.trial_count</code>);</p></li>

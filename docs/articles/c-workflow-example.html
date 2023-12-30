@@ -178,7 +178,7 @@ instead. For real-world analyses, start with a short (e.g., one day)
 time series and a single individual to develop the workflow.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Set seed</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/sim_helpers.html">ss</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Define a sample of acoustic time series </span></span>
 <span><span class="va">acc</span>  <span class="op">&lt;-</span> <span class="va">dat_acoustics</span><span class="op">[</span><span class="va">individual_id</span> <span class="op">==</span> <span class="fl">25</span>, <span class="op">]</span></span>
@@ -498,12 +498,12 @@ utilisation distributions. To reconstruct movement paths, use
 <span>                   .cols <span class="op">=</span> <span class="st">"depth"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">out_pfp</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    path_id timestep cell_id   cell_x  cell_y   cell_z depth</span></span>
-<span><span class="co">#&gt; 1:       1        1  604741 709004.6 6253169 83.21526 73.78</span></span>
-<span><span class="co">#&gt; 2:       1        2  601707 709154.6 6253269 80.03239 73.32</span></span>
-<span><span class="co">#&gt; 3:       1        3  597907 709154.6 6253394 87.54828 73.32</span></span>
-<span><span class="co">#&gt; 4:       1        4  603231 709254.6 6253219 63.35369 73.32</span></span>
-<span><span class="co">#&gt; 5:       1        5  596387 709154.6 6253444 87.54828 73.55</span></span>
-<span><span class="co">#&gt; 6:       1        6  601712 709279.6 6253269 68.53316 68.70</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:       1        1  600198 709429.6 6253319 51.65337 73.78</span></span>
+<span><span class="co">#&gt; 2:       1        2  607033 709304.6 6253094 52.98276 73.32</span></span>
+<span><span class="co">#&gt; 3:       1        3  597909 709204.6 6253394 75.20494 73.32</span></span>
+<span><span class="co">#&gt; 4:       1        4  600196 709379.6 6253319 60.09327 73.32</span></span>
+<span><span class="co">#&gt; 5:       1        5  596395 709354.6 6253444 65.31673 73.55</span></span>
+<span><span class="co">#&gt; 6:       1        6  600203 709554.6 6253319 45.66550 68.70</span></span></code></pre></div>
 <p>We can visualise an example path as follows:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gebco</span><span class="op">)</span></span>

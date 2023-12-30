@@ -133,6 +133,7 @@
 <span>                         dependencies <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>The <code>dependencies = TRUE</code> argument ensures that suggested packages are also installed, which are required for some functions and to build vignettes. This process may take several minutes. Set <code>build_vignettes = FALSE</code> for a faster installation.</p>
+<p>We strongly recommend using <a href="https://rstudio.github.io/renv/articles/renv.html" class="external-link"><code>renv</code></a> (or similar) and <a href="https://r4ds.had.co.nz/workflow-projects.html" class="external-link">RStudio Projects</a> to track the version of <a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a> that you use in your projects. This will ensure that your code continues to work, even if we have to make breaking changes to <a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a> as the package evolves in response to user feedback.</p>
 </div>
 <div class="section level1">
 <h1 id="vignettes">Vignettes<a class="anchor" aria-label="anchor" href="#vignettes"></a>
@@ -277,9 +278,9 @@
 <li>
 <code><a href="reference/acs_setup_detection_overlaps.html">acs_setup_detection_overlaps()</a></code>, which pre-calculates detection overlaps;</li>
 <li>
-<code><a href="reference/acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code>, which pre-calculates detection kernels;</li>
+<code><a href="reference/acs_setup_detection_kernel.html">acs_setup_detection_kernel()</a></code>, which prepares a detection kernel;</li>
 <li>
-<code><a href="reference/acs_setup_detection_kernel.html">acs_setup_detection_kernel()</a></code>, which is an example detection probability model;</li>
+<code><a href="reference/acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code>, which pre-calculates detection kernels;</li>
 </ul>
 </li>
 <li>(Re)sampling functions (see <code>pf_sample</code>) for the (re)sampling of valid proposal locations, including:

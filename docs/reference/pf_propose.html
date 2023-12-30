@@ -75,47 +75,43 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pf_rpropose_kick</span><span class="op">(</span></span>
-<span>  <span class="va">.particles</span>,</span>
-<span>  <span class="va">.obs</span>,</span>
-<span>  <span class="va">.t</span>,</span>
-<span>  <span class="va">.dlist</span>,</span>
-<span>  .sim_length <span class="op">=</span> <span class="va">rlen</span>,</span>
-<span>  .sim_angle <span class="op">=</span> <span class="va">rangrw</span>,</span>
-<span>  <span class="va">...</span></span>
-<span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pf_rpropose_kick</span><span class="op">(</span><span class="va">.particles</span>, <span class="va">.obs</span>, <span class="va">.t</span>, <span class="va">.dlist</span>, .rstep <span class="op">=</span> <span class="va">rstep</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">pf_rpropose_reachable</span><span class="op">(</span><span class="va">.particles</span>, <span class="va">.obs</span>, <span class="va">.t</span>, <span class="va">.dlist</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">pf_dpropose</span><span class="op">(</span><span class="va">.particles</span>, <span class="va">.obs</span>, <span class="va">.t</span>, <span class="va">.dlist</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">pf_dpropose</span><span class="op">(</span><span class="va">.particles</span>, <span class="va">.obs</span>, <span class="va">.t</span>, <span class="va">.dlist</span>, .dstep <span class="op">=</span> <span class="va">dstep</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.particles, .obs, .t, .dlist</dt>
-<dd><p>Required arguments for all <code>propose</code> functions.</p><ul><li><p><code>.particles</code>---a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of particle samples from the previous time step;</p></li>
+<dd><p>Required arguments for all <code>.propose</code> functions.</p><ul><li><p><code>.particles</code>---a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of particle samples from the previous time step;</p></li>
 <li><p><code>.obs</code>---the <code>.obs</code> <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> from <code><a href="pf_forward.html">pf_forward()</a></code>;</p></li>
 <li><p><code>.t</code>---an <code>integer</code> that defines the time step;</p></li>
-<li><p><code>.dlist</code>---the <code>.dlist</code> <code>list</code> from <code><a href="pf_forward.html">pf_forward()</a></code>;</p></li>
+<li><p><code>.dlist</code>---the <code>.dlist</code> <code>list</code> from <code><a href="pf_forward.html">pf_forward()</a></code>;</p><ul><li><p>For <code>pf_rpropose_kick()</code>, <code>.dlist</code> must contain <code>.dlist$spatial$bathy</code> and <code>.dlist$pars$lonlat</code>;</p></li>
+<li><p>For <code>pf_rpropose_reachable()</code>, <code>.dlist</code> must contain <code>.dlist$spatial$bathy</code>;</p></li>
+<li><p>for <code>pf_dpropose()</code>, <code>.dlist</code> must contain <code>.dlist$pars$lonlat</code>;</p></li>
+</ul></li>
 </ul></dd>
 
 
-<dt>.sim_length, .sim_angle</dt>
-<dd><p>Additional arguments for <code>pf_rpropose_kick()</code>. These are functions that simulate step lengths and turning angles respectively. Each function must accept a <code>.n</code> argument that defines the number of simulated values.</p></dd>
-
-
-<dt>...</dt>
-<dd><p>Additional arguments.</p><ul><li><p>For <code>pf_rpropose_kick()</code>, <code>...</code> is passed to <code>.sim_length</code> and <code>.sim_angle</code>.</p></li>
-<li><p>For <code>pf_dpropose()</code>, <code>...</code> is passed to <code><a href="sim_helpers.html">dstep()</a></code>.</p></li>
+<dt>.rstep, .dstep, ...</dt>
+<dd><p>Additional arguments for <code>pf_rpropose_kick()</code> and <code>pf_dpropose()</code> respectively. By default, in <code><a href="pf_forward.html">pf_forward()</a></code> arguments passed via <code>...</code> are passed to these arguments.</p><ul><li><p><code>.rstep</code> is a <code>function</code>, like <code><a href="sim_helpers.html">rstep()</a></code>, that simulates new locations;</p></li>
+<li><p><code>.dstep</code> is a <code>function</code>, like <code><a href="sim_helpers.html">dstep()</a></code>, that calculates the probability density of movements between locations;</p></li>
+</ul><p>At the time of writing, these functions must accept the following named arguments:</p><ul><li><p><code>.xy0</code>---a two-column object (<code><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></code>, <code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></code>, <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>) of accepted (x, y) coordinates from the previous time step. In <code>.rstep</code>, movement is simulated from <code>.xy0</code> into new locations;</p></li>
+<li><p><code>.xy1</code>---For <code>.dstep</code> only, <code>.xy1</code> is a two-column matrix of accepted coordinates for the current time step;</p></li>
+<li><p><code>.lonlat</code>---A <code>logical</code> variable that defines whether or not coordinates are in longitude/latitude format or planar;</p></li>
+<li><p><code>...</code>---Additional arguments;</p></li>
 </ul></dd>
 
 </dl></div>
     <div id="details">
     <h2>Details</h2>
     <p>In <code><a href="pf_forward.html">pf_forward()</a></code>, proposal functions are used to generate (propose) new, candidate locations for the individual's position, contingent upon previous positions (particle samples). Proposal locations are generated from previous locations via stochastic kicks and directed sampling.</p>
-<p>The <code>.rpropose</code> argument in <code><a href="pf_forward.html">pf_forward()</a></code> expects a stochastic-kick routine and <code>pf_rpropose_kick()</code> is the default. This is used to simulate proposal locations by 'kicking' particles into new locations as specified by a movement model. Custom functions that accept the <code>.particles</code>, <code>.obs</code>, <code>.t</code> and <code>.dlist</code> arguments can be provided.</p>
-<p>If stochastic kicks fail to produce a sufficient number of valid particle samples, <code>pf_rpropose_reachable()</code> may be called under-the-hood for directed sampling. For selected particles, this function identifies the set of reachable locations, for which likelihood calculations and sampling are then implemented (see <code><a href="pf_forward.html">pf_forward()</a></code>).</p>
-<p><code>pf_dpropose()</code> calculates the probability density of movements into proposal locations and is required for directed sampling.</p>
+<p>The <code>.rpropose</code> argument in <code><a href="pf_forward.html">pf_forward()</a></code> expects a stochastic-kick routine and <code>pf_rpropose_kick()</code> is the default. This is used to simulate proposal locations by 'kicking' particles into new locations as specified by a movement model (<code>.rstep</code>).</p>
+<p><code>pf_rpropose_kick</code> is a simple wrapper for <code><a href="sim_helpers.html">rstep()</a></code> that passes the <code>.particles</code> <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> to the function as required and then updates <code>.particles</code> with simulated locations. Simulated coordinates are redefined on the grid (<code>.dlist$spatial$bathy</code>) and grid cell IDs are included in the output. Argument passed via <code>...</code> arguments are passed to <code>.rstep</code>, which under default settings means <code><a href="sim_helpers.html">rstep()</a></code>'s <code>.rlen</code> and <code>.rang</code> arguments, or additional arguments passed to those functions. This facilitates simulation of a wide variety of random walks. At the time of writing, correlated random walks are not easy for users to implement, but this should improve in future.</p>
+<p>In <code><a href="pf_forward.html">pf_forward()</a></code>, if stochastic kicks fail to produce a sufficient number of valid particle samples, <code>pf_rpropose_reachable()</code> may be called under-the-hood for directed sampling (see <code><a href="pf_opt.html">pf_opt_trial()</a></code>). For selected particles, this function identifies the set of reachable locations. We evaluate the likelihood of reachable locations and the probability density of moving into each location and then sample locations according to the (normalised) product of these two variables. The <code>.dpropose</code> argument is required to calculate the probability density of moving between locations. This function must accept the usual <code>.particles</code>, <code>.obs</code>, <code>.t</code>, <code>.dlist</code> and <code>...</code> arguments and return a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>, for the subset of valid locations, with a <code>dens</code> column that defines probability densities. The function must be able to handle empty <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>s, which are passed down the call stack if all proposal (reachable) locations have zero likelihood.</p>
+<p><code>pf_dpropose()</code> is the default <code>.dpropose</code> routine. Under default settings, this is a simple wrapper for <code><a href="sim_helpers.html">dstep()</a></code> that handles empty <a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a>s or passes the relevant coordinate columns, for the accepted locations from the previous time step ((<code>x_past</code>, <code>y_past</code>) in <code>.particles</code>) and the proposal locations for the current time step ((<code>x_now</code>, <code>y_now</code>) in <code>.particles</code>) to <code><a href="sim_helpers.html">dstep()</a></code>. In this situation, <code>...</code> arguments are passed to <code><a href="sim_helpers.html">dstep()</a></code>.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
