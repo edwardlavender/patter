@@ -68,7 +68,7 @@
 #' `.cang` and `.dang` arguments are not yet implemented and must be [`missing`].
 #'
 #' @param ... Arguments passed to/from functions.
-#' * [`ss()`]: not used;
+#' * [`ssf()`], [`ssv()`]: not used;
 #' * [`rbern()`], [`ddet()`]: not used;
 #' * [`rdet()`], [`ddet()`]: passed to `.ddet` ( = [`ddet()`], wrapping [`ddetlogistic()`]);
 #' * [`ddetlogistic()`]: not used;

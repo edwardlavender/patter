@@ -94,7 +94,7 @@ test_that(".cstep_iter() works", {
   # Implement .cstep_iter() for the first two points
   # * This should work
   # * We expect the flux function to print 1,2 once
-  ss()
+  ssv()
   p <- 1:2
   .cstep_iter(.xy0 = pts[p, ], .lonlat = FALSE,
               .flux = flux, .fv = .flux_template(.n_step = 2, .n_path = length(p)),
@@ -105,7 +105,7 @@ test_that(".cstep_iter() works", {
   # Implement .cstep_iter() for all points
   # * We expect the flux function print 1,2 once then 3 for 99 times
   # * Then the function will fail
-  ss()
+  ssv()
   p <- 1:3
   .cstep_iter(.xy0 = pts[p, ], .lonlat = FALSE,
               .flux = flux, .fv = .flux_template(.n_step = 2, .n_path = length(p)),

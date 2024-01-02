@@ -57,7 +57,7 @@ points(det$dist, det$detection)
 #### --------------------------------------------------
 # Movement examples
 
-ss()
+ssv()
 n <- 1e5L
 
 #### Truncated gamma random generation

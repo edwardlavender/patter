@@ -7,22 +7,22 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
 
   #### Example (1): Implement function with default options
   # The function returns a data.table with simulated locations
-  ss()
+  ssv()
   p <- sim_path_walk()
   p
 
   #### Example (2): Update region for simulation
-  ss()
+  ssv()
   p <- sim_path_walk(dat_gebco())
   p
 
   #### Example (3): Specify origin
   origin <- cbind(710275.3, 6259763)
-  ss()
+  ssv()
   p <- sim_path_walk(dat_gebco(), .origin = cbind(710275.3, 6259763))
 
   #### Example (4): Update number of steps/number of paths
-  ss()
+  ssv()
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = 100L, .n_path = 5L,
@@ -35,7 +35,7 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
 
   #### Example (5): Modify step length parameters
   hist(rtruncgamma(1e3, .shape = 5, .mobility = 100))
-  ss()
+  ssv()
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = 100L,
@@ -55,7 +55,7 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
       rtruncgamma(.n = .n, .shape = 15, .scale = 15, .mobility = 500)
     }
   }
-  ss()
+  ssv()
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = nrow(b) + 1,
@@ -68,7 +68,7 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
   # (accounting for the longitude of natural origin = -9 in dat_gebco())
   # and .rho = 1:
   rwn(.n = 10, .mu =  -(90 + 9), .rho = 1)
-  ss()
+  ssv()
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = 10L,
@@ -77,7 +77,7 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
   p
 
   #### Example (8): Use a correlated random walk model
-  ss()
+  ssv()
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = 1000L, .n_path = 1L,
@@ -98,7 +98,7 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
       )
     )
   }
-  ss()
+  ssv()
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = 1000L,

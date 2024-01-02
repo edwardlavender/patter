@@ -1,6 +1,6 @@
 test_that("Distribution functions work", {
 
-  ss()
+  ssv()
   n <- 1e5L
 
   #### Test rtruncgamma()
@@ -17,16 +17,16 @@ test_that("Distribution functions work", {
   expect_true(all(x == 0))
 
   #### Test rlen()
-  ss()
+  ssv()
   a <- rlen(.n = 10)
-  ss()
+  ssv()
   b <- rtruncgamma(.n = 10)
   expect_equal(a, b)
 
   #### Test rangrw()
-  ss()
+  ssv()
   a <- rangrw(.n = 10)
-  ss()
+  ssv()
   b <- rwn(.n = 10)
   expect_equal(a, b)
 
@@ -64,7 +64,7 @@ test_that("*det*() functions work", {
 
 test_that("cang() works and is consistent", {
 
-  ss()
+  ssv()
   n <- 1e5L
 
   #### Define planar and lon/lat grids
@@ -213,9 +213,9 @@ test_that("sim_array() works", {
   expect_equal(a$receiver_id, c(1, 2, 1, 2))
 
   #### Test reproducibility
-  ss()
+  ssv()
   a <- sim_array()
-  ss()
+  ssv()
   b <- sim_array()
   expect_equal(a, b)
 
@@ -224,7 +224,7 @@ test_that("sim_array() works", {
 test_that("sim_path_walk() works", {
 
   #### Basic validation
-  ss()
+  ssv()
   n_step <- 1e3
   gebco <- dat_gebco()
   p <- sim_path_walk(.bathy = gebco, .n_step = n_step)
@@ -251,9 +251,9 @@ test_that("sim_path_walk() works", {
   expect_true(all(!is.na(p$cell_z)))
 
   #### Test reproducibility
-  ss()
+  ssv()
   a <- sim_path_walk()
-  ss()
+  ssv()
   b <- sim_path_walk()
   expect_equal(a, b)
 
@@ -315,7 +315,7 @@ test_that("sim_path_walk() works", {
     expect_equal(a, -99)
   })
   # Test correlated model
-  ss()
+  ssv()
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = 2000L,

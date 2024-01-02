@@ -20,7 +20,7 @@ test_that("par_mf() works", {
   expect_equal(c(10, 10), par_mf(100))
   expect_equal(c(10, 10), par_mf(99))
   # Show that the number of rows & columns is always sufficient
-  ss()
+  ssv()
   lapply(1:100, function(i) {
     # Sample a number of plots
     s <- sample(1:100, size = 1)
