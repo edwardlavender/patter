@@ -214,7 +214,7 @@ NULL
   pxy <- as.matrix(.path[, list(x, y)])
   rxy <- as.matrix(.array[, list(receiver_x, receiver_y)])
   # Define (Euclidean) distance matrix between points along the path & receivers
-  # * Rows represent time steps (for one paths)
+  # * Rows represent time steps (for one path)
   # * Columns represent receivers (for one array)
   # * Note that this approach will fail for very large matrices
   dist_mat <- .calc_distance(pxy, rxy, lonlat = .lonlat)
