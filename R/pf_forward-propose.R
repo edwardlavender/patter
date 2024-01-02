@@ -41,6 +41,7 @@ pf_rpropose_kick <- function(.particles, .obs, .t, .dlist, .rstep = rstep, ...) 
   # * The loop in pf_forward() starts on .t = 2L
   # * We assume pf_rpropose_kick() is activated on this step
   if (.t == 2L) {
+    rlang::check_dots_used(error = function(cnd) rlang::inform(paste(cnd)))
     check_dlist(.dlist = .dlist,
                 .par = "lonlat",
                 .spatial = "bathy")
@@ -130,6 +131,7 @@ pf_dpropose <- function(.particles, .obs, .t, .dlist, .dstep = dstep, ...) {
   # * We check inputs assuming pf_dpropose() is activated on this step
   # * (But this is unlikely)
   if (.t == 2L) {
+    rlang::check_dots_used(error = function(cnd) rlang::inform(paste(cnd)))
     check_dlist(.dlist = .dlist, .par = "lonlat")
   }
 
