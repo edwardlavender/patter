@@ -177,10 +177,10 @@ out_pff <- pf_forward(.obs = obs,
 #### Example (4): Customise movement model via `.rpropose` and `.dpropose`
 # Pass arguments to the default models via `.rargs` & `.dargs`
 # * For `.rpropose` = `pf_rpropose_kick()`, `.rargs` get passed to
-# * ... `.rstep` = `rstep()` e.g., `.rlen` = rlen() and `.rang` = rang()
+# * ... `.rkick` > `rkick()` > `rstep()` e.g., `.rlen` = rlen() and `.rang` = rang()
 # * ... and associated args
 # * For `.dpropose` = `pf_dpropose()`, `.dargs` gets passed to
-# * ... `.dstep = dstep()` e.g., `.dlen` = `dtruncgamma()`
+# * ... `.dkick > dkick() > dstep()` e.g., `.dlen` = `dtruncgamma()`
 
 # E.g., customise rlen() shape and scale parameters
 hist(rlen(.n = 1e5L, .shape = 1, .scale = 100), xlim = c(0, 500))

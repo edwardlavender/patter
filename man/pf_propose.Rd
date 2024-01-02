@@ -2,58 +2,76 @@
 % Please edit documentation in R/pf_forward-propose.R
 \name{pf_propose}
 \alias{pf_propose}
+\alias{rkick}
+\alias{dkick}
 \alias{pf_rpropose_kick}
 \alias{pf_rpropose_reachable}
 \alias{pf_dpropose}
 \title{PF: proposal functions}
 \usage{
-pf_rpropose_kick(.particles, .obs, .t, .dlist, .rstep = rstep, ...)
+rkick(.xy0, .rstep = rstep, ..., .obs, .t, .dlist)
+
+dkick(.xy0, .xy1, .dstep = dstep, ..., .obs, .t, .dlist)
+
+pf_rpropose_kick(.particles, .obs, .t, .dlist, .rkick = rkick, ...)
 
 pf_rpropose_reachable(.particles, .obs, .t, .dlist)
 
-pf_dpropose(.particles, .obs, .t, .dlist, .dstep = dstep, ...)
+pf_dpropose(.particles, .obs, .t, .dlist, .dkick = dkick, ...)
 }
 \arguments{
-\item{.particles, .obs, .t, .dlist}{Required arguments for all \code{.propose} functions.
+\item{.obs, .t, .dlist}{Required arguments for all functions.
 \itemize{
-\item \code{.particles}---a \code{\link{data.table}} of particle samples from the previous time step;
 \item \code{.obs}---the \code{.obs} \code{\link{data.table}} from \code{\link[=pf_forward]{pf_forward()}};
 \item \code{.t}---an \code{integer} that defines the time step;
 \item \code{.dlist}---the \code{.dlist} \code{list} from \code{\link[=pf_forward]{pf_forward()}};
 \itemize{
-\item For \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}}, \code{.dlist} must contain \code{.dlist$spatial$bathy} and \code{.dlist$pars$lonlat};
+\item For \code{\link[=rkick]{rkick()}} and \code{\link[=dkick]{dkick()}}, \code{.dlist} must contain \code{.dlist$spatial$bathy};
+\item For \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}}, \code{.dlist} must contain \code{.dlist$spatial$bathy};
 \item For \code{\link[=pf_rpropose_reachable]{pf_rpropose_reachable()}}, \code{.dlist} must contain \code{.dlist$spatial$bathy};
-\item for \code{\link[=pf_dpropose]{pf_dpropose()}}, \code{.dlist} must contain \code{.dlist$pars$lonlat};
 }
 }}
 
-\item{.rstep, .dstep, ...}{Additional arguments for \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}} and \code{\link[=pf_dpropose]{pf_dpropose()}} respectively. By default, in \code{\link[=pf_forward]{pf_forward()}} arguments passed via \code{...} are passed to these arguments.
+\item{.xy1, .xy1, .rstep, .dstep}{Arguments for \code{.rkick} (and \code{\link[=rkick]{rkick()}}) and \code{.dkick} (and \code{\link[=dkick]{dkick()}}).
 \itemize{
-\item \code{.rstep} is a \code{function}, like \code{\link[=rstep]{rstep()}}, that simulates new locations;
-\item \code{.dstep} is a \code{function}, like \code{\link[=dstep]{dstep()}}, that calculates the probability density of movements between locations;
+\item \code{.xy0}---a two-column object (\code{\link{matrix}}, \code{\link{data.frame}}, \code{\link{data.table}}) of accepted (x, y) coordinates from the previous time step. In \code{.rkick}, movement is simulated from \code{.xy0} into new locations;
+\item \code{.xy1}---For \code{.dkick} and \code{\link[=dkick]{dkick()}}, \code{.xy1} is a two-column matrix of accepted coordinates for the current time step;
+\item \code{.rstep} or \code{.dstep} and \code{...}---\code{function}s that simulate new locations or calculate the probability density of movements between locations (such as \code{\link[=rstep]{rstep()}} and \code{\link[=dstep]{dstep()}}) and additional arguments passed to those functions. Both functions must accept:
+\itemize{
+\item \code{.xy0} and \code{.xy1}---as above;
+\item \code{...}---arguments passed from above;
+\item \code{.lonlat}---a \code{logical} variable that defines whether or not coordinates are in longitude/latitude format or planar (extracted from \code{.dlist$pars$lonlat} by default);
+}
+}}
+
+\item{.particles}{Additional required arguments for all \code{.rpropose} and \code{.dpropose} functions:
+\itemize{
+\item \code{.particles}---a \code{\link{data.table}} of particle samples from the previous time step;
+}}
+
+\item{.rkick, .dkick, ...}{Additional arguments for \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}} and \code{\link[=pf_dpropose]{pf_dpropose()}} respectively.
+\itemize{
+\item \code{.rkick} is a \code{function}, like \code{\link[=rkick]{rkick()}}, that simulates new locations;
+\item \code{.dkick} is a \code{function}, like \code{\link[=dkick]{dkick()}}, that calculates the probability density of movements between locations;
 }
 
-At the time of writing, these functions must accept the following named arguments:
-\itemize{
-\item \code{.xy0}---a two-column object (\code{\link{matrix}}, \code{\link{data.frame}}, \code{\link{data.table}}) of accepted (x, y) coordinates from the previous time step. In \code{.rstep}, movement is simulated from \code{.xy0} into new locations;
-\item \code{.xy1}---For \code{.dstep} only, \code{.xy1} is a two-column matrix of accepted coordinates for the current time step;
-\item \code{.lonlat}---A \code{logical} variable that defines whether or not coordinates are in longitude/latitude format or planar;
-\item \code{...}---Additional arguments;
-}}
+At the time of writing, these functions must accept the \code{.xy0}, \code{.xy1}, \code{.rstep}/\code{.dstep} and \code{...} arguments.}
 }
 \description{
-These are proposal functions for \code{\link[=pf_forward]{pf_forward()}}.
+These are proposal functions and supporting routines for \code{\link[=pf_forward]{pf_forward()}}.
 }
 \details{
 In \code{\link[=pf_forward]{pf_forward()}}, proposal functions are used to generate (propose) new, candidate locations for the individual's position, contingent upon previous positions (particle samples). Proposal locations are generated from previous locations via stochastic kicks and directed sampling.
 
-The \code{.rpropose} argument in \code{\link[=pf_forward]{pf_forward()}} expects a stochastic-kick routine and \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}} is the default. This is used to simulate proposal locations by 'kicking' particles into new locations as specified by a movement model (\code{.rstep}).
+The \code{.rpropose} argument in \code{\link[=pf_forward]{pf_forward()}} expects a stochastic-kick routine and \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}} is the default. This is used to simulate proposal locations by 'kicking' particles into new locations as specified by a movement model (\code{.rkick}).
 
-\code{\link{pf_rpropose_kick}} is a simple wrapper for \code{\link[=rstep]{rstep()}} that passes the \code{.particles} \code{\link{data.table}} to the function as required and then updates \code{.particles} with simulated locations. Simulated coordinates are redefined on the grid (\code{.dlist$spatial$bathy}) and grid cell IDs are included in the output. Argument passed via \code{...} arguments are passed to \code{.rstep}, which under default settings means \code{\link[=rstep]{rstep()}}'s \code{.rlen} and \code{.rang} arguments, or additional arguments passed to those functions. This facilitates simulation of a wide variety of random walks. At the time of writing, correlated random walks are not easy for users to implement, but this should improve in future.
+\code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}} is a simple wrapper for \code{\link[=rkick]{rkick()}} that passes the \code{.particles} \code{\link{data.table}} to the function as required and then updates \code{.particles} with simulated locations. Simulated coordinates are redefined on the grid (\code{.dlist$spatial$bathy}) and grid cell IDs are included in the output. \code{\link[=rkick]{rkick()}} itself is a wrapper for \code{.rstep} = \code{\link{rstep}} that accepts (but silently ignores) the \code{.obs}, \code{.t} and \code{.dlist} objects (except \code{.dlist$pars$lonlat}, which is passed to the \code{.lonlat} argument of \code{.rstep}). In \code{\link{pf_rpropose_kick}}, arguments passed via \code{...} are passed to \code{.rkick}, which under default settings means \verb{.rstep = } = \code{\link{rstep}} (i.e., \code{.rlen} and \code{.rang} or additional arguments passed to those arguments). This facilitates simulation of a wide variety of random walks. At the time of writing, correlated random walks are not easy for users to implement, but this should improve in future.
 
-In \code{\link[=pf_forward]{pf_forward()}}, if stochastic kicks fail to produce a sufficient number of valid particle samples, \code{\link[=pf_rpropose_reachable]{pf_rpropose_reachable()}} may be called under-the-hood for directed sampling (see \code{\link[=pf_opt_trial]{pf_opt_trial()}}). For selected particles, this function identifies the set of reachable locations. We evaluate the likelihood of reachable locations and the probability density of moving into each location and then sample locations according to the (normalised) product of these two variables. The \code{.dpropose} argument is required to calculate the probability density of moving between locations. This function must accept the usual \code{.particles}, \code{.obs}, \code{.t}, \code{.dlist} and \code{...} arguments and return a \code{\link{data.table}}, for the subset of valid locations, with a \code{dens} column that defines probability densities. The function must be able to handle empty \code{\link{data.table}}s, which are passed down the call stack if all proposal (reachable) locations have zero likelihood.
+In \code{\link[=pf_forward]{pf_forward()}}, if stochastic kicks fail to produce a sufficient number of valid particle samples, \code{\link[=pf_rpropose_reachable]{pf_rpropose_reachable()}} may be called under-the-hood for directed sampling (see \code{\link[=pf_opt_trial]{pf_opt_trial()}}). For selected particles, this function identifies the set of reachable locations. We evaluate the likelihood of reachable locations and the probability density of moving into each location and then sample locations according to the (normalised) product of these two variables. The \code{.dpropose} argument in \code{\link[=pf_forward]{pf_forward()}} is required to calculate the probability density of moving between locations. \code{.dpropose} is a function that must accept the usual \code{.particles}, \code{.obs}, \code{.t}, \code{.dlist} and \code{...} arguments and return a \code{\link{data.table}}, for the subset of valid locations, with a \code{dens} column that defines probability densities. The function must be able to handle empty \code{\link{data.table}}s, which are passed down the call stack if all proposal (reachable) locations have zero likelihood.
 
-\code{\link[=pf_dpropose]{pf_dpropose()}} is the default \code{.dpropose} routine. Under default settings, this is a simple wrapper for \code{\link[=dstep]{dstep()}} that handles empty \link{data.table}s or passes the relevant coordinate columns, for the accepted locations from the previous time step ((\code{x_past}, \code{y_past}) in \code{.particles}) and the proposal locations for the current time step ((\code{x_now}, \code{y_now}) in \code{.particles}) to \code{\link[=dstep]{dstep()}}. In this situation, \code{...} arguments are passed to \code{\link[=dstep]{dstep()}}.
+\code{\link[=pf_dpropose]{pf_dpropose()}} is the default \code{.dpropose} routine. Under default settings, this is a simple wrapper for \code{\link[=dkick]{dkick()}} that handles empty \link{data.table}s or passes the relevant coordinate columns, for the accepted locations from the previous time step ((\code{x_past}, \code{y_past}) in \code{.particles}) and the proposal locations for the current time step ((\code{x_now}, \code{y_now}) in \code{.particles}) to \code{.dkick}. Under default settings, \verb{.dkick =} \code{\link{dkick}}. \code{\link[=dkick]{dkick()}} wraps itself wraps a \code{.dstep} function such as \code{\link[=dstep]{dstep()}}, accepting (but silently ignoring) the \code{.obs}, \code{.t} and \code{.dlist} arguments (except \code{.dlist$pars$lonlat}). In this situation, \code{...} arguments are passed to \code{.dstep}.
+
+In \code{\link[=pf_forward]{pf_forward()}}, use \code{.rpropose} and \code{.dpropose} to write fully custom routines, if required. Use \code{.rargs} and \code{.dargs} to customise the default routines. For movement models that require \code{.obs}, \code{.t} and \code{.dlist}, use custom \code{.rkick} and \code{.dkick} functions. Otherwise, you can simply customise \code{.rstep} and \code{.dstep} (for instance, by revising the models used to simulate step lengths and turning angles, or the parameters passed to those models).
 }
 \seealso{
 The forward filtering--backward sampling algorithm samples locations (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
