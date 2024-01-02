@@ -71,11 +71,11 @@ acs_setup_detection_overlaps <- function(.dlist) {
       # Calculate distances between receivers
       rng_1 = moorings$receiver_range[ind_1],
       rng_2 = moorings$receiver_range[ind_2],
-      dist = terra::distance(cbind(moorings$receiver_x[ind_1],
-                                   moorings$receiver_y[ind_1]),
-                             cbind(moorings$receiver_x[ind_2],
-                                   moorings$receiver_y[ind_2]),
-                             lonlat = lonlat, pairwise = TRUE)
+      dist = clen(.xy0 = cbind(moorings$receiver_x[ind_1],
+                               moorings$receiver_y[ind_1]),
+                  .xy1 = cbind(moorings$receiver_x[ind_2],
+                               moorings$receiver_y[ind_2]),
+                  .lonlat = lonlat)
     ) |>
     # Identify receivers that overlap (at least partially) in time & space
     filter(lubridate::int_overlaps(.data$int_1, .data$int_2)) |>
