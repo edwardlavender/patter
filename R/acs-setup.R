@@ -190,8 +190,8 @@ acs_setup_detection_overlaps <- function(.dlist) {
 #' @export
 
 acs_setup_detection_kernel <- function(.mooring,
-                                   .bathy,
-                                   .calc_detection_pr = calc_detection_pr_logistic, ...) {
+                                       .bathy,
+                                       .calc_detection_pr = calc_detection_pr_logistic, ...) {
   # Calculate Euclidean distance around receiver
   rlang::check_dots_used()
   check_dots_allowed(".gamma")
