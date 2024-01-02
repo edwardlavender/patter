@@ -29,7 +29,7 @@
 #' For [`rdet()`], `.ddet` must accept the `.data` [`data.table`] as its first argument and evaluate the probability of a detection accordingly. [`rbern()`] then simulates detection(s). For `.ddet =` [`ddet`], `.data` must include a `dist` column that defines the distances between transmission locations and receivers. In [`ddet()`], `.data$dist` is passed to [`ddetlogistic()`] to calculate detection probabilities (see Details).
 #'
 #' @param .ddetx Additional arguments for [`ddet()`].
-#' * [`.ddetx`] is a function that evaluates the probability density of detections from a `numeric` vector (e.g,. of distances).
+#' * `.ddetx` is a function that evaluates the probability density of detections from a `numeric` vector (e.g,. of distances).
 #'
 #' @param .shape,.scale,.mobility Additional arguments for [`rtruncgamma()`] and [`dtruncgamma()`]:
 #' * `.shape` is a `numeric` value that defines the shape parameter of a Gamma distribution (see [`stats::rgamma()`]).
