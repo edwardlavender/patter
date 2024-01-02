@@ -136,20 +136,20 @@ To compute detection kernels, we need a model that describes that shape of the d
 # Visualise an example detection probability model 
 # * We use the default parameters here, 
 # * ... but you should customise them for your system
-calc_detection_pr_logistic(.distance = 1:1000, 
-                           .alpha = 4,    # intercept parameter
-                           .beta = -0.01, # gradient parameter
-                           .gamma = moorings$receiver_range[1]
-                           ) |> 
+ddetlogistic(.x = 1:1000, 
+             .alpha = 4,    # intercept parameter
+             .beta = -0.01, # gradient parameter
+             .gamma = moorings$receiver_range[1]
+             ) |> 
   plot( xlab = "Distance (m)", 
         ylab = "Detection probability", 
         type = "l")
 
 # Visualise the spatial representation of the model around an example receiver
 k <- acs_setup_detection_kernel(.mooring = dlist$data$moorings[1, ],
-                            .bathy = gebco, 
-                            .calc_detection_pr = calc_detection_pr_logistic,
-                            .alpha = 4, .beta = -0.01)
+                                .bathy = gebco, 
+                                .ddetx = ddetlogistic,
+                                .alpha = 4, .beta = -0.01)
 terra::plot(k)
 ```
 
@@ -161,7 +161,7 @@ Once you have a model, this is plugged into `acs_setup_detection_kernels()` whic
 # * But this should be adjusted as required for your study system
 dlist$algorithm$detection_kernels  <-
   acs_setup_detection_kernels(dlist, 
-                              .calc_detection_pr = acs_setup_detection_kernel)
+                              .ddetkernel = acs_setup_detection_kernel)
 ```
 
 To incorporate ancillary datasets, you need to be able to write down a model (`function`) for likelihood of the data, given particle samples (see `pf_lik` for guidance).

@@ -11,9 +11,8 @@
   .array,
   .calc_distance = terra::distance,
   .lonlat = FALSE,
-  .calc_detection_pr = calc_detection_pr,
+  .rdet = rdet,
   ...,
-  .sim_obs = stats::rbinom,
   .return = c("array_id", "path_id", "timestep", "timestamp", "receiver_id", "dist",
     "pr")
 )

@@ -2,7 +2,13 @@
 % Please edit documentation in R/sims.R
 \name{sim_helpers}
 \alias{sim_helpers}
-\alias{ss}
+\alias{ssf}
+\alias{ssv}
+\alias{rbern}
+\alias{dbern}
+\alias{rdet}
+\alias{ddetlogistic}
+\alias{ddet}
 \alias{rtruncgamma}
 \alias{dtruncgamma}
 \alias{rwn}
@@ -16,7 +22,19 @@
 \alias{cang}
 \title{Simulation: distribution functions}
 \usage{
-ss()
+ssf()
+
+ssv()
+
+rbern(.n, .prob)
+
+dbern(.x, .prob)
+
+rdet(.data, .ddet = ddet, ...)
+
+ddetlogistic(.x, .alpha = 4, .beta = -0.01, .gamma = 750)
+
+ddet(.data, .ddetx = ddetlogistic, ...)
 
 rtruncgamma(.n = 1L, .shape = 15, .scale = 15, .mobility = 500, ...)
 
@@ -63,20 +81,32 @@ clen(.xy0, .xy1, .lonlat)
 cang(.xy0, .xy1, .lonlat)
 }
 \arguments{
-\item{.n, .x, .shape, .scale, .mobility}{Arguments for \code{\link[=rtruncgamma]{rtruncgamma()}} and \code{\link[=dtruncgamma]{dtruncgamma()}}:
+\item{.n, .x}{Arguments for distribution functions (\code{\link[=rbern]{rbern()}}, \code{\link[=dbern]{dbern()}}, \code{\link[=rtruncgamma]{rtruncgamma()}} and \code{\link[=dtruncgamma]{dtruncgamma()}}):
 \itemize{
 \item \code{.n} is an \code{integer} that defines the number of simulated outcome(s);
-\item \code{.x} is a \code{numeric} vector that defines step length(s) (in the context of animal movement);
-\item \code{.shape} is a \code{numeric} value that defines the shape parameter of a Gamma distribution (see \code{\link[stats:GammaDist]{stats::rgamma()}}).
-\item \code{.scale} is a \code{numeric} value that defines the scale parameter of a Gamma distribution (see \code{\link[stats:GammaDist]{stats::rgamma()}}).
-\item \code{.mobility} is a \code{numeric} value that defines the maximum possible value (step length) (see \code{truncdist::rtrunc()}).
+\item \code{.x} is a \code{numeric} vector that simulated outcome(s);
 }}
+
+\item{.prob}{Additional argument(s) for \code{\link[=rbern]{rbern()}} and \code{\link[=dbern]{dbern()}}:
+\itemize{
+\item \code{.prob} is \code{numeric} vector of probabilities.
+}}
+
+\item{.data, .ddet}{Arguments for \code{\link[=rdet]{rdet()}}.
+\itemize{
+\item \code{.data} is a \code{\link{data.table}}.
+\item \code{.ddet} is a \code{function} evaluates the probability of a detection;
+}
+
+For \code{\link[=rdet]{rdet()}}, \code{.ddet} must accept the \code{.data} \code{\link{data.table}} as its first argument and evaluate the probability of a detection accordingly. \code{\link[=rbern]{rbern()}} then simulates detection(s). For \verb{.ddet =} \code{\link{ddet}}, \code{.data} must include a \code{dist} column that defines the distances between transmission locations and receivers. In \code{\link[=ddet]{ddet()}}, \code{.data$dist} is passed to \code{\link[=ddetlogistic]{ddetlogistic()}} to calculate detection probabilities (see Details).}
 
 \item{...}{Arguments passed to/from functions.
 \itemize{
 \item \code{\link[=ss]{ss()}}: not used;
-\item \code{\link[=rtruncgamma]{rtruncgamma()}}: silently ignored;
-\item \code{\link[=dtruncgamma]{dtruncgamma()}}: silently ignored;
+\item \code{\link[=rbern]{rbern()}}, \code{\link[=ddet]{ddet()}}: not used;
+\item \code{\link[=rdet]{rdet()}}, \code{\link[=ddet]{ddet()}}: passed to \code{.ddet} ( = \code{\link[=ddet]{ddet()}}, wrapping \code{\link[=ddetlogistic]{ddetlogistic()}});
+\item \code{\link[=ddetlogistic]{ddetlogistic()}}: not used;
+\item \code{\link[=rtruncgamma]{rtruncgamma()}}, \code{\link[=dtruncgamma]{dtruncgamma()}}: silently ignored;
 \item \code{\link[=rwn]{rwn()}}: silently ignored;
 \item \code{\link[=rlen]{rlen()}}: passed to \code{\link[=rtruncgamma]{rtruncgamma()}};
 \item \code{\link[=rangrw]{rangrw()}}: passed to \code{\link[=rwn]{rwn()}};
@@ -88,9 +118,28 @@ cang(.xy0, .xy1, .lonlat)
 \item \code{\link[=cang]{cang()}}: not used;
 }}
 
+\item{.alpha, .beta, .gamma}{Additional arguments for \code{\link[=ddetlogistic]{ddetlogistic()}} (see Details).
+\itemize{
+\item \code{.alpha} is a \code{numeric} value for the intercept, on the scale of the logistic function.
+\item \code{.beta} is a \code{numeric} value for the gradient, on the scale of the logistic function.
+\item \code{.gamma} is a \code{numeric} value for the receiver detection range.
+}}
+
+\item{.ddetx}{Additional arguments for \code{\link[=ddet]{ddet()}}.
+\itemize{
+\item \code{\link{.ddetx}} is a function that evaluates the probability density of detections from a \code{numeric} vector (e.g,. of distances).
+}}
+
+\item{.shape, .scale, .mobility}{Additional arguments for \code{\link[=rtruncgamma]{rtruncgamma()}} and \code{\link[=dtruncgamma]{dtruncgamma()}}:
+\itemize{
+\item \code{.shape} is a \code{numeric} value that defines the shape parameter of a Gamma distribution (see \code{\link[stats:GammaDist]{stats::rgamma()}}).
+\item \code{.scale} is a \code{numeric} value that defines the scale parameter of a Gamma distribution (see \code{\link[stats:GammaDist]{stats::rgamma()}}).
+\item \code{.mobility} is a \code{numeric} value that defines the maximum possible value (step length) (see \code{truncdist::rtrunc()}).
+}}
+
 \item{.mu, .rho, .sd}{Arguments for \code{\link[=rwn]{rwn()}} for the simulation of turning angles, passed to the \code{mu}, \code{rho} and \code{sd} arguments of \code{\link[circular:wrappednormal]{circular::rwrappednormal()}}.}
 
-\item{.prior, .t}{Arguments for \code{\link[=rlen]{rlen()}}, \code{\link[=rangrw]{rangrw()}} and \code{\link[=rangcrw]{rangcrw()}}, as used in top-level functions (i.e., \code{\link[=sim_path_walk]{sim_path_walk()}}):
+\item{.prior, .t}{Additional arguments for \code{\link[=rlen]{rlen()}}, \code{\link[=rangrw]{rangrw()}} and \code{\link[=rangcrw]{rangcrw()}}, as used in top-level functions (i.e., \code{\link[=sim_path_walk]{sim_path_walk()}}):
 \itemize{
 \item \code{.n}---an \code{integer} that defines the number of simulated outcome(s);
 \item \code{.prior}---a \code{numeric} vector that defines the simulated value(s) from the previous time step;
@@ -132,19 +181,52 @@ The first argument to both functions must be the number of values to simulate. O
 \description{
 These convenience functions support the generation of animal movement paths and observations in \emph{de novo} simulations (\verb{sim_*()} functions) and simulation-based reconstructions of movement paths (\code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}).
 \itemize{
-\item \code{\link[=ss]{ss()}} sets a seed;
+\item \verb{ss*()} functions set seeds;
 \item \verb{r*()} functions simulate random variates;
 \item \verb{c*()} functions calculate outcomes from random-variate inputs;
 \item \verb{d*()} functions return densities;
 }
 
-\verb{r*()} and \verb{c*()} functions are used in \emph{de novo} simulations (via \verb{sim_*()} functions such as \code{\link[=sim_path_walk]{sim_path_walk()}}) and the forward simulation-based reconstruction of movement paths (in \code{\link[=pf_forward]{pf_forward()}}).
+\verb{r*()} and \verb{c*()} functions are used in \emph{de novo} simulations (via \verb{sim_*()} functions such as \code{\link[=sim_path_walk]{sim_path_walk()}} and \code{\link[=sim_detections]{sim_detections()}}) and the forward simulation-based reconstruction of movement paths (in \code{\link[=pf_forward]{pf_forward()}}).
 
 \verb{d*()} functions are primarily used in the simulation-based reconstruction of movement paths as part of the backward sampler via \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}.
 }
 \section{Reproducibility}{
 \itemize{
-\item \code{\link[=ss]{ss()}} wraps \code{\link[=set.seed]{set.seed()}} and is used for reproducible simulations;
+\item \code{\link[=ssf]{ssf()}} sets a fixed seed (wrapping \code{set.seed(123L)});
+\item \code{\link[=ssv]{ssv()}} sets a time-varying seed (wrapping \code{set.seed(as.integer(as.Date(Sys.time())))}) and is primarily intended for package testing;
+}
+}
+
+\section{Detections}{
+\subsection{Distribution functions}{
+\itemize{
+\item \verb{*bern()} functions are distribution functions for the Bernoulli distribution:
+\itemize{
+\item \code{\link[=rbern]{rbern()}} wraps \code{\link[stats:Binomial]{stats::rbinom()}} and simulates values from a Bernoulli distribution;
+\item \code{\link[=dbern]{dbern()}} wraps \code{\link[stats:Binomial]{stats::dbinom()}} and evaluates the probability density of simulated values;
+}
+}
+}
+
+\subsection{Wrappers}{
+\itemize{
+\item \verb{*det()} functions wrap \verb{*bern()} functions for the simulation of detections at receivers:
+\itemize{
+\item \code{\link[=rdet]{rdet()}} wraps \code{\link[=ddet]{ddet()}} and \code{\link[=rbern]{rbern()}} to simulate detections;
+\item \code{\link[=ddet]{ddet()}} wraps \code{\link[=ddetlogistic]{ddetlogistic()}} to calculate the probability density of detections;
+\item \code{\link[=ddetlogistic]{ddetlogistic()}} effectively wraps \code{\link[=dbern]{dbern()}} and evaluates the probability density of a detection event (at receiver \eqn{k} at time \eqn{t}), given a transmission from location \eqn{\bold{s} = (x, y)} (i.e., \eqn{p(\text{ev}[k, t] | \bold{s})}), as a truncated \eqn{\text{logistic}} function of the distance (\code{.x}) between the transmission (\bold{s}) and receiver (\bold{r}) locations, i.e.,
+\deqn{
+p(\text{ev}[k, t] | \bold{s}) =  \text{Bernoulli}(\text{.prob}) \\
+\text{.prob} =
+ \begin{cases}
+   \text{logistic}(\text{.alpha} + \text{.beta} \times .x) & \text{if } .x < \text{.gamma} \\
+   0 & \text{otherwise}
+ \end{cases}
+}
+where \eqn{\text{logistic}(x) = 1 + e^{-x}}; \code{.alpha}, and \code{.beta} are parameters; and \code{.gamma} is the receiver's detection range.
+}
+}
 }
 }
 
@@ -153,7 +235,7 @@ These convenience functions support the generation of animal movement paths and 
 \itemize{
 \item \verb{*truncgamma()} functions are distribution functions for the truncated Gamma distribution:
 \itemize{
-\item \code{\link[=rtruncgamma]{rtruncgamma()}} simulates values from a truncated gamma distribution with a \code{.mobility} parameter that truncates the right-hand side of the distribution;
+\item \code{\link[=rtruncgamma]{rtruncgamma()}} simulates values from a truncated Gamma distribution with a \code{.mobility} parameter that truncates the right-hand side of the distribution;
 \item \code{\link[=dtruncgamma]{dtruncgamma()}} returns the densit(ies) of specified values(s);
 }
 \item \verb{*wn()} functions are distribution functions for the wrapped normal distribution:
@@ -215,12 +297,55 @@ require(terra)
 require(geosphere)
 require(testthat)
 
+
 #### --------------------------------------------------
 # Detection examples
 
-# TO DO
-# ddet
-# ddetlogistic
+#### Bernoulli distribution random generation
+rbern(1, 1)
+rbern(10, 0.5)
+
+#### Bernoulli distribution densities
+dbern(1, 1)
+dbern(c(1, 1), 0.5)
+dbern(c(1, 1), 0.25)
+
+#### Random generation of detections
+# Define a data.table of distances
+dists <- data.table(individual_id = 1L,
+                    receiver_id = 1L,
+                    dist = runif(100, 0, 1000))
+# Simulate detections using default arguments
+rdet(.data = data.table(dists))[]
+# Customise arguments passed to .ddet -> ddet() -> ddetlogistic()
+rdet(.data = dists, .gamma = 10)[]
+# Customise .ddet model
+# * See below.
+
+#### Probability density of detections
+# Use ddetlogistic() to evaluate densities via a logistic function of distances
+ddetlogistic(1:10)
+ddetlogistic(1:10, .gamma = 500)
+# Use ddet() wrapper function
+ddet(dists)
+ddet(dists, .gamma = 500)
+# Customise .ddetx model
+ddetlinear <- function(.x, .alpha = 1, .beta = -0.002, .gamma = 500) {
+  pr <- .alpha + .beta * .x
+  pr <- pmax(pr, 0)
+  pr <- pmin(pr, 1)
+  pr[.x > .gamma] <- 0
+  # pr <- dbern(.x = 1L, size = 1L, prob = pr)
+  pr
+}
+plot(1:500, ddetlinear(1:500),
+     xlim = c(0, 500), ylim = c(0, 1),
+     xlab = "Detection probability", ylab = "Distance (m)",
+     type = "l")
+ddet(dists, .ddetx = ddetlinear)
+# Use ddetlinear in rdet()
+det <- rdet(.data = dists, .ddetx = ddetlinear)
+points(det$dist, det$detection)
 
 
 #### --------------------------------------------------

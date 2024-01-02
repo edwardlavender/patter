@@ -201,25 +201,22 @@ NULL
 
 .sim_detections <- function(.path, .array,
                             .calc_distance = terra::distance, .lonlat = FALSE,
-                            .calc_detection_pr = calc_detection_pr, ...,
-                            .sim_obs = stats::rbinom,
+                            .rdet = rdet, ...,
                             .return = c("array_id", "path_id",
                                         "timestep", "timestamp", "receiver_id",
                                         "dist", "pr")
                             ){
 
-  #### Calculate distances between path and receivers
-  # Define matrices for distance calculations
-  x <- y <- receiver_x <- receiver_y <- NULL
-  pxy <- as.matrix(.path[, list(x, y)])
-  rxy <- as.matrix(.array[, list(receiver_x, receiver_y)])
-  # Define (Euclidean) distance matrix between points along the path & receivers
+  #### Calculate (Euclidean) distances between points along the path & receivers
   # * Rows represent time steps (for one path)
   # * Columns represent receivers (for one array)
   # * Note that this approach will fail for very large matrices
+  x <- y <- receiver_x <- receiver_y <- NULL
+  pxy <- as.matrix(.path[, list(x, y)])
+  rxy <- as.matrix(.array[, list(receiver_x, receiver_y)])
   dist_mat <- .calc_distance(pxy, rxy, lonlat = .lonlat)
 
-  #### Calculate detection probability
+  #### Prepare long-form data.table
   out <-
     dist_mat |>
     as.data.table() |>
@@ -230,23 +227,16 @@ NULL
            timestep = rep(.path$timestep, ncol(dist_mat))) |>
     select("path_id", "array_id", "timestep", "receiver_id", dist = "value") |>
     arrange(.data$timestep, .data$receiver_id) |>
+    merge(.path, by = c("path_id", "timestep")) |>
+    merge(.array, by = c("array_id", "receiver_id")) |>
     as.data.table()
 
-  #### Define detection probabilities from distances
+  #### Simulate detections via .rdet()
+  out <- .rdet(out, ...)
+
+  #### Process outputs
   out <-
     out |>
-    merge(.path, by = c("path_id", "timestep")) |>
-    merge(.array, by = c("array_id", "receiver_id"))
-
-  #### Calculate detection probabilities
-  pr <- NULL
-  out[, pr := .calc_detection_pr(out, ...)]
-
-  #### Simulate detections & return outputs
-  out <-
-    out |>
-    # Simulate detections
-    mutate(detection = .sim_obs(n = nrow(out), size = 1, prob = .data$pr)) |>
     # Drop non detections
     filter(.data$detection == 1L) |>
     mutate(detection = NULL) |>

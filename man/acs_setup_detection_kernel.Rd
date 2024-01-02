@@ -4,21 +4,16 @@
 \alias{acs_setup_detection_kernel}
 \title{AC* set up: detection probability}
 \usage{
-acs_setup_detection_kernel(
-  .mooring,
-  .bathy,
-  .calc_detection_pr = calc_detection_pr_logistic,
-  ...
-)
+acs_setup_detection_kernel(.mooring, .bathy, .ddetx = ddetlogistic, ...)
 }
 \arguments{
-\item{.mooring}{A one-row \code{\link{data.table}} that defines the location of an acoustic receiver and associated information required to calculate detection probability via \code{.calc_detection_pr}. In this function, receiver coordinate columns (\code{receiver_x} and \code{receiver_y}) and the detection range (\code{receiver_range}) is required.}
+\item{.mooring}{A one-row \code{\link{data.table}} that defines the location of an acoustic receiver and associated information required to calculate detection probability via \code{.ddetx}. In this function, receiver coordinate columns (\code{receiver_x} and \code{receiver_y}) and the detection range (\code{receiver_range}) is required.}
 
 \item{.bathy}{A \code{\link{SpatRaster}} that defines the grid on which detection probability is calculated.}
 
-\item{.calc_detection_pr}{A function that calculates detection probability. In this implementation, the function is used to translate a \code{\link{SpatRaster}} of distances (m) (from each grid cell to the receiver in \code{.data}) via \code{\link[terra:app]{terra::app()}}.}
+\item{.ddetx}{A function that calculates detection probability, such as \code{\link[=ddetlogistic]{ddetlogistic()}}. In this implementation, the function is used to translate a \code{\link{SpatRaster}} of distances (m) (from each grid cell to the receiver in \code{.data}) via \code{\link[terra:app]{terra::app()}}. The function must accept a .\code{gamma} argument (even if this is ignored, see below).}
 
-\item{...}{Additional arguments passed to \code{.calc_detection_pr}. These arguments as passed to (\code{\link[=calc_detection_pr_logistic]{calc_detection_pr_logistic()}}  by default. \code{.gamma} is set internally to \code{.mooring$receiver_range}.}
+\item{...}{Additional arguments passed to \code{.ddetx}. These arguments as passed to (\code{\link[=ddetlogistic]{ddetlogistic()}}  by default. \code{.gamma} is set internally to \code{.mooring$receiver_range}.}
 }
 \value{
 The function returns a \code{\link{SpatRaster}} that defines the detection kernel around a specific receiver.
@@ -27,7 +22,7 @@ The function returns a \code{\link{SpatRaster}} that defines the detection kerne
 This function is part of a set of \verb{acs_setup_*()} functions that prepare the layers required to evaluate the likelihood of acoustic observations in an AC*PF algorithm. The function is an example detection probability function, of the kind required by \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}.
 }
 \details{
-An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual. At each time step in such an algorithm, we evaluate the likelihood of acoustic observations (the presence or absence of detections at each operational receiver, accounting for receiver placement) given particle samples. The likelihood of the acoustic observations depends upon how detection probability declines away from receiver(s) in space; i.e., the shape of a 'detection kernel' (see \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}). For any one receiver, the form of the kernel depends on the input to the \code{.calc_detection_pr} in \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}. This function exemplifies one possible input to this argument, which is a model in which detection probability declines logistically with distance from a receiver.
+An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual. At each time step in such an algorithm, we evaluate the likelihood of acoustic observations (the presence or absence of detections at each operational receiver, accounting for receiver placement) given particle samples. The likelihood of the acoustic observations depends upon how detection probability declines away from receiver(s) in space; i.e., the shape of a 'detection kernel' (see \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}). For any one receiver, the form of the kernel depends on the input to the \code{.ddetkernel} in \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}. This function exemplifies one possible input to this argument, which is a model in which detection probability declines logistically with distance from a receiver.
 }
 \section{Warning}{
 \itemize{

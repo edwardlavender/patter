@@ -42,6 +42,26 @@ test_that("Distribution functions work", {
 
 })
 
+test_that("*det*() functions work", {
+  expect_equal(
+    ddet(data.table(dist = 100)),
+    ddetlogistic(100)
+  )
+  expect_equal(
+    ddet(data.table(dist = 100), .beta = -0.03),
+    ddetlogistic(100, .beta = -0.03)
+  )
+
+  ddet2 <- function(.data) {
+    ddetlogistic(.x = .data$dist, .gamma = .data$receiver_range)
+  }
+  expect_equal(
+    ddet2(data.table(distance = c(50, 100), receiver_range = c(20, 150))),
+    c(0, ddetlogistic(100, .gamma = 150))
+  )
+
+})
+
 test_that("cang() works and is consistent", {
 
   ss()
@@ -151,25 +171,6 @@ test_that("clen(), cang() and cstep() are consistent with .lonlat = FALSE/TRUE",
   expect_equal(
     m1_ll,
     cstep(m0_ll, .len = len_ll, .ang = ang_ll, .lonlat = TRUE)
-  )
-})
-
-test_that("calc_detection_pr*() functions work", {
-  expect_equal(
-    calc_detection_pr(data.table(distance = 100)),
-    calc_detection_pr_logistic(100)
-  )
-  expect_equal(
-    calc_detection_pr(data.table(distance = 100), .beta = -0.03),
-    calc_detection_pr_logistic(100, .beta = -0.03)
-  )
-
-  calc_dpr <- function(.data) {
-    calc_detection_pr_logistic(.distance = .data$dist, .gamma = .data$receiver_range)
-  }
-  expect_equal(
-    calc_dpr(data.table(distance = c(50, 100), receiver_range = c(20, 150))),
-    c(0, calc_detection_pr_logistic(100, .gamma = 150))
   )
 })
 
@@ -355,7 +356,7 @@ test_that(".sim_detections() works", {
   )
   # Validate detection probability calculations
   expect_equal(
-    calc_detection_pr_logistic(out$dist),
+    ddetlogistic(out$dist),
     out$pr
   )
   # Validate simulation of detections
@@ -377,14 +378,15 @@ test_that(".sim_detections() works", {
                     pairwise = TRUE)
   )
 
-  #### Validate implementation of .calc_detection_pr()
+  #### Validate implementation of `.rdet`
   # Re-simulate arrays
   a <- sim_array(.n_receiver = 1000)
   a$receiver_x <- a$receiver_easting
   a$receiver_y <- a$receiver_northing
   p <- sim_path_walk(.n_step = 1000)
-  # If gamma = 0, we expect no detections:
-  .sim_detections(.path = p, .array = a, .gamma = 0) |>
+  # If gamma = 0, we expect no detections
+  # (unless the individual is on top of the receiver, hence .gamma = -1e-6 below):
+  .sim_detections(.path = p, .array = a, .gamma = -1e-6) |>
     expect_warning("No detections generated.", fixed = TRUE)
   # If .alpha = Inf, .beta = 1, .gamma = Inf, we expect all detections:
   out <- .sim_detections(.path = p, .array = a,

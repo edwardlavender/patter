@@ -157,8 +157,8 @@ To simulate passive acoustic telemetry data, see:
 
 These functions are supported by a set of simulation helpers, including:
 
-- `calc_detection_pr_logistic()` and `calc_detection_pr()`, which are
-  example detection probability models;
+- `ddetlogistic()`, `ddet()` and `rdet()` for the simulation of
+  detections;
 - `dtruncgamma()` `rtruncgamma()` and `rlen()` for the simulation of
   step lengths;
 - `rwn()`, `rangrw()` and `rangcrw()` for the simulation of turning

@@ -2,8 +2,6 @@
 % Please edit documentation in R/sims.R
 \name{sim_detections}
 \alias{sim_detections}
-\alias{calc_detection_pr}
-\alias{calc_detection_pr_logistic}
 \title{Simulation: acoustic detections}
 \usage{
 sim_detections(
@@ -11,17 +9,12 @@ sim_detections(
   .arrays,
   .calc_distance = terra::distance,
   .lonlat = FALSE,
-  .calc_detection_pr = calc_detection_pr,
+  .rdet = rdet,
   ...,
-  .sim_obs = stats::rbinom,
   .type = c("pairwise", "combinations"),
   .return = c("array_id", "path_id", "timestep", "timestamp", "receiver_id", "dist",
     "pr")
 )
-
-calc_detection_pr(.data, ...)
-
-calc_detection_pr_logistic(.distance, .alpha = 4, .beta = -0.01, .gamma = 750)
 }
 \arguments{
 \item{.paths}{A \code{\link{data.table}} that defines movement path(s) (e.g., from \code{\link[=sim_path_walk]{sim_path_walk()}}). This should contain the following columns:
@@ -46,31 +39,14 @@ calc_detection_pr_logistic(.distance, .alpha = 4, .beta = -0.01, .gamma = 750)
 \item \code{lonlat}, a \code{logical} variable that defines whether or not path/array coordinates are in longitude/latitude format (defined by \code{.lonlat});
 }}
 
-\item{.calc_detection_pr, ...}{A function that calculates detection probabilities. A \code{\link{data.table}} is passed to this function that defines, for each path point, the distance to each corresponding receiver (in a column called \code{dist}). All other variables in \code{.paths} and \code{.arrays} are also available in this \code{\link{data.table}}. This makes it possible to specify a wide variety of detection probability models (see Examples). \code{\link[=calc_detection_pr]{calc_detection_pr()}} function is an example that wraps \code{\link[=calc_detection_pr_logistic]{calc_detection_pr_logistic()}}, which implements a standard, distance-dependent logistic detection probability model. Other arguments can be passed to \code{.calc_detection_pr} via \code{...}.}
-
-\item{.sim_obs}{A function that simulates detections (0, 1), such as \code{\link[stats:Binomial]{stats::rbinom()}}. This must accept three arguments:
-\itemize{
-\item \code{n}---an \code{integer} that defines the number of outcomes to simulate;
-\item \code{size}---an \code{integer} that defines the number of trials (\code{size = 1});
-\item \code{prob}---a \code{numeric} vector that defines detection probabilities;
-}}
+\item{.rdet, }{... A \code{function}, and associated arguments, that simulate detections (such as \code{\link[=rdet]{rdet()}}. A \code{\link{data.table}} is passed to this function (in the form \code{.rdet(.data, ...)}) that defines, for each path point, the distance to each corresponding receiver (in a column called \code{dist}). All other variables in \code{.paths} and \code{.arrays} are also available in this \code{\link{data.table}}. This makes it possible to specify a wide variety of detection probability models (see Examples). The function should return the inputted \code{\link{data.table}} with an \code{integer} \code{detection} column that defines detections (0, 1).}
 
 \item{.type}{If \code{.paths} and \code{.arrays} contain multiple paths/arrays, \code{.type} is a \code{character} that defines whether or not to simulate detections for each path/array pair (\code{.type = "pairwise"}) or for all combinations of paths/arrays (\code{type = "combinations"}).}
 
 \item{.return}{(optional) A \code{character} vector that defines column names retained in the output. \code{NULL} retains all columns in \code{.paths} and \code{.arrays} plus internally computed columns:
 \itemize{
 \item \code{dist}---the distance between points on the path(s) and the receiver(s) that recorded detections;
-\item \code{pr}---the probability of detection at receivers that recorded detections;
-}}
-
-\item{.data}{The input for \code{\link[=calc_detection_pr]{calc_detection_pr()}}, an example \code{.calc_detection_pr} function (see above).}
-
-\item{.distance, .alpha, .beta, .gamma}{Arguments for \code{\link[=calc_detection_pr_logistic]{calc_detection_pr_logistic()}}.
-\itemize{
-\item \code{.distance} is a \code{numeric} vector of distances;
-\item \code{.alpha} is the intercept;
-\item \code{.beta} is the coefficient for the effect of distance;
-\item \code{.gamma} is a \code{numeric} vector of detection range(s);
+\item Columns computed by \code{.rdet}, such as \code{pr} (the probability of detection at receivers that recorded detections), in the case of \verb{.rdet =} \code{\link{rdet}}.
 }}
 }
 \value{
@@ -83,8 +59,7 @@ These functions facilitate the simulation of detections, arising from animal mov
 \code{\link[=sim_detections]{sim_detections()}} implements the simulation. This requires the movement path(s) and array(s) in which detections are simulated to be provided as \code{\link{data.table}}s. If multiple paths and/or arrays are provided, the function simulates detections for each path/array pair (if \code{.type = "pairwise"}) or for all combinations of arrays and paths (if \verb{.type = "combinations}). Detections are simulated in three steps:
 \itemize{
 \item A distance function (\code{.calc_distance}) is used to calculate distances between points along a selected path and receiver(s):
-\item A detection probability function (\code{.calc_detection_pr}) is used to calculate detection probabilities, given distances and other information in \code{.paths} and \code{.arrays};
-\item A random generation function (\code{.sim_obs}) is used to simulate detections (0, 1) at receivers;
+\item A random generation function (\code{.rdet}) is used to simulate detections, given distances and other information in \code{.paths} and \code{.arrays};
 }
 
 In the output, only detections are retained (as in 'real-world' datasets).
@@ -92,7 +67,7 @@ In the output, only detections are retained (as in 'real-world' datasets).
 These functions replace \href{https://edwardlavender.github.io/flapper/reference/sim_detections.html}{\code{flapper::sim_detections()}} and \href{https://edwardlavender.github.io/flapper/reference/get_detection_pr.html}{\code{flapper::get_detection_pr()}}.
 }
 \examples{
-ss()
+ssv()
 
 #### Example (1): Implement function for a single path/array
 # Simulate an example array & path
@@ -113,52 +88,43 @@ sim_detections(.paths = p, .arrays = a, .lonlat = TRUE)
 # E.g., use a shortest-distances function
 # See ?cppRouting::get_distance_matrix for one option.
 
-#### Example (4): Customise the detection probability function
+#### Example (4): Customise the simulation function (`.rdet`)
 # Re-simulate arrays and paths
 a <- sim_array(.n_array = 1L)
 p <- sim_path_walk(.n_path = 1L)
-# Customise the default via .alpha/.beta/.gamma constants
+# Customise the default .alpha/.beta/.gamma constants
 # * If .gamma (detection range) parameter = zero, we get zero detections
 dist <- 1:1000
 sim_detections(.paths = p, .arrays = a, .gamma = 0)
 # E.g., detection probability is perfect, we get detections at every receiver
-plot(dist, calc_detection_pr_logistic(dist, .alpha = Inf, .beta = 1, .gamma = Inf))
+plot(dist, ddetlogistic(dist, .alpha = Inf, .beta = 1, .gamma = Inf))
 sim_detections(.paths = p, .arrays = a, .alpha = Inf, .beta = 1, .gamma = Inf)
 # Customise the default function via receiver-specific parameters
 a$receiver_range <- runif(nrow(a), 100, 500)
-calc_dpr <- function(.data) {
-  calc_detection_pr_logistic(.distance = .data$dist,
-                             .alpha = 2.5, .beta = -0.02,
-                             .gamma = .data$receiver_range)
+ddetreceiver <- function(.data) {
+  ddetlogistic(.x = .data$dist,
+               .alpha = 2.5, .beta = -0.02,
+               .gamma = .data$receiver_range)
 }
-sim_detections(.paths = p, .arrays = a, .calc_detection_pr = calc_dpr)
+sim_detections(.paths = p, .arrays = a, .ddet = ddetreceiver)
 # Use a different model that uses information in .arrays/.paths
 # * E.g., a logistic model that depends on distance & receiver type
 a$receiver_type <- sample(c(0, 1), nrow(a), replace = TRUE)
-.calc_dpr <- function(.distance, .receiver_type,
-                      .alpha = 2.5,
-                      .beta_1 = -0.02, .beta_2 = 2,
-                      .gamma = 500) {
+ddetdrt <- function(.distance, .receiver_type,
+                   .alpha = 2.5,
+                   .beta_1 = -0.02, .beta_2 = 2,
+                   .gamma = 500) {
   pr <- stats::plogis(.alpha + .beta_1 * .distance + .beta_2 * .receiver_type)
   pr[.distance > .gamma] <- 0
   pr
 }
 dist <- 1:500
-plot(dist, .calc_dpr(dist, 0), type = "l")
-lines(dist, .calc_dpr(dist, 1), col = "red")
-calc_dpr <- function(.data) {
-  .calc_dpr(.distance = .data$dist, .receiver_type = .data$receiver_type)
+plot(dist, ddetdrt(dist, 0), type = "l")
+lines(dist, ddetdrt(dist, 1), col = "red")
+ddet2 <- function(.data) {
+  ddetdrt(.distance = .data$dist, .receiver_type = .data$receiver_type)
 }
-sim_detections(.paths = p, .arrays = a, .calc_detection_pr = calc_dpr)
-
-#### Example (5): Customise simulation function
-# extraDistr::rbern() v.1.10.0 is equivalent to rbinom with size = 1 (& a bit faster!)
-# if (rlang::is_installed("extraDistr")) {
-#   sim_obs <- function(n = 1, size = NULL, prob) {
-#     extraDistr::rbern(n = n, prob = prob)
-#   }
-#   sim_detections(.paths = p, .arrays = a, .sim_obs = sim_obs)
-# }
+sim_detections(.paths = p, .arrays = a, .ddet = ddet2)
 
 #### Example (6): Handle multiple paths/arrays
 # Simulate observations between each array/path pair

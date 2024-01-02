@@ -49,7 +49,7 @@ To simulate passive acoustic telemetry data, see:
 
 These functions are supported by a set of simulation helpers, including:
 \itemize{
-\item \code{\link[=calc_detection_pr_logistic]{calc_detection_pr_logistic()}} and \code{\link[=calc_detection_pr]{calc_detection_pr()}}, which are example detection probability models;
+\item \code{\link[=ddetlogistic]{ddetlogistic()}}, \code{\link[=ddet]{ddet()}} and \code{\link[=rdet]{rdet()}} for the simulation of detections;
 \item \code{\link[=dtruncgamma]{dtruncgamma()}} \code{\link[=rtruncgamma]{rtruncgamma()}} and \code{\link[=rlen]{rlen()}} for the simulation of step lengths;
 \item \code{\link[=rwn]{rwn()}}, \code{\link[=rangrw]{rangrw()}} and \code{\link[=rangcrw]{rangcrw()}} for the simulation of turning angles;
 \item \code{\link[=cstep]{cstep()}} and \code{\link[=dstep]{dstep()}} for the simulation of steps into new locations;

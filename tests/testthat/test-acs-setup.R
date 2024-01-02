@@ -49,7 +49,7 @@ test_that("acs_setup_detection_kernel() works", {
   m <- dat_moorings[1, .(receiver_x = receiver_easting, receiver_y = receiver_northing)]
   p <- acs_setup_detection_kernel(m, dat_gebco())
   expect_equal(terra::extract(p, data.frame(m$receiver_x, m$receiver_y))[1, 2],
-               calc_detection_pr_logistic(0))
+               ddetlogistic(0))
 
 })
 
@@ -80,7 +80,7 @@ test_that("acs_setup_detection_kernels() works", {
   })
   # Define kernels
   k <- acs_setup_detection_kernels(dlist,
-                                   .calc_detection_pr = acs_setup_detection_kernel)
+                                   .ddetkernel = acs_setup_detection_kernel)
 
   #### Check array designs
   expect_true(all.equal(
@@ -135,10 +135,10 @@ test_that("acs_setup_detection_kernels() works", {
   }
   # Check warnings (NA at receiver)
   acs_setup_detection_kernels(dlist,
-                              .calc_detection_pr = calc_dpr) |>
+                              .ddetkernel = calc_dpr) |>
     expect_warning("Detection probability is NA at receiver 3.", fixed = TRUE)
   # Check warnings (0 at receiver)
   acs_setup_detection_kernels(dlist,
-                              .calc_detection_pr = function(.mooring, .bathy) calc_dpr(.mooring, .bathy, .error = 0)) |>
+                              .ddetkernel = function(.mooring, .bathy) calc_dpr(.mooring, .bathy, .error = 0)) |>
     expect_warning("Detection probability is 0 at receiver 3.", fixed = TRUE)
 })

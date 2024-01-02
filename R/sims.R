@@ -1,25 +1,44 @@
 #' @title Simulation: distribution functions
 #' @description These convenience functions support the generation of animal movement paths and observations in _de novo_ simulations (`sim_*()` functions) and simulation-based reconstructions of movement paths ([`pf_forward()`] and [`pf_backward_sampler()`]).
 #'
-#' * [`ss()`] sets a seed;
+#' * `ss*()` functions set seeds;
 #' * `r*()` functions simulate random variates;
 #' * `c*()` functions calculate outcomes from random-variate inputs;
 #' * `d*()` functions return densities;
 #'
-#' `r*()` and `c*()` functions are used in _de novo_ simulations (via `sim_*()` functions such as [`sim_path_walk()`]) and the forward simulation-based reconstruction of movement paths (in [`pf_forward()`]).
+#' `r*()` and `c*()` functions are used in _de novo_ simulations (via `sim_*()` functions such as [`sim_path_walk()`] and [`sim_detections()`]) and the forward simulation-based reconstruction of movement paths (in [`pf_forward()`]).
 #'
 #' `d*()` functions are primarily used in the simulation-based reconstruction of movement paths as part of the backward sampler via [`pf_backward_sampler()`].
 #'
-#' @param .n,.x,.shape,.scale,.mobility Arguments for [`rtruncgamma()`] and [`dtruncgamma()`]:
+#' @param .n,.x Arguments for distribution functions ([`rbern()`], [`dbern()`], [`rtruncgamma()`] and [`dtruncgamma()`]):
 #' * `.n` is an `integer` that defines the number of simulated outcome(s);
-#' * `.x` is a `numeric` vector that defines step length(s) (in the context of animal movement);
+#' * `.x` is a `numeric` vector that simulated outcome(s);
+#'
+#' @param .prob Additional argument(s) for [`rbern()`] and [`dbern()`]:
+#' * `.prob` is `numeric` vector of probabilities.
+#'
+#' @param .alpha,.beta,.gamma Additional arguments for [`ddetlogistic()`] (see Details).
+#' * `.alpha` is a `numeric` value for the intercept, on the scale of the logistic function.
+#' * `.beta` is a `numeric` value for the gradient, on the scale of the logistic function.
+#' * `.gamma` is a `numeric` value for the receiver detection range.
+#'
+#' @param .data,.ddet Arguments for [`rdet()`].
+#' * `.data` is a [`data.table`].
+#' * `.ddet` is a `function` evaluates the probability of a detection;
+#'
+#' For [`rdet()`], `.ddet` must accept the `.data` [`data.table`] as its first argument and evaluate the probability of a detection accordingly. [`rbern()`] then simulates detection(s). For `.ddet =` [`ddet`], `.data` must include a `dist` column that defines the distances between transmission locations and receivers. In [`ddet()`], `.data$dist` is passed to [`ddetlogistic()`] to calculate detection probabilities (see Details).
+#'
+#' @param .ddetx Additional arguments for [`ddet()`].
+#' * [`.ddetx`] is a function that evaluates the probability density of detections from a `numeric` vector (e.g,. of distances).
+#'
+#' @param .shape,.scale,.mobility Additional arguments for [`rtruncgamma()`] and [`dtruncgamma()`]:
 #' * `.shape` is a `numeric` value that defines the shape parameter of a Gamma distribution (see [`stats::rgamma()`]).
 #' * `.scale` is a `numeric` value that defines the scale parameter of a Gamma distribution (see [`stats::rgamma()`]).
 #' * `.mobility` is a `numeric` value that defines the maximum possible value (step length) (see `truncdist::rtrunc()`).
 #'
 #' @param .mu,.rho,.sd Arguments for [`rwn()`] for the simulation of turning angles, passed to the `mu`, `rho` and `sd` arguments of [`circular::rwrappednormal()`].
 #'
-#' @param .prior,.t Arguments for [`rlen()`], [`rangrw()`] and [`rangcrw()`], as used in top-level functions (i.e., [`sim_path_walk()`]):
+#' @param .prior,.t Additional arguments for [`rlen()`], [`rangrw()`] and [`rangcrw()`], as used in top-level functions (i.e., [`sim_path_walk()`]):
 #' * `.n`---an `integer` that defines the number of simulated outcome(s);
 #' * `.prior`---a `numeric` vector that defines the simulated value(s) from the previous time step;
 #' * `.t`---an `integer` that defines the time step;
@@ -50,8 +69,10 @@
 #'
 #' @param ... Arguments passed to/from functions.
 #' * [`ss()`]: not used;
-#' * [`rtruncgamma()`]: silently ignored;
-#' * [`dtruncgamma()`]: silently ignored;
+#' * [`rbern()`], [`ddet()`]: not used;
+#' * [`rdet()`], [`ddet()`]: passed to `.ddet` ( = [`ddet()`], wrapping [`ddetlogistic()`]);
+#' * [`ddetlogistic()`]: not used;
+#' * [`rtruncgamma()`], [`dtruncgamma()`]: silently ignored;
 #' * [`rwn()`]: silently ignored;
 #' * [`rlen()`]: passed to [`rtruncgamma()`];
 #' * [`rangrw()`]: passed to [`rwn()`];
@@ -66,14 +87,39 @@
 #'
 #' # Reproducibility
 #'
-#' * [`ss()`] wraps [`set.seed()`] and is used for reproducible simulations;
+#' * [`ssf()`] sets a fixed seed (wrapping `set.seed(123L)`);
+#' * [`ssv()`] sets a time-varying seed (wrapping `set.seed(as.integer(as.Date(Sys.time())))`) and is primarily intended for package testing;
+#'
+#' # Detections
+#'
+#' ## Distribution functions
+#'
+#' * `*bern()` functions are distribution functions for the Bernoulli distribution:
+#'    * [`rbern()`] wraps [`stats::rbinom()`] and simulates values from a Bernoulli distribution;
+#'    * [`dbern()`] wraps [`stats::dbinom()`] and evaluates the probability density of simulated values;
+#'
+#' ## Wrappers
+#'
+#' * `*det()` functions wrap `*bern()` functions for the simulation of detections at receivers:
+#'    * [`rdet()`] wraps [`ddet()`] and [`rbern()`] to simulate detections;
+#'    * [`ddet()`] wraps [`ddetlogistic()`] to calculate the probability density of detections;
+#'    * [`ddetlogistic()`] effectively wraps [`dbern()`] and evaluates the probability density of a detection event (at receiver \eqn{k} at time \eqn{t}), given a transmission from location \eqn{\bold{s} = (x, y)} (i.e., \eqn{p(\text{ev}[k, t] | \bold{s})}), as a truncated \eqn{\text{logistic}} function of the distance (`.x`) between the transmission (\bold{s}) and receiver (\bold{r}) locations, i.e.,
+#' \deqn{
+#' p(\text{ev}[k, t] | \bold{s}) =  \text{Bernoulli}(\text{.prob}) \\
+#' \text{.prob} =
+#'  \begin{cases}
+#'    \text{logistic}(\text{.alpha} + \text{.beta} \times .x) & \text{if } .x < \text{.gamma} \\
+#'    0 & \text{otherwise}
+#'  \end{cases}
+#' }
+#' where \eqn{\text{logistic}(x) = 1 + e^{-x}}; `.alpha`, and `.beta` are parameters; and `.gamma` is the receiver's detection range.
 #'
 #' # Movement
 #'
 #' ## Distribution functions
 #'
 #' * `*truncgamma()` functions are distribution functions for the truncated Gamma distribution:
-#'    * [`rtruncgamma()`] simulates values from a truncated gamma distribution with a `.mobility` parameter that truncates the right-hand side of the distribution;
+#'    * [`rtruncgamma()`] simulates values from a truncated Gamma distribution with a `.mobility` parameter that truncates the right-hand side of the distribution;
 #'    * [`dtruncgamma()`] returns the densit(ies) of specified values(s);
 #
 #' * `*wn()` functions are distribution functions for the wrapped normal distribution:
@@ -129,9 +175,59 @@
 #' @rdname sim_helpers
 #' @export
 
-ss <- function() {
-  # set.seed(123L)
+ssf <- function() {
+  set.seed(123L)
+}
+
+#' @rdname sim_helpers
+#' @export
+
+ssv <- function() {
   set.seed(as.integer(as.Date(Sys.time())))
+}
+
+#' @rdname sim_helpers
+#' @export
+
+rbern <- function(.n, .prob) {
+  stats::rbinom(n = .n, size = 1L, prob = .prob)
+}
+
+#' @rdname sim_helpers
+#' @export
+
+dbern <- function(.x, .prob) {
+  stats::dbinom(x = .x, size = 1L, prob = .prob)
+}
+
+#' @rdname sim_helpers
+#' @export
+
+rdet <- function(.data, .ddet = ddet, ...) {
+  pr <- detection <- NULL
+  .data[, pr := .ddet(.data, ...)]
+  .data[, detection := rbern(.N, .prob = pr)]
+  .data
+}
+
+#' @rdname sim_helpers
+#' @export
+
+ddetlogistic <- function(.x,
+                         .alpha = 4, .beta = -0.01,
+                         .gamma = 750) {
+  pr <- stats::plogis(.alpha + .beta * .x)
+  pr[.x > .gamma] <- 0
+  # pr <- dbern(.x = 1L, size = 1L, prob = pr)
+  pr
+}
+
+#' @rdname sim_helpers
+#' @export
+
+ddet <- function(.data, .ddetx = ddetlogistic, ...) {
+  check_names(.data, "dist")
+  .ddetx(.data$dist, ...)
 }
 
 #' @rdname sim_helpers
@@ -563,28 +659,16 @@ sim_path_walk <- function(.bathy = spatTemplate(), .lonlat = FALSE,
 #' * a matrix of path coordinates (for a selected path);
 #' * a matrix of receiver coordinates (for a specific array);
 #' * `lonlat`, a `logical` variable that defines whether or not path/array coordinates are in longitude/latitude format (defined by `.lonlat`);
-#' @param .calc_detection_pr,... A function that calculates detection probabilities. A [`data.table`] is passed to this function that defines, for each path point, the distance to each corresponding receiver (in a column called `dist`). All other variables in `.paths` and `.arrays` are also available in this [`data.table`]. This makes it possible to specify a wide variety of detection probability models (see Examples). [`calc_detection_pr()`] function is an example that wraps [`calc_detection_pr_logistic()`], which implements a standard, distance-dependent logistic detection probability model. Other arguments can be passed to `.calc_detection_pr` via `...`.
-#' @param .sim_obs A function that simulates detections (0, 1), such as [`stats::rbinom()`]. This must accept three arguments:
-#' * `n`---an `integer` that defines the number of outcomes to simulate;
-#' * `size`---an `integer` that defines the number of trials (`size = 1`);
-#' * `prob`---a `numeric` vector that defines detection probabilities;
+#' @param .rdet, ... A `function`, and associated arguments, that simulate detections (such as [`rdet()`]. A [`data.table`] is passed to this function (in the form `.rdet(.data, ...)`) that defines, for each path point, the distance to each corresponding receiver (in a column called `dist`). All other variables in `.paths` and `.arrays` are also available in this [`data.table`]. This makes it possible to specify a wide variety of detection probability models (see Examples). The function should return the inputted [`data.table`] with an `integer` `detection` column that defines detections (0, 1).
 #' @param .type If `.paths` and `.arrays` contain multiple paths/arrays, `.type` is a `character` that defines whether or not to simulate detections for each path/array pair (`.type = "pairwise"`) or for all combinations of paths/arrays (`type = "combinations"`).
 #' @param .return (optional) A `character` vector that defines column names retained in the output. `NULL` retains all columns in `.paths` and `.arrays` plus internally computed columns:
 #' * `dist`---the distance between points on the path(s) and the receiver(s) that recorded detections;
-#' * `pr`---the probability of detection at receivers that recorded detections;
-#'
-#' @param .data The input for [`calc_detection_pr()`], an example `.calc_detection_pr` function (see above).
-#' @param .distance,.alpha,.beta,.gamma Arguments for [`calc_detection_pr_logistic()`].
-#' * `.distance` is a `numeric` vector of distances;
-#' * `.alpha` is the intercept;
-#' * `.beta` is the coefficient for the effect of distance;
-#' * `.gamma` is a `numeric` vector of detection range(s);
+#' * Columns computed by `.rdet`, such as `pr` (the probability of detection at receivers that recorded detections), in the case of `.rdet =` [`rdet`].
 #'
 #' @details
 #' [`sim_detections()`] implements the simulation. This requires the movement path(s) and array(s) in which detections are simulated to be provided as [`data.table`]s. If multiple paths and/or arrays are provided, the function simulates detections for each path/array pair (if `.type = "pairwise"`) or for all combinations of arrays and paths (if `.type = "combinations`). Detections are simulated in three steps:
 #' * A distance function (`.calc_distance`) is used to calculate distances between points along a selected path and receiver(s):
-#' * A detection probability function (`.calc_detection_pr`) is used to calculate detection probabilities, given distances and other information in `.paths` and `.arrays`;
-#' * A random generation function (`.sim_obs`) is used to simulate detections (0, 1) at receivers;
+#' * A random generation function (`.rdet`) is used to simulate detections, given distances and other information in `.paths` and `.arrays`;
 #'
 #' In the output, only detections are retained (as in 'real-world' datasets).
 #'
@@ -604,8 +688,7 @@ NULL
 
 sim_detections <- function(.paths, .arrays,
                            .calc_distance = terra::distance, .lonlat = FALSE,
-                           .calc_detection_pr = calc_detection_pr, ...,
-                           .sim_obs = stats::rbinom,
+                           .rdet = rdet, ...,
                            .type = c("pairwise", "combinations"),
                            .return = c("array_id", "path_id",
                                        "timestep", "timestamp", "receiver_id",
@@ -613,6 +696,7 @@ sim_detections <- function(.paths, .arrays,
 ) {
 
   #### Check user inputs
+  rlang::check_dots_used()
   check_inherits(.paths, "data.table")
   check_inherits(.arrays, "data.table")
   check_names(.paths, c("timestep", "x", "y"))
@@ -649,8 +733,8 @@ sim_detections <- function(.paths, .arrays,
   # Define arguments for simulation
   args <- list(.path = NULL, .array = NULL,
                .calc_distance = .calc_distance, .lonlat = .lonlat,
-               .calc_detection_pr = .calc_detection_pr, ...,
-               .sim_obs = .sim_obs, .return = .return)
+               .rdet = .rdet, ...,
+               .return = .return)
   # Implement simulation (pairwise or for all combinations)
   if (.type == "pairwise") {
 
@@ -679,22 +763,4 @@ sim_detections <- function(.paths, .arrays,
     arrange("array_id", "path_id", "timestep") |>
     as.data.table()
 
-}
-
-#' @rdname sim_detections
-#' @export
-
-calc_detection_pr <- function(.data, ...) {
-  calc_detection_pr_logistic(.distance = .data$dist, ...)
-}
-
-#' @rdname sim_detections
-#' @export
-
-calc_detection_pr_logistic <- function(.distance,
-                                       .alpha = 4, .beta = -0.01,
-                                       .gamma = 750) {
-  pr <- stats::plogis(.alpha + .beta * .distance)
-  pr[.distance > .gamma] <- 0
-  pr
 }

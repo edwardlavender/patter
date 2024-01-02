@@ -25,7 +25,7 @@ test_that(".acs_absences() works", {
                          .lonlat = FALSE)
   overlaps <- acs_setup_detection_overlaps(dlist)
   kernels <- acs_setup_detection_kernels(dlist,
-                                         .calc_detection_pr = acs_setup_detection_kernel)
+                                         .ddetkernel = acs_setup_detection_kernel)
 
   #### Test .acs_absences()
   # Detections only at 3 indicate absences at 4
