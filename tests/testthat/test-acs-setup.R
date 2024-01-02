@@ -3,7 +3,6 @@ test_that("pf_setup_obs() works", {
 
 })
 
-
 test_that("acs_setup_detection_overlaps() work", {
 
   #### Define example 'moorings' dataset
