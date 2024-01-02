@@ -81,8 +81,8 @@
 <span>  .origin <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  .n_step <span class="op">=</span> <span class="fl">10L</span>,</span>
 <span>  .timestamp <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  .sim_length <span class="op">=</span> <span class="va">rlen</span>,</span>
-<span>  .sim_angle <span class="op">=</span> <span class="va">rangrw</span>,</span>
+<span>  .rlen <span class="op">=</span> <span class="va">rlen</span>,</span>
+<span>  .rang <span class="op">=</span> <span class="va">rangrw</span>,</span>
 <span>  <span class="va">...</span>,</span>
 <span>  .n_path <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  .plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -112,16 +112,16 @@
 <dd><p>(optional) A vector of time stamps, one for each time step, for inclusion in the output <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> as a <code>timestamp</code> column.</p></dd>
 
 
-<dt>.sim_length, .sim_angle, ...</dt>
+<dt>.rlen, .rang, ...</dt>
 <dd><p>Functions and accompanying arguments that simulate step lengths and turning angles. Simulated step lengths should be in map units (e.g., metres) if <code>.lonlat = FALSE</code> or metres if <code>.lonlat = TRUE</code>. Turning angles should be in degrees. The functions must accept four named arguments, even if unused:</p><ul><li><p><code>.n</code>---an <code>integer</code> that defines the number of simulated outcome(s);</p></li>
 <li><p><code>.prior</code>---a <code>numeric</code> vector that defines the simulated value(s) from the previous time step;</p></li>
 <li><p><code>.t</code>---an <code>integer</code> that defines the time step;</p></li>
 <li><p><code>...</code>---additional arguments, if needed;</p></li>
 </ul><p>If <code>.prior</code> is used, the function should be able to handle the first time step (when <code>.prior</code> is set to <code>NULL</code>). See <code><a href="sim_helpers.html">rangcrw()</a></code> (below) for an example.</p>
-<p>Note that <code>...</code> is passed down from <code>sim_path_walk()</code> to both <code>.sim_length</code> and <code>.sim_angle</code> so care is required to ensure that <code>...</code> parameters are handled correctly.</p>
-<p>The following template functions are provided:</p><ul><li><p><code><a href="sim_helpers.html">rlen()</a></code> is an example <code>.sim_length</code> function that simulates step lengths from a truncated Gamma distribution (via <code><a href="sim_helpers.html">rtruncgamma()</a></code>);</p></li>
-<li><p><code><a href="sim_helpers.html">rangrw()</a></code> is an example <code>.sim_angle</code> function that simulates uncorrelated turning angles from a wrapped normal distribution (via <code><a href="sim_helpers.html">rwn()</a></code>);</p></li>
-<li><p><code><a href="sim_helpers.html">rangcrw()</a></code> is an example <code>.sim_angle</code> function that can simulate correlated turning angles (via <code><a href="sim_helpers.html">rwn()</a></code>);</p></li>
+<p>Note that <code>...</code> is passed down from <code>sim_path_walk()</code> to both <code>.rlen</code> and <code>.rang</code> so care is required to ensure that <code>...</code> parameters are handled correctly.</p>
+<p>The following template functions are provided:</p><ul><li><p><code><a href="sim_helpers.html">rlen()</a></code> is an example <code>.rlen</code> function that simulates step lengths from a truncated Gamma distribution (via <code><a href="sim_helpers.html">rtruncgamma()</a></code>);</p></li>
+<li><p><code><a href="sim_helpers.html">rangrw()</a></code> is an example <code>.rang</code> function that simulates uncorrelated turning angles from a wrapped normal distribution (via <code><a href="sim_helpers.html">rwn()</a></code>);</p></li>
+<li><p><code><a href="sim_helpers.html">rangcrw()</a></code> is an example <code>.rang</code> function that can simulate correlated turning angles (via <code><a href="sim_helpers.html">rwn()</a></code>);</p></li>
 </ul></dd>
 
 
@@ -219,12 +219,12 @@
 <span class="r-in"><span>                     .shape <span class="op">=</span> <span class="fl">5</span>, .mobility <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">p</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co">#### Example (6): Modify `.sim_length` model</span></span></span>
+<span class="r-in"><span>  <span class="co">#### Example (6): Modify `.rlen` model</span></span></span>
 <span class="r-in"><span>  <span class="co"># Use time-varying step lengths dependent upon some behavioural state</span></span></span>
 <span class="r-in"><span>  <span class="va">b</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/pkg/terra/man/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="fu"><a href="sim_helpers.html">rtruncgamma</a></span><span class="op">(</span>.n <span class="op">=</span> <span class="fl">1e3</span>, .shape <span class="op">=</span> <span class="fl">5</span>, .scale <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/pkg/terra/man/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="fu"><a href="sim_helpers.html">rtruncgamma</a></span><span class="op">(</span>.n <span class="op">=</span> <span class="fl">1e3</span>, .shape <span class="op">=</span> <span class="fl">15</span>, .scale <span class="op">=</span> <span class="fl">15</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">sim_length</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.n</span> <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>  <span class="va">rlen</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.n</span> <span class="op">=</span> <span class="fl">1</span>,</span></span>
 <span class="r-in"><span>                         <span class="va">.prior</span> <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">.t</span> <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">.state</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>    <span class="kw">if</span> <span class="op">(</span><span class="va">.state</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="va">.t</span><span class="op">]</span> <span class="op">==</span> <span class="fl">0L</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>      <span class="fu"><a href="sim_helpers.html">rtruncgamma</a></span><span class="op">(</span>.n <span class="op">=</span> <span class="va">.n</span>, .shape <span class="op">=</span> <span class="fl">5</span>, .scale <span class="op">=</span> <span class="fl">5</span>, .mobility <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span></span>
@@ -236,7 +236,7 @@
 <span class="r-in"><span>  <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">sim_path_walk</span><span class="op">(</span><span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                     .origin <span class="op">=</span> <span class="va">origin</span>,</span></span>
 <span class="r-in"><span>                     .n_step <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">b</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>                     .sim_length <span class="op">=</span> <span class="va">sim_length</span>, .state <span class="op">=</span> <span class="va">b</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                     .rlen <span class="op">=</span> <span class="va">rlen</span>, .state <span class="op">=</span> <span class="va">b</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">p</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co">#### Example (7): Update model for turning angles</span></span></span>
@@ -249,7 +249,7 @@
 <span class="r-in"><span>  <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">sim_path_walk</span><span class="op">(</span><span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                     .origin <span class="op">=</span> <span class="va">origin</span>,</span></span>
 <span class="r-in"><span>                     .n_step <span class="op">=</span> <span class="fl">10L</span>,</span></span>
-<span class="r-in"><span>                     .sim_angle <span class="op">=</span> <span class="va">rangrw</span>, .mu <span class="op">=</span> <span class="op">-</span><span class="op">(</span><span class="fl">90</span> <span class="op">+</span> <span class="fl">9</span><span class="op">)</span>, .rho <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>                     .rang <span class="op">=</span> <span class="va">rangrw</span>, .mu <span class="op">=</span> <span class="op">-</span><span class="op">(</span><span class="fl">90</span> <span class="op">+</span> <span class="fl">9</span><span class="op">)</span>, .rho <span class="op">=</span> <span class="fl">1</span>,</span></span>
 <span class="r-in"><span>                     .one_page <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">p</span></span></span>
 <span class="r-in"><span></span></span>
@@ -258,14 +258,14 @@
 <span class="r-in"><span>  <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">sim_path_walk</span><span class="op">(</span><span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                     .origin <span class="op">=</span> <span class="va">origin</span>,</span></span>
 <span class="r-in"><span>                     .n_step <span class="op">=</span> <span class="fl">1000L</span>, .n_path <span class="op">=</span> <span class="fl">1L</span>,</span></span>
-<span class="r-in"><span>                     .sim_angle <span class="op">=</span> <span class="va">rangcrw</span>, .rho <span class="op">=</span> <span class="fl">0.5</span>,</span></span>
+<span class="r-in"><span>                     .rang <span class="op">=</span> <span class="va">rangcrw</span>, .rho <span class="op">=</span> <span class="fl">0.5</span>,</span></span>
 <span class="r-in"><span>                     .one_page <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="co"># The correlation between sequential angles is close to the simulated value:</span></span></span>
 <span class="r-in"><span>  <span class="va">adt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>a0 <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="va">angle</span>, a1 <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html" class="external-link">lead</a></span><span class="op">(</span><span class="va">p</span><span class="op">$</span><span class="va">angle</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/pkg/circular/man/cor.circular.html" class="external-link">cor.circular</a></span><span class="op">(</span><span class="fu"><a href="degrees.html">degrees</a></span><span class="op">(</span><span class="va">adt</span><span class="op">$</span><span class="va">a0</span><span class="op">)</span>, <span class="fu"><a href="degrees.html">degrees</a></span><span class="op">(</span><span class="va">adt</span><span class="op">$</span><span class="va">a1</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co">#### Example (9): Use custom step/length or turning angle models</span></span></span>
-<span class="r-in"><span>  <span class="va">sim_angle_vmd</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.n</span> <span class="op">=</span> <span class="fl">1L</span>, <span class="va">.prior</span> <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">rang_vmd</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.n</span> <span class="op">=</span> <span class="fl">1L</span>, <span class="va">.prior</span> <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>      <span class="fu">circular</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/circular/man/vonmises.html" class="external-link">rvonmises</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>        n <span class="op">=</span> <span class="va">.n</span>,</span></span>
@@ -279,7 +279,7 @@
 <span class="r-in"><span>  <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">sim_path_walk</span><span class="op">(</span><span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                     .origin <span class="op">=</span> <span class="va">origin</span>,</span></span>
 <span class="r-in"><span>                     .n_step <span class="op">=</span> <span class="fl">1000L</span>,</span></span>
-<span class="r-in"><span>                     .sim_angle <span class="op">=</span> <span class="va">sim_angle_vmd</span>,</span></span>
+<span class="r-in"><span>                     .rang <span class="op">=</span> <span class="va">rang_vmd</span>,</span></span>
 <span class="r-in"><span>                     .one_page <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">p</span></span></span>
 <span class="r-in"><span></span></span>

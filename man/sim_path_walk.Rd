@@ -10,8 +10,8 @@ sim_path_walk(
   .origin = NULL,
   .n_step = 10L,
   .timestamp = NULL,
-  .sim_length = rlen,
-  .sim_angle = rangrw,
+  .rlen = rlen,
+  .rang = rangrw,
   ...,
   .n_path = 1L,
   .plot = TRUE,
@@ -29,7 +29,7 @@ sim_path_walk(
 
 \item{.timestamp}{(optional) A vector of time stamps, one for each time step, for inclusion in the output \code{\link{data.table}} as a \code{timestamp} column.}
 
-\item{.sim_length, .sim_angle, ...}{Functions and accompanying arguments that simulate step lengths and turning angles. Simulated step lengths should be in map units (e.g., metres) if \code{.lonlat = FALSE} or metres if \code{.lonlat = TRUE}. Turning angles should be in degrees. The functions must accept four named arguments, even if unused:
+\item{.rlen, .rang, ...}{Functions and accompanying arguments that simulate step lengths and turning angles. Simulated step lengths should be in map units (e.g., metres) if \code{.lonlat = FALSE} or metres if \code{.lonlat = TRUE}. Turning angles should be in degrees. The functions must accept four named arguments, even if unused:
 \itemize{
 \item \code{.n}---an \code{integer} that defines the number of simulated outcome(s);
 \item \code{.prior}---a \code{numeric} vector that defines the simulated value(s) from the previous time step;
@@ -39,13 +39,13 @@ sim_path_walk(
 
 If \code{.prior} is used, the function should be able to handle the first time step (when \code{.prior} is set to \code{NULL}). See \code{\link[=rangcrw]{rangcrw()}} (below) for an example.
 
-Note that \code{...} is passed down from \code{\link[=sim_path_walk]{sim_path_walk()}} to both \code{.sim_length} and \code{.sim_angle} so care is required to ensure that \code{...} parameters are handled correctly.
+Note that \code{...} is passed down from \code{\link[=sim_path_walk]{sim_path_walk()}} to both \code{.rlen} and \code{.rang} so care is required to ensure that \code{...} parameters are handled correctly.
 
 The following template functions are provided:
 \itemize{
-\item \code{\link[=rlen]{rlen()}} is an example \code{.sim_length} function that simulates step lengths from a truncated Gamma distribution (via \code{\link[=rtruncgamma]{rtruncgamma()}});
-\item \code{\link[=rangrw]{rangrw()}} is an example \code{.sim_angle} function that simulates uncorrelated turning angles from a wrapped normal distribution (via \code{\link[=rwn]{rwn()}});
-\item \code{\link[=rangcrw]{rangcrw()}} is an example \code{.sim_angle} function that can simulate correlated turning angles (via \code{\link[=rwn]{rwn()}});
+\item \code{\link[=rlen]{rlen()}} is an example \code{.rlen} function that simulates step lengths from a truncated Gamma distribution (via \code{\link[=rtruncgamma]{rtruncgamma()}});
+\item \code{\link[=rangrw]{rangrw()}} is an example \code{.rang} function that simulates uncorrelated turning angles from a wrapped normal distribution (via \code{\link[=rwn]{rwn()}});
+\item \code{\link[=rangcrw]{rangcrw()}} is an example \code{.rang} function that can simulate correlated turning angles (via \code{\link[=rwn]{rwn()}});
 }}
 
 \item{.n_path}{An \code{integer} that defines the number of paths to simulate.}
@@ -130,12 +130,12 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
                      .shape = 5, .mobility = 100)
   p
 
-  #### Example (6): Modify `.sim_length` model
+  #### Example (6): Modify `.rlen` model
   # Use time-varying step lengths dependent upon some behavioural state
   b <- data.table(x = c(0, 0, 1, 1, 1, 1, 1))
   hist(rtruncgamma(.n = 1e3, .shape = 5, .scale = 5))
   hist(rtruncgamma(.n = 1e3, .shape = 15, .scale = 15))
-  sim_length <- function(.n = 1,
+  rlenbs <- function(.n = 1,
                          .prior = NULL, .t = NULL, .state, ...) {
     if (.state$x[.t] == 0L) {
       rtruncgamma(.n = .n, .shape = 5, .scale = 5, .mobility = 50)
@@ -147,7 +147,7 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = nrow(b) + 1,
-                     .sim_length = sim_length, .state = b)
+                     .rlen = rlenbs, .state = b)
   p
 
   #### Example (7): Update model for turning angles
@@ -160,7 +160,7 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = 10L,
-                     .sim_angle = rangrw, .mu = -(90 + 9), .rho = 1,
+                     .rang = rangrw, .mu = -(90 + 9), .rho = 1,
                      .one_page = FALSE)
   p
 
@@ -169,14 +169,14 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = 1000L, .n_path = 1L,
-                     .sim_angle = rangcrw, .rho = 0.5,
+                     .rang = rangcrw, .rho = 0.5,
                      .one_page = FALSE)
   # The correlation between sequential angles is close to the simulated value:
   adt <- data.table(a0 = p$angle, a1 = lead(p$angle)) |> na.omit()
   cor.circular(degrees(adt$a0), degrees(adt$a1))
 
   #### Example (9): Use custom step/length or turning angle models
-  sim_angle_vmd <- function(.n = 1L, .prior = NULL, ...) {
+  rangvmd <- function(.n = 1L, .prior = NULL, ...) {
     as.numeric(
       circular::rvonmises(
         n = .n,
@@ -190,7 +190,7 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = 1000L,
-                     .sim_angle = sim_angle_vmd,
+                     .rang = rangvmd,
                      .one_page = FALSE)
   p
 

@@ -289,8 +289,8 @@ test_that("sim_path_walk() works", {
   # Use time-varying step lengths dependent upon some behavioural state
   b <- data.table(timestep = 1:7,
                   x = c(0, 0, 1, 1, 1, 1, 1))
-  rlen_t <- function(.n = 1,
-                         .prior = NULL, .t = NULL, .state, ...) {
+  rlenbs <- function(.n = 1,
+                    .prior = NULL, .t = NULL, .state, ...) {
     if (.state$x[.t] == 0L) {
       rtruncgamma(.n = .n, .shape = 5, .scale = 5, .mobility = 50)
     } else if (.state$x[.t] == 1L) {
@@ -300,7 +300,7 @@ test_that("sim_path_walk() works", {
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = nrow(b) + 1,
-                     .sim_length = rlen_t, .state = b)
+                     .rlen = rlenbs, .state = b)
   expect_true(all(p$length[1:2] < 50))
   expect_true(all(p$length[3:7] < 500))
 
@@ -309,7 +309,7 @@ test_that("sim_path_walk() works", {
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = 10L,
-                     .sim_angle = rangrw, .mu = -(90 + 9), .rho = 1,
+                     .rang = rangrw, .mu = -(90 + 9), .rho = 1,
                      .one_page = FALSE)
   sapply(na.omit(p$angle), \(a) {
     expect_equal(a, -99)
@@ -319,7 +319,7 @@ test_that("sim_path_walk() works", {
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = 2000L,
-                     .sim_angle = rangcrw, .rho = 0.5,
+                     .rang = rangcrw, .rho = 0.5,
                      .one_page = FALSE)
   angle <- p$angle |> na.omit()
   expect_equal(

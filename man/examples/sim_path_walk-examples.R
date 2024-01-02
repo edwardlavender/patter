@@ -42,12 +42,12 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
                      .shape = 5, .mobility = 100)
   p
 
-  #### Example (6): Modify `.sim_length` model
+  #### Example (6): Modify `.rlen` model
   # Use time-varying step lengths dependent upon some behavioural state
   b <- data.table(x = c(0, 0, 1, 1, 1, 1, 1))
   hist(rtruncgamma(.n = 1e3, .shape = 5, .scale = 5))
   hist(rtruncgamma(.n = 1e3, .shape = 15, .scale = 15))
-  sim_length <- function(.n = 1,
+  rlenbs <- function(.n = 1,
                          .prior = NULL, .t = NULL, .state, ...) {
     if (.state$x[.t] == 0L) {
       rtruncgamma(.n = .n, .shape = 5, .scale = 5, .mobility = 50)
@@ -59,7 +59,7 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = nrow(b) + 1,
-                     .sim_length = sim_length, .state = b)
+                     .rlen = rlenbs, .state = b)
   p
 
   #### Example (7): Update model for turning angles
@@ -72,7 +72,7 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = 10L,
-                     .sim_angle = rangrw, .mu = -(90 + 9), .rho = 1,
+                     .rang = rangrw, .mu = -(90 + 9), .rho = 1,
                      .one_page = FALSE)
   p
 
@@ -81,14 +81,14 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = 1000L, .n_path = 1L,
-                     .sim_angle = rangcrw, .rho = 0.5,
+                     .rang = rangcrw, .rho = 0.5,
                      .one_page = FALSE)
   # The correlation between sequential angles is close to the simulated value:
   adt <- data.table(a0 = p$angle, a1 = lead(p$angle)) |> na.omit()
   cor.circular(degrees(adt$a0), degrees(adt$a1))
 
   #### Example (9): Use custom step/length or turning angle models
-  sim_angle_vmd <- function(.n = 1L, .prior = NULL, ...) {
+  rangvmd <- function(.n = 1L, .prior = NULL, ...) {
     as.numeric(
       circular::rvonmises(
         n = .n,
@@ -102,7 +102,7 @@ if (rlang::is_installed(c("circular", "truncdist"))) {
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = 1000L,
-                     .sim_angle = sim_angle_vmd,
+                     .rang = rangvmd,
                      .one_page = FALSE)
   p
 

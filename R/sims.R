@@ -531,7 +531,7 @@ sim_array <- function(.bathy = spatTemplate(), .lonlat = FALSE,
 #' @param .origin (optional) A one-row, two-column matrix that defines the origin. If unsupplied, `.origin` is sampled at random from `.bathy`. One origin is used for all simulated paths (see `.n_path`).
 #' @param .n_step An `integer` that defines the number of time steps.
 #' @param .timestamp (optional) A vector of time stamps, one for each time step, for inclusion in the output [`data.table`] as a `timestamp` column.
-#' @param .sim_length,.sim_angle,... Functions and accompanying arguments that simulate step lengths and turning angles. Simulated step lengths should be in map units (e.g., metres) if `.lonlat = FALSE` or metres if `.lonlat = TRUE`. Turning angles should be in degrees. The functions must accept four named arguments, even if unused:
+#' @param .rlen,.rang,... Functions and accompanying arguments that simulate step lengths and turning angles. Simulated step lengths should be in map units (e.g., metres) if `.lonlat = FALSE` or metres if `.lonlat = TRUE`. Turning angles should be in degrees. The functions must accept four named arguments, even if unused:
 #' * `.n`---an `integer` that defines the number of simulated outcome(s);
 #' * `.prior`---a `numeric` vector that defines the simulated value(s) from the previous time step;
 #' * `.t`---an `integer` that defines the time step;
@@ -539,12 +539,12 @@ sim_array <- function(.bathy = spatTemplate(), .lonlat = FALSE,
 #'
 #' If `.prior` is used, the function should be able to handle the first time step (when `.prior` is set to `NULL`). See [`rangcrw()`] (below) for an example.
 #'
-#' Note that `...` is passed down from [`sim_path_walk()`] to both `.sim_length` and `.sim_angle` so care is required to ensure that `...` parameters are handled correctly.
+#' Note that `...` is passed down from [`sim_path_walk()`] to both `.rlen` and `.rang` so care is required to ensure that `...` parameters are handled correctly.
 #'
 #' The following template functions are provided:
-#' * [`rlen()`] is an example `.sim_length` function that simulates step lengths from a truncated Gamma distribution (via [`rtruncgamma()`]);
-#' * [`rangrw()`] is an example `.sim_angle` function that simulates uncorrelated turning angles from a wrapped normal distribution (via [`rwn()`]);
-#' * [`rangcrw()`] is an example `.sim_angle` function that can simulate correlated turning angles (via [`rwn()`]);
+#' * [`rlen()`] is an example `.rlen` function that simulates step lengths from a truncated Gamma distribution (via [`rtruncgamma()`]);
+#' * [`rangrw()`] is an example `.rang` function that simulates uncorrelated turning angles from a wrapped normal distribution (via [`rwn()`]);
+#' * [`rangcrw()`] is an example `.rang` function that can simulate correlated turning angles (via [`rwn()`]);
 #'
 #' @param .n_path An `integer` that defines the number of paths to simulate.
 #' @param .plot,.one_page Plot options.
@@ -586,7 +586,7 @@ NULL
 sim_path_walk <- function(.bathy = spatTemplate(), .lonlat = FALSE,
                           .origin = NULL,
                           .n_step = 10L, .timestamp = NULL,
-                          .sim_length = rlen, .sim_angle = rangrw, ...,
+                          .rlen = rlen, .rang = rangrw, ...,
                           .n_path = 1L,
                           .plot = TRUE, .one_page = FALSE) {
   # Check user inputs
@@ -604,8 +604,8 @@ sim_path_walk <- function(.bathy = spatTemplate(), .lonlat = FALSE,
       prior_length <- .fv$length[.row, .col - 1, with = FALSE] |> pull()
       prior_angle  <- .fv$angle[.row, .col - 1, with = FALSE] |> pull()
     }
-    .fv$length[.row, (.col) := .sim_length(.n = n, .prior = prior_length, .t = .col, ...)]
-    .fv$angle[.row, (.col) := .sim_angle(.n = n, .prior = prior_angle, .t = .col, ...)]
+    .fv$length[.row, (.col) := .rlen(.n = n, .prior = prior_length, .t = .col, ...)]
+    .fv$angle[.row, (.col) := .rang(.n = n, .prior = prior_angle, .t = .col, ...)]
   }
   # Implement simulation
   out <- .sim_path_flux(.bathy = .bathy,
