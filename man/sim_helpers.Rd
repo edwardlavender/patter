@@ -127,7 +127,7 @@ For \code{\link[=rdet]{rdet()}}, \code{.ddet} must accept the \code{.data} \code
 
 \item{.ddetx}{Additional arguments for \code{\link[=ddet]{ddet()}}.
 \itemize{
-\item \code{.ddetx} is a \code{function} that evaluates the probability density of detections from a \code{numeric} vector (e.g,. of distances).
+\item \code{\link{.ddetx}} is a function that evaluates the probability density of detections from a \code{numeric} vector (e.g,. of distances).
 }}
 
 \item{.shape, .scale, .mobility}{Additional arguments for \code{\link[=rtruncgamma]{rtruncgamma()}} and \code{\link[=dtruncgamma]{dtruncgamma()}}:
