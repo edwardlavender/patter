@@ -82,22 +82,14 @@ test_that(".cstep_iter() works", {
     points(pts)
   }
 
-  #### Define the flux template & updating function
-  # * the flux template is defined below
-  # * the flux() function is as follows:
-  flux <- function(.fv, .row, .col) {
-    print(.row)
-    .fv$length[.row, (colnames(.fv$length)[.col]) := rlen(length(.row))]
-    .fv$angle[.row, (colnames(.fv$length)[.col]) := rangrw(length(.row))]
-  }
-
   # Implement .cstep_iter() for the first two points
   # * This should work
   # * We expect the flux function to print 1,2 once
   ssv()
   p <- 1:2
   .cstep_iter(.xy0 = pts[p, ], .lonlat = FALSE,
-              .flux = flux, .fv = .flux_template(.n_step = 2, .n_path = length(p)),
+              .flux = .flux, .rlen = rlen, .rang = rangrw,
+              .fv = .flux_template(.n_step = 2, .n_path = length(p)),
               .t = 1,
               .move = .cstep_using_flux,
               .bathy = dat_gebco())
@@ -108,7 +100,8 @@ test_that(".cstep_iter() works", {
   ssv()
   p <- 1:3
   .cstep_iter(.xy0 = pts[p, ], .lonlat = FALSE,
-              .flux = flux, .fv = .flux_template(.n_step = 2, .n_path = length(p)),
+              .flux = .flux, .rlen = rlen, .rang = rangrw,
+              .fv = .flux_template(.n_step = 2, .n_path = length(p)),
               .t = 1,
               .move = .cstep_using_flux,
               .bathy = dat_gebco()) |>

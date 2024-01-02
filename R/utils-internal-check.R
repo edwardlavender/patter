@@ -118,7 +118,6 @@ check_dots_allowed <- function(not_allowed, ...) {
   }
 }
 
-
 #' @rdname check_utils
 #' @keywords internal
 

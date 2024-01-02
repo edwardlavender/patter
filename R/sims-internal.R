@@ -31,7 +31,7 @@ NULL
 .sim_path_flux <- function(.bathy = spatTemplate(), .lonlat = FALSE,
                           .origin = NULL,
                           .n_step = 10L,
-                          .flux, .flux_vals = .flux_template(.n_step, .n_path),
+                          .flux, .rlen, .rang, ..., .flux_vals = .flux_template(.n_step, .n_path),
                           .move = .cstep_using_flux,
                           .n_path = 1L,
                           .plot = TRUE, .one_page = FALSE) {
@@ -62,7 +62,7 @@ NULL
     mat[, lookup[[t + 1]]] <- .cstep_iter(.xy0 = mat[, lookup[[t]], drop = FALSE],
                                           .xy1 = mat[, lookup[[t + 1]], drop = FALSE],
                                           .lonlat = .lonlat,
-                                          .flux = .flux, .fv = .flux_vals,
+                                          .flux = .flux, .rlen = .rlen, .rang = .rang, ..., .fv = .flux_vals,
                                           .move = .move, .t = t,
                                           .bathy = .bathy)
   }
@@ -109,6 +109,21 @@ NULL
 #' @rdname sim_path_flux
 #' @keywords internal
 
+.flux <- function(.fv, .row, .col, .rlen, .rang, ...) {
+  n <- length(.row)
+  if (.col == 1L) {
+    prior_length <- prior_angle <- NULL
+  } else {
+    prior_length <- .fv$length[.row, .col - 1, with = FALSE] |> pull()
+    prior_angle  <- .fv$angle[.row, .col - 1, with = FALSE] |> pull()
+  }
+  .fv$length[.row, (.col) := .rlen(.n = n, .prior = prior_length, .t = .col, ...)]
+  .fv$angle[.row, (.col) := .rang(.n = n, .prior = prior_angle, .t = .col, ...)]
+}
+
+#' @rdname sim_path_flux
+#' @keywords internal
+
 .cstep_using_flux <- function(.xy0, .xy1, .lonlat, .fv, .t) {
   cstep(.xy0 = .xy0, .xy1 = .xy1,
         .len = .fv$length[[.t]], .ang = .fv$angle[[.t]],
@@ -121,7 +136,7 @@ NULL
 .cstep_iter <- function(.xy0,
                         .xy1 = matrix(NA, nrow = nrow(.xy0), ncol = ncol(.xy0)),
                         .lonlat,
-                        .flux, .fv, .t,
+                        .flux, .rlen, .rang, ..., .fv, .t,
                         .move,
                         .bathy) {
   counter <- 0
@@ -134,7 +149,7 @@ NULL
       pos <- which(is.na(.xy1[, 1]))
     }
     # Simulate proposal locations
-    .flux(.fv, .row = pos, .col = .t)
+    .flux(.fv, .row = pos, .col = .t, .rlen = .rlen, .rang = .rang, ...)
     .xy1 <- .move(.xy0 = .xy0,
                   .xy1 = .xy1,
                   .lonlat = .lonlat,

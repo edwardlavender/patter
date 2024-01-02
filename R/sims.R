@@ -590,30 +590,18 @@ sim_path_walk <- function(.bathy = spatTemplate(), .lonlat = FALSE,
                           .n_path = 1L,
                           .plot = TRUE, .one_page = FALSE) {
   # Check user inputs
-  check_dots_for_missing_period(formals(), list(...))
+  rlang::check_dots_used()
   if (.lonlat) {
     rlang::check_installed("geosphere")
   }
-  # Define flux function
-  # * Define this within sim_path_walk() for correct handling of ...
-  .flux <- function(.fv, .row, .col) {
-    n <- length(.row)
-    if (.col == 1L) {
-      prior_length <- prior_angle <- NULL
-    } else {
-      prior_length <- .fv$length[.row, .col - 1, with = FALSE] |> pull()
-      prior_angle  <- .fv$angle[.row, .col - 1, with = FALSE] |> pull()
-    }
-    .fv$length[.row, (.col) := .rlen(.n = n, .prior = prior_length, .t = .col, ...)]
-    .fv$angle[.row, (.col) := .rang(.n = n, .prior = prior_angle, .t = .col, ...)]
-  }
+
   # Implement simulation
   out <- .sim_path_flux(.bathy = .bathy,
                         .lonlat = .lonlat,
                         .origin = .origin,
                         .n_step = .n_step,
                         .move = .cstep_using_flux,
-                        .flux = .flux,
+                        .flux = .flux, .rlen = .rlen, .rang = .rang, ...,
                         .flux_vals = .flux_template(.n_step, .n_path),
                         .n_path = .n_path,
                         .plot = .plot, .one_page = .one_page)

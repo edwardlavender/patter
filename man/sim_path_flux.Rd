@@ -4,6 +4,7 @@
 \alias{sim_path_flux}
 \alias{.sim_path_flux}
 \alias{.flux_template}
+\alias{.flux}
 \alias{.cstep_using_flux}
 \alias{.cstep_iter}
 \alias{.sim_path_pivot}
@@ -16,6 +17,9 @@
   .origin = NULL,
   .n_step = 10L,
   .flux,
+  .rlen,
+  .rang,
+  ...,
   .flux_vals = .flux_template(.n_step, .n_path),
   .move = .cstep_using_flux,
   .n_path = 1L,
@@ -25,6 +29,8 @@
 
 .flux_template(.n_step, .n_path)
 
+.flux(.fv, .row, .col, .rlen, .rang, ...)
+
 .cstep_using_flux(.xy0, .xy1, .lonlat, .fv, .t)
 
 .cstep_iter(
@@ -32,6 +38,9 @@
   .xy1 = matrix(NA, nrow = nrow(.xy0), ncol = ncol(.xy0)),
   .lonlat,
   .flux,
+  .rlen,
+  .rang,
+  ...,
   .fv,
   .t,
   .move,
