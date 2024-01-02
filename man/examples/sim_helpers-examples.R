@@ -1,3 +1,4 @@
+require(data.table)
 require(circular)
 require(terra)
 require(geosphere)

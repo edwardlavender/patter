@@ -292,6 +292,7 @@ where \eqn{\text{logistic}(x) = 1 + e^{-x}}; \code{.alpha}, and \code{.beta} are
 }
 
 \examples{
+require(data.table)
 require(circular)
 require(terra)
 require(geosphere)
