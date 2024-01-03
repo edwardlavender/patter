@@ -20,6 +20,18 @@ pf_rpropose_reachable(.particles, .obs, .t, .dlist)
 pf_dpropose(.particles, .obs, .t, .dlist, .dkick = dkick, ...)
 }
 \arguments{
+\item{.xy0, .xy1, .rstep, .dstep}{Arguments for \code{.rkick} (and \code{\link[=rkick]{rkick()}}) and \code{.dkick} (and \code{\link[=dkick]{dkick()}}).
+\itemize{
+\item \code{.xy0}---a two-column object (\code{\link{matrix}}, \code{\link{data.frame}}, \code{\link{data.table}}) of accepted (x, y) coordinates from the previous time step. In \code{.rkick}, movement is simulated from \code{.xy0} into new locations;
+\item \code{.xy1}---For \code{.dkick} and \code{\link[=dkick]{dkick()}}, \code{.xy1} is a two-column matrix of accepted coordinates for the current time step;
+\item \code{.rstep} or \code{.dstep} and \code{...}---\code{function}s that simulate new locations or calculate the probability density of movements between locations (such as \code{\link[=rstep]{rstep()}} and \code{\link[=dstep]{dstep()}}) and additional arguments passed to those functions. Both functions must accept:
+\itemize{
+\item \code{.xy0} and \code{.xy1}---as above;
+\item \code{...}---arguments passed from above;
+\item \code{.lonlat}---a \code{logical} variable that defines whether or not coordinates are in longitude/latitude format or planar (extracted from \code{.dlist$pars$lonlat} by default);
+}
+}}
+
 \item{.obs, .t, .dlist}{Required arguments for all functions.
 \itemize{
 \item \code{.obs}---the \code{.obs} \code{\link{data.table}} from \code{\link[=pf_forward]{pf_forward()}};
@@ -29,18 +41,6 @@ pf_dpropose(.particles, .obs, .t, .dlist, .dkick = dkick, ...)
 \item For \code{\link[=rkick]{rkick()}} and \code{\link[=dkick]{dkick()}}, \code{.dlist} must contain \code{.dlist$spatial$bathy};
 \item For \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}}, \code{.dlist} must contain \code{.dlist$spatial$bathy};
 \item For \code{\link[=pf_rpropose_reachable]{pf_rpropose_reachable()}}, \code{.dlist} must contain \code{.dlist$spatial$bathy};
-}
-}}
-
-\item{.xy1, .xy1, .rstep, .dstep}{Arguments for \code{.rkick} (and \code{\link[=rkick]{rkick()}}) and \code{.dkick} (and \code{\link[=dkick]{dkick()}}).
-\itemize{
-\item \code{.xy0}---a two-column object (\code{\link{matrix}}, \code{\link{data.frame}}, \code{\link{data.table}}) of accepted (x, y) coordinates from the previous time step. In \code{.rkick}, movement is simulated from \code{.xy0} into new locations;
-\item \code{.xy1}---For \code{.dkick} and \code{\link[=dkick]{dkick()}}, \code{.xy1} is a two-column matrix of accepted coordinates for the current time step;
-\item \code{.rstep} or \code{.dstep} and \code{...}---\code{function}s that simulate new locations or calculate the probability density of movements between locations (such as \code{\link[=rstep]{rstep()}} and \code{\link[=dstep]{dstep()}}) and additional arguments passed to those functions. Both functions must accept:
-\itemize{
-\item \code{.xy0} and \code{.xy1}---as above;
-\item \code{...}---arguments passed from above;
-\item \code{.lonlat}---a \code{logical} variable that defines whether or not coordinates are in longitude/latitude format or planar (extracted from \code{.dlist$pars$lonlat} by default);
 }
 }}
 

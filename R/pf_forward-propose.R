@@ -17,7 +17,7 @@
 #'
 #' At the time of writing, these functions must accept the `.xy0`, `.xy1`, `.rstep`/`.dstep` and `...` arguments.
 #'
-#' @param .xy1,.xy1,.rstep,.dstep Arguments for `.rkick` (and [`rkick()`]) and `.dkick` (and [`dkick()`]).
+#' @param .xy0,.xy1,.rstep,.dstep Arguments for `.rkick` (and [`rkick()`]) and `.dkick` (and [`dkick()`]).
 #' * `.xy0`---a two-column object ([`matrix`], [`data.frame`], [`data.table`]) of accepted (x, y) coordinates from the previous time step. In `.rkick`, movement is simulated from `.xy0` into new locations;
 #' * `.xy1`---For `.dkick` and [`dkick()`], `.xy1` is a two-column matrix of accepted coordinates for the current time step;
 #' * `.rstep` or `.dstep` and `...`---`function`s that simulate new locations or calculate the probability density of movements between locations (such as [`rstep()`] and [`dstep()`]) and additional arguments passed to those functions. Both functions must accept:
