@@ -529,8 +529,8 @@ sim_array <- function(.bathy = spatTemplate(), .lonlat = FALSE,
 #' @description [`sim_path_walk()`] facilitates the simulation of discrete-time animal movement paths from walk models (e.g., random walks, biased random walks, correlated random walks).
 #'
 #' @param .bathy A [`SpatRaster`] that defines the region within which movements are simulated. Movements are simulated in continuous space but restricted within the boundaries defined by `.bathy` and non-`NA` regions.
-#' @param .lonlat A `logical` variable that defines whether or not `.bathy` uses longitude/latitude or planar coordinates.
 #' @param .origin (optional) A one-row, two-column matrix that defines the origin. If unsupplied, `.origin` is sampled at random from `.bathy`. One origin is used for all simulated paths (see `.n_path`).
+#' @param .lonlat A `logical` variable that defines whether or not `.bathy` (and, if applicable, `.origin`) use longitude/latitude or planar coordinates.
 #' @param .n_step An `integer` that defines the number of time steps.
 #' @param .timestamp (optional) A vector of time stamps, one for each time step, for inclusion in the output [`data.table`] as a `timestamp` column.
 #' @param .rlen,.rang,... Functions and accompanying arguments that simulate step lengths and turning angles. Simulated step lengths should be in map units (e.g., metres) if `.lonlat = FALSE` or metres if `.lonlat = TRUE`. Turning angles should be in degrees. The functions must accept four named arguments, even if unused:
@@ -560,9 +560,7 @@ sim_array <- function(.bathy = spatTemplate(), .lonlat = FALSE,
 #' * [`rlen()`], [`rangrw()`] and [`rangcrw()`] are wrappers in the form required by [`sim_path_walk()`];
 #' * [`sim_path_walk()`] simulates the movement path(s);
 #'
-#' Within [`sim_path_walk()`], at each time step, if `.lonlat = FALSE`, current locations (x, y) are updated via `x + length * cos(angle)` and `y + length * sin(angle)`.
-#'
-#' If `.lonlat = TRUE`, current locations are updated via [`geosphere::destPoint()`].
+#' Within [`sim_path_walk()`], at each time step, if `.lonlat = TRUE`, current locations are updated via [`geosphere::destPoint()`]. If `.lonlat = FALSE`, current locations (x, y) are updated via `x + length * cos(angle)` and `y + length * sin(angle)`, where `length` is the simulated vector of step lengths and `angle` is the simulated vector of angles (re-expressed for consistency with [`geosphere::destPoint()`] via [`geoangle()`]).
 #'
 #' `.lonlat` support is experimental. Be especially careful with correlated random walks if `lonlat = TRUE`. On an ellipsoid, the initial (simulated) bearing is not the same as the final bearing, but is not currently updated.
 #'
@@ -585,8 +583,8 @@ NULL
 #' @rdname sim_path_walk
 #' @export
 
-sim_path_walk <- function(.bathy = spatTemplate(), .lonlat = FALSE,
-                          .origin = NULL,
+sim_path_walk <- function(.bathy = spatTemplate(),
+                          .origin = NULL, .lonlat = FALSE,
                           .n_step = 10L, .timestamp = NULL,
                           .rlen = rlen, .rang = rangrw, ...,
                           .n_path = 1L,
@@ -599,8 +597,8 @@ sim_path_walk <- function(.bathy = spatTemplate(), .lonlat = FALSE,
 
   # Implement simulation
   out <- .sim_path_flux(.bathy = .bathy,
-                        .lonlat = .lonlat,
                         .origin = .origin,
+                        .lonlat = .lonlat,
                         .n_step = .n_step,
                         .move = .cstep_using_flux,
                         .flux_vals = .flux_template(.n_step, .n_path),

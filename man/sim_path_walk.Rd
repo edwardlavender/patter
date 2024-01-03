@@ -6,8 +6,8 @@
 \usage{
 sim_path_walk(
   .bathy = spatTemplate(),
-  .lonlat = FALSE,
   .origin = NULL,
+  .lonlat = FALSE,
   .n_step = 10L,
   .timestamp = NULL,
   .rlen = rlen,
@@ -21,9 +21,9 @@ sim_path_walk(
 \arguments{
 \item{.bathy}{A \code{\link{SpatRaster}} that defines the region within which movements are simulated. Movements are simulated in continuous space but restricted within the boundaries defined by \code{.bathy} and non-\code{NA} regions.}
 
-\item{.lonlat}{A \code{logical} variable that defines whether or not \code{.bathy} uses longitude/latitude or planar coordinates.}
-
 \item{.origin}{(optional) A one-row, two-column matrix that defines the origin. If unsupplied, \code{.origin} is sampled at random from \code{.bathy}. One origin is used for all simulated paths (see \code{.n_path}).}
+
+\item{.lonlat}{A \code{logical} variable that defines whether or not \code{.bathy} (and, if applicable, \code{.origin}) use longitude/latitude or planar coordinates.}
 
 \item{.n_step}{An \code{integer} that defines the number of time steps.}
 
@@ -77,9 +77,7 @@ The following convenience functions are provided:
 \item \code{\link[=sim_path_walk]{sim_path_walk()}} simulates the movement path(s);
 }
 
-Within \code{\link[=sim_path_walk]{sim_path_walk()}}, at each time step, if \code{.lonlat = FALSE}, current locations (x, y) are updated via \code{x + length * cos(angle)} and \code{y + length * sin(angle)}.
-
-If \code{.lonlat = TRUE}, current locations are updated via \code{\link[geosphere:destPoint]{geosphere::destPoint()}}.
+Within \code{\link[=sim_path_walk]{sim_path_walk()}}, at each time step, if \code{.lonlat = TRUE}, current locations are updated via \code{\link[geosphere:destPoint]{geosphere::destPoint()}}. If \code{.lonlat = FALSE}, current locations (x, y) are updated via \code{x + length * cos(angle)} and \code{y + length * sin(angle)}, where \code{length} is the simulated vector of step lengths and \code{angle} is the simulated vector of angles (re-expressed for consistency with \code{\link[geosphere:destPoint]{geosphere::destPoint()}} via \code{\link[=geoangle]{geoangle()}}).
 
 \code{.lonlat} support is experimental. Be especially careful with correlated random walks if \code{lonlat = TRUE}. On an ellipsoid, the initial (simulated) bearing is not the same as the final bearing, but is not currently updated.
 
