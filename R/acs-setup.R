@@ -236,7 +236,7 @@ acs_setup_detection_kernel <- function(.mooring,
 #'
 #' @example man/examples/acs_setup_detection_kernels-examples.R
 #'
-#' @source This function is based on the [`flapper::acs_setup_detection_kernels`](https://edwardlavender.github.io/flapper/reference/acs_setup_detection_kernels.html).
+#' @source This function is based on [`flapper::acs_setup_detection_kernels`](https://edwardlavender.github.io/flapper/reference/acs_setup_detection_kernels.html).
 #'
 #' @inherit acs_setup_detection_overlaps seealso
 #' @author Edward Lavender
