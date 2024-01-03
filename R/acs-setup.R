@@ -214,6 +214,7 @@ acs_setup_detection_kernel <- function(.mooring,
 #' * `.dlist$data$moorings`, with the following columns: `receiver_id`, `receiver_start`, `receiver_end`, `receiver_x` and `receiver_y`, plus any columns used internally by `.ddetkernel` (see below).
 #' * `.dlist$data$services`, with the following columns: `receiver_id`, `service_start` and `service_end` (see [`make_matrix_receivers()`]).
 #' * `.dlist$spatial$bathy`, which defines the grid on which detection kernels are represented. `NA`s are used as a mask.
+#' * `.dlist$pars$spatna`, which defines whether or not masking is required.
 #' @param .ddetkernel,... A `function` that defines the detection kernel as a [`SpatRaster`] around a receiver (see [`acs_setup_detection_kernel()`] for an example). This must accept three arguments (even if they are ignored):
 #' * `.mooring`---A one-row [`data.table`] that contains the information in `.dlist$data$moorings` for a specific receiver;
 #' * `.bathy`---the `.dlist$spatial$bathy` [`SpatRaster`];
@@ -259,7 +260,10 @@ acs_setup_detection_kernels <-
 
     #### Check user inputs
     # check_dots_used: acs_setup_detection_kernel() used
-    check_dlist(.dlist = .dlist, .dataset = "moorings", .spatial = "bathy")
+    check_dlist(.dlist = .dlist,
+                .dataset = "moorings",
+                .spatial = "bathy",
+                .par = "spatna")
     moorings <- .dlist$data$moorings
     check_names(.dlist$data$moorings, req = c("receiver_x", "receiver_y"))
     bathy    <- .dlist$spatial$bathy
@@ -397,16 +401,20 @@ acs_setup_detection_kernels <-
     cat_log("... Processing kernels ...")
     cat_log("... ... Receiver-specific kernels (1/4)...")
     receiver_specific_kernels     <- pbapply::pblapply(receiver_specific_kernels,
-                                                       spatExtendMask, .y = bathy, .fill = 0)
+                                                       spatExtendMask, .y = bathy, .fill = 0,
+                                                       .mask = .dlist$pars$spatna)
     cat_log("... ... Receiver-specific inverse kernels (2/4)...")
     receiver_specific_inv_kernels <- pbapply::pblapply(receiver_specific_inv_kernels,
-                                                       spatExtendMask, .y = bathy, .fill = 1)
+                                                       spatExtendMask, .y = bathy, .fill = 1,
+                                                       .mask = .dlist$pars$spatna)
     cat_log("... ... Background surfaces (3/4)...")
     bkg_by_design                 <- pbapply::pblapply(bkg_by_design,
-                                                       spatExtendMask, .y = bathy, .fill = 0)
+                                                       spatExtendMask, .y = bathy, .fill = 0,
+                                                       .mask = .dlist$pars$spatna)
     cat_log("... ... Inverse background surfaces (4/4)...")
     bkg_inv_by_design             <- pbapply::pblapply(bkg_inv_by_design,
-                                                       spatExtendMask, .y = bathy, .fill = 1)
+                                                       spatExtendMask, .y = bathy, .fill = 1,
+                                                       .mask = .dlist$pars$spatna)
 
     #### Build output list
     cat_log("... Listing outputs ...")

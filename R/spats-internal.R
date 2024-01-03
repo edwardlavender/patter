@@ -113,7 +113,10 @@ spatNormalise <- function(x) {
 #' @keywords internal
 
 # Extend and mask a SpatRaster
-spatExtendMask <- function(.x, .y, .fill = 0, ...) {
+spatExtendMask <- function(.x, .y, .fill = 0, .mask = TRUE, ...) {
   out <- terra::extend(x = .x, y = .y, fill = .fill, ...)
-  terra::mask(out, .y)
+  if (.mask) {
+    out <- terra::mask(out, .y)
+  }
+  out
 }
