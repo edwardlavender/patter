@@ -70,7 +70,7 @@
 #' @param ... Arguments passed to/from functions.
 #' * [`ssf()`], [`ssv()`]: not used;
 #' * [`rbern()`], [`ddet()`]: not used;
-#' * [`rdet()`], [`ddet()`]: passed to `.ddet` ( = [`ddet()`], wrapping [`ddetlogistic()`]). Dots must be used;
+#' * [`rdet()`], [`ddet()`]: passed to `.ddet` ( = [`ddet()`], wrapping [`ddetlogistic()`]);
 #' * [`ddetlogistic()`]: not used;
 #' * [`rtruncgamma()`], [`dtruncgamma()`]: silently ignored;
 #' * [`rwn()`]: silently ignored;

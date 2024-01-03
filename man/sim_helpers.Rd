@@ -104,7 +104,7 @@ For \code{\link[=rdet]{rdet()}}, \code{.ddet} must accept the \code{.data} \code
 \itemize{
 \item \code{\link[=ssf]{ssf()}}, \code{\link[=ssv]{ssv()}}: not used;
 \item \code{\link[=rbern]{rbern()}}, \code{\link[=ddet]{ddet()}}: not used;
-\item \code{\link[=rdet]{rdet()}}, \code{\link[=ddet]{ddet()}}: passed to \code{.ddet} ( = \code{\link[=ddet]{ddet()}}, wrapping \code{\link[=ddetlogistic]{ddetlogistic()}}). Dots must be used;
+\item \code{\link[=rdet]{rdet()}}, \code{\link[=ddet]{ddet()}}: passed to \code{.ddet} ( = \code{\link[=ddet]{ddet()}}, wrapping \code{\link[=ddetlogistic]{ddetlogistic()}});
 \item \code{\link[=ddetlogistic]{ddetlogistic()}}: not used;
 \item \code{\link[=rtruncgamma]{rtruncgamma()}}, \code{\link[=dtruncgamma]{dtruncgamma()}}: silently ignored;
 \item \code{\link[=rwn]{rwn()}}: silently ignored;
