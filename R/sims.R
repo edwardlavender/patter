@@ -70,7 +70,7 @@
 #' @param ... Arguments passed to/from functions.
 #' * [`ssf()`], [`ssv()`]: not used;
 #' * [`rbern()`], [`ddet()`]: not used;
-#' * [`rdet()`], [`ddet()`]: passed to `.ddet` ( = [`ddet()`], wrapping [`ddetlogistic()`]);
+#' * [`rdet()`], [`ddet()`]: passed to `.ddet` ( = [`ddet()`], wrapping [`ddetlogistic()`]). Dots must be used;
 #' * [`ddetlogistic()`]: not used;
 #' * [`rtruncgamma()`], [`dtruncgamma()`]: silently ignored;
 #' * [`rwn()`]: silently ignored;
@@ -155,7 +155,9 @@
 #'
 #' # Warnings
 #'
-#' * It is possible to simulate correlated random walks in [`sim_path_walk()`] but at the time of writing this is not supported [`pf_forward()`]. Probability density functions for correlated random walks, as required for [`pf_forward()`] and [`pf_backward_sampler()`] (e.g., `dangrw()`, `dangcrw()`) are not implemented.
+#' * **Dots.** Most of the above low-level functions silently accept unused dots (`...`). In higher level functions (such as [`sim_path_walk()`], [`pf_rpropose_kick()`] and [`pf_dpropose()`]), unused dots produce an error or a warning.
+#'
+#' * **Correlated random walks.** It is possible to simulate correlated random walks in [`sim_path_walk()`] but at the time of writing this is not supported [`pf_forward()`]. Probability density functions for correlated random walks, as required for [`pf_forward()`] and [`pf_backward_sampler()`] (e.g., `dangrw()`, `dangcrw()`) are not implemented.
 #'
 #' @example man/examples/sim_helpers-examples.R
 #' @seealso

@@ -104,7 +104,7 @@ For \code{\link[=rdet]{rdet()}}, \code{.ddet} must accept the \code{.data} \code
 \itemize{
 \item \code{\link[=ssf]{ssf()}}, \code{\link[=ssv]{ssv()}}: not used;
 \item \code{\link[=rbern]{rbern()}}, \code{\link[=ddet]{ddet()}}: not used;
-\item \code{\link[=rdet]{rdet()}}, \code{\link[=ddet]{ddet()}}: passed to \code{.ddet} ( = \code{\link[=ddet]{ddet()}}, wrapping \code{\link[=ddetlogistic]{ddetlogistic()}});
+\item \code{\link[=rdet]{rdet()}}, \code{\link[=ddet]{ddet()}}: passed to \code{.ddet} ( = \code{\link[=ddet]{ddet()}}, wrapping \code{\link[=ddetlogistic]{ddetlogistic()}}). Dots must be used;
 \item \code{\link[=ddetlogistic]{ddetlogistic()}}: not used;
 \item \code{\link[=rtruncgamma]{rtruncgamma()}}, \code{\link[=dtruncgamma]{dtruncgamma()}}: silently ignored;
 \item \code{\link[=rwn]{rwn()}}: silently ignored;
@@ -287,7 +287,8 @@ where \eqn{\text{logistic}(x) = 1 + e^{-x}}; \code{.alpha}, and \code{.beta} are
 
 \section{Warnings}{
 \itemize{
-\item It is possible to simulate correlated random walks in \code{\link[=sim_path_walk]{sim_path_walk()}} but at the time of writing this is not supported \code{\link[=pf_forward]{pf_forward()}}. Probability density functions for correlated random walks, as required for \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} (e.g., \code{dangrw()}, \code{dangcrw()}) are not implemented.
+\item \strong{Dots.} Most of the above low-level functions silently accept unused dots (\code{...}). In higher level functions (such as \code{\link[=sim_path_walk]{sim_path_walk()}}, \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}} and \code{\link[=pf_dpropose]{pf_dpropose()}}), unused dots produce an error or a warning.
+\item \strong{Correlated random walks.} It is possible to simulate correlated random walks in \code{\link[=sim_path_walk]{sim_path_walk()}} but at the time of writing this is not supported \code{\link[=pf_forward]{pf_forward()}}. Probability density functions for correlated random walks, as required for \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} (e.g., \code{dangrw()}, \code{dangcrw()}) are not implemented.
 }
 }
 
