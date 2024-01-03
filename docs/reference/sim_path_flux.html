@@ -3,7 +3,7 @@
 .sim_path_flux() simulates the movement path(s) from flux parameters that are generated dynamically at each time step. This is supported by the following helpers:
 .flux_template() defines a list of data.table objects in which the simulated 'flux' parameters (e.g., step lengths and turning angles) for each step are stored;
 .cstep_using_flux() and cstep() are functions which, given current location(s), calculate new locations, based on step lengths and turning angles;
-.cstep_iter() is an internal wrapper for cstep() that validates proposal steps into new locations;
+.rstep_iter() is an internal wrapper for cstep() that validates proposal steps into new locations;
 .sim_path_pivot() and .flux_pivot() reorientate simulated paths/flux values;
 
 
@@ -81,7 +81,7 @@
     <div class="ref-description">
     <p>Internal functions that support the simulation of movement paths.</p><ul><li><p><code>.sim_path_flux()</code> simulates the movement path(s) from flux parameters that are generated dynamically at each time step. This is supported by the following helpers:</p><ul><li><p><code>.flux_template()</code> defines a list of <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> objects in which the simulated 'flux' parameters (e.g., step lengths and turning angles) for each step are stored;</p></li>
 <li><p><code>.cstep_using_flux()</code> and <code><a href="sim_helpers.html">cstep()</a></code> are functions which, given current location(s), calculate new locations, based on step lengths and turning angles;</p></li>
-<li><p><code>.cstep_iter()</code> is an internal wrapper for <code><a href="sim_helpers.html">cstep()</a></code> that validates proposal steps into new locations;</p></li>
+<li><p><code>.rstep_iter()</code> is an internal wrapper for <code><a href="sim_helpers.html">cstep()</a></code> that validates proposal steps into new locations;</p></li>
 <li><p><code>.sim_path_pivot()</code> and <code>.flux_pivot()</code> reorientate simulated paths/flux values;</p></li>
 </ul></li>
 </ul></div>
@@ -104,7 +104,7 @@
 <span></span>
 <span><span class="fu">.cstep_using_flux</span><span class="op">(</span><span class="va">.xy0</span>, <span class="va">.xy1</span>, <span class="va">.lonlat</span>, <span class="va">.fv</span>, <span class="va">.t</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.cstep_iter</span><span class="op">(</span></span>
+<span><span class="fu">.rstep_iter</span><span class="op">(</span></span>
 <span>  <span class="va">.xy0</span>,</span>
 <span>  .xy1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="cn">NA</span>, nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">.xy0</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">.xy0</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  <span class="va">.lonlat</span>,</span>
@@ -128,10 +128,10 @@
 </ul></li>
 <li><p>To implement this approach, a 'flux template' must be provided (to the <code>.flux_vals</code> argument), which is a list of <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>s that will hold the 'flux' parameters for each time step and can be updated by reference.</p><ul><li><p>The default <code>.flux_template()</code> function generates a list with place holders for simulated step lengths and turning angles.</p></li>
 </ul></li>
-<li><p>The <code>.flux</code> argument is a function that is used to simulate the new values of any flux parameters at each time step and update (by reference) the flux template (i.e., <code>.flux_vals</code>). This must accept <code>.fv</code>, <code>.row</code> and <code>.col</code> arguments, as implemented in <code>.cstep_iter()</code>.</p></li>
+<li><p>The <code>.flux</code> argument is a function that is used to simulate the new values of any flux parameters at each time step and update (by reference) the flux template (i.e., <code>.flux_vals</code>). This must accept <code>.fv</code>, <code>.row</code> and <code>.col</code> arguments, as implemented in <code>.rstep_iter()</code>.</p></li>
 <li><p><code>.move</code> is a function that defines new proposal locations based on the simulated flux values.</p><ul><li><p>For example, <code>.cstep_using_flux()</code>, which wraps <code><a href="sim_helpers.html">cstep()</a></code>, defines proposal locations based on simulated step lengths and turning angles.</p></li>
 </ul></li>
-<li><p>Internally, <code>.move</code> is wrapped within <code>.cstep_iter()</code> and implemented iteratively to ensure that simulated location(s) at each time step are valid (in non NA cells on <code>.bathy</code>).</p></li>
+<li><p>Internally, <code>.move</code> is wrapped within <code>.rstep_iter()</code> and implemented iteratively to ensure that simulated location(s) at each time step are valid (in non NA cells on <code>.bathy</code>).</p></li>
 </ul></div>
     <div id="author">
     <h2>Author</h2>

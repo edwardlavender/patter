@@ -600,9 +600,9 @@ sim_path_walk <- function(.bathy = spatTemplate(),
                         .origin = .origin,
                         .lonlat = .lonlat,
                         .n_step = .n_step,
-                        .move = .cstep_using_flux,
                         .flux_vals = .flux_template(.n_step, .n_path),
                         .rlen = .rlen, .rang = .rang, ...,
+                        .cstep = .cstep_using_flux,
                         .n_path = .n_path,
                         .plot = .plot, .one_page = .one_page)
   # Collect flux parameters (step lengths & turning angles)

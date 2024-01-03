@@ -2,8 +2,9 @@
 #' @description Internal functions that support the simulation of movement paths.
 #' * [`.sim_path_flux()`] simulates the movement path(s) from flux parameters that are generated dynamically at each time step. This is supported by the following helpers:
 #'    * [`.flux_template()`] defines a list of [`data.table`] objects in which the simulated 'flux' parameters (e.g., step lengths and turning angles) for each step are stored;
-#'    * [`.cstep_using_flux()`] and [`cstep()`] are functions which, given current location(s), calculate new locations, based on step lengths and turning angles;
-#'    * [`.cstep_iter()`] is an internal wrapper for [`cstep()`] that validates proposal steps into new locations;
+#'    * [`.flux()`] simulates flux parameters;
+#'    * [`.cstep_using_flux()`] is a wrapper for [`cstep()`] which, given current location(s), calculates new locations, based on step lengths and turning angles;
+#'    * [`.rstep_iter()`] is a wrapper for [`.flux()`] and [`.cstep_using_flux()`] that simulates, calculates and validates proposal steps into new locations;
 #'    * [`.sim_path_pivot()`] and [`.flux_pivot()`] reorientate simulated paths/flux values;
 #'
 #' @details
@@ -14,12 +15,12 @@
 #'    * A starting location (`.origin`) on `.bathy` can be specified or  sampled at random from `.bathy`.
 #'    * `.n_path` movement path(s) from this point are simulated using time-specific ('flux') parameters (such as step lengths and turning angles).
 #'
-#' * To implement this approach, a 'flux template' must be provided (to the `.flux_vals` argument), which is a list of [`data.table`]s that will hold the 'flux' parameters for each time step and can be updated by reference.
+#' * To implement this approach, a 'flux template' must be provided (to the `.flux_vals` argument), which is a list of [`data.table`]s that will hold the 'flux' parameters for each time step and can be updated by reference. (The [`.flux()`] `function` is used to simulate the new values of any flux parameters at each time step and update (by reference) the flux template (i.e., `.flux_vals`). This must accept `.fv`, `.row`, `.col`, `.rlen`, `.rang` and `...` arguments, as implemented in [`.rstep_iter()`].)
 #'    * The default [`.flux_template()`] function generates a list with place holders for simulated step lengths and turning angles.
-#' * `.flux` is a function that is used to simulate the new values of any flux parameters at each time step and update (by reference) the flux template (i.e., `.flux_vals`). This must accept `.fv`, `.row`, `.col`, `.rlen`, `.rang` and `...` arguments, as implemented in [`.cstep_iter()`].
-#' * `.move` is a function that defines new proposal locations based on the simulated flux values.
+#'
+#' * `.cstep` is a function that defines new proposal locations based on the simulated flux values.
 #'    * For example, [`.cstep_using_flux()`], which wraps [`cstep()`], defines proposal locations based on simulated step lengths and turning angles.
-#' * Internally, `.move` is wrapped within [`.cstep_iter()`] and implemented iteratively to ensure that simulated location(s) at each time step are valid (in non NA cells on `.bathy`).
+#' * Internally, `.cstep` is wrapped within [`.rstep_iter()`] and implemented iteratively to ensure that simulated location(s) at each time step are valid (in non NA cells on `.bathy`).
 #'
 #' @author Edward Lavender
 #' @name sim_path_flux
@@ -28,14 +29,15 @@ NULL
 #' @rdname sim_path_flux
 #' @keywords internal
 
-.sim_path_flux <- function(.bathy = spatTemplate(), .lonlat = FALSE,
-                          .origin = NULL,
-                          .n_step = 10L,
-                          .flux_vals = .flux_template(.n_step, .n_path),
-                          .rlen, .rang, ...,
-                          .move = .cstep_using_flux,
-                          .n_path = 1L,
-                          .plot = TRUE, .one_page = FALSE) {
+.sim_path_flux <- function(.bathy = spatTemplate(),
+                           .origin = NULL,
+                           .lonlat = FALSE,
+                           .n_step = 10L,
+                           .flux_vals = .flux_template(.n_step, .n_path),
+                           .rlen, .rang, ...,
+                           .cstep = .cstep_using_flux,
+                           .n_path = 1L,
+                           .plot = TRUE, .one_page = FALSE) {
 
   ### Define a matrix to store outputs
   # * Each row is a path
@@ -47,7 +49,7 @@ NULL
   #### Simulate starting values
   # Define starting location
   if (is.null(.origin)) {
-    .origin <- terra::spatSample(.bathy, size = 1,
+    .origin <- terra::spatSample(.bathy, size = 1L,
                                  method = "random",
                                  xy = TRUE, values = FALSE,
                                  na.rm = TRUE)
@@ -60,11 +62,11 @@ NULL
   pb <- pb_init(.min = 0L, .max = .n_step - 1L)
   for (t in seq_len(.n_step - 1)) {
     pb_tick(.pb = pb, .t = t)
-    mat[, lookup[[t + 1]]] <- .cstep_iter(.xy0 = mat[, lookup[[t]], drop = FALSE],
+    mat[, lookup[[t + 1]]] <- .rstep_iter(.xy0 = mat[, lookup[[t]], drop = FALSE],
                                           .xy1 = mat[, lookup[[t + 1]], drop = FALSE],
                                           .lonlat = .lonlat,
                                           .fv = .flux_vals, .rlen = .rlen, .rang = .rang, ...,
-                                          .move = .move, .t = t,
+                                          .cstep = .cstep, .t = t,
                                           .bathy = .bathy)
   }
   pb_close(.pb = pb)
@@ -134,11 +136,11 @@ NULL
 #' @rdname sim_path_flux
 #' @keywords internal
 
-.cstep_iter <- function(.xy0,
+.rstep_iter <- function(.xy0,
                         .xy1 = matrix(NA, nrow = nrow(.xy0), ncol = ncol(.xy0)),
                         .lonlat,
                         .fv, .rlen, .rang, ..., .t,
-                        .move,
+                        .cstep,
                         .bathy) {
   counter <- 0
   run     <- TRUE
@@ -151,10 +153,10 @@ NULL
     }
     # Simulate proposal locations
     .flux(.fv, .row = pos, .col = .t, .rlen = .rlen, .rang = .rang, ...)
-    .xy1 <- .move(.xy0 = .xy0,
-                  .xy1 = .xy1,
-                  .lonlat = .lonlat,
-                  .fv = .fv, .t = .t)
+    .xy1 <- .cstep(.xy0 = .xy0,
+                   .xy1 = .xy1,
+                   .lonlat = .lonlat,
+                   .fv = .fv, .t = .t)
     # Validate simulated positions
     vals <- terra::extract(.bathy, .xy1[pos, , drop = FALSE])
     .xy1[pos[which(is.na(vals))], ] <- NA

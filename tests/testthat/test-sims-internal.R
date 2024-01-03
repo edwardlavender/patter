@@ -42,7 +42,7 @@ test_that(".sim_path_flux() functions work", {
     )
   )
 
-  #### Test .cstep_iter() iterative approach
+  #### Test .rstep_iter() iterative approach
   # * Tested separately since flux_vals are updated by reference
 
   #### Test data re-orientation functions
@@ -66,7 +66,7 @@ test_that(".sim_path_flux() functions work", {
 
 })
 
-test_that(".cstep_iter() works", {
+test_that(".rstep_iter() works", {
 
   #### Define starting locations
   # * We will define two points far from land & one point on land
@@ -82,29 +82,29 @@ test_that(".cstep_iter() works", {
     points(pts)
   }
 
-  # Implement .cstep_iter() for the first two points
+  # Implement .rstep_iter() for the first two points
   # * This should work
   # * We expect the flux function to print 1,2 once
   ssv()
   p <- 1:2
-  .cstep_iter(.xy0 = pts[p, ], .lonlat = FALSE,
+  .rstep_iter(.xy0 = pts[p, ], .lonlat = FALSE,
               .fv = .flux_template(.n_step = 2, .n_path = length(p)),
               .rlen = rlen, .rang = rangrw,
 
               .t = 1,
-              .move = .cstep_using_flux,
+              .cstep = .cstep_using_flux,
               .bathy = dat_gebco())
 
-  # Implement .cstep_iter() for all points
+  # Implement .rstep_iter() for all points
   # * We expect the flux function print 1,2 once then 3 for 99 times
   # * Then the function will fail
   ssv()
   p <- 1:3
-  .cstep_iter(.xy0 = pts[p, ], .lonlat = FALSE,
+  .rstep_iter(.xy0 = pts[p, ], .lonlat = FALSE,
               .fv = .flux_template(.n_step = 2, .n_path = length(p)),
               .rlen = rlen, .rang = rangrw,
               .t = 1,
-              .move = .cstep_using_flux,
+              .cstep = .cstep_using_flux,
               .bathy = dat_gebco()) |>
     expect_error("Failed to generate 1/3 path(s) (33.33 %) at time 1.",
                  fixed = TRUE)
