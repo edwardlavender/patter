@@ -45,7 +45,7 @@ These functions validate user datasets. See Details for \code{\link{patter}} req
 \details{
 These are internal functions that ensure that input dataset(s) meet \code{\link{patter}} requirements. Users should implement \code{\link[=pat_setup_data]{pat_setup_data()}} to prepare datasets for \code{\link{patter}} functions. Downstream functions (often) silently assume that input datasets meet all requirements, without subsequent checks. This simplifies internal code and documentation.
 \itemize{
-\item \code{check_bathy()} checks the bathymetry \code{\link{SpatRaster}}:
+\item \code{\link[=check_bathy]{check_bathy()}} checks the bathymetry \code{\link{SpatRaster}}:
 \itemize{
 \item Class: \code{\link{SpatRaster}};
 \item Properties:
@@ -55,7 +55,7 @@ These are internal functions that ensure that input dataset(s) meet \code{\link{
 \item At the time of writing (December 2023), planar grids are better tested;
 }
 }
-\item \code{check_acoustics()} checks detection time series:
+\item \code{\link[=check_acoustics]{check_acoustics()}} checks detection time series:
 \itemize{
 \item Class: \code{\link{data.table}};
 \item Columns:
@@ -69,7 +69,7 @@ These are internal functions that ensure that input dataset(s) meet \code{\link{
 \item For most functions, a single time series (for one individual) is required;
 }
 }
-\item \code{check_services()} checks acoustic servicing records:
+\item \code{\link[=check_services]{check_services()}} checks acoustic servicing records:
 \itemize{
 \item Class: \code{\link{data.table}};
 \item Columns:
@@ -82,7 +82,7 @@ These are internal functions that ensure that input dataset(s) meet \code{\link{
 \item Serviced receivers should be found in the \code{.moorings} dataset;
 }
 }
-\item \code{check_moorings()} checks receiver deployment records:
+\item \code{\link[=check_moorings]{check_moorings()}} checks receiver deployment records:
 \itemize{
 \item Class: \code{\link{data.table}};
 \item Columns:
@@ -96,7 +96,7 @@ These are internal functions that ensure that input dataset(s) meet \code{\link{
 \item Receiver coordinates must be valid (not currently validated);
 }
 }
-\item \code{check_archival()} checks archival depth time series data:
+\item \code{\link[=check_archival]{check_archival()}} checks archival depth time series data:
 \itemize{
 \item Class: \code{\link{data.table}};
 \item Columns:

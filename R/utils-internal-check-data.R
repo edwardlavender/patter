@@ -9,14 +9,14 @@
 #' @details
 #' These are internal functions that ensure that input dataset(s) meet [`patter`] requirements. Users should implement [`pat_setup_data()`] to prepare datasets for [`patter`] functions. Downstream functions (often) silently assume that input datasets meet all requirements, without subsequent checks. This simplifies internal code and documentation.
 #'
-#' * `check_bathy()` checks the bathymetry [`SpatRaster`]:
+#' * [`check_bathy()`] checks the bathymetry [`SpatRaster`]:
 #'    - Class: [`SpatRaster`];
 #'    - Properties:
 #'        * A square grid is recommended;
 #'        * Absolute values (m) are recommended;
 #'        * At the time of writing (December 2023), planar grids are better tested;
 #'
-#' * `check_acoustics()` checks detection time series:
+#' * [`check_acoustics()`] checks detection time series:
 #'    - Class: [`data.table`];
 #'    - Columns:
 #'        * `timestamp`---an ordered, `POSIXct` vector of time stamps with a defined `tzone` attribute;
@@ -25,7 +25,7 @@
 #'        * Functions assume accurate clock alignment between receivers;
 #'        * For most functions, a single time series (for one individual) is required;
 #'
-#' * `check_services()` checks acoustic servicing records:
+#' * [`check_services()`] checks acoustic servicing records:
 #'    - Class: [`data.table`];
 #'    - Columns:
 #'        * `receiver_id`---see `.moorings$receiver_id`;
@@ -33,7 +33,7 @@
 #'    - Properties:
 #'        * Serviced receivers should be found in the `.moorings` dataset;
 #'
-#' * `check_moorings()` checks receiver deployment records:
+#' * [`check_moorings()`] checks receiver deployment records:
 #'    - Class: [`data.table`];
 #'    - Columns:
 #'        * `receiver_id`---an `integer` vector of unique receiver deployments (`1, ..., N`);
@@ -42,7 +42,7 @@
 #'       * `receiver_start` should precede `receiver_end` (not currently validated);
 #'       * Receiver coordinates must be valid (not currently validated);
 #'
-#' * `check_archival()` checks archival depth time series data:
+#' * [`check_archival()`] checks archival depth time series data:
 #'    - Class: [`data.table`];
 #'    - Columns:
 #'        * `timestamp`---an ordered, `POSIXct` vector of time stamps with a defined `tzone` attribute;
