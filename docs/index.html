@@ -172,9 +172,9 @@
 <li>
 <code><a href="reference/datasets-algorithms.html">dat_obs()</a></code> for an example output dataset from <code><a href="reference/pf_setup_obs.html">pf_setup_obs()</a></code>;</li>
 <li>
-<code><a href="reference/datasets-algorithms.html">dat_pff()</a></code> for an example output from <code><a href="reference/pf_forward.html">pf_forward()</a></code>;</li>
+<code><a href="reference/datasets-algorithms.html">dat_pff()</a></code> and <code><a href="reference/datasets-algorithms.html">dat_pff_src()</a></code> for example outputs from <code><a href="reference/pf_forward.html">pf_forward()</a></code>;</li>
 <li>
-<code><a href="reference/datasets-algorithms.html">dat_pfbk()</a></code> for an example output from <code><a href="reference/pf_backward_killer.html">pf_backward_killer()</a></code>;</li>
+<code><a href="reference/datasets-algorithms.html">dat_pfbk()</a></code> and <code><a href="reference/datasets-algorithms.html">dat_pfbk_src()</a></code> for example outputs from <code><a href="reference/pf_backward_killer.html">pf_backward_killer()</a></code>;</li>
 <li>
 <code><a href="reference/datasets-algorithms.html">dat_pfp()</a></code> for an example output from <code><a href="reference/pf_path.html">pf_path()</a></code>;</li>
 <li>
@@ -196,13 +196,15 @@
 <p>These functions are supported by a set of simulation helpers, including:</p>
 <ul>
 <li>
-<code><a href="reference/sim_detections.html">calc_detection_pr_logistic()</a></code> and <code><a href="reference/sim_detections.html">calc_detection_pr()</a></code>, which are example detection probability models;</li>
+<code><a href="reference/sim_helpers.html">rbern()</a></code>, <code><a href="reference/sim_helpers.html">rdet()</a></code>, <code><a href="reference/sim_helpers.html">dbern()</a></code>, <code><a href="reference/sim_helpers.html">ddetlogistic()</a></code> and <code><a href="reference/sim_helpers.html">ddet()</a></code> for the simulation of detections;</li>
 <li>
-<code><a href="reference/sim_helpers.html">dtruncgamma()</a></code> <code><a href="reference/sim_helpers.html">rtruncgamma()</a></code> and <code><a href="reference/sim_helpers.html">rlen()</a></code> for the simulation of step lengths;</li>
+<code><a href="reference/sim_helpers.html">dtruncgamma()</a></code>, <code><a href="reference/sim_helpers.html">rtruncgamma()</a></code>, <code><a href="reference/sim_helpers.html">rlen()</a></code> and <code><a href="reference/sim_helpers.html">clen()</a></code> for the simulation of step lengths;</li>
 <li>
-<code><a href="reference/sim_helpers.html">rwn()</a></code>, <code><a href="reference/sim_helpers.html">rangrw()</a></code> and <code><a href="reference/sim_helpers.html">rangcrw()</a></code> for the simulation of turning angles;</li>
+<code><a href="reference/sim_helpers.html">rwn()</a></code>, <code><a href="reference/sim_helpers.html">rangrw()</a></code>, <code><a href="reference/sim_helpers.html">rangcrw()</a></code> and <code><a href="reference/sim_helpers.html">cang()</a></code> for the simulation of turning angles;</li>
 <li>
-<code><a href="reference/sim_helpers.html">cstep()</a></code> and <code><a href="reference/sim_helpers.html">dstep()</a></code> for the simulation of steps into new locations;</li>
+<code><a href="reference/sim_helpers.html">rstep()</a></code>, <code><a href="reference/sim_helpers.html">dstep()</a></code> and <code><a href="reference/sim_helpers.html">cstep()</a></code> for the simulation of steps into new locations;</li>
+<li>
+<code><a href="reference/pf_propose.html">dkick()</a></code> and <code><a href="reference/pf_propose.html">rkick()</a></code> for <code>*step()</code> wrappers;</li>
 </ul>
 <p>To evaluate model skill in reconstructing simulated patterns, see <code>skill_()</code> functions, specifically:</p>
 <ul>
@@ -333,7 +335,7 @@
 <li>
 <code><a href="reference/pf_coord.html">pf_coord()</a></code> to collate particle coordinates for mapping;</li>
 </ul>
-<p><strong>To map utilisation distributions</strong>, use:</p>
+<p><strong>For mapping utilisation distributions</strong>, use:</p>
 <ul>
 <li>
 <code><a href="reference/map_pou.html">map_pou()</a></code> to map probability-of-use;</li>
@@ -348,8 +350,8 @@
 <code><a href="reference/map_dens.html">as.owin.sf()</a></code>, to convert <code>sf</code> objects to observation windows;</li>
 </ul>
 </li>
-</ul>
-<p><strong>For home ranges</strong>, use:</p>
+<li>
+<code>map_hr_*()</code> to map home ranges, specifically:
 <ul>
 <li>
 <code><a href="reference/map_hr.html">map_hr_prop()</a></code> for a custom range;</li>
@@ -360,12 +362,16 @@
 <li>
 <code><a href="reference/map_hr.html">map_hr_full()</a></code> for the full range;</li>
 </ul>
+</li>
+</ul>
 </div>
 <div class="section level1">
 <h1 id="miscellaneous-helpers">Miscellaneous helpers<a class="anchor" aria-label="anchor" href="#miscellaneous-helpers"></a>
 </h1>
-<p>The following convenience functions are also made available to users of <a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a>:</p>
+<p>The following convenience functions are also exported. Use:</p>
 <ul>
+<li>
+<code><a href="reference/sim_helpers.html">ssf()</a></code> and <code><a href="reference/sim_helpers.html">ssv()</a></code> to <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code>;</li>
 <li>
 <code><a href="reference/dist_along_path.html">dist_along_path()</a></code> to calculate distances along a movement path;</li>
 <li>

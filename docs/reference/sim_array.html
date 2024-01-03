@@ -103,7 +103,7 @@
 <dt>.arrangement, .n_receiver, ...</dt>
 <dd><p>Arguments passed to <code><a href="https://rdrr.io/pkg/terra/man/sample.html" class="external-link">terra::spatSample()</a></code>.</p><ul><li><p><code>.arrangement</code> is a <code>character</code> that defines the receiver arrangement (passed to the <code>method</code> argument).</p></li>
 <li><p><code>.n_receiver</code> is an <code>integer</code> that defines the number of receivers to simulate (passed to the <code>size</code> argument).</p></li>
-<li><p><code>...</code> ... Additional arguments.</p></li>
+<li><p><code>...</code> ... Additional arguments, passed to <code><a href="https://rdrr.io/pkg/terra/man/sample.html" class="external-link">terra::spatSample()</a></code>, excluding: <code>x</code>, <code>size</code>, <code>method</code>, <code>replace</code>, <code>na.rm</code>, <code>xy</code>, <code>cells</code> and <code>values</code>.</p></li>
 </ul></dd>
 
 
@@ -168,16 +168,16 @@
 <span class="r-plt img"><img src="sim_array-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="va">a</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     array_id receiver_id receiver_easting receiver_northing</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1:        1           1               75               825</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2:        1           2              335               295</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3:        1           3              245               235</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:        1           4              105               415</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5:        1           5               85               435</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6:        1           6              385               975</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7:        1           7              165               345</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8:        1           8              765                65</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9:        1           9              285               455</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:        1          10              685               145</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:        1           1              915               565</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:        1           2              655               345</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:        1           3              925                 5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:        1           4              375               485</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:        1           5              865               705</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:        1           6              485               565</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:        1           7              285               275</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:        1           8              985               145</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:        1           9               15               425</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:        1          10              155               275</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (2): Customise receiver placement/number</span></span></span>
 <span class="r-in"><span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu">sim_array</span><span class="op">(</span>.arrangement <span class="op">=</span> <span class="st">"regular"</span>, .n_receiver <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></span>
@@ -192,69 +192,69 @@
 <span class="r-in"><span><span class="co">#### Example (4): Control the plot(s)</span></span></span>
 <span class="r-in"><span><span class="fu">sim_array</span><span class="op">(</span>.plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     array_id receiver_id receiver_easting receiver_northing</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1:        1           1              135               135</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2:        1           2              295                65</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3:        1           3              355               865</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:        1           4              355                95</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5:        1           5              745               205</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6:        1           6              515               285</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7:        1           7              215               345</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8:        1           8              975                65</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9:        1           9              995               245</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:        1          10              335               575</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:        1           1              685               665</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:        1           2              815               395</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:        1           3              625               315</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:        1           4              475               925</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:        1           5              925               205</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:        1           6              475               125</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:        1           7              105               885</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:        1           8              695               225</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:        1           9              495               115</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:        1          10              525               405</span>
 <span class="r-in"><span><span class="fu">sim_array</span><span class="op">(</span>.n_array <span class="op">=</span> <span class="fl">5L</span>, .plot <span class="op">=</span> <span class="cn">TRUE</span>, .one_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_array-4.png" alt="" width="700" height="433"></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     array_id receiver_id receiver_easting receiver_northing</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1:        1           1              415               845</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2:        1           2              215               305</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3:        1           3              785               615</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:        1           4              805               215</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5:        1           5              695               475</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6:        1           6               15               365</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7:        1           7              865               635</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8:        1           8              535               725</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9:        1           9              265               795</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:        1          10               45                55</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11:        2           1              445               495</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12:        2           2              195               865</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13:        2           3              405               455</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14:        2           4              235               925</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15:        2           5              275               145</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16:        2           6              375               485</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17:        2           7              825               525</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18:        2           8              575               945</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19:        2           9              655               335</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20:        2          10              255               255</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21:        3           1              525                85</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22:        3           2              305               455</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23:        3           3              885               195</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24:        3           4              445                55</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25:        3           5              895               455</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26:        3           6              635               365</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27:        3           7              335               655</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28:        3           8              265               985</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29:        3           9              835               785</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30:        3          10               95                95</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31:        4           1              835               325</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32:        4           2              135               895</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33:        4           3              735               585</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34:        4           4              405               815</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35:        4           5              175               265</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36:        4           6              915               295</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 37:        4           7              875               155</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38:        4           8              395               985</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 39:        4           9              245               185</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40:        4          10              485               685</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41:        5           1              285               725</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 42:        5           2               15               895</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 43:        5           3               35               785</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44:        5           4               65               415</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 45:        5           5              765               165</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 46:        5           6              685               675</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 47:        5           7               45                85</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 48:        5           8              895               675</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 49:        5           9              505               285</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 50:        5          10               15               155</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:        1           1              835               165</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:        1           2              545               305</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:        1           3              885               485</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:        1           4              575               195</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:        1           5              905               525</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:        1           6              665               995</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:        1           7              935               615</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:        1           8              385                45</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:        1           9              155               785</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:        1          10              565               885</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:        2           1              275                85</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:        2           2              815               335</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:        2           3              425               985</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14:        2           4              655               625</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:        2           5              875               485</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:        2           6              645               985</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17:        2           7              545               935</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18:        2           8              765               575</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19:        2           9              435               205</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20:        2          10              115               195</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21:        3           1              455                85</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22:        3           2              325               405</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23:        3           3              605               465</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24:        3           4              865               625</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25:        3           5              385               455</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26:        3           6              325               845</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27:        3           7              135               115</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28:        3           8              115               455</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29:        3           9              535               675</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30:        3          10              625               705</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31:        4           1              735               605</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32:        4           2              455               875</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33:        4           3              365               425</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34:        4           4              185               275</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35:        4           5              285               225</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36:        4           6               75               395</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37:        4           7              655               885</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38:        4           8              625               905</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39:        4           9               35               105</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40:        4          10              835               865</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41:        5           1              655               105</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42:        5           2              205                75</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 43:        5           3              125               285</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 44:        5           4              945               455</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 45:        5           5               85               955</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 46:        5           6              895               655</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 47:        5           7              545                85</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 48:        5           8              435               765</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 49:        5           9              315               685</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 50:        5          10              465               645</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     array_id receiver_id receiver_easting receiver_northing</span>
 <span class="r-in"><span><span class="fu">sim_array</span><span class="op">(</span>.n_array <span class="op">=</span> <span class="fl">5L</span>, .plot <span class="op">=</span> <span class="cn">TRUE</span>, .one_page <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_array-5.png" alt="" width="700" height="433"></span>
@@ -263,56 +263,56 @@
 <span class="r-plt img"><img src="sim_array-8.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="sim_array-9.png" alt="" width="700" height="433"></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     array_id receiver_id receiver_easting receiver_northing</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1:        1           1              525               745</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2:        1           2              825               125</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3:        1           3              485               335</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:        1           4              765               905</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5:        1           5              695               245</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6:        1           6              635               855</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7:        1           7              445               885</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8:        1           8              205               615</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9:        1           9              385               905</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:        1          10              625               855</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11:        2           1              985               855</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12:        2           2               65               375</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13:        2           3              865               205</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14:        2           4              415               425</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15:        2           5              715               305</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16:        2           6               75               965</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17:        2           7              805               875</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18:        2           8              105               195</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19:        2           9              635               895</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20:        2          10              775               445</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21:        3           1               45                25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22:        3           2              855               115</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23:        3           3              245               645</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24:        3           4              725                35</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25:        3           5              525               485</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26:        3           6              295               795</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27:        3           7              855               265</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28:        3           8              825               735</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29:        3           9              735               355</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30:        3          10              595               555</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31:        4           1              185               295</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32:        4           2              465               485</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33:        4           3              235               535</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34:        4           4              395               965</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35:        4           5              285               815</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36:        4           6              315               435</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 37:        4           7              705               975</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38:        4           8              235               335</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 39:        4           9              485               125</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40:        4          10              695               305</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41:        5           1              975               915</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 42:        5           2              615               535</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 43:        5           3              755                75</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44:        5           4              775               595</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 45:        5           5              985               735</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 46:        5           6              285                95</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 47:        5           7              585               955</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 48:        5           8              475               575</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 49:        5           9              745               165</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 50:        5          10              135               925</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:        1           1              985               315</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:        1           2              945               305</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:        1           3              575               535</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:        1           4              935               905</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:        1           5               15               345</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:        1           6              685               585</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:        1           7              305               205</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:        1           8              575               965</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:        1           9              285               945</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:        1          10              255               595</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:        2           1              145               815</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:        2           2              875               555</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:        2           3              755               705</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14:        2           4              775               615</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:        2           5              695                35</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:        2           6              895               185</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17:        2           7              225               355</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18:        2           8              645               335</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19:        2           9              335               845</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20:        2          10              665               265</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21:        3           1               55               165</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22:        3           2              725               925</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23:        3           3              185               115</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24:        3           4              315                65</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25:        3           5              515               485</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26:        3           6              875               695</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27:        3           7              435               245</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28:        3           8              845               665</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29:        3           9               95               685</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30:        3          10              965               515</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31:        4           1              485               345</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32:        4           2              365               635</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33:        4           3              205                95</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34:        4           4              995                85</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35:        4           5              675                95</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36:        4           6              565                25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37:        4           7              185               135</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38:        4           8              815               885</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39:        4           9              225                65</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40:        4          10              925               985</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41:        5           1              965               865</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42:        5           2              115               165</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 43:        5           3              245               235</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 44:        5           4              965               245</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 45:        5           5              635               585</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 46:        5           6              415                95</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 47:        5           7              295               325</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 48:        5           8               45               635</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 49:        5           9              435               875</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 50:        5          10              255               375</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     array_id receiver_id receiver_easting receiver_northing</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

@@ -91,8 +91,8 @@
 <li><p><code><a href="datasets-mefs.html">dat_archival</a></code> for archival (depth) time series;</p></li>
 <li><p><code><a href="datasets-mefs.html">dat_gebco()</a></code> for a bathymetry grid;</p></li>
 </ul><p>For example algorithm outputs (<code><a href="datasets-algorithms.html">datasets-algorithms</a></code>), see:</p><ul><li><p><code><a href="datasets-algorithms.html">dat_obs()</a></code> for an example output dataset from <code><a href="pf_setup_obs.html">pf_setup_obs()</a></code>;</p></li>
-<li><p><code><a href="datasets-algorithms.html">dat_pff()</a></code> for an example output from <code><a href="pf_forward.html">pf_forward()</a></code>;</p></li>
-<li><p><code><a href="datasets-algorithms.html">dat_pfbk()</a></code> for an example output from <code><a href="pf_backward_killer.html">pf_backward_killer()</a></code>;</p></li>
+<li><p><code><a href="datasets-algorithms.html">dat_pff()</a></code> and <code><a href="datasets-algorithms.html">dat_pff_src()</a></code> for example outputs from <code><a href="pf_forward.html">pf_forward()</a></code>;</p></li>
+<li><p><code><a href="datasets-algorithms.html">dat_pfbk()</a></code> and <code><a href="datasets-algorithms.html">dat_pfbk_src()</a></code> for example outputs from <code><a href="pf_backward_killer.html">pf_backward_killer()</a></code>;</p></li>
 <li><p><code><a href="datasets-algorithms.html">dat_pfp()</a></code> for an example output from <code><a href="pf_path.html">pf_path()</a></code>;</p></li>
 <li><p><code><a href="datasets-algorithms.html">dat_coa()</a></code> for an example output from <code><a href="coa.html">coa()</a></code>;</p></li>
 </ul></div>
@@ -101,10 +101,11 @@
     <p>To simulate passive acoustic telemetry data, see:</p><ul><li><p><code><a href="sim_array.html">sim_array()</a></code> to simulate an acoustic array;</p></li>
 <li><p><code><a href="sim_path_walk.html">sim_path_walk()</a></code> to simulate a movement path from a walk model;</p></li>
 <li><p><code><a href="sim_detections.html">sim_detections()</a></code> to simulate detections at receivers;</p></li>
-</ul><p>These functions are supported by a set of simulation helpers, including:</p><ul><li><p><code><a href="sim_detections.html">calc_detection_pr_logistic()</a></code> and <code><a href="sim_detections.html">calc_detection_pr()</a></code>, which are example detection probability models;</p></li>
-<li><p><code><a href="sim_helpers.html">dtruncgamma()</a></code> <code><a href="sim_helpers.html">rtruncgamma()</a></code> and <code><a href="sim_helpers.html">rlen()</a></code> for the simulation of step lengths;</p></li>
-<li><p><code><a href="sim_helpers.html">rwn()</a></code>, <code><a href="sim_helpers.html">rangrw()</a></code> and <code><a href="sim_helpers.html">rangcrw()</a></code> for the simulation of turning angles;</p></li>
-<li><p><code><a href="sim_helpers.html">cstep()</a></code> and <code><a href="sim_helpers.html">dstep()</a></code> for the simulation of steps into new locations;</p></li>
+</ul><p>These functions are supported by a set of simulation helpers, including:</p><ul><li><p><code><a href="sim_helpers.html">rbern()</a></code>, <code><a href="sim_helpers.html">rdet()</a></code>, <code><a href="sim_helpers.html">dbern()</a></code>, <code><a href="sim_helpers.html">ddetlogistic()</a></code> and <code><a href="sim_helpers.html">ddet()</a></code> for the simulation of detections;</p></li>
+<li><p><code><a href="sim_helpers.html">dtruncgamma()</a></code>, <code><a href="sim_helpers.html">rtruncgamma()</a></code>, <code><a href="sim_helpers.html">rlen()</a></code> and <code><a href="sim_helpers.html">clen()</a></code> for the simulation of step lengths;</p></li>
+<li><p><code><a href="sim_helpers.html">rwn()</a></code>, <code><a href="sim_helpers.html">rangrw()</a></code>, <code><a href="sim_helpers.html">rangcrw()</a></code> and <code><a href="sim_helpers.html">cang()</a></code> for the simulation of turning angles;</p></li>
+<li><p><code><a href="sim_helpers.html">rstep()</a></code>, <code><a href="sim_helpers.html">dstep()</a></code> and <code><a href="sim_helpers.html">cstep()</a></code> for the simulation of steps into new locations;</p></li>
+<li><p><code><a href="pf_propose.html">dkick()</a></code> and <code><a href="pf_propose.html">rkick()</a></code> for <code>*step()</code> wrappers;</p></li>
 </ul><p>To evaluate model skill in reconstructing simulated patterns, see <code>skill_()</code> functions, specifically:</p><ul><li><p><code><a href="skill.html">skill_mb()</a></code> to calculate mean bias;</p></li>
 <li><p><code><a href="skill.html">skill_me()</a></code> to calculate mean error;</p></li>
 <li><p><code><a href="skill.html">skill_rmse()</a></code> to calculate root mean squared error;</p></li>
@@ -155,19 +156,21 @@
 <li><p><code><a href="pf_files.html">pf_files_size()</a></code> to measure file size;</p></li>
 </ul><p><strong>For downstream analyses</strong>, use:</p><ul><li><p><code><a href="pf_path.html">pf_path()</a></code> (and <code><a href="pf_path_pivot.html">pf_path_pivot()</a></code>) to reconstruct movement paths;</p></li>
 <li><p><code><a href="pf_coord.html">pf_coord()</a></code> to collate particle coordinates for mapping;</p></li>
-</ul><p><strong>To map utilisation distributions</strong>, use:</p><ul><li><p><code><a href="map_pou.html">map_pou()</a></code> to map probability-of-use;</p></li>
+</ul><p><strong>For mapping utilisation distributions</strong>, use:</p><ul><li><p><code><a href="map_pou.html">map_pou()</a></code> to map probability-of-use;</p></li>
 <li><p><code><a href="map_dens.html">map_dens()</a></code> to create smooth maps using <code>spatstat</code>, plus the supporting functions:</p><ul><li><p><code><a href="map_dens.html">as.im.SpatRaster()</a></code>, to convert <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code>s to pixel images;</p></li>
 <li><p><code><a href="map_dens.html">as.owin.SpatRaster()</a></code>, to convert  <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code>s to observation windows;</p></li>
 <li><p><code><a href="map_dens.html">as.owin.sf()</a></code>, to convert <code>sf</code> objects to observation windows;</p></li>
 </ul></li>
-</ul><p><strong>For home ranges</strong>, use:</p><ul><li><p><code><a href="map_hr.html">map_hr_prop()</a></code> for a custom range;</p></li>
+<li><p><code>map_hr_*()</code> to map home ranges, specifically:</p><ul><li><p><code><a href="map_hr.html">map_hr_prop()</a></code> for a custom range;</p></li>
 <li><p><code><a href="map_hr.html">map_hr_core()</a></code> for the 'core' range;</p></li>
 <li><p><code><a href="map_hr.html">map_hr_home()</a></code> for the 'home' range;</p></li>
 <li><p><code><a href="map_hr.html">map_hr_full()</a></code> for the full range;</p></li>
+</ul></li>
 </ul></div>
     <div id="miscellaneous-helpers">
     <h2>Miscellaneous helpers</h2>
-    <p>The following convenience functions are also made available to users of <code>patter</code>:</p><ul><li><p><code><a href="dist_along_path.html">dist_along_path()</a></code> to calculate distances along a movement path;</p></li>
+    <p>The following convenience functions are also exported. Use:</p><ul><li><p><code><a href="sim_helpers.html">ssf()</a></code> and <code><a href="sim_helpers.html">ssv()</a></code> to <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code>;</p></li>
+<li><p><code><a href="dist_along_path.html">dist_along_path()</a></code> to calculate distances along a movement path;</p></li>
 <li><p><code><a href="degrees.html">degrees()</a></code> to create circular angles;</p></li>
 <li><p><code><a href="spatTemplate.html">spatTemplate()</a></code> to create a template <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code>;</p></li>
 </ul></div>

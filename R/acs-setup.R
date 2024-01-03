@@ -273,11 +273,22 @@ acs_setup_detection_kernels <-
     cat_log("... Getting receiver-specific kernels (for detection)...")
     receiver_specific_kernels <-
       pbapply::pblapply(split(moorings, moorings$receiver_id), function(m) {
+        # Define receiver coordinates
+        mxy <-
+          m |>
+          select(receiver_x, receiver_y) |>
+          as.matrix()
+        # Define detection container around receiver
+        container <-
+          mxy |>
+          terra::vect(crs = terra::crs(bathy)) |>
+          terra::buffer(width = m$receiver_range, quadsegs = 1e3L)
+        # Crop .bathy for improved speed
+        b <- terra::crop(.bathy, container)
         # Define kernel using user-provided function
-        # print(m)
-        k <- .ddetkernel(.mooring = m, .bathy = bathy,...)
+        k <- .ddetkernel(.mooring = m, .bathy = b,...)
         # Calculate Pr at receiver and check it is not NA or 0
-        pr_at_receiver <- terra::extract(k, data.frame(m$receiver_x, m$receiver_y))[1, 2]
+        pr_at_receiver <- terra::extract(k, mxy)[1, 2]
         if (is.na(pr_at_receiver)) {
           warn("Detection probability is NA at receiver {m$receiver_id}.",
                .envir = environment())
@@ -355,6 +366,15 @@ acs_setup_detection_kernels <-
         if (length(rs_active) == 1) {
           bkg_inv <- detection_kernels_inv_by_rs_active[[1]]
         } else {
+          # Get the extent of the list of (inverse) detection kernels
+          # (hopefully this is considerably smaller than the total extent)
+          ext <- terra::ext(do.call(terra::sprc, detection_kernels_inv_by_rs_active))
+          # Align SpatRasters
+          detection_kernels_inv_by_rs_active <-
+            lapply(detection_kernels_inv_by_rs_active, function(r) {
+              terra::extend(r, ext)
+            })
+          # Calculate the background surface
           detection_kernels_inv_for_rs_active <- do.call(c, detection_kernels_inv_by_rs_active)
           bkg_inv <- terra::app(detection_kernels_inv_for_rs_active, prod)
         }
@@ -367,8 +387,18 @@ acs_setup_detection_kernels <-
     bkg_by_design     <- lapply(bkgs_by_design, function(elm) elm$bkg)
     bkg_inv_by_design <- lapply(bkgs_by_design, function(elm) elm$bkg_inv)
 
-    #### Process outputs
-    cat_log("... Process detection probability kernels ...")
+    #### Extend SpatRasters
+    # We extend SpatRasters back onto .bathy
+    # This is required since we extract values by `cell_now` in pf_forward() & associated routines
+    # This is faster than extracting by coordinates
+    # But we pay a substantial time penalty and object-size penalty now if .bathy is large.
+    receiver_specific_kernels     <- lapply(receiver_specific_kernels, spatExtend, .y = .bathy)
+    receiver_specific_inv_kernels <- lapply(receiver_specific_inv_kernels, spatExtend, .y = .bathy)
+    bkg_by_design                 <- lapply(bkg_by_design, spatExtend, .y = .bathy)
+    bkg_inv_by_design             <- lapply(bkg_inv_by_design, spatExtend, .y = .bathy)
+
+    #### Build output list
+    cat_log("... List detection probability kernels ...")
     # For receiver-specific detection probability kernel lists,
     # add NULL elements to the list for any receivers
     # in the range 1:max(rs) that are not in rs.

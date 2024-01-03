@@ -77,7 +77,7 @@
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">acs_setup_detection_kernels</span><span class="op">(</span></span>
 <span>  <span class="va">.dlist</span>,</span>
-<span>  .calc_detection_pr <span class="op">=</span> <span class="va">acs_setup_detection_kernel</span>,</span>
+<span>  .ddetkernel <span class="op">=</span> <span class="va">acs_setup_detection_kernel</span>,</span>
 <span>  .verbose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"patter.verbose"</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -90,14 +90,14 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.dlist</dt>
-<dd><p>A named <code>list</code> of data and parameters from <code><a href="pat_setup_data.html">pat_setup_data()</a></code>. This function requires:</p><ul><li><p><code>.dlist$data$moorings</code>, with the following columns: <code>receiver_id</code>, <code>receiver_start</code>, <code>receiver_end</code>, <code>receiver_x</code> and <code>receiver_y</code>, plus any columns used internally by <code>.calc_detection_pr</code> (see below).</p></li>
+<dd><p>A named <code>list</code> of data and parameters from <code><a href="pat_setup_data.html">pat_setup_data()</a></code>. This function requires:</p><ul><li><p><code>.dlist$data$moorings</code>, with the following columns: <code>receiver_id</code>, <code>receiver_start</code>, <code>receiver_end</code>, <code>receiver_x</code> and <code>receiver_y</code>, plus any columns used internally by <code>.ddetkernel</code> (see below).</p></li>
 <li><p><code>.dlist$data$services</code>, with the following columns: <code>receiver_id</code>, <code>service_start</code> and <code>service_end</code> (see <code><a href="make_matrix_receivers.html">make_matrix_receivers()</a></code>).</p></li>
 <li><p><code>.dlist$spatial$bathy</code>, which defines the grid on which detection kernels are represented. <code>NA</code>s are used as a mask.</p></li>
 </ul></dd>
 
 
-<dt>.calc_detection_pr, ...</dt>
-<dd><p>A function that defines the detection kernel as a <code>SpatRaster</code> around a receiver (see <code><a href="acs_setup_detection_kernel.html">acs_setup_detection_kernel()</a></code> for an example). This must accept three arguments (even if they are ignored):</p><ul><li><p><code>.mooring</code>---A one-row <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that contains the information in <code>.dlist$data$moorings</code> for a specific receiver;</p></li>
+<dt>.ddetkernel, ...</dt>
+<dd><p>A <code>function</code> that defines the detection kernel as a <code>SpatRaster</code> around a receiver (see <code><a href="acs_setup_detection_kernel.html">acs_setup_detection_kernel()</a></code> for an example). This must accept three arguments (even if they are ignored):</p><ul><li><p><code>.mooring</code>---A one-row <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that contains the information in <code>.dlist$data$moorings</code> for a specific receiver;</p></li>
 <li><p><code>.bathy</code>---the <code>.dlist$spatial$bathy</code> <code>SpatRaster</code>;</p></li>
 <li><p><code>...</code> Additional arguments passed via <code>acs_setup_detection_kernels()</code>;</p></li>
 </ul></dd>
@@ -111,7 +111,7 @@
     <h2>Value</h2>
     
 
-<p>The function returns a named <code>list</code>, with the following elements:</p><ul><li><p><strong><code>receiver_specific_kernels</code></strong>. A <code>list</code>, with one element for all integers from 1 to the maximum receiver number. Any elements that do not correspond to receivers contain a <code>NULL</code> element. List elements that correspond to receivers contain a <code>SpatRaster</code> of the detection kernel around the relevant receiver. Cells values define the likelihood of a detection in that location, as modelled by <code>.calc_detection_pr</code>. In an AC*PF algorithm, at the moment of detection, these kernels effectively up-weight particles near to the receiver(s) that recorded detections.</p></li>
+<p>The function returns a named <code>list</code>, with the following elements:</p><ul><li><p><strong><code>receiver_specific_kernels</code></strong>. A <code>list</code>, with one element for all integers from 1 to the maximum receiver number. Any elements that do not correspond to receivers contain a <code>NULL</code> element. List elements that correspond to receivers contain a <code>SpatRaster</code> of the detection kernel around the relevant receiver. Cells values define the likelihood of a detection in that location, as modelled by <code>.ddetkernel</code>. In an AC*PF algorithm, at the moment of detection, these kernels effectively up-weight particles near to the receiver(s) that recorded detections.</p></li>
 <li><p><strong><code>receiver_specific_inv_kernels</code></strong>. A <code>list</code>, as for <code>receiver_specific_kernels</code>, but in which elements contain the inverse detection kernels (i.e., 1 - detection kernel). In an AC*PF algorithm, at the moment of detection, inverse detection kernels effectively down-weight particles in the overlapping regions between the receiver(s) that recorded detections those that did not.</p></li>
 <li><p><strong><code>array_design</code></strong>. A <code>data.frame</code> that defines the number and deployment times of each unique array design, resulting from receiver deployment, servicing and removal. In the times between detections, this is used to select the appropriate 'background' likelihood surface (see below). This contains the following columns:</p><ul><li><p><code>array_id</code>. An <code>integer</code> vector that defines each unique array design.</p></li>
 <li><p><code>array_start_date</code>. A <code>Date</code> that defines the start date of each array design.</p></li>
@@ -119,12 +119,12 @@
 <li><p><code>array_interval</code>. A <code><a href="https://lubridate.tidyverse.org/reference/Interval-class.html" class="external-link">lubridate::Interval</a></code> vector that defines the deployment period of each array design.</p></li>
 </ul></li>
 <li><p><strong><code>array_design_by_date</code></strong>. A named <code>list</code> that defines, for each date (list element), the array design on that date (based on <code>array_id</code> in <code>array_design</code>).</p></li>
-<li><p><strong><code>bkg_surface_by_design</code></strong>. A <code>list</code>, with one element for each array design, that defines the detection surface across all receivers deployed in that phase of the study. In areas that are covered by the detection kernel of a single receiver, the detection surface depends only on the kernel for that receiver (via <code>.calc_detection_pr</code>). In areas covered by multiple, overlapping kernels, the surface is influenced by the combination of overlapping kernels.</p></li>
+<li><p><strong><code>bkg_surface_by_design</code></strong>. A <code>list</code>, with one element for each array design, that defines the detection surface across all receivers deployed in that phase of the study. In areas that are covered by the detection kernel of a single receiver, the detection surface depends only on the kernel for that receiver (via <code>.ddetkernel</code>). In areas covered by multiple, overlapping kernels, the surface is influenced by the combination of overlapping kernels.</p></li>
 <li><p><strong><code>bkg_inv_surface_by_design</code></strong>. A <code>list</code>, as above for <code>bkg_surface_by_design</code>, but which contains the inverse detection surface (i.e., 1 - <code>bkg_surface_by_design</code>). In the AC*PF algorithm(s), in the gaps between detections, this effectively up-weights particles away from receivers (or, equivalently, down-weights particles near to receivers).</p></li>
 </ul></div>
     <div id="details">
     <h2>Details</h2>
-    <p>An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual. At each time step in such an algorithm, we evaluate the likelihood of acoustic observations (the presence or absence of detections at each operational receiver, accounting for receiver placement) given particle samples. A detection kernel is a spatial representation of the likelihood of a detection <em>around a specific receiver</em>. This typically declines with distance around a receiver, hence the default formulation of the <code>.calc_detection_pr</code> function. This function permits receiver-specific kernels, if required (but time-varying kernels are not currently supported.) Pre-calculating detection kernels is a potentially slow operation, especially for large and/or high-resolution grids (and we would like to improve this in future). However, this penalty is only required once and greatly improves the speed of downstream likelihood calculations in <code><a href="pf_lik.html">pf_lik_ac()</a></code> in <code><a href="pf_forward.html">pf_forward()</a></code>, which only needs to appropriately combine the relevant values at each time step.</p>
+    <p>An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual. At each time step in such an algorithm, we evaluate the likelihood of acoustic observations (the presence or absence of detections at each operational receiver, accounting for receiver placement) given particle samples. A detection kernel is a spatial representation of the likelihood of a detection <em>around a specific receiver</em>. This typically declines with distance around a receiver, hence the default formulation of the <code>.ddetkernel</code> function. This function permits receiver-specific kernels, if required (but time-varying kernels are not currently supported.) Pre-calculating detection kernels is a potentially slow operation, especially for large and/or high-resolution grids (and we would like to improve this in future). However, this penalty is only required once and greatly improves the speed of downstream likelihood calculations in <code><a href="pf_lik.html">pf_lik_ac()</a></code> in <code><a href="pf_forward.html">pf_forward()</a></code>, which only needs to appropriately combine the relevant values at each time step.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -170,8 +170,8 @@
 <span class="r-in"><span><span class="co">#### Example (1): Implement function using specified inputs</span></span></span>
 <span class="r-in"><span><span class="co"># Implement function</span></span></span>
 <span class="r-in"><span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu">acs_setup_detection_kernels</span><span class="op">(</span><span class="va">dlist</span>,</span></span>
-<span class="r-in"><span>                                 .calc_detection_pr <span class="op">=</span> <span class="va">acs_setup_detection_kernel</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::acs_setup_detection_kernels()` called @ 2023-12-30 11:08:38... </span>
+<span class="r-in"><span>                                 .ddetkernel <span class="op">=</span> <span class="va">acs_setup_detection_kernel</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::acs_setup_detection_kernels()` called @ 2024-01-03 14:26:37... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting receiver-specific kernels (for detection)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting receiver-specific inverse kernels... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting area-wide kernels (for non-detection)... </span>
@@ -186,7 +186,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... ... Extract detection probability kernels for active receivers... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Process detection probability kernels ... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::acs_setup_detection_kernels()` call ended @ 2023-12-30 11:08:39 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::acs_setup_detection_kernels()` call ended @ 2024-01-03 14:26:37 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="co"># Examine list elements</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">k</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                               Length Class      Mode</span>

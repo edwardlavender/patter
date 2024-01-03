@@ -75,30 +75,25 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">acs_setup_detection_kernel</span><span class="op">(</span></span>
-<span>  <span class="va">.mooring</span>,</span>
-<span>  <span class="va">.bathy</span>,</span>
-<span>  .calc_detection_pr <span class="op">=</span> <span class="va">calc_detection_pr_logistic</span>,</span>
-<span>  <span class="va">...</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">acs_setup_detection_kernel</span><span class="op">(</span><span class="va">.mooring</span>, <span class="va">.bathy</span>, .ddetx <span class="op">=</span> <span class="va">ddetlogistic</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.mooring</dt>
-<dd><p>A one-row <code>data.table</code> that defines the location of an acoustic receiver and associated information required to calculate detection probability via <code>.calc_detection_pr</code>. In this function, receiver coordinate columns (<code>receiver_x</code> and <code>receiver_y</code>) and the detection range (<code>receiver_range</code>) is required.</p></dd>
+<dd><p>A one-row <code>data.table</code> that defines the location of an acoustic receiver and associated information required to calculate detection probability via <code>.ddetx</code>. In this function, receiver coordinate columns (<code>receiver_x</code> and <code>receiver_y</code>) and the detection range (<code>receiver_range</code>) is required.</p></dd>
 
 
 <dt>.bathy</dt>
 <dd><p>A <code>SpatRaster</code> that defines the grid on which detection probability is calculated.</p></dd>
 
 
-<dt>.calc_detection_pr</dt>
-<dd><p>A function that calculates detection probability. In this implementation, the function is used to translate a <code>SpatRaster</code> of distances (m) (from each grid cell to the receiver in <code>.data</code>) via <code><a href="https://rdrr.io/pkg/terra/man/app.html" class="external-link">terra::app()</a></code>.</p></dd>
+<dt>.ddetx</dt>
+<dd><p>A function that calculates detection probability, such as <code><a href="sim_helpers.html">ddetlogistic()</a></code>. In this implementation, the function is used to translate a <code>SpatRaster</code> of distances (m) (from each grid cell to the receiver in <code>.data</code>) via <code><a href="https://rdrr.io/pkg/terra/man/app.html" class="external-link">terra::app()</a></code>. The function must accept a .<code>gamma</code> argument (even if this is ignored, see below).</p></dd>
 
 
 <dt>...</dt>
-<dd><p>Additional arguments passed to <code>.calc_detection_pr</code>. These arguments as passed to (<code><a href="sim_detections.html">calc_detection_pr_logistic()</a></code>  by default. <code>.gamma</code> is set internally to <code>.mooring$receiver_range</code>.</p></dd>
+<dd><p>Additional arguments passed to <code>.ddetx</code>. These arguments as passed to <code><a href="sim_helpers.html">ddetlogistic()</a></code>  by default. <code>.gamma</code> is set internally to <code>.mooring$receiver_range</code>.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -109,7 +104,7 @@
     </div>
     <div id="details">
     <h2>Details</h2>
-    <p>An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual. At each time step in such an algorithm, we evaluate the likelihood of acoustic observations (the presence or absence of detections at each operational receiver, accounting for receiver placement) given particle samples. The likelihood of the acoustic observations depends upon how detection probability declines away from receiver(s) in space; i.e., the shape of a 'detection kernel' (see <code><a href="acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code>). For any one receiver, the form of the kernel depends on the input to the <code>.calc_detection_pr</code> in <code><a href="acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code>. This function exemplifies one possible input to this argument, which is a model in which detection probability declines logistically with distance from a receiver.</p>
+    <p>An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual. At each time step in such an algorithm, we evaluate the likelihood of acoustic observations (the presence or absence of detections at each operational receiver, accounting for receiver placement) given particle samples. The likelihood of the acoustic observations depends upon how detection probability declines away from receiver(s) in space; i.e., the shape of a 'detection kernel' (see <code><a href="acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code>). For any one receiver, the form of the kernel depends on the input to the <code>.ddetkernel</code> in <code><a href="acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code>. This function exemplifies one possible input to this argument, which is a model in which detection probability declines logistically with distance from a receiver.</p>
     </div>
     <div id="warning">
     <h2>Warning</h2>

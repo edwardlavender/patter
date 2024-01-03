@@ -77,8 +77,8 @@
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">sim_path_walk</span><span class="op">(</span></span>
 <span>  .bathy <span class="op">=</span> <span class="fu"><a href="spatTemplate.html">spatTemplate</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  .lonlat <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  .origin <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .lonlat <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  .n_step <span class="op">=</span> <span class="fl">10L</span>,</span>
 <span>  .timestamp <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  .rlen <span class="op">=</span> <span class="va">rlen</span>,</span>
@@ -96,12 +96,12 @@
 <dd><p>A <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code> that defines the region within which movements are simulated. Movements are simulated in continuous space but restricted within the boundaries defined by <code>.bathy</code> and non-<code>NA</code> regions.</p></dd>
 
 
-<dt>.lonlat</dt>
-<dd><p>A <code>logical</code> variable that defines whether or not <code>.bathy</code> uses longitude/latitude or planar coordinates.</p></dd>
-
-
 <dt>.origin</dt>
 <dd><p>(optional) A one-row, two-column matrix that defines the origin. If unsupplied, <code>.origin</code> is sampled at random from <code>.bathy</code>. One origin is used for all simulated paths (see <code>.n_path</code>).</p></dd>
+
+
+<dt>.lonlat</dt>
+<dd><p>A <code>logical</code> variable that defines whether or not <code>.bathy</code> (and, if applicable, <code>.origin</code>) use longitude/latitude or planar coordinates.</p></dd>
 
 
 <dt>.n_step</dt>
@@ -150,8 +150,7 @@
     <p>The following convenience functions are provided:</p><ul><li><p><code><a href="sim_helpers.html">rtruncgamma()</a></code> and <code><a href="sim_helpers.html">rwn()</a></code> simulate step lengths (from a truncated Gamma distribution) and turning angles (from a wrapped normal distribution);</p></li>
 <li><p><code><a href="sim_helpers.html">rlen()</a></code>, <code><a href="sim_helpers.html">rangrw()</a></code> and <code><a href="sim_helpers.html">rangcrw()</a></code> are wrappers in the form required by <code>sim_path_walk()</code>;</p></li>
 <li><p><code>sim_path_walk()</code> simulates the movement path(s);</p></li>
-</ul><p>Within <code>sim_path_walk()</code>, at each time step, if <code>.lonlat = FALSE</code>, current locations (x, y) are updated via <code>x + length * cos(angle)</code> and <code>y + length * sin(angle)</code>.</p>
-<p>If <code>.lonlat = TRUE</code>, current locations are updated via <code><a href="https://rdrr.io/pkg/geosphere/man/destPoint.html" class="external-link">geosphere::destPoint()</a></code>.</p>
+</ul><p>Within <code>sim_path_walk()</code>, at each time step, if <code>.lonlat = TRUE</code>, current locations are updated via <code><a href="https://rdrr.io/pkg/geosphere/man/destPoint.html" class="external-link">geosphere::destPoint()</a></code>. If <code>.lonlat = FALSE</code>, current locations (x, y) are updated via <code>x + length * cos(angle)</code> and <code>y + length * sin(angle)</code>, where <code>length</code> is the simulated vector of step lengths and <code>angle</code> is the simulated vector of angles (re-expressed for consistency with <code><a href="https://rdrr.io/pkg/geosphere/man/destPoint.html" class="external-link">geosphere::destPoint()</a></code> via <code><a href="spatial_helpers.html">geoangle()</a></code>).</p>
 <p><code>.lonlat</code> support is experimental. Be especially careful with correlated random walks if <code>lonlat = TRUE</code>. On an ellipsoid, the initial (simulated) bearing is not the same as the final bearing, but is not currently updated.</p>
 <p><code>sim_path_walk()</code> replaces <a href="https://edwardlavender.github.io/flapper/reference/sim_path_sa.html" class="external-link"><code><a href="https://edwardlavender.github.io/flapper/reference/sim_path_sa.html" class="external-link">flapper::sim_path_sa()</a></code></a>. Other <a href="https://edwardlavender.github.io/flapper/reference/sim_path_-times.html" class="external-link"><code>flapper::sim_path_*()</code></a> functions are not currently implemented in <code><a href="patter.html">patter</a></code>.</p>
     </div>
@@ -175,151 +174,443 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu">rlang</span><span class="fu">::</span><span class="fu"><a href="https://rlang.r-lib.org/reference/is_installed.html" class="external-link">is_installed</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"circular"</span>, <span class="st">"truncdist"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://dtplyr.tidyverse.org" class="external-link">dtplyr</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va">circular</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://dtplyr.tidyverse.org" class="external-link">dtplyr</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va">circular</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co">#### Example (1): Implement function with default options</span></span></span>
-<span class="r-in"><span>  <span class="co"># The function returns a data.table with simulated locations</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="sim_helpers.html">ss</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">sim_path_walk</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">p</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co">#### Example (2): Update region for simulation</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="sim_helpers.html">ss</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">sim_path_walk</span><span class="op">(</span><span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">p</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co">#### Example (3): Specify origin</span></span></span>
-<span class="r-in"><span>  <span class="va">origin</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fl">710275.3</span>, <span class="fl">6259763</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="sim_helpers.html">ss</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">sim_path_walk</span><span class="op">(</span><span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>, .origin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fl">710275.3</span>, <span class="fl">6259763</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co">#### Example (4): Update number of steps/number of paths</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="sim_helpers.html">ss</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">sim_path_walk</span><span class="op">(</span><span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                     .origin <span class="op">=</span> <span class="va">origin</span>,</span></span>
-<span class="r-in"><span>                     .n_step <span class="op">=</span> <span class="fl">100L</span>, .n_path <span class="op">=</span> <span class="fl">5L</span>,</span></span>
-<span class="r-in"><span>                     .plot <span class="op">=</span> <span class="cn">TRUE</span>, .one_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="co"># The output contains 5 paths, each of 100 steps</span></span></span>
-<span class="r-in"><span>  <span class="va">p</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">path_id</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co">#### Example (5): Modify step length parameters</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/pkg/terra/man/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="fu"><a href="sim_helpers.html">rtruncgamma</a></span><span class="op">(</span><span class="fl">1e3</span>, .shape <span class="op">=</span> <span class="fl">5</span>, .mobility <span class="op">=</span> <span class="fl">100</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="sim_helpers.html">ss</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">sim_path_walk</span><span class="op">(</span><span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                     .origin <span class="op">=</span> <span class="va">origin</span>,</span></span>
-<span class="r-in"><span>                     .n_step <span class="op">=</span> <span class="fl">100L</span>,</span></span>
-<span class="r-in"><span>                     .shape <span class="op">=</span> <span class="fl">5</span>, .mobility <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">p</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co">#### Example (6): Modify `.rlen` model</span></span></span>
-<span class="r-in"><span>  <span class="co"># Use time-varying step lengths dependent upon some behavioural state</span></span></span>
-<span class="r-in"><span>  <span class="va">b</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/pkg/terra/man/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="fu"><a href="sim_helpers.html">rtruncgamma</a></span><span class="op">(</span>.n <span class="op">=</span> <span class="fl">1e3</span>, .shape <span class="op">=</span> <span class="fl">5</span>, .scale <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/pkg/terra/man/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="fu"><a href="sim_helpers.html">rtruncgamma</a></span><span class="op">(</span>.n <span class="op">=</span> <span class="fl">1e3</span>, .shape <span class="op">=</span> <span class="fl">15</span>, .scale <span class="op">=</span> <span class="fl">15</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">rlen</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.n</span> <span class="op">=</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>                         <span class="va">.prior</span> <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">.t</span> <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">.state</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>    <span class="kw">if</span> <span class="op">(</span><span class="va">.state</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="va">.t</span><span class="op">]</span> <span class="op">==</span> <span class="fl">0L</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>      <span class="fu"><a href="sim_helpers.html">rtruncgamma</a></span><span class="op">(</span>.n <span class="op">=</span> <span class="va">.n</span>, .shape <span class="op">=</span> <span class="fl">5</span>, .scale <span class="op">=</span> <span class="fl">5</span>, .mobility <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">.state</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="va">.t</span><span class="op">]</span> <span class="op">==</span> <span class="fl">1L</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>      <span class="fu"><a href="sim_helpers.html">rtruncgamma</a></span><span class="op">(</span>.n <span class="op">=</span> <span class="va">.n</span>, .shape <span class="op">=</span> <span class="fl">15</span>, .scale <span class="op">=</span> <span class="fl">15</span>, .mobility <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="op">}</span></span></span>
-<span class="r-in"><span>  <span class="op">}</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="sim_helpers.html">ss</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">sim_path_walk</span><span class="op">(</span><span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                     .origin <span class="op">=</span> <span class="va">origin</span>,</span></span>
-<span class="r-in"><span>                     .n_step <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">b</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>                     .rlen <span class="op">=</span> <span class="va">rlen</span>, .state <span class="op">=</span> <span class="va">b</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">p</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co">#### Example (7): Update model for turning angles</span></span></span>
-<span class="r-in"><span>  <span class="co"># Use biased random walk by modifying the .mu parameter in rangrw()</span></span></span>
-<span class="r-in"><span>  <span class="co"># E.g., To simulate movement north in a straight line, we use .mu = -99</span></span></span>
-<span class="r-in"><span>  <span class="co"># (accounting for the longitude of natural origin = -9 in dat_gebco())</span></span></span>
-<span class="r-in"><span>  <span class="co"># and .rho = 1:</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="sim_helpers.html">rwn</a></span><span class="op">(</span>.n <span class="op">=</span> <span class="fl">10</span>, .mu <span class="op">=</span>  <span class="op">-</span><span class="op">(</span><span class="fl">90</span> <span class="op">+</span> <span class="fl">9</span><span class="op">)</span>, .rho <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="sim_helpers.html">ss</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">sim_path_walk</span><span class="op">(</span><span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                     .origin <span class="op">=</span> <span class="va">origin</span>,</span></span>
-<span class="r-in"><span>                     .n_step <span class="op">=</span> <span class="fl">10L</span>,</span></span>
-<span class="r-in"><span>                     .rang <span class="op">=</span> <span class="va">rangrw</span>, .mu <span class="op">=</span> <span class="op">-</span><span class="op">(</span><span class="fl">90</span> <span class="op">+</span> <span class="fl">9</span><span class="op">)</span>, .rho <span class="op">=</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>                     .one_page <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">p</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co">#### Example (8): Use a correlated random walk model</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="sim_helpers.html">ss</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">sim_path_walk</span><span class="op">(</span><span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                     .origin <span class="op">=</span> <span class="va">origin</span>,</span></span>
-<span class="r-in"><span>                     .n_step <span class="op">=</span> <span class="fl">1000L</span>, .n_path <span class="op">=</span> <span class="fl">1L</span>,</span></span>
-<span class="r-in"><span>                     .rang <span class="op">=</span> <span class="va">rangcrw</span>, .rho <span class="op">=</span> <span class="fl">0.5</span>,</span></span>
-<span class="r-in"><span>                     .one_page <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="co"># The correlation between sequential angles is close to the simulated value:</span></span></span>
-<span class="r-in"><span>  <span class="va">adt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>a0 <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="va">angle</span>, a1 <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html" class="external-link">lead</a></span><span class="op">(</span><span class="va">p</span><span class="op">$</span><span class="va">angle</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/pkg/circular/man/cor.circular.html" class="external-link">cor.circular</a></span><span class="op">(</span><span class="fu"><a href="degrees.html">degrees</a></span><span class="op">(</span><span class="va">adt</span><span class="op">$</span><span class="va">a0</span><span class="op">)</span>, <span class="fu"><a href="degrees.html">degrees</a></span><span class="op">(</span><span class="va">adt</span><span class="op">$</span><span class="va">a1</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co">#### Example (9): Use custom step/length or turning angle models</span></span></span>
-<span class="r-in"><span>  <span class="va">rang_vmd</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.n</span> <span class="op">=</span> <span class="fl">1L</span>, <span class="va">.prior</span> <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>      <span class="fu">circular</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/circular/man/vonmises.html" class="external-link">rvonmises</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>        n <span class="op">=</span> <span class="va">.n</span>,</span></span>
-<span class="r-in"><span>        mu <span class="op">=</span> <span class="fu"><a href="degrees.html">degrees</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>        kappa <span class="op">=</span> <span class="fl">0</span>,</span></span>
-<span class="r-in"><span>        control.circular <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>units <span class="op">=</span> <span class="st">"degrees"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>      <span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">}</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="sim_helpers.html">ss</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">sim_path_walk</span><span class="op">(</span><span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                     .origin <span class="op">=</span> <span class="va">origin</span>,</span></span>
-<span class="r-in"><span>                     .n_step <span class="op">=</span> <span class="fl">1000L</span>,</span></span>
-<span class="r-in"><span>                     .rang <span class="op">=</span> <span class="va">rang_vmd</span>,</span></span>
-<span class="r-in"><span>                     .one_page <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">p</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="co">#### Example (1): Implement function with default options</span></span></span>
+<span class="r-in"><span><span class="co"># The function returns a data.table with simulated locations</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="sim_helpers.html">ssv</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">sim_path_walk</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_path_walk-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="va">p</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     path_id timestep   length      angle        x          y cell_x cell_y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:       1        1 265.4192   4.510189 705.0000 225.000000    705    225</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:       1        2 238.3868 186.142390 725.8716 489.597297    725    485</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:       1        3 218.3843  57.542949 700.3643 252.579073    705    255</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:       1        4 265.7620 159.273895 884.6357 369.778789    885    365</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:       1        5 221.9251 289.360088 978.6891 121.216107    975    125</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:       1        6 145.3710 142.876322 769.3131 194.785154    765    195</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:       1        7 273.0827 253.655618 857.0500  78.875808    855     75</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:       1        8 341.8014  81.588604 595.0032   2.027574    595      5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:       1        9 341.8745 297.326251 933.1279  52.026216    935     55</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:       1       10       NA         NA 629.4042 208.965967    625    205</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     cell_z cell_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:      0    7771</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:      0    5173</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:      0    7471</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:      0    6389</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:      0    8798</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:      0    8077</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:      0    9286</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:      0    9960</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:      0    9494</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:      0    7963</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#### Example (2): Update region for simulation</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="sim_helpers.html">ssv</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">sim_path_walk</span><span class="op">(</span><span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_path_walk-2.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="va">p</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     path_id timestep   length      angle        x       y   cell_x  cell_y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:       1        1 265.4192   4.510189 709342.1 6261507 709342.1 6261507</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:       1        2 238.3868 186.142390 709363.0 6261771 709342.1 6261807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:       1        3 218.3843  57.542949 709337.5 6261534 709342.1 6261507</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:       1        4 265.7620 159.273895 709521.8 6261652 709542.1 6261607</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:       1        5 269.3482 239.790294 709615.8 6261403 709642.1 6261407</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:       1        6 152.1902  22.773806 709383.1 6261268 709342.1 6261307</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:       1        7 221.9251 289.360088 709442.0 6261408 709442.1 6261407</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:       1        8 145.3710 142.876322 709232.6 6261481 709242.1 6261507</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:       1        9 353.8977 125.316300 709320.3 6261366 709342.1 6261407</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:       1       10       NA         NA 709609.1 6261161 709642.1 6261207</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       cell_z cell_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1: 19.51254   21989</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2: 16.77353   21419</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3: 19.51254   21989</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4: 20.75635   21801</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5: 25.65143   22182</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6: 23.02818   22369</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7: 22.66875   22180</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8: 18.12949   21988</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9: 21.27036   22179</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10: 28.78143   22562</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#### Example (3): Specify origin</span></span></span>
+<span class="r-in"><span><span class="va">origin</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fl">710275.3</span>, <span class="fl">6259763</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="sim_helpers.html">ssv</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">sim_path_walk</span><span class="op">(</span><span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>, .origin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fl">710275.3</span>, <span class="fl">6259763</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_path_walk-3.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#### Example (4): Update number of steps/number of paths</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="sim_helpers.html">ssv</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">sim_path_walk</span><span class="op">(</span><span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                   .origin <span class="op">=</span> <span class="va">origin</span>,</span></span>
+<span class="r-in"><span>                   .n_step <span class="op">=</span> <span class="fl">100L</span>, .n_path <span class="op">=</span> <span class="fl">5L</span>,</span></span>
+<span class="r-in"><span>                   .plot <span class="op">=</span> <span class="cn">TRUE</span>, .one_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_path_walk-4.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="co"># The output contains 5 paths, each of 100 steps</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">path_id</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    path_id   n</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:       1 100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:       2 100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:       3 100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:       4 100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:       5 100</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#### Example (5): Modify step length parameters</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="fu"><a href="sim_helpers.html">rtruncgamma</a></span><span class="op">(</span><span class="fl">1e3</span>, .shape <span class="op">=</span> <span class="fl">5</span>, .mobility <span class="op">=</span> <span class="fl">100</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_path_walk-5.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="fu"><a href="sim_helpers.html">ssv</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">sim_path_walk</span><span class="op">(</span><span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                   .origin <span class="op">=</span> <span class="va">origin</span>,</span></span>
+<span class="r-in"><span>                   .n_step <span class="op">=</span> <span class="fl">100L</span>,</span></span>
+<span class="r-in"><span>                   .shape <span class="op">=</span> <span class="fl">5</span>, .mobility <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_path_walk-6.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="va">p</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      path_id timestep   length      angle        x       y   cell_x  cell_y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:       1        1 69.36928 277.685749 710275.3 6259763 710242.1 6259807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2:       1        2 19.16343 224.094863 710206.6 6259772 710242.1 6259807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:       1        3 63.04376 175.916324 710193.2 6259759 710242.1 6259807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:       1        4 39.46258 278.259871 710197.7 6259696 710242.1 6259707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:       1        5 58.48599 284.100944 710158.7 6259701 710142.1 6259707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   6:       1        6 72.44427  32.866997 710101.9 6259716 710142.1 6259707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   7:       1        7 29.59545 184.781200 710141.2 6259776 710142.1 6259807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   8:       1        8 82.11793  24.617529 710138.8 6259747 710142.1 6259707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   9:       1        9 55.69328 351.457071 710173.0 6259822 710142.1 6259807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  10:       1       10 52.65613 197.816879 710164.7 6259877 710142.1 6259907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  11:       1       11 50.74806 289.865052 710148.6 6259827 710142.1 6259807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  12:       1       12 75.01774 347.767481 710100.9 6259844 710142.1 6259807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  13:       1       13 44.57807  59.228611 710085.0 6259917 710042.1 6259907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  14:       1       14 51.23809  16.732776 710123.3 6259940 710142.1 6259907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  15:       1       15 57.42362 347.793449 710138.0 6259989 710142.1 6260007</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  16:       1       16 83.82482 286.029838 710125.9 6260045 710142.1 6260007</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  17:       1       17 60.54758 318.560515 710045.3 6260068 710042.1 6260107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  18:       1       18 84.80428  22.565290 710005.3 6260114 710042.1 6260107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  19:       1       19 82.47238  31.601454 710037.8 6260192 710042.1 6260207</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  20:       1       20 79.96362 308.885917 710081.0 6260262 710042.1 6260307</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  21:       1       21 65.99458 183.419993 710018.8 6260312 710042.1 6260307</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  22:       1       22 92.88761 347.338279 710014.8 6260246 710042.1 6260207</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  23:       1       23 35.84782   4.925124 709994.5 6260337 710042.1 6260307</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  24:       1       24 61.77555 189.516149 709997.5 6260373 710042.1 6260407</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  25:       1       25 67.37284 324.197567 709987.3 6260312 709942.1 6260307</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  26:       1       26 78.92177 127.694404 709947.9 6260367 709942.1 6260407</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  27:       1       27 41.85583  95.384135 710010.4 6260318 710042.1 6260307</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  28:       1       28 78.17985 214.598738 710052.0 6260314 710042.1 6260307</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  29:       1       29 62.88810 237.462933 710007.7 6260250 710042.1 6260207</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  30:       1       30 39.27892  25.953447 709954.6 6260216 709942.1 6260207</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  31:       1       31 65.29742 231.358473 709971.8 6260251 709942.1 6260207</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  32:       1       32 56.03103 111.534168 709920.8 6260211 709942.1 6260207</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  33:       1       33 85.98099 266.724099 709972.9 6260190 709942.1 6260207</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  34:       1       34 24.85873 282.156764 709887.1 6260185 709842.1 6260207</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  35:       1       35 28.92211 138.263286 709862.8 6260190 709842.1 6260207</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  36:       1       36 60.98665 150.731714 709882.1 6260169 709842.1 6260207</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  37:       1       37 42.63963 348.246569 709911.9 6260116 709942.1 6260107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  38:       1       38 69.77362 287.169624 709903.2 6260157 709942.1 6260207</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  39:       1       39 47.43381 277.450086 709836.5 6260178 709842.1 6260207</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  40:       1       40 71.35893   3.255644 709789.5 6260184 709742.1 6260207</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  41:       1       41 45.43239 167.786623 709793.5 6260255 709842.1 6260207</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  42:       1       42 42.18281 125.895256 709803.2 6260211 709842.1 6260207</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  43:       1       43 95.45175 182.709266 709837.3 6260186 709842.1 6260207</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  44:       1       44 17.85612 107.091886 709832.8 6260091 709842.1 6260107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  45:       1       45 59.24940 257.307416 709849.9 6260086 709842.1 6260107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  46:       1       46 47.26174 106.516806 709792.1 6260073 709742.1 6260107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  47:       1       47 47.06530 141.692617 709837.4 6260059 709842.1 6260107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  48:       1       48 94.64620 272.456616 709866.6 6260022 709842.1 6260007</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  49:       1       49 82.85257 250.561861 709772.0 6260026 709742.1 6260007</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  50:       1       50 63.22861 222.043478 709693.9 6259999 709742.1 6260007</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  51:       1       51 49.11851  18.009114 709651.5 6259952 709642.1 6259907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  52:       1       52 49.82994 162.721537 709666.7 6259999 709642.1 6260007</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  53:       1       53 78.87369  21.033309 709681.5 6259951 709642.1 6259907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  54:       1       54 82.35279 200.945311 709709.8 6260025 709742.1 6260007</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  55:       1       55 35.53444 237.386124 709680.4 6259948 709642.1 6259907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  56:       1       56 96.31191 298.742339 709650.5 6259929 709642.1 6259907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  57:       1       57 88.59820 132.070107 709566.0 6259975 709542.1 6260007</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  58:       1       58 52.17814 145.455292 709631.8 6259915 709642.1 6259907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  59:       1       59 46.44781 205.397868 709661.4 6259872 709642.1 6259907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  60:       1       60 74.73918 303.468022 709641.4 6259831 709642.1 6259807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  61:       1       61 26.57662  19.604528 709579.1 6259872 709542.1 6259907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  62:       1       62 63.76040 261.074369 709588.0 6259897 709542.1 6259907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  63:       1       63 21.18294 248.299327 709525.0 6259887 709542.1 6259907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  64:       1       64 42.84084 246.720134 709505.3 6259879 709542.1 6259907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  65:       1       65 75.86827 169.024012 709466.0 6259862 709442.1 6259907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  66:       1       66 58.02101 235.965324 709480.4 6259788 709442.1 6259807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  67:       1       67 85.13541  49.339077 709432.4 6259755 709442.1 6259707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  68:       1       68 71.39379  64.898705 709496.9 6259811 709542.1 6259807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  69:       1       69 65.17111  18.366364 709561.6 6259841 709542.1 6259807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  70:       1       70 77.27002 101.642299 709582.1 6259903 709542.1 6259907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  71:       1       71 78.69822 354.390885 709657.8 6259887 709642.1 6259907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  72:       1       72 99.72871 248.598145 709650.1 6259966 709642.1 6260007</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  73:       1       73 14.50237 267.861117 709557.3 6259929 709542.1 6259907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  74:       1       74 71.72344 349.155996 709542.8 6259929 709542.1 6259907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  75:       1       75 58.02690 135.326719 709529.3 6259999 709542.1 6260007</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  76:       1       76 68.57056  77.108573 709570.1 6259958 709542.1 6260007</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  77:       1       77 78.06786 239.292314 709636.9 6259973 709642.1 6260007</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  78:       1       78 73.23550 254.076284 709569.8 6259933 709542.1 6259907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  79:       1       79 67.43793 175.003440 709499.4 6259913 709542.1 6259907</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  80:       1       80 86.37895 165.254830 709505.2 6259846 709542.1 6259807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  81:       1       81 40.63667 129.663004 709527.2 6259762 709542.1 6259807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  82:       1       82 45.33430 151.928269 709558.5 6259736 709542.1 6259707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  83:       1       83 58.01076 326.886013 709579.8 6259696 709542.1 6259707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  84:       1       84 39.59753  85.801369 709548.1 6259745 709542.1 6259707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  85:       1       85 63.01547 237.308500 709587.6 6259748 709542.1 6259707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  86:       1       86 74.59391 168.455034 709534.6 6259714 709542.1 6259707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  87:       1       87 43.49521 292.350538 709549.5 6259641 709542.1 6259607</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  88:       1       88 59.00960 217.521428 709509.3 6259657 709542.1 6259707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  89:       1       89 54.74210  23.324634 709473.4 6259611 709442.1 6259607</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  90:       1       90 67.04686 264.343023 709495.0 6259661 709542.1 6259707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  91:       1       91 70.33936 350.078934 709428.3 6259654 709442.1 6259607</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  92:       1       92 41.21809 295.768612 709416.2 6259724 709442.1 6259707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  93:       1       93 82.51146 159.883026 709379.1 6259741 709342.1 6259707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  94:       1       94 40.05088  40.975687 709407.5 6259664 709442.1 6259707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  95:       1       95 84.65006  44.811100 709433.7 6259694 709442.1 6259707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  96:       1       96 62.79956 107.490103 709493.4 6259754 709542.1 6259707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  97:       1       97 47.29474 335.116203 709553.3 6259735 709542.1 6259707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  98:       1       98 44.92629 303.528805 709533.4 6259778 709542.1 6259807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  99:       1       99 93.06927 262.344026 709495.9 6259803 709542.1 6259807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 100:       1      100       NA         NA 709403.7 6259791 709442.1 6259807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      path_id timestep   length      angle        x       y   cell_x  cell_y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        cell_z cell_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1: 59.94371   25228</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2: 59.94371   25228</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3: 59.94371   25228</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4: 61.99064   25418</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5: 66.64500   25417</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   6: 66.64500   25417</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   7: 64.09660   25227</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   8: 66.64500   25417</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   9: 64.09660   25227</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  10: 60.91920   25037</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  11: 64.09660   25227</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  12: 64.09660   25227</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  13: 64.39046   25036</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  14: 60.91920   25037</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  15: 57.21667   24847</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  16: 57.21667   24847</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  17: 55.32137   24656</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  18: 55.32137   24656</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  19: 50.78682   24466</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  20: 46.25227   24276</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  21: 46.25227   24276</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  22: 50.78682   24466</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  23: 46.25227   24276</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  24: 43.91017   24086</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  25: 46.60121   24275</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  26: 44.30830   24085</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  27: 46.25227   24276</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  28: 46.25227   24276</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  29: 50.78682   24466</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  30: 50.93417   24465</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  31: 50.93417   24465</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  32: 50.93417   24465</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  33: 50.93417   24465</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  34: 50.73513   24464</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  35: 50.73513   24464</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  36: 50.73513   24464</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  37: 55.26714   24655</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  38: 50.93417   24465</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  39: 50.73513   24464</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  40: 50.48996   24463</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  41: 50.73513   24464</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  42: 50.73513   24464</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  43: 50.73513   24464</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  44: 54.43401   24654</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  45: 54.43401   24654</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  46: 53.55874   24653</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  47: 54.43401   24654</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  48: 58.13289   24844</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  49: 56.62753   24843</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  50: 56.62753   24843</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  51: 57.34185   25032</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  52: 54.87765   24842</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  53: 57.34185   25032</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  54: 56.62753   24843</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  55: 57.34185   25032</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  56: 57.34185   25032</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  57: 53.12778   24841</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  58: 57.34185   25032</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  59: 57.34185   25032</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  60: 61.93324   25222</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  61: 54.98738   25031</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  62: 54.98738   25031</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  63: 54.98738   25031</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  64: 54.98738   25031</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  65: 55.06673   25030</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  66: 59.13179   25220</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  67: 65.82491   25410</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  68: 59.26422   25221</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  69: 59.26422   25221</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  70: 54.98738   25031</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  71: 57.34185   25032</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  72: 54.87765   24842</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  73: 54.98738   25031</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  74: 54.98738   25031</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  75: 53.12778   24841</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  76: 53.12778   24841</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  77: 54.87765   24842</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  78: 54.98738   25031</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  79: 54.98738   25031</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  80: 59.26422   25221</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  81: 59.26422   25221</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  82: 66.43642   25411</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  83: 66.43642   25411</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  84: 66.43642   25411</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  85: 66.43642   25411</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  86: 66.43642   25411</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  87: 73.60863   25601</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  88: 66.43642   25411</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  89: 72.51803   25600</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  90: 66.43642   25411</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  91: 72.51803   25600</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  92: 65.82491   25410</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  93: 66.77220   25409</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  94: 65.82491   25410</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  95: 65.82491   25410</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  96: 66.43642   25411</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  97: 66.43642   25411</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  98: 59.26422   25221</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  99: 59.26422   25221</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 100: 59.13179   25220</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        cell_z cell_id</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#### Example (6): Modify `.rlen` model</span></span></span>
+<span class="r-in"><span><span class="co"># Use time-varying step lengths dependent upon some behavioural state</span></span></span>
+<span class="r-in"><span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="fu"><a href="sim_helpers.html">rtruncgamma</a></span><span class="op">(</span>.n <span class="op">=</span> <span class="fl">1e3</span>, .shape <span class="op">=</span> <span class="fl">5</span>, .scale <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_path_walk-7.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="fu"><a href="sim_helpers.html">rtruncgamma</a></span><span class="op">(</span>.n <span class="op">=</span> <span class="fl">1e3</span>, .shape <span class="op">=</span> <span class="fl">15</span>, .scale <span class="op">=</span> <span class="fl">15</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_path_walk-8.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="va">rlenbs</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.n</span> <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>                   <span class="va">.prior</span> <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">.t</span> <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">.state</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="kw">if</span> <span class="op">(</span><span class="va">.state</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="va">.t</span><span class="op">]</span> <span class="op">==</span> <span class="fl">0L</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="sim_helpers.html">rtruncgamma</a></span><span class="op">(</span>.n <span class="op">=</span> <span class="va">.n</span>, .shape <span class="op">=</span> <span class="fl">5</span>, .scale <span class="op">=</span> <span class="fl">5</span>, .mobility <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">.state</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="va">.t</span><span class="op">]</span> <span class="op">==</span> <span class="fl">1L</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="sim_helpers.html">rtruncgamma</a></span><span class="op">(</span>.n <span class="op">=</span> <span class="va">.n</span>, .shape <span class="op">=</span> <span class="fl">15</span>, .scale <span class="op">=</span> <span class="fl">15</span>, .mobility <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="sim_helpers.html">ssv</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">sim_path_walk</span><span class="op">(</span><span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                   .origin <span class="op">=</span> <span class="va">origin</span>,</span></span>
+<span class="r-in"><span>                   .n_step <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">b</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>                   .rlen <span class="op">=</span> <span class="va">rlenbs</span>, .state <span class="op">=</span> <span class="va">b</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_path_walk-9.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="va">p</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    path_id timestep     length    angle        x       y   cell_x  cell_y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:       1        1  26.197354 277.6857 710275.3 6259763 710242.1 6259807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:       1        2   6.720799 224.0949 710249.3 6259767 710242.1 6259807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:       1        3 222.472408 175.9163 710244.7 6259762 710242.1 6259807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:       1        4 167.788494 278.2599 710260.5 6259540 710242.1 6259507</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:       1        5 211.812534 284.1009 710094.5 6259564 710142.1 6259607</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:       1        6 245.538316  32.8670 709889.0 6259615 709842.1 6259607</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7:       1        7 143.647037 184.7812 710022.3 6259822 710042.1 6259807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8:       1        8         NA       NA 710010.3 6259679 710042.1 6259707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      cell_z cell_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 59.94371   25228</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: 59.94371   25228</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: 59.94371   25228</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4: 66.08450   25798</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5: 69.19341   25607</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6: 78.05720   25604</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7: 68.24948   25226</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8: 71.29937   25416</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#### Example (7): Update model for turning angles</span></span></span>
+<span class="r-in"><span><span class="co"># Use biased random walk by modifying the .mu parameter in rangrw()</span></span></span>
+<span class="r-in"><span><span class="co"># E.g., To simulate movement north in a straight line, we use .mu = -99</span></span></span>
+<span class="r-in"><span><span class="co"># (accounting for the longitude of natural origin = -9 in dat_gebco())</span></span></span>
+<span class="r-in"><span><span class="co"># and .rho = 1:</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="sim_helpers.html">rwn</a></span><span class="op">(</span>.n <span class="op">=</span> <span class="fl">10</span>, .mu <span class="op">=</span>  <span class="op">-</span><span class="op">(</span><span class="fl">90</span> <span class="op">+</span> <span class="fl">9</span><span class="op">)</span>, .rho <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] -99 -99 -99 -99 -99 -99 -99 -99 -99 -99</span>
+<span class="r-in"><span><span class="fu"><a href="sim_helpers.html">ssv</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">sim_path_walk</span><span class="op">(</span><span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                   .origin <span class="op">=</span> <span class="va">origin</span>,</span></span>
+<span class="r-in"><span>                   .n_step <span class="op">=</span> <span class="fl">10L</span>,</span></span>
+<span class="r-in"><span>                   .rang <span class="op">=</span> <span class="va">rangrw</span>, .mu <span class="op">=</span> <span class="op">-</span><span class="op">(</span><span class="fl">90</span> <span class="op">+</span> <span class="fl">9</span><span class="op">)</span>, .rho <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>                   .one_page <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_path_walk-10.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="va">p</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     path_id timestep   length angle        x       y   cell_x  cell_y   cell_z</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:       1        1 237.7652   -99 710275.3 6259763 710242.1 6259807 59.94371</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:       1        2 265.4192   -99 710040.5 6259726 710042.1 6259707 71.29937</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:       1        3 115.2764   -99 709778.3 6259684 709742.1 6259707 71.70876</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:       1        4 238.3868   -99 709664.5 6259666 709642.1 6259707 69.07259</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:       1        5 222.4724   -99 709429.0 6259629 709442.1 6259607 72.51803</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:       1        6 218.3843   -99 709209.3 6259594 709242.1 6259607 72.66616</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:       1        7 167.7885   -99 708993.6 6259560 709042.1 6259607 65.74485</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:       1        8 265.7620   -99 708827.8 6259534 708842.1 6259507 56.15680</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:       1        9 211.8125   -99 708565.4 6259492 708542.1 6259507 45.13617</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:       1       10       NA    NA 708356.2 6259459 708342.1 6259507 45.81244</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     cell_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:   25228</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:   25416</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:   25413</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:   25412</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:   25600</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:   25598</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:   25596</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:   25784</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:   25781</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:   25779</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#### Example (8): Use a correlated random walk model</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="sim_helpers.html">ssv</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">sim_path_walk</span><span class="op">(</span><span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                   .origin <span class="op">=</span> <span class="va">origin</span>,</span></span>
+<span class="r-in"><span>                   .n_step <span class="op">=</span> <span class="fl">1000L</span>, .n_path <span class="op">=</span> <span class="fl">1L</span>,</span></span>
+<span class="r-in"><span>                   .rang <span class="op">=</span> <span class="va">rangcrw</span>, .rho <span class="op">=</span> <span class="fl">0.5</span>,</span></span>
+<span class="r-in"><span>                   .one_page <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_path_walk-11.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="co"># The correlation between sequential angles is close to the simulated value:</span></span></span>
+<span class="r-in"><span><span class="va">adt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>a0 <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="va">angle</span>, a1 <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html" class="external-link">lead</a></span><span class="op">(</span><span class="va">p</span><span class="op">$</span><span class="va">angle</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/circular/man/cor.circular.html" class="external-link">cor.circular</a></span><span class="op">(</span><span class="fu"><a href="degrees.html">degrees</a></span><span class="op">(</span><span class="va">adt</span><span class="op">$</span><span class="va">a0</span><span class="op">)</span>, <span class="fu"><a href="degrees.html">degrees</a></span><span class="op">(</span><span class="va">adt</span><span class="op">$</span><span class="va">a1</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.4939738</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#### Example (9): Use custom step/length or turning angle models</span></span></span>
+<span class="r-in"><span><span class="va">rangvmd</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.n</span> <span class="op">=</span> <span class="fl">1L</span>, <span class="va">.prior</span> <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="fu">circular</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/circular/man/vonmises.html" class="external-link">rvonmises</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      n <span class="op">=</span> <span class="va">.n</span>,</span></span>
+<span class="r-in"><span>      mu <span class="op">=</span> <span class="fu"><a href="degrees.html">degrees</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>      kappa <span class="op">=</span> <span class="fl">0</span>,</span></span>
+<span class="r-in"><span>      control.circular <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>units <span class="op">=</span> <span class="st">"degrees"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="sim_helpers.html">ssv</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">sim_path_walk</span><span class="op">(</span><span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                   .origin <span class="op">=</span> <span class="va">origin</span>,</span></span>
+<span class="r-in"><span>                   .n_step <span class="op">=</span> <span class="fl">1000L</span>,</span></span>
+<span class="r-in"><span>                   .rang <span class="op">=</span> <span class="va">rangvmd</span>,</span></span>
+<span class="r-in"><span>                   .one_page <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_path_walk-12.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       path_id timestep   length      angle        x       y   cell_x  cell_y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:       1        1 163.1853 325.736383 710275.3 6259763 710242.1 6259807</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:       1        2 138.7588 183.984070 710183.4 6259898 710142.1 6259907</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:       1        3 184.0845  52.603161 710173.8 6259759 710142.1 6259807</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:       1        4 241.8106 208.724725 710320.0 6259871 710342.1 6259907</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:       1        5 244.1243 142.347259 710203.8 6259659 710242.1 6259707</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                                       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  996:       1      996 153.4609 249.258238 711723.8 6258101 711742.1 6258107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  997:       1      997 200.3348   8.199128 711580.3 6258047 711542.1 6258007</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  998:       1      998 170.5817 151.142326 711608.9 6258245 711642.1 6258207</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  999:       1      999 143.5007 130.910295 711691.2 6258096 711642.1 6258107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1000:       1     1000       NA         NA 711799.7 6258002 711842.1 6258007</span>
+<span class="r-in"><span><span class="va">p</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       path_id timestep   length     angle        x       y   cell_x  cell_y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1:       1        1 237.7652 277.68575 710275.3 6259763 710242.1 6259807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2:       1        2 115.2764 224.09486 710039.7 6259795 710042.1 6259807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3:       1        3 222.4724 175.91632 709959.5 6259712 709942.1 6259707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4:       1        4 167.7885 278.25987 709975.3 6259490 709942.1 6259507</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5:       1        5 211.8125 284.10094 709809.3 6259514 709842.1 6259507</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  996:       1      996 309.4054  17.72022 709837.6 6263824 709842.1 6263807</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  997:       1      997 117.2443 257.70288 709931.8 6264119 709942.1 6264107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  998:       1      998 150.8079 130.18663 709817.2 6264094 709842.1 6264107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  999:       1      999 239.6528 294.51378 709932.4 6263997 709942.1 6264007</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1000:       1     1000       NA        NA 709714.4 6264096 709742.1 6264107</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         cell_z cell_id</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    1: 59.94371   25228</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2: 60.91920   25037</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3: 64.09660   25227</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4: 54.29055   25039</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5: 61.99064   25418</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2: 68.24948   25226</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3: 72.50568   25415</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4: 81.04334   25795</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5: 83.84519   25794</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ---                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  996: 39.66733   28473</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  997: 39.39050   28661</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  998: 40.47711   28282</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  999: 39.93707   28472</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1000: 40.61747   28664</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  996: 59.23749   17624</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  997: 75.52404   17055</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  998: 65.49315   17054</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  999: 71.37360   17245</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1000: 56.06592   17053</span>
 </code></pre></div>
     </div>
   </div>
