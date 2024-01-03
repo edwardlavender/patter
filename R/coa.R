@@ -35,10 +35,10 @@ coa <- function(.dlist, .delta_t, .split = NULL,
                 .plot_weights = TRUE, ..., .one_page = TRUE) {
 
   #### Check user inputs
+  # For unusued dots, we rely on hist() warnings
   check_dlist(.dlist = .dlist,
              .dataset = c("acoustics", "moorings"),
              .par = "lonlat")
-  rlang::check_dots_used()
 
   #### Define datasets
   acoustics  <- .dlist$data$acoustics

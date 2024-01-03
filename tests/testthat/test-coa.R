@@ -44,6 +44,14 @@ test_that("coa() works", {
   z <- coa(d_utm_1, .delta_t = "2 hours", .split = "individual_id")
   expect_equal(colnames(z), c("individual_id", "timestamp", "coa_x", "coa_y"))
 
+  # Check dot handling
+  z <- coa(d_utm_1, .delta_t = "2 hours", .split = "individual_id", xlab = "x-title")
+  z <- coa(d_utm_1, .delta_t = "2 hours", .split = "individual_id", blah = "x") |>
+    expect_warning('"blah" is not a graphical parameter') |> # plot.window()
+    expect_warning('"blah" is not a graphical parameter') |> # title()
+    expect_warning('"blah" is not a graphical parameter') |> # axis(1, ...)
+    expect_warning('"blah" is not a graphical parameter')    # axis(2, ...)
+
   # Compare coa() outputs & manual calculations for multiple delta_t values
   lapply(c("2 hours", "4 hours"), function(delta_t) {
 
