@@ -163,7 +163,7 @@ acs_setup_detection_overlaps <- function(.dlist) {
 #' @param .mooring A one-row [`data.table`] that defines the location of an acoustic receiver and associated information required to calculate detection probability via `.ddetx`. In this function, receiver coordinate columns (`receiver_x` and `receiver_y`) and the detection range (`receiver_range`) is required.
 #' @param .bathy A [`SpatRaster`] that defines the grid on which detection probability is calculated.
 #' @param .ddetx A function that calculates detection probability, such as [`ddetlogistic()`]. In this implementation, the function is used to translate a [`SpatRaster`] of distances (m) (from each grid cell to the receiver in `.data`) via [`terra::app()`]. The function must accept a .`gamma` argument (even if this is ignored, see below).
-#' @param ... Additional arguments passed to `.ddetx`. These arguments as passed to ([`ddetlogistic()`]  by default. `.gamma` is set internally to `.mooring$receiver_range`.
+#' @param ... Additional arguments passed to `.ddetx`. These arguments as passed to [`ddetlogistic()`]  by default. `.gamma` is set internally to `.mooring$receiver_range`.
 #'
 #' @details An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual. At each time step in such an algorithm, we evaluate the likelihood of acoustic observations (the presence or absence of detections at each operational receiver, accounting for receiver placement) given particle samples. The likelihood of the acoustic observations depends upon how detection probability declines away from receiver(s) in space; i.e., the shape of a 'detection kernel' (see [`acs_setup_detection_kernels()`]). For any one receiver, the form of the kernel depends on the input to the `.ddetkernel` in [`acs_setup_detection_kernels()`]. This function exemplifies one possible input to this argument, which is a model in which detection probability declines logistically with distance from a receiver.
 #'
@@ -193,7 +193,6 @@ acs_setup_detection_kernel <- function(.mooring,
                                        .bathy,
                                        .ddetx = ddetlogistic, ...) {
   # Calculate Euclidean distance around receiver
-  rlang::check_dots_used()
   rxy  <- matrix(c(.mooring$receiver_x, .mooring$receiver_y), ncol = 2)
   cell <- terra::cellFromXY(.bathy, rxy)
   grid <- terra::setValues(.bathy, NA)
@@ -201,6 +200,7 @@ acs_setup_detection_kernel <- function(.mooring,
   dist <- terra::distance(grid, unit = "m")
   dist <- terra::mask(dist, .bathy)
   # Convert distances to detection pr
+  # * Note that terra::app() detects unused arguments
   terra::app(dist, .ddetx, .gamma = .mooring$receiver_range, ...)
 }
 

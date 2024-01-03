@@ -1,8 +1,3 @@
-test_that("pf_setup_obs() works", {
-
-
-})
-
 test_that("acs_setup_detection_overlaps() work", {
 
   #### Define example 'moorings' dataset
@@ -46,10 +41,17 @@ test_that("acs_setup_detection_overlaps() work", {
 
 test_that("acs_setup_detection_kernel() works", {
   m <- dat_moorings[1, .(receiver_x = receiver_easting, receiver_y = receiver_northing)]
-  p <- acs_setup_detection_kernel(m, dat_gebco())
+  # Test default implementation
+  p <- acs_setup_detection_kernel(m, .bathy = dat_gebco())
   expect_equal(terra::extract(p, data.frame(m$receiver_x, m$receiver_y))[1, 2],
                ddetlogistic(0))
-
+  # Test customisation of .ddetx arguments
+  p <- acs_setup_detection_kernel(m, .bathy = dat_gebco(), .alpha = 0, .beta = 0)
+  expect_equal(terra::extract(p, data.frame(m$receiver_x, m$receiver_y))[1, 2],
+               ddetlogistic(0, .alpha = 0, .beta = 0))
+  # Test unused arguments
+  acs_setup_detection_kernel(m, .bathy = dat_gebco(), .blah = 1) |>
+    expect_error("unused argument (.blah = 1)", fixed = TRUE)
 })
 
 test_that("acs_setup_detection_kernels() works", {
@@ -75,7 +77,9 @@ test_that("acs_setup_detection_kernels() works", {
   m <- dlist$data$moorings
   pr <- lapply(seq_len(max(m$receiver_id)), function(id) {
     if (!(id %in% m$receiver_id)) return(NULL)
-    acs_setup_detection_kernel(m[m$receiver_id == id, , drop = FALSE], dat_gebco())
+    # Test default implementation
+    acs_setup_detection_kernel(m[m$receiver_id == id, , drop = FALSE],
+                               .bathy = dat_gebco())
   })
   # Define kernels
   k <- acs_setup_detection_kernels(dlist,
