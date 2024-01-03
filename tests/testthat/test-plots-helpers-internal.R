@@ -45,7 +45,7 @@ test_that("add_sp_path() works", {
   save_png <- function(code, width = 400, height = 400) {
     path <- tempfile(fileext = ".png")
     png(path, width = width, height = height)
-    on.exit(dev.off())
+    on.exit(dev.off(), add = TRUE)
     eval(code)
     path
   }

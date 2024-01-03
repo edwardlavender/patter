@@ -44,7 +44,9 @@
 pf_files <- function(.sink, .folder = NULL, ...) {
 
   #### List files & validate
-  rlang::check_dots_used()
+  # check_dots_used:  list.files() used
+  check_dots_allowed("full.names", ...)
+  check_dots_for_missing_period(formals(), list(...))
   .sink <- .pf_sink_folder(.sink = .sink, .folder = .folder)
   files <- list.files(.sink, full.names = TRUE, ...)
   if (length(files) == 0L) {
@@ -89,7 +91,9 @@ pf_files_size <- function(.sink,
                           .folder = NULL, ...,
                           .unit = c("MB", "GB", "TB")) {
   # Check inputs
-  rlang::check_dots_used()
+  # check_dots_used:  list.files() used
+  check_dots_allowed("full.names", ...)
+  check_dots_for_missing_period(formals(), list(...))
   # Get units
   .unit <- match.arg(.unit)
   # Define size in MB

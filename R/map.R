@@ -40,7 +40,8 @@ map_pou <-
     on.exit(cat_log(call_end(.fun = "map_pou", .start = t_onset, .end = Sys.time())), add = TRUE)
 
     #### Check user inputs
-    # For dots, we rely on terra::plot() warnings
+    # check_dots_used: terra::plot() warnings used
+    check_dots_for_missing_period(formals(), list(...))
     check_inherits(.map, "SpatRaster")
 
     #### Get XYM (cell IDs and marks)
@@ -172,7 +173,9 @@ map_dens <- function(.map,
   # Check `.map`
   check_inherits(.map, "SpatRaster")
   # Check dots
-  rlang::check_dots_used()
+  # * check_dots_used(): this is not possible
+  check_dots_allowed(c("at", "se"), ...)
+  check_dots_for_missing_period(formals(), list(...))
 
   #### Set up messages
   cat_log <- cat_init(.verbose = .verbose)
@@ -300,7 +303,10 @@ NULL
 #' @export
 
 map_hr_prop <- function(.map, .prop = 0.5, .add = FALSE, ...) {
-  rlang::check_dots_used()
+  # Check dots
+  # * check_dots_used: terra::plot() errors used
+  check_dots_allowed("add", ...)
+  check_dots_for_missing_period(formals(), list(...))
   if (length(.prop) != 1L) {
     abort("`.prop` should be a single number (proportion).")
   }

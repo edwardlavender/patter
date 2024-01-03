@@ -503,7 +503,7 @@ cang(centre_utm, west_utm, .lonlat = FALSE)  # ~ -90
 # Demonstrate (consistent) definition of angles on lon/lat and planar grids
 compare <- function(.ang = 0) {
   pp <- par(mfrow = c(1, 2))
-  on.exit(par(pp))
+  on.exit(par(pp), add = TRUE)
   # Plot lon/lat grid and add centre + new coord
   terra::plot(gll)
   points(centre)

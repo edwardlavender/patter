@@ -39,7 +39,7 @@ call_end <- function(.fun = as.character(sys.call(-1L)), .start, .end = Sys.time
 
 # Format call duration (difftime) statement for cat()
 call_duration <- function(.start, .end, ...) {
-  rlang::check_dots_used(...)
+  # check_dots_used: difftime() used
   dft      <- difftime(.end, .start, ...)
   duration <- round(as.numeric(dft), digits = 2)
   units    <- attr(dft, "units")
@@ -54,7 +54,7 @@ call_duration <- function(.start, .end, ...) {
 
 # Record call timings in a list
 call_timings <- function(.start, .end = Sys.time(), ...) {
-  rlang::check_dots_used()
+  # check_dots_used: difftime() used
   list(start = .start,
        end = .end,
        duration = difftime(.end, .start, ...))

@@ -28,7 +28,7 @@ coa(
 \item{.plot_weights, ..., .one_page}{Plot arguments.
 \itemize{
 \item \code{.plot_weights} is a \code{logical} variable that defines whether or not to plot the frequency distribution of weights for each \code{.split} value (i.e., the frequency distribution of the number of detections at each receiver in each time interval, excluding time intervals without detections).
-\item \code{...} is a placeholder for arguments passed to \code{\link[graphics:hist]{graphics::hist()}}.
+\item \code{...} is a placeholder for arguments passed to \code{\link[graphics:hist]{graphics::hist()}}, excluding \code{main}.
 \item \code{.one_page} A \code{logical} variable that defines whether or not to plot all histograms on one page.
 }}
 }

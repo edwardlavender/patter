@@ -193,7 +193,9 @@ acs_setup_detection_kernel <- function(.mooring,
                                        .bathy,
                                        .ddetx = ddetlogistic, ...) {
   # Checks
-  # (terra::app() handles dots)
+  # * check_dots_used: terra::app() used
+  check_dots_allowed(".gamma", ...)
+  check_dots_for_missing_period(formals(), list(...))
   # Calculate Euclidean distance around receiver
   rxy  <- matrix(c(.mooring$receiver_x, .mooring$receiver_y), ncol = 2)
   cell <- terra::cellFromXY(.bathy, rxy)
@@ -256,7 +258,7 @@ acs_setup_detection_kernels <-
     on.exit(cat_log(call_end(.fun = "acs_setup_detection_kernels", .start = t_onset, .end = Sys.time())), add = TRUE)
 
     #### Check user inputs
-    # (acs_setup_detection_kernel() handles dots)
+    # check_dots_used: acs_setup_detection_kernel() used
     check_dlist(.dlist = .dlist, .dataset = "moorings", .spatial = "bathy")
     moorings <- .dlist$data$moorings
     check_names(.dlist$data$moorings, req = c("receiver_x", "receiver_y"))

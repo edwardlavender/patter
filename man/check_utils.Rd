@@ -11,6 +11,8 @@
 \alias{check_tz}
 \alias{check_new_colnames}
 \alias{check_not_null}
+\alias{check_dots_allowed}
+\alias{check_dots_for_missing_period}
 \title{Utilities: check functions}
 \usage{
 check_dir_exists(input)
@@ -37,6 +39,10 @@ check_tz(input, arg = deparse(substitute(input)))
 check_new_colnames(.data, .new)
 
 check_not_null(input, req)
+
+check_dots_allowed(not_allowed, ...)
+
+check_dots_for_missing_period(args, dots)
 }
 \description{
 These internal functions perform generic checks on user inputs.

@@ -13,7 +13,7 @@ acs_setup_detection_kernel(.mooring, .bathy, .ddetx = ddetlogistic, ...)
 
 \item{.ddetx}{A function that calculates detection probability, such as \code{\link[=ddetlogistic]{ddetlogistic()}}. In this implementation, the function is used to translate a \code{\link{SpatRaster}} of distances (m) (from each grid cell to the receiver in \code{.data}) via \code{\link[terra:app]{terra::app()}}. The function must accept a .\code{gamma} argument (even if this is ignored, see below).}
 
-\item{...}{Additional arguments passed to \code{.ddetx}. These arguments as passed to (\code{\link[=ddetlogistic]{ddetlogistic()}}  by default. \code{.gamma} is set internally to \code{.mooring$receiver_range}.}
+\item{...}{Additional arguments passed to \code{.ddetx}. These arguments as passed to \code{\link[=ddetlogistic]{ddetlogistic()}}  by default. \code{.gamma} is set internally to \code{.mooring$receiver_range}.}
 }
 \value{
 The function returns a \code{\link{SpatRaster}} that defines the detection kernel around a specific receiver.

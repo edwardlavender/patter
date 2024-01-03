@@ -8,7 +8,7 @@
 #' @param .delta_t The time interval over which to calculate COAs. This can be specified in any way understood by [`cut.POSIXt()`] (see the `breaks` argument).
 #' @param .plot_weights,...,.one_page Plot arguments.
 #' * `.plot_weights` is a `logical` variable that defines whether or not to plot the frequency distribution of weights for each `.split` value (i.e., the frequency distribution of the number of detections at each receiver in each time interval, excluding time intervals without detections).
-#' * `...` is a placeholder for arguments passed to [`graphics::hist()`].
+#' * `...` is a placeholder for arguments passed to [`graphics::hist()`], excluding `main`.
 #' * `.one_page` A `logical` variable that defines whether or not to plot all histograms on one page.
 #'
 #' @details COAs are calculated as a weighted mean of the locations of receivers at which individuals are detected over consecutive time intervals, weighted by the frequency of detections at each of those receivers. COAs are calculated via [`stats::weighted.mean()`] (for planar coordinates) or [`geosphere::geomean()`] (for longitude/latitude coordinates).
@@ -35,10 +35,12 @@ coa <- function(.dlist, .delta_t, .split = NULL,
                 .plot_weights = TRUE, ..., .one_page = TRUE) {
 
   #### Check user inputs
-  # For unusued dots, we rely on hist() warnings
+  # check_dots_used: hist() warnings used
+  check_dots_allowed("main", ...)
+  check_dots_for_missing_period(formals(), list(...))
   check_dlist(.dlist = .dlist,
-             .dataset = c("acoustics", "moorings"),
-             .par = "lonlat")
+              .dataset = c("acoustics", "moorings"),
+              .par = "lonlat")
 
   #### Define datasets
   acoustics  <- .dlist$data$acoustics
