@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils-internal-check.R
 \name{check_utils}
 \alias{check_utils}
-\alias{check_dir}
+\alias{check_dir_exists}
 \alias{check_dir_is_empty}
 \alias{check_contents_ext}
 \alias{check_inherits}
@@ -15,7 +15,7 @@
 \alias{check_not_null}
 \title{Utilities: check functions}
 \usage{
-check_dir(input)
+check_dir_exists(input)
 
 check_dir_is_empty(input, action = abort)
 

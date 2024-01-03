@@ -7,7 +7,7 @@ NULL
 #' @rdname check_utils
 #' @keywords internal
 
-check_dir <- function(input) {
+check_dir_exists <- function(input) {
   check_inherits(input, "character")
   if (!dir.exists(input)) {
     abort("The directory '{input}' does not exist.",
@@ -21,7 +21,7 @@ check_dir <- function(input) {
 
 check_dir_is_empty <- function(input, action = abort) {
   if (!is.null(input)) {
-    check_dir(input)
+    check_dir_exists(input)
     if (length(list.files(input) != 0L)) {
       action("The directory '{input}' is not empty.",
              .envir = environment())

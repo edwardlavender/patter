@@ -41,7 +41,7 @@
 pf_files <- function(.sink, ...) {
 
   #### Check inputs
-  check_dir(input = .sink)
+  check_dir_exists(input = .sink)
   check_dots_allowed("full.names", ...)
   check_dots_for_missing_period(formals(), list(...))
   rlang::check_dots_used()

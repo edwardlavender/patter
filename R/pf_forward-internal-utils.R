@@ -46,7 +46,7 @@ NULL
   if (is.null(.record$sink)) {
     return(NULL)
   }
-  check_dir(.record$sink)
+  check_dir_exists(.record$sink)
   folder_history <- file.path(.record$sink, "history")
   folder_diagnostics <- file.path(.record$sink, "diagnostics")
   lapply(c(folder_history, folder_diagnostics), \(.folder) {

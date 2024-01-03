@@ -79,7 +79,7 @@
 
   # Handle folder input
   if (length(.history) == 1L) {
-    check_dir(.history)
+    check_dir_exists(.history)
     check_contents_ext(.history, "parquet")
     out <-
       .history |>
