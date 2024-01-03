@@ -33,7 +33,7 @@ check_dir_empty <- function(input, action = abort) {
 #' @rdname check_utils
 #' @keywords internal
 
-check_contents_ext <- function(input, ext, ...) {
+check_dir_contents_ext <- function(input, ext, ...) {
   f    <- list.files(input, ...)
   fext <- unique(tools::file_ext(f))
   if (!all(fext %in% ext)) {

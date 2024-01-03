@@ -80,7 +80,7 @@
   # Handle folder input
   if (length(.history) == 1L) {
     check_dir_exists(.history)
-    check_contents_ext(.history, "parquet")
+    check_dir_contents_ext(.history, "parquet")
     out <-
       .history |>
       arrow::open_dataset(...)
