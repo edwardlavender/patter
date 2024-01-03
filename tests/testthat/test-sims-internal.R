@@ -88,8 +88,9 @@ test_that(".cstep_iter() works", {
   ssv()
   p <- 1:2
   .cstep_iter(.xy0 = pts[p, ], .lonlat = FALSE,
-              .flux = .flux, .rlen = rlen, .rang = rangrw,
               .fv = .flux_template(.n_step = 2, .n_path = length(p)),
+              .rlen = rlen, .rang = rangrw,
+
               .t = 1,
               .move = .cstep_using_flux,
               .bathy = dat_gebco())
@@ -100,8 +101,8 @@ test_that(".cstep_iter() works", {
   ssv()
   p <- 1:3
   .cstep_iter(.xy0 = pts[p, ], .lonlat = FALSE,
-              .flux = .flux, .rlen = rlen, .rang = rangrw,
               .fv = .flux_template(.n_step = 2, .n_path = length(p)),
+              .rlen = rlen, .rang = rangrw,
               .t = 1,
               .move = .cstep_using_flux,
               .bathy = dat_gebco()) |>

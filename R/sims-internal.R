@@ -16,7 +16,7 @@
 #'
 #' * To implement this approach, a 'flux template' must be provided (to the `.flux_vals` argument), which is a list of [`data.table`]s that will hold the 'flux' parameters for each time step and can be updated by reference.
 #'    * The default [`.flux_template()`] function generates a list with place holders for simulated step lengths and turning angles.
-#' * The `.flux` argument is a function that is used to simulate the new values of any flux parameters at each time step and update (by reference) the flux template (i.e., `.flux_vals`). This must accept `.fv`, `.row` and `.col` arguments, as implemented in [`.cstep_iter()`].
+#' * `.flux` is a function that is used to simulate the new values of any flux parameters at each time step and update (by reference) the flux template (i.e., `.flux_vals`). This must accept `.fv`, `.row`, `.col`, `.rlen`, `.rang` and `...` arguments, as implemented in [`.cstep_iter()`].
 #' * `.move` is a function that defines new proposal locations based on the simulated flux values.
 #'    * For example, [`.cstep_using_flux()`], which wraps [`cstep()`], defines proposal locations based on simulated step lengths and turning angles.
 #' * Internally, `.move` is wrapped within [`.cstep_iter()`] and implemented iteratively to ensure that simulated location(s) at each time step are valid (in non NA cells on `.bathy`).
@@ -31,7 +31,8 @@ NULL
 .sim_path_flux <- function(.bathy = spatTemplate(), .lonlat = FALSE,
                           .origin = NULL,
                           .n_step = 10L,
-                          .flux, .rlen, .rang, ..., .flux_vals = .flux_template(.n_step, .n_path),
+                          .flux_vals = .flux_template(.n_step, .n_path),
+                          .rlen, .rang, ...,
                           .move = .cstep_using_flux,
                           .n_path = 1L,
                           .plot = TRUE, .one_page = FALSE) {
@@ -62,7 +63,7 @@ NULL
     mat[, lookup[[t + 1]]] <- .cstep_iter(.xy0 = mat[, lookup[[t]], drop = FALSE],
                                           .xy1 = mat[, lookup[[t + 1]], drop = FALSE],
                                           .lonlat = .lonlat,
-                                          .flux = .flux, .rlen = .rlen, .rang = .rang, ..., .fv = .flux_vals,
+                                          .fv = .flux_vals, .rlen = .rlen, .rang = .rang, ...,
                                           .move = .move, .t = t,
                                           .bathy = .bathy)
   }
@@ -136,7 +137,7 @@ NULL
 .cstep_iter <- function(.xy0,
                         .xy1 = matrix(NA, nrow = nrow(.xy0), ncol = ncol(.xy0)),
                         .lonlat,
-                        .flux, .rlen, .rang, ..., .fv, .t,
+                        .fv, .rlen, .rang, ..., .t,
                         .move,
                         .bathy) {
   counter <- 0
