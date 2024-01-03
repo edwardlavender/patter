@@ -162,6 +162,7 @@ acs_setup_detection_overlaps <- function(.dlist) {
 #' @description This function is part of a set of `acs_setup_*()` functions that prepare the layers required to evaluate the likelihood of acoustic observations in an AC*PF algorithm. The function is an example detection probability function, of the kind required by [`acs_setup_detection_kernels()`].
 #' @param .mooring A one-row [`data.table`] that defines the location of an acoustic receiver and associated information required to calculate detection probability via `.ddetx`. In this function, receiver coordinate columns (`receiver_x` and `receiver_y`) and the detection range (`receiver_range`) is required.
 #' @param .bathy A [`SpatRaster`] that defines the grid on which detection probability is calculated.
+#' @param .mask A `logical` variable that defines whether or not to mask the detection kernel by `.bathy`. Use `.mask = TRUE` if `.bathy` contains `NA`s.
 #' @param .ddetx A function that calculates detection probability, such as [`ddetlogistic()`]. In this implementation, the function is used to translate a [`SpatRaster`] of distances (m) (from each grid cell to the receiver in `.data`) via [`terra::app()`]. The function must accept a .`gamma` argument (even if this is ignored, see below).
 #' @param ... Additional arguments passed to `.ddetx`. These arguments as passed to [`ddetlogistic()`]  by default. `.gamma` is set internally to `.mooring$receiver_range`.
 #'
@@ -191,6 +192,7 @@ acs_setup_detection_overlaps <- function(.dlist) {
 
 acs_setup_detection_kernel <- function(.mooring,
                                        .bathy,
+                                       .mask = TRUE,
                                        .ddetx = ddetlogistic, ...) {
   # Checks
   # * check_dots_used: terra::app() used
@@ -202,9 +204,10 @@ acs_setup_detection_kernel <- function(.mooring,
   grid <- terra::setValues(.bathy, NA)
   grid[cell] <- 1
   dist <- terra::distance(grid, unit = "m")
-  dist <- terra::mask(dist, .bathy)
+  if (.mask) {
+    dist <- terra::mask(dist, .bathy)
+  }
   # Convert distances to detection pr
-  # * Note that terra::app() detects unused arguments
   terra::app(dist, .ddetx, .gamma = .mooring$receiver_range, ...)
 }
 
@@ -218,6 +221,7 @@ acs_setup_detection_kernel <- function(.mooring,
 #' @param .ddetkernel,... A `function` that defines the detection kernel as a [`SpatRaster`] around a receiver (see [`acs_setup_detection_kernel()`] for an example). This must accept three arguments (even if they are ignored):
 #' * `.mooring`---A one-row [`data.table`] that contains the information in `.dlist$data$moorings` for a specific receiver;
 #' * `.bathy`---the `.dlist$spatial$bathy` [`SpatRaster`];
+#' * `.mask`---a `logical` variable passed down from `.dlist$pars$spatna`;
 #' * `...` Additional arguments passed via [`acs_setup_detection_kernels()`];
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
@@ -290,7 +294,7 @@ acs_setup_detection_kernels <-
         # Crop bathy for improved speed
         b <- terra::crop(bathy, container)
         # Define kernel using user-provided function
-        k <- .ddetkernel(.mooring = m, .bathy = b,...)
+        k <- .ddetkernel(.mooring = m, .bathy = b, .mask = .dlist$pars$spatna, ...)
         # Calculate Pr at receiver and check it is not NA or 0
         pr_at_receiver <- terra::extract(k, mxy)[1, 1]
         if (is.na(pr_at_receiver)) {
