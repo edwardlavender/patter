@@ -194,7 +194,6 @@ acs_setup_detection_kernel <- function(.mooring,
                                        .ddetx = ddetlogistic, ...) {
   # Calculate Euclidean distance around receiver
   rlang::check_dots_used()
-  check_dots_allowed(".gamma")
   rxy  <- matrix(c(.mooring$receiver_x, .mooring$receiver_y), ncol = 2)
   cell <- terra::cellFromXY(.bathy, rxy)
   grid <- terra::setValues(.bathy, NA)

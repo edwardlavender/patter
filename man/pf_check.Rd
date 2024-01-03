@@ -2,12 +2,9 @@
 % Please edit documentation in R/pf_forward-internal-utils.R
 \name{pf_check}
 \alias{pf_check}
-\alias{.pf_checks}
 \alias{.pf_check_obs}
 \title{PF helper: internal check functions}
 \usage{
-.pf_checks(inputs = match.call()[-1L], defaults = formals(), dots)
-
 .pf_check_obs(.obs)
 }
 \description{

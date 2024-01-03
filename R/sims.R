@@ -396,7 +396,7 @@ cang <- function(.xy0, .xy1, .lonlat) {
 #' @param .arrangement,.n_receiver,... Arguments passed to [`terra::spatSample()`].
 #' * `.arrangement` is a `character` that defines the receiver arrangement (passed to the `method` argument).
 #' * `.n_receiver` is an `integer` that defines the number of receivers to simulate (passed to the `size` argument).
-#' * `...` ... Additional arguments.
+#' * `...` ... Additional arguments, passed to [`terra::spatSample()`], excluding: `x`, `size`, `method`, re`place, `na.rm`, `xy`, `cells` and `values`.
 #' @param .receiver_start,.receiver_end,.receiver_range (optional) Additional columns to include in the output:
 #'  * `.receiver_start` and `.receiver_end` are `Date` or `POSIXct` inputs that specify the deployment time period;
 #'  * `.receiver_range` is a `numeric` input that defines the detection range;
@@ -450,10 +450,7 @@ sim_array <- function(.bathy = spatTemplate(), .lonlat = FALSE,
                       .n_array = 1L,
                       .plot = TRUE, .one_page = FALSE) {
   #### Check user inputs
-  # Check dots
-  check_dots_for_missing_period(formals(), list(...))
-  check_dots_allowed(c("x", "size", "method", "replace", "na.rm", "xy",
-                       "cells", "values"))
+  rlang::check_dots_used()
   # * Check receiver_end is after receiver_start (if supplied)
   lapply(list(.receiver_start, .receiver_end, .receiver_range), \(x) {
     if (!is.null(x) && length(x) != 1L) {

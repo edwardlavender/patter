@@ -9,8 +9,6 @@
 \alias{check_names}
 \alias{check_named_list}
 \alias{check_tz}
-\alias{check_dots_allowed}
-\alias{check_dots_for_missing_period}
 \alias{check_new_colnames}
 \alias{check_not_null}
 \title{Utilities: check functions}
@@ -35,10 +33,6 @@ check_names(
 check_named_list(input, ignore_empty = TRUE, arg = deparse(substitute(input)))
 
 check_tz(input, arg = deparse(substitute(input)))
-
-check_dots_allowed(not_allowed, ...)
-
-check_dots_for_missing_period(args, dots)
 
 check_new_colnames(.data, .new)
 

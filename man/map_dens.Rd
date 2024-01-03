@@ -41,7 +41,7 @@ map_dens(
 
 \item{.discretise}{A \code{logical} variable that defines whether or not to discretise coordinates on \code{.map} (see \code{\link[=.map_coord]{.map_coord()}}).}
 
-\item{...}{Arguments for density estimation, passed to \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}}, such as \code{sigma} (i.e., the bandwidth).}
+\item{...}{Arguments for density estimation, passed to \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}}, such as \code{sigma} (i.e., the bandwidth). \code{at} and \code{se} are not permitted.}
 
 \item{.plot}{A \code{logical} variable that defines whether or not to plot the output.}
 

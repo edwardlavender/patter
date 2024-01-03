@@ -7,14 +7,6 @@ NULL
 #' @rdname pf_check
 #' @keywords internal
 
-# Collate .pf_checks() for pf_forward()
-.pf_checks <- function(inputs = match.call()[-1L], defaults = formals(), dots) {
-  check_dots_for_missing_period(formals, dots)
-}
-
-#' @rdname pf_check
-#' @keywords internal
-
 # Check `.obs` data.table
 .pf_check_obs <- function(.obs) {
   if (inherits(.obs, "data.frame") & !inherits(.obs, "data.table")) {

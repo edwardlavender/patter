@@ -42,8 +42,6 @@ pf_files <- function(.sink, ...) {
 
   #### Check inputs
   check_dir_exists(input = .sink)
-  check_dots_allowed("full.names", ...)
-  check_dots_for_missing_period(formals(), list(...))
   rlang::check_dots_used()
 
   #### List files & validate
@@ -90,7 +88,6 @@ pf_files_size <- function(.sink,
                           .folder = NULL, ...,
                           .unit = c("MB", "GB", "TB")) {
   # Check inputs
-  check_dots_allowed("full.names")
   rlang::check_dots_used()
   # Get units
   .unit <- match.arg(.unit)

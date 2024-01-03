@@ -27,7 +27,7 @@ sim_array(
 \itemize{
 \item \code{.arrangement} is a \code{character} that defines the receiver arrangement (passed to the \code{method} argument).
 \item \code{.n_receiver} is an \code{integer} that defines the number of receivers to simulate (passed to the \code{size} argument).
-\item \code{...} ... Additional arguments.
+\item \code{...} ... Additional arguments, passed to \code{\link[terra:sample]{terra::spatSample()}}, excluding: \code{x}, \code{size}, \code{method}, re\verb{place, }na.rm\verb{, }xy\verb{, }cells\code{and}values`.
 }}
 
 \item{.receiver_start, .receiver_end, .receiver_range}{(optional) Additional columns to include in the output:

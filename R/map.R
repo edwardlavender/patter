@@ -71,7 +71,7 @@ map_pou <-
 #' * `.invert` is a logical variable that defines whether or not to invert `.poly` (e.g., to turn a terrestrial polygon into an aquatic polygon);
 #' @param .coord (optional) Coordinates for density estimation, provided in any format accepted by [`.map_coord()`]. **Coordinates must be planar**.
 #' @param .discretise A `logical` variable that defines whether or not to discretise coordinates on `.map` (see [`.map_coord()`]).
-#' @param ... Arguments for density estimation, passed to [`spatstat.explore::density.ppp()`], such as `sigma` (i.e., the bandwidth).
+#' @param ... Arguments for density estimation, passed to [`spatstat.explore::density.ppp()`], such as `sigma` (i.e., the bandwidth). `at` and `se` are not permitted.
 #' @param .plot A `logical` variable that defines whether or not to plot the output.
 #' @param .use_tryCatch A `logical` variable that controls error handling:
 #' * If `.use_tryCatch = FALSE`, if density estimation fails with an error, the function fails with the same error.
@@ -171,9 +171,7 @@ map_dens <- function(.map,
   rlang::check_installed("spatstat.geom")
   # Check `.map`
   check_inherits(.map, "SpatRaster")
-  # Check dots (`at` and `se` are not currently supported)
-  check_dots_allowed(c("at", "se"))
-  check_dots_for_missing_period(formals(), list(...))
+  # Check dots
   rlang::check_dots_used()
 
   #### Set up messages
@@ -302,7 +300,6 @@ NULL
 #' @export
 
 map_hr_prop <- function(.map, .prop = 0.5, .add = FALSE, ...) {
-  check_dots_for_missing_period(formals(), list(...))
   rlang::check_dots_used()
   if (length(.prop) != 1L) {
     abort("`.prop` should be a single number (proportion).")
