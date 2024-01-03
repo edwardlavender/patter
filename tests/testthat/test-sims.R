@@ -249,6 +249,9 @@ test_that("sim_path_walk() works", {
   expect_equal(p$cell_z, terra::extract(gebco, p$cell_id)[, 1])
   # Validate no NAs
   expect_true(all(!is.na(p$cell_z)))
+  # check_dots_used
+  sim_path_walk(blah = 200) |>
+    expect_error("Arguments in `...` must be used.")
 
   #### Test reproducibility
   ssv()

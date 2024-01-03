@@ -589,7 +589,7 @@ sim_path_walk <- function(.bathy = spatTemplate(),
                           .n_path = 1L,
                           .plot = TRUE, .one_page = FALSE) {
   # Check user inputs
-  rlang::check_dots_used()
+  rlang::check_dots_used(error = function(cnd) stop(cnd))
   if (.lonlat) {
     rlang::check_installed("geosphere")
   }
