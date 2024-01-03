@@ -19,7 +19,7 @@ check_dir_exists <- function(input) {
 #' @rdname check_utils
 #' @keywords internal
 
-check_dir_is_empty <- function(input, action = abort) {
+check_dir_empty <- function(input, action = abort) {
   if (!is.null(input)) {
     check_dir_exists(input)
     if (length(list.files(input) != 0L)) {

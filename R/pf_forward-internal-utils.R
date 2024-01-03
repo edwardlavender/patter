@@ -53,7 +53,7 @@ NULL
     if (!dir.exists(.folder)) {
       dir.create(.folder)
     }
-    check_dir_is_empty(.folder, action = warn)
+    check_dir_empty(.folder, action = warn)
   })
   list(history = folder_history,
        diagnostics = folder_diagnostics)

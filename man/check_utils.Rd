@@ -3,7 +3,7 @@
 \name{check_utils}
 \alias{check_utils}
 \alias{check_dir_exists}
-\alias{check_dir_is_empty}
+\alias{check_dir_empty}
 \alias{check_contents_ext}
 \alias{check_inherits}
 \alias{check_names}
@@ -17,7 +17,7 @@
 \usage{
 check_dir_exists(input)
 
-check_dir_is_empty(input, action = abort)
+check_dir_empty(input, action = abort)
 
 check_contents_ext(input, ext, ...)
 
