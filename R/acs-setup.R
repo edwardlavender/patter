@@ -276,19 +276,19 @@ acs_setup_detection_kernels <-
         # Define receiver coordinates
         mxy <-
           m |>
-          select(receiver_x, receiver_y) |>
+          select("receiver_x", "receiver_y") |>
           as.matrix()
         # Define detection container around receiver
         container <-
           mxy |>
           terra::vect(crs = terra::crs(bathy)) |>
           terra::buffer(width = m$receiver_range, quadsegs = 1e3L)
-        # Crop .bathy for improved speed
-        b <- terra::crop(.bathy, container)
+        # Crop bathy for improved speed
+        b <- terra::crop(bathy, container)
         # Define kernel using user-provided function
         k <- .ddetkernel(.mooring = m, .bathy = b,...)
         # Calculate Pr at receiver and check it is not NA or 0
-        pr_at_receiver <- terra::extract(k, mxy)[1, 2]
+        pr_at_receiver <- terra::extract(k, mxy)[1, 1]
         if (is.na(pr_at_receiver)) {
           warn("Detection probability is NA at receiver {m$receiver_id}.",
                .envir = environment())
@@ -314,7 +314,7 @@ acs_setup_detection_kernels <-
 
     #### Get dates of changes in array design
     cat_log("... Getting area-wide kernels (for non-detection)...")
-    cat_log("... ... Get unique array designs...")
+    cat_log("... ... Geting unique array designs...")
     # Get receiver status matrix from moorings and services (in units of days, time unit is Date)
     rs_mat <- make_matrix_receivers(.dlist = .dlist,
                                     .delta_t = "days",
@@ -346,7 +346,7 @@ acs_setup_detection_kernels <-
     names(array_design_by_date) <- as.character(cdates)
 
     #### For each unique array design, create the area-wide kernel surface that represents detection Pr/inverse detection Pr
-    cat_log("... ... Get area wide kernels for each array design...")
+    cat_log("... ... Geting area-wide kernels for each array design...")
     bkgs_by_design <-
       pbapply::pblapply(1:nrow(rs_mat_cp), function(icp) {
 
@@ -357,12 +357,12 @@ acs_setup_detection_kernels <-
         rs_active <- colnames(cp)[which(cp == 1)]
 
         #### Pull out necessary kernels for active receivers from detection_kernels_by_xy into a list
-        cat_log("... ... ... ... Extract detection probability kernels for active receivers...")
+        cat_log("... ... ... ... Extracting kernels for active receivers...")
         detection_kernels_inv_by_rs_active <-
           lapply(rs_active, function(ra) receiver_specific_inv_kernels[[ra]])
 
         #### Calculate the probability of not being detected in each cell
-        cat_log("... ... ... ... Combining detection kernels to calculate the background detection probability surfaces (this is a slow step)...")
+        cat_log("... ... ... ... Combining kernels...")
         if (length(rs_active) == 1) {
           bkg_inv <- detection_kernels_inv_by_rs_active[[1]]
         } else {
@@ -372,7 +372,7 @@ acs_setup_detection_kernels <-
           # Align SpatRasters
           detection_kernels_inv_by_rs_active <-
             lapply(detection_kernels_inv_by_rs_active, function(r) {
-              terra::extend(r, ext)
+              terra::extend(r, ext, fill = 1)
             })
           # Calculate the background surface
           detection_kernels_inv_for_rs_active <- do.call(c, detection_kernels_inv_by_rs_active)
@@ -387,18 +387,29 @@ acs_setup_detection_kernels <-
     bkg_by_design     <- lapply(bkgs_by_design, function(elm) elm$bkg)
     bkg_inv_by_design <- lapply(bkgs_by_design, function(elm) elm$bkg_inv)
 
-    #### Extend SpatRasters
-    # We extend SpatRasters back onto .bathy
-    # This is required since we extract values by `cell_now` in pf_forward() & associated routines
-    # This is faster than extracting by coordinates
-    # But we pay a substantial time penalty and object-size penalty now if .bathy is large.
-    receiver_specific_kernels     <- lapply(receiver_specific_kernels, spatExtend, .y = .bathy)
-    receiver_specific_inv_kernels <- lapply(receiver_specific_inv_kernels, spatExtend, .y = .bathy)
-    bkg_by_design                 <- lapply(bkg_by_design, spatExtend, .y = .bathy)
-    bkg_inv_by_design             <- lapply(bkg_inv_by_design, spatExtend, .y = .bathy)
+    #### Process SpatRasters
+    # We extend SpatRasters back onto bathy (slow).
+    # This is required since we extract values by `cell_now` in pf_forward() & associated routines.
+    # This is faster than extracting by coordinates.
+    # But we pay a substantial time penalty and object-size penalty now if bathy is large.
+    # For the extension, we use spatExtendMask().
+    # TO DO: check whether masking (which is slow), as implemented by spatExtendMask, is strictly required.
+    cat_log("... Processing kernels ...")
+    cat_log("... ... Receiver-specific kernels (1/4)...")
+    receiver_specific_kernels     <- pbapply::pblapply(receiver_specific_kernels,
+                                                       spatExtendMask, .y = bathy, .fill = 0)
+    cat_log("... ... Receiver-specific inverse kernels (2/4)...")
+    receiver_specific_inv_kernels <- pbapply::pblapply(receiver_specific_inv_kernels,
+                                                       spatExtendMask, .y = bathy, .fill = 1)
+    cat_log("... ... Background surfaces (3/4)...")
+    bkg_by_design                 <- pbapply::pblapply(bkg_by_design,
+                                                       spatExtendMask, .y = bathy, .fill = 0)
+    cat_log("... ... Inverse background surfaces (4/4)...")
+    bkg_inv_by_design             <- pbapply::pblapply(bkg_inv_by_design,
+                                                       spatExtendMask, .y = bathy, .fill = 1)
 
     #### Build output list
-    cat_log("... List detection probability kernels ...")
+    cat_log("... Listing outputs ...")
     # For receiver-specific detection probability kernel lists,
     # add NULL elements to the list for any receivers
     # in the range 1:max(rs) that are not in rs.

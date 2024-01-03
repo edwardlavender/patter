@@ -9,6 +9,7 @@
 \alias{spatIntersect.SpatVector}
 \alias{spatIsEmpty}
 \alias{spatNormalise}
+\alias{spatExtendMask}
 \title{Spatial helper: \verb{spat*} functions}
 \usage{
 spatContainsNA(.x)
@@ -24,6 +25,8 @@ spatIntersect.SpatVector(.x)
 spatIsEmpty(.x)
 
 spatNormalise(x)
+
+spatExtendMask(.x, .y, .fill = 0, ...)
 }
 \description{
 Internal helpers for \code{terra} \code{\link{SpatRaster}} and \code{\link{SpatVector}} objects.

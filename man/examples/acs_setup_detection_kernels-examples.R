@@ -36,7 +36,7 @@ par(pp)
 # Examine example receiver-specific inverse kernels
 pp <- par(mfrow = c(1, 2))
 lapply(c(3, 4), \(id) {
-  terra::plot(k$receiver_specific_kernels[[id]])
+  terra::plot(k$receiver_specific_inv_kernels[[id]])
   points(m[m$receiver_id == id, .(receiver_easting, receiver_northing)],
          cex = 2)
 }) |> invisible()
@@ -45,14 +45,12 @@ par(pp)
 # (for each unique combination of receivers that were deployed)
 pp <- par(mfrow = c(1, 2))
 lapply(k$bkg_surface_by_design, \(bkg) {
-  terra::plot(bkg, axes = FALSE)
-  box()
+  terra::plot(bkg)
 }) |> invisible()
 par(pp)
 # Examine background inverse detection surfaces
 pp <- par(mfrow = c(1, 2))
 lapply(k$bkg_inv_surface_by_design, \(bkg) {
-  terra::plot(bkg, axes = FALSE)
-  box()
+  terra::plot(bkg)
 }) |> invisible()
 par(pp)

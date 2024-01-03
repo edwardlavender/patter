@@ -108,3 +108,12 @@ spatIsEmpty <- function(.x) {
 spatNormalise <- function(x) {
   x / as.numeric(terra::global(x, "sum", na.rm = TRUE))
 }
+
+#' @rdname spat
+#' @keywords internal
+
+# Extend and mask a SpatRaster
+spatExtendMask <- function(.x, .y, .fill = 0, ...) {
+  out <- terra::extend(x = .x, y = .y, fill = .fill, ...)
+  terra::mask(out, .y)
+}
