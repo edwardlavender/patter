@@ -5,16 +5,16 @@
 \alias{pf_files_size}
 \title{PF: list files}
 \usage{
-pf_files(.sink, ...)
+pf_files(.sink, .folder = NULL, ...)
 
 pf_files_size(.sink, .folder = NULL, ..., .unit = c("MB", "GB", "TB"))
 }
 \arguments{
 \item{.sink}{A \code{character} string that defines the directory in which files are located.}
 
-\item{...}{A placeholder for additional arguments passed to \code{\link[=list.files]{list.files()}}, such as \code{pattern}, excluding \code{full.names}.}
+\item{.folder}{(optional) A \code{character} string that defines the name of a sub-folder for which to list files (via \code{\link[=pf_files]{pf_files()}}) or summarise file sizes (via \code{\link[=pf_files_size]{pf_files_size()}}).}
 
-\item{.folder}{(optional) For \code{\link[=pf_files_size]{pf_files_size()}}, a \code{character} string that defines the name of a sub-folder for which to summarise file sizes.}
+\item{...}{A placeholder for additional arguments passed to \code{\link[=list.files]{list.files()}}, such as \code{pattern}, excluding \code{full.names}.}
 
 \item{.unit}{For \code{\link[=pf_files_size]{pf_files_size()}}, \code{.unit} is a \code{character} string that defines the units of the output (\code{MB}, \code{GB}, \code{TB}).}
 }
@@ -35,14 +35,17 @@ At the time of writing, \code{\link[=pf_files]{pf_files()}} cannot be used to li
 
 \examples{
 # Use `pf_files()` to list files from `pf_forward()`
-pff_folder <- dat_pff_src(.folder = "history")
-files <- pf_files(pff_folder)
+pff_folder <- dat_pff_src(.folder = NULL)
+files      <- pf_files(.sink = pff_folder, .folder = "history")
 
 # Use `pf_files()` to list files from `pf_backward_killer()`
 pfbk_folder <- dat_pfbk_src()
-files <- pf_files(pfbk_folder)
+files       <- pf_files(pfbk_folder)
 
 # Use `pf_files_size()` to calculate file size
+pf_files_size(pff_folder, recursive = TRUE)
+pf_files_size(pff_folder, .folder = "history")
+pf_files_size(pff_folder, .folder = "diagnostics")
 pf_files_size(pfbk_folder)
 pf_files_size(pfbk_folder, .unit = "GB")
 pf_files_size(pfbk_folder, .unit = "TB")

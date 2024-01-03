@@ -97,3 +97,22 @@
   # Return error on failure
   abort("`.history` should be a pf_particles-class object, the `history` element of a pf_particles-class object, a list of file paths or a directory containing history (.parquet) files.")
 }
+
+#' @title PF: internal utilities
+#' @description These functions are internal utilities that support particle filtering routines.
+#' @author Edward Lavender
+#' @name pf_utils_internal
+
+#' @rdname pf_utils_internal
+#' @keywords internal
+
+.pf_sink_folder <- function(.sink, .folder) {
+  check_dir_exists(.sink)
+  if (!is.null(.folder)) {
+    check_inherits(.folder, "character")
+    stopifnot(length(.folder) == 1L)
+    .sink <- file.path(.sink, .folder)
+    check_dir_exists(.sink)
+  }
+  .sink
+}

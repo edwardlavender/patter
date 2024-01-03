@@ -4,7 +4,7 @@
 #' [`pf_files_size()`] calculates the total size of all files.
 #'
 #' @param .sink A `character` string that defines the directory in which files are located.
-#' @param .folder (optional) For [`pf_files_size()`], a `character` string that defines the name of a sub-folder for which to summarise file sizes.
+#' @param .folder (optional) A `character` string that defines the name of a sub-folder for which to list files (via [`pf_files()`]) or summarise file sizes (via [`pf_files_size()`]).
 #' @param ... A placeholder for additional arguments passed to [`list.files()`], such as `pattern`, excluding `full.names`.
 #' @param .unit For [`pf_files_size()`], `.unit` is a `character` string that defines the units of the output (`MB`, `GB`, `TB`).
 #'
@@ -18,14 +18,17 @@
 #'
 #' @examples
 #' # Use `pf_files()` to list files from `pf_forward()`
-#' pff_folder <- dat_pff_src(.folder = "history")
-#' files <- pf_files(pff_folder)
+#' pff_folder <- dat_pff_src(.folder = NULL)
+#' files      <- pf_files(.sink = pff_folder, .folder = "history")
 #'
 #' # Use `pf_files()` to list files from `pf_backward_killer()`
 #' pfbk_folder <- dat_pfbk_src()
-#' files <- pf_files(pfbk_folder)
+#' files       <- pf_files(pfbk_folder)
 #'
 #' # Use `pf_files_size()` to calculate file size
+#' pf_files_size(pff_folder, recursive = TRUE)
+#' pf_files_size(pff_folder, .folder = "history")
+#' pf_files_size(pff_folder, .folder = "diagnostics")
 #' pf_files_size(pfbk_folder)
 #' pf_files_size(pfbk_folder, .unit = "GB")
 #' pf_files_size(pfbk_folder, .unit = "TB")
@@ -38,13 +41,11 @@
 #' @rdname pf_files
 #' @export
 
-pf_files <- function(.sink, ...) {
-
-  #### Check inputs
-  check_dir_exists(input = .sink)
-  rlang::check_dots_used()
+pf_files <- function(.sink, .folder = NULL, ...) {
 
   #### List files & validate
+  rlang::check_dots_used()
+  .sink <- .pf_sink_folder(.sink = .sink, .folder = .folder)
   files <- list.files(.sink, full.names = TRUE, ...)
   if (length(files) == 0L) {
     abort("No files identified in `.sink`.")
@@ -92,11 +93,7 @@ pf_files_size <- function(.sink,
   # Get units
   .unit <- match.arg(.unit)
   # Define size in MB
-  if (!is.null(.folder)) {
-    check_inherits(.folder, "character")
-    stopifnot(length(.folder) == 1L)
-    .sink <- file.path(.sink, .folder)
-  }
+  .sink <- .pf_sink_folder(.sink = .sink, .folder = .folder)
   size <-
     .sink |>
     list.files(..., full.names = TRUE) |>
