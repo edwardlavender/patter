@@ -142,8 +142,10 @@ For example datasets from the Movement Ecology of Flapper Skate project
 For example algorithm outputs (`datasets-algorithms`), see:
 
 - `dat_obs()` for an example output dataset from `pf_setup_obs()`;
-- `dat_pff()` for an example output from `pf_forward()`;
-- `dat_pfbk()` for an example output from `pf_backward_killer()`;
+- `dat_pff()` and `dat_pff_src()` for example outputs from
+  `pf_forward()`;
+- `dat_pfbk()` and `dat_pfbk_src()` for example outputs from
+  `pf_backward_killer()`;
 - `dat_pfp()` for an example output from `pf_path()`;
 - `dat_coa()` for an example output from `coa()`;
 
@@ -157,14 +159,15 @@ To simulate passive acoustic telemetry data, see:
 
 These functions are supported by a set of simulation helpers, including:
 
-- `ddetlogistic()`, `ddet()` and `rdet()` for the simulation of
-  detections;
-- `dtruncgamma()` `rtruncgamma()` and `rlen()` for the simulation of
-  step lengths;
-- `rwn()`, `rangrw()` and `rangcrw()` for the simulation of turning
-  angles;
-- `cstep()` and `dstep()` for the simulation of steps into new
-  locations;
+- `rbern()`, `rdet()`, `dbern()`, `ddetlogistic()` and `ddet()` for the
+  simulation of detections;
+- `dtruncgamma()`, `rtruncgamma()`, `rlen()` and `clen()` for the
+  simulation of step lengths;
+- `rwn()`, `rangrw()`, `rangcrw()` and `cang()` for the simulation of
+  turning angles;
+- `rstep()`, `dstep()` and `cstep()` for the simulation of steps into
+  new locations;
+- `dkick()` and `rkick()` for `*step()` wrappers;
 
 To evaluate model skill in reconstructing simulated patterns, see
 `skill_()` functions, specifically:
@@ -261,7 +264,7 @@ acoustic telemetry systems.
 - `pf_path()` (and `pf_path_pivot()`) to reconstruct movement paths;
 - `pf_coord()` to collate particle coordinates for mapping;
 
-**To map utilisation distributions**, use:
+**For mapping utilisation distributions**, use:
 
 - `map_pou()` to map probability-of-use;
 - `map_dens()` to create smooth maps using `spatstat`, plus the
@@ -270,19 +273,17 @@ acoustic telemetry systems.
   - `as.owin.SpatRaster()`, to convert `SpatRaster`s to observation
     windows;
   - `as.owin.sf()`, to convert `sf` objects to observation windows;
-
-**For home ranges**, use:
-
-- `map_hr_prop()` for a custom range;
-- `map_hr_core()` for the ‘core’ range;
-- `map_hr_home()` for the ‘home’ range;
-- `map_hr_full()` for the full range;
+- `map_hr_*()` to map home ranges, specifically:
+  - `map_hr_prop()` for a custom range;
+  - `map_hr_core()` for the ‘core’ range;
+  - `map_hr_home()` for the ‘home’ range;
+  - `map_hr_full()` for the full range;
 
 # Miscellaneous helpers
 
-The following convenience functions are also made available to users of
-[`patter`](https://github.com/edwardlavender/patter):
+The following convenience functions are also exported. Use:
 
+- `ssf()` and `ssv()` to `set.seed()`;
 - `dist_along_path()` to calculate distances along a movement path;
 - `degrees()` to create circular angles;
 - `spatTemplate()` to create a template `SpatRaster`;

@@ -32,8 +32,8 @@ For example datasets from the Movement Ecology of Flapper Skate project (\code{\
 For example algorithm outputs (\code{\link{datasets-algorithms}}), see:
 \itemize{
 \item \code{\link[=dat_obs]{dat_obs()}} for an example output dataset from \code{\link[=pf_setup_obs]{pf_setup_obs()}};
-\item \code{\link[=dat_pff]{dat_pff()}} for an example output from \code{\link[=pf_forward]{pf_forward()}};
-\item \code{\link[=dat_pfbk]{dat_pfbk()}} for an example output from \code{\link[=pf_backward_killer]{pf_backward_killer()}};
+\item \code{\link[=dat_pff]{dat_pff()}} and \code{\link[=dat_pff_src]{dat_pff_src()}} for example outputs from \code{\link[=pf_forward]{pf_forward()}};
+\item \code{\link[=dat_pfbk]{dat_pfbk()}} and \code{\link[=dat_pfbk_src]{dat_pfbk_src()}} for example outputs from \code{\link[=pf_backward_killer]{pf_backward_killer()}};
 \item \code{\link[=dat_pfp]{dat_pfp()}} for an example output from \code{\link[=pf_path]{pf_path()}};
 \item \code{\link[=dat_coa]{dat_coa()}} for an example output from \code{\link[=coa]{coa()}};
 }
@@ -49,10 +49,11 @@ To simulate passive acoustic telemetry data, see:
 
 These functions are supported by a set of simulation helpers, including:
 \itemize{
-\item \code{\link[=ddetlogistic]{ddetlogistic()}}, \code{\link[=ddet]{ddet()}} and \code{\link[=rdet]{rdet()}} for the simulation of detections;
-\item \code{\link[=dtruncgamma]{dtruncgamma()}} \code{\link[=rtruncgamma]{rtruncgamma()}} and \code{\link[=rlen]{rlen()}} for the simulation of step lengths;
-\item \code{\link[=rwn]{rwn()}}, \code{\link[=rangrw]{rangrw()}} and \code{\link[=rangcrw]{rangcrw()}} for the simulation of turning angles;
-\item \code{\link[=cstep]{cstep()}} and \code{\link[=dstep]{dstep()}} for the simulation of steps into new locations;
+\item \code{\link[=rbern]{rbern()}}, \code{\link[=rdet]{rdet()}}, \code{\link[=dbern]{dbern()}}, \code{\link[=ddetlogistic]{ddetlogistic()}} and \code{\link[=ddet]{ddet()}} for the simulation of detections;
+\item \code{\link[=dtruncgamma]{dtruncgamma()}}, \code{\link[=rtruncgamma]{rtruncgamma()}}, \code{\link[=rlen]{rlen()}} and \code{\link[=clen]{clen()}} for the simulation of step lengths;
+\item \code{\link[=rwn]{rwn()}}, \code{\link[=rangrw]{rangrw()}}, \code{\link[=rangcrw]{rangcrw()}} and \code{\link[=cang]{cang()}} for the simulation of turning angles;
+\item \code{\link[=rstep]{rstep()}}, \code{\link[=dstep]{dstep()}} and \code{\link[=cstep]{cstep()}} for the simulation of steps into new locations;
+\item \code{\link[=dkick]{dkick()}} and \code{\link[=rkick]{rkick()}} for \verb{*step()} wrappers;
 }
 
 To evaluate model skill in reconstructing simulated patterns, see \code{skill_()} functions, specifically:
@@ -153,7 +154,7 @@ The main thrust of \code{\link{patter}} is the provision of an integrated modell
 \item \code{\link[=pf_coord]{pf_coord()}} to collate particle coordinates for mapping;
 }
 
-\strong{To map utilisation distributions}, use:
+\strong{For mapping utilisation distributions}, use:
 \itemize{
 \item \code{\link[=map_pou]{map_pou()}} to map probability-of-use;
 \item \code{\link[=map_dens]{map_dens()}} to create smooth maps using \code{spatstat}, plus the supporting functions:
@@ -162,9 +163,7 @@ The main thrust of \code{\link{patter}} is the provision of an integrated modell
 \item \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}}, to convert  \code{\link{SpatRaster}}s to observation windows;
 \item \code{\link[=as.owin.sf]{as.owin.sf()}}, to convert \code{sf} objects to observation windows;
 }
-}
-
-\strong{For home ranges}, use:
+\item \verb{map_hr_*()} to map home ranges, specifically:
 \itemize{
 \item \code{\link[=map_hr_prop]{map_hr_prop()}} for a custom range;
 \item \code{\link[=map_hr_core]{map_hr_core()}} for the 'core' range;
@@ -172,10 +171,12 @@ The main thrust of \code{\link{patter}} is the provision of an integrated modell
 \item \code{\link[=map_hr_full]{map_hr_full()}} for the full range;
 }
 }
+}
 
 \section{Miscellaneous helpers}{
-The following convenience functions are also made available to users of \code{\link{patter}}:
+The following convenience functions are also exported. Use:
 \itemize{
+\item \code{\link[=ssf]{ssf()}} and \code{\link[=ssv]{ssv()}} to \code{\link[=set.seed]{set.seed()}};
 \item \code{\link[=dist_along_path]{dist_along_path()}} to calculate distances along a movement path;
 \item \code{\link[=degrees]{degrees()}} to create circular angles;
 \item \code{\link[=spatTemplate]{spatTemplate()}} to create a template \code{\link{SpatRaster}};
