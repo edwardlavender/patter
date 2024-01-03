@@ -144,4 +144,14 @@ test_that("acs_setup_detection_kernels() works", {
   acs_setup_detection_kernels(dlist,
                               .ddetkernel = function(.mooring, .bathy) ddetx(.mooring, .bathy, .error = 0)) |>
     expect_warning("Detection probability is 0 at receiver 3.", fixed = TRUE)
+
+  # Check dot handling
+  acs_setup_detection_kernels(dlist,
+                              .ddetkernel = acs_setup_detection_kernel,
+                              .alpha = 4)
+  acs_setup_detection_kernels(dlist,
+                              .ddetkernel = acs_setup_detection_kernel,
+                              .blah = 4) |>
+    expect_error("unused argument (.blah = 4)", fixed = TRUE)
+
 })
