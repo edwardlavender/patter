@@ -40,8 +40,8 @@ map_pou <-
     on.exit(cat_log(call_end(.fun = "map_pou", .start = t_onset, .end = Sys.time())), add = TRUE)
 
     #### Check user inputs
+    # For dots, we rely on terra::plot() warnings
     check_inherits(.map, "SpatRaster")
-    rlang::check_dots_used()
 
     #### Get XYM (cell IDs and marks)
     cat_log("... Building XYM...")
