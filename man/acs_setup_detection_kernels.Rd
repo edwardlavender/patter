@@ -4,7 +4,7 @@
 \alias{acs_setup_detection_kernels}
 \title{AC* set up: detection kernels}
 \source{
-This function is based on the \href{https://edwardlavender.github.io/flapper/reference/acs_setup_detection_kernels.html}{\code{flapper::acs_setup_detection_kernels}}.
+This function is based on \href{https://edwardlavender.github.io/flapper/reference/acs_setup_detection_kernels.html}{\code{flapper::acs_setup_detection_kernels}}.
 }
 \usage{
 acs_setup_detection_kernels(
@@ -20,12 +20,14 @@ acs_setup_detection_kernels(
 \item \code{.dlist$data$moorings}, with the following columns: \code{receiver_id}, \code{receiver_start}, \code{receiver_end}, \code{receiver_x} and \code{receiver_y}, plus any columns used internally by \code{.ddetkernel} (see below).
 \item \code{.dlist$data$services}, with the following columns: \code{receiver_id}, \code{service_start} and \code{service_end} (see \code{\link[=make_matrix_receivers]{make_matrix_receivers()}}).
 \item \code{.dlist$spatial$bathy}, which defines the grid on which detection kernels are represented. \code{NA}s are used as a mask.
+\item \code{.dlist$pars$spatna}, which defines whether or not masking is required.
 }}
 
 \item{.ddetkernel, ...}{A \code{function} that defines the detection kernel as a \code{\link{SpatRaster}} around a receiver (see \code{\link[=acs_setup_detection_kernel]{acs_setup_detection_kernel()}} for an example). This must accept three arguments (even if they are ignored):
 \itemize{
 \item \code{.mooring}---A one-row \code{\link{data.table}} that contains the information in \code{.dlist$data$moorings} for a specific receiver;
 \item \code{.bathy}---the \code{.dlist$spatial$bathy} \code{\link{SpatRaster}};
+\item \code{.mask}---a \code{logical} variable passed down from \code{.dlist$pars$spatna};
 \item \code{...} Additional arguments passed via \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}};
 }}
 

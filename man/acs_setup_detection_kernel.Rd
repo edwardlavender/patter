@@ -4,12 +4,20 @@
 \alias{acs_setup_detection_kernel}
 \title{AC* set up: detection probability}
 \usage{
-acs_setup_detection_kernel(.mooring, .bathy, .ddetx = ddetlogistic, ...)
+acs_setup_detection_kernel(
+  .mooring,
+  .bathy,
+  .mask = TRUE,
+  .ddetx = ddetlogistic,
+  ...
+)
 }
 \arguments{
 \item{.mooring}{A one-row \code{\link{data.table}} that defines the location of an acoustic receiver and associated information required to calculate detection probability via \code{.ddetx}. In this function, receiver coordinate columns (\code{receiver_x} and \code{receiver_y}) and the detection range (\code{receiver_range}) is required.}
 
 \item{.bathy}{A \code{\link{SpatRaster}} that defines the grid on which detection probability is calculated.}
+
+\item{.mask}{A \code{logical} variable that defines whether or not to mask the detection kernel by \code{.bathy}. Use \code{.mask = TRUE} if \code{.bathy} contains \code{NA}s.}
 
 \item{.ddetx}{A function that calculates detection probability, such as \code{\link[=ddetlogistic]{ddetlogistic()}}. In this implementation, the function is used to translate a \code{\link{SpatRaster}} of distances (m) (from each grid cell to the receiver in \code{.data}) via \code{\link[terra:app]{terra::app()}}. The function must accept a .\code{gamma} argument (even if this is ignored, see below).}
 

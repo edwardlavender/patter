@@ -26,7 +26,7 @@ spatIsEmpty(.x)
 
 spatNormalise(x)
 
-spatExtendMask(.x, .y, .fill = 0, ...)
+spatExtendMask(.x, .y, .fill = 0, .mask = TRUE, ...)
 }
 \description{
 Internal helpers for \code{terra} \code{\link{SpatRaster}} and \code{\link{SpatVector}} objects.
