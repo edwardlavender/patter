@@ -308,7 +308,7 @@ For additional options in
 
 **For further code examples**, see:
 
-- [`patter-sim`](https://github.com/edwardlavender/patter-eval) for an
+- [`patter-eval`](https://github.com/edwardlavender/patter-eval) for an
   extensive simulation-based workflow and analysis;
 - [`patter-flapper`](https://github.com/edwardlavender/patter-flapper)
   for a complete real-world analysis;
