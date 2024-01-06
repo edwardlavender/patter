@@ -292,7 +292,7 @@ acs_setup_detection_kernels <-
           terra::vect(crs = terra::crs(bathy)) |>
           terra::buffer(width = m$receiver_range, quadsegs = 1e3L)
         # Crop bathy for improved speed
-        b <- terra::crop(bathy, container)
+        b <- terra::crop(bathy, container, snap = "out")
         # Define kernel using user-provided function
         k <- .ddetkernel(.mooring = m, .bathy = b, .mask = .dlist$pars$spatna, ...)
         # Calculate Pr at receiver and check it is not NA or 0
