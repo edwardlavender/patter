@@ -130,23 +130,22 @@ pf_rpropose_reachable <- function(.particles, .obs, .t, .dlist) {
     select("x_past", "y_past") |>
     as.matrix() |>
     terra::vect(type = "point") |>
-    terra::buffer(width = .obs$mobility[.t], quadsegs = 1e3)
-  terra::crs(zone) <- terra::crs(.dlist$spatial$bathy)
+    terra::buffer(width = .obs$mobility[.t], quadsegs = 1e3L) |>
+    sf::st_as_sf() |>
+    sf::st_set_crs(terra::crs(.dlist$spatial$bathy)) |>
+    mutate(cell_past = .particles$cell_past)
 
   # Identify permitted location choices given .mobility
   # * Use exact_extract() for much faster speeds
   choices <-
     exactextractr::exact_extract(.dlist$spatial$bathy,
-                                 sf::st_as_sf(zone),
+                                 zone,
+                                 include_cols = "cell_past",
                                  include_cell = TRUE,
                                  include_xy = TRUE,
-                                 progress = FALSE)
-  for (i in seq_len(length(choices))) {
-    choices[[i]]$cell_past <- .particles$cell_past[i]
-  }
-  choices <-
-    choices |>
+                                 progress = FALSE) |>
     rbindlist() |>
+    lazy_dt() |>
     filter(!is.na(.data$value)) |>
     mutate(cell = as.integer(.data$cell),
            x = as.numeric(.data$x),
