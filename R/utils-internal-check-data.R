@@ -11,6 +11,7 @@
 #'
 #' * [`check_bathy()`] checks the bathymetry [`SpatRaster`]:
 #'    - Class: [`SpatRaster`];
+#'    - Name(s): `"bathy"`;
 #'    - Properties:
 #'        * A square grid is recommended;
 #'        * Absolute values (m) are recommended;
@@ -77,6 +78,12 @@ check_bathy <- function(.bathy) {
     return(.bathy)
   }
   check_inherits(.bathy, "SpatRaster")
+  if (names(.bathy) != "bathy") {
+    warn("`.bathy` name updated from '{names(.bathy)}' to 'bathy'.",
+         .envir = environment())
+    names(.bathy) <- "bathy"
+  }
+
   res <- terra::res(.bathy)
   if (!all.equal(res[1], res[2])) {
     msg("A square bathymetry grid is recommended.")

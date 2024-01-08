@@ -48,6 +48,7 @@ These are internal functions that ensure that input dataset(s) meet \code{\link{
 \item \code{\link[=check_bathy]{check_bathy()}} checks the bathymetry \code{\link{SpatRaster}}:
 \itemize{
 \item Class: \code{\link{SpatRaster}};
+\item Name(s): \code{"bathy"};
 \item Properties:
 \itemize{
 \item A square grid is recommended;
