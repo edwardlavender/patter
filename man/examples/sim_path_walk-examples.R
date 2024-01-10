@@ -79,7 +79,7 @@ ssv()
 p <- sim_path_walk(dat_gebco(),
                    .origin = origin,
                    .n_step = 1000L, .n_path = 1L,
-                   .rang = rangcrw, .rho = 0.5,
+                   .rang = rangcrw, .rho = 0.4,
                    .one_page = FALSE)
 # The correlation between sequential angles is close to the simulated value:
 adt <- data.table(a0 = p$angle, a1 = lead(p$angle)) |> na.omit()
