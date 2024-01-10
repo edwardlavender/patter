@@ -75,7 +75,13 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">acs_setup_detection_kernel</span><span class="op">(</span><span class="va">.mooring</span>, <span class="va">.bathy</span>, .ddetx <span class="op">=</span> <span class="va">ddetlogistic</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">acs_setup_detection_kernel</span><span class="op">(</span></span>
+<span>  <span class="va">.mooring</span>,</span>
+<span>  <span class="va">.bathy</span>,</span>
+<span>  .mask <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  .ddetx <span class="op">=</span> <span class="va">ddetlogistic</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -86,6 +92,10 @@
 
 <dt>.bathy</dt>
 <dd><p>A <code>SpatRaster</code> that defines the grid on which detection probability is calculated.</p></dd>
+
+
+<dt>.mask</dt>
+<dd><p>A <code>logical</code> variable that defines whether or not to mask the detection kernel by <code>.bathy</code>. Use <code>.mask = TRUE</code> if <code>.bathy</code> contains <code>NA</code>s.</p></dd>
 
 
 <dt>.ddetx</dt>
@@ -133,6 +143,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">dlist</span> <span class="op">&lt;-</span> <span class="fu"><a href="pat_setup_data.html">pat_setup_data</a></span><span class="op">(</span>.moorings <span class="op">=</span> <span class="va">dat_moorings</span>,</span></span>
 <span class="r-in"><span>                        .bathy <span class="op">=</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                        .lonlat <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`.bathy` name updated from 'layer' to 'bathy'.</span>
 <span class="r-in"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="va">dlist</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">moorings</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">b</span> <span class="op">&lt;-</span> <span class="va">dlist</span><span class="op">$</span><span class="va">spatial</span><span class="op">$</span><span class="va">bathy</span></span></span>
 <span class="r-in"><span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu">acs_setup_detection_kernel</span><span class="op">(</span><span class="va">m</span>, <span class="va">b</span><span class="op">)</span></span></span>

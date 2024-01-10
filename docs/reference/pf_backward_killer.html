@@ -144,7 +144,7 @@
 <span class="r-in"><span><span class="co">#### Example (1): Implement backward pass from object in memory</span></span></span>
 <span class="r-in"><span><span class="va">out_pfb</span> <span class="op">&lt;-</span> <span class="fu">pf_backward_killer</span><span class="op">(</span>.history <span class="op">=</span> <span class="va">out_pff</span><span class="op">$</span><span class="va">history</span>,</span></span>
 <span class="r-in"><span>                              .record <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_record</a></span><span class="op">(</span>.save <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_backward_killer()` called @ 2024-01-03 14:26:58... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_backward_killer()` called @ 2024-01-10 18:12:54... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 25: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[25]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 24: </span>
@@ -310,12 +310,12 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[2]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 1: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[1]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_backward_killer()` call ended @ 2024-01-03 14:26:58 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_backward_killer()` call ended @ 2024-01-10 18:12:54 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (2): Implement backward pass from parquet files</span></span></span>
 <span class="r-in"><span><span class="va">out_pfb</span> <span class="op">&lt;-</span> <span class="fu">pf_backward_killer</span><span class="op">(</span>.history <span class="op">=</span> <span class="fu"><a href="pf_files.html">pf_files</a></span><span class="op">(</span><span class="va">pff_folder</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                              .record <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_record</a></span><span class="op">(</span>.save <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_backward_killer()` called @ 2024-01-03 14:26:58... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_backward_killer()` called @ 2024-01-10 18:12:54... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 25: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Reading `.history[[25]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Reading `.history[[24]]`... </span>
@@ -506,7 +506,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[2]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 1: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[1]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_backward_killer()` call ended @ 2024-01-03 14:26:58 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_backward_killer()` call ended @ 2024-01-10 18:12:54 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (3): Write history to file (as in `pf_forward()`)</span></span></span>
 <span class="r-in"><span><span class="va">con</span>        <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"patter"</span><span class="op">)</span></span></span>
@@ -514,7 +514,7 @@
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">pfb_folder</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">out_pfb</span> <span class="op">&lt;-</span> <span class="fu">pf_backward_killer</span><span class="op">(</span>.history <span class="op">=</span> <span class="fu"><a href="pf_files.html">pf_files</a></span><span class="op">(</span><span class="va">pff_folder</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                              .record <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_record</a></span><span class="op">(</span>.sink <span class="op">=</span> <span class="va">pfb_folder</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_backward_killer()` called @ 2024-01-03 14:26:58... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_backward_killer()` called @ 2024-01-10 18:12:54... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 25: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Reading `.history[[25]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Reading `.history[[24]]`... </span>
@@ -705,7 +705,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[2]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 1: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[1]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_backward_killer()` call ended @ 2024-01-03 14:26:58 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_backward_killer()` call ended @ 2024-01-10 18:12:54 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">pfb_folder</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "1.parquet"  "10.parquet" "11.parquet" "12.parquet" "13.parquet"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [6] "14.parquet"</span>
@@ -717,7 +717,7 @@
 <span class="r-in"><span>                              .record <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_record</a></span><span class="op">(</span>.save <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                              .verbose <span class="op">=</span> <span class="va">log.txt</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="va">log.txt</span><span class="op">)</span>, <span class="fl">15</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "`patter::pf_backward_killer()` called @ 2024-01-03 14:26:58... "                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "`patter::pf_backward_killer()` called @ 2024-01-10 18:12:54... "                                         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [2] "... Time step 25: "                                                                                      </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [3] "... ... Reading `.history[[25]]`... "                                                                    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [4] "... ... Reading `.history[[24]]`... "                                                                    </span>
@@ -741,7 +741,7 @@
 <span class="r-in"><span><span class="va">pbo</span> <span class="op">&lt;-</span> <span class="fu">pbapply</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pbapply/man/pboptions.html" class="external-link">pboptions</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">out_pfb</span> <span class="op">&lt;-</span> <span class="fu">pf_backward_killer</span><span class="op">(</span><span class="fu"><a href="pf_files.html">pf_files</a></span><span class="op">(</span><span class="va">pff_folder</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                              .record <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_record</a></span><span class="op">(</span>.save <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_backward_killer()` called @ 2024-01-03 14:26:58... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_backward_killer()` called @ 2024-01-10 18:12:54... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 25: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Reading `.history[[25]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Reading `.history[[24]]`... </span>
@@ -932,7 +932,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[2]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 1: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[1]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_backward_killer()` call ended @ 2024-01-03 14:26:58 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_backward_killer()` call ended @ 2024-01-10 18:12:54 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Clean up</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">con</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>

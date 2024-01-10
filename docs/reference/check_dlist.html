@@ -121,6 +121,7 @@
     <div id="details">
     <h2>Details</h2>
     <p>These are internal functions that ensure that input dataset(s) meet <code><a href="patter.html">patter</a></code> requirements. Users should implement <code><a href="pat_setup_data.html">pat_setup_data()</a></code> to prepare datasets for <code><a href="patter.html">patter</a></code> functions. Downstream functions (often) silently assume that input datasets meet all requirements, without subsequent checks. This simplifies internal code and documentation.</p><ul><li><p><code>check_bathy()</code> checks the bathymetry <code>SpatRaster</code>:</p><ul><li><p>Class: <code>SpatRaster</code>;</p></li>
+<li><p>Name(s): <code>"bathy"</code>;</p></li>
 <li><p>Properties:</p><ul><li><p>A square grid is recommended;</p></li>
 <li><p>Absolute values (m) are recommended;</p></li>
 <li><p>At the time of writing (December 2023), planar grids are better tested;</p></li>
