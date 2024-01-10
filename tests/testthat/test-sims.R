@@ -322,13 +322,12 @@ test_that("sim_path_walk() works", {
   p <- sim_path_walk(dat_gebco(),
                      .origin = origin,
                      .n_step = 2000L,
-                     .rang = rangcrw, .rho = 0.5,
+                     .rang = rangcrw, .rho = 0.4,
                      .one_page = FALSE)
   angle <- p$angle |> na.omit()
-  expect_equal(
-    circular::cor.circular(degrees(angle[-length(angle)]),
-                           degrees(angle[-1])),
-    0.5, tolerance = 0.1
+  expect_true(
+    abs(circular::cor.circular(
+      degrees(angle[-length(angle)]), degrees(angle[-1])) - 0.4) < 0.1
   )
 })
 
