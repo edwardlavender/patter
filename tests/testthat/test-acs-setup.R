@@ -114,7 +114,7 @@ test_that("acs_setup_detection_kernels() works", {
 
   #### Check validation of invalid inputs
   # Define invalid input
-  ddetx <- function(.mooring, .bathy, .error = NA) {
+  ddetkernel <- function(.mooring, .bathy, .mask = TRUE, .error = NA) {
     # Define helper function to calculate detection probability given distance (m)
     .ddetx <- function(distance) {
       pr <- stats::plogis(2.5 + -0.02 * distance)
@@ -127,7 +127,9 @@ test_that("acs_setup_detection_kernels() works", {
     grid <- terra::setValues(.bathy, NA)
     grid[cell] <- 1
     dist <- terra::distance(grid, unit = "m")
-    dist <- terra::mask(dist, .bathy)
+    if (.mask) {
+      dist <- terra::mask(dist, .bathy)
+    }
     # Convert distances to detection pr
     pr <- terra::app(dist, .ddetx)
     # Introduce error: set the receiver 3 location to 0 or NA
@@ -138,11 +140,11 @@ test_that("acs_setup_detection_kernels() works", {
   }
   # Check warnings (NA at receiver)
   acs_setup_detection_kernels(dlist,
-                              .ddetkernel = ddetx) |>
+                              .ddetkernel = ddetkernel) |>
     expect_warning("Detection probability is NA at receiver 3.", fixed = TRUE)
   # Check warnings (0 at receiver)
   acs_setup_detection_kernels(dlist,
-                              .ddetkernel = function(.mooring, .bathy) ddetx(.mooring, .bathy, .error = 0)) |>
+                              .ddetkernel = ddetkernel, .error = 0) |>
     expect_warning("Detection probability is 0 at receiver 3.", fixed = TRUE)
 
   # Check dot handling
