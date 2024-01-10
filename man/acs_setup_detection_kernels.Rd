@@ -54,7 +54,7 @@ The function returns a named \code{list}, with the following elements:
 This function is part of a set of \verb{acs_setup_*()} functions that prepare the layers required to evaluate the likelihood of acoustic observations in an AC*PF algorithm. The function prepares the detection kernels.
 }
 \details{
-An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual. At each time step in such an algorithm, we evaluate the likelihood of acoustic observations (the presence or absence of detections at each operational receiver, accounting for receiver placement) given particle samples. A detection kernel is a spatial representation of the likelihood of a detection \emph{around a specific receiver}. This typically declines with distance around a receiver, hence the default formulation of the \code{.ddetkernel} function. This function permits receiver-specific kernels, if required (but time-varying kernels are not currently supported.) Pre-calculating detection kernels is a potentially slow operation, especially for large and/or high-resolution grids (and we would like to improve this in future). However, this penalty is only required once and greatly improves the speed of downstream likelihood calculations in \code{\link[=pf_lik_ac]{pf_lik_ac()}} in \code{\link[=pf_forward]{pf_forward()}}, which only needs to appropriately combine the relevant values at each time step.
+An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual. At each time step in such an algorithm, we evaluate the likelihood of acoustic observations (the presence or absence of detections at each operational receiver, accounting for receiver placement) given particle samples. A detection kernel is a spatial representation of the likelihood of a detection \emph{around a specific receiver}. This typically declines with distance around a receiver, hence the default formulation of the \code{.ddetkernel} function. This function permits receiver-specific kernels, if required (but time-varying kernels are not currently supported). Pre-calculating detection kernels is a potentially slow operation, especially for large and/or high-resolution grids (and we would like to improve this in future). However, this penalty is only required once and greatly improves the speed of downstream likelihood calculations in \code{\link[=pf_lik_ac]{pf_lik_ac()}} in \code{\link[=pf_forward]{pf_forward()}}, which only needs to appropriately combine the relevant values at each time step.
 }
 \examples{
 require(data.table)
@@ -115,7 +115,7 @@ lapply(k$bkg_inv_surface_by_design, \(bkg) {
 par(pp)
 }
 \seealso{
-To implement such an algorithm, see:
+To implement an AC*PF algorithm, see:
 \enumerate{
 \item \code{\link[=pat_setup_data]{pat_setup_data()}} to set up datasets;
 \item \verb{acs_setup_*()} functions to prepare layers required for likelihood calculations, i.e.:
