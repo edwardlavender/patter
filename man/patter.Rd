@@ -143,20 +143,25 @@ The main thrust of \code{\link{patter}} is the provision of an integrated modell
 \item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} to run the backward sampler;
 }
 
+\strong{For convenience plotting functions}, see:
+\itemize{
+\item \code{\link[=pf_plot_history]{pf_plot_history()}} to plot particle histories;
+}
+
 \strong{For common utility functions}, see:
 \itemize{
 \item \code{\link[=pf_files]{pf_files()}} to list particle-sample files;
 \item \code{\link[=pf_files_size]{pf_files_size()}} to measure file size;
 }
 
-\strong{For downstream analyses}, use:
+\strong{For movement-path reconstruction}, use:
 \itemize{
 \item \code{\link[=pf_path]{pf_path()}} (and \code{\link[=pf_path_pivot]{pf_path_pivot()}}) to reconstruct movement paths;
-\item \code{\link[=pf_coord]{pf_coord()}} to collate particle coordinates for mapping;
 }
 
 \strong{For mapping utilisation distributions}, use:
 \itemize{
+\item \code{\link[=pf_coord]{pf_coord()}} to collate particle coordinates for mapping;
 \item \code{\link[=map_pou]{map_pou()}} to map probability-of-use;
 \item \code{\link[=map_dens]{map_dens()}} to create smooth maps using \code{spatstat}, plus the supporting functions:
 \itemize{

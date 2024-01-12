@@ -176,18 +176,22 @@ The main thrust of [`patter`](https://github.com/edwardlavender/patter) is the p
 * `pf_backward_killer_diagnostics()` to summarise particle diagnostics;
 * `pf_backward_sampler()` to run the backward sampler;
 
+**For convenience plotting functions**, see:
+
+* `pf_plot_history()` to plot particle histories;
+
 **For common utility functions**, see:
 
 * `pf_files()` to list particle-sample files;
 * `pf_files_size()` to measure file size;
 
-**For downstream analyses**, use: 
+**For movement-path reconstruction**, use: 
 
 * `pf_path()` (and `pf_path_pivot()`) to reconstruct movement paths;
-* `pf_coord()` to collate particle coordinates for mapping;
 
 **For mapping utilisation distributions**, use:
 
+* `pf_coord()` to collate particle coordinates for mapping;
 * `map_pou()` to map probability-of-use;
 * `map_dens()` to create smooth maps using `spatstat`, plus the supporting functions:
     * `as.im.SpatRaster()`, to convert `SpatRaster`s to pixel images;
