@@ -180,7 +180,7 @@ pf_opt_rerun_from <- function(.rerun, .revert = 25L) {
 #'
 #' * To map emergent patterns of space use, use [`pf_coord()`] plus a `map_*()` function, such as [`map_pou()`], [`map_dens()`] and/or [`map_hr`]`_()`.
 #'
-#' * For additional utilities, see supporting `pf_*()` functions, such as [`pf_files()`] and [`pf_files_size()`].
+#' * For additional utilities, see supporting `pf_*()` functions, such as [`pf_plot_history()`], [`pf_files()`] and [`pf_files_size()`].
 #'
 #' @author Edward Lavender
 #' @export
