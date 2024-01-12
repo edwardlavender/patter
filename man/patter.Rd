@@ -2,6 +2,7 @@
 % Please edit documentation in R/patter-package.R
 \docType{package}
 \name{patter}
+\alias{patter-package}
 \alias{patter}
 \title{\code{\link{patter}} for passive acoustic telemetry}
 \description{

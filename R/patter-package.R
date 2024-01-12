@@ -166,9 +166,8 @@
 #'
 #' @references Lavender, E. et al. (2023). An integrative modelling framework for passive acoustic telemetry. Methods in Ecology and Evolution. \url{https://doi.org/10.1111/2041-210X.14193}.
 #'
-#' @docType package
 #' @name patter
-NULL
+"_PACKAGE"
 
 #' @importFrom utils head
 #' @importFrom utils tail
@@ -224,7 +223,7 @@ NULL
 #' @importFrom collapse seq_col
 #' @importFrom collapse seq_row
 #'
-#' @importFrom lubridate `%within%`
+#' @importFrom lubridate %within%
 #'
 #' @importFrom arrow schema
 #' @importFrom arrow int32
