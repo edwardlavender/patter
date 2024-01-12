@@ -25,14 +25,17 @@ pf_files_size(.sink, .folder = NULL, ..., .unit = c("MB", "GB", "TB"))
 }
 }
 \description{
-\code{\link[=pf_files]{pf_files()}} creates an ordered \code{list} of the parquet files that contain particle samples (e.g., from \code{\link[=pf_forward]{pf_forward()}} or \code{\link[=pf_backward_killer]{pf_backward_killer()}}).
+\code{\link[=pf_files]{pf_files()}} creates an ordered \code{list} of numbered files.
 
 \code{\link[=pf_files_size]{pf_files_size()}} calculates the total size of all files.
 }
-\section{Warning}{
+\details{
+\code{\link[=pf_files]{pf_files()}} expects listed files to be named \verb{1.\{.ext\}}, \verb{2.\{.ext\}}, ..., \verb{N.\{.ext\}}. All listed files must share the same file extension.
+
+The function is normally used to to create an ordered \code{list} of the \code{parquet} files that contain particle samples (e.g., from \code{\link[=pf_forward]{pf_forward()}} or \code{\link[=pf_backward_killer]{pf_backward_killer()}}), but it can be used in any situation with files named as described above (e.g., to \code{list} \code{png} files from \code{\link[=pf_plot_history]{pf_plot_history()}}).
+
 At the time of writing, \code{\link[=pf_files]{pf_files()}} cannot be used to list particle-diagnostic files from \code{\link[=pf_forward]{pf_forward()}} and should only be used for particle samples. However, \code{\link[=pf_files_size]{pf_files_size()}} can be used to estimate the total file size in any directory.
 }
-
 \examples{
 # Use `pf_files()` to list files from `pf_forward()`
 pff_folder <- dat_pff_src(.folder = NULL)

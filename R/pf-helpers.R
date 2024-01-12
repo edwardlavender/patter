@@ -1,5 +1,5 @@
 #' @title PF: list files
-#' @description [`pf_files()`] creates an ordered `list` of the parquet files that contain particle samples (e.g., from [`pf_forward()`] or [`pf_backward_killer()`]).
+#' @description [`pf_files()`] creates an ordered `list` of numbered files.
 #'
 #' [`pf_files_size()`] calculates the total size of all files.
 #'
@@ -9,7 +9,10 @@
 #' @param .unit For [`pf_files_size()`], `.unit` is a `character` string that defines the units of the output (`MB`, `GB`, `TB`).
 #'
 #' @details
-#' # Warning
+#' [`pf_files()`] expects listed files to be named `1.{.ext}`, `2.{.ext}`, ..., `N.{.ext}`. All listed files must share the same file extension.
+#'
+#' The function is normally used to to create an ordered `list` of the `parquet` files that contain particle samples (e.g., from [`pf_forward()`] or [`pf_backward_killer()`]), but it can be used in any situation with files named as described above (e.g., to `list` `png` files from [`pf_plot_history()`]).
+#'
 #' At the time of writing, [`pf_files()`] cannot be used to list particle-diagnostic files from [`pf_forward()`] and should only be used for particle samples. However, [`pf_files_size()`] can be used to estimate the total file size in any directory.
 #'
 #' @return
@@ -56,8 +59,9 @@ pf_files <- function(.sink, .folder = NULL, ...) {
   if (length(unique(exts)) != 1L) {
     abort("Multiple file types (extensions) identified in `.sink`. Do you need to pass `pattern` to `list.files()`?")
   }
-  if (!all(exts == "parquet")) {
-    abort(".parquet files are expected.")
+  .ext <- exts[1]
+  if (!all(exts == .ext)) {
+    abort("The extensions of listed files vary.")
   }
 
   #### Define ordered vector of files
@@ -65,7 +69,7 @@ pf_files <- function(.sink, .folder = NULL, ...) {
   names   <- as.integer(tools::file_path_sans_ext(basename(files)))
   # Check file names are integers (1, 2, etc.) by coercion
   if (any(is.na(names))) {
-    abort("File names should be '1.parquet', '2.parquet', etc.")
+    abort("File names should be '1.{{extension}}', '2.{{extension}}', ..., 'N.{{extension}}'.")
   }
   # Order file paths by number
   out <-
@@ -77,9 +81,10 @@ pf_files <- function(.sink, .folder = NULL, ...) {
     arrange(.data$name) |>
     as.data.table()
   # Validate ordered list (e.g., to check there are no gaps)
-  if (!all.equal(paste0(seq_row(out), ".parquet"),
+  if (!all.equal(paste0(seq_row(out), ".", .ext),
                  basename(out$file))) {
-    abort("File names should be '1.parquet', '2.parquet', etc.")
+    abort("File names should be '1.{.ext}', '2.{.ext}', etc.",
+          .envir = environment())
   }
   as.list(out$file)
 }
