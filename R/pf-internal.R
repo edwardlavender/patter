@@ -16,9 +16,10 @@
 #'
 #' All functions also silently accept (and return) `NULL`.
 #
-#' @param ... Additional arguments if `.history` is a directory;
-#' * In [`.pf_history_list()`], `...` is passed to [`pf_files()`];
-#' * In [`.pf_history_dt()`]: `...`  is passed to [`arrow::open_dataset()`].
+#' @param ... Additional arguments:
+#' * In [`.pf_history_list()`], `...` is passed to [`pf_files()`] if `.history` is a directory;
+#' * In [`.pf_history_elm()`], `...` is passed to [`arrow::read_parquet()`] is `.read = TRUE`;
+#' * In [`.pf_history_dt()`]: `...`  is passed to [`arrow::open_dataset()`] if `.history` is a directory.
 #'
 #' @param .elm,.read For [`.pf_history_read()`] and [`.pf_history_elm()`]:
 #' * `.elm` is an `integer` that defines the `list` index.
@@ -148,12 +149,12 @@
 # * This function expects a list and should follow .pf_history_list()
 .pf_history_elm <- function(.history,
                             .elm,
-                            .read = .pf_history_read(.history)) {
+                            .read = .pf_history_read(.history), ...) {
   if (is.null(.history)) {
     return(NULL)
   }
   if (.read) {
-    return(arrow::read_parquet(.history[[.elm]]))
+    return(arrow::read_parquet(.history[[.elm]], ...))
   } else {
     return(.history[[.elm]])
   }

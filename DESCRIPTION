@@ -21,6 +21,7 @@ Imports:
     rlang,
     terra
 Suggests:
+    av, 
     exactextractr,
     geosphere, 
     knitr,

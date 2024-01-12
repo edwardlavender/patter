@@ -12,7 +12,7 @@
 
 .pf_history_read(.history)
 
-.pf_history_elm(.history, .elm, .read = .pf_history_read(.history))
+.pf_history_elm(.history, .elm, .read = .pf_history_read(.history), ...)
 
 .pf_history_dt(.history, ..., .collect = TRUE)
 }
@@ -29,10 +29,11 @@ For \code{\link[=.pf_history_read]{.pf_history_read()}} and \code{\link[=.pf_his
 
 All functions also silently accept (and return) \code{NULL}.}
 
-\item{...}{Additional arguments if \code{.history} is a directory;
+\item{...}{Additional arguments:
 \itemize{
-\item In \code{\link[=.pf_history_list]{.pf_history_list()}}, \code{...} is passed to \code{\link[=pf_files]{pf_files()}};
-\item In \code{\link[=.pf_history_dt]{.pf_history_dt()}}: \code{...}  is passed to \code{\link[arrow:open_dataset]{arrow::open_dataset()}}.
+\item In \code{\link[=.pf_history_list]{.pf_history_list()}}, \code{...} is passed to \code{\link[=pf_files]{pf_files()}} if \code{.history} is a directory;
+\item In \code{\link[=.pf_history_elm]{.pf_history_elm()}}, \code{...} is passed to \code{\link[arrow:read_parquet]{arrow::read_parquet()}} is \code{.read = TRUE};
+\item In \code{\link[=.pf_history_dt]{.pf_history_dt()}}: \code{...}  is passed to \code{\link[arrow:open_dataset]{arrow::open_dataset()}} if \code{.history} is a directory.
 }}
 
 \item{.elm, .read}{For \code{\link[=.pf_history_read]{.pf_history_read()}} and \code{\link[=.pf_history_elm]{.pf_history_elm()}}:
