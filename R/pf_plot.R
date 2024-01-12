@@ -14,8 +14,9 @@
 #'
 #' @details For each `.step`, [`terra::plot()`] is used to plot `.dlist$spatial$bathy`. Particle samples in `.forward` are added onto the grid via [`graphics::points()`]. If `.backward` is supplied, particles in `.forward` should be derived from the forward run. Particles in `.forward` but not `.backward` (i.e., dead ends) are shown in red (unless `.add_forward$col` is overridden).
 #'
-#' @return The function is called for its side effects. It returns `invisible(TRUE)`.
+#' This function replaces [`flapper::pf_plot_history()`](https://edwardlavender.github.io/flapper/reference/pf_plot_history.html)
 #'
+#' @return The function is called for its side effects. It returns `invisible(TRUE)`.
 #' @example man/examples/pf_plot_history-examples.R
 #' @inherit pf_forward seealso
 #' @author Edward Lavender

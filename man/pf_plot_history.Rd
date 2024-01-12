@@ -45,6 +45,8 @@ This function maps particle histories for selected time steps or entire time ser
 }
 \details{
 For each \code{.step}, \code{\link[terra:plot]{terra::plot()}} is used to plot \code{.dlist$spatial$bathy}. Particle samples in \code{.forward} are added onto the grid via \code{\link[graphics:points]{graphics::points()}}. If \code{.backward} is supplied, particles in \code{.forward} should be derived from the forward run. Particles in \code{.forward} but not \code{.backward} (i.e., dead ends) are shown in red (unless \code{.add_forward$col} is overridden).
+
+This function replaces \href{https://edwardlavender.github.io/flapper/reference/pf_plot_history.html}{\code{flapper::pf_plot_history()}}
 }
 \examples{
 #### Set up
