@@ -3,9 +3,12 @@
 \name{utils-lists}
 \alias{utils-lists}
 \alias{list_compact}
+\alias{list_merge}
 \title{Utilities: list helpers}
 \usage{
 list_compact(l)
+
+list_merge(...)
 }
 \description{
 These are internal list helpers in \code{\link{patter}}.
