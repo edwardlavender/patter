@@ -1,9 +1,7 @@
 #' @title PF: backward killer
 #' @description This function implements backward pruning (killing) of particle samples.
 #'
-#' @param .history Particle samples from the forward simulation, provided either as:
-#' * A `list` of [`data.table`]s that define particle samples; i.e., the `history` element of a [`pf_particles-class`] object. This must contain columns that define sampled cells at each time step (`cell_now`) alongside previous samples (`cell_past`).
-#' * An ordered `list` of file paths (from [`pf_files()`]) that defines the directories in which particle samples were written from the forward simulation (as parquet files).
+#' @param .history Particle samples from the forward simulation, provided in any format accepted by [`.pf_history_list()`]. Particle samples must contain `cell_past` and `cell_now` columns.
 #' @param .record A named `list` of output options, from [`pf_opt_record()`].
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
@@ -38,12 +36,11 @@ pf_backward_killer <- function(.history,
   on.exit(cat_log(call_end(.fun = "pf_backward_killer", .start = t_onset, .end = Sys.time())), add = TRUE)
 
   #### Set up loop
-  # Define whether or not .history dataframes need to be read from file
-  if (inherits(.history[[1]], "data.frame")) {
-    read_history <- FALSE
-  } else {
-    read_history <- TRUE
-  }
+  # History
+  .history <- .pf_history_list(.history)
+  read     <- .pf_history_read(.history)
+  check_names(.pf_history_elm(.history, .elm = 1L, .read = read),
+              c("cell_past", "cell_now"))
   # Variables
   write          <- !is.null(.record$sink)
   timestep_final <- length(.history)
@@ -54,16 +51,19 @@ pf_backward_killer <- function(.history,
   for (t in rev(seq_len(timestep_final))) {
 
     #### Read particle samples for t and t - 1
+    # For speed, we use arrow::read_parquet() directly rather than .pf_history_elm()
     pb_tick(.pb = pb, .t = (timestep_final - t) + 1L)
     cat_log(paste0("... Time step ", t, ":"))
-    if (read_history) {
+    if (read) {
       if (t == timestep_final) {
         cat_log(paste0("... ... Reading `.history[[", timestep_final, "]]`..."))
-        .history[[t]] <- arrow::read_parquet(.history[[t]])
+        .history[[t]] <- arrow::read_parquet(.history[[t]],
+                                             col_select = .record$cols)
       }
       if (t > 1) {
         cat_log(paste0("... ... Reading `.history[[", t - 1L, "]]`..."))
-        .history[[t - 1L]] <- arrow::read_parquet(.history[[t - 1L]])
+        .history[[t - 1L]] <- arrow::read_parquet(.history[[t - 1L]],
+                                                  col_select = .record$cols)
       }
     }
 
