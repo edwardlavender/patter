@@ -36,7 +36,7 @@
 #' * `.scale` is a `numeric` value that defines the scale parameter of a Gamma distribution (see [`stats::rgamma()`]).
 #' * `.mobility` is a `numeric` value that defines the maximum possible value (step length) (see `truncdist::rtrunc()`).
 #'
-#' @param .mu,.rho,.sd Arguments for [`rwn()`] for the simulation of turning angles, passed to the `mu`, `rho` and `sd` arguments of [`circular::rwrappednormal()`].
+#' @param .mu,.rho,.sd Arguments for [`rwn()`] for the simulation of turning angles, passed to the `mu`, `rho` and `sd` arguments of [`circular::rwrappednormal()`]. `.sd` (`sd`) is only used if `.rho` (`rho`) is `NULL`.
 #'
 #' @param .prior,.t Additional arguments for [`rlen()`], [`rangrw()`] and [`rangcrw()`], as used in top-level functions (i.e., [`sim_path_walk()`]):
 #' * `.n`---an `integer` that defines the number of simulated outcome(s);

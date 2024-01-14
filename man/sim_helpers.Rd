@@ -137,7 +137,7 @@ For \code{\link[=rdet]{rdet()}}, \code{.ddet} must accept the \code{.data} \code
 \item \code{.mobility} is a \code{numeric} value that defines the maximum possible value (step length) (see \code{truncdist::rtrunc()}).
 }}
 
-\item{.mu, .rho, .sd}{Arguments for \code{\link[=rwn]{rwn()}} for the simulation of turning angles, passed to the \code{mu}, \code{rho} and \code{sd} arguments of \code{\link[circular:wrappednormal]{circular::rwrappednormal()}}.}
+\item{.mu, .rho, .sd}{Arguments for \code{\link[=rwn]{rwn()}} for the simulation of turning angles, passed to the \code{mu}, \code{rho} and \code{sd} arguments of \code{\link[circular:wrappednormal]{circular::rwrappednormal()}}. \code{.sd} (\code{sd}) is only used if \code{.rho} (\code{rho}) is \code{NULL}.}
 
 \item{.prior, .t}{Additional arguments for \code{\link[=rlen]{rlen()}}, \code{\link[=rangrw]{rangrw()}} and \code{\link[=rangcrw]{rangcrw()}}, as used in top-level functions (i.e., \code{\link[=sim_path_walk]{sim_path_walk()}}):
 \itemize{
