@@ -61,11 +61,10 @@
       abort("There are <= 2 steps in the time series.")
     }
     index <- 2:length(.history)
-    if (.read) {
-      history_for_index <- paste0("arrow::read_parquet(.history[[", index, "]])")
-    } else {
-      history_for_index <- paste0(".history[[", index, "]]")
-    }
+    history_for_index <- paste0(".pf_history_elm(.history = .history, ",
+                                ".elm = ", index, ", ",
+                                ".read = ", .read, ", ",
+                                "col_select = c('cell_past', 'cell_now'))")
     paste0(
       ".history[[1]] |> \n",
       paste(paste0("  .pf_path_join(", history_for_index, ", .t = ", index,

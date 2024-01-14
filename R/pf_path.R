@@ -1,8 +1,6 @@
 #' @title PF: path reconstruction
 #' @description This function implements the path-reconstruction algorithm.
-#' @param .history Particle samples from the particle filter, provided either as:
-#' * A `list` of [`data.table`]s that define particle samples; i.e., the `history` element of a [`pf_particles-class`] object. This must contain columns that define sampled cells at each time step (`cell_now`) alongside previous samples (`cell_past`).
-#' * An ordered `list` of file paths (from [`pf_files()`]) that defines the directories in which particle samples are located (as parquet files).
+#' @param .history Particle samples from the particle filter, provided in any format accepted by [`.pf_history_list()`]. Particle samples must contain `cell_past` and `cell_now` columns.
 #' @param .bathy (optional) If `.return = "long"`, a bathymetry [`SpatRaster`] can be supplied to define cell coordinates (see [`pf_path_pivot()`]).
 #' @param .obs,.cols (optional) If `.return = "long"`, `.obs` and `.cols` are a [`data.table`] and a `character` vector of column names in `.obs` to match onto the output (see [`pf_path_pivot()`]).
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
@@ -44,18 +42,15 @@ pf_path <- function(.history,
 
   # Set up chain
   cat_log("... Setting up...")
-  if (inherits(.history[[1]], "data.frame")) {
-    check_names(.history[[1]], c("cell_past", "cell_now"))
-    read <- FALSE
-  } else {
-    read <- TRUE
-  }
+  .history <- .pf_history_list(.history)
+  read     <- .pf_history_read(.history)
+  check_names(.pf_history_elm(.history, .elm = 1L, .read = read),
+              c("cell_past", "cell_now"))
 
   # Define history[[1]]
   cat_log("... Processing history[[1]]...")
-  if (read) {
-    .history[[1]] <- arrow::read_parquet(.history[[1]])
-  }
+  .history[[1]] <- .pf_history_elm(.history, .elm = 1L, .read = read,
+                                  col_select = c("cell_past", "cell_now"))
   .history[[1]] <-
     .history[[1]] |>
     select(x0 = "cell_past", x1 = "cell_now") |>
