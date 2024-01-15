@@ -28,10 +28,15 @@ test_that("cl_*() helpers work", {
   cl_stop(cl)
 
   # Check cl_chunks()
-  cl_chunks(NULL, 10) |>
-    expect_equal(list(1:3, 4:5, 6:7, 8:10))
-  cl_chunks(2L, 10) |>
-    expect_equal(list(1:2, 3, 4, 5, 6, 7, 8, 9:10))
+  # * .nout is essentially the number of chunks on each core
+  cl_chunks(NULL, 10L) |>
+    expect_equal(as.list(1:10L))
+  cl_chunks(2L, 10L, 1) |>
+    expect_equal(list(1:5L, 6:10L))
+  cl_chunks(2L, 10L, 3L) |>
+    expect_equal(c(list(1:2L), list(3),
+                   list(4:5L), list(6:7L),
+                   list(8L), list(9:10L)))
 
   # Check cl_export()
   cl_export()
@@ -51,12 +56,12 @@ test_that("cl_*() helpers work", {
   cl_lapply(1:10, \(x) x + 0, .cl = 2L) |>
     expect_equal(as.list(1:10L))
   if (.Platform$OS.type == "unix") {
-    cl_lapply(1:10, \(x) x + 0, .cl = 2L, .use_chunks = TRUE, .combine = unlist) |>
+    cl_lapply(1:10, \(x) x + 0, .cl = 2L, .chunk = TRUE, .combine = unlist) |>
       expect_equal(c(1:10L))
   }
   cl_lapply(1:10, \(x) x + 0, .cl = parallel::makeCluster(2L)) |>
     expect_equal(as.list(1:10L))
-  cl_lapply(1:10, \(x) x + 0, .cl = parallel::makeCluster(2L), .use_chunks = FALSE) |>
+  cl_lapply(1:10, \(x) x + 0, .cl = parallel::makeCluster(2L), .chunk = FALSE) |>
     expect_equal(as.list(1:10L))
 
 })
