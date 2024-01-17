@@ -13,6 +13,8 @@
 #' * [`skill_R()`] computes Spearman's rank correlation coefficient.
 #' * [`skill_d()`] computes the index of agreement.
 #'
+#' These functions are not memory safe.
+#'
 #' @return The functions return a number.
 #'
 #' @examples
