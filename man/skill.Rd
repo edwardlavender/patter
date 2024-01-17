@@ -41,6 +41,8 @@ We follow the mathematical definitions in Lavender et al. (2022) Supplementary I
 \item \code{\link[=skill_R]{skill_R()}} computes Spearman's rank correlation coefficient.
 \item \code{\link[=skill_d]{skill_d()}} computes the index of agreement.
 }
+
+These functions are not memory safe.
 }
 \examples{
 # Define template SpatRasters
