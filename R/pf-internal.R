@@ -18,12 +18,13 @@
 #
 #' @param ... Additional arguments:
 #' * In [`.pf_history_list()`], `...` is passed to [`pf_files()`] if `.history` is a directory;
-#' * In [`.pf_history_elm()`], `...` is passed to [`arrow::read_parquet()`] is `.read = TRUE`;
+#' * In [`.pf_history_elm()`], `...` is passed to [`arrow::read_parquet()`] is `.read = TRUE`. `col_select` is controlled via `.cols` and not permitted;
 #' * In [`.pf_history_dt()`]: `...`  is passed to [`arrow::open_dataset()`] if `.history` is a directory.
 #'
-#' @param .elm,.read For [`.pf_history_read()`] and [`.pf_history_elm()`]:
+#' @param .elm,.read,.cols For [`.pf_history_read()`] and/or [`.pf_history_elm()`]:
 #' * `.elm` is an `integer` that defines the `list` index.
 #' * `.read` is a `logical` variable that defines whether or not to read particle samples from file.
+#' * (optional) `.cols` is a `character` vector of columns to select, for [`.pf_history_elm()`].
 #'
 #' @param .collect For [`.pf_history_dt()`], if `.history` is a directory, `.collect` is a `logical` variable that defines whether or not to collect the dataset in memory.
 #'
@@ -149,14 +150,29 @@
 # * This function expects a list and should follow .pf_history_list()
 .pf_history_elm <- function(.history,
                             .elm,
-                            .read = .pf_history_read(.history), ...) {
+                            .read = .pf_history_read(.history),
+                            .cols = NULL, ...) {
   if (is.null(.history)) {
     return(NULL)
   }
   if (.read) {
-    return(arrow::read_parquet(.history[[.elm]], ...))
+    if (is.null(.cols)) {
+      # Read all columns
+      # * There is an issue in {arrow} with tidyselect & col_select = .cols when .cols = NULL
+      # * So this statement is separated from the one below
+      return(arrow::read_parquet(.history[[.elm]], ...))
+    } else {
+      return(arrow::read_parquet(.history[[.elm]],
+                                 col_select = .cols, ...))
+    }
   } else {
-    return(.history[[.elm]])
+    if (is.null(.cols)) {
+      return(.history[[.elm]])
+    } else {
+      return(.history[[.elm]] |>
+               select(all_of(.cols)) |>
+               as.data.table())
+    }
   }
 }
 

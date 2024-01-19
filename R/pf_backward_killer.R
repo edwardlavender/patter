@@ -26,11 +26,10 @@ pf_backward_killer <- function(.history,
                                .verbose = getOption("patter.verbose")) {
 
   #### Check user inputs
-  # TO DO (enhance checks)
-  t_onset <- Sys.time()
-  check_inherits(.history, "list")
+  # TO DO
 
   #### Set up messages
+  t_onset <- Sys.time()
   cat_log <- cat_init(.verbose = .verbose)
   cat_log(call_start(.fun = "pf_backward_killer", .start = t_onset))
   on.exit(cat_log(call_end(.fun = "pf_backward_killer", .start = t_onset, .end = Sys.time())), add = TRUE)
@@ -39,12 +38,12 @@ pf_backward_killer <- function(.history,
   # History
   .history <- .pf_history_list(.history)
   read     <- .pf_history_read(.history)
-  check_names(.pf_history_elm(.history, .elm = 1L, .read = read),
+  check_names(.pf_history_elm(.history, .elm = 1L, .read = read, .cols = .record$cols),
               c("cell_past", "cell_now"))
   # Variables
   write          <- !is.null(.record$sink)
-  timestep_final <- length(.history)
   # Define progress bar
+  timestep_final <- length(.history)
   pb <- pb_init(.min = 0L, .max = timestep_final)
 
   #### Implement loop

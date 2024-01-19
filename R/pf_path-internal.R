@@ -64,7 +64,7 @@
     history_for_index <- paste0(".pf_history_elm(.history = .history, ",
                                 ".elm = ", index, ", ",
                                 ".read = ", .read, ", ",
-                                "col_select = c('cell_past', 'cell_now'))")
+                                ".cols = c('cell_past', 'cell_now'))")
     paste0(
       ".history[[1]] |> \n",
       paste(paste0("  .pf_path_join(", history_for_index, ", .t = ", index,

@@ -12,7 +12,13 @@
 
 .pf_history_read(.history)
 
-.pf_history_elm(.history, .elm, .read = .pf_history_read(.history), ...)
+.pf_history_elm(
+  .history,
+  .elm,
+  .read = .pf_history_read(.history),
+  .cols = NULL,
+  ...
+)
 
 .pf_history_dt(.history, ..., .collect = TRUE)
 }
@@ -32,14 +38,15 @@ All functions also silently accept (and return) \code{NULL}.}
 \item{...}{Additional arguments:
 \itemize{
 \item In \code{\link[=.pf_history_list]{.pf_history_list()}}, \code{...} is passed to \code{\link[=pf_files]{pf_files()}} if \code{.history} is a directory;
-\item In \code{\link[=.pf_history_elm]{.pf_history_elm()}}, \code{...} is passed to \code{\link[arrow:read_parquet]{arrow::read_parquet()}} is \code{.read = TRUE};
+\item In \code{\link[=.pf_history_elm]{.pf_history_elm()}}, \code{...} is passed to \code{\link[arrow:read_parquet]{arrow::read_parquet()}} is \code{.read = TRUE}. \code{col_select} is controlled via \code{.cols} and not permitted;
 \item In \code{\link[=.pf_history_dt]{.pf_history_dt()}}: \code{...}  is passed to \code{\link[arrow:open_dataset]{arrow::open_dataset()}} if \code{.history} is a directory.
 }}
 
-\item{.elm, .read}{For \code{\link[=.pf_history_read]{.pf_history_read()}} and \code{\link[=.pf_history_elm]{.pf_history_elm()}}:
+\item{.elm, .read, .cols}{For \code{\link[=.pf_history_read]{.pf_history_read()}} and/or \code{\link[=.pf_history_elm]{.pf_history_elm()}}:
 \itemize{
 \item \code{.elm} is an \code{integer} that defines the \code{list} index.
 \item \code{.read} is a \code{logical} variable that defines whether or not to read particle samples from file.
+\item (optional) \code{.cols} is a \code{character} vector of columns to select, for \code{\link[=.pf_history_elm]{.pf_history_elm()}}.
 }}
 
 \item{.collect}{For \code{\link[=.pf_history_dt]{.pf_history_dt()}}, if \code{.history} is a directory, \code{.collect} is a \code{logical} variable that defines whether or not to collect the dataset in memory.}

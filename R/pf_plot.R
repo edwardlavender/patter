@@ -72,7 +72,7 @@ pf_plot_history <- function(.dlist,
     fwd <- .pf_history_elm(.history = .forward,
                            .elm = t,
                            .read = forward_read,
-                           col_select = c("cell_now", "x_now", "y_now"))
+                           .cols = c("cell_now", "x_now", "y_now"))
     add_fwd   <- .add_forward
     add_fwd$x <- fwd$x_now
     add_fwd$y <- fwd$y_now
@@ -81,7 +81,7 @@ pf_plot_history <- function(.dlist,
       bwd <- .pf_history_elm(.history = .backward,
                              .elm = t,
                              .read = backward_read,
-                             col_select = "cell_now")
+                             .cols = "cell_now")
       if (is.null(.add_forward$col)) {
         add_fwd$col <- c("red", "black")[(fwd$cell_now %in% bwd$cell_now) + 1]
       }

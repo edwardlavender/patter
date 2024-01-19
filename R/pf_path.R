@@ -50,7 +50,7 @@ pf_path <- function(.history,
   # Define history[[1]]
   cat_log("... Processing history[[1]]...")
   .history[[1]] <- .pf_history_elm(.history, .elm = 1L, .read = read,
-                                  col_select = c("cell_past", "cell_now"))
+                                  .cols = c("cell_past", "cell_now"))
   .history[[1]] <-
     .history[[1]] |>
     select(x0 = "cell_past", x1 = "cell_now") |>

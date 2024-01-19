@@ -37,10 +37,10 @@ test_that(".pf_path_chain() works", {
   chain_1 <- .pf_path_chain(as.list(1:5), .read = TRUE)
   chain_2 <-
     ".history[[1]] |>
-  .pf_path_join(.pf_history_elm(.history = .history, .elm = 2, .read = TRUE, col_select = c('cell_past', 'cell_now')), .t = 2, .pb = .pb, .pb_step = 5) |>
-  .pf_path_join(.pf_history_elm(.history = .history, .elm = 3, .read = TRUE, col_select = c('cell_past', 'cell_now')), .t = 3, .pb = .pb, .pb_step = 4) |>
-  .pf_path_join(.pf_history_elm(.history = .history, .elm = 4, .read = TRUE, col_select = c('cell_past', 'cell_now')), .t = 4, .pb = .pb, .pb_step = 3) |>
-  .pf_path_join(.pf_history_elm(.history = .history, .elm = 5, .read = TRUE, col_select = c('cell_past', 'cell_now')), .t = 5, .pb = .pb, .pb_step = 2)"
+  .pf_path_join(.pf_history_elm(.history = .history, .elm = 2, .read = TRUE, .cols = c('cell_past', 'cell_now')), .t = 2, .pb = .pb, .pb_step = 5) |>
+  .pf_path_join(.pf_history_elm(.history = .history, .elm = 3, .read = TRUE, .cols = c('cell_past', 'cell_now')), .t = 3, .pb = .pb, .pb_step = 4) |>
+  .pf_path_join(.pf_history_elm(.history = .history, .elm = 4, .read = TRUE, .cols = c('cell_past', 'cell_now')), .t = 4, .pb = .pb, .pb_step = 3) |>
+  .pf_path_join(.pf_history_elm(.history = .history, .elm = 5, .read = TRUE, .cols = c('cell_past', 'cell_now')), .t = 5, .pb = .pb, .pb_step = 2)"
   expect_equal(gsub(" ", "", chain_1),
                gsub(" ", "", chain_2))
 
@@ -48,10 +48,10 @@ test_that(".pf_path_chain() works", {
   chain_1 <- .pf_path_chain(as.list(1:5), .read = FALSE)
   chain_2 <-
     ".history[[1]] |>
-  .pf_path_join(.pf_history_elm(.history = .history, .elm = 2, .read = FALSE, col_select = c('cell_past', 'cell_now')), .t = 2, .pb = .pb, .pb_step = 5) |>
-  .pf_path_join(.pf_history_elm(.history = .history, .elm = 3, .read = FALSE, col_select = c('cell_past', 'cell_now')), .t = 3, .pb = .pb, .pb_step = 4) |>
-  .pf_path_join(.pf_history_elm(.history = .history, .elm = 4, .read = FALSE, col_select = c('cell_past', 'cell_now')), .t = 4, .pb = .pb, .pb_step = 3) |>
-  .pf_path_join(.pf_history_elm(.history = .history, .elm = 5, .read = FALSE, col_select = c('cell_past', 'cell_now')), .t = 5, .pb = .pb, .pb_step = 2)"
+  .pf_path_join(.pf_history_elm(.history = .history, .elm = 2, .read = FALSE, .cols = c('cell_past', 'cell_now')), .t = 2, .pb = .pb, .pb_step = 5) |>
+  .pf_path_join(.pf_history_elm(.history = .history, .elm = 3, .read = FALSE, .cols = c('cell_past', 'cell_now')), .t = 3, .pb = .pb, .pb_step = 4) |>
+  .pf_path_join(.pf_history_elm(.history = .history, .elm = 4, .read = FALSE, .cols = c('cell_past', 'cell_now')), .t = 4, .pb = .pb, .pb_step = 3) |>
+  .pf_path_join(.pf_history_elm(.history = .history, .elm = 5, .read = FALSE, .cols = c('cell_past', 'cell_now')), .t = 5, .pb = .pb, .pb_step = 2)"
   expect_equal(gsub(" ", "", chain_1),
                gsub(" ", "", chain_2))
 
