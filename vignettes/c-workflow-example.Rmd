@@ -58,7 +58,7 @@ The next step is to prepare the movement datasets. In this vignette, we use a sm
 
 ```{r}
 # Set seed
-ssv()
+set.seed(123L)
 
 # Define a sample of acoustic time series 
 acc  <- dat_acoustics[individual_id == 25, ]
