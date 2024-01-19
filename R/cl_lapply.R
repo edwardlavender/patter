@@ -33,7 +33,7 @@
 #'
 #' [`cl_lapply()`] is exported, as we have found it useful in other projects, but primarily intended for internal use. Use [`pbapply::pboptions()`] to control the progress bar, including the number of gradations (`nout`). `nout` also controls the number of chunks on each core. Fewer chunks reduce parallelisation overhead but also the number of gradations on the progress bar.
 #'
-#' [`cl_lapply()`] and associated (internal) functions evolved from the [`cl_*()`](https://edwardlavender.github.io/flapper/reference/cl.html) functions in [`flapper`](https://github.com/edwardlavender/flapper).
+#' [`cl_lapply()`] and associated (internal) functions evolved from [`flapper::cl_*()`](https://edwardlavender.github.io/flapper/reference/cl.html) functions.
 #'
 #' @return The function invisibly returns a `list` or a combined `list` (defined by `.combine`).
 #'

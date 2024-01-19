@@ -14,7 +14,7 @@
 #' * [`cl_export()`] implements [`parallel::clusterExport()`] if both `.cl` and `.varlist` are specified
 #' * [`cl_stop()`] implements [`parallel::stopCluster()`] if `.cl` is a `cluster` object from [`parallel::makeCluster()`].
 #'
-#' These routines evolved from the [`cl_*()`](https://edwardlavender.github.io/flapper/reference/cl.html) functions in [`flapper`](https://github.com/edwardlavender/flapper).
+#' These routines evolved from [`flapper::cl_*()`](https://edwardlavender.github.io/flapper/reference/cl.html) functions.
 #'
 #' @return
 #' * [`cl_lapply_chunk()`] returns a `list`.

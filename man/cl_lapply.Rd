@@ -67,7 +67,7 @@ The function invisibly returns a \code{list} or a combined \code{list} (defined 
 \details{
 \code{\link[=cl_lapply]{cl_lapply()}} is exported, as we have found it useful in other projects, but primarily intended for internal use. Use \code{\link[pbapply:pboptions]{pbapply::pboptions()}} to control the progress bar, including the number of gradations (\code{nout}). \code{nout} also controls the number of chunks on each core. Fewer chunks reduce parallelisation overhead but also the number of gradations on the progress bar.
 
-\code{\link[=cl_lapply]{cl_lapply()}} and associated (internal) functions evolved from the \href{https://edwardlavender.github.io/flapper/reference/cl.html}{\verb{cl_*()}} functions in \href{https://github.com/edwardlavender/flapper}{\code{flapper}}.
+\code{\link[=cl_lapply]{cl_lapply()}} and associated (internal) functions evolved from \href{https://edwardlavender.github.io/flapper/reference/cl.html}{\verb{flapper::cl_*()}} functions.
 }
 \seealso{
 See \href{https://edwardlavender.github.io/flapper/reference/flapper-tips-parallel.html}{\code{flapper-tips-parallel}} for further information about parallelisation, including the differences between socket clusters and forking.

@@ -53,7 +53,7 @@ A set of internal wrappers for \code{\link[parallel:parallel-package]{parallel::
 \item \code{\link[=cl_stop]{cl_stop()}} implements \code{\link[parallel:makeCluster]{parallel::stopCluster()}} if \code{.cl} is a \code{cluster} object from \code{\link[parallel:makeCluster]{parallel::makeCluster()}}.
 }
 
-These routines evolved from the \href{https://edwardlavender.github.io/flapper/reference/cl.html}{\verb{cl_*()}} functions in \href{https://github.com/edwardlavender/flapper}{\code{flapper}}.
+These routines evolved from \href{https://edwardlavender.github.io/flapper/reference/cl.html}{\verb{flapper::cl_*()}} functions.
 }
 \author{
 Edward Lavender
