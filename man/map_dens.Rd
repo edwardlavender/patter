@@ -26,9 +26,9 @@ map_dens(
 )
 }
 \arguments{
-\item{.map}{A \code{\link{SpatRaster}} that defines the grid on which the UD is represented. If \code{.coord = NULL}, \code{.map} also defines the points (and associated weights) that are smoothed (see \code{\link[=.map_coord.dt]{.map_coord.dt()}}). \strong{The coordinate reference system of \code{.map} must be planar} and specified.}
+\item{.map}{A \code{\link{SpatRaster}} that defines the grid on which the UD is represented. If \code{.coord = NULL}, \code{.map} also defines the points (and associated weights) that are smoothed (see \code{\link[=.map_coord]{.map_coord()}}). \strong{The coordinate reference system of \code{.map} must be planar} and specified.}
 
-\item{.im, .owin}{A pixel image representation of \code{.map} (see \code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}} and \code{\link[spatstat.geom:im]{spatstat.geom::im()}}) and an observation window (see \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}}, \code{\link[=as.owin.sf]{as.owin.sf()}} and \code{\link[spatstat.geom:owin]{spatstat.geom::owin()}}). These objects may be computed automatically from \code{.map} (with rectangular or gridded observation windows used by default, depending on whether or not \code{.map} contains \code{NA}s), but this option can be over-ridden. For faster results, use a rectangular or polygon observation window (see \code{\link[=as.owin.sf]{as.owin.sf()}}). If \code{.coord} is supplied, \code{.im} is necessarily (re)-defined internally (see Details).}
+\item{.im, .owin}{(optional) A pixel image representation of \code{.map} (see \code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}} and \code{\link[spatstat.geom:im]{spatstat.geom::im()}}) and an observation window (see \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}}, \code{\link[=as.owin.sf]{as.owin.sf()}} and \code{\link[spatstat.geom:owin]{spatstat.geom::owin()}}). These objects may be computed automatically from \code{.map} (with rectangular or gridded observation windows used by default, depending on whether or not \code{.map} contains \code{NA}s), but this option can be over-ridden. For faster results, use a rectangular or polygon observation window (see \code{\link[=as.owin.sf]{as.owin.sf()}}). If \code{.coord} is supplied, \code{.im} is necessarily (re)-defined internally (see Details).}
 
 \item{.poly, .bbox, .invert}{For \code{\link[=as.owin.sf]{as.owin.sf()}} to construct observation windows from \code{sf} objects.
 \itemize{
@@ -39,7 +39,7 @@ map_dens(
 
 \item{.coord}{(optional) Coordinates for density estimation, provided in any format accepted by \code{\link[=.map_coord]{.map_coord()}}. \strong{Coordinates must be planar}.}
 
-\item{.discretise}{A \code{logical} variable that defines whether or not to discretise coordinates on \code{.map} (see \code{\link[=.map_coord]{.map_coord()}}).}
+\item{.discretise}{If \code{.coord} is provided, \code{.discretise} is a \code{logical} variable that defines whether or not to discretise coordinates on \code{.map} (see \code{\link[=.map_coord]{.map_coord()}}).}
 
 \item{...}{Arguments for density estimation, passed to \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}}, such as \code{sigma} (i.e., the bandwidth). \code{at} and \code{se} are not permitted.}
 
