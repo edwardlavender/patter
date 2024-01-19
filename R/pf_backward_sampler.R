@@ -14,9 +14,11 @@
 #' @export
 
 pf_count <- function(.history,
-                     .cl = NULL, .cl_varlist = NULL, .cl_chunk = TRUE,
                      .record = pf_opt_record(),
-                     .verbose = getOption("patter.verbose")) {
+                     .verbose = getOption("patter.verbose"),
+                     .cl = NULL,
+                     .cl_varlist = NULL,
+                     .cl_chunk = ifelse(is.null(.cl), FALSE, TRUE)) {
 
   #### Check user inputs
   # TO DO (enhance checks)

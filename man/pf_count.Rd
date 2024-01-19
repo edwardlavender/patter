@@ -6,21 +6,21 @@
 \usage{
 pf_count(
   .history,
+  .record = pf_opt_record(),
+  .verbose = getOption("patter.verbose"),
   .cl = NULL,
   .cl_varlist = NULL,
-  .cl_chunk = TRUE,
-  .record = pf_opt_record(),
-  .verbose = getOption("patter.verbose")
+  .cl_chunk = ifelse(is.null(.cl), FALSE, TRUE)
 )
 }
 \arguments{
 \item{.history}{Particle samples, provided in any format accepted by \code{\link[=.pf_history_list]{.pf_history_list()}}. Particle samples must contain the \code{cell_now} column.}
 
-\item{.cl, .cl_varlist, .cl_chunk}{Parallelisation options, passed to \code{\link[=cl_lapply]{cl_lapply()}}.}
-
 \item{.record}{A named \code{list} of output options, from \code{\link[=pf_opt_record]{pf_opt_record()}}.}
 
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
+
+\item{.cl, .cl_varlist, .cl_chunk}{Parallelisation options, passed to \code{\link[=cl_lapply]{cl_lapply()}}.}
 }
 \value{
 The function returns a \code{\linkS4class{pf_particles}} object.
