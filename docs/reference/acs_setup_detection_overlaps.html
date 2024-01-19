@@ -100,7 +100,7 @@
     </div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index"><p>To implement such an algorithm, see:</p><ol><li><p><code><a href="pat_setup_data.html">pat_setup_data()</a></code> to set up datasets;</p></li>
+    <div class="dont-index"><p>To implement an AC*PF algorithm, see:</p><ol><li><p><code><a href="pat_setup_data.html">pat_setup_data()</a></code> to set up datasets;</p></li>
 <li><p><code>acs_setup_*()</code> functions to prepare layers required for likelihood calculations, i.e.:</p><ul><li><p><code>acs_setup_detection_overlaps()</code>, which identifies detection overlaps;</p></li>
 <li><p><code><a href="acs_setup_detection_kernel.html">acs_setup_detection_kernel()</a></code>, which prepares a detection kernel;</p></li>
 <li><p><code><a href="acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code>, which prepares detection kernels;</p></li>
@@ -120,7 +120,6 @@
 <span class="r-in"><span><span class="va">dlist</span> <span class="op">&lt;-</span> <span class="fu"><a href="pat_setup_data.html">pat_setup_data</a></span><span class="op">(</span>.moorings <span class="op">=</span> <span class="va">dat_moorings</span>,</span></span>
 <span class="r-in"><span>                        .bathy <span class="op">=</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                        .lonlat <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`.bathy` name updated from 'layer' to 'bathy'.</span>
 <span class="r-in"><span><span class="co"># Prepare detection overlaps</span></span></span>
 <span class="r-in"><span><span class="co"># * Store detection overlaps in dlist$algorithms</span></span></span>
 <span class="r-in"><span><span class="co"># * It is expected in this slot by `pf_lik_ac()`</span></span></span>

@@ -126,11 +126,11 @@
 </ul></div>
     <div id="details">
     <h2>Details</h2>
-    <p>An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual. At each time step in such an algorithm, we evaluate the likelihood of acoustic observations (the presence or absence of detections at each operational receiver, accounting for receiver placement) given particle samples. A detection kernel is a spatial representation of the likelihood of a detection <em>around a specific receiver</em>. This typically declines with distance around a receiver, hence the default formulation of the <code>.ddetkernel</code> function. This function permits receiver-specific kernels, if required (but time-varying kernels are not currently supported.) Pre-calculating detection kernels is a potentially slow operation, especially for large and/or high-resolution grids (and we would like to improve this in future). However, this penalty is only required once and greatly improves the speed of downstream likelihood calculations in <code><a href="pf_lik.html">pf_lik_ac()</a></code> in <code><a href="pf_forward.html">pf_forward()</a></code>, which only needs to appropriately combine the relevant values at each time step.</p>
+    <p>An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual. At each time step in such an algorithm, we evaluate the likelihood of acoustic observations (the presence or absence of detections at each operational receiver, accounting for receiver placement) given particle samples. A detection kernel is a spatial representation of the likelihood of a detection <em>around a specific receiver</em>. This typically declines with distance around a receiver, hence the default formulation of the <code>.ddetkernel</code> function. This function permits receiver-specific kernels, if required (but time-varying kernels are not currently supported). Pre-calculating detection kernels is a potentially slow operation, especially for large and/or high-resolution grids (and we would like to improve this in future). However, this penalty is only required once and greatly improves the speed of downstream likelihood calculations in <code><a href="pf_lik.html">pf_lik_ac()</a></code> in <code><a href="pf_forward.html">pf_forward()</a></code>, which only needs to appropriately combine the relevant values at each time step.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index"><p>To implement such an algorithm, see:</p><ol><li><p><code><a href="pat_setup_data.html">pat_setup_data()</a></code> to set up datasets;</p></li>
+    <div class="dont-index"><p>To implement an AC*PF algorithm, see:</p><ol><li><p><code><a href="pat_setup_data.html">pat_setup_data()</a></code> to set up datasets;</p></li>
 <li><p><code>acs_setup_*()</code> functions to prepare layers required for likelihood calculations, i.e.:</p><ul><li><p><code><a href="acs_setup_detection_overlaps.html">acs_setup_detection_overlaps()</a></code>, which identifies detection overlaps;</p></li>
 <li><p><code><a href="acs_setup_detection_kernel.html">acs_setup_detection_kernel()</a></code>, which prepares a detection kernel;</p></li>
 <li><p><code>acs_setup_detection_kernels()</code>, which prepares detection kernels;</p></li>
@@ -168,13 +168,12 @@
 <span class="r-in"><span>                       .bathy <span class="op">=</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                       .lonlat <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `.moorings` coordinates coerced onto `.bathy` grid.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`.bathy` name updated from 'layer' to 'bathy'.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (1): Implement function using specified inputs</span></span></span>
 <span class="r-in"><span><span class="co"># Implement function</span></span></span>
 <span class="r-in"><span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu">acs_setup_detection_kernels</span><span class="op">(</span><span class="va">dlist</span>,</span></span>
 <span class="r-in"><span>                                 .ddetkernel <span class="op">=</span> <span class="va">acs_setup_detection_kernel</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::acs_setup_detection_kernels()` called @ 2024-01-10 18:12:30... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::acs_setup_detection_kernels()` called @ 2024-01-19 11:42:06... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting receiver-specific kernels (for detection)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting receiver-specific inverse kernels... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting area-wide kernels (for non-detection)... </span>
@@ -194,7 +193,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Background surfaces (3/4)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Inverse background surfaces (4/4)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Listing outputs ... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::acs_setup_detection_kernels()` call ended @ 2024-01-10 18:12:30 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::acs_setup_detection_kernels()` call ended @ 2024-01-19 11:42:06 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="co"># Examine list elements</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">k</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                               Length Class      Mode</span>

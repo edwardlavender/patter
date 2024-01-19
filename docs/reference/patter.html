@@ -152,11 +152,12 @@
 </ul><p><strong>To implement the backward pass (<code><a href="pf_backward_-times.html">pf_backward_*()</a></code>)</strong>, use:</p><ul><li><p><code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> to prune dead-ends;</p></li>
 <li><p><code><a href="pf_backward_killer_diagnostics.html">pf_backward_killer_diagnostics()</a></code> to summarise particle diagnostics;</p></li>
 <li><p><code>pf_backward_sampler()</code> to run the backward sampler;</p></li>
+</ul><p><strong>For convenience plotting functions</strong>, see:</p><ul><li><p><code><a href="pf_plot_history.html">pf_plot_history()</a></code> to plot particle histories;</p></li>
 </ul><p><strong>For common utility functions</strong>, see:</p><ul><li><p><code><a href="pf_files.html">pf_files()</a></code> to list particle-sample files;</p></li>
 <li><p><code><a href="pf_files.html">pf_files_size()</a></code> to measure file size;</p></li>
-</ul><p><strong>For downstream analyses</strong>, use:</p><ul><li><p><code><a href="pf_path.html">pf_path()</a></code> (and <code><a href="pf_path_pivot.html">pf_path_pivot()</a></code>) to reconstruct movement paths;</p></li>
-<li><p><code><a href="pf_coord.html">pf_coord()</a></code> to collate particle coordinates for mapping;</p></li>
-</ul><p><strong>For mapping utilisation distributions</strong>, use:</p><ul><li><p><code><a href="map_pou.html">map_pou()</a></code> to map probability-of-use;</p></li>
+</ul><p><strong>For movement-path reconstruction</strong>, use:</p><ul><li><p><code><a href="pf_path.html">pf_path()</a></code> (and <code><a href="pf_path_pivot.html">pf_path_pivot()</a></code>) to reconstruct movement paths;</p></li>
+</ul><p><strong>For mapping utilisation distributions</strong>, use:</p><ul><li><p><code><a href="pf_coord.html">pf_coord()</a></code> to collate particle coordinates for mapping;</p></li>
+<li><p><code><a href="map_pou.html">map_pou()</a></code> to map probability-of-use;</p></li>
 <li><p><code><a href="map_dens.html">map_dens()</a></code> to create smooth maps using <code>spatstat</code>, plus the supporting functions:</p><ul><li><p><code><a href="map_dens.html">as.im.SpatRaster()</a></code>, to convert <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code>s to pixel images;</p></li>
 <li><p><code><a href="map_dens.html">as.owin.SpatRaster()</a></code>, to convert  <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code>s to observation windows;</p></li>
 <li><p><code><a href="map_dens.html">as.owin.sf()</a></code>, to convert <code>sf</code> objects to observation windows;</p></li>

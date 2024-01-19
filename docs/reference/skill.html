@@ -113,7 +113,8 @@
 <li><p><code>skill_rmse()</code> computes root mean squared error.</p></li>
 <li><p><code>skill_R()</code> computes Spearman's rank correlation coefficient.</p></li>
 <li><p><code>skill_d()</code> computes the index of agreement.</p></li>
-</ul></div>
+</ul><p>These functions are not memory safe.</p>
+    </div>
     <div id="references">
     <h2>References</h2>
     <p>Lavender, E. et al. (2022). Benthic animal-borne sensors and citizen science combine to validate ocean modelling. Sci. Rep. 12: 16613. <a href="https://www.doi.org/1038/s41598-022-20254-z" class="external-link">https://www.doi.org/1038/s41598-022-20254-z</a></p>
@@ -143,15 +144,15 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Calculate skill metrics</span></span></span>
 <span class="r-in"><span><span class="fu">skill_mb</span><span class="op">(</span><span class="va">mod</span>, <span class="va">obs</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.001090368</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.001001526</span>
 <span class="r-in"><span><span class="fu">skill_me</span><span class="op">(</span><span class="va">mod</span>, <span class="va">obs</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.7974617</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.7987982</span>
 <span class="r-in"><span><span class="fu">skill_rmse</span><span class="op">(</span><span class="va">mod</span>, <span class="va">obs</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9993448</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.001157</span>
 <span class="r-in"><span><span class="fu">skill_R</span><span class="op">(</span><span class="va">mod</span>, <span class="va">obs</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.2746021</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.2712872</span>
 <span class="r-in"><span><span class="fu">skill_d</span><span class="op">(</span><span class="va">mod</span>, <span class="va">obs</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.3726866</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.3741001</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

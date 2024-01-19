@@ -73,6 +73,9 @@
     <loc>/reference/cl.html</loc>
   </url>
   <url>
+    <loc>/reference/cl_lapply.html</loc>
+  </url>
+  <url>
     <loc>/reference/coa.html</loc>
   </url>
   <url>
@@ -190,6 +193,9 @@
     <loc>/reference/pf_forward_diagnostics.html</loc>
   </url>
   <url>
+    <loc>/reference/pf_history.html</loc>
+  </url>
+  <url>
     <loc>/reference/pf_lik.html</loc>
   </url>
   <url>
@@ -209,6 +215,9 @@
   </url>
   <url>
     <loc>/reference/pf_path_pivot.html</loc>
+  </url>
+  <url>
+    <loc>/reference/pf_plot_history.html</loc>
   </url>
   <url>
     <loc>/reference/pf_propose.html</loc>

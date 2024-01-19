@@ -82,9 +82,9 @@
 <span>  .trial_kick <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  .trial_sampler_crit <span class="op">=</span> <span class="fl">10L</span>,</span>
 <span>  .trial_sampler <span class="op">=</span> <span class="fl">1L</span>,</span>
-<span>  .trial_revert_crit <span class="op">=</span> <span class="fl">5L</span>,</span>
+<span>  .trial_revert_crit <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  .trial_revert_steps <span class="op">=</span> <span class="fl">10L</span>,</span>
-<span>  .trial_revert <span class="op">=</span> <span class="fl">10L</span></span>
+<span>  .trial_revert <span class="op">=</span> <span class="fl">2L</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">pf_opt_record</span><span class="op">(</span>.save <span class="op">=</span> <span class="cn">FALSE</span>, .cols <span class="op">=</span> <span class="cn">NULL</span>, .sink <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
@@ -151,7 +151,7 @@
 </ul></li>
 <li><p>To reconstruct movement paths from particle samples, use <code><a href="pf_path.html">pf_path()</a></code>.</p></li>
 <li><p>To map emergent patterns of space use, use <code><a href="pf_coord.html">pf_coord()</a></code> plus a <code>map_*()</code> function, such as <code><a href="map_pou.html">map_pou()</a></code>, <code><a href="map_dens.html">map_dens()</a></code> and/or <code><a href="map_hr.html">map_hr</a></code><code>_()</code>.</p></li>
-<li><p>For additional utilities, see supporting <code>pf_*()</code> functions, such as <code><a href="pf_files.html">pf_files()</a></code> and <code><a href="pf_files.html">pf_files_size()</a></code>.</p></li>
+<li><p>For additional utilities, see supporting <code>pf_*()</code> functions, such as <code><a href="pf_plot_history.html">pf_plot_history()</a></code>, <code><a href="pf_files.html">pf_files()</a></code> and <code><a href="pf_files.html">pf_files_size()</a></code>.</p></li>
 </ul></div>
     </div>
     <div id="author">
@@ -181,13 +181,13 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $trial_revert_crit</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $trial_revert_steps</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $trial_revert</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu">pf_opt_trial</span><span class="op">(</span>.trial_kick_crit <span class="op">=</span> <span class="fl">10L</span>, .trial_kick <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $trial_origin_crit</span>
@@ -209,13 +209,13 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $trial_revert_crit</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $trial_revert_steps</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $trial_revert</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu">pf_opt_record</span><span class="op">(</span>.save <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $save</span>
