@@ -46,12 +46,12 @@ spatSampleDT <- function(.x, .spatcell = .x, .size = 1e6, .method = "random") {
 spatIntersect <- function(.x, .value = 1, .fun = NULL) {
   # Check inputs
   check_inherits(.x, "list")
+  # Permit (but drop) NULL elements in `.x`
+  .x <- list_compact(.x)
   check_inherits(.x[[1]], c("SpatRaster", "SpatVector"))
   if (!is.null(.value) & !is.null(.fun)) {
     abort("Either `.value` or `.fun` should be supplied.")
   }
-  # Permit (but drop) NULL elements in `.x`
-  .x <- list_compact(.x)
   # Handle one-length lists quickly
   if (length(.x) == 1L) {
     return(.x[[1]])
