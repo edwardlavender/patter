@@ -1,7 +1,7 @@
 #' @title PF: count particles
 #' @description This function counts particle (cell) samples. Its primary use is to process outputs from forward filter for [`pf_backward_sampler()`].
 #' @param .history Particle samples, provided in any format accepted by [`.pf_history_list()`]. Particle samples must contain the `cell_now` column.
-#' @param .cl,.cl_varlist,.cl_chunks Parallelisation options, passed to [`cl_lapply()`].
+#' @param .cl,.cl_varlist,.cl_chunk Parallelisation options, passed to [`cl_lapply()`].
 #' @param .record A named `list` of output options, from [`pf_opt_record()`].
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
@@ -14,7 +14,7 @@
 #' @export
 
 pf_count <- function(.history,
-                     .cl = NULL, .cl_varlist = NULL, .cl_chunks = TRUE,
+                     .cl = NULL, .cl_varlist = NULL, .cl_chunk = TRUE,
                      .record = pf_opt_record(),
                      .verbose = getOption("patter.verbose")) {
 
@@ -38,7 +38,7 @@ pf_count <- function(.history,
   .history <-
     cl_lapply(
       .x = seq_len(length(.history)),
-      .cl = .cl, .varlist = .cl_varlist, .chunk = .cl_chunks,
+      .cl = .cl, .varlist = .cl_varlist, .chunk = .cl_chunk,
       .fun = function(t) {
 
         # Count distinct cells

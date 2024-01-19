@@ -8,7 +8,7 @@ pf_count(
   .history,
   .cl = NULL,
   .cl_varlist = NULL,
-  .cl_chunks = TRUE,
+  .cl_chunk = TRUE,
   .record = pf_opt_record(),
   .verbose = getOption("patter.verbose")
 )
@@ -16,7 +16,7 @@ pf_count(
 \arguments{
 \item{.history}{Particle samples, provided in any format accepted by \code{\link[=.pf_history_list]{.pf_history_list()}}. Particle samples must contain the \code{cell_now} column.}
 
-\item{.cl, .cl_varlist, .cl_chunks}{Parallelisation options, passed to \code{\link[=cl_lapply]{cl_lapply()}}.}
+\item{.cl, .cl_varlist, .cl_chunk}{Parallelisation options, passed to \code{\link[=cl_lapply]{cl_lapply()}}.}
 
 \item{.record}{A named \code{list} of output options, from \code{\link[=pf_opt_record]{pf_opt_record()}}.}
 
