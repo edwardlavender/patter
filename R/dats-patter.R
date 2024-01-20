@@ -46,8 +46,9 @@
 dat_dlist <- function() {
   data <- system.file("extdata", "dat_dlist.rds",
                       package = "patter", mustWork = TRUE)
+  data <- readRDS(data)
   data$spatial$bathy <- terra::unwrap(data$spatial$bathy)
-  readRDS(data)
+  data
 }
 
 #' @rdname  datasets-algorithms
