@@ -4,6 +4,8 @@
 \alias{pf_history}
 \alias{.pf_history_list}
 \alias{.pf_history_read}
+\alias{.pf_history_write}
+\alias{.pf_history_cols}
 \alias{.pf_history_elm}
 \alias{.pf_history_dt}
 \title{PF: access particle histories}
@@ -11,6 +13,10 @@
 .pf_history_list(.history, ...)
 
 .pf_history_read(.history)
+
+.pf_history_write(.record)
+
+.pf_history_cols(.history, .record, .input_cols, .output_cols = NULL)
 
 .pf_history_elm(
   .history,
@@ -31,7 +37,7 @@
 \item A \code{list} of file paths (e.g., from \code{\link[=pf_files]{pf_files()}});
 }
 
-For \code{\link[=.pf_history_read]{.pf_history_read()}} and \code{\link[=.pf_history_elm]{.pf_history_elm()}}, \code{.history} should be a \code{list}.
+For \code{\link[=.pf_history_read]{.pf_history_read()}}, \code{\link[=.pf_history_elm]{.pf_history_elm()}} and \code{\link[=.pf_history_cols]{.pf_history_cols()}}, \code{.history} should be a \code{list}.
 
 All functions also silently accept (and return) \code{NULL}.}
 
@@ -42,7 +48,13 @@ All functions also silently accept (and return) \code{NULL}.}
 \item In \code{\link[=.pf_history_dt]{.pf_history_dt()}}: \code{...}  is passed to \code{\link[arrow:open_dataset]{arrow::open_dataset()}} if \code{.history} is a directory.
 }}
 
-\item{.elm, .read, .cols}{For \code{\link[=.pf_history_read]{.pf_history_read()}} and/or \code{\link[=.pf_history_elm]{.pf_history_elm()}}:
+\item{.record, .input_cols, .output_columns}{Additional arguments for \code{\link[=.pf_history_write]{.pf_history_write()}} and \code{\link[=.pf_history_cols]{.pf_history_cols()}}:
+\itemize{
+\item \code{.record} is a named \code{list} of output options, from \code{\link[=pf_opt_record]{pf_opt_record()}}.
+\item \code{.input_cols} and \code{.output_cols} are \code{character} vectors that define essential input and output columns;
+}}
+
+\item{.elm, .read, .cols}{Additional arguments for \code{\link[=.pf_history_elm]{.pf_history_elm()}}:
 \itemize{
 \item \code{.elm} is an \code{integer} that defines the \code{list} index.
 \item \code{.read} is a \code{logical} variable that defines whether or not to read particle samples from file.
@@ -55,7 +67,8 @@ All functions also silently accept (and return) \code{NULL}.}
 If \code{.history = NULL}, \code{NULL} is returned. Otherwise:
 \itemize{
 \item \code{\link[=.pf_history_list]{.pf_history_list()}} returns a list of \code{\link{data.table}}s (options 1 and 2) or file paths (options 3 and 4);
-\item \code{\link[=.pf_history_read]{.pf_history_read()}} return a \code{logical} variable;
+\item \code{\link[=.pf_history_read]{.pf_history_read()}} and \code{\link[=.pf_history_write]{.pf_history_write()}} each return a \code{logical} variable;
+\item \code{\link[=pf_history_cols]{pf_history_cols()}} returns a named \code{list};
 \item \code{\link[=.pf_history_elm]{.pf_history_elm()}} returns a \code{\link{data.table}} for particle samples for a single time step;
 \item \code{\link[=.pf_history_dt]{.pf_history_dt()}} returns a \code{\link{data.table}} or an \code{\link[arrow:Dataset]{arrow::FileSystemDataset}} (if \code{.history} is a directory and \code{.collect = FALSE}).
 }
@@ -65,6 +78,8 @@ These functions function access or collate particle histories.
 \itemize{
 \item \code{\link[=.pf_history_list]{.pf_history_list()}} \code{list}s particle histories or file pointers;
 \item \code{\link[=.pf_history_read]{.pf_history_read()}} distinguishes particle histories in memory versus on file;
+\item \code{\link[=.pf_history_write]{.pf_history_write()}} defines whether or not to write particle histories to file;
+\item \code{\link[=.pf_history_cols]{.pf_history_cols()}} validates input and output columns;
 \item \code{\link[=.pf_history_elm]{.pf_history_elm()}} accesses particle histories for a specific \code{list} element;
 \item \code{\link[=.pf_history_dt]{.pf_history_dt()}} collates particle histories into a single \code{\link{data.table}};
 }

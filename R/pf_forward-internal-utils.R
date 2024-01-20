@@ -55,10 +55,9 @@ NULL
 #' @keywords internal
 
 # Write files (particles) to output directory
-.pf_write_particles <- function(.particles, .sink, .write) {
+.pf_write_particles <- function(.particles, .sink, .filename, .write) {
   if (.write) {
-    file <- paste0(.particles$timestep[1], ".parquet")
-    arrow::write_parquet(.particles, sink = file.path(.sink, file))
+    arrow::write_parquet(.particles, sink = file.path(.sink, paste0(.filename, ".parquet")))
   }
 }
 
@@ -116,10 +115,15 @@ NULL
 
   #### Define wrapper functions
   .pf_write_particles_abbr <- function(.particles) {
-    .pf_write_particles(.particles = .particles, .sink = folder_history, .write = !is.null(.record$sink))
+    .pf_write_particles(.particles = .particles,
+                        .sink = folder_history,
+                        .filename = .particles$timestep[1],
+                        .write = !is.null(.record$sink))
   }
   .pf_write_diagnostics_abbr <- function(.diagnostics) {
-    .pf_write_diagnostics(.diagnostics = .diagnostics, .sink = folder_diagnostics, !is.null(.record$sink))
+    .pf_write_diagnostics(.diagnostics = .diagnostics,
+                          .sink = folder_diagnostics,
+                          .write = !is.null(.record$sink))
   }
 
   #### Collate outputs

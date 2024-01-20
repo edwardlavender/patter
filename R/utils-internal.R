@@ -123,6 +123,23 @@ cat_init <- function(.verbose) {
   }
 }
 
+#' @title Utilities: strings
+#' @name utils-str
+
+#' @rdname utils-str
+#' @keywords internal
+
+str_items <- function(.items, quo = "`") {
+  if (all(.items == "")) {
+    rlang::warn("`.items` is an empty string ('').")
+    out <- .items
+  } else {
+    collap <- paste0(quo, ", ", quo)
+    out <- paste0(quo, paste0(.items, collapse = collap), quo)
+  }
+  out
+}
+
 #' @title Utilities: list helpers
 #' @description These are internal list helpers in [`patter`].
 #' @author Edward Lavender

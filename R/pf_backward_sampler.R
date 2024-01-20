@@ -30,11 +30,13 @@ pf_count <- function(.history,
   on.exit(cat_log(call_end(.fun = "pf_count", .start = t_onset, .end = Sys.time())), add = TRUE)
 
   #### Set up loop
-  .history <- .pf_history_list(.history)
-  read     <- .pf_history_read(.history)
-  write    <- !is.null(.record$sink)
-  check_names(.pf_history_elm(.history, .elm = 1L, .read = read, .cols = .record$cols),
-              c("cell_now"))
+  .history  <- .pf_history_list(.history)
+  read      <- .pf_history_read(.history)
+  inout     <- .pf_history_cols(.history = .history, .record = .record,
+                                .input_cols = "cell_now", .output_cols = "n")
+  .record   <- inout$.record
+  read_cols <- inout$read_cols
+  write     <- .pf_history_write(.record)
 
   #### Process history
   .history <-
@@ -44,11 +46,11 @@ pf_count <- function(.history,
       .fun = function(t) {
 
         # Count distinct cells
-        d <-
+        pnow <-
           .pf_history_elm(.history,
                           .elm = t,
-                          .read = .pf_history_read(.history),
-                          .cols = .record$cols) |>
+                          .read = read,
+                          .cols = read_cols) |>
           lazy_dt() |>
           group_by(.data$cell_now) |>
           mutate(n = n()) |>
@@ -57,11 +59,10 @@ pf_count <- function(.history,
           as.data.table()
 
         # Record outputs
-        if (write) {
-          arrow::write_parquet(d, file.path(.record$sink, paste0(t, ".parquet")))
-        }
+        .pf_write_particles(.particles = pnow, .sink = .record$sink,
+                            .filename = t, .write = write)
         if (.record$save) {
-          return(d)
+          return(pnow)
         } else {
           return(NULL)
         }

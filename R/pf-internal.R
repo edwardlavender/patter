@@ -3,6 +3,8 @@
 #'
 #' * [`.pf_history_list()`] `list`s particle histories or file pointers;
 #' * [`.pf_history_read()`] distinguishes particle histories in memory versus on file;
+#' * [`.pf_history_write()`] defines whether or not to write particle histories to file;
+#' * [`.pf_history_cols()`] validates input and output columns;
 #' * [`.pf_history_elm()`] accesses particle histories for a specific `list` element;
 #' * [`.pf_history_dt()`] collates particle histories into a single [`data.table`];
 #'
@@ -12,7 +14,7 @@
 #' * A `character` string that defines the directory containing parquet files;
 #' * A `list` of file paths (e.g., from [`pf_files()`]);
 #'
-#' For [`.pf_history_read()`] and [`.pf_history_elm()`], `.history` should be a `list`.
+#' For [`.pf_history_read()`], [`.pf_history_elm()`] and [`.pf_history_cols()`], `.history` should be a `list`.
 #'
 #' All functions also silently accept (and return) `NULL`.
 #
@@ -21,10 +23,14 @@
 #' * In [`.pf_history_elm()`], `...` is passed to [`arrow::read_parquet()`] is `.read = TRUE`. `col_select` is controlled via `.cols` and not permitted;
 #' * In [`.pf_history_dt()`]: `...`  is passed to [`arrow::open_dataset()`] if `.history` is a directory.
 #'
-#' @param .elm,.read,.cols For [`.pf_history_read()`] and/or [`.pf_history_elm()`]:
+#' @param .elm,.read,.cols Additional arguments for [`.pf_history_elm()`]:
 #' * `.elm` is an `integer` that defines the `list` index.
 #' * `.read` is a `logical` variable that defines whether or not to read particle samples from file.
 #' * (optional) `.cols` is a `character` vector of columns to select, for [`.pf_history_elm()`].
+#'
+#' @param .record,.input_cols,.output_columns Additional arguments for [`.pf_history_write()`] and [`.pf_history_cols()`]:
+#' * `.record` is a named `list` of output options, from [`pf_opt_record()`].
+#' * `.input_cols` and `.output_cols` are `character` vectors that define essential input and output columns;
 #'
 #' @param .collect For [`.pf_history_dt()`], if `.history` is a directory, `.collect` is a `logical` variable that defines whether or not to collect the dataset in memory.
 #'
@@ -53,7 +59,8 @@
 #' If `.history = NULL`, `NULL` is returned. Otherwise:
 #'
 #' * [`.pf_history_list()`] returns a list of [`data.table`]s (options 1 and 2) or file paths (options 3 and 4);
-#' * [`.pf_history_read()`] return a `logical` variable;
+#' * [`.pf_history_read()`] and [`.pf_history_write()`] each return a `logical` variable;
+#' * [`pf_history_cols()`] returns a named `list`;
 #' * [`.pf_history_elm()`] returns a [`data.table`] for particle samples for a single time step;
 #' * [`.pf_history_dt()`] returns a [`data.table`] or an [`arrow::FileSystemDataset`] (if `.history` is a directory and `.collect = FALSE`).
 #'
@@ -146,6 +153,58 @@
 #' @rdname pf_history
 #' @keywords internal
 
+# Define whether or not to write particles to file
+.pf_history_write <- function(.record) {
+  if (is.null(.record$sink)) {
+    return(FALSE)
+  } else {
+    check_dir_exists(.record$sink)
+    check_dir_empty(.record$sink, action = warn)
+    return(TRUE)
+  }
+}
+
+#' @rdname pf_history
+#' @keywords internal
+
+# Validate input and output columns
+.pf_history_cols <- function(.history, .record, .input_cols, .output_cols = NULL) {
+
+  if (is.null(.history)) {
+    return(NULL)
+  }
+
+  # Define columns to read from .history and columns to return
+  read_cols <- NULL
+  if (!is.null(.record$cols)) {
+    # Define a subset of columns to read from .history
+    # * This includes essential input columns, as required for a specific function, plus .record$cols
+    read_cols <- unique(c(.input_cols, .record$cols))
+    # Define columns to return
+    # * This includes essential (computed) columns, like `n` in pf_count()
+    # * Plus requested return columns
+    if (!is.null(.output_cols)) {
+      bool_missing <- !(.output_cols %in% .record$cols)
+      if (any(bool_missing)) {
+        .cols_missing <- .output_cols[bool_missing]
+        warn("Missing essential column(s) included in `.record$cols` ({str_items(.cols_missing)}).",
+             .envir = environment())
+        .record$cols <- unique(c(.record$cols, .output_cols))
+      }
+    }
+  }
+
+  # Validate .history contains required columns
+  check_names(.pf_history_elm(.history, .elm = 1L, .cols = read_cols),
+              .input_cols)
+
+  # Return updated read and output options
+  list(.record = .record, read_cols = read_cols)
+}
+
+#' @rdname pf_history
+#' @keywords internal
+
 # Define particle samples for a specific .history element e.g., .history[[1]]
 # * This function expects a list and should follow .pf_history_list()
 .pf_history_elm <- function(.history,
@@ -170,7 +229,7 @@
       return(.history[[.elm]])
     } else {
       return(.history[[.elm]] |>
-               select(all_of(.cols)) |>
+               select(any_of(.cols)) |>
                as.data.table())
     }
   }

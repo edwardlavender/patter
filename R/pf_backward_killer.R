@@ -35,13 +35,14 @@ pf_backward_killer <- function(.history,
   on.exit(cat_log(call_end(.fun = "pf_backward_killer", .start = t_onset, .end = Sys.time())), add = TRUE)
 
   #### Set up loop
-  # History
-  .history <- .pf_history_list(.history)
-  read     <- .pf_history_read(.history)
-  check_names(.pf_history_elm(.history, .elm = 1L, .read = read, .cols = .record$cols),
-              c("cell_past", "cell_now"))
-  # Variables
-  write          <- !is.null(.record$sink)
+  .history  <- .pf_history_list(.history)
+  read      <- .pf_history_read(.history)
+  inout     <- .pf_history_cols(.history = .history, .record = .record,
+                                .input_cols = c("cell_past", "cell_now"))
+  .record   <- inout$.record
+  read_cols <- inout$read_cols
+  write     <- .pf_history_write(.record)
+
   # Define progress bar
   timestep_final <- length(.history)
   pb <- pb_init(.min = 0L, .max = timestep_final)
@@ -57,12 +58,12 @@ pf_backward_killer <- function(.history,
       if (t == timestep_final) {
         cat_log(paste0("... ... Reading `.history[[", timestep_final, "]]`..."))
         .history[[t]] <- arrow::read_parquet(.history[[t]],
-                                             col_select = .record$cols)
+                                             col_select = read_cols)
       }
       if (t > 1) {
         cat_log(paste0("... ... Reading `.history[[", t - 1L, "]]`..."))
         .history[[t - 1L]] <- arrow::read_parquet(.history[[t - 1L]],
-                                                  col_select = .record$cols)
+                                                  col_select = read_cols)
       }
     }
 
@@ -85,7 +86,8 @@ pf_backward_killer <- function(.history,
     cat_log(paste0("... ... Recording (cleaned) outputs for `.history[[", t, "]]`..."))
     .history[[t]] <- .pf_snapshot(.dt = .history[[t]], .save = .record$save,
                                   .select = !is.null(.record$cols), .cols = .record$cols)
-    .pf_write_particles(.particles = .history[[t]], .sink = .record$sink, .write = write)
+    .pf_write_particles(.particles = .history[[t]], .sink = .record$sink,
+                        .filename = t, .write = write)
     # Drop saved particles for current time step, if necessary
     if (!.record$save) {
       .history[[t]] <- NA

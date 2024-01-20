@@ -18,7 +18,7 @@
 \usage{
 .pf_dirs(.record)
 
-.pf_write_particles(.particles, .sink, .write)
+.pf_write_particles(.particles, .sink, .filename, .write)
 
 .pf_write_diagnostics(.diagnostics, .sink, .write)
 
