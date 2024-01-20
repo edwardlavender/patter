@@ -36,7 +36,8 @@ This function counts particle (cell) samples. Its primary use is to process outp
 # Define output options
 record <-
   pf_opt_record(.save = TRUE,
-              .cols = c("timestep", "cell_now", "x_now", "y_now", "n"))
+                .cols = c("timestep", "cell_now",
+                          "x_now", "y_now", "n"))
 
 #### Example (1): `pf_count()` accepts particle samples in the usual formats
 p <- pf_count(dat_pff(), .record = record)
