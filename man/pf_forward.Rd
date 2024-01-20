@@ -25,7 +25,13 @@ pf_forward(
 \arguments{
 \item{.obs}{A \code{\link{data.table}} defining the timeline and associated observations, typically from \code{\link[=pf_setup_obs]{pf_setup_obs()}}.}
 
-\item{.dlist}{A \code{named} list of data and parameters required propose locations and calculate likelihoods (see \code{\link[=pat_setup_data]{pat_setup_data()}}, \code{\link{pf_lik}} and \code{\link{pf_propose}}). At a minimum, this function requires \code{.dlist$spatial$bathy}. An \code{.dlist$spatial$origin} \code{\link{SpatRaster}} can be included to define the origin. Additional elements required by \code{.likelihood},\code{.rpropose} and \code{.dpropose} functions should be included (see below).}
+\item{.dlist}{A \code{named} list of data and parameters required propose locations and calculate likelihoods (see \code{\link[=pat_setup_data]{pat_setup_data()}}, \code{\link{pf_lik}} and \code{\link{pf_propose}}). This function requires:
+\itemize{
+\item \code{.dlist$spatial$bathy}
+\item (optional) \code{.dlist$spatial$origin}, a \code{\link{SpatRaster}} used to define the origin.
+\item \code{.dlist$pars$lonlat} (required by the default \code{.rpropose} and \code{.dpropose} arguments).
+\item Any additional elements required by \code{.likelihood},\code{.rpropose} and \code{.dpropose} functions(see below).
+}}
 
 \item{.rpropose, .dpropose, .rargs, .dargs}{Proposal functions and associated argument lists (see \code{\link{pf_propose}}).
 \itemize{
