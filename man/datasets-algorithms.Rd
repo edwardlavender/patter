@@ -2,6 +2,7 @@
 % Please edit documentation in R/dats-patter.R
 \name{datasets-algorithms}
 \alias{datasets-algorithms}
+\alias{dat_dlist}
 \alias{dat_obs}
 \alias{dat_pff}
 \alias{dat_pff_src}
@@ -14,6 +15,8 @@
 For full details on the algorithm parameters used to generate these datasets, see \url{https://github.com/edwardlavender/patter/blob/main/data-raw/003-add-data-algorithms.R}.
 }
 \usage{
+dat_dlist()
+
 dat_obs()
 
 dat_pff()
@@ -39,6 +42,7 @@ These functions load example outputs from key \code{\link{patter}} functions, in
 }
 \details{
 \itemize{
+\item \code{\link[=dat_dlist]{dat_dlist()}} reads eample output from \code{\link[=pat_setup_data]{pat_setup_data()}};
 \item \code{\link[=dat_pff]{dat_pff()}} reads an example output from \code{\link[=pf_setup_obs]{pf_setup_obs()}};
 \item \code{\link[=dat_pff]{dat_pff()}} reads an example output from \code{\link[=pf_forward]{pf_forward()}};
 \item \code{\link[=dat_pff_src]{dat_pff_src()}} is the directory in which example \code{.parquet} files from \code{\link[=pf_forward]{pf_forward()}} are stored;
@@ -50,6 +54,7 @@ These functions load example outputs from key \code{\link{patter}} functions, in
 }
 \examples{
 # Load inbuilt datasets
+dat_dlist() |> summary()
 dat_obs() |> dplyr::glimpse()
 dat_pff() |> summary()
 dat_pfbk() |> summary()

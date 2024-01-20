@@ -113,13 +113,20 @@ out_pou <- terra::wrap(out_pou)
 #### Collate datasets
 # Update names
 dat_obs   <- obs
+dat_dlist <- dlist
 dat_coa   <- out_coa
 dat_pff   <- out_pff
 dat_pfbk  <- out_pfbk
 dat_pfp   <- out_pfp
+# Update contents
+summary(dat_dlist)
+dat_dlist$spatial$bathy <- terra::wrap(dat_dlist$spatial$bathy)
+dat_dlist$algorithm$detection_overlaps <- NULL
+dat_dlist$algorithm$detection_kernels  <- NULL
 # Collate datasets
 datasets <-
   list(dat_obs = dat_obs,
+       dat_dlist = dat_dlist,
        dat_coa = dat_coa,
        dat_pff = dat_pff,
        dat_pfbk = dat_pfbk,

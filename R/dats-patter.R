@@ -5,6 +5,7 @@
 #' @param .folder For [`dat_pff_src()`], `.folder` is `NULL` or a `character` that defines the name of the folder in which outputs are stored (`history` for particle samples or `diagnostics` for particle diagnostics). `NULL` returns the path to the directory containing both `history/` and `diagnostics/`. See the documentation for [`pf_forward()`] and [`pf_particles-class`] objects for further details.
 #'
 #' @details
+#' * [`dat_dlist()`] reads example output from [`pat_setup_data()`];
 #' * [`dat_pff()`] reads an example output from [`pf_setup_obs()`];
 #' * [`dat_pff()`] reads an example output from [`pf_forward()`];
 #' * [`dat_pff_src()`] is the directory in which example `.parquet` files from [`pf_forward()`] are stored;
@@ -15,6 +16,7 @@
 #'
 #' @examples
 #' # Load inbuilt datasets
+#' dat_dlist() |> summary()
 #' dat_obs() |> dplyr::glimpse()
 #' dat_pff() |> summary()
 #' dat_pfbk() |> summary()
@@ -37,6 +39,16 @@
 #' @inherit pf_forward seealso
 #' @author Edward Lavender
 #' @name datasets-algorithms
+
+#' @rdname  datasets-algorithms
+#' @export
+
+dat_dlist <- function() {
+  data <- system.file("extdata", "dat_dlist.rds",
+                      package = "patter", mustWork = TRUE)
+  data$spatial$bathy <- terra::unwrap(data$spatial$bathy)
+  readRDS(data)
+}
 
 #' @rdname  datasets-algorithms
 #' @export
