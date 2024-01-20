@@ -210,9 +210,7 @@ pf_forward <- function(.obs,
 
   #### Define startup objects (e.g., empty output lists)
   cat_log("... Setting up simulation...")
-  startup <- .pf_startup(.obs = .obs,
-                         .dlist = .dlist,
-                         .rerun = .rerun,
+  startup <- .pf_startup(.rerun = .rerun,
                          .record = .record)
   # Arguments
   # * Define these options outside of .pf_startup() so that

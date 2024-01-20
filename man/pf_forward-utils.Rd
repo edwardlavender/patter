@@ -22,7 +22,7 @@
 
 .pf_write_diagnostics(.diagnostics, .sink, .write)
 
-.pf_startup(.obs, .dlist, .rargs, .dargs, .rerun, .record)
+.pf_startup(.rerun, .record)
 
 .pf_snapshot(.dt, .save, .select, .cols)
 

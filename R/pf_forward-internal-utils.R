@@ -80,7 +80,7 @@ NULL
 #' @keywords internal
 
 # Implement startup checks and operations
-.pf_startup <- function(.obs, .dlist, .rargs, .dargs, .rerun, .record) {
+.pf_startup <- function(.rerun, .record) {
 
   #### Use .rerun, if specified
   # Currently, we assume that input arguments (e.g., .record_opts) are the same on reruns
