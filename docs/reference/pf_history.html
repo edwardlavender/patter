@@ -88,7 +88,13 @@
 <span></span>
 <span><span class="fu">.pf_history_read</span><span class="op">(</span><span class="va">.history</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.pf_history_elm</span><span class="op">(</span><span class="va">.history</span>, <span class="va">.elm</span>, .read <span class="op">=</span> <span class="fu">.pf_history_read</span><span class="op">(</span><span class="va">.history</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">.pf_history_elm</span><span class="op">(</span></span>
+<span>  <span class="va">.history</span>,</span>
+<span>  <span class="va">.elm</span>,</span>
+<span>  .read <span class="op">=</span> <span class="fu">.pf_history_read</span><span class="op">(</span><span class="va">.history</span><span class="op">)</span>,</span>
+<span>  .cols <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">.pf_history_dt</span><span class="op">(</span><span class="va">.history</span>, <span class="va">...</span>, .collect <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -106,14 +112,15 @@
 
 <dt>...</dt>
 <dd><p>Additional arguments:</p><ul><li><p>In <code>.pf_history_list()</code>, <code>...</code> is passed to <code><a href="pf_files.html">pf_files()</a></code> if <code>.history</code> is a directory;</p></li>
-<li><p>In <code>.pf_history_elm()</code>, <code>...</code> is passed to <code><a href="https://arrow.apache.org/docs/r/reference/read_parquet.html" class="external-link">arrow::read_parquet()</a></code> is <code>.read = TRUE</code>;</p></li>
+<li><p>In <code>.pf_history_elm()</code>, <code>...</code> is passed to <code><a href="https://arrow.apache.org/docs/r/reference/read_parquet.html" class="external-link">arrow::read_parquet()</a></code> is <code>.read = TRUE</code>. <code>col_select</code> is controlled via <code>.cols</code> and not permitted;</p></li>
 <li><p>In <code>.pf_history_dt()</code>: <code>...</code>  is passed to <code><a href="https://arrow.apache.org/docs/r/reference/open_dataset.html" class="external-link">arrow::open_dataset()</a></code> if <code>.history</code> is a directory.</p></li>
 </ul></dd>
 
 
-<dt>.elm, .read</dt>
-<dd><p>For <code>.pf_history_read()</code> and <code>.pf_history_elm()</code>:</p><ul><li><p><code>.elm</code> is an <code>integer</code> that defines the <code>list</code> index.</p></li>
+<dt>.elm, .read, .cols</dt>
+<dd><p>For <code>.pf_history_read()</code> and/or <code>.pf_history_elm()</code>:</p><ul><li><p><code>.elm</code> is an <code>integer</code> that defines the <code>list</code> index.</p></li>
 <li><p><code>.read</code> is a <code>logical</code> variable that defines whether or not to read particle samples from file.</p></li>
+<li><p>(optional) <code>.cols</code> is a <code>character</code> vector of columns to select, for <code>.pf_history_elm()</code>.</p></li>
 </ul></dd>
 
 
