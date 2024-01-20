@@ -6,7 +6,7 @@ mp4s   <- file.path(con, "mp4")
 dir.create(frames, recursive = TRUE)
 dir.create(mp4s, recursive = TRUE)
 # Define data list
-dlist <- pat_setup_data(.bathy = dat_gebco())
+dlist <- dat_dlist()
 
 #### Example (1): Plot selected samples (from the forward run)
 # Use particles in memory

@@ -22,11 +22,11 @@
 #'
 #' @examples
 #' dlist <- pat_setup_data(.acoustics = dat_acoustics,
-#'                       .services = NULL,
-#'                       .archival = dat_archival,
-#'                       .moorings = dat_moorings,
-#'                       .bathy = dat_gebco(),
-#'                       .lonlat = FALSE)
+#'                         .services = NULL,
+#'                         .archival = dat_archival,
+#'                         .moorings = dat_moorings,
+#'                         .bathy = dat_gebco(),
+#'                         .lonlat = FALSE)
 #' summary(dlist)
 #'
 #' @author Edward Lavender

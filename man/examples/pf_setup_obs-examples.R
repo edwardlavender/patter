@@ -5,7 +5,7 @@ arc  <- dat_archival[dat_archival$individual_id == 25, ]
 # For example speed, focus on a subset of data
 acc <- acc[as.Date(timestamp) == as.Date("2016-03-17")]
 arc <- arc[as.Date(timestamp) == as.Date("2016-03-17")]
-# Setup datasets as usual
+# Set up data list(see `?pat_setup_data()`)
 dlist     <- pat_setup_data(.acoustics = acc,
                             .moorings = dat_moorings,
                             .archival = arc,

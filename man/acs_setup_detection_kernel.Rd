@@ -40,9 +40,7 @@ An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic 
 }
 
 \examples{
-dlist <- pat_setup_data(.moorings = dat_moorings,
-                        .bathy = dat_gebco(),
-                        .lonlat = FALSE)
+dlist <- dat_dlist()
 m <- dlist$data$moorings[1, ]
 b <- dlist$spatial$bathy
 k <- acs_setup_detection_kernel(m, b)

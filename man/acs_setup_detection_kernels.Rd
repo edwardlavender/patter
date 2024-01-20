@@ -74,9 +74,9 @@ s <- data.table(receiver_id = c(3, 5),
                 service_end = as.Date(c("2016-01-01", "2016-01-01")))
 # Set up data list as usual
 dlist <- pat_setup_data(.moorings = m,
-                       .services = s,
-                       .bathy = dat_gebco(),
-                       .lonlat = FALSE)
+                        .services = s,
+                        .bathy = dat_gebco(),
+                        .lonlat = FALSE)
 
 #### Example (1): Implement function using specified inputs
 # Implement function

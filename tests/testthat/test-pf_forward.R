@@ -6,16 +6,9 @@ test_that("pf_forward() dot handling", {
   require(dplyr, warn.conflicts = FALSE)
 
   #### Set up forward simulation
-  # Select example acoustic & archival datasets
-  acc <- dat_acoustics[individual_id == dat_acoustics$individual_id[1], ]
-  arc <- dat_archival[individual_id == acc$individual_id[1], ]
-  # Setup data list
-  dlist <- pat_setup_data(.acoustics = acc,
-                          .archival = arc,
-                          .moorings = dat_moorings,
-                          .bathy = dat_gebco(),
-                          .lonlat = FALSE)
-  # Setup AC* algorithm layers
+  # Set up data list
+  dlist <- dat_dlist()
+  # Add AC* algorithm layers
   dlist$algorithm$detection_overlaps <- acs_setup_detection_overlaps(dlist)
   dlist$algorithm$detection_kernels  <- acs_setup_detection_kernels(dlist)
   # Set up observations

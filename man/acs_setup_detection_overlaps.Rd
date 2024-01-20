@@ -27,10 +27,8 @@ In this function, receiver deployments that overlap in time (accounting for depl
 This function replaces \href{https://edwardlavender.github.io/flapper/reference/get_detection_containers_overlap.html}{\code{flapper::get_detection_containers_overlaps()}}.
 }
 \examples{
-# Set up data
-dlist <- pat_setup_data(.moorings = dat_moorings,
-                        .bathy = dat_gebco(),
-                        .lonlat = FALSE)
+# Set up data list(see `?pat_setup_data()`)
+dlist <- dat_dlist()
 # Prepare detection overlaps
 # * Store detection overlaps in dlist$algorithms
 # * It is expected in this slot by `pf_lik_ac()`

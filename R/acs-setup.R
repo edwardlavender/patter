@@ -14,10 +14,8 @@
 #' @return The function returns a nested `list`, with one element for all integers from `1:max(.moorings$receiver_id)`. Any elements that do not correspond to receivers contain a `NULL` element. List elements that correspond to receivers contain a `NULL` or a `list` that defines, for each deployment date with overlapping receiver(s), a vector of overlapping receiver(s).
 #'
 #' @examples
-#' # Set up data
-#' dlist <- pat_setup_data(.moorings = dat_moorings,
-#'                         .bathy = dat_gebco(),
-#'                         .lonlat = FALSE)
+#' # Set up data list(see `?pat_setup_data()`)
+#' dlist <- dat_dlist()
 #' # Prepare detection overlaps
 #' # * Store detection overlaps in dlist$algorithms
 #' # * It is expected in this slot by `pf_lik_ac()`
@@ -176,9 +174,7 @@ acs_setup_detection_overlaps <- function(.dlist) {
 #' @return The function returns a [`SpatRaster`] that defines the detection kernel around a specific receiver.
 #'
 #' @examples
-#' dlist <- pat_setup_data(.moorings = dat_moorings,
-#'                         .bathy = dat_gebco(),
-#'                         .lonlat = FALSE)
+#' dlist <- dat_dlist()
 #' m <- dlist$data$moorings[1, ]
 #' b <- dlist$spatial$bathy
 #' k <- acs_setup_detection_kernel(m, b)
