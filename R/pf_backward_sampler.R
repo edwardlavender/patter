@@ -10,6 +10,9 @@
 #'
 #' @return The function returns a [`pf_particles-class`] object.
 #'
+#' @example man/examples/pf_count-examples.R
+#'
+#' @inherit pf_forward seealso
 #' @author Edward Lavender
 #' @export
 

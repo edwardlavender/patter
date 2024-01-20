@@ -174,12 +174,17 @@
     return(NULL)
   }
 
+  # Read .history[[1]] (for validation)
+  pnow <- .pf_history_elm(.history, .elm = 1L)
+
   # Define columns to read from .history and columns to return
   read_cols <- NULL
   if (!is.null(.record$cols)) {
     # Define a subset of columns to read from .history
-    # * This includes essential input columns, as required for a specific function, plus .record$cols
-    read_cols <- unique(c(.input_cols, .record$cols))
+    # * This includes essential input columns, as required for a specific function
+    # * Plus .record$cols (if available)
+    # * (We can only select available columns in arrow::read_parquet())
+    read_cols <- unique(c(.input_cols, .record$cols[.record$cols %in% colnames(pnow)]))
     # Define columns to return
     # * This includes essential (computed) columns, like `n` in pf_count()
     # * Plus requested return columns
@@ -194,9 +199,10 @@
     }
   }
 
-  # Validate .history contains required columns
-  check_names(.pf_history_elm(.history, .elm = 1L, .cols = read_cols),
-              .input_cols)
+  # Validate history[[t]]
+  if (!is.null(read_cols)) {
+    check_names(pnow, read_cols)
+  }
 
   # Return updated read and output options
   list(.record = .record, read_cols = read_cols)

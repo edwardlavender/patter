@@ -31,6 +31,57 @@ This function counts particle (cell) samples. Its primary use is to process outp
 \details{
 \code{\link[=pf_count]{pf_count()}} iterates over time steps, counts the number of copies of each cell and saves a \code{\link{data.table}} of counts in memory and/or writes them to file for \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}. This is designed to improve speed in \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}.
 }
+\examples{
+#### Set up
+# Define output options
+record <-
+  pf_opt_record(.save = TRUE,
+              .cols = c("timestep", "cell_now", "x_now", "y_now", "n"))
+
+#### Example (1): `pf_count()` accepts particle samples in the usual formats
+p <- pf_count(dat_pff(), .record = record)
+p <- pf_count(dat_pff()$history, .record = record)
+p <- pf_count(dat_pff_src(), .record = record)
+p <- pf_count(pf_files(dat_pff_src()), .record = record)
+# The function returns a ?`pf_particles-class` object
+summary(p)
+# This includes particle counts for each time step
+head(p$history[[1]])
+head(p$history[[2]]) # etc.
+# And a record of algorithm timings
+p$time
+
+#### Example (2): Use a cluster
+# This is only likely to be beneficial for long time series
+p <- pf_count(dat_pff(),
+              .record = record,
+              .cl = 2L)
+p <- pf_count(dat_pff(),
+              .record = record,
+              .cl = parallel::makeCluster(2L))
+}
+\seealso{
+The forward filtering--backward sampling algorithm samples locations (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
+\itemize{
+\item To set up data, use \code{\link[=pat_setup_data]{pat_setup_data()}}.
+\item \code{\link[=pf_forward]{pf_forward()}} implements the forward filter:
+\itemize{
+\item To set up an observations timeline, use \code{\link[=pf_setup_obs]{pf_setup_obs()}}.
+\item For proposal (movement) models, see \code{\link{pf_propose}}.
+\item For likelihood functions, to evaluate the likelihood of the data at proposal locations, see \code{\link{pf_lik}}.
+\item For sampling functions, to (re)sample plausible proposal locations, see \code{\link{pf_sample}}.
+\item For tuning parameters, see \code{\link{pf_opt}}.
+}
+\item \code{\link[=pf_backward_*]{pf_backward_*()}} refines outputs from the forward filter:
+\itemize{
+\item \code{\link[=pf_backward_killer]{pf_backward_killer()}} removes dead-ends;
+\item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implements the backward sampler;
+}
+\item To reconstruct movement paths from particle samples, use \code{\link[=pf_path]{pf_path()}}.
+\item To map emergent patterns of space use, use \code{\link[=pf_coord]{pf_coord()}} plus a \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()}.
+\item For additional utilities, see supporting \verb{pf_*()} functions, such as \code{\link[=pf_plot_history]{pf_plot_history()}}, \code{\link[=pf_files]{pf_files()}} and \code{\link[=pf_files_size]{pf_files_size()}}.
+}
+}
 \author{
 Edward Lavender
 }
