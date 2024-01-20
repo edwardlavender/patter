@@ -68,7 +68,7 @@ If \code{.history = NULL}, \code{NULL} is returned. Otherwise:
 \itemize{
 \item \code{\link[=.pf_history_list]{.pf_history_list()}} returns a list of \code{\link{data.table}}s (options 1 and 2) or file paths (options 3 and 4);
 \item \code{\link[=.pf_history_read]{.pf_history_read()}} and \code{\link[=.pf_history_write]{.pf_history_write()}} each return a \code{logical} variable;
-\item \code{\link[=pf_history_cols]{pf_history_cols()}} returns a named \code{list};
+\item \code{\link[=.pf_history_cols]{.pf_history_cols()}} returns a named \code{list};
 \item \code{\link[=.pf_history_elm]{.pf_history_elm()}} returns a \code{\link{data.table}} for particle samples for a single time step;
 \item \code{\link[=.pf_history_dt]{.pf_history_dt()}} returns a \code{\link{data.table}} or an \code{\link[arrow:Dataset]{arrow::FileSystemDataset}} (if \code{.history} is a directory and \code{.collect = FALSE}).
 }

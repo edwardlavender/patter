@@ -60,7 +60,7 @@
 #'
 #' * [`.pf_history_list()`] returns a list of [`data.table`]s (options 1 and 2) or file paths (options 3 and 4);
 #' * [`.pf_history_read()`] and [`.pf_history_write()`] each return a `logical` variable;
-#' * [`pf_history_cols()`] returns a named `list`;
+#' * [`.pf_history_cols()`] returns a named `list`;
 #' * [`.pf_history_elm()`] returns a [`data.table`] for particle samples for a single time step;
 #' * [`.pf_history_dt()`] returns a [`data.table`] or an [`arrow::FileSystemDataset`] (if `.history` is a directory and `.collect = FALSE`).
 #'
