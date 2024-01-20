@@ -192,6 +192,7 @@
 #' @importFrom dplyr ungroup
 #' @importFrom dplyr distinct
 #' @importFrom dplyr slice
+#' @importFrom dplyr slice_sample
 #' @importFrom dplyr arrange
 #' @importFrom dplyr select
 #' @importFrom dplyr any_of
