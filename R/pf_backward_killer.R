@@ -124,6 +124,8 @@ pf_backward_killer <- function(.history,
 pf_backward_killer_diagnostics <- function(.history, ...) {
   .history |>
     .pf_history_dt(..., .collect = TRUE) |>
+    add_col_real(.col = "lik") |>
+    lazy_dt() |>
     group_by(.data$timestep) |>
     summarise(timestep = .data$timestep[1],
               n = n(),
