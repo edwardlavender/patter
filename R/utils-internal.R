@@ -166,14 +166,30 @@ list_merge <- function(...) {
   Reduce(list_modify, x = lists, init = list())
 }
 
-#' @title Utilities: column products
-#' @description This function calculates column products for each row in a [`matrix`].
-#' @param .data A [`matrix`].
-#' @param .cols A vector that defines the columns in `.data` to multiply.
-#' @return The function returns a `numeric` vector.
+#' @title Utilities: data helpers
+#' @description These are internal helpers for data structures (such as [`.data.table`]s and related objects) in [`patter`].
 #' @author Edward Lavender
+#' @name utils-dt
+
+#' @rdname utils-dt
 #' @keywords internal
 
+# Add missing columns
+# * .data A `data.table` or similar.
+# * .col A `character` string.
+add_col_real <- function(.data, .col) {
+  if (!rlang::has_name(.data, .col)) {
+    .data[[.col]] <- NA_real_
+  }
+  .data
+}
+
+#' @rdname utils-dt
+#' @keywords internal
+
+# Calculate column products for each row in a [`matrix`].
+# * .data A [`matrix`].
+# * .cols A vector that defines the columns in `.data` to multiply.
 colProds.matrix <- function(.data, .cols = seq_col(.data)) {
   if (length(.cols) == 1L) {
     return(.data[, .cols])
