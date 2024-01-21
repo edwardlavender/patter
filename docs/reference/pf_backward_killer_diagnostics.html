@@ -104,7 +104,7 @@
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index">
-<ul><li><p><code><a href="pf_forward.html">pf_forward()</a></code>, <code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> and <code>pf_backward_sampler()</code> implement the forward simulation and the backward pass;</p></li>
+<ul><li><p><code><a href="pf_forward.html">pf_forward()</a></code>, <code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> and <code><a href="pf_backward_sampler.html">pf_backward_sampler()</a></code> implement the forward simulation and the backward pass;</p></li>
 <li><p><code><a href="pf_forward_diagnostics.html">pf_forward_diagnostics()</a></code> and <code>pf_backward_killer_diagnostics()</code> collect diagnostics;</p></li>
 <li><p><code><a href="pf_diag.html">.pf_diag</a></code><code>_()</code> functions are internal routines that calculate diagnostic statistics;</p></li>
 </ul></div>
@@ -120,17 +120,17 @@
 <span class="r-in"><span><span class="va">diag</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_pfbk</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">pf_backward_killer_diagnostics</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">diag</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    timestep  n n_u        ess</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:        1 49  17 0.07211279</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:        2 65  13 0.04819651</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:        3 60  16 0.05545625</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:        4 56  17 0.05488710</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:        5 59  15 0.07538771</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:        6 60  13 0.05712730</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:        1 43  23 0.10513853</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:        2 68  16 0.04665253</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:        3 68  15 0.04481973</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:        4 45  15 0.06703600</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:        5 59  18 0.06964210</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:        6 60  20 0.06085620</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (2): Calculate diagnostics from parquet files</span></span></span>
 <span class="r-in"><span><span class="va">pfb_folder</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_pfbk_src</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">diag_2</span> <span class="op">&lt;-</span> <span class="fu">pf_backward_killer_diagnostics</span><span class="op">(</span><span class="va">pfb_folder</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">diag</span>, <span class="va">diag_2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isTRUE</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">diag</span>, <span class="va">diag_2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (3): Analyse diagnostics</span></span></span>
 <span class="r-in"><span><span class="co"># Define helper function</span></span></span>

@@ -164,16 +164,16 @@
 <span class="r-in"><span>                service_end <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2016-01-01"</span>, <span class="st">"2016-01-01"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Set up data list as usual</span></span></span>
 <span class="r-in"><span><span class="va">dlist</span> <span class="op">&lt;-</span> <span class="fu"><a href="pat_setup_data.html">pat_setup_data</a></span><span class="op">(</span>.moorings <span class="op">=</span> <span class="va">m</span>,</span></span>
-<span class="r-in"><span>                       .services <span class="op">=</span> <span class="va">s</span>,</span></span>
-<span class="r-in"><span>                       .bathy <span class="op">=</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                       .lonlat <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                        .services <span class="op">=</span> <span class="va">s</span>,</span></span>
+<span class="r-in"><span>                        .bathy <span class="op">=</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                        .lonlat <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `.moorings` coordinates coerced onto `.bathy` grid.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (1): Implement function using specified inputs</span></span></span>
 <span class="r-in"><span><span class="co"># Implement function</span></span></span>
 <span class="r-in"><span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu">acs_setup_detection_kernels</span><span class="op">(</span><span class="va">dlist</span>,</span></span>
 <span class="r-in"><span>                                 .ddetkernel <span class="op">=</span> <span class="va">acs_setup_detection_kernel</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::acs_setup_detection_kernels()` called @ 2024-01-20 09:14:40... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::acs_setup_detection_kernels()` called @ 2024-01-21 13:33:04... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting receiver-specific kernels (for detection)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting receiver-specific inverse kernels... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting area-wide kernels (for non-detection)... </span>
@@ -193,7 +193,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Background surfaces (3/4)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Inverse background surfaces (4/4)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Listing outputs ... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::acs_setup_detection_kernels()` call ended @ 2024-01-20 09:14:41 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::acs_setup_detection_kernels()` call ended @ 2024-01-21 13:33:04 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="co"># Examine list elements</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">k</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                               Length Class      Mode</span>

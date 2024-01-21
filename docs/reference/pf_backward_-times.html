@@ -77,7 +77,7 @@ See pf_backward_killer_diagnostics() to compare particle diagnostics for the two
 
     <div class="ref-description">
     <p>The forward filtering--backward sampling algorithm implemented by <code><a href="patter.html">patter</a></code> that reconstructs animal movements in passive acoustic telemetry systems comprises a forward filter and a backward pass. The forward filter runs a simulation forwards in time, sampling locations (particles) that are consistent with the data up to and including each time point and a movement model (see <code><a href="pf_forward.html">pf_forward()</a></code>). The backward pass refines outputs from the forward filter. <code><a href="patter.html">patter</a></code> provides two options for the backward pass:</p><ul><li><p><code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> prunes 'dead-ends' from the time series. This function is simple but fast.</p></li>
-<li><p><code>pf_backward_sampler()</code> implements a backward sampler. This function samples from the joint distribution of particles, given all of the data---both from the past and the future. This is much more expensive.</p></li>
+<li><p><code><a href="pf_backward_sampler.html">pf_backward_sampler()</a></code> implements a backward sampler. This function samples from the joint distribution of particles, given all of the data---both from the past and the future. This is much more expensive.</p></li>
 </ul><p>See <code><a href="pf_backward_killer_diagnostics.html">pf_backward_killer_diagnostics()</a></code> to compare particle diagnostics for the two approaches.</p>
     </div>
 
@@ -98,7 +98,7 @@ See pf_backward_killer_diagnostics() to compare particle diagnostics for the two
 <li><p>For tuning parameters, see <code><a href="pf_opt.html">pf_opt</a></code>.</p></li>
 </ul></li>
 <li><p><code>pf_backward_*()</code> refines outputs from the forward filter:</p><ul><li><p><code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> removes dead-ends;</p></li>
-<li><p><code>pf_backward_sampler()</code> implements the backward sampler;</p></li>
+<li><p><code><a href="pf_backward_sampler.html">pf_backward_sampler()</a></code> implements the backward sampler;</p></li>
 </ul></li>
 <li><p>To reconstruct movement paths from particle samples, use <code><a href="pf_path.html">pf_path()</a></code>.</p></li>
 <li><p>To map emergent patterns of space use, use <code><a href="pf_coord.html">pf_coord()</a></code> plus a <code>map_*()</code> function, such as <code><a href="map_pou.html">map_pou()</a></code>, <code><a href="map_dens.html">map_dens()</a></code> and/or <code><a href="map_hr.html">map_hr</a></code><code>_()</code>.</p></li>

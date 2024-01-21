@@ -172,6 +172,9 @@
     <loc>/reference/pf_backward_killer_diagnostics.html</loc>
   </url>
   <url>
+    <loc>/reference/pf_backward_sampler.html</loc>
+  </url>
+  <url>
     <loc>/reference/pf_check.html</loc>
   </url>
   <url>
@@ -272,6 +275,9 @@
   </url>
   <url>
     <loc>/reference/spatial_helpers.html</loc>
+  </url>
+  <url>
+    <loc>/reference/utils-dt.html</loc>
   </url>
   <url>
     <loc>/reference/utils-lists.html</loc>

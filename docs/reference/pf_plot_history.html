@@ -141,7 +141,7 @@
 <li><p>For tuning parameters, see <code><a href="pf_opt.html">pf_opt</a></code>.</p></li>
 </ul></li>
 <li><p><code><a href="pf_backward_-times.html">pf_backward_*()</a></code> refines outputs from the forward filter:</p><ul><li><p><code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> removes dead-ends;</p></li>
-<li><p><code>pf_backward_sampler()</code> implements the backward sampler;</p></li>
+<li><p><code><a href="pf_backward_sampler.html">pf_backward_sampler()</a></code> implements the backward sampler;</p></li>
 </ul></li>
 <li><p>To reconstruct movement paths from particle samples, use <code><a href="pf_path.html">pf_path()</a></code>.</p></li>
 <li><p>To map emergent patterns of space use, use <code><a href="pf_coord.html">pf_coord()</a></code> plus a <code>map_*()</code> function, such as <code><a href="map_pou.html">map_pou()</a></code>, <code><a href="map_dens.html">map_dens()</a></code> and/or <code><a href="map_hr.html">map_hr</a></code><code>_()</code>.</p></li>
@@ -163,23 +163,25 @@
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">frames</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">mp4s</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Define data list</span></span></span>
-<span class="r-in"><span><span class="va">dlist</span> <span class="op">&lt;-</span> <span class="fu"><a href="pat_setup_data.html">pat_setup_data</a></span><span class="op">(</span>.bathy <span class="op">=</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">dlist</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_dlist</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (1): Plot selected samples (from the forward run)</span></span></span>
-<span class="r-in"><span><span class="co"># Use particles in memory</span></span></span>
+<span class="r-in"><span><span class="co"># Particles can be provided in any format accepted by `?.pf_history_list()`</span></span></span>
+<span class="r-in"><span><span class="co"># Here, we use precomputed samples:</span></span></span>
+<span class="r-in"><span><span class="co"># * Use particles in memory</span></span></span>
 <span class="r-in"><span><span class="fu">pf_plot_history</span><span class="op">(</span>.dlist <span class="op">=</span> <span class="va">dlist</span>,</span></span>
 <span class="r-in"><span>                .forward <span class="op">=</span> <span class="fu"><a href="datasets-algorithms.html">dat_pff</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                .steps <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># Use the `history` list directly</span></span></span>
+<span class="r-in"><span><span class="co"># * Use the `history` list directly</span></span></span>
 <span class="r-in"><span><span class="fu">pf_plot_history</span><span class="op">(</span>.dlist <span class="op">=</span> <span class="va">dlist</span>,</span></span>
 <span class="r-in"><span>                .forward <span class="op">=</span> <span class="fu"><a href="datasets-algorithms.html">dat_pff</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">history</span>,</span></span>
 <span class="r-in"><span>                .steps <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="pf_plot_history-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="co"># Use a directory</span></span></span>
+<span class="r-in"><span><span class="co"># * Use a directory</span></span></span>
 <span class="r-in"><span><span class="fu">pf_plot_history</span><span class="op">(</span>.dlist <span class="op">=</span> <span class="va">dlist</span>,</span></span>
 <span class="r-in"><span>                .forward <span class="op">=</span> <span class="fu"><a href="datasets-algorithms.html">dat_pff_src</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                .steps <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># Use a list of files</span></span></span>
+<span class="r-in"><span><span class="co"># * Use a list of files</span></span></span>
 <span class="r-in"><span><span class="fu">pf_plot_history</span><span class="op">(</span>.dlist <span class="op">=</span> <span class="va">dlist</span>,</span></span>
 <span class="r-in"><span>                .forward <span class="op">=</span> <span class="fu"><a href="pf_files.html">pf_files</a></span><span class="op">(</span><span class="fu"><a href="datasets-algorithms.html">dat_pff_src</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                .steps <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></span>
@@ -314,7 +316,7 @@
 <span class="r-in"><span>  <span class="co"># Sys.open(output)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//Rtmp6EbyWu/patter/mp4/ani.mp4"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpQu3F7r/patter/mp4/ani.mp4"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Clean up</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">con</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>

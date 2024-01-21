@@ -104,7 +104,7 @@
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index">
-<ul><li><p><code><a href="pf_forward.html">pf_forward()</a></code>, <code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> and <code>pf_backward_sampler()</code> implement the forward simulation and the backward pass;</p></li>
+<ul><li><p><code><a href="pf_forward.html">pf_forward()</a></code>, <code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> and <code><a href="pf_backward_sampler.html">pf_backward_sampler()</a></code> implement the forward simulation and the backward pass;</p></li>
 <li><p><code>pf_forward_diagnostics()</code> and <code><a href="pf_backward_killer_diagnostics.html">pf_backward_killer_diagnostics()</a></code> collect diagnostics;</p></li>
 <li><p><code><a href="pf_diag.html">.pf_diag</a></code><code>_()</code> functions are internal routines that calculate diagnostic statistics;</p></li>
 </ul></div>
@@ -123,13 +123,13 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span>   2:      1      1        1      lik-acs_filter_land    NA 203 203 0.004926108</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   3:      1      1        1 lik-acs_filter_container    NA 203 203 0.004926108</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   4:      1      1        1            lik-pf_lik_ac    NA 177 177 0.078771993</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   5:      1      1        1            sample-origin     1 100  57 0.050732899</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:      1      1        1            sample-origin     1 100  67 0.056432974</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 145:      1      1       25                 proposal     1 100  80 0.010000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 146:      1      1       25      lik-acs_filter_land     1 100  80 0.010000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 147:      1      1       25 lik-acs_filter_container     1 100  80 0.010000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 148:      1      1       25            lik-pf_lik_ac     1 100  80 0.015502579</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 149:      1      1       25              sample-kick     1 100  47 0.013213661</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 121:      1      1       25                 proposal     1 100  84 0.010000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 122:      1      1       25      lik-acs_filter_land     1 100  84 0.010000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 123:      1      1       25 lik-acs_filter_container     1 100  84 0.010000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 124:      1      1       25            lik-pf_lik_ac     1 100  84 0.017451947</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 125:      1      1       25              sample-kick     1 100  53 0.013512201</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># pf_forward_diagnostics() also works but is unnecessary</span></span></span>
 <span class="r-in"><span><span class="fu">pf_forward_diagnostics</span><span class="op">(</span><span class="fu"><a href="datasets-algorithms.html">dat_pff</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -138,13 +138,13 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span>   2:      1      1        1      lik-acs_filter_land    NA 203 203 0.004926108</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   3:      1      1        1 lik-acs_filter_container    NA 203 203 0.004926108</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   4:      1      1        1            lik-pf_lik_ac    NA 177 177 0.078771993</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   5:      1      1        1            sample-origin     1 100  57 0.050732899</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:      1      1        1            sample-origin     1 100  67 0.056432974</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 145:      1      1       25                 proposal     1 100  80 0.010000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 146:      1      1       25      lik-acs_filter_land     1 100  80 0.010000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 147:      1      1       25 lik-acs_filter_container     1 100  80 0.010000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 148:      1      1       25            lik-pf_lik_ac     1 100  80 0.015502579</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 149:      1      1       25              sample-kick     1 100  47 0.013213661</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 121:      1      1       25                 proposal     1 100  84 0.010000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 122:      1      1       25      lik-acs_filter_land     1 100  84 0.010000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 123:      1      1       25 lik-acs_filter_container     1 100  84 0.010000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 124:      1      1       25            lik-pf_lik_ac     1 100  84 0.017451947</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 125:      1      1       25              sample-kick     1 100  53 0.013512201</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># For outputs stored on file, use pf_forward_diagnostics()</span></span></span>
 <span class="r-in"><span><span class="va">pff_folder</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_pff_src</a></span><span class="op">(</span>.folder <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
@@ -154,32 +154,32 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span>   2:      1      1        1      lik-acs_filter_land    NA 203 203 0.004926108</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   3:      1      1        1 lik-acs_filter_container    NA 203 203 0.004926108</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   4:      1      1        1            lik-pf_lik_ac    NA 177 177 0.078771993</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   5:      1      1        1            sample-origin     1 100  57 0.050732899</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:      1      1        1            sample-origin     1 100  67 0.056432974</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 145:      1      1       25                 proposal     1 100  80 0.010000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 146:      1      1       25      lik-acs_filter_land     1 100  80 0.010000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 147:      1      1       25 lik-acs_filter_container     1 100  80 0.010000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 148:      1      1       25            lik-pf_lik_ac     1 100  80 0.015502579</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 149:      1      1       25              sample-kick     1 100  47 0.013213661</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 121:      1      1       25                 proposal     1 100  84 0.010000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 122:      1      1       25      lik-acs_filter_land     1 100  84 0.010000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 123:      1      1       25 lik-acs_filter_container     1 100  84 0.010000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 124:      1      1       25            lik-pf_lik_ac     1 100  84 0.017451947</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 125:      1      1       25              sample-kick     1 100  53 0.013512201</span>
 <span class="r-in"><span><span class="fu">pf_forward_diagnostics</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">pff_folder</span>, <span class="st">"diagnostics"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      iter_m iter_i timestep                component trial   n n_u         ess</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   1:      1      1        1                 proposal    NA 203 203 0.004926108</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   2:      1      1        1      lik-acs_filter_land    NA 203 203 0.004926108</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   3:      1      1        1 lik-acs_filter_container    NA 203 203 0.004926108</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   4:      1      1        1            lik-pf_lik_ac    NA 177 177 0.078771993</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   5:      1      1        1            sample-origin     1 100  57 0.050732899</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:      1      1        1            sample-origin     1 100  67 0.056432974</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 145:      1      1       25                 proposal     1 100  80 0.010000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 146:      1      1       25      lik-acs_filter_land     1 100  80 0.010000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 147:      1      1       25 lik-acs_filter_container     1 100  80 0.010000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 148:      1      1       25            lik-pf_lik_ac     1 100  80 0.015502579</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 149:      1      1       25              sample-kick     1 100  47 0.013213661</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 121:      1      1       25                 proposal     1 100  84 0.010000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 122:      1      1       25      lik-acs_filter_land     1 100  84 0.010000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 123:      1      1       25 lik-acs_filter_container     1 100  84 0.010000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 124:      1      1       25            lik-pf_lik_ac     1 100  84 0.017451947</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 125:      1      1       25              sample-kick     1 100  53 0.013512201</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Outputs are identical</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isTRUE</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="datasets-algorithms.html">dat_pff</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">diagnostics</span>,</span></span>
 <span class="r-in"><span>  <span class="fu">pf_forward_diagnostics</span><span class="op">(</span><span class="va">pff_folder</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </div>

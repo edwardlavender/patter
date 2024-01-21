@@ -81,7 +81,10 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.history</dt>
-<dd><p>Particle samples, provided in any format accepted by <code><a href="pf_history.html">.pf_history_dt()</a></code>.</p></dd>
+<dd><p>Particle samples, provided in any format accepted by <code><a href="pf_history.html">.pf_history_dt()</a></code>. Particle samples may be sourced from:</p><ul><li><p><code><a href="pf_forward.html">pf_forward()</a></code> (a marginal distribution);</p></li>
+<li><p><code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> (a 'partial' joint distribution);</p></li>
+<li><p><code><a href="pf_backward_sampler.html">pf_backward_sampler()</a></code> (the full joint distribution);</p></li>
+</ul><p>Particle samples must contain the <code>timestep</code> and <code>cell_now</code> columns.</p></dd>
 
 
 <dt>.bathy</dt>
@@ -103,7 +106,7 @@
     </div>
     <div id="details">
     <h2>Details</h2>
-    <p>The <code>timestep</code> and <code>cell_now</code> columns in <code><a href="pf_forward.html">pf_forward()</a></code> outputs are required to extract coordinates. <code>cell_now</code> is used to extract coordinates on <code>.bathy</code>.</p>
+    <p>The <code>cell_now</code> column is used to extract coordinates on <code>.bathy</code>.</p>
 <p>This function is not memory safe, since the entire time series of coordinates is collected in memory.</p>
     </div>
     <div id="see-also">
@@ -116,7 +119,7 @@
 <li><p>For tuning parameters, see <code><a href="pf_opt.html">pf_opt</a></code>.</p></li>
 </ul></li>
 <li><p><code><a href="pf_backward_-times.html">pf_backward_*()</a></code> refines outputs from the forward filter:</p><ul><li><p><code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> removes dead-ends;</p></li>
-<li><p><code>pf_backward_sampler()</code> implements the backward sampler;</p></li>
+<li><p><code><a href="pf_backward_sampler.html">pf_backward_sampler()</a></code> implements the backward sampler;</p></li>
 </ul></li>
 <li><p>To reconstruct movement paths from particle samples, use <code><a href="pf_path.html">pf_path()</a></code>.</p></li>
 <li><p>To map emergent patterns of space use, use <code>pf_coord()</code> plus a <code>map_*()</code> function, such as <code><a href="map_pou.html">map_pou()</a></code>, <code><a href="map_dens.html">map_dens()</a></code> and/or <code><a href="map_hr.html">map_hr</a></code><code>_()</code>.</p></li>
@@ -130,14 +133,99 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">p</span>     <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_pfbk</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pxy_1</span> <span class="op">&lt;-</span> <span class="fu">pf_coord</span><span class="op">(</span><span class="va">p</span><span class="op">$</span><span class="va">history</span>, <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#### Example (1): Use particle samples in memory or on file</span></span></span>
+<span class="r-in"><span><span class="co"># Particles can be provided in any format accepted by `?.pf_history_dt()`</span></span></span>
+<span class="r-in"><span><span class="co"># Here, we use precomputed samples:</span></span></span>
+<span class="r-in"><span><span class="va">gebco</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">pf_coord</span><span class="op">(</span><span class="fu"><a href="datasets-algorithms.html">dat_pff</a></span><span class="op">(</span><span class="op">)</span>, .bathy <span class="op">=</span> <span class="va">gebco</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       timestep cell_id   cell_x  cell_y    cell_z</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1:        1   37569 709342.1 6253307  60.09327</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2:        1   38708 709242.1 6252707  45.23619</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3:        1   37379 709342.1 6253407  65.31673</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4:        1   38329 709342.1 6252907  45.88295</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5:        1   38142 709642.1 6253007  39.55516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2496:       25   37565 708942.1 6253307 102.59936</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2497:       25   38902 709642.1 6252607  37.09717</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2498:       25   36425 708942.1 6253907 141.14836</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2499:       25   39279 709342.1 6252407  40.16304</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2500:       25   38319 708342.1 6252907 110.62663</span>
+<span class="r-in"><span><span class="fu">pf_coord</span><span class="op">(</span><span class="fu"><a href="datasets-algorithms.html">dat_pff</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">history</span>, .bathy <span class="op">=</span> <span class="va">gebco</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       timestep cell_id   cell_x  cell_y    cell_z</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1:        1   37569 709342.1 6253307  60.09327</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2:        1   38708 709242.1 6252707  45.23619</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3:        1   37379 709342.1 6253407  65.31673</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4:        1   38329 709342.1 6252907  45.88295</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5:        1   38142 709642.1 6253007  39.55516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2496:       25   37565 708942.1 6253307 102.59936</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2497:       25   38902 709642.1 6252607  37.09717</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2498:       25   36425 708942.1 6253907 141.14836</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2499:       25   39279 709342.1 6252407  40.16304</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2500:       25   38319 708342.1 6252907 110.62663</span>
+<span class="r-in"><span><span class="fu">pf_coord</span><span class="op">(</span><span class="fu"><a href="datasets-algorithms.html">dat_pff_src</a></span><span class="op">(</span><span class="op">)</span>, .bathy <span class="op">=</span> <span class="va">gebco</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       timestep cell_id   cell_x  cell_y    cell_z</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1:        1   37569 709342.1 6253307  60.09327</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2:        1   38708 709242.1 6252707  45.23619</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3:        1   37379 709342.1 6253407  65.31673</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4:        1   38329 709342.1 6252907  45.88295</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5:        1   38142 709642.1 6253007  39.55516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2496:       25   37565 708942.1 6253307 102.59936</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2497:       25   38902 709642.1 6252607  37.09717</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2498:       25   36425 708942.1 6253907 141.14836</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2499:       25   39279 709342.1 6252407  40.16304</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2500:       25   38319 708342.1 6252907 110.62663</span>
+<span class="r-in"><span><span class="fu">pf_coord</span><span class="op">(</span><span class="fu"><a href="pf_files.html">pf_files</a></span><span class="op">(</span><span class="fu"><a href="datasets-algorithms.html">dat_pff_src</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>, .bathy <span class="op">=</span> <span class="va">gebco</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       timestep cell_id   cell_x  cell_y    cell_z</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1:        1   37569 709342.1 6253307  60.09327</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2:        1   38708 709242.1 6252707  45.23619</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3:        1   37379 709342.1 6253407  65.31673</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4:        1   38329 709342.1 6252907  45.88295</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5:        1   38142 709642.1 6253007  39.55516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2496:       25   37565 708942.1 6253307 102.59936</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2497:       25   38902 709642.1 6252607  37.09717</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2498:       25   36425 708942.1 6253907 141.14836</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2499:       25   39279 709342.1 6252407  40.16304</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2500:       25   38319 708342.1 6252907 110.62663</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">pfbk_folder</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_pfbk_src</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pxy_2</span>       <span class="op">&lt;-</span> <span class="fu">pf_coord</span><span class="op">(</span><span class="va">pfbk_folder</span>, <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co">#### Example (2): Use particle samples from the forward run or the backward pass</span></span></span>
+<span class="r-in"><span><span class="fu">pf_coord</span><span class="op">(</span><span class="fu"><a href="datasets-algorithms.html">dat_pff</a></span><span class="op">(</span><span class="op">)</span>, .bathy <span class="op">=</span> <span class="va">gebco</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       timestep cell_id   cell_x  cell_y    cell_z</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1:        1   37569 709342.1 6253307  60.09327</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2:        1   38708 709242.1 6252707  45.23619</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3:        1   37379 709342.1 6253407  65.31673</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4:        1   38329 709342.1 6252907  45.88295</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5:        1   38142 709642.1 6253007  39.55516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2496:       25   37565 708942.1 6253307 102.59936</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2497:       25   38902 709642.1 6252607  37.09717</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2498:       25   36425 708942.1 6253907 141.14836</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2499:       25   39279 709342.1 6252407  40.16304</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2500:       25   38319 708342.1 6252907 110.62663</span>
+<span class="r-in"><span><span class="fu">pf_coord</span><span class="op">(</span><span class="fu"><a href="datasets-algorithms.html">dat_pfbk</a></span><span class="op">(</span><span class="op">)</span>, .bathy <span class="op">=</span> <span class="va">gebco</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       timestep cell_id   cell_x  cell_y    cell_z</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1:        1   37569 709342.1 6253307  60.09327</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2:        1   38708 709242.1 6252707  45.23619</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3:        1   37379 709342.1 6253407  65.31673</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4:        1   38520 709442.1 6252807  42.39980</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5:        1   37377 709142.1 6253407  87.54828</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1546:       25   37565 708942.1 6253307 102.59936</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1547:       25   38902 709642.1 6252607  37.09717</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1548:       25   36425 708942.1 6253907 141.14836</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1549:       25   39279 709342.1 6252407  40.16304</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1550:       25   38319 708342.1 6252907 110.62663</span>
+<span class="r-in"><span><span class="co"># pf_coord(dat_pfbs(), .bathy = gebco)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">pxy_1</span>, <span class="va">pxy_2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co">#### Example (3): Include additional columns in the output</span></span></span>
+<span class="r-in"><span><span class="va">obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_obs</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pxy</span> <span class="op">&lt;-</span> <span class="fu">pf_coord</span><span class="op">(</span><span class="fu"><a href="datasets-algorithms.html">dat_pff</a></span><span class="op">(</span><span class="op">)</span>, .bathy <span class="op">=</span> <span class="va">gebco</span>,</span></span>
+<span class="r-in"><span>                .obs <span class="op">=</span> <span class="va">obs</span>, .cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"detection"</span>, <span class="st">"depth"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#### Example (4): Use particle coordinates for mapping</span></span></span>
+<span class="r-in"><span><span class="co"># See `map_*()` functions e.g. `?map_dens()`</span></span></span>
 </code></pre></div>
     </div>
   </div>

@@ -164,7 +164,7 @@
 <li><p>For tuning parameters, see <code><a href="pf_opt.html">pf_opt</a></code>.</p></li>
 </ul></li>
 <li><p><code><a href="pf_backward_-times.html">pf_backward_*()</a></code> refines outputs from the forward filter:</p><ul><li><p><code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> removes dead-ends;</p></li>
-<li><p><code>pf_backward_sampler()</code> implements the backward sampler;</p></li>
+<li><p><code><a href="pf_backward_sampler.html">pf_backward_sampler()</a></code> implements the backward sampler;</p></li>
 </ul></li>
 <li><p>To reconstruct movement paths from particle samples, use <code><a href="pf_path.html">pf_path()</a></code>.</p></li>
 <li><p>To map emergent patterns of space use, use <code><a href="pf_coord.html">pf_coord()</a></code> plus a <code>map_*()</code> function, such as <code><a href="map_pou.html">map_pou()</a></code>, <code><a href="map_dens.html">map_dens()</a></code> and/or <code><a href="map_hr.html">map_hr</a></code><code>_()</code>.</p></li>
@@ -185,7 +185,7 @@
 <span class="r-in"><span><span class="co"># For example speed, focus on a subset of data</span></span></span>
 <span class="r-in"><span><span class="va">acc</span> <span class="op">&lt;-</span> <span class="va">acc</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="va">timestamp</span><span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2016-03-17"</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">arc</span> <span class="op">&lt;-</span> <span class="va">arc</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="va">timestamp</span><span class="op">)</span> <span class="op">==</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2016-03-17"</span><span class="op">)</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="co"># Setup datasets as usual</span></span></span>
+<span class="r-in"><span><span class="co"># Set up data list(see `?pat_setup_data()`)</span></span></span>
 <span class="r-in"><span><span class="va">dlist</span>     <span class="op">&lt;-</span> <span class="fu"><a href="pat_setup_data.html">pat_setup_data</a></span><span class="op">(</span>.acoustics <span class="op">=</span> <span class="va">acc</span>,</span></span>
 <span class="r-in"><span>                            .moorings <span class="op">=</span> <span class="va">dat_moorings</span>,</span></span>
 <span class="r-in"><span>                            .archival <span class="op">=</span> <span class="va">arc</span>,</span></span>

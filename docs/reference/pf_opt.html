@@ -109,7 +109,7 @@
 <dt>.save, .sink, .cols</dt>
 <dd><p><code>pf_opt_record()</code> arguments, passed to <code>.record</code> in <code><a href="pf_forward.html">pf_forward()</a></code>.</p><ul><li><p><code>.save</code>---a <code>logical</code> variable that defines whether or not to save particle samples and diagnostics in memory. Use <code>.save = TRUE</code> with caution.</p></li>
 <li><p><code>.sink</code>---a <code>character</code> string that defines a (usually) empty directory in which to write particle samples and diagnostics. <code>{.sink}/history/</code>and <code>{.sink}/diagnostics</code> directories are created (if necessary) to store particle samples and diagnostics respectively.</p></li>
-<li><p><code>.cols</code>---a <code>character</code> vector that defines the names of the columns in particle-sample <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>s to save and/or write to file at each time step. This reduces the space occupied by outputs. For <code><a href="pf_backward_killer.html">pf_backward_killer()</a></code>, you need to retain <code>timestep</code>, <code>cell_past</code> and <code>cell_now</code>. For <code>pf_backward_sampler()</code>, you need <code>timestep</code>, <code>cell_now</code>, <code>x_now</code> and <code>y_now</code> for the backward sampler. For calculation of effective sample size, <code>lik</code> is required. <code>NULL</code> retains all columns.</p></li>
+<li><p><code>.cols</code>---a <code>character</code> vector that defines the names of the columns in particle-sample <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>s to save and/or write to file at each time step. This reduces the space occupied by outputs. For <code><a href="pf_backward_killer.html">pf_backward_killer()</a></code>, you need to retain <code>timestep</code>, <code>cell_past</code> and <code>cell_now</code>. For <code><a href="pf_backward_sampler.html">pf_backward_sampler()</a></code>, you need <code>timestep</code>, <code>cell_now</code>, <code>x_now</code> and <code>y_now</code> for the backward sampler. For calculation of effective sample size, <code>lik</code> is required. <code>NULL</code> retains all columns.</p></li>
 </ul><p>At least one of <code>.save = TRUE</code> and <code>.sink</code> must be set.</p></dd>
 
 
@@ -147,7 +147,7 @@
 <li><p>For tuning parameters, see <code>pf_opt</code>.</p></li>
 </ul></li>
 <li><p><code><a href="pf_backward_-times.html">pf_backward_*()</a></code> refines outputs from the forward filter:</p><ul><li><p><code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> removes dead-ends;</p></li>
-<li><p><code>pf_backward_sampler()</code> implements the backward sampler;</p></li>
+<li><p><code><a href="pf_backward_sampler.html">pf_backward_sampler()</a></code> implements the backward sampler;</p></li>
 </ul></li>
 <li><p>To reconstruct movement paths from particle samples, use <code><a href="pf_path.html">pf_path()</a></code>.</p></li>
 <li><p>To map emergent patterns of space use, use <code><a href="pf_coord.html">pf_coord()</a></code> plus a <code>map_*()</code> function, such as <code><a href="map_pou.html">map_pou()</a></code>, <code><a href="map_dens.html">map_dens()</a></code> and/or <code><a href="map_hr.html">map_hr</a></code><code>_()</code>.</p></li>
