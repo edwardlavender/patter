@@ -103,7 +103,9 @@ head(out_pfbs$history[[nt]])
 # The `time` element records timing
 out_pfbs$time
 
-#### Example (2): Particle samples may be located in memory or on file
+#### Example (2): Use particle samples in memory or on file
+# Particles can be provided in any format accepted by `?.pf_history_list()`
+# Here, we use precomputed samples:
 ssv()
 out_pfbs_b <- pf_backward_sampler(.history = out_pff$history,
                                   .dlist = dlist,
