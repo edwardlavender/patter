@@ -51,7 +51,7 @@
 #'
 #' # `diagnostics`
 #'
-#' In [`pf_forward()`], we track metrics of particle diversity (hereafter, 'particle diagnostics') through time for analysis of convergence issues, sampling sufficiency and other properties (see [`pf_diag`]). Particle diagnostics are recorded for each trial and component of a stochastic process.
+#' In [`pf_forward()`], we track metrics of particle diversity (hereafter, 'particle diagnostics') through time for analysis of convergence issues, sampling sufficiency and other properties (see [`pf_diag-internal`]). Particle diagnostics are recorded for each trial and component of a stochastic process.
 #'
 #' For stochastic kicks (implemented via [`.pf_particles_kick()`]), we record:
 #' * Proposal diagnostics, following stochastic kicks;
@@ -84,9 +84,9 @@
 #'    * `nu`---an `integer` vector that defines the number of unique locations (see [`.pf_diag_nu()`]).
 #'    * `ess`---a `numeric` vector that defines the effective sample size (see [`.pf_diag_ess()`]).
 #'
-#' In [`pf_forward()`], if `.record$save = FALSE`, `diagnostics` is `NULL` and the individual [`data.table`]s are written to file in `{.record$sink}/diagnostics/` (see [`pf_opt_record()`]). To collate diagnostics from file, use [`pf_forward_diagnostics()`].
+#' In [`pf_forward()`], if `.record$save = FALSE`, `diagnostics` is `NULL` and the individual [`data.table`]s are written to file in `{.record$sink}/diagnostics/` (see [`pf_opt_record()`]). To collate convergence diagnostics from file, use [`pf_diag_convergence()`].
 #'
-#' At the time of writing, diagnostics are not computed on the fly by [`pf_backward_*()`] and are instead calculated post-hoc by [`pf_backward_killer_diagnostics()`].
+#' At the time of writing, diagnostics are not computed on the fly by [`pf_backward_*()`], but summary diagnostics can be computed for both [`pf_forward()`] and [`pf_backward_*()`] via [`pf_diag_summary()`].
 #'
 #' # `internal`
 #'

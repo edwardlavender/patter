@@ -2,63 +2,130 @@
 % Please edit documentation in R/pf-diagnostics.R
 \name{pf_diag}
 \alias{pf_diag}
-\alias{.pf_diag_any}
-\alias{.pf_diag_nu}
-\alias{.pf_diag_ess}
-\alias{.pf_diag}
-\alias{.pf_diag_bind}
-\alias{.pf_diag_collect}
+\alias{pf_diag_convergence}
+\alias{pf_diag_summary}
 \title{PF: particle diagnostics}
 \usage{
-.pf_diag_any(.particles)
+pf_diag_convergence(.sink, ...)
 
-.pf_diag_nu(.cells)
+pf_diag_summary(.history, ...)
+}
+\arguments{
+\item{.sink}{For \code{\link[=pf_diag_convergence]{pf_diag_convergence()}}, \code{.sink} specifies particle diagnostics. The following inputs are accepted:
+\itemize{
+\item A \code{\linkS4class{pf_particles}} object;
+\item A \code{character} string that defines the directory containing \code{parquet} files, specified as:
+\itemize{
+\item \code{{.record$sink}}(as specified in \code{\link[=pf_forward]{pf_forward()}});
+\item \verb{\{.record$sink\}/diagnostics/};
+}
+}}
 
-.pf_diag_ess(.likelihood)
+\item{...}{Additional arguments.
+\itemize{
+\item In \code{\link[=pf_diag_convergence]{pf_diag_convergence()}}, \code{...} is passed to \code{\link[arrow:open_dataset]{arrow::open_dataset()}}.
+\item In \code{\link[=pf_diag_summary]{pf_diag_summary()}}, \code{...} is passed to \code{\link[=.pf_history_dt]{.pf_history_dt()}}. \code{.collect}, if used, is necessarily \code{TRUE} and should not be specified.
+}}
 
-.pf_diag(.particles, .t, .trial = NA_integer_, .label)
+\item{.history}{For \code{\link[=pf_diag_summary]{pf_diag_summary()}}, \code{.history} expects particle samples, provided in any format accepted by \code{\link[=.pf_history_dt]{.pf_history_dt()}}.}
+}
+\value{
+\verb{pf_diag_*()} functions return \code{\link{data.table}}s.
 
-.pf_diag_bind(.diagnostics)
+\code{\link[=pf_diag_convergence]{pf_diag_convergence()}} returns the \code{diagnostics} \code{\link{data.table}} of a \code{pf_particles-class} object.
 
-.pf_diag_collect(.diagnostics, .iter_m, .iter_i)
+\code{\link{pf_diag_summary}} returns a summary \code{\link{data.table}} with the following columns:
+\itemize{
+\item \code{timestep}---an \code{integer} that defines the time step;
+\item \code{n}---an \code{integer} that defines the number of particles;
+\item \code{n_u}---an \code{integer} that defines the number of unique location samples (see \code{\link[=.pf_diag_nu]{.pf_diag_nu()}});
+\item \code{ess}---a \code{double} that defines the effective sample size (see \code{\link[=.pf_diag_ess]{.pf_diag_ess()}}).
+}
 }
 \description{
-These are internal functions that calculate diagnostic statistics from selected particle samples.
+These functions collate particle diagnostics from \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_*]{pf_backward_*()}}.
 }
-\section{Particle diagnostics}{
-Particle diagnostics measure how the diversity of particle samples evolves through time. Current diagnostic metrics include the number of unique particle samples at each time step and the effective sample size. Particle diagnostics have multiple uses:
-\itemize{
-\item \strong{Convergence.} Diagnostics from the forward run can indicate the causes of convergence failures. This is possible because \code{\link[=pf_forward]{pf_forward()}} keeps track of diagnostics at every stage of the algorithm, recording at each time step the diversity of particle proposals, the diversity remaining after each likelihood function evaluation and the diversity following (re)-sampling. See \code{\linkS4class{pf_particles}} and \code{vignette("d-demos", package = "patter")} for an illustration.
-\item \strong{Sampling.} Diagnostics indicate sampling sufficiency. In general, a low ratio of the number of unique particles to the total number of particles indicates effective coverage of the possible locations of an individual.
-\item \strong{Particle degeneracy.} Diagnostics measure particle degeneracy, i.e., the decay in the number of unique particles through time as trajectories are rendered invalid by observations. Comparison of particle diagnostics between \code{\link[=pf_backward_killer]{pf_backward_killer()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} is particularly valuable in this context. Both functions perform a backward refinement of particles from \code{\link[=pf_forward]{pf_forward()}}; however, the former is simple but fast, while the latter is sophisticated but expensive. Tracking particle diagnostics can indicate whether \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} is worth the cost.
+\details{
+Particle diagnostics are fully described in \code{\link{pf_diag-internal}}.
+
+\code{\link[=pf_diag_convergence]{pf_diag_convergence()}} collates convergence diagnostic outputs from \code{\link[=pf_forward]{pf_forward()}}. If \code{\link[=pf_forward]{pf_forward()}} is implemented with \code{.record$save = TRUE}, the outputted \code{\linkS4class{pf_particles}} object from \code{\link[=pf_forward]{pf_forward()}} includes a pre-compiled \code{\link{data.table}} of diagnostics (see \code{\link[=pf_opt_record]{pf_opt_record()}}). \code{\link[=pf_diag_convergence]{pf_diag_convergence()}} accepts a \code{\linkS4class{pf_particles}} object, but there is really no need for this, as a \code{diagnostics} element is already present in this object. Instead, \code{\link[=pf_diag_convergence]{pf_diag_convergence()}} is primarily designed to collate particle diagnostics on file. \code{\link[=pf_forward]{pf_forward()}} writes particle diagnostics to \code{{.record$sink}/diagnostics} (see \code{\link[=pf_opt_record]{pf_opt_record()}}). You can supply \code{{.record$sink}} or \verb{\{.record$sink\}/diagnostics/} to this function. The individual \code{\link{data.table}}s are collated to match the form in which they are provided by \code{\link[=pf_forward]{pf_forward()}} when \code{.record$save = TRUE}.
+
+\code{\link[=pf_diag_summary]{pf_diag_summary()}} summarises particle diagnostics directly from (accepted) particle samples. This can be used for \code{\link[=pf_forward]{pf_forward()}} or \code{\link[=pf_backward_*]{pf_backward_*()}}.
 }
+\examples{
+#### Example (1): Examine convergence diagnostics from `pf_forward()`
+
+# For outputs stored in memory, extract the `diagnostics` element
+dat_pff()$diagnostics
+
+# `pf_diag_convergence()` also works but is unnecessary
+pf_diag_convergence(dat_pff())
+
+# For outputs stored on file, use `pf_diag_convergence()`
+pff_folder <- dat_pff_src(.folder = NULL)
+pf_diag_convergence(pff_folder)
+pf_diag_convergence(file.path(pff_folder, "diagnostics"))
+
+# Outputs are identical
+stopifnot(isTRUE(all.equal(
+  dat_pff()$diagnostics,
+  pf_diag_convergence(pff_folder)
+)))
+
+#### Example (2): Summarise diagnostics for accepted particle samples
+
+## (A) Use particle samples from pf_forward() or pf_backward_*()
+pf_diag_summary(.history = out_pff())
+pf_diag_summary(.history = out_pfbk())
+# pf_diag_summary(.history = out_pfbs())
+
+## (B) Use particle samples in memory or on file
+# Particles can be provided in any format accepted by `?.pf_history_dt()`
+d1 <- pf_diag_summary(.history = out_pfbk())
+d2 <- pf_diag_summary(.history = out_pfbk()$history)
+d3 <- pf_diag_summary(.history = dat_pfbk_src())
+d4 <- pf_diag_summary(.history = pf_files(dat_pfbk_src()))
+stopifnot(isTRUE(all.equal(d1, d2)))
+stopifnot(isTRUE(all.equal(d1, d3)))
+stopifnot(isTRUE(all.equal(d1, d4)))
+
+## (C) Examine trends in particle diagnostics
+
+# Collate particle diagnostics
+diag_f <- pf_diag_summary(dat_pff())
+diag_k <- pf_diag_summary(dat_pfbk())
+diag_s <- pf_diag_summary(dat_pfbs())
+
+# Plot diagnostic time series
+pf_plot_diag_ts <- function(.f, .k, .s, .metric = c("n", "nu", "ess"), ...){
+  # Define base plot
+  .metric <- match.arg(metric)
+  ylim <- range(c(.f[[.metric]], .k[[.metric]], .s[[.metric]]))
+  plot(.f$timestep, .f[[.metric]],
+       xlab = "time step", ylab = .metric,
+       ylim = ylim, type = "n", ...)
+  # Add diagnostics for each algorithm
+  add_diag <- function(x, y, col) {
+    if (!all(is.na(y))) {
+      ct <- col2rgb(col) / 255
+      ct <- rgb(ct[1], ct[2], ct[3], alpha = 0.25)
+      lines(loess.smooth(x, y), lwd = 2, col = ct)
+      points(x, y, cex = 0.5, col = col)
+    }
+    invisible(NULL)
+  }
+  add_diag(.f$timestep, .f[[.metric]], col = "red")
+  add_diag(.k$timestep, .k[[.metric]], col = "orange")
+  add_diag(.s$timestep, .s[[.metric]], col = "darkgreen")
 }
 
-\section{Internal routines}{
-\itemize{
-\item \code{\link[=.pf_diag_any]{.pf_diag_any()}} identifies whether or not any particle samples remain;
-\item \code{\link[=.pf_diag_nu]{.pf_diag_nu()}} counts the number of unique particle samples (grid cells);
-\item \code{\link[=.pf_diag_ess]{.pf_diag_ess()}} calculates effective sample size from particle likelihoods;
-\item \code{\link[=.pf_diag]{.pf_diag()}} is a wrapper function that calculates diagnostics;
-\item \code{\link[=.pf_diag_bind]{.pf_diag_bind()}} binds \code{list}s of diagnostics together;
-\item \code{\link[=.pf_diag_collect]{.pf_diag_collect()}} wraps \code{\link[=.pf_diag_bind]{.pf_diag_bind()}} and assigns required columns;
+# Plot time series
+pp <- par(mfrow = c(1, 3))
+cl_lapply(c("n", "nu", "ess"), function(.metric) {
+  pf_plot_diag_ts(.f = diag_f,
+                  .k = diag_k,
+                  .s = diag_s,
+                  .metric = .metric)
+})
+par(pp)
 }
-}
-
-\section{Exported wrappers}{
-In \code{\link{pf_forward}}, diagnostics are necessarily calculated on the fly by \code{\link{.pf_diag}}\verb{_()} functions and simply require extraction from outputs via \code{\link[=pf_forward_diagnostics]{pf_forward_diagnostics()}}. However, note that the forward simulation necessitates the calculation of multiple diagnostics at each time step and \code{\link[=pf_forward_diagnostics]{pf_forward_diagnostics()}} attempts to collate all diagnostics in memory, which is not memory safe.
-
-\code{\link[=pf_backward_killer]{pf_backward_killer()}} only tracks particle samples and it is therefore necessary to calculate diagnostics from particle samples post-hoc via \code{\link[=pf_backward_killer_diagnostics]{pf_backward_killer_diagnostics()}}. A single set of diagnostics is calculated for each time step, so this function is (effectively) memory safe.
-}
-
-\seealso{
-\itemize{
-\item \code{\link[=pf_forward]{pf_forward()}}, \code{\link[=pf_backward_killer]{pf_backward_killer()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implement the forward simulation and the backward pass;
-\item \code{\link[=pf_forward_diagnostics]{pf_forward_diagnostics()}} and \code{\link[=pf_backward_killer_diagnostics]{pf_backward_killer_diagnostics()}} collect diagnostics;
-\item \code{\link{.pf_diag}}\verb{_()} functions are internal routines that calculate diagnostic statistics;
-}
-}
-\author{
-Edward Lavender
-}
-\keyword{internal}

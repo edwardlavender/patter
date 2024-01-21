@@ -56,7 +56,7 @@ If \code{.record$save = FALSE}, \code{.history} is an empty \code{list} and the 
 }
 
 \section{\code{diagnostics}}{
-In \code{\link[=pf_forward]{pf_forward()}}, we track metrics of particle diversity (hereafter, 'particle diagnostics') through time for analysis of convergence issues, sampling sufficiency and other properties (see \code{\link{pf_diag}}). Particle diagnostics are recorded for each trial and component of a stochastic process.
+In \code{\link[=pf_forward]{pf_forward()}}, we track metrics of particle diversity (hereafter, 'particle diagnostics') through time for analysis of convergence issues, sampling sufficiency and other properties (see \code{\link{pf_diag-internal}}). Particle diagnostics are recorded for each trial and component of a stochastic process.
 
 For stochastic kicks (implemented via \code{\link[=.pf_particles_kick]{.pf_particles_kick()}}), we record:
 \itemize{
@@ -102,9 +102,9 @@ If \code{.record$save = TRUE}, particle diagnostics are collated in a single \co
 }
 }
 
-In \code{\link[=pf_forward]{pf_forward()}}, if \code{.record$save = FALSE}, \code{diagnostics} is \code{NULL} and the individual \code{\link{data.table}}s are written to file in \verb{\{.record$sink\}/diagnostics/} (see \code{\link[=pf_opt_record]{pf_opt_record()}}). To collate diagnostics from file, use \code{\link[=pf_forward_diagnostics]{pf_forward_diagnostics()}}.
+In \code{\link[=pf_forward]{pf_forward()}}, if \code{.record$save = FALSE}, \code{diagnostics} is \code{NULL} and the individual \code{\link{data.table}}s are written to file in \verb{\{.record$sink\}/diagnostics/} (see \code{\link[=pf_opt_record]{pf_opt_record()}}). To collate convergence diagnostics from file, use \code{\link[=pf_diag_convergence]{pf_diag_convergence()}}.
 
-At the time of writing, diagnostics are not computed on the fly by \code{\link[=pf_backward_*]{pf_backward_*()}} and are instead calculated post-hoc by \code{\link[=pf_backward_killer_diagnostics]{pf_backward_killer_diagnostics()}}.
+At the time of writing, diagnostics are not computed on the fly by \code{\link[=pf_backward_*]{pf_backward_*()}}, but summary diagnostics can be computed for both \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_*]{pf_backward_*()}} via \code{\link[=pf_diag_summary]{pf_diag_summary()}}.
 }
 
 \section{\code{internal}}{

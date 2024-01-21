@@ -13,7 +13,7 @@ The forward filtering--backward sampling algorithm implemented by \code{\link{pa
 \item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implements a backward sampler. This function samples from the joint distribution of particles, given all of the data---both from the past and the future. This is much more expensive.
 }
 
-See \code{\link[=pf_backward_killer_diagnostics]{pf_backward_killer_diagnostics()}} to compare particle diagnostics for the two approaches.
+See \code{\link[=pf_diag_summary]{pf_diag_summary()}} to compare particle diagnostics for the two approaches.
 }
 \seealso{
 The forward filtering--backward sampling algorithm samples locations (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.

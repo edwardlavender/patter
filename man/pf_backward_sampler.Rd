@@ -145,9 +145,9 @@ cl_lapply(seq_len(nt), function(i) {
 
 #### Example (5): Compare particle diagnostics (e.g., degeneracy)
 # Extract diagnostics
-diag_f <- pf_backward_killer_diagnostics(out_pff)
-diag_k <- pf_backward_killer_diagnostics(out_pfbk)
-diag_s <- pf_backward_killer_diagnostics(out_pfbs)
+diag_f <- pf_diag_summary(out_pff)
+diag_k <- pf_diag_summary(out_pfbk)
+diag_s <- pf_diag_summary(out_pfbs)
 # Compare the number of unique samples through time
 ylim <- range(c(diag_f$n_u, diag_k$n_u, diag_s$n_u))
 plot(diag_f$timestep, diag_f$n_u,
@@ -156,7 +156,7 @@ plot(diag_f$timestep, diag_f$n_u,
      type = "b", cex = 0.5, col = "red")
 lines(diag_k$timestep, diag_k$n_u,
       type = "b", cex = 0.5, col = "orange")
-lines(diag_k$timestep, diag_s$n_u,
+lines(diag_s$timestep, diag_s$n_u,
       type = "b", cex = 0.5, col = "darkgreen")
 
 #### Example (6): Compare maps

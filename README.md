@@ -245,14 +245,16 @@ acoustic telemetry systems.
   - `pf_opt_rerun_from()`, which sets re-run parameters;
   - `pf_opt_control()`, which sets control parameters;
   - `pf_opt_record()`, which sets output properties;
-- Downstream diagnostic functions, namely:
-  - `pf_forward_diagnostics()`, which collates particle diagnostics;
 
 **To implement the backward pass (`pf_backward_*()`)**, use:
 
 - `pf_backward_killer()` to prune dead-ends;
-- `pf_backward_killer_diagnostics()` to summarise particle diagnostics;
 - `pf_backward_sampler()` to run the backward sampler;
+
+**For particle diagnostics**, see:
+
+- `pf_diag_convergence()` to collate convergence diagnostics;
+- `pf_diag_summary()` to collate summary diagnostics;
 
 **For convenience plotting functions**, see:
 

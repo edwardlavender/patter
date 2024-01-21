@@ -7,7 +7,7 @@
 #'
 #' @details This function removes 'dead ends' from particle samples. If you imagine the forward simulation, as implemented by [`pf_forward()`], as a branching process, like the growth of a fungal network between two points in space (representing the start and end of the time series), dead ends are the side branches that emerge during this process that do not reach the destination (because sooner-or-later they are rendered incompatible with the data). This function prunes dead-ends from the time series by running a fast `match`ing process backwards in time and retaining the subset of particle samples that lead to the destination particle samples. This process is very fast, and you can use the results to reconstruct movement paths (via [`pf_path()`]) and maps of space use (via `map_*()` functions), but crude.
 #'
-#' There are two, related limitations with the 'prune' methodology. The first is that the removal of dead ends tends to bias particle samples, because early samples (which invariably sooner-or-later end up on a dead-end) are more likely to get killed than later samples. This is known as particle degeneracy. Use the [`pf_backward_killer_diagnostics()`] function to evaluate trends in the effective sample size through time and examine whether this is an issue. The second is that while particles from the forward simulation are contingent upon the past (a marginal distribution), they do not embody information from the future (the joint distribution).
+#' There are two, related limitations with the 'prune' methodology. The first is that the removal of dead ends tends to bias particle samples, because early samples (which invariably sooner-or-later end up on a dead-end) are more likely to get killed than later samples. This is known as particle degeneracy. Use the [`pf_diag_summary()`] function to evaluate trends in the effective sample size through time and examine whether this is an issue. The second is that while particles from the forward simulation are contingent upon the past (a marginal distribution), they do not embody information from the future (the joint distribution).
 #'
 #' To reconstruct the joint distribution of particle samples given all data (i.e., 'proper' movement trajectories), the backward sampler is required instead ([`pf_backward_sampler()`]). However, this is much more expensive.
 #'
@@ -99,37 +99,4 @@ pf_backward_killer <- function(.history,
                               .history = .history,
                               .record = .record)
 
-}
-
-#' @title PF: backward killer diagnostics
-#' @description This function calculates diagnostics from particle samples from [`pf_backward_killer()`].
-#' @param .history Particle samples, provided in any format accepted by [`.pf_history_dt()`].
-#' @param ... Arguments passed to [`.pf_history_dt()`], excluding `.collect` with is necessarily `TRUE`.
-#'
-#' @details Particle diagnostics are fully described in [`pf_diag`].
-#'
-#' @return The function returns a [`data.table`] with the following columns:
-#' * `timestep`---an `integer` that defines the time step;
-#' * `n`---an `integer` that defines the number of particles;
-#' * `n_u`---an `integer` that defines the number of unique location samples (see [`.pf_diag_nu()`]);
-#' * `ess`---a `double` that defines the effective sample size (see [`.pf_diag_ess()`]);
-#'
-#' @example man/examples/pf_backward_killer_diagnostics-examples.R
-#'
-#' @inherit pf_diag seealso
-#' @author Edward Lavender
-#' @export
-
-pf_backward_killer_diagnostics <- function(.history, ...) {
-  .history |>
-    .pf_history_dt(..., .collect = TRUE) |>
-    add_col_real(.col = "lik") |>
-    lazy_dt() |>
-    group_by(.data$timestep) |>
-    summarise(timestep = .data$timestep[1],
-              n = n(),
-              n_u = .pf_diag_nu(.data$cell_now),
-              ess = .pf_diag_ess(.data$lik)
-    ) |>
-    as.data.table()
 }

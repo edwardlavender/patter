@@ -65,7 +65,7 @@ Algorithm parameters should remain consistent on algorithm reruns.}
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }
 \value{
-The function returns a \code{\linkS4class{pf_particles}} object. If \code{.record$sink} is specified, two directories, \verb{\{.record$sink\}/history/} and \code{{.record$sink}/diagnostics}, are also created that contain particle samples and diagnostics. Particle samples are labelled \verb{1.parquet, 2.parquet, ..., T.parquet}, where \code{T} is the number of time steps. Diagnostics are labelled \code{A-B-C}, where \code{A}, \code{B} and \code{C} are the number of manual restarts, internal reversions and time steps. Use \code{\link[=pf_forward_diagnostics]{pf_forward_diagnostics()}} to collate diagnostics.
+The function returns a \code{\linkS4class{pf_particles}} object. If \code{.record$sink} is specified, two directories, \verb{\{.record$sink\}/history/} and \code{{.record$sink}/diagnostics}, are also created that contain particle samples and diagnostics. Particle samples are labelled \verb{1.parquet, 2.parquet, ..., T.parquet}, where \code{T} is the number of time steps. Diagnostics are labelled \code{A-B-C}, where \code{A}, \code{B} and \code{C} are the number of manual restarts, internal reversions and time steps. Use \code{\link[=pf_diag_convergence]{pf_diag_convergence()}} to collate convergence diagnostics and \code{\link[=pf_diag_summary]{pf_diag_summary()}} for a summary.
 }
 \description{
 This function runs the forward simulation of the forward filtering--backward smoothing algorithm. The forward simulation samples possible locations (particles) of an animal at each time point given the data up to (and including) that time point and a movement model.
@@ -99,7 +99,7 @@ This is highly flexible routine for the reconstruction of the possible locations
 }
 
 \section{Convergence and diagnostics}{
-While \code{\link[=pf_forward]{pf_forward()}} tries hard to reconstruct a complete time series of location samples, algorithm convergence is not guaranteed. The algorithm may reach a dead-end---a time step at which there are no valid locations into which the algorithm can step. This may be due to data errors, incorrect assumptions, insufficient sampling effort or poor tuning-parameter settings. To facilitate diagnosis of the immediate cause of convergence failures, during likelihood evaluations we keep track of 'particle diagnostics', i.e., the number of unique, valid locations before/after each likelihood evaluation alongside other statistics (see \code{\link{pf_diag}} and \code{\linkS4class{pf_particles}}).
+While \code{\link[=pf_forward]{pf_forward()}} tries hard to reconstruct a complete time series of location samples, algorithm convergence is not guaranteed. The algorithm may reach a dead-end---a time step at which there are no valid locations into which the algorithm can step. This may be due to data errors, incorrect assumptions, insufficient sampling effort or poor tuning-parameter settings. To facilitate diagnosis of the immediate cause of convergence failures, during likelihood evaluations we keep track of 'particle diagnostics', i.e., the number of unique, valid locations before/after each likelihood evaluation alongside other statistics (see \code{\link{pf_diag-internal}} and \code{\linkS4class{pf_particles}}).
 }
 
 \examples{

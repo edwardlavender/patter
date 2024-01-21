@@ -130,17 +130,18 @@ The main thrust of \code{\link{patter}} is the provision of an integrated modell
 \item \code{\link[=pf_opt_control]{pf_opt_control()}}, which sets control parameters;
 \item \code{\link[=pf_opt_record]{pf_opt_record()}}, which sets output properties;
 }
-\item Downstream diagnostic functions, namely:
-\itemize{
-\item \code{\link[=pf_forward_diagnostics]{pf_forward_diagnostics()}}, which collates particle diagnostics;
-}
 }
 
 \strong{To implement the backward pass (\code{\link[=pf_backward_*]{pf_backward_*()}})}, use:
 \itemize{
 \item \code{\link[=pf_backward_killer]{pf_backward_killer()}} to prune dead-ends;
-\item \code{\link[=pf_backward_killer_diagnostics]{pf_backward_killer_diagnostics()}} to summarise particle diagnostics;
 \item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} to run the backward sampler;
+}
+
+\strong{For particle diagnostics}, see:
+\itemize{
+\item \code{\link[=pf_diag_convergence]{pf_diag_convergence()}} to collate convergence diagnostics;
+\item \code{\link[=pf_diag_summary]{pf_diag_summary()}} to collate summary diagnostics;
 }
 
 \strong{For convenience plotting functions}, see:

@@ -1,4 +1,75 @@
 #' @title PF: particle diagnostics
+#' @description These functions collate particle diagnostics from [`pf_forward()`] and [`pf_backward_*()`].
+#' @param .sink For [`pf_diag_convergence()`], `.sink` specifies particle diagnostics. The following inputs are accepted:
+#' * A [`pf_particles-class`] object;
+#' * A `character` string that defines the directory containing `parquet` files, specified in one of the following formats:
+#'    * `{.record$sink}` (as specified in [`pf_forward()`]);
+#'    * `{.record$sink}/diagnostics/`;
+#'
+#' @param .history For [`pf_diag_summary()`], `.history` expects particle samples, provided in any format accepted by [`.pf_history_dt()`].
+#'
+#' @param ... Additional arguments.
+#' * In [`pf_diag_convergence()`], `...` is passed to [`arrow::open_dataset()`].
+#' * In [`pf_diag_summary()`], `...` is passed to [`.pf_history_dt()`]. `.collect`, if used, is necessarily `TRUE` and should not be specified.
+#'
+#' @details Particle diagnostics are fully described in [`pf_diag-internal`].
+#'
+#' [`pf_diag_convergence()`] collates convergence diagnostic outputs from [`pf_forward()`]. If [`pf_forward()`] is implemented with `.record$save = TRUE`, the outputted [`pf_particles-class`] object from [`pf_forward()`] includes a pre-compiled [`data.table`] of diagnostics (see [`pf_opt_record()`]). [`pf_diag_convergence()`] accepts a [`pf_particles-class`] object, but there is really no need for this, as a `diagnostics` element is already present in this object. Instead, [`pf_diag_convergence()`] is primarily designed to collate particle diagnostics on file. [`pf_forward()`] writes particle diagnostics to `{.record$sink}/diagnostics` (see [`pf_opt_record()`]). You can supply `{.record$sink}` or `{.record$sink}/diagnostics/` to this function. The individual [`data.table`]s are collated to match the form in which they are provided by [`pf_forward()`] when `.record$save = TRUE`.
+#'
+#' [`pf_diag_summary()`] summarises particle diagnostics directly from (accepted) particle samples. This can be used for [`pf_forward()`] or [`pf_backward_*()`].
+#'
+#' @example man/examples/pf_diag-examples.R
+#'
+#' @return `pf_diag_*()` functions return [`data.table`]s.
+#'
+#' [`pf_diag_convergence()`] returns the `diagnostics` [`data.table`] of a `pf_particles-class` object.
+#'
+#' [`pf_diag_summary`] returns a summary [`data.table`] with the following columns:
+#' * `timestep`---an `integer` that defines the time step;
+#' * `n`---an `integer` that defines the number of particles;
+#' * `n_u`---an `integer` that defines the number of unique location samples (see [`.pf_diag_nu()`]);
+#' * `ess`---a `double` that defines the effective sample size (see [`.pf_diag_ess()`]).
+#'
+#' @inherit pf_diag seealso
+#' @name pf_diag
+
+#' @rdname pf_diag
+#' @export
+
+pf_diag_convergence <- function(.sink, ...) {
+  if (inherits(.sink, pf_class)) {
+    return(.sink$diagnostics)
+  }
+  check_dir_exists(.sink)
+  if (basename(.sink) != "diagnostics") {
+    .sink <- file.path(.sink, "diagnostics")
+  }
+  check_dir_exists(.sink)
+  .sink |>
+    arrow::open_dataset(...) |>
+    arrange(.data$iter_m, .data$iter_i, .data$timestep) |>
+    collect() |>
+    as.data.table()
+}
+
+#' @rdname pf_diag
+#' @export
+
+pf_diag_summary <- function(.history, ...) {
+  .history |>
+    .pf_history_dt(..., .collect = TRUE) |>
+    add_col_real(.col = "lik") |>
+    lazy_dt() |>
+    group_by(.data$timestep) |>
+    summarise(timestep = .data$timestep[1],
+              n = n(),
+              n_u = .pf_diag_nu(.data$cell_now),
+              ess = .pf_diag_ess(.data$lik)
+    ) |>
+    as.data.table()
+}
+
+#' @title PF: particle diagnostics (internal)
 #' @description These are internal functions that calculate diagnostic statistics from selected particle samples.
 #'
 #' @details
@@ -20,40 +91,40 @@
 #'
 #' # Exported wrappers
 #'
-#' In [`pf_forward`], diagnostics are necessarily calculated on the fly by [`.pf_diag`]`_()` functions and simply require extraction from outputs via [`pf_forward_diagnostics()`]. However, note that the forward simulation necessitates the calculation of multiple diagnostics at each time step and [`pf_forward_diagnostics()`] attempts to collate all diagnostics in memory, which is not memory safe.
+#' In [`pf_forward()`], convergence diagnostics are necessarily calculated on the fly by [`.pf_diag`]`_()` functions. To collate convergence diagnostics from [`pf_forward()`], use [`pf_diag_convergence()`]. However, note that the forward simulation necessitates the calculation of multiple diagnostics at each time step and [`pf_diag_convergence()`] attempts to collate all diagnostics in memory, which is not memory safe.
 #'
-#' [`pf_backward_killer()`] only tracks particle samples and it is therefore necessary to calculate diagnostics from particle samples post-hoc via [`pf_backward_killer_diagnostics()`]. A single set of diagnostics is calculated for each time step, so this function is (effectively) memory safe.
+#' To collate summary diagnostics from [`pf_forward()`] or [`pf_backward_*()`], use [`pf_diag_summary()`]. This function calculates a single set of diagnostics is calculated for each time step, so this function is (effectively) memory safe.
 #'
 #' @seealso
 #' * [`pf_forward()`], [`pf_backward_killer()`] and [`pf_backward_sampler()`] implement the forward simulation and the backward pass;
-#' * [`pf_forward_diagnostics()`] and [`pf_backward_killer_diagnostics()`] collect diagnostics;
+#' * [`pf_diag_convergence()`] and [`pf_diag_summary()`] collect diagnostics;
 #' * [`.pf_diag`]`_()` functions are internal routines that calculate diagnostic statistics;
 #'
 #' @author Edward Lavender
-#' @name pf_diag
+#' @name pf_diag-internal
 
-#' @rdname pf_diag
+#' @rdname pf_diag-internal
 #' @keywords internal
 
 .pf_diag_any <- function(.particles) {
   fnrow(.particles) != 0L
 }
 
-#' @rdname pf_diag
+#' @rdname pf_diag-internal
 #' @keywords internal
 
 .pf_diag_nu <- function(.cells) {
   length(collapse::funique(.cells))
 }
 
-#' @rdname pf_diag
+#' @rdname pf_diag-internal
 #' @keywords internal
 
 .pf_diag_ess <- function(.likelihood) {
   1 / sum(.likelihood ^ 2)
 }
 
-#' @rdname pf_diag
+#' @rdname pf_diag-internal
 #' @keywords internal
 
 .pf_diag <- function(.particles, .t, .trial = NA_integer_, .label) {
@@ -71,7 +142,7 @@
   out
 }
 
-#' @rdname pf_diag
+#' @rdname pf_diag-internal
 #' @keywords internal
 
 .pf_diag_bind <- function(.diagnostics) {
@@ -82,7 +153,7 @@
   }
 }
 
-#' @rdname pf_diag
+#' @rdname pf_diag-internal
 #' @keywords internal
 
 .pf_diag_collect <- function(.diagnostics, .iter_m, .iter_i) {
