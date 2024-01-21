@@ -31,8 +31,8 @@ NULL
 #' @rdname pf_forward-utils
 #' @keywords internal
 
-# Define directories for output files
-.pf_dirs <- function(.record) {
+# Define directories for output files in pf_forward()
+.pf_forward_dirs <- function(.record) {
   check_named_list(.record)
   check_names(.record, "sink")
   if (is.null(.record$sink)) {
@@ -54,18 +54,8 @@ NULL
 #' @rdname pf_forward-utils
 #' @keywords internal
 
-# Write files (particles) to output directory
-.pf_write_particles <- function(.particles, .sink, .filename, .write) {
-  if (.write) {
-    arrow::write_parquet(.particles, sink = file.path(.sink, paste0(.filename, ".parquet")))
-  }
-}
-
-#' @rdname pf_forward-utils
-#' @keywords internal
-
 # Write files (diagnostics) to output directory
-.pf_write_diagnostics <- function(.diagnostics, .sink, .write) {
+.pf_forward_write_diagnostics <- function(.diagnostics, .sink, .write) {
   if (.write) {
     file <- paste0(
       paste(.diagnostics$iter_m[1],
@@ -80,7 +70,7 @@ NULL
 #' @keywords internal
 
 # Implement startup checks and operations
-.pf_startup <- function(.rerun, .record) {
+.pf_forward_startup <- function(.rerun, .record) {
 
   #### Use .rerun, if specified
   # Currently, we assume that input arguments (e.g., .record_opts) are the same on reruns
@@ -109,7 +99,7 @@ NULL
   history     <- list()
   diagnostics <- list()
   # directories to write outputs (may be NULL)
-  folders            <- .pf_dirs(.record)
+  folders            <- .pf_forward_dirs(.record)
   folder_history     <- folders[["history"]]
   folder_diagnostics <- folders[["diagnostics"]]
 
@@ -121,9 +111,9 @@ NULL
                         .write = !is.null(.record$sink))
   }
   .pf_write_diagnostics_abbr <- function(.diagnostics) {
-    .pf_write_diagnostics(.diagnostics = .diagnostics,
-                          .sink = folder_diagnostics,
-                          .write = !is.null(.record$sink))
+    .pf_forward_write_diagnostics(.diagnostics = .diagnostics,
+                                  .sink = folder_diagnostics,
+                                  .write = !is.null(.record$sink))
   }
 
   #### Collate outputs
@@ -148,28 +138,8 @@ NULL
 #' @rdname pf_forward-utils
 #' @keywords internal
 
-# Snapshot data.tables for saving in memory or to file
-.pf_snapshot <- function(.dt,.save, .select, .cols) {
-  # Copy & drop attributes
-  # * This is necessary if we save objects in memory only
-  if (.save) {
-    .dt <- copy(data.table(.dt))
-  }
-  # Subset columns (to reduce file size)
-  if (.select) {
-    .dt <-
-      .dt |>
-      select(any_of(.cols)) |>
-      as.data.table()
-  }
-  .dt
-}
-
-#' @rdname pf_forward-utils
-#' @keywords internal
-
 # Define the starting time step for the loop
-.pf_start_t <- function(.rerun, .rerun_from) {
+.pf_forward_start_t <- function(.rerun, .rerun_from) {
   if (length(.rerun) == 0L) {
     t <- 2L
   } else {
@@ -182,7 +152,7 @@ NULL
 #' @keywords internal
 
 # Increment loop: current cells become past cells @ next time step
-.pf_increment <- function(.particles) {
+.pf_forward_increment <- function(.particles) {
   .particles |>
     lazy_dt() |>
     mutate(timestep = .data$timestep + 1L) |>
@@ -197,7 +167,7 @@ NULL
 #' @keywords internal
 
 # Define particles for the previous time step
-.pf_ppast <- function(.particles, .history, .sink, .t) {
+.pf_forward_ppast <- function(.particles, .history, .sink, .t) {
   # Define previous time step
   tp <- .t - 1L
   # Define particles
@@ -211,14 +181,14 @@ NULL
     }
   }
   # Modify particles (cell_now at t - 1 becomes cell_past at t)
-  .pf_increment(.particles)
+  .pf_forward_increment(.particles)
 }
 
 #' @rdname pf_forward-utils
 #' @keywords internal
 
 # Choose whether or not to implement directed sampling
-.pf_trial_sampler <- function(.diagnostics, .trial_crit) {
+.pf_forward_trial_sampler <- function(.diagnostics, .trial_crit) {
  if (!rlang::has_name(.diagnostics, "kick")) {
    return(TRUE)
  } else {
@@ -232,7 +202,7 @@ NULL
 #' @keywords internal
 
 # Revert to an earlier time step
-.pf_revert <- function(.t, .trial_revert_steps) {
+.pf_forward_revert <- function(.t, .trial_revert_steps) {
   max(c(2L, .t - .trial_revert_steps))
 }
 
@@ -240,7 +210,7 @@ NULL
 #' @keywords internal
 
 # Continue the simulation to the next time step
-.pf_continue <- function(.particles, .t, .crit, .trial_revert_crit) {
+.pf_forward_continue <- function(.particles, .t, .crit, .trial_revert_crit) {
 
   # Outcome (A): convergence failure
   # * If there are no particles, return warning + FALSE
@@ -267,7 +237,7 @@ NULL
 #' @keywords internal
 
 # Collate `pf_forward()` outputs
-.pf_outputs <- function(.rerun, .start, .startup, .history, .diagnostics, .convergence) {
+.pf_forward_output <- function(.rerun, .start, .startup, .history, .diagnostics, .convergence) {
   .rerun$time[[.startup$control$iter_m]] <- call_timings(.start = .start)
   out  <- list(history = .history,
                diagnostics = .pf_diag_bind(.diagnostics),

@@ -108,7 +108,7 @@ At the time of writing, diagnostics are not computed on the fly by \code{\link[=
 }
 
 \section{\code{internal}}{
-For \code{\link[=pf_forward]{pf_forward()}}, \code{internal} is named list of internal objects for algorithm reruns (see \code{.rerun} and \code{\link[=.pf_startup]{.pf_startup()}}).
+For \code{\link[=pf_forward]{pf_forward()}}, \code{internal} is named list of internal objects for algorithm reruns (see \code{.rerun} and \code{\link[=.pf_forward_startup]{.pf_forward_startup()}}).
 }
 
 \section{\code{convergence}}{

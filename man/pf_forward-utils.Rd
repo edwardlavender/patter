@@ -2,43 +2,44 @@
 % Please edit documentation in R/pf_forward-internal-utils.R
 \name{pf_forward-utils}
 \alias{pf_forward-utils}
-\alias{.pf_dirs}
-\alias{.pf_write_particles}
-\alias{.pf_write_diagnostics}
-\alias{.pf_startup}
-\alias{.pf_snapshot}
-\alias{.pf_start_t}
-\alias{.pf_increment}
-\alias{.pf_ppast}
-\alias{.pf_trial_sampler}
-\alias{.pf_revert}
-\alias{.pf_continue}
-\alias{.pf_outputs}
+\alias{.pf_forward_dirs}
+\alias{.pf_forward_write_diagnostics}
+\alias{.pf_forward_startup}
+\alias{.pf_forward_start_t}
+\alias{.pf_forward_increment}
+\alias{.pf_forward_ppast}
+\alias{.pf_forward_trial_sampler}
+\alias{.pf_forward_revert}
+\alias{.pf_forward_continue}
+\alias{.pf_forward_output}
 \title{PF helper: internal utilities}
 \usage{
-.pf_dirs(.record)
+.pf_forward_dirs(.record)
 
-.pf_write_particles(.particles, .sink, .filename, .write)
+.pf_forward_write_diagnostics(.diagnostics, .sink, .write)
 
-.pf_write_diagnostics(.diagnostics, .sink, .write)
+.pf_forward_startup(.rerun, .record)
 
-.pf_startup(.rerun, .record)
+.pf_forward_start_t(.rerun, .rerun_from)
 
-.pf_snapshot(.dt, .save, .select, .cols)
+.pf_forward_increment(.particles)
 
-.pf_start_t(.rerun, .rerun_from)
+.pf_forward_ppast(.particles, .history, .sink, .t)
 
-.pf_increment(.particles)
+.pf_forward_trial_sampler(.diagnostics, .trial_crit)
 
-.pf_ppast(.particles, .history, .sink, .t)
+.pf_forward_revert(.t, .trial_revert_steps)
 
-.pf_trial_sampler(.diagnostics, .trial_crit)
+.pf_forward_continue(.particles, .t, .crit, .trial_revert_crit)
 
-.pf_revert(.t, .trial_revert_steps)
-
-.pf_continue(.particles, .t, .crit, .trial_revert_crit)
-
-.pf_outputs(.rerun, .start, .startup, .history, .diagnostics, .convergence)
+.pf_forward_output(
+  .rerun,
+  .start,
+  .startup,
+  .history,
+  .diagnostics,
+  .convergence
+)
 }
 \description{
 These functions are internal utilities for \code{\link[=pf_forward]{pf_forward()}}.

@@ -215,10 +215,10 @@ pf_forward <- function(.obs,
 
   #### Define startup objects (e.g., empty output lists)
   cat_log("... Setting up simulation...")
-  startup <- .pf_startup(.rerun = .rerun,
-                         .record = .record)
+  startup <- .pf_forward_startup(.rerun = .rerun,
+                                 .record = .record)
   # Arguments
-  # * Define these options outside of .pf_startup() so that
+  # * Define these options outside of .pf_forward_startup() so that
   # * .rerun works even if the output list is written to file.
   # * (Otherwise, SpatRasters in startup aren't saved/reloaded properly.)
   .rargs$.obs   <- .obs
@@ -265,11 +265,11 @@ pf_forward <- function(.obs,
 
   #### Initiate loop
   # Define starting time step
-  t          <- .pf_start_t(.rerun, .rerun_from)
+  t          <- .pf_forward_start_t(.rerun, .rerun_from)
   index_diag <- length(diagnostics) + 1L
   # Define previous particles
-  ppast <- .pf_ppast(.particles = pnow, .history = history,
-                     .sink = startup$output$folder_history, .t = t)
+  ppast <- .pf_forward_ppast(.particles = pnow, .history = history,
+                             .sink = startup$output$folder_history, .t = t)
   # Define progress bar
   pb <- pb_init(.min = 2L, .max = max(.obs$timestep))
 
@@ -303,8 +303,8 @@ pf_forward <- function(.obs,
 
     #### (2) Propose new particles (using direct sampling)
     if (.trial$trial_sampler > 0L) {
-      use_sampler <- .pf_trial_sampler(.diagnostics = diagnostics_t,
-                                       .trial_crit = .trial$trial_sampler_crit)
+      use_sampler <- .pf_forward_trial_sampler(.diagnostics = diagnostics_t,
+                                               .trial_crit = .trial$trial_sampler_crit)
       if (use_sampler) {
         cat_log("... ... ... Using directed sampling...")
         pnow <- .pf_particles_sampler(.particles = copy(ppast),
@@ -332,19 +332,21 @@ pf_forward <- function(.obs,
     crit <- diagnostics_t$n_u[nrow(diagnostics_t)]
     if (crit < .trial$trial_revert_crit & iter_i <= .trial$trial_revert) {
       # Define time step
-      t <- .pf_revert(.t = t, .trial_revert_steps = .trial$trial_revert_steps)
+      t <- .pf_forward_revert(.t = t, .trial_revert_steps = .trial$trial_revert_steps)
       cat_log(paste0("... ... ... Reverting to time ", t, " (on ", iter_i, "/", .trial$trial_revert, " revert attempt(s)...)"))
       iter_i <- iter_i + 1L
       # Define ppast for relevant time step
-      ppast <- .pf_ppast(.particles = NULL, .history = history,
-                         .sink = startup$output$folder_history, .t = t)
+      ppast <- .pf_forward_ppast(.particles = NULL, .history = history,
+                                 .sink = startup$output$folder_history, .t = t)
 
     } else {
 
       #### (3) (B) Continue or finish simulation
       # Check convergence
-      continue <- .pf_continue(.particles = pnow, .t = t,
-                               .crit = crit, .trial_revert_crit = .trial$trial_revert_crit)
+      continue <- .pf_forward_continue(.particles = pnow,
+                                       .t = t,
+                                       .crit = crit,
+                                       .trial_revert_crit = .trial$trial_revert_crit)
       # Save particle samples (if possible)
       if (continue) {
         snapshot <- .pf_snapshot(.dt = pnow, .save = .record$save,
@@ -355,29 +357,29 @@ pf_forward <- function(.obs,
         .pf_write_particles_abbr(.particles = snapshot)
       } else {
         # For convergence failures, collate outputs & return up to current time step
-        out <- .pf_outputs(.rerun = .rerun,
-                           .start = t_onset,
-                           .startup = startup,
-                           .history = history,
-                           .diagnostics = diagnostics,
-                           .convergence = FALSE)
+        out <- .pf_forward_output(.rerun = .rerun,
+                                  .start = t_onset,
+                                  .startup = startup,
+                                  .history = history,
+                                  .diagnostics = diagnostics,
+                                  .convergence = FALSE)
         return(out)
       }
 
       #### Move on
       t <- t + 1L
-      ppast <- .pf_increment(.particles = pnow)
+      ppast <- .pf_forward_increment(.particles = pnow)
     }
 
   }
   pb_close(.pb = pb)
 
   #### Return outputs
-  .pf_outputs(.rerun = .rerun,
-              .start = t_onset,
-              .startup = startup,
-              .history = history,
-              .diagnostics = diagnostics,
-              .convergence = TRUE)
+  .pf_forward_output(.rerun = .rerun,
+                     .start = t_onset,
+                     .startup = startup,
+                     .history = history,
+                     .diagnostics = diagnostics,
+                     .convergence = TRUE)
 
 }

@@ -90,7 +90,7 @@
 #'
 #' # `internal`
 #'
-#' For [`pf_forward()`], `internal` is named list of internal objects for algorithm reruns (see `.rerun` and [`.pf_startup()`]).
+#' For [`pf_forward()`], `internal` is named list of internal objects for algorithm reruns (see `.rerun` and [`.pf_forward_startup()`]).
 #'
 #' # `convergence`
 #'
