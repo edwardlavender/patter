@@ -1,6 +1,12 @@
 #' @title PF: path reconstruction
 #' @description This function implements the path-reconstruction algorithm.
-#' @param .history Particle samples from the particle filter, provided in any format accepted by [`.pf_history_list()`]. Particle samples must contain `cell_past` and `cell_now` columns.
+#' @param .history Particle samples, provided in any format accepted by [`.pf_history_list()`]. Particle samples may be sourced from:
+#' * [`pf_forward()`] (a marginal distribution);
+#' * [`pf_backward_killer()`] (a 'partial' joint distribution);
+#' * [`pf_backward_sampler()`] (the full joint distribution);
+#'
+#' Particle samples must contain `cell_past` and `cell_now` columns.
+#'
 #' @param .bathy (optional) If `.return = "long"`, a bathymetry [`SpatRaster`] can be supplied to define cell coordinates (see [`pf_path_pivot()`]).
 #' @param .obs,.cols (optional) If `.return = "long"`, `.obs` and `.cols` are a [`data.table`] and a `character` vector of column names in `.obs` to match onto the output (see [`pf_path_pivot()`]).
 #' @param .verbose User output control (see [`patter-progress`] for supported options).

@@ -7,7 +7,14 @@
 pf_coord(.history, .bathy, .obs = NULL, .cols = NULL)
 }
 \arguments{
-\item{.history}{Particle samples, provided in any format accepted by \code{\link[=.pf_history_dt]{.pf_history_dt()}}.}
+\item{.history}{Particle samples, provided in any format accepted by \code{\link[=.pf_history_dt]{.pf_history_dt()}}. Particle samples may be sourced from:
+\itemize{
+\item \code{\link[=pf_forward]{pf_forward()}} (a marginal distribution);
+\item \code{\link[=pf_backward_killer]{pf_backward_killer()}} (a 'partial' joint distribution);
+\item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} (the full joint distribution);
+}
+
+Particle samples must contain the \code{timestep} and \code{cell_now} columns.}
 
 \item{.bathy}{The bathymetry \code{\link{SpatRaster}}.}
 
@@ -27,7 +34,7 @@ If \code{.obs} is supplied, the output also contains any columns specified in \c
 This function collects particle samples and extracts coordinates.
 }
 \details{
-The \code{timestep} and \code{cell_now} columns in \code{\link[=pf_forward]{pf_forward()}} outputs are required to extract coordinates. \code{cell_now} is used to extract coordinates on \code{.bathy}.
+The \code{cell_now} column is used to extract coordinates on \code{.bathy}.
 
 This function is not memory safe, since the entire time series of coordinates is collected in memory.
 }

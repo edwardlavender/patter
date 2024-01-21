@@ -1,12 +1,18 @@
 #' @title PF: particle coordinates
 #' @description This function collects particle samples and extracts coordinates.
 #'
-#' @param .history Particle samples, provided in any format accepted by [`.pf_history_dt()`].
+#' @param .history Particle samples, provided in any format accepted by [`.pf_history_dt()`]. Particle samples may be sourced from:
+#' * [`pf_forward()`] (a marginal distribution);
+#' * [`pf_backward_killer()`] (a 'partial' joint distribution);
+#' * [`pf_backward_sampler()`] (the full joint distribution);
+#'
+#' Particle samples must contain the `timestep` and `cell_now` columns.
+#'
 #' @param .bathy The bathymetry [`SpatRaster`].
 #' @param .obs,.cols (optional) A [`data.table`] and a character vector of column names in `.obs` to match onto the output. `.obs` must contain a `timestep` column for matching.
 #'
 #' @details
-#' The `timestep` and `cell_now` columns in [`pf_forward()`] outputs are required to extract coordinates. `cell_now` is used to extract coordinates on `.bathy`.
+#' The `cell_now` column is used to extract coordinates on `.bathy`.
 #'
 #' This function is not memory safe, since the entire time series of coordinates is collected in memory.
 #'
@@ -36,9 +42,7 @@ pf_coord <- function(.history, .bathy, .obs = NULL, .cols = NULL) {
 
   # Define particle coordinates
   sch <- schema(timestep = int32(),
-                cell_now = int32(),
-                x_now = double(),
-                y_now = double())
+                cell_now = int32())
   p <-
     .history |>
     .pf_history_dt(schema = sch, .collect = TRUE) |>

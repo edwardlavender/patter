@@ -14,7 +14,14 @@ pf_path(
 )
 }
 \arguments{
-\item{.history}{Particle samples from the particle filter, provided in any format accepted by \code{\link[=.pf_history_list]{.pf_history_list()}}. Particle samples must contain \code{cell_past} and \code{cell_now} columns.}
+\item{.history}{Particle samples, provided in any format accepted by \code{\link[=.pf_history_list]{.pf_history_list()}}. Particle samples may be sourced from:
+\itemize{
+\item \code{\link[=pf_forward]{pf_forward()}} (a marginal distribution);
+\item \code{\link[=pf_backward_killer]{pf_backward_killer()}} (a 'partial' joint distribution);
+\item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} (the full joint distribution);
+}
+
+Particle samples must contain \code{cell_past} and \code{cell_now} columns.}
 
 \item{.bathy}{(optional) If \code{.return = "long"}, a bathymetry \code{\link{SpatRaster}} can be supplied to define cell coordinates (see \code{\link[=pf_path_pivot]{pf_path_pivot()}}).}
 
