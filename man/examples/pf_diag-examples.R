@@ -20,14 +20,14 @@ stopifnot(isTRUE(all.equal(
 #### Example (2): Summarise diagnostics for accepted particle samples
 
 ## (A) Use particle samples from pf_forward() or pf_backward_*()
-pf_diag_summary(.history = out_pff())
-pf_diag_summary(.history = out_pfbk())
-# pf_diag_summary(.history = out_pfbs())
+pf_diag_summary(.history = dat_pff())
+pf_diag_summary(.history = dat_pfbk())
+pf_diag_summary(.history = dat_pfbs())
 
 ## (B) Use particle samples in memory or on file
 # Particles can be provided in any format accepted by `?.pf_history_dt()`
-d1 <- pf_diag_summary(.history = out_pfbk())
-d2 <- pf_diag_summary(.history = out_pfbk()$history)
+d1 <- pf_diag_summary(.history = dat_pfbk())
+d2 <- pf_diag_summary(.history = dat_pfbk()$history)
 d3 <- pf_diag_summary(.history = dat_pfbk_src())
 d4 <- pf_diag_summary(.history = pf_files(dat_pfbk_src()))
 stopifnot(isTRUE(all.equal(d1, d2)))
@@ -42,19 +42,21 @@ diag_k <- pf_diag_summary(dat_pfbk())
 diag_s <- pf_diag_summary(dat_pfbs())
 
 # Plot diagnostic time series
-pf_plot_diag_ts <- function(.f, .k, .s, .metric = c("n", "nu", "ess"), ...){
+pf_plot_diag_ts <- function(.f, .k, .s, .metric = c("n", "n_u", "ess"), ...){
   # Define base plot
-  .metric <- match.arg(metric)
-  ylim <- range(c(.f[[.metric]], .k[[.metric]], .s[[.metric]]))
+  .metric <- match.arg(.metric)
+  ylim <- range(c(.f[[.metric]], .k[[.metric]], .s[[.metric]]), na.rm = TRUE)
   plot(.f$timestep, .f[[.metric]],
        xlab = "time step", ylab = .metric,
        ylim = ylim, type = "n", ...)
   # Add diagnostics for each algorithm
   add_diag <- function(x, y, col) {
     if (!all(is.na(y))) {
+      # Add semi-transparent smoother (colour: ct)
       ct <- col2rgb(col) / 255
       ct <- rgb(ct[1], ct[2], ct[3], alpha = 0.25)
-      lines(loess.smooth(x, y), lwd = 2, col = ct)
+      lines(stats::loess.smooth(x, y), lwd = 2, col = ct)
+      # Add points
       points(x, y, cex = 0.5, col = col)
     }
     invisible(NULL)
@@ -65,8 +67,12 @@ pf_plot_diag_ts <- function(.f, .k, .s, .metric = c("n", "nu", "ess"), ...){
 }
 
 # Plot time series
+# * Red:    pf_forward()
+# * Orange: pf_backward_killer()
+# * Green:  pf_backward_sampler()
 pp <- par(mfrow = c(1, 3))
-cl_lapply(c("n", "nu", "ess"), function(.metric) {
+cl_lapply(c("n", "n_u", "ess"), function(.metric) {
+  print(.metric)
   pf_plot_diag_ts(.f = diag_f,
                   .k = diag_k,
                   .s = diag_s,

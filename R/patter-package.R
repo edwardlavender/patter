@@ -180,7 +180,11 @@
 #' @importFrom graphics par
 #' @importFrom graphics arrows
 #' @importFrom graphics points
+#' @importFrom graphics lines
 #' @importFrom graphics hist
+#'
+#' @importFrom grDevices rgb
+#' @importFrom grDevices col2rgb
 #'
 #' @importFrom rlang .data
 #'

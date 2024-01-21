@@ -28,7 +28,7 @@
 #' * `timestep`---an `integer` that defines the time step;
 #' * `n`---an `integer` that defines the number of particles;
 #' * `n_u`---an `integer` that defines the number of unique location samples (see [`.pf_diag_nu()`]);
-#' * `ess`---a `double` that defines the effective sample size (see [`.pf_diag_ess()`]).
+#' * `ess`---a `double` that defines the effective sample size or `NA_real_` if the `lik` column is unavailable (see [`.pf_diag_ess()`]);
 #'
 #' @inherit pf_diag seealso
 #' @name pf_diag
