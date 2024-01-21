@@ -95,8 +95,8 @@ pf_backward_killer <- function(.history,
   pb_close(.pb = pb)
 
   #### Return outputs
-  .pf_backward_killer_outputs(.start = t_onset,
-                              .history = .history,
-                              .record = .record)
+  .pf_backward_output(.start = t_onset,
+                      .history = .history,
+                      .record = .record)
 
 }

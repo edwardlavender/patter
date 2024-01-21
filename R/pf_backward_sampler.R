@@ -184,9 +184,9 @@ pf_backward_sampler <- function(.history,
                       .filename = 1L, .write = write)
 
   #### Return outputs
-  .pf_backward_killer_outputs(.start = t_onset,
-                              .history = .history,
-                              .record = .record)
+  .pf_backward_output(.start = t_onset,
+                      .history = .history,
+                      .record = .record)
 
 }
 
