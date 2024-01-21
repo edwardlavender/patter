@@ -28,8 +28,6 @@ pf_path <- function(.history,
 
   # Check user inputs
   t_onset <- Sys.time()
-  check_inherits(.history, "list")
-  rlang::check_installed("collapse")
   .return <- match.arg(.return)
   if (.return == "long") {
     .pf_path_pivot_checks(.obs, .cols)
