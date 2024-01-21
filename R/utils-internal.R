@@ -167,7 +167,7 @@ list_merge <- function(...) {
 }
 
 #' @title Utilities: data helpers
-#' @description These are internal helpers for data structures (such as [`.data.table`]s and related objects) in [`patter`].
+#' @description These are internal helpers for data structures (such as [`data.table`]s and related objects) in [`patter`].
 #' @author Edward Lavender
 #' @name utils-dt
 
