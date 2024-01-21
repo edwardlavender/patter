@@ -320,9 +320,8 @@
     proposals <-
       # Calculate movement densities
       do.call(.dpropose, .dargs) |>
-      # Calculate weights & normalise
-      mutate(weight = .data$lik * .data$dens,
-             weight = .data$weight / sum(.data$weight)) |>
+      # Calculate weights
+      mutate(weight = .data$lik * .data$dens) |>
       as.data.table()
 
     #### Sample particles (from the set of allowed particles)
