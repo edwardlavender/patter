@@ -51,33 +51,32 @@ pf_backward_killer <- function(.history,
   for (t in rev(seq_len(timestep_final))) {
 
     #### Read particle samples for t and t - 1
-    # For speed, we use arrow::read_parquet() directly rather than .pf_history_elm()
+    # For speed, we only use .pf_history_elm() if read = TRUE
+    tp <- t - 1L
     pb_tick(.pb = pb, .t = (timestep_final - t) + 1L)
     cat_log(paste0("... Time step ", t, ":"))
     if (read) {
       if (t == timestep_final) {
         cat_log(paste0("... ... Reading `.history[[", timestep_final, "]]`..."))
-        .history[[t]] <- arrow::read_parquet(.history[[t]],
-                                             col_select = read_cols)
+        .history[[t]] <- .pf_history_elm(.history = .history, .elm = t, .read = TRUE, .cols = read_cols)
       }
       if (t > 1) {
-        cat_log(paste0("... ... Reading `.history[[", t - 1L, "]]`..."))
-        .history[[t - 1L]] <- arrow::read_parquet(.history[[t - 1L]],
-                                                  col_select = read_cols)
+        cat_log(paste0("... ... Reading `.history[[", tp, "]]`..."))
+        .history[[tp]] <- .pf_history_elm(.history = .history, .elm = tp, .read = TRUE, .cols = read_cols)
       }
     }
 
     #### Filter particle samples
     # cell_past for current time step should match cell_now for previous one
     if (t < timestep_final && t > 1) {
-      cat_log(paste0("... ... Cleaning `.history[[", t - 1, "]]`..."))
+      cat_log(paste0("... ... Cleaning `.history[[", tp, "]]`..."))
       cat_log(paste0("... ... Identifying `cell_now` (for the previous step) that match `cell_past` (for the current step)..."))
       cat_log(paste0("... ... ... Input: ", nrow(.history[[t]]), " rows in `.history[[t]]`..."))
-      bool <- .history[[t - 1]]$cell_now %in% .history[[t]]$cell_past
+      bool <- .history[[tp]]$cell_now %in% .history[[t]]$cell_past
       if (!all(bool)) {
         cat_log(paste0("... ... ... Filtering ", length(which(!bool)), " dead ends (", length(which(bool)), " remain)..."))
-        .history[[t - 1]] <- .history[[t - 1]] |> filter(bool) |> as.data.table()
-        cat_log(paste0("... ... ... Output: ", nrow(.history[[t - 1]]), " rows in `.history[[t - 1]]`..."))
+        .history[[tp]] <- .history[[tp]] |> filter(bool) |> as.data.table()
+        cat_log(paste0("... ... ... Output: ", nrow(.history[[tp]]), " rows in `.history[[t - 1]]`..."))
       }
     }
 
