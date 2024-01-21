@@ -92,7 +92,7 @@ pf_backward_sampler <- function(.history,
 
     cat_log(paste0("... Time step ", t, ":"))
     tp <- t - 1L
-    pb_tick(.pb = pb, .t = n_step - (tp))
+    pb_tick(.pb = pb, .t = n_step - tp)
 
     #### Collect .history[[t]] and .history[[t - 1L]]
     # Use arrow::read_parquet() directly for speed (if required)
@@ -132,9 +132,9 @@ pf_backward_sampler <- function(.history,
       lazy_dt(immutable = FALSE) |>
       group_by(.data$index_now) |>
       # slice_sample() doesn't work with .data$dens pronoun
-      dplyr::sample_n(size = 1L, weight_by = dens, replace = TRUE) |>
+      slice_sample(n = 1L, weight_by = dens, replace = TRUE) |>
       ungroup() |>
-      mutate(timestep = tp) |>
+      mutate(timestep = t) |>
       select("timestep",
              "cell_past", "x_past", "y_past",
              "cell_now", "x_now", "y_now",
@@ -142,6 +142,9 @@ pf_backward_sampler <- function(.history,
       as.data.table()
 
     #### Record outputs
+    # Record .history[[t]]
+    # * For each particle in .history[[t]], we have sampled cell_past
+    # * (which will become cell_now at the next time step)
     .history[[t]] <- .pf_snapshot(.dt = h, .save = .record$save,
                                   .select = !is.null(.record$cols), .cols = .record$cols)
     .pf_write_particles(.particles = h, .sink = .record$sink,
@@ -158,6 +161,7 @@ pf_backward_sampler <- function(.history,
       mutate(timestep = tp) |>
       select("timestep", cell_now = "cell_past", x_now = "x_past", y_now = "y_past") |>
       as.data.table()
+
   }
   pb_close(.pb = pb)
 
@@ -168,17 +172,16 @@ pf_backward_sampler <- function(.history,
            cell_past = NA_integer_,
            x_past = NA_real_,
            y_past = NA_real_,
-           dist = NA_real_,
            dens = NA_real_) |>
     select("timestep",
            "cell_past", "x_past", "y_past",
            "cell_now", "x_now", "y_now",
            "dens") |>
     as.data.table()
-  .history[[t]] <- .pf_snapshot(.dt = .history[[1L]], .save = .record$save,
-                                .select = !is.null(.record$cols), .cols = .record$cols)
+  .history[[1L]] <- .pf_snapshot(.dt = .history[[1L]], .save = .record$save,
+                                 .select = !is.null(.record$cols), .cols = .record$cols)
   .pf_write_particles(.particles = .history[[1L]], .sink = .record$sink,
-                      .filename = t, .write = write)
+                      .filename = 1L, .write = write)
 
   #### Return outputs
   .pf_backward_killer_outputs(.start = t_onset,
