@@ -5,7 +5,7 @@ head(diag)
 #### Example (2): Calculate diagnostics from parquet files
 pfb_folder <- dat_pfbk_src()
 diag_2 <- pf_backward_killer_diagnostics(pfb_folder)
-stopifnot(all.equal(diag, diag_2))
+stopifnot(isTRUE(all.equal(diag, diag_2)))
 
 #### Example (3): Analyse diagnostics
 # Define helper function

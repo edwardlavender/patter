@@ -81,8 +81,8 @@ pf_files <- function(.sink, .folder = NULL, ...) {
     arrange(.data$name) |>
     as.data.table()
   # Validate ordered list (e.g., to check there are no gaps)
-  if (!all.equal(paste0(seq_row(out), ".", .ext),
-                 basename(out$file))) {
+  if (!isTRUE(all.equal(paste0(seq_row(out), ".", .ext),
+                        basename(out$file)))) {
     abort("File names should be '1.{.ext}', '2.{.ext}', etc.",
           .envir = environment())
   }

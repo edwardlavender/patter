@@ -10,7 +10,7 @@ pf_forward_diagnostics(pff_folder)
 pf_forward_diagnostics(file.path(pff_folder, "diagnostics"))
 
 # Outputs are identical
-stopifnot(all.equal(
+stopifnot(isTRUE(all.equal(
   dat_pff()$diagnostics,
   pf_forward_diagnostics(pff_folder)
-))
+)))

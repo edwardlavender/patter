@@ -85,7 +85,7 @@ check_bathy <- function(.bathy) {
   }
 
   res <- terra::res(.bathy)
-  if (!all.equal(res[1], res[2])) {
+  if (!isTRUE(all.equal(res[1], res[2]))) {
     msg("A square bathymetry grid is recommended.")
   }
   min_val <- terra::global(.bathy, "min", na.rm = TRUE)

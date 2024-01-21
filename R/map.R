@@ -251,7 +251,7 @@ map_dens <- function(.map,
     # dens <- terra::mask(dens, .map)
     dens <- dens / terra::global(dens, "sum", na.rm = TRUE)[1, 1]
   }
-  stopifnot(all.equal(1, terra::global(dens, "sum", na.rm = TRUE)[1, 1]))
+  stopifnot(isTRUE(all.equal(1, terra::global(dens, "sum", na.rm = TRUE)[1, 1])))
 
   #### Plot density
   if (.plot) {
