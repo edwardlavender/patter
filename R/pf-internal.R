@@ -225,20 +225,25 @@
       # Read all columns
       # * There is an issue in {arrow} with tidyselect & col_select = .cols when .cols = NULL
       # * So this statement is separated from the one below
-      return(arrow::read_parquet(.history[[.elm]], ...))
+      out <- arrow::read_parquet(.history[[.elm]], ...)
     } else {
-      return(arrow::read_parquet(.history[[.elm]],
-                                 col_select = .cols, ...))
+      out <- arrow::read_parquet(.history[[.elm]],
+                                 col_select = .cols, ...)
     }
   } else {
     if (is.null(.cols)) {
-      return(.history[[.elm]])
+      out <- .history[[.elm]]
     } else {
-      return(.history[[.elm]] |>
-               select(any_of(.cols)) |>
-               as.data.table())
+      out <- .history[[.elm]] |>
+        select(any_of(.cols)) |>
+        as.data.table()
     }
   }
+  if (fnrow(out) == 0L) {
+    abort(".history[[{.elm}]] is empty!",
+          .envir = environment())
+  }
+  out
 }
 
 #' @rdname pf_history
