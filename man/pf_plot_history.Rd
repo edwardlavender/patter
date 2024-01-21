@@ -60,19 +60,21 @@ dir.create(mp4s, recursive = TRUE)
 dlist <- dat_dlist()
 
 #### Example (1): Plot selected samples (from the forward run)
-# Use particles in memory
+# Particles can be provided in any format accepted by `?.pf_history_list()`
+# Here, we use precomputed samples:
+# * Use particles in memory
 pf_plot_history(.dlist = dlist,
                 .forward = dat_pff(),
                 .steps = 1L)
-# Use the `history` list directly
+# * Use the `history` list directly
 pf_plot_history(.dlist = dlist,
                 .forward = dat_pff()$history,
                 .steps = 1L)
-# Use a directory
+# * Use a directory
 pf_plot_history(.dlist = dlist,
                 .forward = dat_pff_src(),
                 .steps = 1L)
-# Use a list of files
+# * Use a list of files
 pf_plot_history(.dlist = dlist,
                 .forward = pf_files(dat_pff_src()),
                 .steps = 1L)
