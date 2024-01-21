@@ -74,6 +74,7 @@ if (overwrite) {
   dir.create(pff_folder, recursive = TRUE)
   sink <- pff_folder
 }
+ssf()
 out_pff <- pf_forward(.obs = obs,
                       .dlist = dlist,
                       .likelihood = list(acs_filter_land = acs_filter_land,
@@ -86,7 +87,7 @@ out_pff <- pf_forward(.obs = obs,
                                                         "x_now", "y_now", "lik")))
 
 #### Implement pf_backward_killer()
-# NB: If pf_forward() is re-run, pf_backward() must also be re-run.
+# NB: If pf_forward() is re-run, pf_backward_*() must also be re-run.
 sink      <- NULL
 if (overwrite) {
   pfbk_folder <- file.path("inst", "extdata", "acpf", "backward", "killer")
@@ -97,12 +98,27 @@ if (overwrite) {
 out_pfbk <- pf_backward_killer(.history = out_pff$history,
                                .record = pf_opt_record(.save = TRUE, .sink = sink))
 
+#### Implement pf_backward_sampler()
+# NB: If pf_forward() is re-run, pf_backward_*() must also be re-run.
+sink      <- NULL
+if (overwrite) {
+  pfbs_folder <- file.path("inst", "extdata", "acpf", "backward", "sampler")
+  unlink(pfbs_folder, recursive = TRUE)
+  dir.create(pfbs_folder, recursive = TRUE)
+  sink <- pfbs_folder
+}
+ssf()
+out_pfbs <- pf_backward_sampler(.history = out_pff$history,
+                                .obs = NULL,
+                                .dlist = dlist,
+                                .record = pf_opt_record(.save = TRUE, .sink = sink))
+
 #### Implement pf_path()
-out_pfp <- pf_path(out_pfbk$history, .bathy = dlist$spatial$bathy)
+out_pfp <- pf_path(out_pfbs$history, .bathy = dlist$spatial$bathy)
 
 #### Implement map_pou()
 out_pou <- map_pou(.map = dlist$spatial$bathy,
-                   .coord = pf_coord(.history = out_pfbk$history, .bathy = dlist$spatial$bathy))
+                   .coord = pf_coord(.history = out_pfbs$history, .bathy = dlist$spatial$bathy))
 out_pou <- terra::wrap(out_pou)
 
 
@@ -117,6 +133,7 @@ dat_dlist <- dlist
 dat_coa   <- out_coa
 dat_pff   <- out_pff
 dat_pfbk  <- out_pfbk
+dat_pfbs  <- out_pfbs
 dat_pfp   <- out_pfp
 # Update contents
 summary(dat_dlist)
@@ -130,6 +147,7 @@ datasets <-
        dat_coa = dat_coa,
        dat_pff = dat_pff,
        dat_pfbk = dat_pfbk,
+       dat_pfbs = dat_pfbs,
        dat_pfp = dat_pfp)
 
 #### Check dataset sizes (MB)
