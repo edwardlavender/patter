@@ -135,3 +135,10 @@ cl_lapply(c("n", "n_u", "ess"), function(.metric) {
 })
 par(pp)
 }
+\seealso{
+\itemize{
+\item \code{\link[=pf_forward]{pf_forward()}}, \code{\link[=pf_backward_killer]{pf_backward_killer()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implement the forward simulation and the backward pass;
+\item \code{\link[=pf_diag_convergence]{pf_diag_convergence()}} and \code{\link[=pf_diag_summary]{pf_diag_summary()}} collect diagnostics;
+\item \code{\link{.pf_diag}}\verb{_()} functions are internal routines that calculate diagnostic statistics;
+}
+}

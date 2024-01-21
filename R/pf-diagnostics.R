@@ -30,7 +30,7 @@
 #' * `n_u`---an `integer` that defines the number of unique location samples (see [`.pf_diag_nu()`]);
 #' * `ess`---a `double` that defines the effective sample size or `NA_real_` if the `lik` column is unavailable (see [`.pf_diag_ess()`]);
 #'
-#' @inherit pf_diag seealso
+#' @inherit pf_diag-internal seealso
 #' @name pf_diag
 
 #' @rdname pf_diag

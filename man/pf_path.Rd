@@ -130,7 +130,7 @@ The forward filtering--backward sampling algorithm samples locations (particles)
 }
 \item To reconstruct movement paths from particle samples, use \code{\link[=pf_path]{pf_path()}}.
 \item To map emergent patterns of space use, use \code{\link[=pf_coord]{pf_coord()}} plus a \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()}.
-\item For additional utilities, see supporting \verb{pf_*()} functions, such as \code{\link[=pf_plot_history]{pf_plot_history()}}, \code{\link[=pf_files]{pf_files()}} and \code{\link[=pf_files_size]{pf_files_size()}}.
+\item For additional utilities, see supporting \verb{pf_*()} functions, such as \code{\link[=pf_files]{pf_files()}}, \code{\link[=pf_files_size]{pf_files_size()}}, \code{\link[=pf_plot_history]{pf_plot_history()}}, \code{\link[=pf_diag_convergence]{pf_diag_convergence()}} and \code{\link[=pf_diag_summary]{pf_diag_summary()}}.
 }
 }
 \author{
