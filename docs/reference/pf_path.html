@@ -138,7 +138,7 @@
 </ul></li>
 <li><p>To reconstruct movement paths from particle samples, use <code>pf_path()</code>.</p></li>
 <li><p>To map emergent patterns of space use, use <code><a href="pf_coord.html">pf_coord()</a></code> plus a <code>map_*()</code> function, such as <code><a href="map_pou.html">map_pou()</a></code>, <code><a href="map_dens.html">map_dens()</a></code> and/or <code><a href="map_hr.html">map_hr</a></code><code>_()</code>.</p></li>
-<li><p>For additional utilities, see supporting <code>pf_*()</code> functions, such as <code><a href="pf_plot_history.html">pf_plot_history()</a></code>, <code><a href="pf_files.html">pf_files()</a></code> and <code><a href="pf_files.html">pf_files_size()</a></code>.</p></li>
+<li><p>For additional utilities, see supporting <code>pf_*()</code> functions, such as <code><a href="pf_files.html">pf_files()</a></code>, <code><a href="pf_files.html">pf_files_size()</a></code>, <code><a href="pf_plot_history.html">pf_plot_history()</a></code>, <code><a href="pf_diag.html">pf_diag_convergence()</a></code> and <code><a href="pf_diag.html">pf_diag_summary()</a></code>.</p></li>
 </ul></div>
     </div>
     <div id="author">
@@ -162,37 +162,37 @@
 <span class="r-in"><span><span class="co"># Particles can be provided in any format accepted by `?.pf_history_list()`</span></span></span>
 <span class="r-in"><span><span class="co"># Here, we use precomputed samples:</span></span></span>
 <span class="r-in"><span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu">pf_path</span><span class="op">(</span><span class="va">out_pfbk</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` called @ 2024-01-21 13:33:46... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` called @ 2024-01-21 21:57:36... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing history[[1]]... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Evaluating chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Reorientating matrix via pf_path_pivot()... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` call ended @ 2024-01-21 13:33:46 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` call ended @ 2024-01-21 21:57:36 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu">pf_path</span><span class="op">(</span><span class="va">out_pfbk</span><span class="op">$</span><span class="va">history</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` called @ 2024-01-21 13:33:46... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` called @ 2024-01-21 21:57:36... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing history[[1]]... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Evaluating chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Reorientating matrix via pf_path_pivot()... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` call ended @ 2024-01-21 13:33:46 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` call ended @ 2024-01-21 21:57:36 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="va">p3</span> <span class="op">&lt;-</span> <span class="fu">pf_path</span><span class="op">(</span><span class="fu"><a href="datasets-algorithms.html">dat_pfbk_src</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` called @ 2024-01-21 13:33:46... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` called @ 2024-01-21 21:57:36... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing history[[1]]... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Evaluating chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Reorientating matrix via pf_path_pivot()... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` call ended @ 2024-01-21 13:33:46 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` call ended @ 2024-01-21 21:57:36 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="va">p4</span> <span class="op">&lt;-</span> <span class="fu">pf_path</span><span class="op">(</span><span class="fu"><a href="pf_files.html">pf_files</a></span><span class="op">(</span><span class="fu"><a href="datasets-algorithms.html">dat_pfbk_src</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` called @ 2024-01-21 13:33:46... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` called @ 2024-01-21 21:57:36... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing history[[1]]... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Evaluating chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Reorientating matrix via pf_path_pivot()... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` call ended @ 2024-01-21 13:33:46 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` call ended @ 2024-01-21 21:57:36 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isTRUE</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isTRUE</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isTRUE</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -203,47 +203,47 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (3): Include cell coordinates/obs columns</span></span></span>
 <span class="r-in"><span><span class="va">p3</span> <span class="op">&lt;-</span> <span class="fu">pf_path</span><span class="op">(</span><span class="va">out_pfbk</span>, <span class="va">gebco</span>, <span class="va">obs</span>, .cols <span class="op">=</span> <span class="st">"depth"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` called @ 2024-01-21 13:33:46... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` called @ 2024-01-21 21:57:36... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing history[[1]]... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Evaluating chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Reorientating matrix via pf_path_pivot()... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` call ended @ 2024-01-21 13:33:46 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` call ended @ 2024-01-21 21:57:37 (duration: ~1 sec(s)). </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">p3</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    path_id timestep cell_id   cell_x  cell_y   cell_z depth</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:       1        1   38899 709342.1 6252607 41.63695 73.78</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:       1        2   38898 709242.1 6252607 43.93695 73.32</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:       1        3   38710 709442.1 6252707 40.86837 73.32</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:       1        4   39088 709242.1 6252507 42.63771 73.32</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:       1        5   38519 709342.1 6252807 44.46762 73.55</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:       1        6   38141 709542.1 6253007 42.54443 68.70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:       1        1   38519 709342.1 6252807 44.46762 73.78</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:       1        2   38138 709242.1 6253007 52.99475 73.32</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:       1        3   37759 709342.1 6253207 56.53801 73.32</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:       1        4   37761 709542.1 6253207 44.62514 73.32</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:       1        5   37569 709342.1 6253307 60.09327 73.55</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:       1        6   37566 709042.1 6253307 91.54701 68.70</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (5): Adjust standard `patter-progress` options</span></span></span>
 <span class="r-in"><span><span class="co"># Use a log.txt file</span></span></span>
 <span class="r-in"><span><span class="va">log.txt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".txt"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">p4</span> <span class="op">&lt;-</span> <span class="fu">pf_path</span><span class="op">(</span><span class="va">out_pfbk</span>, .verbose <span class="op">=</span> <span class="va">log.txt</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="va">log.txt</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "`patter::pf_path()` called @ 2024-01-21 13:33:46... "                        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "`patter::pf_path()` called @ 2024-01-21 21:57:37... "                        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2] "... Setting up... "                                                          </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [3] "... Processing history[[1]]... "                                             </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [4] "... Defining chain text... "                                                 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [5] "... Evaluating chain text... "                                               </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [6] "... Reorientating matrix via pf_path_pivot()... "                            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [7] "`patter::pf_path()` call ended @ 2024-01-21 13:33:46 (duration: ~0 sec(s)). "</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [7] "`patter::pf_path()` call ended @ 2024-01-21 21:57:37 (duration: ~0 sec(s)). "</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">log.txt</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Suppress `.verbose`</span></span></span>
 <span class="r-in"><span><span class="va">p4</span> <span class="op">&lt;-</span> <span class="fu">pf_path</span><span class="op">(</span><span class="va">out_pfbk</span>, .verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Suppress progress bar</span></span></span>
 <span class="r-in"><span><span class="va">pbo</span> <span class="op">&lt;-</span> <span class="fu">pbapply</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pbapply/man/pboptions.html" class="external-link">pboptions</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">p4</span> <span class="op">&lt;-</span> <span class="fu">pf_path</span><span class="op">(</span><span class="va">out_pfbk</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` called @ 2024-01-21 13:33:46... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` called @ 2024-01-21 21:57:37... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing history[[1]]... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Evaluating chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Reorientating matrix via pf_path_pivot()... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` call ended @ 2024-01-21 13:33:46 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` call ended @ 2024-01-21 21:57:37 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="fu">pbapply</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pbapply/man/pboptions.html" class="external-link">pboptions</a></span><span class="op">(</span><span class="va">pbo</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (6): Examine outputs</span></span></span>
@@ -266,39 +266,39 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (6): Change output format</span></span></span>
 <span class="r-in"><span><span class="va">p6</span> <span class="op">&lt;-</span> <span class="fu">pf_path</span><span class="op">(</span><span class="va">out_pfbk</span><span class="op">$</span><span class="va">history</span>, .return <span class="op">=</span> <span class="st">"wide"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` called @ 2024-01-21 13:33:46... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` called @ 2024-01-21 21:57:37... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing history[[1]]... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Evaluating chain text... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` call ended @ 2024-01-21 13:33:46 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` call ended @ 2024-01-21 21:57:37 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">p6</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Classes ‘data.table’ and 'data.frame':	100 obs. of  25 variables:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x1 : int  38899 38899 38899 38899 38899 38899 38899 38899 37379 37379 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x2 : int  38898 38898 38898 38898 38898 38898 38898 38898 37567 37567 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x3 : int  38710 38710 38710 38710 38710 38710 38710 38710 37758 37758 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x4 : int  39088 39088 39088 39088 39088 39088 39088 39088 38138 38138 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x5 : int  38519 38519 38519 38519 38519 38519 38519 38519 38328 38328 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x6 : int  38141 38141 38141 38141 38141 38141 38141 38141 38516 38516 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x7 : int  38520 38520 38520 38520 38520 38520 38520 38520 39087 39087 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x8 : int  38521 38521 38521 38521 38521 38521 38521 38521 38898 38898 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x9 : int  38140 38140 38140 38140 38140 38140 38140 38140 38328 38328 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x10: int  38329 38329 38329 38329 38329 38329 38329 38329 38139 38139 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x11: int  37948 37948 37948 37948 37948 37948 37948 37948 37759 37759 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x12: int  37946 37946 37946 37946 37946 37946 37946 37946 37758 37758 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x13: int  37949 37949 37949 37949 37949 37949 37949 37949 37950 37950 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x14: int  37569 37569 37569 37569 37569 37569 37569 37569 37568 37568 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x15: int  37567 37567 37567 37567 37567 37567 37567 37567 37757 37757 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x16: int  37758 37758 37758 37758 37758 37758 37758 37758 37378 37378 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x17: int  37377 37377 37377 37377 37377 37377 37377 37377 36997 36997 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x18: int  37566 37566 37566 37566 37566 37566 37566 37566 37185 37185 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x19: int  37563 37563 37563 37563 37563 37563 37185 37563 37373 37373 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x20: int  37753 37185 37185 37753 37185 37753 36998 37753 36994 36995 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x21: int  38326 37373 37373 38326 37566 38326 37378 38326 36997 37187 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x22: int  38328 37754 37754 38328 37375 38328 37186 38328 37378 37566 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x23: int  38709 37562 37562 38709 36805 38709 36994 38709 36996 37184 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x24: int  38901 37749 37749 38901 36424 38901 36997 38901 37376 37565 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x25: int  39279 37371 37371 39279 36426 38712 36425 39473 36995 37374 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x1 : int  38519 38519 38519 39088 38519 38710 37946 39088 38519 38519 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x2 : int  38138 38138 38138 38519 38138 38330 38328 38519 38138 38138 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x3 : int  37759 37759 37759 38899 37759 38711 37949 38899 37759 37759 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x4 : int  37761 37761 37761 38897 37761 38523 37569 38897 37761 37761 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x5 : int  37569 37569 37569 38327 37569 38521 37757 38327 37569 37569 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x6 : int  37566 37566 37566 38708 37566 38329 37568 38708 37566 37566 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x7 : int  37946 37946 37946 38898 37946 38137 37187 38898 37946 37946 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x8 : int  37566 37566 37566 38900 37566 38329 36808 38900 37566 37566 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x9 : int  37378 37378 37378 38519 37378 38138 37188 38519 37378 37378 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x10: int  37759 37759 37759 38327 37759 38140 37566 38707 37759 37759 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x11: int  38138 38138 38138 38328 38138 38521 37947 38710 38138 38138 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x12: int  37757 37757 37757 38521 37757 38519 38328 38518 37757 37757 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x13: int  37759 37759 37759 38142 37759 38900 38330 38329 37759 37759 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x14: int  37757 37757 37757 38140 37757 38330 38710 37949 37757 37757 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x15: int  37950 37950 37950 37948 37950 38138 38331 37757 37950 37950 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x16: int  38138 38138 38138 37950 38138 38140 38519 37755 38138 38138 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x17: int  38518 38518 38518 37759 38518 38332 38139 37566 38518 38518 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x18: int  38707 38707 38707 37566 38707 38524 38519 37186 38707 38707 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x19: int  39087 39087 38709 37563 39087 38716 38521 37375 38709 39087 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x20: int  38896 38896 38331 37183 38896 38714 38519 37946 38331 38896 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x21: int  38708 38708 37949 37563 38708 38901 38521 37375 37949 38708 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x22: int  38520 38520 38329 37376 38900 38903 38710 37567 38327 38520 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x23: int  38903 38903 38331 36997 39281 38525 39091 37375 38897 38903 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x24: int  39473 39284 38713 37185 39660 38716 39282 37373 38899 39473 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ x25: int  39853 39281 38711 37754 39092 38335 39284 36994 39278 39853 ...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  - attr(*, ".internal.selfref")=&lt;externalptr&gt; </span>
 </code></pre></div>
     </div>

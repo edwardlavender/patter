@@ -305,21 +305,20 @@
 <code><a href="reference/pf_opt.html">pf_opt_record()</a></code>, which sets output properties;</li>
 </ul>
 </li>
-<li>Downstream diagnostic functions, namely:
-<ul>
-<li>
-<code><a href="reference/pf_forward_diagnostics.html">pf_forward_diagnostics()</a></code>, which collates particle diagnostics;</li>
-</ul>
-</li>
 </ul>
 <p><strong>To implement the backward pass (<code>pf_backward_*()</code>)</strong>, use:</p>
 <ul>
 <li>
 <code><a href="reference/pf_backward_killer.html">pf_backward_killer()</a></code> to prune dead-ends;</li>
 <li>
-<code><a href="reference/pf_backward_killer_diagnostics.html">pf_backward_killer_diagnostics()</a></code> to summarise particle diagnostics;</li>
-<li>
 <code><a href="reference/pf_backward_sampler.html">pf_backward_sampler()</a></code> to run the backward sampler;</li>
+</ul>
+<p><strong>For particle diagnostics</strong>, see:</p>
+<ul>
+<li>
+<code><a href="reference/pf_diag.html">pf_diag_convergence()</a></code> to collate convergence diagnostics;</li>
+<li>
+<code><a href="reference/pf_diag.html">pf_diag_summary()</a></code> to collate summary diagnostics;</li>
 </ul>
 <p><strong>For convenience plotting functions</strong>, see:</p>
 <ul>

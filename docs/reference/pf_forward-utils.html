@@ -75,29 +75,32 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">.pf_dirs</span><span class="op">(</span><span class="va">.record</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">.pf_forward_dirs</span><span class="op">(</span><span class="va">.record</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.pf_write_particles</span><span class="op">(</span><span class="va">.particles</span>, <span class="va">.sink</span>, <span class="va">.filename</span>, <span class="va">.write</span><span class="op">)</span></span>
+<span><span class="fu">.pf_forward_write_diagnostics</span><span class="op">(</span><span class="va">.diagnostics</span>, <span class="va">.sink</span>, <span class="va">.write</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.pf_write_diagnostics</span><span class="op">(</span><span class="va">.diagnostics</span>, <span class="va">.sink</span>, <span class="va">.write</span><span class="op">)</span></span>
+<span><span class="fu">.pf_forward_startup</span><span class="op">(</span><span class="va">.rerun</span>, <span class="va">.record</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.pf_startup</span><span class="op">(</span><span class="va">.rerun</span>, <span class="va">.record</span><span class="op">)</span></span>
+<span><span class="fu">.pf_forward_start_t</span><span class="op">(</span><span class="va">.rerun</span>, <span class="va">.rerun_from</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.pf_snapshot</span><span class="op">(</span><span class="va">.dt</span>, <span class="va">.save</span>, <span class="va">.select</span>, <span class="va">.cols</span><span class="op">)</span></span>
+<span><span class="fu">.pf_forward_increment</span><span class="op">(</span><span class="va">.particles</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.pf_start_t</span><span class="op">(</span><span class="va">.rerun</span>, <span class="va">.rerun_from</span><span class="op">)</span></span>
+<span><span class="fu">.pf_forward_ppast</span><span class="op">(</span><span class="va">.particles</span>, <span class="va">.history</span>, <span class="va">.sink</span>, <span class="va">.t</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.pf_increment</span><span class="op">(</span><span class="va">.particles</span><span class="op">)</span></span>
+<span><span class="fu">.pf_forward_trial_sampler</span><span class="op">(</span><span class="va">.diagnostics</span>, <span class="va">.trial_crit</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.pf_ppast</span><span class="op">(</span><span class="va">.particles</span>, <span class="va">.history</span>, <span class="va">.sink</span>, <span class="va">.t</span><span class="op">)</span></span>
+<span><span class="fu">.pf_forward_revert</span><span class="op">(</span><span class="va">.t</span>, <span class="va">.trial_revert_steps</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.pf_trial_sampler</span><span class="op">(</span><span class="va">.diagnostics</span>, <span class="va">.trial_crit</span><span class="op">)</span></span>
+<span><span class="fu">.pf_forward_continue</span><span class="op">(</span><span class="va">.particles</span>, <span class="va">.t</span>, <span class="va">.crit</span>, <span class="va">.trial_revert_crit</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.pf_revert</span><span class="op">(</span><span class="va">.t</span>, <span class="va">.trial_revert_steps</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">.pf_continue</span><span class="op">(</span><span class="va">.particles</span>, <span class="va">.t</span>, <span class="va">.crit</span>, <span class="va">.trial_revert_crit</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">.pf_outputs</span><span class="op">(</span><span class="va">.rerun</span>, <span class="va">.start</span>, <span class="va">.startup</span>, <span class="va">.history</span>, <span class="va">.diagnostics</span>, <span class="va">.convergence</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">.pf_forward_output</span><span class="op">(</span></span>
+<span>  <span class="va">.rerun</span>,</span>
+<span>  <span class="va">.start</span>,</span>
+<span>  <span class="va">.startup</span>,</span>
+<span>  <span class="va">.history</span>,</span>
+<span>  <span class="va">.diagnostics</span>,</span>
+<span>  <span class="va">.convergence</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="author">

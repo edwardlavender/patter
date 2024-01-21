@@ -123,7 +123,7 @@
 </ul></li>
 <li><p>To reconstruct movement paths from particle samples, use <code><a href="pf_path.html">pf_path()</a></code>.</p></li>
 <li><p>To map emergent patterns of space use, use <code>pf_coord()</code> plus a <code>map_*()</code> function, such as <code><a href="map_pou.html">map_pou()</a></code>, <code><a href="map_dens.html">map_dens()</a></code> and/or <code><a href="map_hr.html">map_hr</a></code><code>_()</code>.</p></li>
-<li><p>For additional utilities, see supporting <code>pf_*()</code> functions, such as <code><a href="pf_plot_history.html">pf_plot_history()</a></code>, <code><a href="pf_files.html">pf_files()</a></code> and <code><a href="pf_files.html">pf_files_size()</a></code>.</p></li>
+<li><p>For additional utilities, see supporting <code>pf_*()</code> functions, such as <code><a href="pf_files.html">pf_files()</a></code>, <code><a href="pf_files.html">pf_files_size()</a></code>, <code><a href="pf_plot_history.html">pf_plot_history()</a></code>, <code><a href="pf_diag.html">pf_diag_convergence()</a></code> and <code><a href="pf_diag.html">pf_diag_summary()</a></code>.</p></li>
 </ul></div>
     </div>
     <div id="author">
@@ -139,85 +139,97 @@
 <span class="r-in"><span><span class="va">gebco</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">pf_coord</span><span class="op">(</span><span class="fu"><a href="datasets-algorithms.html">dat_pff</a></span><span class="op">(</span><span class="op">)</span>, .bathy <span class="op">=</span> <span class="va">gebco</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       timestep cell_id   cell_x  cell_y    cell_z</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:        1   37569 709342.1 6253307  60.09327</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:        1   38708 709242.1 6252707  45.23619</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:        1   37379 709342.1 6253407  65.31673</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:        1   38329 709342.1 6252907  45.88295</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:        1   38142 709642.1 6253007  39.55516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1:        1   37949 709342.1 6253107  52.98276</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2:        1   38900 709442.1 6252607  39.33695</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3:        1   37946 709042.1 6253107  74.88351</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4:        1   39089 709342.1 6252507  40.22162</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5:        1   37191 709542.1 6253507  54.39227</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2496:       25   37565 708942.1 6253307 102.59936</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2497:       25   38902 709642.1 6252607  37.09717</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2498:       25   36425 708942.1 6253907 141.14836</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2499:       25   39279 709342.1 6252407  40.16304</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2500:       25   38319 708342.1 6252907 110.62663</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2496:       25   36610 708442.1 6253807 149.87747</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2497:       25   39282 709642.1 6252407  38.07315</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2498:       25   36427 709142.1 6253907 127.14054</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2499:       25   39286 710042.1 6252407  57.94794</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2500:       25   39284 709842.1 6252407  44.40382</span>
 <span class="r-in"><span><span class="fu">pf_coord</span><span class="op">(</span><span class="fu"><a href="datasets-algorithms.html">dat_pff</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">history</span>, .bathy <span class="op">=</span> <span class="va">gebco</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       timestep cell_id   cell_x  cell_y    cell_z</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:        1   37569 709342.1 6253307  60.09327</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:        1   38708 709242.1 6252707  45.23619</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:        1   37379 709342.1 6253407  65.31673</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:        1   38329 709342.1 6252907  45.88295</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:        1   38142 709642.1 6253007  39.55516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1:        1   37949 709342.1 6253107  52.98276</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2:        1   38900 709442.1 6252607  39.33695</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3:        1   37946 709042.1 6253107  74.88351</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4:        1   39089 709342.1 6252507  40.22162</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5:        1   37191 709542.1 6253507  54.39227</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2496:       25   37565 708942.1 6253307 102.59936</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2497:       25   38902 709642.1 6252607  37.09717</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2498:       25   36425 708942.1 6253907 141.14836</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2499:       25   39279 709342.1 6252407  40.16304</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2500:       25   38319 708342.1 6252907 110.62663</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2496:       25   36610 708442.1 6253807 149.87747</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2497:       25   39282 709642.1 6252407  38.07315</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2498:       25   36427 709142.1 6253907 127.14054</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2499:       25   39286 710042.1 6252407  57.94794</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2500:       25   39284 709842.1 6252407  44.40382</span>
 <span class="r-in"><span><span class="fu">pf_coord</span><span class="op">(</span><span class="fu"><a href="datasets-algorithms.html">dat_pff_src</a></span><span class="op">(</span><span class="op">)</span>, .bathy <span class="op">=</span> <span class="va">gebco</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       timestep cell_id   cell_x  cell_y    cell_z</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:        1   37569 709342.1 6253307  60.09327</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:        1   38708 709242.1 6252707  45.23619</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:        1   37379 709342.1 6253407  65.31673</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:        1   38329 709342.1 6252907  45.88295</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:        1   38142 709642.1 6253007  39.55516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1:        1   37949 709342.1 6253107  52.98276</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2:        1   38900 709442.1 6252607  39.33695</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3:        1   37946 709042.1 6253107  74.88351</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4:        1   39089 709342.1 6252507  40.22162</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5:        1   37191 709542.1 6253507  54.39227</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2496:       25   37565 708942.1 6253307 102.59936</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2497:       25   38902 709642.1 6252607  37.09717</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2498:       25   36425 708942.1 6253907 141.14836</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2499:       25   39279 709342.1 6252407  40.16304</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2500:       25   38319 708342.1 6252907 110.62663</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2496:       25   36610 708442.1 6253807 149.87747</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2497:       25   39282 709642.1 6252407  38.07315</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2498:       25   36427 709142.1 6253907 127.14054</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2499:       25   39286 710042.1 6252407  57.94794</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2500:       25   39284 709842.1 6252407  44.40382</span>
 <span class="r-in"><span><span class="fu">pf_coord</span><span class="op">(</span><span class="fu"><a href="pf_files.html">pf_files</a></span><span class="op">(</span><span class="fu"><a href="datasets-algorithms.html">dat_pff_src</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>, .bathy <span class="op">=</span> <span class="va">gebco</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       timestep cell_id   cell_x  cell_y    cell_z</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:        1   37569 709342.1 6253307  60.09327</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:        1   38708 709242.1 6252707  45.23619</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:        1   37379 709342.1 6253407  65.31673</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:        1   38329 709342.1 6252907  45.88295</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:        1   38142 709642.1 6253007  39.55516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1:        1   37949 709342.1 6253107  52.98276</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2:        1   38900 709442.1 6252607  39.33695</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3:        1   37946 709042.1 6253107  74.88351</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4:        1   39089 709342.1 6252507  40.22162</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5:        1   37191 709542.1 6253507  54.39227</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2496:       25   37565 708942.1 6253307 102.59936</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2497:       25   38902 709642.1 6252607  37.09717</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2498:       25   36425 708942.1 6253907 141.14836</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2499:       25   39279 709342.1 6252407  40.16304</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2500:       25   38319 708342.1 6252907 110.62663</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2496:       25   36610 708442.1 6253807 149.87747</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2497:       25   39282 709642.1 6252407  38.07315</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2498:       25   36427 709142.1 6253907 127.14054</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2499:       25   39286 710042.1 6252407  57.94794</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2500:       25   39284 709842.1 6252407  44.40382</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (2): Use particle samples from the forward run or the backward pass</span></span></span>
 <span class="r-in"><span><span class="fu">pf_coord</span><span class="op">(</span><span class="fu"><a href="datasets-algorithms.html">dat_pff</a></span><span class="op">(</span><span class="op">)</span>, .bathy <span class="op">=</span> <span class="va">gebco</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       timestep cell_id   cell_x  cell_y    cell_z</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:        1   37569 709342.1 6253307  60.09327</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:        1   38708 709242.1 6252707  45.23619</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:        1   37379 709342.1 6253407  65.31673</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:        1   38329 709342.1 6252907  45.88295</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:        1   38142 709642.1 6253007  39.55516</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1:        1   37949 709342.1 6253107  52.98276</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2:        1   38900 709442.1 6252607  39.33695</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3:        1   37946 709042.1 6253107  74.88351</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4:        1   39089 709342.1 6252507  40.22162</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5:        1   37191 709542.1 6253507  54.39227</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2496:       25   37565 708942.1 6253307 102.59936</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2497:       25   38902 709642.1 6252607  37.09717</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2498:       25   36425 708942.1 6253907 141.14836</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2499:       25   39279 709342.1 6252407  40.16304</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2500:       25   38319 708342.1 6252907 110.62663</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2496:       25   36610 708442.1 6253807 149.87747</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2497:       25   39282 709642.1 6252407  38.07315</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2498:       25   36427 709142.1 6253907 127.14054</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2499:       25   39286 710042.1 6252407  57.94794</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2500:       25   39284 709842.1 6252407  44.40382</span>
 <span class="r-in"><span><span class="fu">pf_coord</span><span class="op">(</span><span class="fu"><a href="datasets-algorithms.html">dat_pfbk</a></span><span class="op">(</span><span class="op">)</span>, .bathy <span class="op">=</span> <span class="va">gebco</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       timestep cell_id   cell_x  cell_y    cell_z</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:        1   37569 709342.1 6253307  60.09327</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:        1   38708 709242.1 6252707  45.23619</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:        1   37379 709342.1 6253407  65.31673</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:        1   38520 709442.1 6252807  42.39980</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:        1   37377 709142.1 6253407  87.54828</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1:        1   38900 709442.1 6252607  39.33695</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2:        1   37946 709042.1 6253107  74.88351</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3:        1   37948 709242.1 6253107  58.17422</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4:        1   37375 708942.1 6253407 111.23534</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5:        1   38708 709242.1 6252707  45.23619</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1546:       25   37565 708942.1 6253307 102.59936</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1547:       25   38902 709642.1 6252607  37.09717</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1548:       25   36425 708942.1 6253907 141.14836</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1549:       25   39279 709342.1 6252407  40.16304</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1550:       25   38319 708342.1 6252907 110.62663</span>
-<span class="r-in"><span><span class="co"># pf_coord(dat_pfbs(), .bathy = gebco)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1772:       25   36610 708442.1 6253807 149.87747</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1773:       25   39282 709642.1 6252407  38.07315</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1774:       25   36427 709142.1 6253907 127.14054</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1775:       25   39286 710042.1 6252407  57.94794</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1776:       25   39284 709842.1 6252407  44.40382</span>
+<span class="r-in"><span><span class="fu">pf_coord</span><span class="op">(</span><span class="fu"><a href="datasets-algorithms.html">dat_pfbs</a></span><span class="op">(</span><span class="op">)</span>, .bathy <span class="op">=</span> <span class="va">gebco</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       timestep cell_id   cell_x  cell_y    cell_z</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1:        1   38518 709242.1 6252807  46.53543</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2:        1   38328 709242.1 6252907  47.83468</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3:        1   38140 709442.1 6253007  45.86026</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4:        1   39279 709342.1 6252407  40.16304</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5:        1   37948 709242.1 6253107  58.17422</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2496:       25   36610 708442.1 6253807 149.87747</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2497:       25   39282 709642.1 6252407  38.07315</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2498:       25   36427 709142.1 6253907 127.14054</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2499:       25   39286 710042.1 6252407  57.94794</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2500:       25   39284 709842.1 6252407  44.40382</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (3): Include additional columns in the output</span></span></span>
 <span class="r-in"><span><span class="va">obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_obs</a></span><span class="op">(</span><span class="op">)</span></span></span>

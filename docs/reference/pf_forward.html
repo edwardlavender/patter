@@ -151,7 +151,7 @@
     <h2>Value</h2>
     
 
-<p>The function returns a <code><a href="pf_particles-class.html">pf_particles</a></code> object. If <code>.record$sink</code> is specified, two directories, <code>{.record$sink}/history/</code> and <code>{.record$sink}/diagnostics</code>, are also created that contain particle samples and diagnostics. Particle samples are labelled <code>1.parquet, 2.parquet, ..., T.parquet</code>, where <code>T</code> is the number of time steps. Diagnostics are labelled <code>A-B-C</code>, where <code>A</code>, <code>B</code> and <code>C</code> are the number of manual restarts, internal reversions and time steps. Use <code><a href="pf_forward_diagnostics.html">pf_forward_diagnostics()</a></code> to collate diagnostics.</p>
+<p>The function returns a <code><a href="pf_particles-class.html">pf_particles</a></code> object. If <code>.record$sink</code> is specified, two directories, <code>{.record$sink}/history/</code> and <code>{.record$sink}/diagnostics</code>, are also created that contain particle samples and diagnostics. Particle samples are labelled <code>1.parquet, 2.parquet, ..., T.parquet</code>, where <code>T</code> is the number of time steps. Diagnostics are labelled <code>A-B-C</code>, where <code>A</code>, <code>B</code> and <code>C</code> are the number of manual restarts, internal reversions and time steps. Use <code><a href="pf_diag.html">pf_diag_convergence()</a></code> to collate convergence diagnostics and <code><a href="pf_diag.html">pf_diag_summary()</a></code> for a summary.</p>
     </div>
     <div id="overview">
     <h2>Overview</h2>
@@ -173,7 +173,7 @@
     </div>
     <div id="convergence-and-diagnostics">
     <h2>Convergence and diagnostics</h2>
-    <p>While <code>pf_forward()</code> tries hard to reconstruct a complete time series of location samples, algorithm convergence is not guaranteed. The algorithm may reach a dead-end---a time step at which there are no valid locations into which the algorithm can step. This may be due to data errors, incorrect assumptions, insufficient sampling effort or poor tuning-parameter settings. To facilitate diagnosis of the immediate cause of convergence failures, during likelihood evaluations we keep track of 'particle diagnostics', i.e., the number of unique, valid locations before/after each likelihood evaluation alongside other statistics (see <code><a href="pf_diag.html">pf_diag</a></code> and <code><a href="pf_particles-class.html">pf_particles</a></code>).</p>
+    <p>While <code>pf_forward()</code> tries hard to reconstruct a complete time series of location samples, algorithm convergence is not guaranteed. The algorithm may reach a dead-end---a time step at which there are no valid locations into which the algorithm can step. This may be due to data errors, incorrect assumptions, insufficient sampling effort or poor tuning-parameter settings. To facilitate diagnosis of the immediate cause of convergence failures, during likelihood evaluations we keep track of 'particle diagnostics', i.e., the number of unique, valid locations before/after each likelihood evaluation alongside other statistics (see <code><a href="pf_diag-internal.html">pf_diag-internal</a></code> and <code><a href="pf_particles-class.html">pf_particles</a></code>).</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -189,7 +189,7 @@
 </ul></li>
 <li><p>To reconstruct movement paths from particle samples, use <code><a href="pf_path.html">pf_path()</a></code>.</p></li>
 <li><p>To map emergent patterns of space use, use <code><a href="pf_coord.html">pf_coord()</a></code> plus a <code>map_*()</code> function, such as <code><a href="map_pou.html">map_pou()</a></code>, <code><a href="map_dens.html">map_dens()</a></code> and/or <code><a href="map_hr.html">map_hr</a></code><code>_()</code>.</p></li>
-<li><p>For additional utilities, see supporting <code>pf_*()</code> functions, such as <code><a href="pf_plot_history.html">pf_plot_history()</a></code>, <code><a href="pf_files.html">pf_files()</a></code> and <code><a href="pf_files.html">pf_files_size()</a></code>.</p></li>
+<li><p>For additional utilities, see supporting <code>pf_*()</code> functions, such as <code><a href="pf_files.html">pf_files()</a></code>, <code><a href="pf_files.html">pf_files_size()</a></code>, <code><a href="pf_plot_history.html">pf_plot_history()</a></code>, <code><a href="pf_diag.html">pf_diag_convergence()</a></code> and <code><a href="pf_diag.html">pf_diag_summary()</a></code>.</p></li>
 </ul></div>
     </div>
     <div id="author">
@@ -210,7 +210,7 @@
 <span class="r-in"><span><span class="co"># Add AC* algorithm layers</span></span></span>
 <span class="r-in"><span><span class="va">dlist</span><span class="op">$</span><span class="va">algorithm</span><span class="op">$</span><span class="va">detection_overlaps</span> <span class="op">&lt;-</span> <span class="fu"><a href="acs_setup_detection_overlaps.html">acs_setup_detection_overlaps</a></span><span class="op">(</span><span class="va">dlist</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">dlist</span><span class="op">$</span><span class="va">algorithm</span><span class="op">$</span><span class="va">detection_kernels</span>  <span class="op">&lt;-</span> <span class="fu"><a href="acs_setup_detection_kernels.html">acs_setup_detection_kernels</a></span><span class="op">(</span><span class="va">dlist</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::acs_setup_detection_kernels()` called @ 2024-01-21 13:33:32... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::acs_setup_detection_kernels()` called @ 2024-01-21 21:57:29... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting receiver-specific kernels (for detection)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting receiver-specific inverse kernels... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Getting area-wide kernels (for non-detection)... </span>
@@ -274,7 +274,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Background surfaces (3/4)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Inverse background surfaces (4/4)... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Listing outputs ... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::acs_setup_detection_kernels()` call ended @ 2024-01-21 13:33:33 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::acs_setup_detection_kernels()` call ended @ 2024-01-21 21:57:30 (duration: ~1 sec(s)). </span>
 <span class="r-in"><span><span class="co"># Set up observations (see `?pf_setup_obs()`)</span></span></span>
 <span class="r-in"><span><span class="va">obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_obs</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -288,7 +288,7 @@
 <span class="r-in"><span>                      .dlist <span class="op">=</span> <span class="va">dlist</span>,</span></span>
 <span class="r-in"><span>                      .likelihood <span class="op">=</span> <span class="va">pf_lik_acpf</span>,</span></span>
 <span class="r-in"><span>                      .record <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_record</a></span><span class="op">(</span>.save <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 13:33:33... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 21:57:30... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up simulation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining origin... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Initiating simulation... </span>
@@ -340,7 +340,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 25: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 13:33:33 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 21:57:30 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="co">## Examine output object</span></span></span>
 <span class="r-in"><span><span class="co"># The function returns a named list:</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">out_pff</span><span class="op">)</span></span></span>
@@ -411,13 +411,13 @@
 <span class="r-in"><span><span class="va">out_pff</span><span class="op">$</span><span class="va">time</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]$start</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2024-01-21 13:33:33 CET"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2024-01-21 21:57:30 CET"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]$end</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2024-01-21 13:33:33 CET"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2024-01-21 21:57:30 CET"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]$duration</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Time difference of 0.2661881 secs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Time difference of 0.270709 secs</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
@@ -600,7 +600,7 @@
 <span class="r-in"><span>                      .dlist <span class="op">=</span> <span class="va">dlist</span>,</span></span>
 <span class="r-in"><span>                      .likelihood <span class="op">=</span> <span class="va">pf_lik_dcpf</span>,</span></span>
 <span class="r-in"><span>                      .record <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_record</a></span><span class="op">(</span>.save <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 13:33:33... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 21:57:30... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up simulation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining origin... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Initiating simulation... </span>
@@ -652,7 +652,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 25: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 13:33:33 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 21:57:30 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (3): Implement ACDCPF algorithm with default options</span></span></span>
 <span class="r-in"><span><span class="va">pf_lik_acdcpf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>pf_lik_dc <span class="op">=</span> <span class="va">pf_lik_dc</span>,</span></span>
@@ -663,7 +663,7 @@
 <span class="r-in"><span>                      .dlist <span class="op">=</span> <span class="va">dlist</span>,</span></span>
 <span class="r-in"><span>                      .likelihood <span class="op">=</span> <span class="va">pf_lik_acdcpf</span>,</span></span>
 <span class="r-in"><span>                      .record <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_record</a></span><span class="op">(</span>.save <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 13:33:33... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 21:57:30... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up simulation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining origin... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Initiating simulation... </span>
@@ -715,7 +715,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 25: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 13:33:34 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 21:57:31 (duration: ~1 sec(s)). </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (4): Customise movement model via `.rpropose` and `.dpropose`</span></span></span>
 <span class="r-in"><span><span class="co"># Pass arguments to the default models via `.rargs` &amp; `.dargs`</span></span></span>
@@ -737,7 +737,7 @@
 <span class="r-in"><span>                      .likelihood <span class="op">=</span> <span class="va">pf_lik_acdcpf</span>,</span></span>
 <span class="r-in"><span>                      .record <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_record</a></span><span class="op">(</span>.save <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                      .control <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_control</a></span><span class="op">(</span>.sampler_batch_size <span class="op">=</span> <span class="fl">100L</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 13:33:34... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 21:57:31... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up simulation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining origin... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Initiating simulation... </span>
@@ -789,7 +789,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 25: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 13:33:34 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 21:57:31 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># E.g., customise rlen() .mobility parameter</span></span></span>
 <span class="r-in"><span><span class="co"># &gt; Restricted mobility leads to convergence failure</span></span></span>
@@ -802,7 +802,7 @@
 <span class="r-in"><span>                      .likelihood <span class="op">=</span> <span class="va">pf_lik_acdcpf</span>,</span></span>
 <span class="r-in"><span>                      .record <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_record</a></span><span class="op">(</span>.save <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                      .control <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_control</a></span><span class="op">(</span>.sampler_batch_size <span class="op">=</span> <span class="fl">100L</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 13:33:34... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 21:57:31... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up simulation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining origin... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Initiating simulation... </span>
@@ -854,11 +854,11 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 25: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 13:33:34 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 21:57:31 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="co"># &gt; Sequential steps are &lt; .mobility + grid resolution/2</span></span></span>
 <span class="r-in"><span><span class="va">out_pfbk</span> <span class="op">&lt;-</span> <span class="fu"><a href="pf_backward_killer.html">pf_backward_killer</a></span><span class="op">(</span><span class="va">out_pff</span><span class="op">$</span><span class="va">history</span>,</span></span>
 <span class="r-in"><span>                               .record <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_record</a></span><span class="op">(</span>.save <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_backward_killer()` called @ 2024-01-21 13:33:34... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_backward_killer()` called @ 2024-01-21 21:57:31... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 25: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[25]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 24: </span>
@@ -1024,20 +1024,20 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[2]]`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Time step 1: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Recording (cleaned) outputs for `.history[[1]]`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_backward_killer()` call ended @ 2024-01-21 13:33:34 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_backward_killer()` call ended @ 2024-01-21 21:57:31 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="va">out_path</span> <span class="op">&lt;-</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="pf_path.html">pf_path</a></span><span class="op">(</span><span class="va">out_pfbk</span><span class="op">$</span><span class="va">history</span>, .bathy <span class="op">=</span> <span class="va">dlist</span><span class="op">$</span><span class="va">spatial</span><span class="op">$</span><span class="va">bathy</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">path_id</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>dist <span class="op">=</span> <span class="fu"><a href="dist_along_path.html">dist_along_path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">cell_x</span>, <span class="va">cell_y</span><span class="op">)</span>, .lonlat <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` called @ 2024-01-21 13:33:34... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` called @ 2024-01-21 21:57:31... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing history[[1]]... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Evaluating chain text... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Reorientating matrix via pf_path_pivot()... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` call ended @ 2024-01-21 13:33:34 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_path()` call ended @ 2024-01-21 21:57:31 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">out_path</span><span class="op">$</span><span class="va">dist</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">&lt;</span></span></span>
 <span class="r-in"><span>  <span class="fl">100</span> <span class="op">+</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html" class="external-link">res</a></span><span class="op">(</span><span class="va">dlist</span><span class="op">$</span><span class="va">spatial</span><span class="op">$</span><span class="va">bathy</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -1054,7 +1054,7 @@
 <span class="r-in"><span>                      .likelihood <span class="op">=</span> <span class="va">pf_lik_acdcpf</span>,</span></span>
 <span class="r-in"><span>                      .record <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_record</a></span><span class="op">(</span>.save <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                      .control <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_control</a></span><span class="op">(</span>.sampler_batch_size <span class="op">=</span> <span class="fl">100L</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 13:33:34... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 21:57:31... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up simulation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining origin... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Initiating simulation... </span>
@@ -1106,7 +1106,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 25: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 13:33:35 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 21:57:32 (duration: ~1 sec(s)). </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (5): Customise likelihood</span></span></span>
 <span class="r-in"><span><span class="co"># We can implement different algorithms by modifying the .likelihood list (above)</span></span></span>
@@ -1536,7 +1536,7 @@
 <span class="r-in"><span>                      .dlist <span class="op">=</span> <span class="va">dlist</span>,</span></span>
 <span class="r-in"><span>                      .likelihood <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>pf_lik_temp <span class="op">=</span> <span class="va">pf_lik_temp</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                      .record <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_record</a></span><span class="op">(</span>.save <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 13:33:35... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 21:57:32... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up simulation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining origin... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Initiating simulation... </span>
@@ -1588,7 +1588,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 25: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 13:33:35 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 21:57:32 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="co"># Run simulation accounting for multiple datasets</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="sim_helpers.html">ssv</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">out_pff</span> <span class="op">&lt;-</span> <span class="fu">pf_forward</span><span class="op">(</span>.obs <span class="op">=</span> <span class="va">obs</span>,</span></span>
@@ -1596,7 +1596,7 @@
 <span class="r-in"><span>                      .likelihood <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>pf_lik_ac <span class="op">=</span> <span class="va">pf_lik_ac</span>,</span></span>
 <span class="r-in"><span>                                         pf_lik_temp <span class="op">=</span> <span class="va">pf_lik_temp</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                      .record <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_record</a></span><span class="op">(</span>.save <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 13:33:35... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 21:57:32... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up simulation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining origin... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Initiating simulation... </span>
@@ -1648,7 +1648,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 25: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 13:33:35 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 21:57:32 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="co"># Note that the temperature likelihood (deliberately) has no influence here:</span></span></span>
 <span class="r-in"><span><span class="va">out_pff</span><span class="op">$</span><span class="va">diagnostics</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      iter_m iter_i timestep       component trial   n n_u         ess</span>
@@ -1762,7 +1762,7 @@
 <span class="r-in"><span>                      .likelihood <span class="op">=</span> <span class="va">pf_lik_acpf</span>,</span></span>
 <span class="r-in"><span>                      .n <span class="op">=</span> <span class="fl">1000L</span>,</span></span>
 <span class="r-in"><span>                      .record <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_record</a></span><span class="op">(</span>.save <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 13:33:35... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 21:57:32... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up simulation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining origin... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Initiating simulation... </span>
@@ -1814,7 +1814,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 25: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 13:33:35 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 21:57:33 (duration: ~1 sec(s)). </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">out_pff</span><span class="op">$</span><span class="va">history</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1000</span>
 <span class="r-in"><span><span class="co"># Use systematic resampling</span></span></span>
@@ -1826,82 +1826,59 @@
 <span class="r-in"><span>                      .sample <span class="op">=</span> <span class="va">pf_sample_systematic</span>,</span></span>
 <span class="r-in"><span>                      .control <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_control</a></span><span class="op">(</span>.sampler_batch_size <span class="op">=</span> <span class="fl">100L</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                      .record <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_record</a></span><span class="op">(</span>.save <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 13:33:35... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 21:57:33... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up simulation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining origin... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Initiating simulation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 2: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Using directed sampling... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 3: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Using directed sampling... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 4: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Using directed sampling... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 5: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Using directed sampling... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 6: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Using directed sampling... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 7: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Using directed sampling... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 8: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Using directed sampling... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 9: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 10: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Using directed sampling... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 11: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Using directed sampling... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 12: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Using directed sampling... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 13: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Using directed sampling... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 14: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Using directed sampling... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 15: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Using directed sampling... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 16: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Using directed sampling... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 17: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Using directed sampling... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 18: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Using directed sampling... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 19: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Using directed sampling... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 20: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Using directed sampling... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 21: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Using directed sampling... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 22: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Using directed sampling... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 23: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Using directed sampling... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 24: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Using directed sampling... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 25: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Using directed sampling... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 13:33:42 (duration: ~7 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 21:57:33 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (7): Control convergence via `.trial_` arguments</span></span></span>
 <span class="r-in"><span><span class="co"># See `vignette("c-demos", package = "patter")` for detailed examples</span></span></span>
@@ -1914,7 +1891,7 @@
 <span class="r-in"><span>                      .dlist <span class="op">=</span> <span class="va">dlist</span>,</span></span>
 <span class="r-in"><span>                      .likelihood <span class="op">=</span> <span class="va">pf_lik_acpf</span>,</span></span>
 <span class="r-in"><span>                      .record <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_record</a></span><span class="op">(</span>.save <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 13:33:42... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 21:57:33... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up simulation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining origin... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Initiating simulation... </span>
@@ -1966,14 +1943,14 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 25: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 13:33:42 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 21:57:33 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="fu"><a href="sim_helpers.html">ssv</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">out_pff_2</span> <span class="op">&lt;-</span> <span class="fu">pf_forward</span><span class="op">(</span>.obs <span class="op">=</span> <span class="va">obs</span>,</span></span>
 <span class="r-in"><span>                        .dlist <span class="op">=</span> <span class="va">dlist</span>,</span></span>
 <span class="r-in"><span>                        .likelihood <span class="op">=</span> <span class="va">pf_lik_acpf</span>,</span></span>
 <span class="r-in"><span>                        .record <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_record</a></span><span class="op">(</span>.save <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                        .rerun <span class="op">=</span> <span class="va">out_pff_1</span>, .rerun_from <span class="op">=</span> <span class="fl">5L</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 13:33:42... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 21:57:33... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up simulation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Initiating simulation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 5: </span>
@@ -2018,7 +1995,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 25: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 13:33:42 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 21:57:33 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (9): Adjust record options</span></span></span>
 <span class="r-in"><span><span class="co"># Use `sink` to write to particles to file (recommended)</span></span></span>
@@ -2029,7 +2006,7 @@
 <span class="r-in"><span>                      .dlist <span class="op">=</span> <span class="va">dlist</span>,</span></span>
 <span class="r-in"><span>                      .likelihood <span class="op">=</span> <span class="va">pf_lik_acpf</span>,</span></span>
 <span class="r-in"><span>                      .record <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_record</a></span><span class="op">(</span>.save <span class="op">=</span> <span class="cn">FALSE</span>, .sink <span class="op">=</span> <span class="va">pff_folder</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 13:33:42... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 21:57:33... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up simulation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining origin... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Initiating simulation... </span>
@@ -2081,7 +2058,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 25: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 13:33:43 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 21:57:34 (duration: ~1 sec(s)). </span>
 <span class="r-in"><span><span class="co"># &gt; `save = FALSE` suppresses outputs in memory:</span></span></span>
 <span class="r-in"><span><span class="va">out_pff</span><span class="op">$</span><span class="va">history</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> list()</span>
@@ -2092,22 +2069,22 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "diagnostics" "history"    </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="pf_files.html">pf_files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">pff_folder</span>, <span class="st">"history"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[1]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpQu3F7r/forward/history/1.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpFUCtMJ/forward/history/1.parquet"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[2]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpQu3F7r/forward/history/2.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpFUCtMJ/forward/history/2.parquet"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[3]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpQu3F7r/forward/history/3.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpFUCtMJ/forward/history/3.parquet"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[4]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpQu3F7r/forward/history/4.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpFUCtMJ/forward/history/4.parquet"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[5]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpQu3F7r/forward/history/5.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpFUCtMJ/forward/history/5.parquet"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [[6]]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpQu3F7r/forward/history/6.parquet"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpFUCtMJ/forward/history/6.parquet"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="co"># &gt; Check file size (MB)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="pf_files.html">pf_files_size</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">pff_folder</span>, <span class="st">"history"</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -2121,10 +2098,10 @@
 <span class="r-in"><span>                      .record <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_record</a></span><span class="op">(</span>.save <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>                                              .sink <span class="op">=</span> <span class="va">pff_folder</span>,</span></span>
 <span class="r-in"><span>                                              .cols <span class="op">=</span> <span class="va">cols</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 13:33:43... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 21:57:34... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up simulation... </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The directory '/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpQu3F7r/forward/history' is not empty.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The directory '/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpQu3F7r/forward/diagnostics' is not empty.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The directory '/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpFUCtMJ/forward/history' is not empty.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The directory '/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpFUCtMJ/forward/diagnostics' is not empty.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining origin... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Initiating simulation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 2: </span>
@@ -2175,7 +2152,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 25: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 13:33:43 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 21:57:34 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="fu"><a href="pf_files.html">pf_files_size</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">pff_folder</span>, <span class="st">"history"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.206542</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">pff_folder</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
@@ -2190,7 +2167,7 @@
 <span class="r-in"><span>                      .record <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_record</a></span><span class="op">(</span>.save <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                      .verbose <span class="op">=</span> <span class="va">log.txt</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="va">log.txt</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "`patter::pf_forward()` called @ 2024-01-21 13:33:43... "                        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "`patter::pf_forward()` called @ 2024-01-21 21:57:34... "                        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [2] "... Setting up simulation... "                                                  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [3] "... Defining origin... "                                                        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [4] "... Initiating simulation... "                                                  </span>
@@ -2242,7 +2219,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> [50] "... ... ... Kicking particles... "                                              </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [51] "... ... Time step 25: "                                                         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [52] "... ... ... Kicking particles... "                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [53] "`patter::pf_forward()` call ended @ 2024-01-21 13:33:43 (duration: ~0 sec(s)). "</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [53] "`patter::pf_forward()` call ended @ 2024-01-21 21:57:34 (duration: ~0 sec(s)). "</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">log.txt</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Suppress `.verbose`</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="sim_helpers.html">ssv</a></span><span class="op">(</span><span class="op">)</span></span></span>
@@ -2258,7 +2235,7 @@
 <span class="r-in"><span>                      .dlist <span class="op">=</span> <span class="va">dlist</span>,</span></span>
 <span class="r-in"><span>                      .likelihood <span class="op">=</span> <span class="va">pf_lik_acpf</span>,</span></span>
 <span class="r-in"><span>                      .record <span class="op">=</span> <span class="fu"><a href="pf_opt.html">pf_opt_record</a></span><span class="op">(</span>.save <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 13:33:44... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` called @ 2024-01-21 21:57:34... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up simulation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining origin... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Initiating simulation... </span>
@@ -2310,7 +2287,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... Time step 25: </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... ... ... Kicking particles... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 13:33:44 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_forward()` call ended @ 2024-01-21 21:57:35 (duration: ~1 sec(s)). </span>
 <span class="r-in"><span><span class="fu">pbapply</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pbapply/man/pboptions.html" class="external-link">pboptions</a></span><span class="op">(</span><span class="va">pbo</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>

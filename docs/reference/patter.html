@@ -147,11 +147,10 @@
 <li><p><code><a href="pf_opt.html">pf_opt_control()</a></code>, which sets control parameters;</p></li>
 <li><p><code><a href="pf_opt.html">pf_opt_record()</a></code>, which sets output properties;</p></li>
 </ul></li>
-<li><p>Downstream diagnostic functions, namely:</p><ul><li><p><code><a href="pf_forward_diagnostics.html">pf_forward_diagnostics()</a></code>, which collates particle diagnostics;</p></li>
-</ul></li>
 </ul><p><strong>To implement the backward pass (<code><a href="pf_backward_-times.html">pf_backward_*()</a></code>)</strong>, use:</p><ul><li><p><code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> to prune dead-ends;</p></li>
-<li><p><code><a href="pf_backward_killer_diagnostics.html">pf_backward_killer_diagnostics()</a></code> to summarise particle diagnostics;</p></li>
 <li><p><code><a href="pf_backward_sampler.html">pf_backward_sampler()</a></code> to run the backward sampler;</p></li>
+</ul><p><strong>For particle diagnostics</strong>, see:</p><ul><li><p><code><a href="pf_diag.html">pf_diag_convergence()</a></code> to collate convergence diagnostics;</p></li>
+<li><p><code><a href="pf_diag.html">pf_diag_summary()</a></code> to collate summary diagnostics;</p></li>
 </ul><p><strong>For convenience plotting functions</strong>, see:</p><ul><li><p><code><a href="pf_plot_history.html">pf_plot_history()</a></code> to plot particle histories;</p></li>
 </ul><p><strong>For common utility functions</strong>, see:</p><ul><li><p><code><a href="pf_files.html">pf_files()</a></code> to list particle-sample files;</p></li>
 <li><p><code><a href="pf_files.html">pf_files_size()</a></code> to measure file size;</p></li>
