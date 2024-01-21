@@ -108,12 +108,12 @@
 
   # Handle .pf objects
   if (inherits(.history, pf_class)) {
-    return(.history$history)
+    return(copy(.history$history))
   }
 
   # Handle list of data.table inputs
   if (inherits(.history, "list") && inherits(.history[[1]], "data.table")) {
-    return(.history)
+    return(copy(.history))
   }
 
   # Handle list of file paths
