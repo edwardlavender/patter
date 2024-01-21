@@ -3,12 +3,9 @@
 \name{utils-dt}
 \alias{utils-dt}
 \alias{add_col_real}
-\alias{colProds.matrix}
 \title{Utilities: data helpers}
 \usage{
 add_col_real(.data, .col)
-
-colProds.matrix(.data, .cols = seq_col(.data))
 }
 \description{
 These are internal helpers for data structures (such as \code{\link{data.table}}s and related objects) in \code{\link{patter}}.

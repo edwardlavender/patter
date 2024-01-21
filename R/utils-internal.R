@@ -184,7 +184,19 @@ add_col_real <- function(.data, .col) {
   .data
 }
 
-#' @rdname utils-dt
+#' @title Utilities: statistics helpers
+#' @description These are internal helpers for statistical calculations in [`patter`].
+#' @author Edward Lavender
+#' @name utils-stats
+
+#' @rdname utils-stats
+#' @keywords internal
+
+normalise <- function(x) {
+  x / sum(x)
+}
+
+#' @rdname utils-stats
 #' @keywords internal
 
 # Calculate column products for each row in a [`matrix`].
