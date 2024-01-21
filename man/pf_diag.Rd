@@ -14,9 +14,9 @@ pf_diag_summary(.history, ...)
 \item{.sink}{For \code{\link[=pf_diag_convergence]{pf_diag_convergence()}}, \code{.sink} specifies particle diagnostics. The following inputs are accepted:
 \itemize{
 \item A \code{\linkS4class{pf_particles}} object;
-\item A \code{character} string that defines the directory containing \code{parquet} files, specified as:
+\item A \code{character} string that defines the directory containing \code{parquet} files, specified in one of the following formats:
 \itemize{
-\item \code{{.record$sink}}(as specified in \code{\link[=pf_forward]{pf_forward()}});
+\item \code{{.record$sink}} (as specified in \code{\link[=pf_forward]{pf_forward()}});
 \item \verb{\{.record$sink\}/diagnostics/};
 }
 }}
