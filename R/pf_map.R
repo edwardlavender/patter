@@ -17,14 +17,7 @@
 #'
 #' If `.obs` is supplied, the output also contains any columns specified in `.cols`.
 #'
-#' @examples
-#' p     <- dat_pfbk()
-#' pxy_1 <- pf_coord(p$history, dat_gebco())
-#'
-#' pfbk_folder <- dat_pfbk_src()
-#' pxy_2       <- pf_coord(pfbk_folder, dat_gebco())
-#'
-#' stopifnot(isTRUE(all.equal(pxy_1, pxy_2)))
+#' @example man/examples/pf_coord-examples.R
 #'
 #' @inherit pf_forward seealso
 #'

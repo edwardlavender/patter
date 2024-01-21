@@ -32,14 +32,27 @@ The \code{timestep} and \code{cell_now} columns in \code{\link[=pf_forward]{pf_f
 This function is not memory safe, since the entire time series of coordinates is collected in memory.
 }
 \examples{
-p     <- dat_pfbk()
-pxy_1 <- pf_coord(p$history, dat_gebco())
+#### Example (1): Use particle samples in memory or on file
+# Particles can be provided in any format accepted by `?.pf_history_dt()`
+# Here, we use precomputed samples:
+gebco <- dat_gebco()
+pf_coord(dat_pff(), .bathy = gebco)
+pf_coord(dat_pff()$history, .bathy = gebco)
+pf_coord(dat_pff_src(), .bathy = gebco)
+pf_coord(pf_files(dat_pff_src()), .bathy = gebco)
 
-pfbk_folder <- dat_pfbk_src()
-pxy_2       <- pf_coord(pfbk_folder, dat_gebco())
+#### Example (2): Use particle samples from the forward run or the backward pass
+pf_coord(dat_pff(), .bathy = gebco)
+pf_coord(dat_pfbk(), .bathy = gebco)
+# pf_coord(dat_pfbs(), .bathy = gebco)
 
-stopifnot(isTRUE(all.equal(pxy_1, pxy_2)))
+#### Example (3): Include additional columns in the output
+obs <- dat_obs()
+pxy <- pf_coord(dat_pff(), .bathy = gebco,
+                .obs = obs, .cols = c("detection", "depth"))
 
+#### Example (4): Use particle coordinates for mapping
+# See `map_*()` functions e.g. `?map_dens()`
 }
 \seealso{
 The forward filtering--backward sampling algorithm samples locations (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
