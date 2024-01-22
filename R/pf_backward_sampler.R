@@ -127,6 +127,7 @@ pf_backward_sampler <- function(.history,
     .dargs$.t         <- t
     h <- do.call(.dpropose, .dargs)
     # For each particle at time t, we sample a previous particle
+    # (There should be at least one such particle that is valid)
     h <-
       h |>
       lazy_dt(immutable = FALSE) |>
