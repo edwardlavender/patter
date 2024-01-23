@@ -130,6 +130,11 @@ cl_cores <- function(.cl = NULL) {
   } else {
     if (inherits(.cl, "cluster")) n <- length(.cl) else n <- .cl
   }
+  nmax <- parallel::detectCores()
+  nmax <- ifelse(is.na(nmax), 1L, nmax)
+  if (n > nmax) {
+    warn("The number of CPU cores exceeds the number of detected cores.")
+  }
   n
 }
 
