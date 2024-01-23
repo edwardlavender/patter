@@ -38,6 +38,10 @@
 #'
 #' The vectorised implementation returns a [`pf_particles-class`] object, as in [`pf_forward()`] and [`pf_backward_sampler()`]. Unlike a particle-by-particle implementation, we do not automatically reconstruct trajectories. [`pf_path()`] is required to translate particle samples into trajectories.
 #'
+#' # Mobility
+#'
+#' Currently, we assume that at each time step there is at least one valid connection from each location to location(s) at the preceding step. If this assumption is violated, you will receive an error along the lines of: `Supplied {N} items to be assigned to {n < N} items of column 'index'.` This indicates a discrepancy in the movement models used to generate locations and calculate probability densities (and probably an inconsistent handling of `.mobility`, possibly as a result of discretisation). See [`pf_propose`] for further details.
+#'
 #' # Costs
 #'
 #' The backward sampler requires large numbers of (potentially replicate) calculations. Under default settings, calculations are implemented on-the-fly. For intermediate-sized problems, it may be more efficient to pre-compute densities, or variables required for density estimation (such as distance), between (unique) particle pairs before implementation of the backward sampler. Modify `.dpropose`  to read and match densities from objects in memory or from file onto the `.particles` [`data.table`]. However, for big datasets, identifying and storing unique particle combinations becomes difficult and expensive and we do not currently have a better solution than on-the-fly calculations. If [`pf_backward_sampler()`] is prohibitively expensive, it is acceptable to use particle samples from [`pf_forward()`]) and/or [`pf_backward_killer()`] for trajectory construction and mapping. The extent to which backward sampling refines trajectories and patterns of space use is context-specific.

@@ -27,7 +27,7 @@
 #' * `lik`---a `numeric` vector of likelihoods;
 #' * `weight`---a `numeric` vector of sampling weights;
 #'
-#' Coordinates are defined on the grid by the default proposal functions [`pf_rpropose_kick()`] and [`pf_rpropose_reachable()`].
+#' Coordinates are defined in continuous space by [`pf_rpropose_kick()`] and on the grid by [`pf_rpropose_reachable()`].
 #'
 #' The likelihood column (`lik`) is the product of the likelihood scores from each likelihood function. (Successive likelihood functions should _update_ this column.)
 #'

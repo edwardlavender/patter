@@ -45,7 +45,7 @@ op <- options(patter.verbose = FALSE)
 
 ## Prepare study area
 
-The first step is to define a grid over the study area. Here, we use an in-built bathymetry `SpatRaster` to represent the study area, but any grid is acceptable. `NA` defines inhospitable habitats (land in this case). Movements and likelihoods are represented on the grid, so it is desirable to use a relatively fine resolution where possible (especially since the speed of the forward simulation is (largely) independent of grid resolution).
+The first step is to define a grid over the study area. Here, we use an in-built bathymetry `SpatRaster` to represent the study area, but any grid is acceptable. `NA` defines inhospitable habitats (land in this case). Some movement and likelihood functions are implemented on a grid, so it is desirable to use a relatively fine resolution where possible.
 
 ```{r}
 (gebco <- terra::disagg(dat_gebco(), 4))

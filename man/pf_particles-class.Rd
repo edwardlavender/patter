@@ -31,7 +31,7 @@ In \code{\link[=pf_forward]{pf_forward()}}, the columns in this table depend on 
 \item \code{weight}---a \code{numeric} vector of sampling weights;
 }
 
-Coordinates are defined on the grid by the default proposal functions \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}} and \code{\link[=pf_rpropose_reachable]{pf_rpropose_reachable()}}.
+Coordinates are defined in continuous space by \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}} and on the grid by \code{\link[=pf_rpropose_reachable]{pf_rpropose_reachable()}}.
 
 The likelihood column (\code{lik}) is the product of the likelihood scores from each likelihood function. (Successive likelihood functions should \emph{update} this column.)
 
