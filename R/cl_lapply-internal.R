@@ -37,7 +37,7 @@ cl_lapply_chunk <- function(.x, .fun, ...,
   ncl         <- cl_cores(.cl)
   nchunk      <- length(index_by_chunk)
   nchunkpercl <- ceiling(nchunk / ncl)
-  msg("`cl_lapply()` implemented on {ncl} core(s) using a total of {nchunk} chunk(s) (~{nchunkpercl} per core & progress gradations.).",
+  msg("`cl_lapply()` implemented on {ncl} core(s) using a total of {nchunk} chunk(s) (~{nchunkpercl} per core & progress gradations).",
       .envir = environment())
   # Loop over chunks in parallel
   cl_export(.cl, .varlist, .envir)
