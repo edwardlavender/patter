@@ -93,10 +93,12 @@ pf_rpropose_kick <- function(.particles, .obs, .t, .dlist, .rkick = rkick, ...) 
                 .spatial = "bathy")
   }
   # Kick each particle from previous location into new proposal locations
-  x_past <- y_past <- NULL
+  x_now <- y_now <- x_past <- y_past <- NULL
   xy_now <- .rkick(.xy0 = .particles[, list(x_past, y_past)],
                    .obs = .obs, .t = .t, .dlist = .dlist, ...)
-  # Update data.table with cell IDs
+  # Update data.table with coordinates
+  .particles[, x_now := as.numeric(xy_now[, 1])]
+  .particles[, y_now := as.numeric(xy_now[, 2])]
   cell_now <- NULL
   .particles[, cell_now := as.integer(terra::cellFromXY(.dlist$spatial$bathy, xy_now))]
   # Drop kicks beyond the study area
