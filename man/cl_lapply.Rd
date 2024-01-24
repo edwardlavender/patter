@@ -2,6 +2,7 @@
 % Please edit documentation in R/cl_lapply.R
 \name{cl_lapply}
 \alias{cl_lapply}
+\alias{cl_chunk}
 \title{Parallelisation via \code{\link[=lapply]{lapply()}}}
 \usage{
 cl_lapply(
@@ -16,6 +17,8 @@ cl_lapply(
   .use_names = TRUE,
   .combine = NULL
 )
+
+cl_chunk(.cl)
 }
 \arguments{
 \item{.x}{A \code{list} or sequence of objects over which to iterate.}
@@ -59,13 +62,22 @@ The output of \code{.chunk_fun} is made available to \code{.fun} via \code{.chun
 \item{.combine}{(optional) A \code{function} that defines how to combine \code{list} elements. If \code{.combine = NULL}, a \code{list} is returned. Other suitable options are, for example, \code{purrr::list_flatten()} and \code{\link[data.table:rbindlist]{data.table::rbindlist()}}.}
 }
 \value{
-The function invisibly returns a \code{list} or a combined \code{list} (defined by \code{.combine}).
+\itemize{
+\item \code{\link[=cl_lapply]{cl_lapply()}} invisibly returns a \code{list} or a combined \code{list} (defined by \code{.combine}).
+\item \code{\link[=cl_chunk]{cl_chunk()}} returns a \code{logical} variable.
+}
 }
 \description{
 \code{\link[=cl_lapply]{cl_lapply()}} is a wrapper for \code{\link[pbapply:pbapply]{pbapply::pblapply()}} that handles cluster checking, set up, batch processing and cluster closure.
 }
 \details{
 \code{\link[=cl_lapply]{cl_lapply()}} is exported, as we have found it useful in other projects, but primarily intended for internal use. Use \code{\link[pbapply:pboptions]{pbapply::pboptions()}} to control the progress bar, including the number of gradations (\code{nout}). \code{nout} also controls the number of chunks on each core. Fewer chunks reduce parallelisation overhead but also the number of gradations on the progress bar.
+
+\code{\link[=cl_chunk]{cl_chunk()}} sets the default chunk behaviour of \code{\link[=cl_lapply]{cl_lapply()}} in wrapper functions:
+\itemize{
+\item If a single core is specified, \code{\link[=cl_chunk]{cl_chunk()}} returns \code{FALSE}.
+\item Otherwise, \code{\link[=cl_chunk]{cl_chunk()}} returns \code{TRUE}.
+}
 
 \code{\link[=cl_lapply]{cl_lapply()}} and associated (internal) functions evolved from \href{https://edwardlavender.github.io/flapper/reference/cl.html}{\verb{flapper::cl_*()}} functions.
 }

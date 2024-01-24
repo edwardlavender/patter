@@ -33,13 +33,22 @@
 #'
 #' [`cl_lapply()`] is exported, as we have found it useful in other projects, but primarily intended for internal use. Use [`pbapply::pboptions()`] to control the progress bar, including the number of gradations (`nout`). `nout` also controls the number of chunks on each core. Fewer chunks reduce parallelisation overhead but also the number of gradations on the progress bar.
 #'
+#' [`cl_chunk()`] sets the default chunk behaviour of [`cl_lapply()`] in wrapper functions:
+#' * If a single core is specified, [`cl_chunk()`] returns `FALSE`.
+#' * Otherwise, [`cl_chunk()`] returns `TRUE`.
+#'
 #' [`cl_lapply()`] and associated (internal) functions evolved from [`flapper::cl_*()`](https://edwardlavender.github.io/flapper/reference/cl.html) functions.
 #'
-#' @return The function invisibly returns a `list` or a combined `list` (defined by `.combine`).
+#' @return
+#' * [`cl_lapply()`] invisibly returns a `list` or a combined `list` (defined by `.combine`).
+#' * [`cl_chunk()`] returns a `logical` variable.
 #'
 #' @seealso See [`flapper-tips-parallel`](https://edwardlavender.github.io/flapper/reference/flapper-tips-parallel.html) for further information about parallelisation, including the differences between socket clusters and forking.
 #'
 #' @author Edward Lavender
+#' @name cl_lapply
+
+#' @rdname cl_lapply
 #' @export
 
 cl_lapply <- function(.x, .fun, ...,
@@ -78,4 +87,11 @@ cl_lapply <- function(.x, .fun, ...,
   # Return outputs
   invisible(y)
 
+}
+
+#' @rdname cl_lapply
+#' @export
+
+cl_chunk <- function(.cl) {
+  ifelse(cl_cores(.cl) == 1L, FALSE, TRUE)
 }
