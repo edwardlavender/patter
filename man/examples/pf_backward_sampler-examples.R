@@ -14,9 +14,9 @@ nt       <- length(out_pff$history)
 
 #### Example (1): Implement function with default arguments
 ssv()
-out_pfbs <- pf_backward_sampler(.history = out_pff,
-                                .dlist = dlist,
-                                .record = pf_opt_record(.save = TRUE))
+out_pfbs <- pf_backward_sampler_v(.history = out_pff,
+                                  .dlist = dlist,
+                                  .record = pf_opt_record(.save = TRUE))
 # The function returns a pf_particles-class object
 summary(out_pfbs)
 # Particle samples are located in the `history` element
@@ -30,17 +30,17 @@ out_pfbs$time
 # Particles can be provided in any format accepted by `?.pf_history_list()`
 # Here, we use precomputed samples:
 ssv()
-out_pfbs_b <- pf_backward_sampler(.history = out_pff$history,
-                                  .dlist = dlist,
-                                  .record = pf_opt_record(.save = TRUE))
+out_pfbs_b <- pf_backward_sampler_v(.history = out_pff$history,
+                                    .dlist = dlist,
+                                    .record = pf_opt_record(.save = TRUE))
 ssv()
-out_pfbs_c <- pf_backward_sampler(.history = dat_pff_src(),
-                                  .dlist = dlist,
-                                  .record = pf_opt_record(.save = TRUE))
+out_pfbs_c <- pf_backward_sampler_v(.history = dat_pff_src(),
+                                    .dlist = dlist,
+                                    .record = pf_opt_record(.save = TRUE))
 ssv()
-out_pfbs_d <- pf_backward_sampler(.history = pf_files(dat_pff_src()),
-                                  .dlist = dlist,
-                                  .record = pf_opt_record(.save = TRUE))
+out_pfbs_d <- pf_backward_sampler_v(.history = pf_files(dat_pff_src()),
+                                    .dlist = dlist,
+                                    .record = pf_opt_record(.save = TRUE))
 stopifnot(all.equal(out_pfbs$history, out_pfbs_b$history))
 stopifnot(all.equal(out_pfbs$history, out_pfbs_c$history))
 stopifnot(all.equal(out_pfbs$history, out_pfbs_d$history))
@@ -53,10 +53,10 @@ con        <- file.path(tempdir(), "patter")
 pfbs_folder <- file.path(con, "backward", "sampler")
 dir.create(pfbs_folder, recursive = TRUE)
 ssv()
-out_pfbs <- pf_backward_sampler(.history = out_pff,
-                                .dlist = dlist,
-                                .record = pf_opt_record(.save = TRUE,
-                                                        .sink = pfbs_folder))
+out_pfbs <- pf_backward_sampler_v(.history = out_pff,
+                                  .dlist = dlist,
+                                  .record = pf_opt_record(.save = TRUE,
+                                                          .sink = pfbs_folder))
 cl_lapply(seq_len(nt), function(i) {
   a <- out_pfbs$history[[i]]
   b <- arrow::read_parquet(file.path(pfbs_folder, paste0(i, ".parquet")))

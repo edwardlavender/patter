@@ -108,10 +108,10 @@ if (overwrite) {
   sink <- pfbs_folder
 }
 ssf()
-out_pfbs <- pf_backward_sampler(.history = out_pff$history,
-                                .obs = NULL,
-                                .dlist = dlist,
-                                .record = pf_opt_record(.save = TRUE, .sink = sink))
+out_pfbs <- pf_backward_sampler_v(.history = out_pff$history,
+                                  .obs = NULL,
+                                  .dlist = dlist,
+                                  .record = pf_opt_record(.save = TRUE, .sink = sink))
 
 #### Implement pf_path()
 out_pfp <- pf_path(out_pfbs$history, .bathy = dlist$spatial$bathy)
