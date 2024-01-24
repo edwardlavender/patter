@@ -50,7 +50,7 @@ This vignette lists the steps required to use `patter` to reconstruct movement p
    - Validate detection range (using simultaneous detections at multiple receivers)
    - Validate concurrent observations (e.g., confirm detection containers contain valid locations)
 
-3. (optional) Pre-compute any necessary algorithm layers
+3. (optional) Precompute any necessary algorithm layers
 
    - AC* algorithm layers:
       - Define detection overlaps via `acs_setup_detection_overlaps()`

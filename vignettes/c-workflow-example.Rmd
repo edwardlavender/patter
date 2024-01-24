@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 The `patter` package is a forward filtering--backward sampling algorithm for reconstructing movements and patterns of space use for tagged animals in passive acoustic telemetry systems (Lavender et al., 2023). For a introduction to the methodology, see the methodology vignette (type `vignette("a-methodology", package = "patter")`). This vignette exemplifies the basic workflow via `patter`. Its purpose is simply to illustrate how functions fit together. For full details and additional functionality, see the package/function documentation. 
 
 <img src="workflow.png" width="100%" />
-**Figure 1. The workflow for `patter`.** This comprises four main steps: data preparation, forward filtering, backward sampling and analysis. In data preparation, we prepare the data for analysis and pre-compute necessary algorithm inputs. In forward filtering, we simulate possible locations of an individual, given the data and a movement model, moving forwards in time. In backwards sampling, we further refine the set of simulated locations. We can then analyse reconstructed movement paths and patterns of space use. 
+**Figure 1. The workflow for `patter`.** This comprises four main steps: data preparation, forward filtering, backward sampling and analysis. In data preparation, we prepare the data for analysis and precompute necessary algorithm inputs. In forward filtering, we simulate possible locations of an individual, given the data and a movement model, moving forwards in time. In backwards sampling, we further refine the set of simulated locations. We can then analyse reconstructed movement paths and patterns of space use. 
 
 # Packages
 

@@ -41,7 +41,7 @@ pff_folder <- dat_pff_src(.folder = "history")
 
 #### Example (1): Use particle samples in memory or on file
 # Particles can be provided in any format accepted by `?.pf_history_list()`
-# Here, we use precomputed samples:
+# Here, we use pre-computed samples:
 out_pfbk_a <- pf_backward_killer(.history = out_pff,
                                  .record = pf_opt_record(.save = TRUE))
 out_pfbk_b <- pf_backward_killer(.history = out_pff$history,
