@@ -54,8 +54,8 @@ These functions load example outputs from key \code{\link{patter}} functions, in
 \item \code{\link[=dat_pff_src]{dat_pff_src()}} is the directory in which example \code{.parquet} files from \code{\link[=pf_forward]{pf_forward()}} are stored;
 \item \code{\link[=dat_pfbk]{dat_pfbk()}} reads an example output from \code{\link[=pf_backward_killer]{pf_backward_killer()}};
 \item \code{\link[=dat_pff_src]{dat_pff_src()}} is the directory in which example \code{.parquet} files from \code{\link[=pf_backward_killer]{pf_backward_killer()}} are stored;
-\item \code{\link[=dat_pfbs]{dat_pfbs()}} reads an example output from \code{\link[=pf_backward_sampler]{pf_backward_sampler()}};
-\item \code{\link[=dat_pfbs_src]{dat_pfbs_src()}} is the directory in which example \code{.parquet} files from \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} are stored;
+\item \code{\link[=dat_pfbs]{dat_pfbs()}} reads an example output from \code{\link[=pf_backward_sampler_v]{pf_backward_sampler_v()}};
+\item \code{\link[=dat_pfbs_src]{dat_pfbs_src()}} is the directory in which example \code{.parquet} files from \code{\link[=pf_backward_sampler_v]{pf_backward_sampler_v()}} are stored;
 \item \code{\link[=dat_pfp]{dat_pfp()}} reads an example output from \code{\link[=pf_path]{pf_path()}};
 \item \code{\link[=dat_coa]{dat_coa()}} reads an example output from \code{\link[=coa]{coa()}};
 }
@@ -79,7 +79,7 @@ pf_files(dat_pff_src())
 # Directory of inbuilt parquet files from `pf_backward_killer()`
 dat_pfbk_src()
 
-# Directory of inbuilt parquet files frim `pf_backward_sampler()`
+# Directory of inbuilt parquet files frim `pf_backward_sampler_v()`
 dat_pfbs_src()
 
 }
@@ -98,7 +98,7 @@ The forward filtering--backward sampling algorithm samples locations (particles)
 \item \code{\link[=pf_backward_*]{pf_backward_*()}} refines outputs from the forward filter:
 \itemize{
 \item \code{\link[=pf_backward_killer]{pf_backward_killer()}} removes dead-ends;
-\item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implements the backward sampler;
+\item \code{\link{pf_backward_sampler}}\verb{_*()} implements the backward sampler;
 }
 \item To reconstruct movement paths from particle samples, use \code{\link[=pf_path]{pf_path()}}.
 \item To map emergent patterns of space use, use \code{\link[=pf_coord]{pf_coord()}} plus a \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()}.

@@ -78,7 +78,7 @@ pf_diag_summary <- function(.history, ...) {
 #' Particle diagnostics measure how the diversity of particle samples evolves through time. Current diagnostic metrics include the number of unique particle samples at each time step and the effective sample size. Particle diagnostics have multiple uses:
 #' * **Convergence.** Diagnostics from the forward run can indicate the causes of convergence failures. This is possible because [`pf_forward()`] keeps track of diagnostics at every stage of the algorithm, recording at each time step the diversity of particle proposals, the diversity remaining after each likelihood function evaluation and the diversity following (re)-sampling. See [`pf_particles-class`] and `vignette("d-demos", package = "patter")` for an illustration.
 #' * **Sampling.** Diagnostics indicate sampling sufficiency. In general, a low ratio of the number of unique particles to the total number of particles indicates effective coverage of the possible locations of an individual.
-#' * **Particle degeneracy.** Diagnostics measure particle degeneracy, i.e., the decay in the number of unique particles through time as trajectories are rendered invalid by observations. Comparison of particle diagnostics between [`pf_backward_killer()`] and [`pf_backward_sampler()`] is particularly valuable in this context. Both functions perform a backward refinement of particles from [`pf_forward()`]; however, the former is simple but fast, while the latter is sophisticated but expensive. Tracking particle diagnostics can indicate whether [`pf_backward_sampler()`] is worth the cost.
+#' * **Particle degeneracy.** Diagnostics measure particle degeneracy, i.e., the decay in the number of unique particles through time as trajectories are rendered invalid by observations. Comparison of particle diagnostics between [`pf_backward_killer()`] and [`pf_backward_sampler`]`_*()` is particularly valuable in this context. Both functions perform a backward refinement of particles from [`pf_forward()`]; however, the former is simple but fast, while the latter is sophisticated but expensive. Tracking particle diagnostics can indicate whether [`pf_backward_sampler`]`_*()` is worth the cost.
 #'
 #' # Internal routines
 #'
@@ -96,7 +96,7 @@ pf_diag_summary <- function(.history, ...) {
 #' To collate summary diagnostics from [`pf_forward()`] or [`pf_backward_*()`], use [`pf_diag_summary()`]. This function calculates a single set of diagnostics is calculated for each time step, so this function is (effectively) memory safe.
 #'
 #' @seealso
-#' * [`pf_forward()`], [`pf_backward_killer()`] and [`pf_backward_sampler()`] implement the forward simulation and the backward pass;
+#' * [`pf_forward()`] and [`pf_backward_*()`] implement the forward simulation and the backward pass;
 #' * [`pf_diag_convergence()`] and [`pf_diag_summary()`] collect diagnostics;
 #' * [`.pf_diag`]`_()` functions are internal routines that calculate diagnostic statistics;
 #'

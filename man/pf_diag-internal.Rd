@@ -30,7 +30,7 @@ Particle diagnostics measure how the diversity of particle samples evolves throu
 \itemize{
 \item \strong{Convergence.} Diagnostics from the forward run can indicate the causes of convergence failures. This is possible because \code{\link[=pf_forward]{pf_forward()}} keeps track of diagnostics at every stage of the algorithm, recording at each time step the diversity of particle proposals, the diversity remaining after each likelihood function evaluation and the diversity following (re)-sampling. See \code{\linkS4class{pf_particles}} and \code{vignette("d-demos", package = "patter")} for an illustration.
 \item \strong{Sampling.} Diagnostics indicate sampling sufficiency. In general, a low ratio of the number of unique particles to the total number of particles indicates effective coverage of the possible locations of an individual.
-\item \strong{Particle degeneracy.} Diagnostics measure particle degeneracy, i.e., the decay in the number of unique particles through time as trajectories are rendered invalid by observations. Comparison of particle diagnostics between \code{\link[=pf_backward_killer]{pf_backward_killer()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} is particularly valuable in this context. Both functions perform a backward refinement of particles from \code{\link[=pf_forward]{pf_forward()}}; however, the former is simple but fast, while the latter is sophisticated but expensive. Tracking particle diagnostics can indicate whether \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} is worth the cost.
+\item \strong{Particle degeneracy.} Diagnostics measure particle degeneracy, i.e., the decay in the number of unique particles through time as trajectories are rendered invalid by observations. Comparison of particle diagnostics between \code{\link[=pf_backward_killer]{pf_backward_killer()}} and \code{\link{pf_backward_sampler}}\verb{_*()} is particularly valuable in this context. Both functions perform a backward refinement of particles from \code{\link[=pf_forward]{pf_forward()}}; however, the former is simple but fast, while the latter is sophisticated but expensive. Tracking particle diagnostics can indicate whether \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} is worth the cost.
 }
 }
 
@@ -53,7 +53,7 @@ To collate summary diagnostics from \code{\link[=pf_forward]{pf_forward()}} or \
 
 \seealso{
 \itemize{
-\item \code{\link[=pf_forward]{pf_forward()}}, \code{\link[=pf_backward_killer]{pf_backward_killer()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implement the forward simulation and the backward pass;
+\item \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_*]{pf_backward_*()}} implement the forward simulation and the backward pass;
 \item \code{\link[=pf_diag_convergence]{pf_diag_convergence()}} and \code{\link[=pf_diag_summary]{pf_diag_summary()}} collect diagnostics;
 \item \code{\link{.pf_diag}}\verb{_()} functions are internal routines that calculate diagnostic statistics;
 }

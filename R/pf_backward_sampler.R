@@ -13,7 +13,7 @@
 #' * `.dlist`, a `named` list of data and parameters required to calculate movement densities (see [`pf_forward()`]);
 #' * (optional) Additional arguments, passed in a named `list` via `.dargs` (see [`pf_forward()`]);
 #'
-#' Using these inputs, `.dpropose` must calculate the probability density of movements from each `cell_past` to `cell_now`, returning the inputted [`data.table`] with a `dens` column. In [`pf_backward_sampler_p()`], we only consider a single `cell_now` at each time step alongside all previous locations. In [`pf_backward_sampler()`], we simultaneously consider all `cell_now` entries at the current time step alongside all previous locations.
+#' Using these inputs, `.dpropose` must calculate the probability density of movements from each `cell_past` to `cell_now`, returning the inputted [`data.table`] with a `dens` column. In [`pf_backward_sampler_p()`], we only consider a single `cell_now` at each time step alongside all previous locations. In [`pf_backward_sampler_v()`], we simultaneously consider all `cell_now` entries at the current time step alongside all previous locations.
 #'
 #' The default function uses `.particles` and `.dlist$spatial$lonlat`. It calculates Euclidean distances between particle coordinates and translates these into probabilities via `.dkick` (see [`pf_dpropose()`]).
 #'
@@ -26,7 +26,7 @@
 #'
 #' @details
 #' # Overview
-#' The forward-filtering backward-sampling algorithm in [`patter`] is implemented via [`pf_forward()`] plus [`pf_backward_sampler()`]. [`pf_forward()`] runs a simulation forwards in time, generating location (particle) samples that are consistent with the data up to and including each time point (a marginal distribution). The backward sampler runs a simulation backwards in time. This generates a set of particle samples at each time step that embodies all information from both the past _and the future_; i.e., the full joint distribution of individual locations and data (see [`pf_backward_*()`])
+#' The forward-filtering backward-sampling algorithm in [`patter`] is implemented via [`pf_forward()`] plus [`pf_backward_*()`]. [`pf_forward()`] runs a simulation forwards in time, generating location (particle) samples that are consistent with the data up to and including each time point (a marginal distribution). The backward sampler runs a simulation backwards in time. This generates a set of particle samples at each time step that embodies all information from both the past _and the future_; i.e., the full joint distribution of individual locations and data (see [`pf_backward_*()`])
 #'
 #' # Parallel implementation
 #'
@@ -61,14 +61,14 @@
 #'
 #' This approach assumes that particle combinations can be held in memory (this is reasonable for \eqn{\leq 1000} particles but is relatively easy to relax if required) and that likelihood evaluations are cheap. Under these circumstances, this approach is faster than similar, more memory-efficient approaches based on the subset of unique cell combinations.
 #'
-#' The vectorised implementation returns a [`pf_particles-class`] object, as in [`pf_forward()`] and [`pf_backward_sampler()`]. Unlike a particle-by-particle implementation, we do not automatically reconstruct trajectories. [`pf_path()`] is required to translate particle samples into trajectories.
+#' The vectorised implementation returns a [`pf_particles-class`] object, as in [`pf_forward()`] and [`pf_backward_killer()`]. Unlike a particle-by-particle implementation, we do not automatically reconstruct trajectories. [`pf_path()`] is required to translate particle samples into trajectories.
 #'
 #' ## Advantages
 #' * Speed. The main advantage of [`pf_backward_sampler_v()`] is speed when only modest numbers of cores are available. We anticipate that in most cases [`pf_backward_sampler_v()`] is preferable for this reason.
 #' * History. We keep track of particle histories.
 #'
 #' ## Use cases
-#' We used this approach in the [`patter-flapper`](https://github.com/edwardlavender/patter-flapper) project. In that project, we considered a large grid, exceeding four billion cells. It was not feasible to precalculate movement densities. We implemented the algorithms in parallel over individuals. We used the vectorised implementation of the backward sampler which, on a single core, exhibited similar speeds to a paralellised implementation of [`pf_backward_sampler()`] over 10 cores.
+#' We used this approach in the [`patter-flapper`](https://github.com/edwardlavender/patter-flapper) project. In that project, we considered a large grid, exceeding four billion cells. It was not feasible to precalculate movement densities. We implemented the algorithms in parallel over individuals. We used the vectorised implementation of the backward sampler which, on a single core, exhibited similar speeds to a paralellised implementation of [`pf_backward_sampler_p()`] over 10 cores.
 #'
 #' # Mobility
 #'

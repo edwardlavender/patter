@@ -21,7 +21,7 @@ stopifnot(isTRUE(all.equal(p1, p4)))
 
 #### Example (2): Use particle samples from different algorithms
 # * See pf_backward_killer()
-# * See pf_backward_sampler()
+# * See pf_backward_sampler_*()
 
 #### Example (3): Include cell coordinates/obs columns
 p3 <- pf_path(out_pfbk, gebco, obs, .cols = "depth")

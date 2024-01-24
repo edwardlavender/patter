@@ -28,7 +28,7 @@ This function removes 'dead ends' from particle samples. If you imagine the forw
 
 There are two, related limitations with the 'prune' methodology. The first is that the removal of dead ends tends to bias particle samples, because early samples (which invariably sooner-or-later end up on a dead-end) are more likely to get killed than later samples. This is known as particle degeneracy. Use the \code{\link[=pf_diag_summary]{pf_diag_summary()}} function to evaluate trends in the effective sample size through time and examine whether this is an issue. The second is that while particles from the forward simulation are contingent upon the past (a marginal distribution), they do not embody information from the future (the joint distribution).
 
-To reconstruct the joint distribution of particle samples given all data (i.e., 'proper' movement trajectories), the backward sampler is required instead (\code{\link[=pf_backward_sampler]{pf_backward_sampler()}}). However, this is much more expensive.
+To reconstruct the joint distribution of particle samples given all data (i.e., 'proper' movement trajectories), the backward sampler is required instead (see \code{\link{pf_backward_sampler}}). However, this is much more expensive.
 
 This function replaces functionality in \href{https://edwardlavender.github.io/flapper/reference/pf_simplify.html}{\code{flapper::pf_simplify()}}.
 }
@@ -97,7 +97,7 @@ The forward filtering--backward sampling algorithm samples locations (particles)
 \item \code{\link[=pf_backward_*]{pf_backward_*()}} refines outputs from the forward filter:
 \itemize{
 \item \code{\link[=pf_backward_killer]{pf_backward_killer()}} removes dead-ends;
-\item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implements the backward sampler;
+\item \code{\link{pf_backward_sampler}}\verb{_*()} implements the backward sampler;
 }
 \item To reconstruct movement paths from particle samples, use \code{\link[=pf_path]{pf_path()}}.
 \item To map emergent patterns of space use, use \code{\link[=pf_coord]{pf_coord()}} plus a \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()}.

@@ -1,5 +1,5 @@
 #' @title Simulation: distribution functions
-#' @description These convenience functions support the generation of animal movement paths and observations in _de novo_ simulations (`sim_*()` functions) and simulation-based reconstructions of movement paths ([`pf_forward()`] and [`pf_backward_sampler()`]).
+#' @description These convenience functions support the generation of animal movement paths and observations in _de novo_ simulations (`sim_*()` functions) and simulation-based reconstructions of movement paths ([`pf_forward()`] and [`pf_backward_*()`]).
 #'
 #' * `ss*()` functions set seeds;
 #' * `r*()` functions simulate random variates;
@@ -8,7 +8,7 @@
 #'
 #' `r*()` and `c*()` functions are used in _de novo_ simulations (via `sim_*()` functions such as [`sim_path_walk()`] and [`sim_detections()`]) and the forward simulation-based reconstruction of movement paths (in [`pf_forward()`]).
 #'
-#' `d*()` functions are primarily used in the simulation-based reconstruction of movement paths as part of the backward sampler via [`pf_backward_sampler()`].
+#' `d*()` functions are primarily used in the simulation-based reconstruction of movement paths as part of the backward sampler via [`pf_backward_*()`].
 #'
 #' @param .n,.x Arguments for distribution functions ([`rbern()`], [`dbern()`], [`rtruncgamma()`] and [`dtruncgamma()`]):
 #' * `.n` is an `integer` that defines the number of simulated outcome(s);
@@ -157,7 +157,7 @@
 #'
 #' * **Dots.** Most of the above low-level functions silently accept unused dots (`...`). In higher level functions (such as [`sim_path_walk()`], [`pf_rpropose_kick()`] and [`pf_dpropose()`]), unused dots produce an error or a warning.
 #'
-#' * **Correlated random walks.** It is possible to simulate correlated random walks in [`sim_path_walk()`] but at the time of writing this is not supported [`pf_forward()`]. Probability density functions for correlated random walks, as required for [`pf_forward()`] and [`pf_backward_sampler()`] (e.g., `dangrw()`, `dangcrw()`) are not implemented.
+#' * **Correlated random walks.** It is possible to simulate correlated random walks in [`sim_path_walk()`] but at the time of writing this is not supported [`pf_forward()`]. Probability density functions for correlated random walks, as required for [`pf_forward()`] and [`pf_backward_*()`] (e.g., `dangrw()`, `dangcrw()`) are not implemented.
 #'
 #' @example man/examples/sim_helpers-examples.R
 #' @seealso
@@ -168,7 +168,7 @@
 #'    * [`sim_detections()`] simulates detection(s) at receivers;
 #'
 #' * [`pf_forward()`] implements forward simulation-based reconstruction of movement paths;
-#' * [`pf_backward_sampler()`] implements backward simulation-based reconstruction of movement paths;
+#' * [`pf_backward_*()`] implements backward simulation-based reconstruction of movement paths;
 #' * [`skill`] functions compared simulated and reconstructed patterns to evaluate model skill;
 #'
 #' @author Edward Lavender

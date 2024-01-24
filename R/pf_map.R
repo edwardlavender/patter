@@ -4,7 +4,7 @@
 #' @param .history Particle samples, provided in any format accepted by [`.pf_history_dt()`]. Particle samples may be sourced from:
 #' * [`pf_forward()`] (a marginal distribution);
 #' * [`pf_backward_killer()`] (a 'partial' joint distribution);
-#' * [`pf_backward_sampler()`] (the full joint distribution);
+#' * [`pf_backward_sampler_v()`] (the full joint distribution);
 #'
 #' Particle samples must contain the `timestep` and `cell_now` columns.
 #'

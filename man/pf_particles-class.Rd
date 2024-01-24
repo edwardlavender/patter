@@ -4,7 +4,7 @@
 \alias{pf_particles-class}
 \title{PF: \code{\linkS4class{pf_particles}} objects}
 \description{
-An S3 class that defines the named \code{list} returned by \code{\link[=pf_forward]{pf_forward()}}, \code{\link[=pf_backward_killer]{pf_backward_killer()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}.
+An S3 class that defines the named \code{list} returned by \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_*]{pf_backward_*()}}.
 }
 \section{Structure}{
 \code{\linkS4class{pf_particles}} is a label used to denote outputs from selected functions in \code{\link{patter}}. The structure of this class is not strictly defined and primarily exists to streamline documentation. At the time of writing, \code{\linkS4class{pf_particles}} objects may comprise the following elements:
@@ -46,13 +46,27 @@ If \code{.record$save = FALSE}, \code{.history} is an empty \code{list} and the 
 
 \code{\link[=pf_backward_killer]{pf_backward_killer()}} simply drops dead-ends (rows) from the time series and leaves the columns from \code{\link[=pf_forward]{pf_forward()}} intact (unless \code{.record$cols} is supplied).
 
-\code{\link[=pf_backward_sampler]{pf_backward_sampler()}} retains or updates the following columns, or a subset thereof as specified by \code{.record$cols}:
+\code{\link[=pf_backward_sampler_v]{pf_backward_sampler_v()}} retains or updates the following columns, or a subset thereof as specified by \code{.record$cols}:
 \itemize{
 \item \code{timestep}
 \item \code{cell_past}, \code{x_past}, \code{y_past}
 \item \code{cell_now}, \code{x_now}, \code{y_now}
 \item \code{dens}
 }
+
+\code{\link[=pf_backward_sampler_p]{pf_backward_sampler_p()}} tracks paths, not particle histories, so this element is empty.
+}
+
+\section{\code{paths}}{
+\code{paths} is a \code{\link{data.table}} of movement paths. Currently, this is only populated by \code{\link[=pf_backward_sampler_p]{pf_backward_sampler_p()}}. By default, the following columns are retained:
+\itemize{
+\item \code{path_id}---an \code{integer} vector of path IDs;
+\item \code{timestep}---an \code{integer} vector of time steps;
+\item \code{cell_past}, \code{cell_now}, \code{x_now}, \code{y_now}---Cell IDs and coordinates for particle samples;
+\item \code{dens}---a \code{numeric} vector of movement densities from \code{cell_past} into \code{cell_now};
+}
+
+Additional columns may be included from the forward run, as specified by \code{.record$cols}.
 }
 
 \section{\code{diagnostics}}{
@@ -134,7 +148,7 @@ The forward filtering--backward sampling algorithm samples locations (particles)
 \item \code{\link[=pf_backward_*]{pf_backward_*()}} refines outputs from the forward filter:
 \itemize{
 \item \code{\link[=pf_backward_killer]{pf_backward_killer()}} removes dead-ends;
-\item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implements the backward sampler;
+\item \code{\link{pf_backward_sampler}}\verb{_*()} implements the backward sampler;
 }
 \item To reconstruct movement paths from particle samples, use \code{\link[=pf_path]{pf_path()}}.
 \item To map emergent patterns of space use, use \code{\link[=pf_coord]{pf_coord()}} plus a \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()}.

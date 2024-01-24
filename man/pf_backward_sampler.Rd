@@ -45,7 +45,7 @@ pf_backward_sampler_v(
 \item (optional) Additional arguments, passed in a named \code{list} via \code{.dargs} (see \code{\link[=pf_forward]{pf_forward()}});
 }
 
-Using these inputs, \code{.dpropose} must calculate the probability density of movements from each \code{cell_past} to \code{cell_now}, returning the inputted \code{\link{data.table}} with a \code{dens} column. In \code{\link[=pf_backward_sampler_p]{pf_backward_sampler_p()}}, we only consider a single \code{cell_now} at each time step alongside all previous locations. In \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}, we simultaneously consider all \code{cell_now} entries at the current time step alongside all previous locations.
+Using these inputs, \code{.dpropose} must calculate the probability density of movements from each \code{cell_past} to \code{cell_now}, returning the inputted \code{\link{data.table}} with a \code{dens} column. In \code{\link[=pf_backward_sampler_p]{pf_backward_sampler_p()}}, we only consider a single \code{cell_now} at each time step alongside all previous locations. In \code{\link[=pf_backward_sampler_v]{pf_backward_sampler_v()}}, we simultaneously consider all \code{cell_now} entries at the current time step alongside all previous locations.
 
 The default function uses \code{.particles} and \code{.dlist$spatial$lonlat}. It calculates Euclidean distances between particle coordinates and translates these into probabilities via \code{.dkick} (see \code{\link[=pf_dpropose]{pf_dpropose()}}).
 
@@ -72,7 +72,7 @@ These functions implement the backward sampling algorithm.
 }
 }
 \section{Overview}{
-The forward-filtering backward-sampling algorithm in \code{\link{patter}} is implemented via \code{\link[=pf_forward]{pf_forward()}} plus \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}. \code{\link[=pf_forward]{pf_forward()}} runs a simulation forwards in time, generating location (particle) samples that are consistent with the data up to and including each time point (a marginal distribution). The backward sampler runs a simulation backwards in time. This generates a set of particle samples at each time step that embodies all information from both the past \emph{and the future}; i.e., the full joint distribution of individual locations and data (see \code{\link[=pf_backward_*]{pf_backward_*()}})
+The forward-filtering backward-sampling algorithm in \code{\link{patter}} is implemented via \code{\link[=pf_forward]{pf_forward()}} plus \code{\link[=pf_backward_*]{pf_backward_*()}}. \code{\link[=pf_forward]{pf_forward()}} runs a simulation forwards in time, generating location (particle) samples that are consistent with the data up to and including each time point (a marginal distribution). The backward sampler runs a simulation backwards in time. This generates a set of particle samples at each time step that embodies all information from both the past \emph{and the future}; i.e., the full joint distribution of individual locations and data (see \code{\link[=pf_backward_*]{pf_backward_*()}})
 }
 
 \section{Parallel implementation}{
@@ -120,7 +120,7 @@ Unlike \code{\link[=pf_backward_sampler_p]{pf_backward_sampler_p()}}, \code{\lin
 
 This approach assumes that particle combinations can be held in memory (this is reasonable for \eqn{\leq 1000} particles but is relatively easy to relax if required) and that likelihood evaluations are cheap. Under these circumstances, this approach is faster than similar, more memory-efficient approaches based on the subset of unique cell combinations.
 
-The vectorised implementation returns a \code{\linkS4class{pf_particles}} object, as in \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}. Unlike a particle-by-particle implementation, we do not automatically reconstruct trajectories. \code{\link[=pf_path]{pf_path()}} is required to translate particle samples into trajectories.
+The vectorised implementation returns a \code{\linkS4class{pf_particles}} object, as in \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_killer]{pf_backward_killer()}}. Unlike a particle-by-particle implementation, we do not automatically reconstruct trajectories. \code{\link[=pf_path]{pf_path()}} is required to translate particle samples into trajectories.
 \subsection{Advantages}{
 \itemize{
 \item Speed. The main advantage of \code{\link[=pf_backward_sampler_v]{pf_backward_sampler_v()}} is speed when only modest numbers of cores are available. We anticipate that in most cases \code{\link[=pf_backward_sampler_v]{pf_backward_sampler_v()}} is preferable for this reason.
@@ -260,7 +260,7 @@ The forward filtering--backward sampling algorithm samples locations (particles)
 \item \code{\link[=pf_backward_*]{pf_backward_*()}} refines outputs from the forward filter:
 \itemize{
 \item \code{\link[=pf_backward_killer]{pf_backward_killer()}} removes dead-ends;
-\item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implements the backward sampler;
+\item \code{\link{pf_backward_sampler}}\verb{_*()} implements the backward sampler;
 }
 \item To reconstruct movement paths from particle samples, use \code{\link[=pf_path]{pf_path()}}.
 \item To map emergent patterns of space use, use \code{\link[=pf_coord]{pf_coord()}} plus a \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()}.

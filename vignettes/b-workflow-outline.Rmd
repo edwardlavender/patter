@@ -74,7 +74,7 @@ This vignette lists the steps required to use `patter` to reconstruct movement p
 
 # Backward pass 
 
-1. Use `pf_backward_killer()` or `pf_backward_sampler()` 
+1. Use `pf_backward_killer()` or `pf_backward_sampler_*()` 
 
 # Analysis 
 

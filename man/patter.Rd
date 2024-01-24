@@ -135,7 +135,7 @@ The main thrust of \code{\link{patter}} is the provision of an integrated modell
 \strong{To implement the backward pass (\code{\link[=pf_backward_*]{pf_backward_*()}})}, use:
 \itemize{
 \item \code{\link[=pf_backward_killer]{pf_backward_killer()}} to prune dead-ends;
-\item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} to run the backward sampler;
+\item \code{\link[=pf_backward_sampler_p]{pf_backward_sampler_p()}} or \code{\link[=pf_backward_sampler_v]{pf_backward_sampler_v()}} to run the backward sampler;
 }
 
 \strong{For particle diagnostics}, see:

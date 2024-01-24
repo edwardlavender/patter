@@ -159,7 +159,7 @@ The forward filtering--backward sampling algorithm samples locations (particles)
 \item \code{\link[=pf_backward_*]{pf_backward_*()}} refines outputs from the forward filter:
 \itemize{
 \item \code{\link[=pf_backward_killer]{pf_backward_killer()}} removes dead-ends;
-\item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implements the backward sampler;
+\item \code{\link{pf_backward_sampler}}\verb{_*()} implements the backward sampler;
 }
 \item To reconstruct movement paths from particle samples, use \code{\link[=pf_path]{pf_path()}}.
 \item To map emergent patterns of space use, use \code{\link[=pf_coord]{pf_coord()}} plus a \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()}.

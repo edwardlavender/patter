@@ -189,7 +189,7 @@ These convenience functions support the generation of animal movement paths and 
 
 \verb{r*()} and \verb{c*()} functions are used in \emph{de novo} simulations (via \verb{sim_*()} functions such as \code{\link[=sim_path_walk]{sim_path_walk()}} and \code{\link[=sim_detections]{sim_detections()}}) and the forward simulation-based reconstruction of movement paths (in \code{\link[=pf_forward]{pf_forward()}}).
 
-\verb{d*()} functions are primarily used in the simulation-based reconstruction of movement paths as part of the backward sampler via \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}.
+\verb{d*()} functions are primarily used in the simulation-based reconstruction of movement paths as part of the backward sampler via \code{\link[=pf_backward_*]{pf_backward_*()}}.
 }
 \section{Reproducibility}{
 \itemize{
@@ -288,7 +288,7 @@ where \eqn{\text{logistic}(x) = 1 + e^{-x}}; \code{.alpha}, and \code{.beta} are
 \section{Warnings}{
 \itemize{
 \item \strong{Dots.} Most of the above low-level functions silently accept unused dots (\code{...}). In higher level functions (such as \code{\link[=sim_path_walk]{sim_path_walk()}}, \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}} and \code{\link[=pf_dpropose]{pf_dpropose()}}), unused dots produce an error or a warning.
-\item \strong{Correlated random walks.} It is possible to simulate correlated random walks in \code{\link[=sim_path_walk]{sim_path_walk()}} but at the time of writing this is not supported \code{\link[=pf_forward]{pf_forward()}}. Probability density functions for correlated random walks, as required for \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} (e.g., \code{dangrw()}, \code{dangcrw()}) are not implemented.
+\item \strong{Correlated random walks.} It is possible to simulate correlated random walks in \code{\link[=sim_path_walk]{sim_path_walk()}} but at the time of writing this is not supported \code{\link[=pf_forward]{pf_forward()}}. Probability density functions for correlated random walks, as required for \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_*]{pf_backward_*()}} (e.g., \code{dangrw()}, \code{dangcrw()}) are not implemented.
 }
 }
 
@@ -536,7 +536,7 @@ compare(270)
 \item \code{\link[=sim_detections]{sim_detections()}} simulates detection(s) at receivers;
 }
 \item \code{\link[=pf_forward]{pf_forward()}} implements forward simulation-based reconstruction of movement paths;
-\item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implements backward simulation-based reconstruction of movement paths;
+\item \code{\link[=pf_backward_*]{pf_backward_*()}} implements backward simulation-based reconstruction of movement paths;
 \item \code{\link{skill}} functions compared simulated and reconstructed patterns to evaluate model skill;
 }
 }

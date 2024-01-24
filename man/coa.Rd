@@ -80,7 +80,7 @@ coa(dlist, .delta_t = "6 hours", .split = "individual_id")
 }
 \seealso{
 \itemize{
-\item To derive location samples from the forward-filter backward-sampler, see \code{\link[=pf_forward]{pf_forward()}}, \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} and \code{\link[=pf_coord]{pf_coord()}};
+\item To derive location samples from the forward-filter backward-sampler, see \code{\link[=pf_forward]{pf_forward()}}, \code{\link[=pf_backward_*]{pf_backward_*()}} and \code{\link[=pf_coord]{pf_coord()}};
 \item For mapping utilisation distributions from coordinates, see \verb{map_*()} functions (i.e., \code{\link[=map_pou]{map_pou()}} and \code{\link[=map_dens]{map_dens()}};
 }
 }

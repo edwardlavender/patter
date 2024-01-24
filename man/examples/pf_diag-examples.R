@@ -69,7 +69,7 @@ pf_plot_diag_ts <- function(.f, .k, .s, .metric = c("n", "n_u", "ess"), ...){
 # Plot time series
 # * Red:    pf_forward()
 # * Orange: pf_backward_killer()
-# * Green:  pf_backward_sampler()
+# * Green:  pf_backward_sampler_*()
 pp <- par(mfrow = c(1, 3))
 cl_lapply(c("n", "n_u", "ess"), function(.metric) {
   print(.metric)

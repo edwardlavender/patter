@@ -10,7 +10,11 @@
 The forward filtering--backward sampling algorithm implemented by \code{\link{patter}} that reconstructs animal movements in passive acoustic telemetry systems comprises a forward filter and a backward pass. The forward filter runs a simulation forwards in time, sampling locations (particles) that are consistent with the data up to and including each time point and a movement model (see \code{\link[=pf_forward]{pf_forward()}}). The backward pass refines outputs from the forward filter. \code{\link{patter}} provides two options for the backward pass:
 \itemize{
 \item \code{\link[=pf_backward_killer]{pf_backward_killer()}} prunes 'dead-ends' from the time series. This function is simple but fast.
-\item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implements a backward sampler. This function samples from the joint distribution of particles, given all of the data---both from the past and the future. This is much more expensive.
+\item \verb{pf_backward_sampler_*()} are backward sampling routines. This algorithm samples from the joint distribution of particles, given all of the data---both from the past and the future. This is much more expensive. Currently there are two imlpementation options:
+\itemize{
+\item \code{\link[=pf_backward_sampler_p]{pf_backward_sampler_p()}}, which implements a particle-by-particle routine;
+\item \code{\link[=pf_backward_sampler_v]{pf_backward_sampler_v()}}, which uses vectorisation;
+}
 }
 
 See \code{\link[=pf_diag_summary]{pf_diag_summary()}} to compare particle diagnostics for the two approaches.
@@ -30,7 +34,7 @@ The forward filtering--backward sampling algorithm samples locations (particles)
 \item \code{\link[=pf_backward_*]{pf_backward_*()}} refines outputs from the forward filter:
 \itemize{
 \item \code{\link[=pf_backward_killer]{pf_backward_killer()}} removes dead-ends;
-\item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implements the backward sampler;
+\item \code{\link{pf_backward_sampler}}\verb{_*()} implements the backward sampler;
 }
 \item To reconstruct movement paths from particle samples, use \code{\link[=pf_path]{pf_path()}}.
 \item To map emergent patterns of space use, use \code{\link[=pf_coord]{pf_coord()}} plus a \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()}.

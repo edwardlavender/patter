@@ -146,7 +146,7 @@ sim_detections(.paths = p, .arrays = a, .type = "combinations")
 \item \code{\link[=sim_detections]{sim_detections()}} simulates detection(s) at receivers;
 }
 \item \code{\link[=pf_forward]{pf_forward()}} implements forward simulation-based reconstruction of movement paths;
-\item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implements backward simulation-based reconstruction of movement paths;
+\item \code{\link[=pf_backward_*]{pf_backward_*()}} implements backward simulation-based reconstruction of movement paths;
 \item \code{\link{skill}} functions compared simulated and reconstructed patterns to evaluate model skill;
 }
 }

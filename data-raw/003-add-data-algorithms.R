@@ -98,7 +98,7 @@ if (overwrite) {
 out_pfbk <- pf_backward_killer(.history = out_pff$history,
                                .record = pf_opt_record(.save = TRUE, .sink = sink))
 
-#### Implement pf_backward_sampler()
+#### Implement pf_backward_sampler_*()
 # NB: If pf_forward() is re-run, pf_backward_*() must also be re-run.
 sink      <- NULL
 if (overwrite) {

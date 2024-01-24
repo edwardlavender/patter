@@ -112,7 +112,7 @@
 #' **To implement the backward pass ([`pf_backward_*()`])**, use:
 #'
 #' * [`pf_backward_killer()`] to prune dead-ends;
-#' * [`pf_backward_sampler()`] to run the backward sampler;
+#' * [`pf_backward_sampler_p()`] or [`pf_backward_sampler_v()`] to run the backward sampler;
 #'
 #' **For particle diagnostics**, see:
 #' * [`pf_diag_convergence()`] to collate convergence diagnostics;

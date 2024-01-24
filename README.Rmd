@@ -29,7 +29,7 @@ knitr::opts_chunk$set(
 [`patter`](https://github.com/edwardlavender/patter) is designed to reconstruct fine-scale movement paths and emergent patterns of space use in passive acoustic telemetry systems. A powerful, flexible process-orientated framework known as a forward filtering--backward sampling algorithm is used for this purpose.
 This framework unifies the [`flapper`](https://github.com/edwardlavender/flapper) algorithms and provides important opportunities for development, which we exploit here. 
 
-The essential functions are `pf_forward()` and `pf_backward_sampler()`. `pf_forward()` is the forward filter. This simulates the possible locations of an individual moving forwards in time, accounting for all of the data (including acoustic observations, depth observations and any other observations) _up to_ each time point and the animal's movement. `pf_backward_sampler()` refines outputs from the forward filter. This function runs a simulation backwards in time and samples likely locations in line with all of the data _up to and after_ each time point. The outcome is a set of location samples that represent possible trajectories and embody emergent patterns of space use. 
+The essential functions are `pf_forward()` and `pf_backward_sampler_*()`. `pf_forward()` is the forward filter. This simulates the possible locations of an individual moving forwards in time, accounting for all of the data (including acoustic observations, depth observations and any other observations) _up to_ each time point and the animal's movement. `pf_backward_sampler_*()` refines outputs from the forward filter. This function runs a simulation backwards in time and samples likely locations in line with all of the data _up to and after_ each time point. The outcome is a set of location samples that represent possible trajectories and embody emergent patterns of space use. 
 
 # Evolution
 
@@ -170,7 +170,7 @@ The main thrust of [`patter`](https://github.com/edwardlavender/patter) is the p
 **To implement the backward pass (`pf_backward_*()`)**, use:
 
 * `pf_backward_killer()` to prune dead-ends;
-* `pf_backward_sampler()` to run the backward sampler;
+* `pf_backward_sampler_p()` or [`pf_backward_sampler_v()`] to run the backward sampler;
 
 **For particle diagnostics**, see:
 

@@ -34,7 +34,7 @@ We continue to use the terms `acs_*`, `AC*PF` and `*DCPF`:
 
 The forward simulation is followed by a backward pass. In the original `flapper` implementation, the backward pass was implemented by `pf_simplify()` and involved pruning 'dead ends' from the forward simulation. If you imagine the forward simulation as a growing fungal network between two points in space (representing the start and end of a time series), dead ends are the side branches of the (simulated) fungal network that fail to reach the end. The corresponding (and much improved) routine in `patter` is `pf_backward_killer()`. 
 
-There are two, related limitations with the 'prune' methodology. The first is that the removal of dead ends tends to bias particle samples, because early samples (which invariably sooner-or-later end up on a dead-end) are more likely to get killed than later samples. This is known as particle degeneracy. The second is that while particles are contingent upon the past (a marginal distribution), they do not embody information from the future (the joint distribution). In `patter`, a backward sampling algorithm mitigates these issue to reconstruct movement trajectories (see `pf_backward_sampler()`).
+There are two, related limitations with the 'prune' methodology. The first is that the removal of dead ends tends to bias particle samples, because early samples (which invariably sooner-or-later end up on a dead-end) are more likely to get killed than later samples. This is known as particle degeneracy. The second is that while particles are contingent upon the past (a marginal distribution), they do not embody information from the future (the joint distribution). In `patter`, a backward sampling algorithm mitigates these issue to reconstruct movement trajectories (see `pf_backward_*()`).
 
 See `NEWS` for a summary of the differences between `flapper` and `patter`. 
 
@@ -85,14 +85,14 @@ The backward sampler is used to reconstruct the joint distribution of particle s
 * Sample a selected particle at the previous time step, in line with the probability densities linking each pair of particles;
 * Repeat this process until the start of the time series;
 
-Backward sampling is implemented via `pf_backward_sampler()` and associates. As noted above, you can also reconstruct paths via `pf_forward()` plus `pf_backward_killer()` (and `pf_path()`), which is much less computationally intensive, but subject to limitations (see above). 
+Backward sampling is implemented via `pf_backward_sampler_*()` and associates. As noted above, you can also reconstruct paths via `pf_forward()` plus `pf_backward_killer()` (and `pf_path()`), which is much less computationally intensive, but subject to limitations (see above). 
 
 # Analysis 
 
 Particle samples can be used to reconstruct movement paths and maps of space use. Movement paths can be reconstructed in two ways: 
 
 * (original) `pf_forward()` &rarr; `pf_backward_killer()` &rarr; `pf_path()`
-* (recommended) `pf_forward()` &rarr; `pf_backward_sampler()`
+* (recommended) `pf_forward()` &rarr; `pf_backward_sampler_*()` &rarr; `pf_path()`
 
 Patterns of space use (utilisation distributions) can be reconstructed using standard statistical techniques (see `map_pou()`, `map_dens()` and `map_hr_*()` for inbuilt functions).
 

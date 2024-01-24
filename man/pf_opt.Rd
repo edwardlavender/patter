@@ -45,7 +45,7 @@ For example, if after kicking previous particles into proposal locations and eva
 \itemize{
 \item \code{.save}---a \code{logical} variable that defines whether or not to save particle samples and diagnostics in memory. Use \code{.save = TRUE} with caution.
 \item \code{.sink}---a \code{character} string that defines a (usually) empty directory in which to write particle samples and diagnostics. \verb{\{.sink\}/history/}and \code{{.sink}/diagnostics} directories are created (if necessary) to store particle samples and diagnostics respectively.
-\item \code{.cols}---a \code{character} vector that defines the names of the columns in particle-sample \code{\link{data.table}}s to save and/or write to file at each time step. This reduces the space occupied by outputs. For \code{\link[=pf_backward_killer]{pf_backward_killer()}}, you need to retain \code{timestep}, \code{cell_past} and \code{cell_now}. For \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}, you need \code{timestep}, \code{cell_now}, \code{x_now} and \code{y_now} for the backward sampler. For calculation of effective sample size, \code{lik} is required. \code{NULL} retains all columns.
+\item \code{.cols}---a \code{character} vector that defines the names of the columns in particle-sample \code{\link{data.table}}s to save and/or write to file at each time step. This reduces the space occupied by outputs. For \code{\link[=pf_backward_killer]{pf_backward_killer()}}, you need to retain \code{timestep}, \code{cell_past} and \code{cell_now}. For \code{\link{pf_backward_sampler}}\verb{_*()}, you need \code{timestep}, \code{cell_now}, \code{x_now} and \code{y_now} for the backward sampler. For calculation of effective sample size, \code{lik} is required. \code{NULL} retains all columns.
 }
 
 At least one of \code{.save = TRUE} and \code{.sink} must be set.}
@@ -98,7 +98,7 @@ The forward filtering--backward sampling algorithm samples locations (particles)
 \item \code{\link[=pf_backward_*]{pf_backward_*()}} refines outputs from the forward filter:
 \itemize{
 \item \code{\link[=pf_backward_killer]{pf_backward_killer()}} removes dead-ends;
-\item \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implements the backward sampler;
+\item \code{\link{pf_backward_sampler}}\verb{_*()} implements the backward sampler;
 }
 \item To reconstruct movement paths from particle samples, use \code{\link[=pf_path]{pf_path()}}.
 \item To map emergent patterns of space use, use \code{\link[=pf_coord]{pf_coord()}} plus a \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()}.

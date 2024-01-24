@@ -22,7 +22,7 @@ The `pf_forward()` function implements the forward simulation. This brings toget
 
 The `pf_backward_killer()` is used to prune dead-ends from the forward simulation. This replaces previous functionality in `pf_simplify()` and is much faster. Pruning a 20,000 step time series with 1,000 particles at each time step now takes less than two minutes.
 
-`pf_backward_sampler()` is a major, new routine that implements the backward sampler. This is required for the reconstruction of movement trajectories. 
+`pf_backward_sampler_*()` is a major, new routine that implements the backward sampler. This is required for the reconstruction of movement trajectories. 
 
 ## Analysis 
 

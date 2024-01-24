@@ -39,16 +39,17 @@ sampling algorithm is used for this purpose. This framework unifies the
 [`flapper`](https://github.com/edwardlavender/flapper) algorithms and
 provides important opportunities for development, which we exploit here.
 
-The essential functions are `pf_forward()` and `pf_backward_sampler()`.
-`pf_forward()` is the forward filter. This simulates the possible
-locations of an individual moving forwards in time, accounting for all
-of the data (including acoustic observations, depth observations and any
-other observations) *up to* each time point and the animal’s movement.
-`pf_backward_sampler()` refines outputs from the forward filter. This
-function runs a simulation backwards in time and samples likely
-locations in line with all of the data *up to and after* each time
-point. The outcome is a set of location samples that represent possible
-trajectories and embody emergent patterns of space use.
+The essential functions are `pf_forward()` and
+`pf_backward_sampler_*()`. `pf_forward()` is the forward filter. This
+simulates the possible locations of an individual moving forwards in
+time, accounting for all of the data (including acoustic observations,
+depth observations and any other observations) *up to* each time point
+and the animal’s movement. `pf_backward_sampler_*()` refines outputs
+from the forward filter. This function runs a simulation backwards in
+time and samples likely locations in line with all of the data *up to
+and after* each time point. The outcome is a set of location samples
+that represent possible trajectories and embody emergent patterns of
+space use.
 
 # Evolution
 
@@ -249,7 +250,8 @@ acoustic telemetry systems.
 **To implement the backward pass (`pf_backward_*()`)**, use:
 
 - `pf_backward_killer()` to prune dead-ends;
-- `pf_backward_sampler()` to run the backward sampler;
+- `pf_backward_sampler_p()` or \[`pf_backward_sampler_v()`\] to run the
+  backward sampler;
 
 **For particle diagnostics**, see:
 

@@ -11,8 +11,8 @@
 #' * [`dat_pff_src()`] is the directory in which example `.parquet` files from [`pf_forward()`] are stored;
 #' * [`dat_pfbk()`] reads an example output from [`pf_backward_killer()`];
 #' * [`dat_pff_src()`] is the directory in which example `.parquet` files from [`pf_backward_killer()`] are stored;
-#' * [`dat_pfbs()`] reads an example output from [`pf_backward_sampler()`];
-#' * [`dat_pfbs_src()`] is the directory in which example `.parquet` files from [`pf_backward_sampler()`] are stored;
+#' * [`dat_pfbs()`] reads an example output from [`pf_backward_sampler_v()`];
+#' * [`dat_pfbs_src()`] is the directory in which example `.parquet` files from [`pf_backward_sampler_v()`] are stored;
 #' * [`dat_pfp()`] reads an example output from [`pf_path()`];
 #' * [`dat_coa()`] reads an example output from [`coa()`];
 #'
@@ -35,7 +35,7 @@
 #' # Directory of inbuilt parquet files from `pf_backward_killer()`
 #' dat_pfbk_src()
 #'
-#' # Directory of inbuilt parquet files frim `pf_backward_sampler()`
+#' # Directory of inbuilt parquet files frim `pf_backward_sampler_v()`
 #' dat_pfbs_src()
 #'
 #' @source For full details on the algorithm parameters used to generate these datasets, see \url{https://github.com/edwardlavender/patter/blob/main/data-raw/003-add-data-algorithms.R}.

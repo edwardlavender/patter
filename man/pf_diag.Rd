@@ -124,7 +124,7 @@ pf_plot_diag_ts <- function(.f, .k, .s, .metric = c("n", "n_u", "ess"), ...){
 # Plot time series
 # * Red:    pf_forward()
 # * Orange: pf_backward_killer()
-# * Green:  pf_backward_sampler()
+# * Green:  pf_backward_sampler_*()
 pp <- par(mfrow = c(1, 3))
 cl_lapply(c("n", "n_u", "ess"), function(.metric) {
   print(.metric)
@@ -137,7 +137,7 @@ par(pp)
 }
 \seealso{
 \itemize{
-\item \code{\link[=pf_forward]{pf_forward()}}, \code{\link[=pf_backward_killer]{pf_backward_killer()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} implement the forward simulation and the backward pass;
+\item \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_*]{pf_backward_*()}} implement the forward simulation and the backward pass;
 \item \code{\link[=pf_diag_convergence]{pf_diag_convergence()}} and \code{\link[=pf_diag_summary]{pf_diag_summary()}} collect diagnostics;
 \item \code{\link{.pf_diag}}\verb{_()} functions are internal routines that calculate diagnostic statistics;
 }

@@ -1,5 +1,5 @@
 #' @title PF: [`pf_particles-class`] objects
-#' @description An S3 class that defines the named `list` returned by [`pf_forward()`], [`pf_backward_killer()`] and [`pf_backward_sampler()`].
+#' @description An S3 class that defines the named `list` returned by [`pf_forward()`] and [`pf_backward_*()`].
 #'
 #' @details
 #'
@@ -43,11 +43,23 @@
 #'
 #' [`pf_backward_killer()`] simply drops dead-ends (rows) from the time series and leaves the columns from [`pf_forward()`] intact (unless `.record$cols` is supplied).
 #'
-#' [`pf_backward_sampler()`] retains or updates the following columns, or a subset thereof as specified by `.record$cols`:
+#' [`pf_backward_sampler_v()`] retains or updates the following columns, or a subset thereof as specified by `.record$cols`:
 #' * `timestep`
 #' * `cell_past`, `x_past`, `y_past`
 #' * `cell_now`, `x_now`, `y_now`
 #' * `dens`
+#'
+#' [`pf_backward_sampler_p()`] tracks paths, not particle histories, so this element is empty.
+#'
+#' # `paths`
+#'
+#' `paths` is a [`data.table`] of movement paths. Currently, this is only populated by [`pf_backward_sampler_p()`]. By default, the following columns are retained:
+#' * `path_id`---an `integer` vector of path IDs;
+#' * `timestep`---an `integer` vector of time steps;
+#' * `cell_past`, `cell_now`, `x_now`, `y_now`---Cell IDs and coordinates for particle samples;
+#' * `dens`---a `numeric` vector of movement densities from `cell_past` into `cell_now`;
+#'
+#' Additional columns may be included from the forward run, as specified by `.record$cols`.
 #'
 #' # `diagnostics`
 #'
