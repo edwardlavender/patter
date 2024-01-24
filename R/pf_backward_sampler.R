@@ -31,7 +31,7 @@
 #' # Parallel implementation
 #'
 #' ## Overview
-#' The backward sampler begins with particle samples from [`pf_forward()`] for the final time step. [`pf_backward_sample_p()`] iterates over particles and time steps. Moving backwards in time, for time step (> 1) and each particle, the algorithm acts as follows:
+#' The backward sampler begins with particle samples from [`pf_forward()`] for the final time step. [`pf_backward_sampler_p()`] iterates over particles and time steps. Moving backwards in time, for time step (> 1) and each particle, the algorithm acts as follows:
 #' * Calculate the probability density of movements from that particle to all particles at the previous time step via a `.dpropose` function.
 #' * (In practice, this typically requires calculating the distances between particle samples and translating these into densities using the movement model);
 #' * Sample a selected particle at the previous time step, in line with the probability densities linking each pair of particles;
@@ -76,7 +76,7 @@
 #'
 #' # Costs
 #'
-#' The backward sampler requires large numbers of (potentially replicate) calculations. Under default settings, calculations are implemented on-the-fly. For intermediate-sized problems, it may be more efficient to pre-compute densities, or variables required for density estimation (such as distance), between (unique) particle pairs before implementation of the backward sampler. This is easiest in [`pf_backward_sampler_p()`], since we consider only a single particle (grid cell) at each time step. Modify `.dpropose`  to read and match densities from objects in memory or from file onto the `.particles` [`data.table`]. However, for big datasets, identifying and storing unique particle combinations becomes difficult and expensive and we do not currently have a better solution than on-the-fly calculations. If [`pf_backward_sampler_*()`] is prohibitively expensive, it is acceptable to use particle samples from [`pf_forward()`]) and/or [`pf_backward_killer()`] for trajectory construction and mapping. The extent to which backward sampling refines trajectories and patterns of space use is context-specific.
+#' The backward sampler requires large numbers of (potentially replicate) calculations. Under default settings, calculations are implemented on-the-fly. For intermediate-sized problems, it may be more efficient to pre-compute densities, or variables required for density estimation (such as distance), between (unique) particle pairs before implementation of the backward sampler. This is easiest in [`pf_backward_sampler_p()`], since we consider only a single particle (grid cell) at each time step. Modify `.dpropose`  to read and match densities from objects in memory or from file onto the `.particles` [`data.table`]. However, for big datasets, identifying and storing unique particle combinations becomes difficult and expensive and we do not currently have a better solution than on-the-fly calculations. If `pf_backward_sampler_*()` is prohibitively expensive, it is acceptable to use particle samples from [`pf_forward()`]) and/or [`pf_backward_killer()`] for trajectory construction and mapping. The extent to which backward sampling refines trajectories and patterns of space use is context-specific.
 #'
 #' @example man/examples/pf_backward_sampler-examples.R
 #'

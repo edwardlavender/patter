@@ -100,7 +100,11 @@ diag_s <- pf_diag_summary(dat_pfbs())
 pf_plot_diag_ts <- function(.f, .k, .s, .metric = c("n", "n_u", "ess"), ...){
   # Define base plot
   .metric <- match.arg(.metric)
-  ylim <- range(c(.f[[.metric]], .k[[.metric]], .s[[.metric]]), na.rm = TRUE)
+  vals    <- c(.f[[.metric]], .k[[.metric]], .s[[.metric]])
+  if (all(is.na(vals))) {
+    return(NULL)
+  }
+  ylim <- range(vals, na.rm = TRUE)
   plot(.f$timestep, .f[[.metric]],
        xlab = "time step", ylab = .metric,
        ylim = ylim, type = "n", ...)

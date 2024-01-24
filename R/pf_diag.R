@@ -58,13 +58,13 @@ pf_diag_convergence <- function(.sink, ...) {
 pf_diag_summary <- function(.history, ...) {
   .history |>
     .pf_history_dt(..., .collect = TRUE) |>
-    add_col_real(.col = "lik") |>
+    add_col_real(.col = "weight") |>
     lazy_dt() |>
     group_by(.data$timestep) |>
     summarise(timestep = .data$timestep[1],
               n = n(),
               n_u = .pf_diag_nu(.data$cell_now),
-              ess = .pf_diag_ess(.data$lik)
+              ess = .pf_diag_ess(.data$weight)
     ) |>
     as.data.table()
 }
@@ -84,7 +84,7 @@ pf_diag_summary <- function(.history, ...) {
 #'
 #' * [`.pf_diag_any()`] identifies whether or not any particle samples remain;
 #' * [`.pf_diag_nu()`] counts the number of unique particle samples (grid cells);
-#' * [`.pf_diag_ess()`] calculates effective sample size from particle likelihoods;
+#' * [`.pf_diag_ess()`] calculates effective sample size from normalised particle weights;
 #' * [`.pf_diag()`] is a wrapper function that calculates diagnostics;
 #' * [`.pf_diag_bind()`] binds `list`s of diagnostics together;
 #' * [`.pf_diag_collect()`] wraps [`.pf_diag_bind()`] and assigns required columns;
@@ -120,8 +120,12 @@ pf_diag_summary <- function(.history, ...) {
 #' @rdname pf_diag-internal
 #' @keywords internal
 
-.pf_diag_ess <- function(.likelihood) {
-  1 / sum(.likelihood ^ 2)
+.pf_diag_ess <- function(.weight) {
+  if (all(is.na(.weight))) {
+    return(NA_real_)
+  }
+  stopifnot(isTRUE(all.equal(sum(.weight), 1)))
+  1 / sum(.weight ^ 2)
 }
 
 #' @rdname pf_diag-internal
@@ -137,7 +141,7 @@ pf_diag_summary <- function(.history, ...) {
   if (out$n > 0) {
     n_u <- ess <- NULL
     out[, n_u := .pf_diag_nu(.particles$cell_now)]
-    out[, ess := .pf_diag_ess(.particles$lik)]
+    out[, ess := .pf_diag_ess(.particles$weight)]
   }
   out
 }

@@ -177,6 +177,7 @@
   # Define global variables
   lik <- weight <- NULL
   .particles[, lik := 1]
+  .particles[, weight := 1 / fnrow(.particles)]
   # Define baseline (proposal) diagnostics
   if (!is.null(.diagnostics)) {
     .diagnostics[["proposal"]] <-
@@ -191,6 +192,8 @@
                                .obs = .obs,
                                .t = .t,
                                .dlist = .dlist)
+      # Normalise weights to track ESS
+      .particles[, weight := normalise(lik)]
       if (!is.null(.diagnostics)) {
         .diagnostics[[names(.stack)[i]]] <-
           .pf_diag(.particles = .particles, .t = .t,
@@ -308,6 +311,8 @@
   # Get summary diagnostics
   # * TO DO
   # * Provide a more detailed breakdown (include diagnostics in lapply())
+  weight <- NULL
+  proposals[, weight := normalise(weight)]
   diagnostics[["lik-directed"]] <- .pf_diag(.particles = proposals, .t = .t,
                                            .trial = NA_integer_, .label = "lik-directed")
 
