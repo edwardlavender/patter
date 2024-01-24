@@ -4,7 +4,7 @@
 \alias{.pf_backward_output}
 \title{PF: backward pass internals}
 \usage{
-.pf_backward_output(.start, .history, .record)
+.pf_backward_output(.start, .history, .path = NULL, .record)
 }
 \description{
 Internal functions for the backward pass.

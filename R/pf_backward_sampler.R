@@ -1,10 +1,11 @@
 #' @title PF: backward sampler
-#' @description This is a vectorised implementation of the backward sampling algorithm.
+#' @description These functions implement the backward sampling algorithm.
+#' * [`pf_backward_sampler_p()`] is a parallel particle-by-particle implementation;
+#' * [`pf_backward_sampler_v()`] is a vectorised implementation;
 #'
 #' @param .history Particle samples from the forward simulation, provided in any format accepted by [`.pf_history_list()`]. Particle samples must contain `timestep`, `cell_now`, `x_now` and `y_now` columns.
 #' @param .dpropose,.obs,.dlist,.dargs A `function` and associated arguments used to evaluate the probability density of movement between location pairs (see [`pf_forward()`] and [`pf_dpropose()`]). `.dpropose` must accept the following arguments, even if they are unused:
 #' * `.particles`, a [`data.table`] of particle samples that contains pairs of particles from the current and previous time steps. This contains the following columns:
-#'    * `index_now`,`index_past`---`integer` vectors that define sample positions in particle [`data.table`]s for the current and previous time step;
 #'    * `cell_now`, `x_now`, `y_now`---an `integer` vector of particle (grid cell) IDs and `numeric` vectors of particle coordinates for the current time step;
 #'    * `cell_past`, `x_past`, `y_past`---as above but for the previous time step;
 #' * `.obs`, a [`data.table`] of observations (see [`pf_forward()`]);
@@ -12,9 +13,13 @@
 #' * `.dlist`, a `named` list of data and parameters required to calculate movement densities (see [`pf_forward()`]);
 #' * (optional) Additional arguments, passed in a named `list` via `.dargs` (see [`pf_forward()`]);
 #'
-#' Using these inputs, `.dpropose` must calculate the probability density of movements from each `cell_past` to `cell_now`, returning the inputted [`data.table`] with a `dens` column. The default function uses `.particles` and `.dlist$spatial$lonlat`. It calculates Euclidean distances between particle coordinates and translates these into probabilities via `.dkick` (see [`pf_dpropose()`]).
+#' Using these inputs, `.dpropose` must calculate the probability density of movements from each `cell_past` to `cell_now`, returning the inputted [`data.table`] with a `dens` column. In [`pf_backward_sampler_p()`], we only consider a single `cell_now` at each time step alongside all previous locations. In [`pf_backward_sampler()`], we simultaneously consider all `cell_now` entries at the current time step alongside all previous locations.
+#'
+#' The default function uses `.particles` and `.dlist$spatial$lonlat`. It calculates Euclidean distances between particle coordinates and translates these into probabilities via `.dkick` (see [`pf_dpropose()`]).
 #'
 #' See [`pf_forward()`] and [`pf_dpropose()`] for full details on required function arguments, inputs and outputs.
+#'
+#' @param .cl,.cl_varlist,.cl_chunk For [`pf_backward_sampler_p()`], `.cl*` arguments are parallelisation options, passed to [`cl_lapply()`].
 #'
 #' @param .record A named `list` of output options, from [`pf_opt_record()`].
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
@@ -23,43 +28,211 @@
 #' # Overview
 #' The forward-filtering backward-sampling algorithm in [`patter`] is implemented via [`pf_forward()`] plus [`pf_backward_sampler()`]. [`pf_forward()`] runs a simulation forwards in time, generating location (particle) samples that are consistent with the data up to and including each time point (a marginal distribution). The backward sampler runs a simulation backwards in time. This generates a set of particle samples at each time step that embodies all information from both the past _and the future_; i.e., the full joint distribution of individual locations and data (see [`pf_backward_*()`])
 #'
-#' # Pseudocode
-#' The backward sampler _begins_ with particle samples from [`pf_forward()`] for the final time step. Moving backwards in time, for time step (> 1) and each particle, the algorithm acts as follows:
+#' # Parallel implementation
+#'
+#' ## Overview
+#' The backward sampler begins with particle samples from [`pf_forward()`] for the final time step. [`pf_backward_sample_p()`] iterates over particles and time steps. Moving backwards in time, for time step (> 1) and each particle, the algorithm acts as follows:
 #' * Calculate the probability density of movements from that particle to all particles at the previous time step via a `.dpropose` function.
 #' * (In practice, this typically requires calculating the distances between particle samples and translating these into densities using the movement model);
 #' * Sample a selected particle at the previous time step, in line with the probability densities linking each pair of particles;
 #'
-#' # Vectorisation
-#' In practice, this function iterates over time steps and vectorises probability density calculations:
+#' This implementation returns a [`pf_particles-class`] object, but only the `paths` and `time` elements are populated by default. Unlike the vectorised implementation, we do not directly keep track of particle histories.
+#'
+#' ## Advantages
+#' * Simple. This routine is simpler than the vectorised approach.
+#' * Memory-safe. The function is effectively memory safe, since we handle one particle at a time.
+#' * Scalable. The algorithm is embarrassingly parallel and it is possible to achieve substantial speed ups with parallelisation.
+#' * Permits pre-calculated densities. It is straightforward to use precomputed densities for any given cell into surrounding cells. Simply use `.dpropose` to read precomputed densities from a selected cell (`.particles$cell_now[1]`) to surrounding cells into memory and match them onto the `.particles` [`data.table`]. Set `NA`s to zero for re-sampling (see below).
+#' * Paths. By iterating over each particle, we automatically generate movement paths, unlike [`pf_backward_sampler_v()`] which requires post-hoc path assembly (see [`pf_path()`]).
+#'
+#' [`pf_backward_sampler_p()`] is preferable if:
+#' * You have massive parallelisation capacities;
+#' * You can (and want to) use precomputed densities;
+#' * You want to obtain movement trajectories automatically;
+#'
+#' ## Use cases
+#' We used this approach in the [`patter-eval`](https://github.com/edwardlavender/patter-eval) project. In that project, we considered a relatively small study area within which we implemented tens of thousands of simulations in parallel. This made it possible (and worthwhile) to precompute movement densities across a grid. In the backward sampler, we read precomputed densities into memory at each time step. This was massively faster than the repetitive vectorised implementation.
+#'
+#' # Vectorised implementation
+#'
+#' Unlike [`pf_backward_sampler_p()`], [`pf_backward_sampler_v()`] iterates over time steps and vectorises probability density calculations:
 #' * At each time step, we identify all combinations of particle samples for the current and previous time step.
 #' * Probability densities are evaluated between particle pairs and re-sampling is implemented by particle.
 #'
-#' This approach assumes that particle combinations can be held in memory (this is reasonable for \eqn{\leq 1000} particles but is relatively easy to relax if required) and that likelihood evaluations are cheap. Under these circumstances, this approach is faster than more memory-efficient approaches based on the subset of unique cell combinations. It is also much cheaper than a (parallelised) particle-by-particle implementation and faster than the latter with moderate numbers (\eqn{ \lesssim 10}, depending on context) of cores. However, it is still expensive (see Costs, below).
+#' This approach assumes that particle combinations can be held in memory (this is reasonable for \eqn{\leq 1000} particles but is relatively easy to relax if required) and that likelihood evaluations are cheap. Under these circumstances, this approach is faster than similar, more memory-efficient approaches based on the subset of unique cell combinations.
 #'
 #' The vectorised implementation returns a [`pf_particles-class`] object, as in [`pf_forward()`] and [`pf_backward_sampler()`]. Unlike a particle-by-particle implementation, we do not automatically reconstruct trajectories. [`pf_path()`] is required to translate particle samples into trajectories.
 #'
+#' ## Advantages
+#' * Speed. The main advantage of [`pf_backward_sampler_v()`] is speed when only modest numbers of cores are available. We anticipate that in most cases [`pf_backward_sampler_v()`] is preferable for this reason.
+#' * History. We keep track of particle histories.
+#'
+#' ## Use cases
+#' We used this approach in the [`patter-flapper`](https://github.com/edwardlavender/patter-flapper) project. In that project, we considered a large grid, exceeding four billion cells. It was not feasible to precalculate movement densities. We implemented the algorithms in parallel over individuals. We used the vectorised implementation of the backward sampler which, on a single core, exhibited similar speeds to a paralellised implementation of [`pf_backward_sampler()`] over 10 cores.
+#'
 #' # Mobility
 #'
-#' Currently, we assume that at each time step there is at least one valid connection from each location to location(s) at the preceding step. If this assumption is violated, you will receive an error along the lines of: `Supplied {N} items to be assigned to {n < N} items of column 'index'.` This indicates a discrepancy in the movement models used to generate locations and calculate probability densities (and probably an inconsistent handling of `.mobility`, possibly as a result of discretisation). See [`pf_propose`] for further details.
+#' Currently, we assume that at each time step there is at least one valid connection from each location to location(s) at the preceding step. If this assumption is violated, you will receive an error along the lines of `Error in sample.int(0, size = 1L, prob = 1) : invalid first argument` ([`pf_backward_sampler_p()`]) or `Supplied {N} items to be assigned to {n < N} items of column 'index'` ([`pf_backward_sampler_v()`]). This indicates a discrepancy in the movement models used to generate locations and calculate probability densities (and probably an inconsistent handling of `.mobility`, possibly as a result of discretisation). See [`pf_propose`] for further details.
 #'
 #' # Costs
 #'
-#' The backward sampler requires large numbers of (potentially replicate) calculations. Under default settings, calculations are implemented on-the-fly. For intermediate-sized problems, it may be more efficient to pre-compute densities, or variables required for density estimation (such as distance), between (unique) particle pairs before implementation of the backward sampler. Modify `.dpropose`  to read and match densities from objects in memory or from file onto the `.particles` [`data.table`]. However, for big datasets, identifying and storing unique particle combinations becomes difficult and expensive and we do not currently have a better solution than on-the-fly calculations. If [`pf_backward_sampler()`] is prohibitively expensive, it is acceptable to use particle samples from [`pf_forward()`]) and/or [`pf_backward_killer()`] for trajectory construction and mapping. The extent to which backward sampling refines trajectories and patterns of space use is context-specific.
+#' The backward sampler requires large numbers of (potentially replicate) calculations. Under default settings, calculations are implemented on-the-fly. For intermediate-sized problems, it may be more efficient to pre-compute densities, or variables required for density estimation (such as distance), between (unique) particle pairs before implementation of the backward sampler. This is easiest in [`pf_backward_sampler_p()`], since we consider only a single particle (grid cell) at each time step. Modify `.dpropose`  to read and match densities from objects in memory or from file onto the `.particles` [`data.table`]. However, for big datasets, identifying and storing unique particle combinations becomes difficult and expensive and we do not currently have a better solution than on-the-fly calculations. If [`pf_backward_sampler_*()`] is prohibitively expensive, it is acceptable to use particle samples from [`pf_forward()`]) and/or [`pf_backward_killer()`] for trajectory construction and mapping. The extent to which backward sampling refines trajectories and patterns of space use is context-specific.
 #'
 #' @example man/examples/pf_backward_sampler-examples.R
 #'
-#' @return The function returns a [`pf_particles-class`] object.
+#' @return The functions return a [`pf_particles-class`] object:
+#' * [`pf_backward_sampler_p()`] automatically populates the `path` and `time` elements;
+#' * [`pf_backward_sampler_v()`] automatically populates the `history` and `time` elements;
 #'
 #' @inherit pf_forward seealso
 #' @author Edward Lavender
+#' @name pf_backward_sampler
+
+NULL
+
+#' @rdname pf_backward_sampler
 #' @export
 
-pf_backward_sampler <- function(.history,
-                                .dpropose = pf_dpropose,
-                                .obs = NULL, .dlist,
-                                .dargs = list(),
-                                .record = pf_opt_record(),
-                                .verbose = getOption("patter.verbose")) {
+pf_backward_sampler_p <- function(.history,
+                                  .dpropose = pf_dpropose,
+                                  .obs = NULL,
+                                  .dlist,
+                                  .dargs = list(),
+                                  .cl = NULL,
+                                  .cl_varlist = NULL,
+                                  .cl_chunk = cl_chunk(.cl),
+                                  .record = pf_opt_record(),
+                                  .verbose = getOption("patter.verbose")) {
+
+  #### Check user inputs
+  # TO DO
+
+  #### Set up messages
+  t_onset <- Sys.time()
+  cat_log <- cat_init(.verbose = .verbose)
+  cat_log(call_start(.fun = "pf_backward_sampler_p", .start = t_onset))
+  on.exit(cat_log(call_end(.fun = "pf_backward_sampler_p", .start = t_onset,
+                           .end = Sys.time())), add = TRUE)
+  .history <- .pf_history_list(.history)
+  read     <- .pf_history_read(.history)
+
+  #### Set up loop
+  # .history
+  .history  <- .pf_history_list(.history)
+  read      <- .pf_history_read(.history)
+  inout     <- .pf_history_cols(.history = .history, .record = .record,
+                                .input_cols = c("cell_now", "x_now", "y_now"))
+  .record   <- inout$.record
+  read_cols <- inout$read_cols
+  write     <- .pf_history_write(.record)
+  # Final (starting) particle samples for the backward sampler
+  n_step <- length(.history)
+  .history[[n_step]] <- .pf_history_elm(.history = .history, .elm = n_step,
+                                        cols = read_cols)
+  n_particle <- fnrow(.history[[n_step]])
+  # Function arguments
+  .dargs$.obs   <- .obs
+  .dargs$.dlist <- .dlist
+  # Global variables
+  dens <- NULL
+
+  #### Generate paths
+  cat_log("... Generating path(s)...")
+  paths <-
+    cl_lapply(
+      seq_len(n_particle),
+      .cl = .cl,
+      .varlist = .cl_varlist,
+      .chunk = .cl_chunk,
+      .fun = function(i) {
+
+        #### Set up loop
+        cat_log(paste("... ... On particle", i, "..."))
+        cat_log("... ... ... Preparing to run sampler...")
+        path <- density <- list()
+        path[[n_step]] <- .history[[n_step]][i, ]
+        path[[n_step]][, dens := 1]
+
+        #### Run backwards sampler for a selected particle (i)
+        cat_log("... ... ... Running sampler...")
+        for (t in n_step:2) {
+          # Read history if necessary
+          cat_log(paste("... ... ... ... On time step", t, "..."))
+          tp <- t - 1L
+          if (read) {
+            # Drop history for t (to save memory) & read new history
+            .history[[t]] <- NA
+            .history[[tp]] <- .pf_history_elm(.history = .history, .elm = tp,
+                                              cols = read_cols)
+          }
+          # Calculate step densities
+          pnow <-
+            dplyr::bind_cols(
+              path[[t]] |>
+                select("cell_now", "x_now", "y_now") |>
+                as.data.table(),
+              .history[[tp]] |>
+                select(cell_past = "cell_now",
+                       x_past = "x_now",
+                       y_past = "y_now") |>
+                as.data.table()
+            ) |>
+            as.data.table()
+          .dargs$.particles <- pnow
+          .dargs$.t         <- t
+          prob              <- do.call(.dpropose, .dargs)$dens
+          # Sample a previous location
+          index <- sample.int(length(prob), size = 1L, prob = prob)
+          path[[tp]] <- .history[[tp]][index, ]
+          path[[t]][, dens := prob[index]]
+        }
+
+        #### Collate path
+        cat_log("... ... ... Collating paths...")
+        path[[1]][, dens := NA_real_]
+        path <-
+          path |>
+          rbindlist() |>
+          mutate(path_id = i, .before = 1L) |>
+          as.data.table()
+
+        #### Save path
+        cat_log("... ... ... Recording path...")
+        .pf_write_particles(.particles = path, .sink = .record$sink,
+                            .filename = t, .write = write)
+        # Save path in memory
+        if (.record$save) {
+          return(path)
+        } else {
+          return(NULL)
+        }
+      })
+
+  #### Return outputs
+  if (is.null(paths[[1]])) {
+    paths <- NULL
+  } else {
+    paths <-
+      paths |>
+      rbindlist() |>
+      arrange(.data$path_id, .data$timestep) |>
+      as.data.table()
+  }
+  .pf_backward_output(.start = t_onset,
+                      .history = list(),
+                      .path = paths,
+                      .record = .record)
+}
+
+#' @rdname pf_backward_sampler
+#' @export
+
+pf_backward_sampler_v <- function(.history,
+                                  .dpropose = pf_dpropose,
+                                  .obs = NULL, .dlist,
+                                  .dargs = list(),
+                                  .record = pf_opt_record(),
+                                  .verbose = getOption("patter.verbose")) {
 
   #### Check user inputs
   t_onset <- Sys.time()
@@ -194,4 +367,3 @@ pf_backward_sampler <- function(.history,
                       .record = .record)
 
 }
-
