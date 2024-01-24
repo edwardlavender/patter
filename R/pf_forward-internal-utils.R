@@ -240,6 +240,7 @@ NULL
 .pf_forward_output <- function(.rerun, .start, .startup, .history, .diagnostics, .convergence) {
   .rerun$time[[.startup$control$iter_m]] <- call_timings(.start = .start)
   out  <- list(history = .history,
+               path = NULL,
                diagnostics = .pf_diag_bind(.diagnostics),
                internal = list(startup = .startup),
                convergence = .convergence,
