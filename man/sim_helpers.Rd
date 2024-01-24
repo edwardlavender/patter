@@ -179,7 +179,7 @@ The first argument to both functions must be the number of values to simulate. O
 \code{.cang} and \code{.dang} arguments are not yet implemented and must be \code{\link{missing}}.}
 }
 \description{
-These convenience functions support the generation of animal movement paths and observations in \emph{de novo} simulations (\verb{sim_*()} functions) and simulation-based reconstructions of movement paths (\code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_sampler]{pf_backward_sampler()}}).
+These convenience functions support the generation of animal movement paths and observations in \emph{de novo} simulations (\verb{sim_*()} functions) and simulation-based reconstructions of movement paths (\code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_*]{pf_backward_*()}}).
 \itemize{
 \item \verb{ss*()} functions set seeds;
 \item \verb{r*()} functions simulate random variates;

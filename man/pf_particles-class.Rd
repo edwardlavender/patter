@@ -62,7 +62,7 @@ If \code{.record$save = FALSE}, \code{.history} is an empty \code{list} and the 
 \itemize{
 \item \code{path_id}---an \code{integer} vector of path IDs;
 \item \code{timestep}---an \code{integer} vector of time steps;
-\item \code{cell_past}, \code{cell_now}, \code{x_now}, \code{y_now}---Cell IDs and coordinates for particle samples;
+\item \code{cell_past}, \code{x_past}, \code{y_past}, \code{cell_now}, \code{x_now}, \code{y_now}---Cell IDs and coordinates for particle samples;
 \item \code{dens}---a \code{numeric} vector of movement densities from \code{cell_past} into \code{cell_now};
 }
 

@@ -130,7 +130,7 @@ The vectorised implementation returns a \code{\linkS4class{pf_particles}} object
 
 \subsection{Use cases}{
 
-We used this approach in the \href{https://github.com/edwardlavender/patter-flapper}{\code{patter-flapper}} project. In that project, we considered a large grid, exceeding four billion cells. It was not feasible to precalculate movement densities. We implemented the algorithms in parallel over individuals. We used the vectorised implementation of the backward sampler which, on a single core, exhibited similar speeds to a paralellised implementation of \code{\link[=pf_backward_sampler]{pf_backward_sampler()}} over 10 cores.
+We used this approach in the \href{https://github.com/edwardlavender/patter-flapper}{\code{patter-flapper}} project. In that project, we considered a large grid, exceeding four billion cells. It was not feasible to precalculate movement densities. We implemented the algorithms in parallel over individuals. We used the vectorised implementation of the backward sampler which, on a single core, exhibited similar speeds to a paralellised implementation of \code{\link[=pf_backward_sampler_p]{pf_backward_sampler_p()}} over 10 cores.
 }
 }
 

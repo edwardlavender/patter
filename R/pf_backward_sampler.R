@@ -150,12 +150,15 @@ pf_backward_sampler_p <- function(.history,
         cat_log(paste("... ... On particle", i, "..."))
         cat_log("... ... ... Preparing to run sampler...")
         path <- density <- list()
-        path[[n_step]] <- .history[[n_step]][i, ]
-        path[[n_step]][, dens := 1]
+        path[[n_step]] <-
+          .history[[n_step]][i, ] |>
+          select("timestep", "cell_now", "x_now", "y_now") |>
+          as.data.table()
 
         #### Run backwards sampler for a selected particle (i)
         cat_log("... ... ... Running sampler...")
         for (t in n_step:2) {
+
           # Read history if necessary
           cat_log(paste("... ... ... ... On time step", t, "..."))
           tp <- t - 1L
@@ -163,33 +166,49 @@ pf_backward_sampler_p <- function(.history,
             # Drop history for t (to save memory) & read new history
             .history[[t]] <- NA
             .history[[tp]] <- .pf_history_elm(.history = .history, .elm = tp,
-                                              cols = read_cols)
+                                              .read = TRUE, cols = read_cols)
           }
-          # Calculate step densities
+          # Calculate step densities (cell_now -> cell_past)
+          htp <-
+            .history[[tp]] |>
+            select(cell_past = "cell_now",
+                   x_past = "x_now",
+                   y_past = "y_now") |>
+            as.data.table()
           pnow <-
-            dplyr::bind_cols(
-              path[[t]] |>
-                select("cell_now", "x_now", "y_now") |>
-                as.data.table(),
-              .history[[tp]] |>
-                select(cell_past = "cell_now",
-                       x_past = "x_now",
-                       y_past = "y_now") |>
-                as.data.table()
-            ) |>
+            dplyr::bind_cols(path[[t]], htp) |>
             as.data.table()
           .dargs$.particles <- pnow
           .dargs$.t         <- t
-          prob              <- do.call(.dpropose, .dargs)$dens
+          pnow              <- do.call(.dpropose, .dargs)
           # Sample a previous location
-          index <- sample.int(length(prob), size = 1L, prob = prob)
-          path[[tp]] <- .history[[tp]][index, ]
-          path[[t]][, dens := prob[index]]
+          index <- sample.int(nrow(pnow), size = 1L, prob = normalise(pnow$dens))
+          # Record cell_now: cell_past pair for current time step
+          path[[t]] <- pnow[index, ]
+          # `cell_past` becomes `cell_now` for the next time step
+          path[[tp]] <-
+            path[[t]] |>
+            lazy_dt() |>
+            mutate(timestep = tp) |>
+            select("timestep", cell_now = "cell_past",
+                   x_now = "x_past", y_now = "y_past") |>
+            as.data.table()
         }
+
+
+
 
         #### Collate path
         cat_log("... ... ... Collating paths...")
-        path[[1]][, dens := NA_real_]
+        # Fix path[[1L]]
+        path[[1L]] <-
+          path[[1L]] |>
+          mutate(cell_past = NA_integer_,
+                 x_past = NA_real_,
+                 y_past = NA_real_,
+                 dens = NA_real_) |>
+          as.data.table()
+        # Join paths (for selected particle)
         path <-
           path |>
           rbindlist() |>
@@ -198,6 +217,9 @@ pf_backward_sampler_p <- function(.history,
 
         #### Save path
         cat_log("... ... ... Recording path...")
+        if (!is.null(.record$cols)) {
+          path <- path |> select(all_of(.record$cols)) |> as.data.table()
+        }
         .pf_write_particles(.particles = path, .sink = .record$sink,
                             .filename = t, .write = write)
         # Save path in memory

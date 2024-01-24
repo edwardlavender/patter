@@ -56,7 +56,7 @@
 #' `paths` is a [`data.table`] of movement paths. Currently, this is only populated by [`pf_backward_sampler_p()`]. By default, the following columns are retained:
 #' * `path_id`---an `integer` vector of path IDs;
 #' * `timestep`---an `integer` vector of time steps;
-#' * `cell_past`, `cell_now`, `x_now`, `y_now`---Cell IDs and coordinates for particle samples;
+#' * `cell_past`, `x_past`, `y_past`, `cell_now`, `x_now`, `y_now`---Cell IDs and coordinates for particle samples;
 #' * `dens`---a `numeric` vector of movement densities from `cell_past` into `cell_now`;
 #'
 #' Additional columns may be included from the forward run, as specified by `.record$cols`.
