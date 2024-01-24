@@ -200,7 +200,7 @@
   }
 
   #### Return outputs
-  .particles[, weight := lik]
+  .particles[, weight := normalise(lik)]
   attr(.particles, "diagnostics") <- .diagnostics
   .particles
 
@@ -321,7 +321,7 @@
       # Calculate movement densities
       do.call(.dpropose, .dargs) |>
       # Calculate weights
-      mutate(weight = .data$lik * .data$dens) |>
+      mutate(weight = normalise(.data$lik * .data$dens)) |>
       as.data.table()
 
     #### Sample particles (from the set of allowed particles)

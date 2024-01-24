@@ -11,7 +11,7 @@ pf_sample_multinomial(.particles, .n)
 pf_sample_systematic(.particles, .n)
 }
 \arguments{
-\item{.particles}{A \code{\link{data.table}} that defines particle samples. This includes a \code{weight} column that should be used for (re)sampling.}
+\item{.particles}{A \code{\link{data.table}} that defines particle samples. This includes a \code{weight} column that should be used for (re)sampling. \code{.particles$weights} are normalised to sum to one.}
 
 \item{.n}{An \code{integer} that defines the number of particle samples at each time step.}
 }

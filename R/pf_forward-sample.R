@@ -2,7 +2,7 @@
 #'
 #' @description These are particle sampling functions for [`pf_forward()`].
 #'
-#' @param .particles A [`data.table`] that defines particle samples. This includes a `weight` column that should be used for (re)sampling.
+#' @param .particles A [`data.table`] that defines particle samples. This includes a `weight` column that should be used for (re)sampling. `.particles$weights` are normalised to sum to one.
 #' @param .n An `integer` that defines the number of particle samples at each time step.
 #'
 #' @details
@@ -32,10 +32,11 @@
 pf_sample_multinomial <- function(.particles, .n) {
   if (fnrow(.particles) > 0L) {
     stopifnot(rlang::has_name(.particles, "weight"))
+    stopifnot(all.equal(sum(.particles$weight, 1)))
     .particles[sample.int(.N,
                           size = .n,
                           replace = TRUE,
-                          prob = normalise(.particles$weight)), ]
+                          prob = .particles$weight), ]
   } else {
     .particles
   }
@@ -48,7 +49,8 @@ pf_sample_systematic <- function(.particles, .n) {
   if (fnrow(.particles) > 0L) {
     # Cumulative sum of weights
     stopifnot(rlang::has_name(.particles, "weight"))
-    cwt <- cumsum(normalise(.particles$weight))
+    stopifnot(all.equal(sum(.particles$weight, 1)))
+    cwt <- cumsum(.particles$weight)
     # Simulate starting point
     u1 <- stats::runif(n = 1, 0, 1 / .n)
     # Define grid
