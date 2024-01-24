@@ -36,9 +36,11 @@ test_that("pf_backward_sampler_p() works", {
   val <-
     path |>
     group_by(path_id) |>
-    mutate(cell_match = lag(cell_now) == cell_past,
-           x_match = lag(x_now) == x_past,
-           y_match = lag(y_now) == y_past)
+    mutate(cell_lag = dplyr::lag(cell_now),
+           cell_match = dplyr::lag(cell_now) == cell_past,
+           x_match = dplyr::lag(x_now) == x_past,
+           y_match = dplyr::lag(y_now) == y_past) |>
+    as.data.table()
   expect_true(all(val$cell_match, na.rm = TRUE))
   expect_true(all(val$x_match, na.rm = TRUE))
   expect_true(all(val$y_match, na.rm = TRUE))
@@ -57,7 +59,7 @@ test_that("pf_backward_sampler_p() works", {
     path |>
     group_by(path_id) |>
     mutate(len = dist_along_path(cbind(x_now, y_now)),
-           len = lag(len)) |>
+           len = dplyr::lag(len)) |>
     filter(timestep > 1L) |>
     mutate(dens2 = dtruncgamma(len))
   expect_equal(val$dens, val$dens2)
