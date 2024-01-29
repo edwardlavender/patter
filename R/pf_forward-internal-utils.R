@@ -159,7 +159,8 @@ NULL
     select("timestep",
            cell_past = "cell_now",
            x_past = "x_now",
-           y_past = "y_now") |>
+           y_past = "y_now",
+           "weight") |>
     as.data.table()
 }
 
@@ -193,7 +194,7 @@ NULL
    return(TRUE)
  } else {
    pos  <- fnrow(.diagnostics[["kick"]])
-   crit <- .diagnostics[["kick"]]$n_u[pos]
+   crit <- .diagnostics[["kick"]]$ess[pos]
    return(crit < .trial_crit)
  }
 }

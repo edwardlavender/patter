@@ -10,11 +10,10 @@
 \usage{
 pf_opt_trial(
   .trial_origin_crit = 1L,
-  .trial_origin = 1L,
-  .trial_kick_crit = 1L,
   .trial_kick = 1L,
-  .trial_sampler_crit = 10L,
   .trial_sampler = 1L,
+  .trial_sampler_crit = 10L,
+  .trial_resample_crit = 500L,
   .trial_revert_crit = 1L,
   .trial_revert_steps = 10L,
   .trial_revert = 2L
@@ -77,7 +76,7 @@ These functions are defined separately for convenience of documentation. Note th
 }
 \examples{
 pf_opt_trial()
-pf_opt_trial(.trial_kick_crit = 10L, .trial_kick = 2L)
+pf_opt_trial(.trial_resample_crit = 200L)
 pf_opt_record(.save = TRUE)
 pf_opt_control()
 pf_opt_rerun_from(dat_pff(), .revert = 10L)

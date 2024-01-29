@@ -10,7 +10,7 @@
 #'  * [`pf_sample_multinomial`] implements multinomial (re)sampling.
 #'  * [`pf_sample_systematic()`] implements systematic (re)sampling.
 #'
-#' Sampling functions must accept `.particles` and `.n` arguments and return a [`data.table`] of `.n` particle samples.
+#' Sampling functions must accept `.particles` and `.n` arguments and return a [`data.table`] of `.n` particle samples. The `weight` column must be reset after sampling.
 #'
 #' Systematic particle sampling ([`pf_sample_systematic()`]) is generally recommended.
 #'
@@ -37,10 +37,9 @@ pf_sample_multinomial <- function(.particles, .n) {
                           size = .n,
                           replace = TRUE,
                           prob = .particles$weight), ]
-    # Renormalise weights
-    # * This is required to calculate ESS after sampling
+    # Reset the weights
     weight <- NULL
-    .particles[, weight := normalise(weight)]
+    .particles[, weight := 1 / fnrow(.particles)]
   }
   .particles
 }
@@ -60,10 +59,9 @@ pf_sample_systematic <- function(.particles, .n) {
     u <- seq(u1, 1, by = 1 / .n)
     # Select particles
     .particles <- .particles[findInterval(u, cwt) + 1, ]
-    # Renormalise weights
-    # * This is required to calculate ESS after sampling
+    # Reset the weights
     weight <- NULL
-    .particles[, weight := normalise(weight)]
+    .particles[, weight := 1 / fnrow(.particles)]
   }
   .particles
 }

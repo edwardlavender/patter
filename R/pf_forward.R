@@ -36,7 +36,7 @@
 #'
 #' @examples
 #' pf_opt_trial()
-#' pf_opt_trial(.trial_kick_crit = 10L, .trial_kick = 2L)
+#' pf_opt_trial(.trial_resample_crit = 200L)
 #' pf_opt_record(.save = TRUE)
 #' pf_opt_control()
 #' pf_opt_rerun_from(dat_pff(), .revert = 10L)
@@ -49,20 +49,18 @@
 #' @export
 
 pf_opt_trial <- function(.trial_origin_crit = 1L,
-                         .trial_origin = 1L,
-                         .trial_kick_crit = 1L,
                          .trial_kick = 1L,
-                         .trial_sampler_crit = 10L,
                          .trial_sampler = 1L,
+                         .trial_sampler_crit = 10L,
+                         .trial_resample_crit = 500L,
                          .trial_revert_crit = 1L,
                          .trial_revert_steps = 10L,
                          .trial_revert = 2L) {
   list(trial_origin_crit = .trial_origin_crit,
-       trial_origin = .trial_origin,
-       trial_kick_crit = .trial_kick_crit,
        trial_kick = .trial_kick,
-       trial_sampler_crit = .trial_sampler_crit,
        trial_sampler = .trial_sampler,
+       trial_sampler_crit = .trial_sampler_crit,
+       trial_resample_crit = .trial_resample_crit,
        trial_revert_crit = .trial_revert_crit,
        trial_revert_steps = .trial_revert_steps,
        trial_revert = .trial_revert)
@@ -236,6 +234,8 @@ pf_forward <- function(.obs,
   select_cols    <- startup$output$select_cols
   history        <- startup$output$history
   diagnostics    <- startup$output$diagnostics
+  # Global variables
+  weight <- lik <- NULL
 
   #### Define origin
   pnow <- NULL
@@ -248,7 +248,6 @@ pf_forward <- function(.obs,
                                  .likelihood = .likelihood,
                                  .sample = .sample, .n = .n,
                                  .trial_crit = .trial$trial_origin_crit,
-                                 .trial_count = .trial$trial_origin,
                                  .control = .control)
     diagnostics_1 <- .pf_diag_collect(.diagnostics = attr(pnow, "diagnostics"),
                                       .iter_m = iter_m, .iter_i = iter_i)
@@ -293,9 +292,6 @@ pf_forward <- function(.obs,
                                  .rpropose = .rpropose, .dpropose = NULL,
                                  .rargs = .rargs, .dargs = NULL,
                                  .likelihood = .likelihood,
-                                 .sample = .sample, .n = .n,
-                                 .trial_crit = .trial$trial_kick_crit,
-                                 .trial_count = .trial$trial_kick,
                                  .control = .control
                                  )
       diagnostics_t[["kick"]] <- .pf_diag_bind(attr(pnow, "diagnostics"))
@@ -312,15 +308,24 @@ pf_forward <- function(.obs,
                                       .rpropose = NULL, .dpropose = .dpropose,
                                       .rargs = NULL, .dargs = .dargs,
                                       .likelihood = .likelihood,
-                                      .sample = .sample, .n = .n,
-                                      .trial_crit = .trial$trial_sampler_crit,
-                                      .trial_count = .trial$trial_sampler,
                                       .control = .control)
         diagnostics_t[["sampler"]] <- .pf_diag_bind(attr(pnow, "diagnostics"))
       }
     }
 
-    #### (3) Collect diagnostics
+    #### (3) (optional) Resampling
+    # Update weights
+    pnow[, weight := normalise(weight * lik)]
+    # Optionally implement re-sampling
+    if (.pf_diag_ess(pnow$weight) < .trial$trial_resample_crit) {
+      pnow <- .sample(.particles = pnow, .n = .n)
+    }
+    diagnostics_t[["sampler"]] <- .pf_diag(.particles = pnow,
+                                           .weight = "weight",
+                                           .t = t,
+                                           .label = "sample")
+
+    #### (4) Collect diagnostics
     diagnostics_t <- .pf_diag_collect(diagnostics_t, .iter_m = iter_m, .iter_i = iter_i)
     if (.record$save) {
       diagnostics[[index_diag]] <- diagnostics_t
@@ -328,7 +333,7 @@ pf_forward <- function(.obs,
     .pf_write_diagnostics_abbr(diagnostics_t)
     index_diag <- index_diag + 1L
 
-    #### (4) (A) Revert to an earlier time step
+    #### (5) (A) Revert to an earlier time step
     crit <- diagnostics_t$n_u[nrow(diagnostics_t)]
     if (crit < .trial$trial_revert_crit & iter_i <= .trial$trial_revert) {
       # Define time step
@@ -341,7 +346,7 @@ pf_forward <- function(.obs,
 
     } else {
 
-      #### (3) (B) Continue or finish simulation
+      #### (5) (B) Continue or finish simulation
       # Check convergence
       continue <- .pf_forward_continue(.particles = pnow,
                                        .t = t,

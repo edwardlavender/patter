@@ -28,7 +28,7 @@ These are particle sampling functions for \code{\link[=pf_forward]{pf_forward()}
 \item \code{\link[=pf_sample_systematic]{pf_sample_systematic()}} implements systematic (re)sampling.
 }
 
-Sampling functions must accept \code{.particles} and \code{.n} arguments and return a \code{\link{data.table}} of \code{.n} particle samples.
+Sampling functions must accept \code{.particles} and \code{.n} arguments and return a \code{\link{data.table}} of \code{.n} particle samples. The \code{weight} column must be reset after sampling.
 
 Systematic particle sampling (\code{\link[=pf_sample_systematic]{pf_sample_systematic()}}) is generally recommended.
 }

@@ -20,7 +20,7 @@
   .dargs = NULL
 )
 
-.pf_sample_origin(.particles, .n, .sample, .trial_crit, .trial_count)
+.pf_sample_origin(.particles, .n, .sample, .trial_crit)
 
 .pf_particles_origin(
   .particles = NULL,
@@ -39,15 +39,7 @@
   .control
 )
 
-.pf_lik(
-  .particles,
-  .obs,
-  .t,
-  .dlist,
-  .stack,
-  .diagnostics = list(),
-  .trial = NA_integer_
-)
+.pf_lik(.particles, .obs, .t, .dlist, .stack, .diagnostics = list())
 
 .pf_lik_ac_detection(.particles, .kernels, .detections, .absences)
 
@@ -61,10 +53,6 @@
   .rargs = list(),
   .dargs = NULL,
   .likelihood,
-  .sample,
-  .n,
-  .trial_crit,
-  .trial_count,
   .control
 )
 
@@ -78,10 +66,6 @@
   .rargs = NULL,
   .dargs = list(),
   .likelihood,
-  .sample,
-  .n,
-  .trial_crit,
-  .trial_count,
   .control
 )
 }

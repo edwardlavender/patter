@@ -16,7 +16,7 @@
 
 .pf_diag_ess(.weight)
 
-.pf_diag(.particles, .t, .trial = NA_integer_, .label)
+.pf_diag(.particles, .weight, .t, .label)
 
 .pf_diag_bind(.diagnostics)
 

@@ -131,17 +131,16 @@ pf_diag_summary <- function(.history, ...) {
 #' @rdname pf_diag-internal
 #' @keywords internal
 
-.pf_diag <- function(.particles, .t, .trial = NA_integer_, .label) {
+.pf_diag <- function(.particles, .weight, .t, .label) {
   out <- data.table(timestep = .t,
                     component = .label,
-                    trial = .trial,
-                    n = nrow(.particles),
-                    n_u = 0L,
-                    ess = 0L)
+                    n = fnrow(.particles),
+                    n_u = NA_integer_,
+                    ess = NA_real_)
   if (out$n > 0) {
     n_u <- ess <- NULL
     out[, n_u := .pf_diag_nu(.particles$cell_now)]
-    out[, ess := .pf_diag_ess(.particles$weight)]
+    out[, ess := .pf_diag_ess(.particles[[.weight]])]
   }
   out
 }
@@ -170,7 +169,7 @@ pf_diag_summary <- function(.history, ...) {
   iter_i <- NULL
   diagnostics[, iter_i := .iter_i]
   setcolorder(diagnostics, c("iter_m", "iter_i",
-                             "timestep", "component", "trial",
+                             "timestep", "component",
                              "n", "n_u", "ess"))
   diagnostics
 }
