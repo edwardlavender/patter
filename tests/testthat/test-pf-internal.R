@@ -15,7 +15,8 @@ test_that(".pf_history_dt() works", {
                         cell_now = int32(),
                         x_now = double(),
                         y_now = double(),
-                        lik = double()
+                        lik = double(),
+                        weight = double()
                       ))
 
   # Confirm each implementation option returns identical outputs

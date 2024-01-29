@@ -84,7 +84,7 @@ out_pff <- pf_forward(.obs = obs,
                                               .sink = sink,
                                               .cols = c("timestep",
                                                         "cell_past", "cell_now",
-                                                        "x_now", "y_now", "lik")))
+                                                        "x_now", "y_now", "lik", "weight")))
 
 #### Implement pf_backward_killer()
 # NB: If pf_forward() is re-run, pf_backward_*() must also be re-run.
