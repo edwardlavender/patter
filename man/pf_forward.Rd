@@ -13,7 +13,7 @@ pf_forward(
   .dargs = list(),
   .likelihood = list(),
   .n = 100L,
-  .sample = pf_sample_multinomial,
+  .sample = pf_sample_systematic,
   .trial = pf_opt_trial(),
   .control = pf_opt_control(),
   .rerun = list(),
