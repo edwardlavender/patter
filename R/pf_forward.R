@@ -309,7 +309,7 @@ pf_forward <- function(.obs,
                                       .rargs = NULL, .dargs = .dargs,
                                       .likelihood = .likelihood,
                                       .control = .control)
-        diagnostics_t[["sampler"]] <- .pf_diag_bind(attr(pnow, "diagnostics"))
+        diagnostics_t[["grid"]] <- .pf_diag_bind(attr(pnow, "diagnostics"))
       }
     }
 
@@ -318,12 +318,13 @@ pf_forward <- function(.obs,
     pnow[, weight := normalise(weight * lik)]
     # Optionally implement re-sampling
     if (.pf_diag_ess(pnow$weight) < .trial$trial_resample_crit) {
+      cat_log("... ... ... (Re)-sampling...")
       pnow <- .sample(.particles = pnow, .n = .n)
+      diagnostics_t[["resample"]] <- .pf_diag(.particles = pnow,
+                                              .weight = "weight",
+                                              .t = t,
+                                              .label = "sample")
     }
-    diagnostics_t[["sampler"]] <- .pf_diag(.particles = pnow,
-                                           .weight = "weight",
-                                           .t = t,
-                                           .label = "sample")
 
     #### (4) Collect diagnostics
     diagnostics_t <- .pf_diag_collect(diagnostics_t, .iter_m = iter_m, .iter_i = iter_i)
