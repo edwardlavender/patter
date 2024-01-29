@@ -132,11 +132,15 @@ pf_diag_summary <- function(.history, ...) {
 #' @keywords internal
 
 .pf_diag <- function(.particles, .weight, .t, .label) {
+  # Define baseline statistics
+  # * n_u & ess = 0 (not NA)
+  # * This is updated below, unless out$n = 0
+  # * THis is required for `use_sampler` in pf_forward()
   out <- data.table(timestep = .t,
                     component = .label,
                     n = fnrow(.particles),
-                    n_u = NA_integer_,
-                    ess = NA_real_)
+                    n_u = 0L,
+                    ess = 0)
   if (out$n > 0) {
     n_u <- ess <- NULL
     out[, n_u := .pf_diag_nu(.particles$cell_now)]
