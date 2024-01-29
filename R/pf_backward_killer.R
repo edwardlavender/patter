@@ -42,6 +42,8 @@ pf_backward_killer <- function(.history,
   .record   <- inout$.record
   read_cols <- inout$read_cols
   write     <- .pf_history_write(.record)
+  # Global variables
+  weight <- NULL
 
   # Define progress bar
   timestep_final <- length(.history)
@@ -75,8 +77,15 @@ pf_backward_killer <- function(.history,
       bool <- .history[[tp]]$cell_now %in% .history[[t]]$cell_past
       if (!all(bool)) {
         cat_log(paste0("... ... ... Filtering ", length(which(!bool)), " dead ends (", length(which(bool)), " remain)..."))
-        .history[[tp]] <- .history[[tp]] |> filter(bool) |> as.data.table()
+        .history[[tp]] <-
+          .history[[tp]] |>
+          filter(bool) |>
+          as.data.table()
         cat_log(paste0("... ... ... Output: ", nrow(.history[[tp]]), " rows in `.history[[t - 1]]`..."))
+        # Re-normalise weights
+        if (rlang::has_name(.history[[tp]], "weight")) {
+          .history[[tp]][, weight := normalise(weight)]
+        }
       }
     }
 
