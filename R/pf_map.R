@@ -50,12 +50,12 @@ pf_coord <- function(.history, .bathy, .obs = NULL, .cols = NULL) {
     as.data.table()
 
   # Add grid cell coordinates
+  cell_xy <- terra::xyFromCell(.bathy, p$cell_id)
   p <-
     p |>
-    mutate(cell_xy = terra::xyFromCell(.bathy, .data$cell_id),
-           cell_x = as.numeric(.data$cell_xy[, 1]),
-           cell_y = as.numeric(.data$cell_xy[, 2]),
-           cell_z = terra::extract(.bathy, .data$cell_id)) |>
+    mutate(cell_x = as.numeric(cell_xy[, 1]),
+           cell_y = as.numeric(cell_xy[, 2]),
+           cell_z = terra::extract(.bathy, .data$cell_id)[, 1]) |>
     select(any_of("timestep"), "cell_id", "cell_x", "cell_y", "cell_z", any_of("mark")) |>
     as.data.table()
 
