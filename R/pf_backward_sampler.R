@@ -195,9 +195,6 @@ pf_backward_sampler_p <- function(.history,
             as.data.table()
         }
 
-
-
-
         #### Collate path
         cat_log("... ... ... Collating paths...")
         # Fix path[[1L]]
