@@ -12,7 +12,9 @@ pf_plot_history(
   .png = NULL,
   .add_surface = list(),
   .add_forward = list(),
-  .prompt = FALSE
+  .add_layer = NULL,
+  .prompt = FALSE,
+  ...
 )
 }
 \arguments{
@@ -27,7 +29,7 @@ pf_plot_history(
 
 \item{.steps}{\code{NULL} or an \code{integer} vector of the time steps for which to map particle samples. \code{NULL} specifies all time steps.}
 
-\item{.png}{(optional) A named \code{list}, passed to \code{\link[grDevices:png]{grDevices::png()}}, to save plots to file. Files are named \verb{\{.steps[1]\}.png, \{.steps[2]\}.png, ..., \{.steps[N]\}.png}.}
+\item{.png}{(optional) A named \code{list}, passed to \code{\link[grDevices:png]{grDevices::png()}}, to save plots to file. \code{filename} should be the directory in which to write files. Files are named \verb{\{.steps[1]\}.png, \{.steps[2]\}.png, ..., \{.steps[N]\}.png}. \code{.png} should be supplied if \code{.cl} is supplied via \code{...}.}
 
 \item{.add_surface, .add_forward}{Named \code{list}s for plot customisation.
 \itemize{
@@ -35,7 +37,11 @@ pf_plot_history(
 \item \code{.add_forward} is passed to \code{\link[graphics:points]{graphics::points()}}, excluding \code{x} and \code{y}.
 }}
 
-\item{.prompt}{A \code{logical} variable that defines whether or not to prompt the user for input between plots. This is only used if \code{.png = NULL} (and there are multiple time steps).}
+\item{.add_layer}{(optional) A \code{function} used to add additional layer(s) to the plot, such as \code{function() {points(x, y)}} where \code{x} and \code{y} are (for example) receiver coordinates.}
+
+\item{.prompt}{A \code{logical} variable that defines whether or not to prompt the user for input between plots. This is only used in interactive mode if \code{.png = NULL} (and there are multiple time steps).}
+
+\item{...}{Additional argument(s) passed to \code{\link[=cl_lapply]{cl_lapply()}}, such as \code{.cl}.}
 }
 \value{
 The function is called for its side effects. It returns \code{invisible(TRUE)}.
