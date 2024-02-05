@@ -118,7 +118,7 @@
   label <- "sample-origin"
   diagnostics[[label]] <- .pf_diag(.particles = pnow, .weight = "weight", .t = 1L, .label = label)
   # Validate sampling sufficiency
-  crit  <- diagnostics[[label]]$n_u
+  crit  <- diagnostics[[label]]$ess
   if (crit < .trial_crit) {
     abort("Insufficient starting locations.")
   }
