@@ -12,6 +12,7 @@ pf_backward_sampler_p(
   .obs = NULL,
   .dlist,
   .dargs = list(),
+  .control = pf_opt_control(),
   .cl = NULL,
   .cl_varlist = NULL,
   .cl_chunk = cl_chunk(.cl),
@@ -25,6 +26,7 @@ pf_backward_sampler_v(
   .obs = NULL,
   .dlist,
   .dargs = list(),
+  .control = pf_opt_control(),
   .record = pf_opt_record(),
   .verbose = getOption("patter.verbose")
 )
@@ -50,6 +52,8 @@ Using these inputs, \code{.dpropose} must calculate the probability density of m
 The default function uses \code{.particles} and \code{.dlist$spatial$lonlat}. It calculates Euclidean distances between particle coordinates and translates these into probabilities via \code{.dkick} (see \code{\link[=pf_dpropose]{pf_dpropose()}}).
 
 See \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_dpropose]{pf_dpropose()}} for full details on required function arguments, inputs and outputs.}
+
+\item{.control}{A named \code{list} of control options, from \code{\link[=pf_opt_control]{pf_opt_control()}}.}
 
 \item{.cl, .cl_varlist, .cl_chunk}{For \code{\link[=pf_backward_sampler_p]{pf_backward_sampler_p()}}, \verb{.cl*} arguments are parallelisation options, passed to \code{\link[=cl_lapply]{cl_lapply()}}.}
 

@@ -17,7 +17,7 @@ pf_rpropose_kick(.particles, .obs, .t, .dlist, .rkick = rkick, ...)
 
 pf_rpropose_reachable(.particles, .obs, .t, .dlist)
 
-pf_dpropose(.particles, .obs, .t, .dlist, .dkick = dkick, ...)
+pf_dpropose(.particles, .obs, .t, .dlist, .drop, .dkick = dkick, ...)
 }
 \arguments{
 \item{.xy0, .xy1, .rstep, .dstep}{Arguments for \code{.rkick} (and \code{\link[=rkick]{rkick()}}) and \code{.dkick} (and \code{\link[=dkick]{dkick()}}).
@@ -44,9 +44,10 @@ pf_dpropose(.particles, .obs, .t, .dlist, .dkick = dkick, ...)
 }
 }}
 
-\item{.particles}{Additional required arguments for all \code{.rpropose} and \code{.dpropose} functions:
+\item{.particles, .drop}{Additional required arguments for all \code{.rpropose} and/or \code{.dpropose} functions:
 \itemize{
 \item \code{.particles}---a \code{\link{data.table}} of particle samples from the previous time step;
+#' * \code{.drop}---for \code{.dpropose}, \code{.drop} is a \code{logical} variable that defines whether or not to drop particles with zero density;
 }}
 
 \item{.rkick, .dkick, ...}{Additional arguments for \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}} and \code{\link[=pf_dpropose]{pf_dpropose()}} respectively.

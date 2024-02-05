@@ -248,7 +248,7 @@ names(temps) <- hours
 terra::plot(temps)
 dlist$spatial$temp <- temps
 # Define the likelihood of the temp data given location proposals
-pf_lik_temp <- function(.particles, .obs, .t, .dlist) {
+pf_lik_temp <- function(.particles, .obs, .t, .dlist, .drop) {
   # Extract temps
   temp <- NULL
   locs <- terra::vect(cbind(.particles$x_now, .particles$y_now))
@@ -261,9 +261,14 @@ pf_lik_temp <- function(.particles, .obs, .t, .dlist) {
   # * ... within a cool/warm limit are impossible
   .particles[, lik_temp := (temp >= .obs$temp_cool[.t] &
                               temp <= .obs$temp_warm[.t]) + 0, ]
-  # Update likelihood & filter impossible locations
+  # Update likelihood
   lik <- NULL
-  .particles[, lik := lik * lik_temp][lik > 0, ]
+  .particles[, lik := lik * lik_temp]
+  # (optional) Filter impossible locations
+  if (.drop) {
+    .particles <- .particles[lik > 0, ]
+  }
+  .particles
 }
 # Run simulation accounting for temperature data only
 dlist$spatial$origin <- NULL

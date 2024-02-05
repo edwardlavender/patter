@@ -146,7 +146,8 @@
                        .obs = .obs,
                        .t = 1L,
                        .dlist = .dlist,
-                       .stack = .likelihood)
+                       .stack = .likelihood,
+                       .control = .control)
   diagnostics[["lik"]] <- attr(proposals, "diagnostics")
   # Sample proposal location(s)
   weight <- lik <- NULL
@@ -164,7 +165,7 @@
 #' @rdname pf_particle
 #' @keywords internal
 
-.pf_lik <- function(.particles, .obs, .t, .dlist, .stack, .diagnostics = list()) {
+.pf_lik <- function(.particles, .obs, .t, .dlist, .stack, .diagnostics = list(), .control) {
 
   #### Set up
   # Global variables
@@ -187,7 +188,8 @@
       .particles <- .stack[[i]](.particles = .particles,
                                 .obs = .obs,
                                 .t = .t,
-                                .dlist = .dlist)
+                                .dlist = .dlist,
+                                .drop = .control$drop)
       .particles[, wt := normalise(weight * lik)]
       if (diagnose) {
         .diagnostics[[names(.stack)[i]]] <-
@@ -239,6 +241,32 @@
 #' @rdname pf_particle
 #' @keywords internal
 
+# Drop particles with zero likelihood
+.pf_lik_drop <- function(.particles, .drop) {
+  if (.drop) {
+      .particles <-
+        .particles |>
+        filter(.data$lik > 0) |>
+        as.data.table()
+  }
+  .particles
+}
+
+#' @rdname pf_particle
+#' @keywords internal
+
+# Add a 'bathy' column by reference
+.pf_bathy <- function(.particles, .dlist) {
+  if (!rlang::has_name(.particles, "bathy")) {
+    bathy <- cell_now <- NULL
+    .particles[, bathy := terra::extract(.dlist$spatial$bathy, cell_now)[, 1]]
+  }
+  .particles
+}
+
+#' @rdname pf_particle
+#' @keywords internal
+
 .pf_particles_kick <- function(.particles, .obs, .t, .dlist,
                                .rpropose, .dpropose = NULL,
                                .rargs = list(), .dargs = NULL,
@@ -253,7 +281,8 @@
   proposals <- .pf_lik(.particles = proposals,
                        .obs = .obs, .t = .t,
                        .dlist = .dlist,
-                       .stack = .likelihood)
+                       .stack = .likelihood,
+                       .control = .control)
   diagnostics[["kick"]] <- attr(proposals, "diagnostics")
   # Return outputs
   attr(proposals, "diagnostics") <- diagnostics
@@ -284,7 +313,8 @@
             .obs = .obs, .t = .t,
             .dlist = .dlist,
             .stack = .likelihood,
-            .diagnostics = NULL)
+            .diagnostics = NULL,
+            .control = .control)
   }) |>
     rbindlist(fill = TRUE) |>
     as.data.table()

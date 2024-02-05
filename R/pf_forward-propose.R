@@ -8,8 +8,9 @@
 #'      * For [`pf_rpropose_kick()`], `.dlist` must contain `.dlist$spatial$bathy`;
 #'      * For [`pf_rpropose_reachable()`], `.dlist` must contain `.dlist$spatial$bathy`;
 #'
-#' @param .particles Additional required arguments for all `.rpropose` and `.dpropose` functions:
+#' @param .particles,.drop Additional required arguments for all `.rpropose` and/or `.dpropose` functions:
 #' * `.particles`---a [`data.table`] of particle samples from the previous time step;
+#' #' * `.drop`---for `.dpropose`, `.drop` is a `logical` variable that defines whether or not to drop particles with zero density;
 #'
 #' @param .rkick,.dkick,... Additional arguments for [`pf_rpropose_kick()`] and [`pf_dpropose()`] respectively.
 #' * `.rkick` is a `function`, like [`rkick()`], that simulates new locations;
@@ -178,7 +179,7 @@ pf_rpropose_reachable <- function(.particles, .obs, .t, .dlist) {
 #' @rdname pf_propose
 #' @export
 
-pf_dpropose <- function(.particles, .obs, .t, .dlist, .dkick = dkick, ...) {
+pf_dpropose <- function(.particles, .obs, .t, .dlist, .drop, .dkick = dkick, ...) {
 
   # Check inputs placeholder
   # * TO DO
@@ -203,8 +204,12 @@ pf_dpropose <- function(.particles, .obs, .t, .dlist, .dkick = dkick, ...) {
                                 ...,
                                 .obs = .obs, .t = .t, .dlist = .dlist)]
     # Isolate particles with positive densities
-    .particles |>
-      filter(dens > 0) |>
-      as.data.table()
+    if (.drop) {
+      .particles <-
+        .particles |>
+        filter(dens > 0) |>
+        as.data.table()
+    }
+    .particles
   }
 }

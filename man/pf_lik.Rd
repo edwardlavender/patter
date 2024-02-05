@@ -8,13 +8,13 @@
 \alias{pf_lik_dc}
 \title{PF: likelihood functions}
 \usage{
-acs_filter_land(.particles, .obs, .t, .dlist)
+acs_filter_land(.particles, .obs, .t, .dlist, .drop)
 
-acs_filter_container(.particles, .obs, .t, .dlist)
+acs_filter_container(.particles, .obs, .t, .dlist, .drop)
 
-pf_lik_ac(.particles, .obs, .t, .dlist)
+pf_lik_ac(.particles, .obs, .t, .dlist, .drop)
 
-pf_lik_dc(.particles, .obs, .t, .dlist)
+pf_lik_dc(.particles, .obs, .t, .dlist, .drop)
 }
 \arguments{
 \item{.particles}{A \code{\link{data.table}} that defines proposal locations. This contains the following columns:
@@ -35,15 +35,17 @@ pf_lik_dc(.particles, .obs, .t, .dlist)
 \item For \code{\link[=pf_lik_dc]{pf_lik_dc()}}, \code{.dlist} should contain \code{.dlist$spatial$bathy}.
 \item For custom likelihood functions, \code{.dlist} may require other datasets.
 }}
+
+\item{.drop}{A \code{logical} variable that defines whether or not to drop \code{.particles} rows with zero likelihood.}
 }
 \value{
-Functions return the \code{.particle} \code{\link{data.table}} for valid proposal locations and updated likelihoods (in the \code{lik} column).
+Functions return the \code{.particles} \code{\link{data.table}} for valid proposal locations and updated likelihoods (in the \code{lik} column).
 }
 \description{
 These are likelihood functions for the forward simulation. \code{\link[=pf_forward]{pf_forward()}} expects a named \code{list} of likelihood functions that evaluate the likelihood of each dataset given location proposals. Convenience functions are provided that calculate the likelihood of acoustic and archival data, given location proposals, as resolved by the acoustic-container and depth-contour algorithms presented by Lavender et al. (2023).
 }
 \details{
-In \code{\link[=pf_forward]{pf_forward()}}, the likelihood of the data given proposal locations is evaluated using a named \code{list} of user-defined functions (one for each dataset). Each function must accept a \code{\link{data.table}} of proposal locations (\code{.particles}) alongside the arguments named above (even if they are ignored), evaluate the likelihood of the data and return an updated \code{\link{data.table}} for the subset of valid proposals and \emph{updated} likelihoods (in the \code{lik} column). For computational efficiency, is is desirable that functions are ordered by the extent to which they invalidate proposal locations and that each function drops invalid proposals (since this reduces the number of subsequent likelihood calculations). For faster evaluations, it might also pay to group likelihood terms under a single wrapper function (since this eliminates the need to loop over individual terms in \code{\link[=.pf_lik]{.pf_lik()}}).
+In \code{\link[=pf_forward]{pf_forward()}}, the likelihood of the data given proposal locations is evaluated using a named \code{list} of user-defined functions (one for each dataset). Each function must accept a \code{\link{data.table}} of proposal locations (\code{.particles}) alongside the arguments named above (even if they are ignored), evaluate the likelihood of the data and return an updated \code{\link{data.table}} for the subset of valid proposals and \emph{updated} likelihoods (in the \code{lik} column). For computational efficiency, it is desirable that functions are ordered by the extent to which they invalidate proposal locations and that each function drops invalid proposals (since this reduces the number of subsequent likelihood calculations). For faster evaluations, it might also pay to group likelihood terms under a single wrapper function (since this eliminates the need to loop over individual terms in \code{\link[=.pf_lik]{.pf_lik()}}).
 
 The following convenience functions are provided:
 \itemize{

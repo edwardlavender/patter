@@ -1,7 +1,7 @@
 #' @title PF: simulation options
-#' @description These functions define selected function arguments for [`pf_forward()`].
+#' @description These functions define selected function arguments for [`pf_forward()`] and/or [`pf_backward_*()`].
 #'
-#' @param .trial_origin_crit,.trial_origin,.trial_kick_crit,.trial_kick,.trial_sampler_crit,.trial_sampler,.trial_revert_crit,.trial_revert_steps,.trial_revert [`pf_opt_trial()`] arguments used to tune convergence properties. All arguments expect `integer`s.
+#' @param .trial_origin_crit,.trial_origin,.trial_kick_crit,.trial_kick,.trial_sampler_crit,.trial_sampler,.trial_revert_crit,.trial_revert_steps,.trial_revert [`pf_opt_trial()`] arguments, passed to `.trial` in [`pf_forward()`] and used to tune convergence properties. All arguments expect `integer`s.
 #' * `.trial_{step}` arguments define the number of times to trial a stochastic process at each time step (before giving up).
 #' * `.trial_{step}_crit` arguments define the number of valid, unique proposal locations (grid cells) required to trigger a repeated trial.
 #'
@@ -12,15 +12,16 @@
 #' * `.trial_sampler_crit` is the critical threshold for directed sampling. Following stochastic kicks, if the number of unique, valid proposals remains <= `.trial_sampler_crit`, directed sampling is implemented. Samples are redrawn up to `.trial_sampler` times. Use `.trial_sampler_crit = 0L` to suppress directed sampling.
 #' * `.trial_revert_crit` is the critical threshold for a reversion. If the number of unique, valid proposal locations is <= `.trial_revert_crit`, the algorithm reverts by `.trial_revert_steps` time steps to an earlier time step (time step two or greater). `.trial_revert` is the total number of reversions permitted. This is reset on algorithm reruns (see `.rerun`).
 #'
-#' @param .save,.sink,.cols [`pf_opt_record()`] arguments, passed to `.record` in [`pf_forward()`].
+#' @param .save,.sink,.cols [`pf_opt_record()`] arguments, passed to `.record` in [`pf_forward()`] and [`pf_backward_*()`].
 #' * `.save`---a `logical` variable that defines whether or not to save particle samples and diagnostics in memory. Use `.save = TRUE` with caution.
 #' * `.sink`---a `character` string that defines a (usually) empty directory in which to write particle samples and diagnostics. `{.sink}/history/`and `{.sink}/diagnostics` directories are created (if necessary) to store particle samples and diagnostics respectively.
 #' * `.cols`---a `character` vector that defines the names of the columns in particle-sample [`data.table`]s to save and/or write to file at each time step. This reduces the space occupied by outputs. For [`pf_backward_killer()`], you need to retain `timestep`, `cell_past` and `cell_now`. For [`pf_backward_sampler`]`_*()`, you need `timestep`, `cell_now`, `x_now` and `y_now` for the backward sampler. For calculation of effective sample size, `weight` is required. `NULL` retains all columns.
 #'
 #' At least one of `.save = TRUE` and `.sink` must be set.
 #'
-#' @param .sampler_batch_size [`pf_opt_control()`] arguments, passed to `.control` in [`pf_forward()`].
-#' * `.sampler_batch_size`---an `integer` that controls the batch size (the number of particles processed simultaneously) in directed sampling. Increase the batch size to improve speed; decrease the batch size to avoid memory constraints. The appropriate batch size depends on grid resolution and memory availability.
+#' @param .drop,.sampler_batch_size [`pf_opt_control()`] arguments, passed to `.control` in [`pf_forward()`] and [`pf_backward_*()`].
+#' * `.drop` A `logical` variable that defines whether or not to drop particles with zero likelihood or density.
+#' * `.sampler_batch_size`---for [`pf_forward()]` (specifically, [`.pf_particles_sampler()`]), `.sampler_batch_size` is an `integer` that controls the batch size (the number of particles processed simultaneously) in directed sampling. Increase the batch size to improve speed; decrease the batch size to avoid memory constraints. The appropriate batch size depends on grid resolution and memory availability.
 #'
 #' @param .rerun,.revert [`pf_opt_rerun_from()`] arguments.
 #' * `.rerun` is a named `list` of algorithm outputs from a previous run.
@@ -83,8 +84,9 @@ pf_opt_record <- function(.save = FALSE, .cols = NULL, .sink = NULL) {
 #' @rdname pf_opt
 #' @export
 
-pf_opt_control <- function(.sampler_batch_size = 2L) {
-  list(sampler_batch_size = .sampler_batch_size)
+pf_opt_control <- function(.sampler_batch_size = 2L, .drop = TRUE) {
+  list(drop = .drop,
+       sampler_batch_size = .sampler_batch_size)
 }
 
 #' @rdname pf_opt
@@ -223,6 +225,7 @@ pf_forward <- function(.obs,
   .rargs$.dlist <- .dlist
   .dargs$.obs   <- .obs
   .dargs$.dlist <- .dlist
+  .dargs$.drop <- .control$drop
   # Controls
   iter_i         <- startup$control$iter_i
   iter_m         <- startup$control$iter_m

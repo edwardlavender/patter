@@ -21,6 +21,7 @@
 #'
 #' @param .cl,.cl_varlist,.cl_chunk For [`pf_backward_sampler_p()`], `.cl*` arguments are parallelisation options, passed to [`cl_lapply()`].
 #'
+#' @param .control A named `list` of control options, from [`pf_opt_control()`].
 #' @param .record A named `list` of output options, from [`pf_opt_record()`].
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
@@ -98,6 +99,7 @@ pf_backward_sampler_p <- function(.history,
                                   .obs = NULL,
                                   .dlist,
                                   .dargs = list(),
+                                  .control = pf_opt_control(),
                                   .cl = NULL,
                                   .cl_varlist = NULL,
                                   .cl_chunk = cl_chunk(.cl),
@@ -133,6 +135,7 @@ pf_backward_sampler_p <- function(.history,
   # Function arguments
   .dargs$.obs   <- .obs
   .dargs$.dlist <- .dlist
+  .dargs$.drop  <- .control$drop
   # Global variables
   dens <- NULL
 
@@ -250,6 +253,7 @@ pf_backward_sampler_v <- function(.history,
                                   .dpropose = pf_dpropose,
                                   .obs = NULL, .dlist,
                                   .dargs = list(),
+                                  .control = pf_opt_control(),
                                   .record = pf_opt_record(),
                                   .verbose = getOption("patter.verbose")) {
 
@@ -278,6 +282,7 @@ pf_backward_sampler_v <- function(.history,
   # Function arguments
   .dargs$.obs   <- .obs
   .dargs$.dlist <- .dlist
+  .dargs$.drop  <- .control$drop
   # Global variables
   dens <- NULL
   # Progress bar

@@ -13,9 +13,10 @@
 #' * For [`pf_lik_ac()`], `.dlist` should contain `.dlist$algorithm$detection_overlaps` (from [`acs_setup_detection_overlaps()`]) and `.dlist$algorithm$detection_kernels` (from [`acs_setup_detection_kernels()`].
 #' * For [`pf_lik_dc()`], `.dlist` should contain `.dlist$spatial$bathy`.
 #' * For custom likelihood functions, `.dlist` may require other datasets.
+#' @param .drop A `logical` variable that defines whether or not to drop `.particles` rows with zero likelihood.
 #'
 #' @details
-#' In [`pf_forward()`], the likelihood of the data given proposal locations is evaluated using a named `list` of user-defined functions (one for each dataset). Each function must accept a [`data.table`] of proposal locations (`.particles`) alongside the arguments named above (even if they are ignored), evaluate the likelihood of the data and return an updated [`data.table`] for the subset of valid proposals and _updated_ likelihoods (in the `lik` column). For computational efficiency, is is desirable that functions are ordered by the extent to which they invalidate proposal locations and that each function drops invalid proposals (since this reduces the number of subsequent likelihood calculations). For faster evaluations, it might also pay to group likelihood terms under a single wrapper function (since this eliminates the need to loop over individual terms in [`.pf_lik()`]).
+#' In [`pf_forward()`], the likelihood of the data given proposal locations is evaluated using a named `list` of user-defined functions (one for each dataset). Each function must accept a [`data.table`] of proposal locations (`.particles`) alongside the arguments named above (even if they are ignored), evaluate the likelihood of the data and return an updated [`data.table`] for the subset of valid proposals and _updated_ likelihoods (in the `lik` column). For computational efficiency, it is desirable that functions are ordered by the extent to which they invalidate proposal locations and that each function drops invalid proposals (since this reduces the number of subsequent likelihood calculations). For faster evaluations, it might also pay to group likelihood terms under a single wrapper function (since this eliminates the need to loop over individual terms in [`.pf_lik()`]).
 #'
 #' The following convenience functions are provided:
 #' * [`acs_filter_land()`] is a binary 'habitability' (land/water) filter. This is useful when the 'stochastic kick' methodology is used to generate proposal locations in systems that include inhospitable habitats. The function calculates the likelihood (0, 1) of the 'hospitable' data given sampled particles. Location proposals in `NA` cells on the bathymetry grid (`.dlist$spatial$bathy`) are dropped.
@@ -25,7 +26,7 @@
 #'
 #' In [`pf_forward()`], [`acs_filter_container()`] and [`pf_lik_ac()`] effectively replace the role of [`flapper::ac()`](https://edwardlavender.github.io/flapper/reference/ac.html) function. [`pf_lik_dc()`] effectively replaces the role of [`flapper::dc()`](https://edwardlavender.github.io/flapper/reference/dc.html).
 #'
-#' @return Functions return the `.particle` [`data.table`] for valid proposal locations and updated likelihoods (in the `lik` column).
+#' @return Functions return the `.particles` [`data.table`] for valid proposal locations and updated likelihoods (in the `lik` column).
 #'
 #' @inherit pf_forward seealso
 #' @author Edward Lavender
@@ -35,25 +36,28 @@
 #' @export
 
 # Eliminate particles in inhospitable locations (e.g., on land)
-acs_filter_land <- function(.particles, .obs, .t, .dlist) {
+acs_filter_land <- function(.particles, .obs, .t, .dlist, .drop) {
   if (.t == 1L) {
+    check_dlist(.dlist = .dlist, .spatial = "bathy", .par = "spatna")
     if (is.null(.dlist$pars$spatna)) {
       warn("`.dlist$pars$spatna` is undefined & assumed FALSE by `acs_filter_land()`.")
-      return(.particles)
     }
   }
   if (isTRUE(.dlist$pars$spatna)) {
-    .particles |>
-      filter(!is.na(terra::extract(.dlist$spatial$bathy, .data$cell_now))[, 1]) |>
-      as.data.table()
+    .particles <-
+      .particles |>
+      .pf_bathy(.dlist = .dlist) |>
+      mutate(lik = .data$lik * ((!is.na(.data$bathy)) + 0L)) |>
+      .pf_lik_drop(.drop = .drop)
   }
+  .particles
 }
 
 #' @rdname pf_lik
 #' @export
 
 # Eliminate particles incompatible with container dynamics
-acs_filter_container <- function(.particles, .obs, .t, .dlist) {
+acs_filter_container <- function(.particles, .obs, .t, .dlist, .drop) {
 
   #### Checks
   if (.t == 1L) {
@@ -81,7 +85,11 @@ acs_filter_container <- function(.particles, .obs, .t, .dlist) {
     # * Particles are forced to be within (all) future containers
     # * This does not eliminate all impossible locations e.g., due to peninsulas
     # * But it is a quick way of dropping particles
-    .particles <- .particles[Rfast::rowsums(dist <= .obs$buffer_future_incl_gamma[.t]) == ncol(dist), ]
+    .particles <-
+      .particles |>
+      mutate(lik = .data$lik * ((Rfast::rowsums(dist <= .obs$buffer_future_incl_gamma[.t]) == ncol(dist)) + 0L)) |>
+      .pf_lik_drop(.drop = .drop)
+
   }
   .particles
 }
@@ -90,7 +98,7 @@ acs_filter_container <- function(.particles, .obs, .t, .dlist) {
 #' @export
 
 # Evaluate likelihood of acoustic data
-pf_lik_ac <- function(.particles, .obs, .t, .dlist) {
+pf_lik_ac <- function(.particles, .obs, .t, .dlist, .drop) {
 
   #### Checks
   if (.t == 1L) {
@@ -125,9 +133,7 @@ pf_lik_ac <- function(.particles, .obs, .t, .dlist) {
   }
 
   #### Return particles
-  .particles |>
-    filter(.data$lik > 0) |>
-    as.data.table()
+  .pf_lik_drop(.particles = .particles, .drop = .drop)
 
 }
 
@@ -135,16 +141,15 @@ pf_lik_ac <- function(.particles, .obs, .t, .dlist) {
 #' @export
 
 # Evaluate particles incompatible with the depth data
-pf_lik_dc <- function(.particles, .obs, .t, .dlist) {
+pf_lik_dc <- function(.particles, .obs, .t, .dlist, .drop) {
   # Checks
   if (.t == 1L) {
     check_names(.obs, req = c("depth_shallow", "depth_deep"))
     check_dlist(.dlist = .dlist, .spatial = "bathy")
   }
-  # Look up bathymetric depths, if required
-  if (!rlang::has_name(.particles, "bathy")) {
-    .particles$bathy <- terra::extract(.dlist$spatial$bathy, .particles$cell_now)
-  }
-  # Calculate likelihood (0, 1)
-  .particles[(.particles$bathy >= .obs$depth_shallow[.t] & .particles$bathy <= .obs$depth_deep[.t]), ]
+  # Likelihood evaluation
+  .particles |>
+    .pf_bathy(.dlist = .dlist) |>
+    mutate(lik = .data$lik * ((.particles$bathy >= .obs$depth_shallow[.t] & .particles$bathy <= .obs$depth_deep[.t]) + 0L)) |>
+    .pf_lik_drop(.drop = .drop)
 }

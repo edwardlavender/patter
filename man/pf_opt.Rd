@@ -21,12 +21,12 @@ pf_opt_trial(
 
 pf_opt_record(.save = FALSE, .cols = NULL, .sink = NULL)
 
-pf_opt_control(.sampler_batch_size = 2L)
+pf_opt_control(.sampler_batch_size = 2L, .drop = TRUE)
 
 pf_opt_rerun_from(.rerun, .revert = 25L)
 }
 \arguments{
-\item{.trial_origin_crit, .trial_origin, .trial_kick_crit, .trial_kick, .trial_sampler_crit, .trial_sampler, .trial_revert_crit, .trial_revert_steps, .trial_revert}{\code{\link[=pf_opt_trial]{pf_opt_trial()}} arguments used to tune convergence properties. All arguments expect \code{integer}s.
+\item{.trial_origin_crit, .trial_origin, .trial_kick_crit, .trial_kick, .trial_sampler_crit, .trial_sampler, .trial_revert_crit, .trial_revert_steps, .trial_revert}{\code{\link[=pf_opt_trial]{pf_opt_trial()}} arguments, passed to \code{.trial} in \code{\link[=pf_forward]{pf_forward()}} and used to tune convergence properties. All arguments expect \code{integer}s.
 \itemize{
 \item \verb{.trial_\{step\}} arguments define the number of times to trial a stochastic process at each time step (before giving up).
 \item \verb{.trial_\{step\}_crit} arguments define the number of valid, unique proposal locations (grid cells) required to trigger a repeated trial.
@@ -40,7 +40,7 @@ For example, if after kicking previous particles into proposal locations and eva
 \item \code{.trial_revert_crit} is the critical threshold for a reversion. If the number of unique, valid proposal locations is <= \code{.trial_revert_crit}, the algorithm reverts by \code{.trial_revert_steps} time steps to an earlier time step (time step two or greater). \code{.trial_revert} is the total number of reversions permitted. This is reset on algorithm reruns (see \code{.rerun}).
 }}
 
-\item{.save, .sink, .cols}{\code{\link[=pf_opt_record]{pf_opt_record()}} arguments, passed to \code{.record} in \code{\link[=pf_forward]{pf_forward()}}.
+\item{.save, .sink, .cols}{\code{\link[=pf_opt_record]{pf_opt_record()}} arguments, passed to \code{.record} in \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_*]{pf_backward_*()}}.
 \itemize{
 \item \code{.save}---a \code{logical} variable that defines whether or not to save particle samples and diagnostics in memory. Use \code{.save = TRUE} with caution.
 \item \code{.sink}---a \code{character} string that defines a (usually) empty directory in which to write particle samples and diagnostics. \verb{\{.sink\}/history/}and \code{{.sink}/diagnostics} directories are created (if necessary) to store particle samples and diagnostics respectively.
@@ -49,9 +49,10 @@ For example, if after kicking previous particles into proposal locations and eva
 
 At least one of \code{.save = TRUE} and \code{.sink} must be set.}
 
-\item{.sampler_batch_size}{\code{\link[=pf_opt_control]{pf_opt_control()}} arguments, passed to \code{.control} in \code{\link[=pf_forward]{pf_forward()}}.
+\item{.drop, .sampler_batch_size}{\code{\link[=pf_opt_control]{pf_opt_control()}} arguments, passed to \code{.control} in \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_*]{pf_backward_*()}}.
 \itemize{
-\item \code{.sampler_batch_size}---an \code{integer} that controls the batch size (the number of particles processed simultaneously) in directed sampling. Increase the batch size to improve speed; decrease the batch size to avoid memory constraints. The appropriate batch size depends on grid resolution and memory availability.
+\item \code{.drop} A \code{logical} variable that defines whether or not to drop particles with zero likelihood or density.
+\item \code{.sampler_batch_size}---for [\verb{pf_forward()]} (specifically, \code{\link[=.pf_particles_sampler]{.pf_particles_sampler()}}), \code{.sampler_batch_size} is an \code{integer} that controls the batch size (the number of particles processed simultaneously) in directed sampling. Increase the batch size to improve speed; decrease the batch size to avoid memory constraints. The appropriate batch size depends on grid resolution and memory availability.
 }}
 
 \item{.rerun, .revert}{\code{\link[=pf_opt_rerun_from]{pf_opt_rerun_from()}} arguments.
@@ -69,7 +70,7 @@ At least one of \code{.save = TRUE} and \code{.sink} must be set.}
 }
 }
 \description{
-These functions define selected function arguments for \code{\link[=pf_forward]{pf_forward()}}.
+These functions define selected function arguments for \code{\link[=pf_forward]{pf_forward()}} and/or \code{\link[=pf_backward_*]{pf_backward_*()}}.
 }
 \details{
 These functions are defined separately for convenience of documentation. Note that they do not define global options and must be passed to \code{\link[=pf_forward]{pf_forward()}} arguments.
