@@ -38,7 +38,7 @@ pf_diag_summary(.history, ...)
 \itemize{
 \item \code{timestep}---an \code{integer} that defines the time step;
 \item \code{n}---an \code{integer} that defines the number of particles;
-\item \code{n_u}---an \code{integer} that defines the number of unique location samples (see \code{\link[=.pf_diag_nu]{.pf_diag_nu()}});
+\item \code{nu}---an \code{integer} that defines the number of unique location samples (see \code{\link[=.pf_diag_nu]{.pf_diag_nu()}});
 \item \code{ess}---a \code{double} that defines the effective sample size or \code{NA_real_} if the \code{lik} column is unavailable (see \code{\link[=.pf_diag_ess]{.pf_diag_ess()}});
 }
 }
@@ -97,7 +97,7 @@ diag_k <- pf_diag_summary(dat_pfbk())
 diag_s <- pf_diag_summary(dat_pfbs())
 
 # Plot diagnostic time series
-pf_plot_diag_ts <- function(.f, .k, .s, .metric = c("n", "n_u", "ess"), ...){
+pf_plot_diag_ts <- function(.f, .k, .s, .metric = c("n", "nu", "ess"), ...){
   # Define base plot
   .metric <- match.arg(.metric)
   vals    <- c(.f[[.metric]], .k[[.metric]], .s[[.metric]])
@@ -130,7 +130,7 @@ pf_plot_diag_ts <- function(.f, .k, .s, .metric = c("n", "n_u", "ess"), ...){
 # * Orange: pf_backward_killer()
 # * Green:  pf_backward_sampler_*()
 pp <- par(mfrow = c(1, 3))
-cl_lapply(c("n", "n_u", "ess"), function(.metric) {
+cl_lapply(c("n", "nu", "ess"), function(.metric) {
   print(.metric)
   pf_plot_diag_ts(.f = diag_f,
                   .k = diag_k,

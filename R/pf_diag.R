@@ -27,7 +27,7 @@
 #' [`pf_diag_summary`] returns a summary [`data.table`] with the following columns:
 #' * `timestep`---an `integer` that defines the time step;
 #' * `n`---an `integer` that defines the number of particles;
-#' * `n_u`---an `integer` that defines the number of unique location samples (see [`.pf_diag_nu()`]);
+#' * `nu`---an `integer` that defines the number of unique location samples (see [`.pf_diag_nu()`]);
 #' * `ess`---a `double` that defines the effective sample size or `NA_real_` if the `lik` column is unavailable (see [`.pf_diag_ess()`]);
 #'
 #' @inherit pf_diag-internal seealso
@@ -63,7 +63,7 @@ pf_diag_summary <- function(.history, ...) {
     group_by(.data$timestep) |>
     summarise(timestep = .data$timestep[1],
               n = n(),
-              n_u = .pf_diag_nu(.data$cell_now),
+              nu = .pf_diag_nu(.data$cell_now),
               ess = .pf_diag_ess(.data$weight)
     ) |>
     as.data.table()
@@ -133,17 +133,17 @@ pf_diag_summary <- function(.history, ...) {
 
 .pf_diag <- function(.particles, .weight, .t, .label) {
   # Define baseline statistics
-  # * n_u & ess = 0 (not NA)
+  # * nu & ess = 0 (not NA)
   # * This is updated below, unless out$n = 0
   # * THis is required for `use_sampler` in pf_forward()
   out <- data.table(timestep = .t,
                     component = .label,
                     n = fnrow(.particles),
-                    n_u = 0L,
+                    nu = 0L,
                     ess = 0)
   if (out$n > 0) {
-    n_u <- ess <- NULL
-    out[, n_u := .pf_diag_nu(.particles$cell_now)]
+    nu <- ess <- NULL
+    out[, nu := .pf_diag_nu(.particles$cell_now)]
     out[, ess := .pf_diag_ess(.particles[[.weight]])]
   }
   out
@@ -174,6 +174,6 @@ pf_diag_summary <- function(.history, ...) {
   diagnostics[, iter_i := .iter_i]
   setcolorder(diagnostics, c("iter_m", "iter_i",
                              "timestep", "component",
-                             "n", "n_u", "ess"))
+                             "n", "nu", "ess"))
   diagnostics
 }

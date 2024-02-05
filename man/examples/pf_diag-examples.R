@@ -42,7 +42,7 @@ diag_k <- pf_diag_summary(dat_pfbk())
 diag_s <- pf_diag_summary(dat_pfbs())
 
 # Plot diagnostic time series
-pf_plot_diag_ts <- function(.f, .k, .s, .metric = c("n", "n_u", "ess"), ...){
+pf_plot_diag_ts <- function(.f, .k, .s, .metric = c("n", "nu", "ess"), ...){
   # Define base plot
   .metric <- match.arg(.metric)
   vals    <- c(.f[[.metric]], .k[[.metric]], .s[[.metric]])
@@ -75,7 +75,7 @@ pf_plot_diag_ts <- function(.f, .k, .s, .metric = c("n", "n_u", "ess"), ...){
 # * Orange: pf_backward_killer()
 # * Green:  pf_backward_sampler_*()
 pp <- par(mfrow = c(1, 3))
-cl_lapply(c("n", "n_u", "ess"), function(.metric) {
+cl_lapply(c("n", "nu", "ess"), function(.metric) {
   print(.metric)
   pf_plot_diag_ts(.f = diag_f,
                   .k = diag_k,

@@ -153,7 +153,7 @@ expect_false(out_pff$convergence)
 
 # (B) Examine diagnostics to pin down the causes of convergence failures
 # > All particles are surviving the AC* filters
-# > (base n_u == pf_lik_ac).
+# > (base nu == pf_lik_ac).
 # > This makes sense b/c after the first time step detections weren't recorded
 # > and, in this sparse array, information in detection gaps is limited, see:
 # > obs_sbt[, detection]

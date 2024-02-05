@@ -72,14 +72,14 @@ diag_f <- pf_diag_summary(out_pff)
 diag_k <- pf_diag_summary(out_pfbk)
 diag_s <- pf_diag_summary(out_pfbs)
 # Compare the number of unique samples through time
-ylim <- range(c(diag_f$n_u, diag_k$n_u, diag_s$n_u))
-plot(diag_f$timestep, diag_f$n_u,
+ylim <- range(c(diag_f$nu, diag_k$nu, diag_s$nu))
+plot(diag_f$timestep, diag_f$nu,
      ylim = ylim,
      xlab = "Time (steps)", ylab = "Number unique samples",
      type = "b", cex = 0.5, col = "red")
-lines(diag_k$timestep, diag_k$n_u,
+lines(diag_k$timestep, diag_k$nu,
       type = "b", cex = 0.5, col = "orange")
-lines(diag_s$timestep, diag_s$n_u,
+lines(diag_s$timestep, diag_s$nu,
       type = "b", cex = 0.5, col = "darkgreen")
 
 #### Example (6): Compare maps
