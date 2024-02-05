@@ -8,19 +8,11 @@
 \alias{.pf_lik}
 \alias{.pf_lik_ac_detection}
 \alias{.pf_lik_drop}
-\alias{.pf_bathy}
 \alias{.pf_particles_kick}
 \alias{.pf_particles_sampler}
 \title{PF: particle internals}
 \usage{
-.pf_rpropose_origin(
-  .particles = NULL,
-  .obs,
-  .t = 1L,
-  .dlist,
-  .rargs = NULL,
-  .dargs = NULL
-)
+.pf_rpropose_origin(.particles = NULL, .obs, .t = 1L, .dlist, .rargs = NULL)
 
 .pf_sample_origin(.particles, .n, .sample, .trial_crit)
 
@@ -37,7 +29,6 @@
   .sample,
   .n,
   .trial_crit,
-  .trial_count,
   .control
 )
 
@@ -47,17 +38,13 @@
 
 .pf_lik_drop(.particles, .drop)
 
-.pf_bathy(.particles, .dlist)
-
 .pf_particles_kick(
   .particles,
   .obs,
   .t,
   .dlist,
   .rpropose,
-  .dpropose = NULL,
   .rargs = list(),
-  .dargs = NULL,
   .likelihood,
   .control
 )
@@ -67,9 +54,7 @@
   .obs,
   .t,
   .dlist,
-  .rpropose = NULL,
   .dpropose,
-  .rargs = NULL,
   .dargs = list(),
   .likelihood,
   .control
@@ -84,7 +69,7 @@ Function hierarchy is as follows:
 \item \verb{pf_rpropose_*()} functions generate proposals;
 \item \verb{pf_lik_*()} functions calculate likelihoods;
 \item \verb{pf_sample_*()} functions sample proposals;
-\item \verb{pf_particle_*()} functions wrap proposals, likelihood calculations and sampling in an iterative framework;
+\item \verb{pf_particle_*()} functions combine proposals, likelihood calculations and, if applicable, sampling;
 }
 
 Proposal and likelihood functions must accept the following core arguments:
@@ -93,6 +78,7 @@ Proposal and likelihood functions must accept the following core arguments:
 \item \code{.obs}
 \item \code{.t}
 \item \code{.dlist}
+\item \code{.drop} (except for \code{rpropose} functions);
 }
 
 Proposal functions must also accept:
@@ -105,10 +91,10 @@ Proposal functions must also accept:
 \itemize{
 \item \code{.stack}---a named \code{list} of likelihood functions (see \code{\link{pf_lik}}).
 \item \code{.diagnostics}---an empty \code{list} used to store likelihood diagnostics, or \code{NULL}.
-\item \code{.trial}---an \code{integer} that distinguishes trials.
+\item \code{.control}---a named \code{list} of control options, from \code{\link[=pf_opt_control]{pf_opt_control()}}.
 }
 
-Most likelihood functions are directly exported but some internals routines are also documented here for convenience, namely \code{\link[=.pf_lik_ac_detection]{.pf_lik_ac_detection()}}. See also \verb{acs_*()} functions.
+Most likelihood functions are directly exported but some internals routines are also documented here for convenience, namely \code{\link[=.pf_lik_ac_detection]{.pf_lik_ac_detection()}} and \code{\link[=.pf_lik_drop]{.pf_lik_drop()}}. See also \verb{acs_*()} functions.
 
 Sampling functions must accept:
 \itemize{
@@ -122,7 +108,7 @@ Wrapper functions must accept:
 \item Proposal functions (\code{.rpropose},\code{.dpropose}) and argument lists (\code{.rargs}, \code{.dargs});
 \item Additional likelihood arguments (\code{.likelihood});
 \item Sampling arguments (\code{.sample}, \code{.n});
-\item Iteration arguments (\code{.trial_crit}, \code{.trial_count});
+\item Iteration arguments, if applicable (\code{.trial_crit}, \code{.trial_count});
 \item Control arguments (\code{.control});
 }
 

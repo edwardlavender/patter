@@ -7,13 +7,14 @@
 #' * `pf_rpropose_*()` functions generate proposals;
 #' * `pf_lik_*()` functions calculate likelihoods;
 #' * `pf_sample_*()` functions sample proposals;
-#' * `pf_particle_*()` functions wrap proposals, likelihood calculations and sampling in an iterative framework;
+#' * `pf_particle_*()` functions combine proposals, likelihood calculations and, if applicable, sampling;
 #'
 #' Proposal and likelihood functions must accept the following core arguments:
 #' * `.particles`
 #' * `.obs`
 #' * `.t`
 #' * `.dlist`
+#' * `.drop` (except for `rpropose` functions);
 #'
 #' Proposal functions must also accept:
 #' * `.rargs`
@@ -22,9 +23,9 @@
 #' [`.pf_lik()`] is a wrapper for specified likelihood functions (see [`pf_lik`]). The function returns a [`data.table`] that defines valid proposal locations, likelihoods and weights. A `diagnostics` attribute contains proposal diagnostics. This also requires:
 #' * `.stack`---a named `list` of likelihood functions (see [`pf_lik`]).
 #' * `.diagnostics`---an empty `list` used to store likelihood diagnostics, or `NULL`.
-#' * `.trial`---an `integer` that distinguishes trials.
+#' * `.control`---a named `list` of control options, from [`pf_opt_control()`].
 #'
-#' Most likelihood functions are directly exported but some internals routines are also documented here for convenience, namely [`.pf_lik_ac_detection()`]. See also `acs_*()` functions.
+#' Most likelihood functions are directly exported but some internals routines are also documented here for convenience, namely [`.pf_lik_ac_detection()`] and [`.pf_lik_drop()`]. See also `acs_*()` functions.
 #'
 #' Sampling functions must accept:
 #' * `.particles`
@@ -35,7 +36,7 @@
 #' * Proposal functions (`.rpropose`,`.dpropose`) and argument lists (`.rargs`, `.dargs`);
 #' * Additional likelihood arguments (`.likelihood`);
 #' * Sampling arguments (`.sample`, `.n`);
-#' * Iteration arguments (`.trial_crit`, `.trial_count`);
+#' * Iteration arguments, if applicable (`.trial_crit`, `.trial_count`);
 #' * Control arguments (`.control`);
 #'
 #' Internal functions may support additional arguments as required.
@@ -60,8 +61,7 @@
 #' @keywords internal
 
 # Propose origin locations
-.pf_rpropose_origin <- function(.particles = NULL, .obs, .t = 1L, .dlist,
-                                .rargs = NULL, .dargs = NULL){
+.pf_rpropose_origin <- function(.particles = NULL, .obs, .t = 1L, .dlist, .rargs = NULL){
 
   # Extract required objects from .dlist
   if (is.null(.dlist$spatial$origin)) {
@@ -115,7 +115,7 @@
   pnow  <- .sample(.particles = .particles, .n = .n)
   # Calculate diagnostics of sample
   diagnostics <- list()
-  label <- "sample-origin"
+  label <- "sample"
   diagnostics[[label]] <- .pf_diag(.particles = pnow, .weight = "weight", .t = 1L, .label = label)
   # Validate sampling sufficiency
   crit  <- diagnostics[[label]]$ess
@@ -135,7 +135,7 @@
                                  .rargs = NULL, .dargs = NULL,
                                  .likelihood,
                                  .sample, .n,
-                                 .trial_crit, .trial_count, .control) {
+                                 .trial_crit, .control) {
   # Generate proposal location(s)
   diagnostics <- list()
   proposals <- .pf_rpropose_origin(.obs = .obs,
@@ -255,21 +255,9 @@
 #' @rdname pf_particle
 #' @keywords internal
 
-# Add a 'bathy' column by reference
-.pf_bathy <- function(.particles, .dlist) {
-  if (!rlang::has_name(.particles, "bathy")) {
-    bathy <- cell_now <- NULL
-    .particles[, bathy := terra::extract(.dlist$spatial$bathy, cell_now)[, 1]]
-  }
-  .particles
-}
-
-#' @rdname pf_particle
-#' @keywords internal
-
 .pf_particles_kick <- function(.particles, .obs, .t, .dlist,
-                               .rpropose, .dpropose = NULL,
-                               .rargs = list(), .dargs = NULL,
+                               .rpropose,
+                               .rargs = list(),
                                .likelihood,
                                .control) {
   # Set variables
@@ -293,8 +281,8 @@
 #' @keywords internal
 
 .pf_particles_sampler <- function(.particles, .obs, .t, .dlist,
-                                  .rpropose = NULL, .dpropose,
-                                  .rargs = NULL, .dargs = list(),
+                                  .dpropose,
+                                  .dargs = list(),
                                   .likelihood,
                                   .control) {
   #### Set variables
@@ -333,6 +321,7 @@
   if (fnrow(pnow) > 0L) {
 
     #### Calculate movement densities & weights (likelihood * movement densities)
+    # Calculate weights
     .dargs$.particles <- proposals
     pnow <-
       # Calculate movement densities
@@ -343,8 +332,7 @@
       mutate(lik = .data$lik * .data$dens,
              wt = normalise(weight * .data$lik)) |>
       as.data.table()
-
-    #### Update diagnostics
+    # Update diagnostics
     diagnostics[["move-directed"]] <- .pf_diag(.particles = proposals,
                                                .weight = "wt",
                                                .t = .t,

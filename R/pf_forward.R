@@ -1,16 +1,14 @@
 #' @title PF: simulation options
 #' @description These functions define selected function arguments for [`pf_forward()`] and/or [`pf_backward_*()`].
 #'
-#' @param .trial_origin_crit,.trial_origin,.trial_kick_crit,.trial_kick,.trial_sampler_crit,.trial_sampler,.trial_revert_crit,.trial_revert_steps,.trial_revert [`pf_opt_trial()`] arguments, passed to `.trial` in [`pf_forward()`] and used to tune convergence properties. All arguments expect `integer`s.
-#' * `.trial_{step}` arguments define the number of times to trial a stochastic process at each time step (before giving up).
-#' * `.trial_{step}_crit` arguments define the number of valid, unique proposal locations (grid cells) required to trigger a repeated trial.
-#'
-#' For example, if after kicking previous particles into proposal locations and evaluating the likelihood of each location only 10 unique particles remain, the stochastic process is repeated up to `.trial_kick` times or until the number of valid proposals exceeds `.trial_kick_crit` (see Details). In full:
-#'
-#' * `.trial_origin_crit` is the critical threshold for the starting samples. If the number of unique, valid starting locations is <= `.trial_origin_crit`, sampling is repeated up to `.trial_origin` times.
-#' * `trial_kick_crit` is the critical threshold for stochastic kicks. If the number of unique, valid proposals is <= `trial_kick_crit`, the process of kicking and sampling particles (via `.rpropose` and `.sample`) is repeated up to `.trial_kick` times. Use `.trial_kick = 0L` to suppress stochastic kicks.
-#' * `.trial_sampler_crit` is the critical threshold for directed sampling. Following stochastic kicks, if the number of unique, valid proposals remains <= `.trial_sampler_crit`, directed sampling is implemented. Samples are redrawn up to `.trial_sampler` times. Use `.trial_sampler_crit = 0L` to suppress directed sampling.
-#' * `.trial_revert_crit` is the critical threshold for a reversion. If the number of unique, valid proposal locations is <= `.trial_revert_crit`, the algorithm reverts by `.trial_revert_steps` time steps to an earlier time step (time step two or greater). `.trial_revert` is the total number of reversions permitted. This is reset on algorithm reruns (see `.rerun`).
+#' @param .trial_origin_crit,.trial_kick,.trial_sampler,.trial_sampler_crit,.trial_resample_crit,.trial_revert_crit,.trial_revert_steps,.trial_revert [`pf_opt_trial()`] arguments, passed to `.trial` in [`pf_forward()`] and used to tune convergence properties. All arguments expect `integer` or `logical` inputs.
+#' * `.trial_origin_crit` is an `integer` that specifies the critical effective sample size (ESS) for the starting samples. If the initial ESS is < `.trial_origin_crit`, a [`warning`] is given.
+#' * `.trial_kick` is a `logical` variable that defines whether or not to trial the stochastic kick methodology.
+#' * `.trial_sampler` is a `logical` variable that defines whether or not to trial the directed sampling methodology.
+#' * `.trial_sampler_crit` is an `integer` that specifies the critical threshold for directed sampling. Following stochastic kicks, if the ESS is < `.trial_sampler_crit`, directed sampling is implemented.
+#' * `.trial_resample_crit` is an `integer` that defines the ESS for (re)sampling. Particles are resampled when the ESS is < `.trial_resample_crit`.
+#' * `.trial_revert_crit` is an `integer` that specifies the critical threshold for a reversion. If the ESS < `.trial_revert_crit`, the algorithm reverts by `.trial_revert_steps` time steps to an earlier time step (time step two or greater).
+#' * `.trial_revert` is an `integer` that specifies the total number of reversions permitted. This is reset on algorithm reruns (see `.rerun`).
 #'
 #' @param .save,.sink,.cols [`pf_opt_record()`] arguments, passed to `.record` in [`pf_forward()`] and [`pf_backward_*()`].
 #' * `.save`---a `logical` variable that defines whether or not to save particle samples and diagnostics in memory. Use `.save = TRUE` with caution.
@@ -21,7 +19,7 @@
 #'
 #' @param .drop,.sampler_batch_size [`pf_opt_control()`] arguments, passed to `.control` in [`pf_forward()`] and [`pf_backward_*()`].
 #' * `.drop` A `logical` variable that defines whether or not to drop particles with zero likelihood or density.
-#' * `.sampler_batch_size`---for [`pf_forward()]` (specifically, [`.pf_particles_sampler()`]), `.sampler_batch_size` is an `integer` that controls the batch size (the number of particles processed simultaneously) in directed sampling. Increase the batch size to improve speed; decrease the batch size to avoid memory constraints. The appropriate batch size depends on grid resolution and memory availability.
+#' * `.sampler_batch_size`---for [`pf_forward()`] (specifically, [`.pf_particles_sampler()`]), `.sampler_batch_size` is an `integer` that controls the batch size (the number of particles processed simultaneously) in directed sampling. Increase the batch size to improve speed; decrease the batch size to avoid memory constraints. The appropriate batch size depends on grid resolution and memory availability.
 #'
 #' @param .rerun,.revert [`pf_opt_rerun_from()`] arguments.
 #' * `.rerun` is a named `list` of algorithm outputs from a previous run.
@@ -49,14 +47,14 @@
 #' @rdname pf_opt
 #' @export
 
-pf_opt_trial <- function(.trial_origin_crit = 1L,
-                         .trial_kick = 1L,
-                         .trial_sampler = 1L,
+pf_opt_trial <- function(.trial_origin_crit = 2L,
+                         .trial_kick = TRUE,
+                         .trial_sampler = TRUE,
                          .trial_sampler_crit = 10L,
                          .trial_resample_crit = 500L,
                          .trial_revert_crit = 1L,
                          .trial_revert_steps = 10L,
-                         .trial_revert = 2L) {
+                         .trial_revert = 1L) {
   list(trial_origin_crit = .trial_origin_crit,
        trial_kick = .trial_kick,
        trial_sampler = .trial_sampler,
@@ -140,19 +138,19 @@ pf_opt_rerun_from <- function(.rerun, .revert = 25L) {
 #' 3. A weights step, in which we translate likelihoods into sampling weights.
 #' 4. A sampling step, in which we (re)sample valid proposal locations using the weights.
 #'
-#' At the first time step, proposal locations are defined from a large number of 'quadrature points' across a [`SpatRaster`] that defines starting location(s), defined in `.dlist$spatial$origin` (`.dlist$spatial$bathy` is used if `.dlist$spatial$origin` is undefined). `NA`s/non `NA`s distinguish possible/impossible locations. For AC*PF algorithm implementations (i.e., implementations that incorporate acoustic data, see Algorithms, below), grid cells beyond acoustic containers are masked. For *DCPF implementations (i.e., implementations that incorporate depth data, see Algorithms, below), it is also desirable if you can, at least approximately, mask grid cells that are incompatible with the first depth observation. At the first time step, up to `1e6` locations ('quadrature points') are sampled from the [`SpatRaster`]. At each quadrature point, we evaluate likelihoods and calculate weights. `.n` starting locations (particles) are sampled, via `.sample`, from the set of quadrature points using the weights. If the effective sample size (ESS) of sampled locations is less than `.record$trial_origin_crit`, a [`warning`] is given.
+#' At the first time step, proposal locations are defined from a large number of 'quadrature points' across a [`SpatRaster`] that defines starting location(s), defined in `.dlist$spatial$origin` (`.dlist$spatial$bathy` is used if `.dlist$spatial$origin` is undefined). `NA`s/non `NA`s distinguish possible/impossible locations. For AC*PF algorithm implementations (i.e., implementations that incorporate acoustic data, see Algorithms, below), grid cells beyond acoustic containers are masked. For *DCPF implementations (i.e., implementations that incorporate depth data, see Algorithms, below), it is also desirable if you can, at least approximately, mask grid cells that are incompatible with the first depth observation. At the first time step, up to `1e6` locations ('quadrature points') are sampled from the [`SpatRaster`]. At each quadrature point, we evaluate likelihoods and calculate weights. `.n` starting locations (particles) are sampled, via `.sample`, from the set of quadrature points using the weights. If the effective sample size (ESS) of sampled locations is less than `.trial$trial_origin_crit`, a [`warning`] is given.
 #'
 #' At subsequent time steps, proposal locations are generated via `.rpropose` which, by default, is a 'stochastic kick' function that 'kicks' previous particles at random into new locations (in line with the restrictions imposed by a movement model). The benefit of this approach is that it is extremely fast, but in situations in which there are relatively few possible locations for an individual, the approach can work poorly because few kicked particles end up in valid locations. A `list` of likelihood functions is used to evaluate the likelihood of the data, given each proposal, and filter invalid proposals. During this time, we track how the number and diversity of proposal locations declines, as the data are revealed to be incompatible with selected proposals by successive likelihood functions (see Convergence and diagnostics, below). Likelihoods are translated into weights for resampling (see below).
 #'
-#' Following the stochastic-kick methodology, if the effective sample size is <= `.trial_sampler_crit`, directed sampling is initiated. For each unique, previous location, this methodology identifies the set of reachable cells, given a mobility parameter, and evaluates likelihoods and the probability density of movements into each reachable location (which are used to define sampling weights). `.n` locations are then directly sampled from the set of valid locations. This approach is expensive in terms of time (since it requires iteration over particles) and memory (since the complete set of valid locations is used for sampling). Particles can be processed in batches for improved speed, up to the limits imposed by available memory (see `.control`). While this approach is expensive, sampling from the set of valid locations facilitates convergence.
+#' Following the stochastic-kick methodology, if the effective sample size is <= `.trial$trial_sampler_crit`, directed sampling is initiated. For each unique, previous location, this methodology identifies the set of reachable cells, given a mobility parameter, and evaluates likelihoods and the probability density of movements into each reachable location (which are used to define sampling weights). This approach is expensive in terms of time (since it requires iteration over particles) and memory (since the complete set of valid locations is used for sampling). Particles can be processed in batches for improved speed, up to the limits imposed by available memory (see `.control`). While this approach is expensive, sampling from the set of valid locations facilitates convergence.
 #'
 #' You can opt to use either `.rpropose` or directed sampling via the `.trial_` arguments to [`pf_opt_trial()`]. However, in general, it is advisable to permit the algorithm to chop-and-change between methods, depending on the number of valid proposals. This approach benefits from the speed of stochastic kicks, where possible, as well as the improved convergence properties of directed sampling, where required.
 #'
 #' Particle rejuvenation is another strategy that is sometimes used to facilitate convergence but this is not currently implemented.
 #'
-#' At the end of each time step, if the number of unique, valid locations remains <= `.trial_revert_crit`, the algorithm can step backwards in time by `.trial_revert_steps` and try again. This reversion will be attempted up to `.trial_revert` times. After `.trial_revert` times, if the algorithm reaches a time step when there are fewer than `.trial_revert_crit` unique samples, it will produce a [`warning`], but attempt to continue the simulation if possible. In the case of convergence failures, you can rerun the simulation from existing outputs, starting from an earlier time step, via `.rerun`. However, algorithm arguments should remain constant. On algorithm reversions and reruns, particle samplers are replaced but particle diagnostics are always retained.
+#' At the end of each time step, the effective sample size of weighted particles is evaluated. If the ESS is below the critical value specified in `.trial$trial_resample_crit` and/or directed sampling is implemented, particles are (re)-sampled, via `.sample`. If the ESS is less than `.trial$trial_revert_crit`, the algorithm can step backwards in time by `.trial$trial_revert_steps` and try again. This reversion will be attempted up to `.trial$trial_revert` times. After `.trial$trial_revert` times, if the algorithm reaches a time step when the ESS is less than `.trial$trial_revert_crit`, it will produce a [`warning`], but attempt to continue the simulation if possible. In the case of convergence failures, you can rerun the simulation from existing outputs, starting from an earlier time step, via `.rerun`. However, algorithm arguments should remain constant. On algorithm reversions and reruns, particle samplers are replaced but particle diagnostics are always retained.
 #'
-#' The algorithm iterates over the time series, proposing and sampling particles as described above. Particle samples can be saved in memory or written to file, alongside particle diagnostics. If the function fails to convergence, a [`warning`] is returned alongside the outputs up to that time step. Otherwise, the function will continue to the end of the time series.
+#' The algorithm iterates over the time series, proposing, weighting and (re)sampling particles as described above. Particle samples can be saved in memory or written to file, alongside particle diagnostics. If the function fails to convergence, a [`warning`] is returned alongside the outputs up to that time step. Otherwise, the function will continue to the end of the time series.
 #'
 #' # Algorithms
 #'
@@ -238,7 +236,7 @@ pf_forward <- function(.obs,
   history        <- startup$output$history
   diagnostics    <- startup$output$diagnostics
   # Global variables
-  weight <- lik <- NULL
+  weight <- lik <- wt <- NULL
 
   #### Define origin
   pnow <- NULL
@@ -288,12 +286,12 @@ pf_forward <- function(.obs,
     .dargs$.t <- t
 
     #### (1) Propose new particles (using kicks)
-    if (.trial$trial_kick > 0L) {
+    if (.trial$trial_kick) {
       cat_log("... ... ... Kicking particles...")
       pnow <- .pf_particles_kick(.particles = copy(ppast),
                                  .obs = .obs, .t = t, .dlist = .dlist,
-                                 .rpropose = .rpropose, .dpropose = NULL,
-                                 .rargs = .rargs, .dargs = NULL,
+                                 .rpropose = .rpropose,
+                                 .rargs = .rargs,
                                  .likelihood = .likelihood,
                                  .control = .control
                                  )
@@ -301,15 +299,16 @@ pf_forward <- function(.obs,
     }
 
     #### (2) Propose new particles (using direct sampling)
-    if (.trial$trial_sampler > 0L) {
+    use_sampler <- FALSE
+    if (.trial$trial_sampler) {
       use_sampler <- .pf_forward_trial_sampler(.diagnostics = diagnostics_t,
                                                .trial_crit = .trial$trial_sampler_crit)
       if (use_sampler) {
         cat_log("... ... ... Using directed sampling...")
         pnow <- .pf_particles_sampler(.particles = copy(ppast),
                                       .obs = .obs, .t = t, .dlist = .dlist,
-                                      .rpropose = NULL, .dpropose = .dpropose,
-                                      .rargs = NULL, .dargs = .dargs,
+                                      .dpropose = .dpropose,
+                                      .dargs = .dargs,
                                       .likelihood = .likelihood,
                                       .control = .control)
         diagnostics_t[["grid"]] <- .pf_diag_bind(attr(pnow, "diagnostics"))
@@ -320,8 +319,10 @@ pf_forward <- function(.obs,
     if (fnrow(pnow) > 0L) {
       # Update weights
       pnow[, weight := normalise(weight * lik)]
-      # Optionally implement re-sampling
-      if (.pf_diag_ess(pnow$weight) < .trial$trial_resample_crit) {
+      # Optionally implement re-sampling, if:
+      # * ESS < .trial$trial_resample_crit
+      # * use_sampler = TRUE
+      if ((.pf_diag_ess(pnow$weight) < .trial$trial_resample_crit) || use_sampler) {
         cat_log("... ... ... (Re)-sampling...")
         pnow <- .sample(.particles = pnow, .n = .n)
         diagnostics_t[["resample"]] <- .pf_diag(.particles = pnow,
@@ -330,6 +331,8 @@ pf_forward <- function(.obs,
                                                 .label = "sample")
       }
     }
+    # Drop wt column to avoid user confusion
+    pnow[, wt := NULL]
 
     #### (4) Collect diagnostics
     diagnostics_t <- .pf_diag_collect(diagnostics_t, .iter_m = iter_m, .iter_i = iter_i)
@@ -340,7 +343,7 @@ pf_forward <- function(.obs,
     index_diag <- index_diag + 1L
 
     #### (5) (A) Revert to an earlier time step
-    crit <- diagnostics_t$n_u[nrow(diagnostics_t)]
+    crit <- diagnostics_t$ess[nrow(diagnostics_t)]
     if (crit < .trial$trial_revert_crit & iter_i <= .trial$trial_revert) {
       # Define time step
       t <- .pf_forward_revert(.t = t, .trial_revert_steps = .trial$trial_revert_steps)

@@ -3,11 +3,14 @@
 \name{pf_utils-internal}
 \alias{pf_utils-internal}
 \alias{.pf_sink_folder}
+\alias{.pf_bathy}
 \alias{.pf_snapshot}
 \alias{.pf_write_particles}
 \title{PF: internal utilities}
 \usage{
 .pf_sink_folder(.sink, .folder)
+
+.pf_bathy(.particles, .dlist)
 
 .pf_snapshot(.dt, .save, .select, .cols)
 

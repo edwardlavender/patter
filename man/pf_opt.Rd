@@ -9,14 +9,14 @@
 \title{PF: simulation options}
 \usage{
 pf_opt_trial(
-  .trial_origin_crit = 1L,
-  .trial_kick = 1L,
-  .trial_sampler = 1L,
+  .trial_origin_crit = 2L,
+  .trial_kick = TRUE,
+  .trial_sampler = TRUE,
   .trial_sampler_crit = 10L,
   .trial_resample_crit = 500L,
   .trial_revert_crit = 1L,
   .trial_revert_steps = 10L,
-  .trial_revert = 2L
+  .trial_revert = 1L
 )
 
 pf_opt_record(.save = FALSE, .cols = NULL, .sink = NULL)
@@ -26,18 +26,15 @@ pf_opt_control(.sampler_batch_size = 2L, .drop = TRUE)
 pf_opt_rerun_from(.rerun, .revert = 25L)
 }
 \arguments{
-\item{.trial_origin_crit, .trial_origin, .trial_kick_crit, .trial_kick, .trial_sampler_crit, .trial_sampler, .trial_revert_crit, .trial_revert_steps, .trial_revert}{\code{\link[=pf_opt_trial]{pf_opt_trial()}} arguments, passed to \code{.trial} in \code{\link[=pf_forward]{pf_forward()}} and used to tune convergence properties. All arguments expect \code{integer}s.
+\item{.trial_origin_crit, .trial_kick, .trial_sampler, .trial_sampler_crit, .trial_resample_crit, .trial_revert_crit, .trial_revert_steps, .trial_revert}{\code{\link[=pf_opt_trial]{pf_opt_trial()}} arguments, passed to \code{.trial} in \code{\link[=pf_forward]{pf_forward()}} and used to tune convergence properties. All arguments expect \code{integer} or \code{logical} inputs.
 \itemize{
-\item \verb{.trial_\{step\}} arguments define the number of times to trial a stochastic process at each time step (before giving up).
-\item \verb{.trial_\{step\}_crit} arguments define the number of valid, unique proposal locations (grid cells) required to trigger a repeated trial.
-}
-
-For example, if after kicking previous particles into proposal locations and evaluating the likelihood of each location only 10 unique particles remain, the stochastic process is repeated up to \code{.trial_kick} times or until the number of valid proposals exceeds \code{.trial_kick_crit} (see Details). In full:
-\itemize{
-\item \code{.trial_origin_crit} is the critical threshold for the starting samples. If the number of unique, valid starting locations is <= \code{.trial_origin_crit}, sampling is repeated up to \code{.trial_origin} times.
-\item \code{trial_kick_crit} is the critical threshold for stochastic kicks. If the number of unique, valid proposals is <= \code{trial_kick_crit}, the process of kicking and sampling particles (via \code{.rpropose} and \code{.sample}) is repeated up to \code{.trial_kick} times. Use \code{.trial_kick = 0L} to suppress stochastic kicks.
-\item \code{.trial_sampler_crit} is the critical threshold for directed sampling. Following stochastic kicks, if the number of unique, valid proposals remains <= \code{.trial_sampler_crit}, directed sampling is implemented. Samples are redrawn up to \code{.trial_sampler} times. Use \code{.trial_sampler_crit = 0L} to suppress directed sampling.
-\item \code{.trial_revert_crit} is the critical threshold for a reversion. If the number of unique, valid proposal locations is <= \code{.trial_revert_crit}, the algorithm reverts by \code{.trial_revert_steps} time steps to an earlier time step (time step two or greater). \code{.trial_revert} is the total number of reversions permitted. This is reset on algorithm reruns (see \code{.rerun}).
+\item \code{.trial_origin_crit} is an \code{integer} that specifies the critical effective sample size (ESS) for the starting samples. If the initial ESS is < \code{.trial_origin_crit}, a \code{\link{warning}} is given.
+\item \code{.trial_kick} is a \code{logical} variable that defines whether or not to trial the stochastic kick methodology.
+\item \code{.trial_sampler} is a \code{logical} variable that defines whether or not to trial the directed sampling methodology.
+\item \code{.trial_sampler_crit} is an \code{integer} that specifies the critical threshold for directed sampling. Following stochastic kicks, if the ESS is < \code{.trial_sampler_crit}, directed sampling is implemented.
+\item \code{.trial_resample_crit} is an \code{integer} that defines the ESS for (re)sampling. Particles are resampled when the ESS is < \code{.trial_resample_crit}.
+\item \code{.trial_revert_crit} is an \code{integer} that specifies the critical threshold for a reversion. If the ESS < \code{.trial_revert_crit}, the algorithm reverts by \code{.trial_revert_steps} time steps to an earlier time step (time step two or greater).
+\item \code{.trial_revert} is an \code{integer} that specifies the total number of reversions permitted. This is reset on algorithm reruns (see \code{.rerun}).
 }}
 
 \item{.save, .sink, .cols}{\code{\link[=pf_opt_record]{pf_opt_record()}} arguments, passed to \code{.record} in \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_*]{pf_backward_*()}}.
@@ -52,7 +49,7 @@ At least one of \code{.save = TRUE} and \code{.sink} must be set.}
 \item{.drop, .sampler_batch_size}{\code{\link[=pf_opt_control]{pf_opt_control()}} arguments, passed to \code{.control} in \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_*]{pf_backward_*()}}.
 \itemize{
 \item \code{.drop} A \code{logical} variable that defines whether or not to drop particles with zero likelihood or density.
-\item \code{.sampler_batch_size}---for [\verb{pf_forward()]} (specifically, \code{\link[=.pf_particles_sampler]{.pf_particles_sampler()}}), \code{.sampler_batch_size} is an \code{integer} that controls the batch size (the number of particles processed simultaneously) in directed sampling. Increase the batch size to improve speed; decrease the batch size to avoid memory constraints. The appropriate batch size depends on grid resolution and memory availability.
+\item \code{.sampler_batch_size}---for \code{\link[=pf_forward]{pf_forward()}} (specifically, \code{\link[=.pf_particles_sampler]{.pf_particles_sampler()}}), \code{.sampler_batch_size} is an \code{integer} that controls the batch size (the number of particles processed simultaneously) in directed sampling. Increase the batch size to improve speed; decrease the batch size to avoid memory constraints. The appropriate batch size depends on grid resolution and memory availability.
 }}
 
 \item{.rerun, .revert}{\code{\link[=pf_opt_rerun_from]{pf_opt_rerun_from()}} arguments.

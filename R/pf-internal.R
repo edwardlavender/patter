@@ -21,6 +21,18 @@
 #' @rdname pf_utils-internal
 #' @keywords internal
 
+# Add a 'bathy' column by reference
+.pf_bathy <- function(.particles, .dlist) {
+  if (!rlang::has_name(.particles, "bathy")) {
+    bathy <- cell_now <- NULL
+    .particles[, bathy := terra::extract(.dlist$spatial$bathy, cell_now)[, 1]]
+  }
+  .particles
+}
+
+#' @rdname pf_utils-internal
+#' @keywords internal
+
 # Snapshot data.tables for saving in memory or to file
 .pf_snapshot <- function(.dt,.save, .select, .cols) {
   # Copy & drop attributes
