@@ -314,16 +314,18 @@ pf_forward <- function(.obs,
     }
 
     #### (3) (optional) Resampling
-    # Update weights
-    pnow[, weight := normalise(weight * lik)]
-    # Optionally implement re-sampling
-    if (.pf_diag_ess(pnow$weight) < .trial$trial_resample_crit) {
-      cat_log("... ... ... (Re)-sampling...")
-      pnow <- .sample(.particles = pnow, .n = .n)
-      diagnostics_t[["resample"]] <- .pf_diag(.particles = pnow,
-                                              .weight = "weight",
-                                              .t = t,
-                                              .label = "sample")
+    if (fnrow(pnow) > 0L) {
+      # Update weights
+      pnow[, weight := normalise(weight * lik)]
+      # Optionally implement re-sampling
+      if (.pf_diag_ess(pnow$weight) < .trial$trial_resample_crit) {
+        cat_log("... ... ... (Re)-sampling...")
+        pnow <- .sample(.particles = pnow, .n = .n)
+        diagnostics_t[["resample"]] <- .pf_diag(.particles = pnow,
+                                                .weight = "weight",
+                                                .t = t,
+                                                .label = "sample")
+      }
     }
 
     #### (4) Collect diagnostics
