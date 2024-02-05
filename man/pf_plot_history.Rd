@@ -37,7 +37,7 @@ pf_plot_history(
 \item \code{.add_forward} is passed to \code{\link[graphics:points]{graphics::points()}}, excluding \code{x} and \code{y}.
 }}
 
-\item{.add_layer}{(optional) A \code{function} used to add additional layer(s) to the plot, such as \code{function() {points(x, y)}} where \code{x} and \code{y} are (for example) receiver coordinates.}
+\item{.add_layer}{(optional) A \code{function} used to add additional layer(s) to the plot. The function must a single (unnamed) \code{integer} value for the time step (even if ignored). An example function is \code{function(...) points(x, y)} where \code{x} and \code{y} are (for example) receiver coordinates.}
 
 \item{.prompt}{A \code{logical} variable that defines whether or not to prompt the user for input between plots. This is only used in interactive mode if \code{.png = NULL} (and there are multiple time steps).}
 

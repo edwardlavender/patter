@@ -10,7 +10,7 @@
 #' @param .add_surface,.add_forward Named `list`s for plot customisation.
 #' * `.add_surface` is passed to [`terra::plot()`], excluding `x` and `main`.
 #' * `.add_forward` is passed to [`graphics::points()`], excluding `x` and `y`.
-#' @param .add_layer (optional) A `function` used to add additional layer(s) to the plot, such as `function() {points(x, y)}` where `x` and `y` are (for example) receiver coordinates.
+#' @param .add_layer (optional) A `function` used to add additional layer(s) to the plot. The function must a single (unnamed) `integer` value for the time step (even if ignored). An example function is `function(...) points(x, y)` where `x` and `y` are (for example) receiver coordinates.
 #' @param .prompt A `logical` variable that defines whether or not to prompt the user for input between plots. This is only used in interactive mode if `.png = NULL` (and there are multiple time steps).
 #' @param ... Additional argument(s) passed to [`cl_lapply()`], such as `.cl`.
 #'
@@ -104,7 +104,7 @@ pf_plot_history <- function(.dlist,
     do.call(terra::plot, .add_surface)
     do.call(points, add_fwd)
     if (do_add_layer) {
-      .add_layer()
+      .add_layer(t)
     }
 
     # Save image
