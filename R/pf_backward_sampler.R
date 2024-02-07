@@ -278,13 +278,12 @@ pf_backward_sampler_v <- function(.history,
   n_step <- length(.history)
   .history[[n_step]] <- .pf_history_elm(.history = .history, .elm = n_step,
                                         cols = read_cols)
-  index <- collapse::seq_row(.history[[n_step]])
   # Function arguments
   .dargs$.obs   <- .obs
   .dargs$.dlist <- .dlist
   .dargs$.drop  <- .control$drop
   # Global variables
-  dens <- NULL
+  index <- dens <- NULL
   # Progress bar
   pb <- pb_init(.min = 0L, .max = n_step - 1L)
 
@@ -297,18 +296,18 @@ pf_backward_sampler_v <- function(.history,
 
     #### Collect .history[[t]] and .history[[t - 1L]]
     # Use arrow::read_parquet() directly for speed (if required)
-    .history[[t]][, index := index]
+    .history[[t]][, index := seq_row(.history[[t]])]
     if (read) {
       .history[[tp]] <- arrow::read_parquet(.history[[tp]])
     }
-    .history[[tp]][, index := index]
+    .history[[tp]][, index := seq_row(.history[[tp]])]
 
     #### Define .history[[t]]
     # Prepare data
     h <-
       CJ(
-        index_now = index,
-        index_past = index,
+        index_now = .history[[t]]$index,
+        index_past = .history[[tp]]$index,
         unique = FALSE,
         sorted = FALSE
       ) |>
