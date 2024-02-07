@@ -322,7 +322,7 @@ pf_forward <- function(.obs,
       # Optionally implement re-sampling, if:
       # * ESS < .trial$trial_resample_crit
       # * use_sampler = TRUE
-      if ((.pf_diag_ess(pnow$weight) < .trial$trial_resample_crit) || use_sampler) {
+      if (isTRUE((.pf_diag_ess(pnow$weight) < .trial$trial_resample_crit)) || use_sampler) {
         cat_log("... ... ... (Re)-sampling...")
         pnow <- .sample(.particles = pnow, .n = .n)
         diagnostics_t[["resample"]] <- .pf_diag(.particles = pnow,
