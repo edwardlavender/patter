@@ -69,7 +69,7 @@ acs_filter_container <- function(.particles, .obs, .t, .dlist, .drop) {
   }
 
   #### Filter
-  if (.t > 1 && .t < max(.obs$timestep)) {
+  if (.t > 1 && .t < fnrow(.obs)) {
     # Calculate distances between particle samples & the receivers that recorded the next detection
     dist <- terra::distance(.particles |>
                               select("x_now", "y_now") |>
