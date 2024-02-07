@@ -280,7 +280,7 @@ pf_forward <- function(.obs,
   while (t %in% t1:fnrow(.obs)) {
 
     #### Initiate time step
-    cat_log(paste0("... ... Index ", t, ":"))
+    cat_log(paste0("... ... Index ", t, " (timestep ", .obs$timestep[t], "):"))
     pb_tick(.pb = pb, .t = t)
     diagnostics_t <- list()
     # Argument lists
