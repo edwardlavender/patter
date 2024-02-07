@@ -182,7 +182,7 @@ NULL
     }
   }
   # Modify particles (cell_now at t - 1 becomes cell_past at t)
-  .pf_forward_increment(.particles = .particles, .obs = .obs, .t = .t)
+  .pf_forward_increment(.particles = .particles, .obs = .obs, .t = tp)
 }
 
 #' @rdname pf_forward-utils
