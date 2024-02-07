@@ -385,7 +385,7 @@ pf_forward <- function(.obs,
 
       #### Move on
       t <- t + 1L
-      ppast <- .pf_forward_increment(.particles = pnow, .obs = .obs, .t = .t)
+      ppast <- .pf_forward_increment(.particles = pnow, .obs = .obs, .t = t)
     }
 
   }
