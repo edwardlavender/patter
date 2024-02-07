@@ -168,7 +168,7 @@ NULL
 #' @keywords internal
 
 # Define particles for the previous time step
-.pf_forward_ppast <- function(.particles, .history, .sink, .t) {
+.pf_forward_ppast <- function(.particles, .history, .sink, .t, .obs) {
   # Define previous time step
   tp <- .t - 1L
   # Define particles
@@ -178,7 +178,7 @@ NULL
     if (length(.history) > 0L) {
       .particles <- .history[[tp]]
     } else {
-      .particles <- arrow::read_parquet(file.path(.sink, paste0(tp, ".parquet")))
+      .particles <- arrow::read_parquet(file.path(.sink, paste0(.obs$timestep[tp], ".parquet")))
     }
   }
   # Modify particles (cell_now at t - 1 becomes cell_past at t)

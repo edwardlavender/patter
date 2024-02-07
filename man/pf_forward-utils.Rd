@@ -24,7 +24,7 @@
 
 .pf_forward_increment(.particles)
 
-.pf_forward_ppast(.particles, .history, .sink, .t)
+.pf_forward_ppast(.particles, .history, .sink, .t, .obs)
 
 .pf_forward_trial_sampler(.diagnostics, .trial_crit)
 

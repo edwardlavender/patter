@@ -223,7 +223,7 @@ pf_forward <- function(.obs,
   .rargs$.dlist <- .dlist
   .dargs$.obs   <- .obs
   .dargs$.dlist <- .dlist
-  .dargs$.drop <- .control$drop
+  .dargs$.drop  <- .control$drop
   # Controls
   iter_i         <- startup$control$iter_i
   iter_m         <- startup$control$iter_m
@@ -264,21 +264,23 @@ pf_forward <- function(.obs,
   }
 
   #### Initiate loop
-  # Define starting time step
-  t          <- .pf_forward_start_t(.rerun, .rerun_from)
+  # Define starting index
+  t1         <- .pf_forward_start_t(.rerun, .rerun_from)
   index_diag <- length(diagnostics) + 1L
   # Define previous particles
   ppast <- .pf_forward_ppast(.particles = pnow, .history = history,
-                             .sink = startup$output$folder_history, .t = t)
+                             .sink = startup$output$folder_history, .t = t1,
+                             .obs = .obs)
   # Define progress bar
-  pb <- pb_init(.min = 2L, .max = max(.obs$timestep))
+  pb <- pb_init(.min = t1, .max = fnrow(.obs))
 
   #### Run simulation
   cat_log("... Initiating simulation...")
-  while (t %in% 2L:max(.obs$timestep)) {
+  t <- t1
+  while (t %in% t1:fnrow(.obs)) {
 
     #### Initiate time step
-    cat_log(paste0("... ... Time step ", t, ":"))
+    cat_log(paste0("... ... Index ", t, ":"))
     pb_tick(.pb = pb, .t = t)
     diagnostics_t <- list()
     # Argument lists
@@ -351,7 +353,8 @@ pf_forward <- function(.obs,
       iter_i <- iter_i + 1L
       # Define ppast for relevant time step
       ppast <- .pf_forward_ppast(.particles = NULL, .history = history,
-                                 .sink = startup$output$folder_history, .t = t)
+                                 .sink = startup$output$folder_history,
+                                 .t = t, .obs = .obs)
 
     } else {
 
