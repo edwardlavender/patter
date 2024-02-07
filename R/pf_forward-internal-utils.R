@@ -152,10 +152,10 @@ NULL
 #' @keywords internal
 
 # Increment loop: current cells become past cells @ next time step
-.pf_forward_increment <- function(.particles) {
+.pf_forward_increment <- function(.particles, .obs, .t) {
   .particles |>
     lazy_dt() |>
-    mutate(timestep = .data$timestep + 1L) |>
+    mutate(timestep = .obs$timestep[.t + 1L]) |>
     select("timestep",
            cell_past = "cell_now",
            x_past = "x_now",
@@ -182,7 +182,7 @@ NULL
     }
   }
   # Modify particles (cell_now at t - 1 becomes cell_past at t)
-  .pf_forward_increment(.particles)
+  .pf_forward_increment(.particles = .particles, .obs = .obs, .t = .t)
 }
 
 #' @rdname pf_forward-utils
