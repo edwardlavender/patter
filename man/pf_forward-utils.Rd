@@ -22,7 +22,7 @@
 
 .pf_forward_start_t(.rerun, .rerun_from)
 
-.pf_forward_increment(.particles)
+.pf_forward_increment(.particles, .obs, .t)
 
 .pf_forward_ppast(.particles, .history, .sink, .t, .obs)
 
