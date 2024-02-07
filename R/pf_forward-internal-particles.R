@@ -95,7 +95,7 @@
 
   # Tidy data.table
   samples |>
-    mutate(timestep = 1L,
+    mutate(timestep = .obs$timestep[.t],
            cell_past = NA_integer_,
            x_past = NA_integer_,
            y_past = NA_integer_,
