@@ -38,6 +38,7 @@ out_pff$time
 # Define shallow and depth limits
 obs[, depth_shallow := depth - 20]
 obs[, depth_deep := depth + 20]
+obs[, depth_scale := depth_deep - depth_shallow]
 # (optional) Define origin SpatRaster
 origin <- dlist$spatial$bathy
 origin <- terra::clamp(origin,

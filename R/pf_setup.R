@@ -58,7 +58,7 @@
 #' If archival data is provided, the following column(s) are also included:
 #' * `depth`---a number that defines the individual's depth (m) at each time step;
 #'
-#' To calculate the likelihood of archival observations in [`pf_forward()`] by the default [`pf_lik_dc()`] routine, a depth envelope (as defined by `depth_deep` and `depth_shallow` columns) is also required (see [`pf_lik_dc()`]).
+#' To calculate the likelihood of archival observations in [`pf_forward()`] by the default [`pf_lik_dc()`] routine, a depth envelope (as defined by `depth_deep`, `depth_shallow` and `depth_scale` columns) is also required (see [`pf_lik_dc()`]).
 #'
 #' @example man/examples/pf_setup_obs-examples.R
 #'

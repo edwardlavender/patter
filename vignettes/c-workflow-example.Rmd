@@ -195,7 +195,8 @@ obs <-
   obs |> 
   mutate(
     depth_shallow = depth + cde(depth)[1, ],
-    depth_deep = depth + cde(depth)[2, ]) |>
+    depth_deep = depth + cde(depth)[2, ], 
+    depth_scale = depth_deep - depth_shallow) |>
   as.data.table()
 
 # (C) Visualise depth-error model
