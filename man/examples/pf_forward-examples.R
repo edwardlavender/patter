@@ -93,6 +93,13 @@ out_pff <- pf_forward(.obs = obs,
                       .likelihood = pf_lik_acdcpf,
                       .record = pf_opt_record(.save = TRUE),
                       .control = pf_opt_control(.sampler_batch_size = 100L))
+# > Pairwise steps are < .mobility + grid resolution/2
+for (i in 2:length(out_pff$history)) {
+  print(i)
+  dist <- clen(out_pff$history[[i]][, .(x_past, y_past)],
+               out_pff$history[[i]][, .(x_now, y_now)], .lonlat = FALSE)
+  stopifnot(max(dist) < 100 + terra::res(dlist$spatial$bathy)[1] / 2)
+}
 # > Sequential steps are < .mobility + grid resolution/2
 out_pfbk <- pf_backward_killer(out_pff$history,
                                .record = pf_opt_record(.save = TRUE))
