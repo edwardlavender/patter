@@ -259,22 +259,86 @@
                                .rpropose,
                                .rargs = list(),
                                .likelihood,
-                               .control) {
-  # Set variables
+                               .control, .trial) {
+
+  #### Set variables
+  kick  <- TRUE
+  count <- 1L
   diagnostics <- list()
+  # Global variables
+  index <- cell_now <- x_now <- y_now <- lik <- NULL
+
+  #### Define output data.table with blank coordinate and lik columns
+  # These will be iteratively updated below
+  .particles[, index := seq_row(.particles)]
+  cols <- colnames(.particles)
+  output <-
+    .particles |>
+    mutate(cell_now = NA_integer_,
+           x_now = NA_real_,
+           y_now = NA_real_,
+           lik = 0) |>
+    as.data.table()
+
+  #### Iteratively update `output` with new locations
   .rargs$.particles <- .particles
-  # Propose particles
-  proposals <- do.call(.rpropose, .rargs)
-  # Calculate likelihood & weights (likelihood = weights)
-  proposals <- .pf_lik(.particles = proposals,
-                       .obs = .obs, .t = .t,
-                       .dlist = .dlist,
-                       .stack = .likelihood,
-                       .control = .control)
-  diagnostics[["kick"]] <- attr(proposals, "diagnostics")
+  while (kick && count <= .trial) {
+    # Propose particles
+    proposals <- do.call(.rpropose, .rargs)
+    # Calculate likelihood & weights (likelihood = weights)
+    proposals <- .pf_lik(.particles = proposals,
+                         .obs = .obs, .t = .t,
+                         .dlist = .dlist,
+                         .stack = .likelihood,
+                         .diagnostics = NULL,
+                         .control = .control)
+    # diagnostics[[paste0("kick-", count)]] <- attr(proposals, "diagnostics")
+    # Update output particles
+    # * Output is updated in locations where we have generated proposals
+    # * Matching is necessary b/c the default .rpropose routine drops
+    # * ... locations beyond the study area (as necessary for likelihood routines)
+    # * Here, `ind` defines, for each row in `output`, the position of the match in proposals
+    # * E.g., 1 NA NA NA  2 ...
+    # * `pos` defines the rows in `output` that correspond to the matches (e.g., 1, 5, ...)
+    ind     <- match(output$index, proposals$index)
+    matches <- !is.na(ind)
+    ind     <- ind[matches]
+    pos     <- which(matches)
+    output[pos, cell_now := proposals$cell_now[ind]]
+    output[pos, x_now := proposals$x_now[ind]]
+    output[pos, y_now := proposals$y_now[ind]]
+    output[pos, lik := proposals$lik[ind]]
+    # Identify proposals beyond the study area or with zero likelihood
+    bool <- is.na(output$cell_now) | (output$lik == 0)
+    # Optionally re-kick invalid proposals
+    if (any(bool)) {
+      count <- count + 1L
+      .rargs$.particles <-
+        output |>
+        filter(bool) |>
+        select(all_of(cols)) |>
+        as.data.table()
+    } else {
+      # Switch kick off if all particles have landed in suitable locations
+      kick <- FALSE
+    }
+  }
+  # Drop residual proposals beyond study area & (optional) zero-likelihood proposals
+  output <-
+    output |>
+    filter(!is.na(cell_now)) |>
+    .pf_lik_drop(.control$drop) |>
+    mutate(index = NULL,
+           wt = normalise(.data$weight * .data$lik)) |>
+    as.data.table()
+  # Update diagnostics
+  diagnostics[["kick"]] <- .pf_diag(.particles = output,
+                                    .weight = "wt",
+                                    .t = .t,
+                                    .label = "kick")
   # Return outputs
-  attr(proposals, "diagnostics") <- diagnostics
-  proposals
+  attr(output, "diagnostics") <- diagnostics
+  output
 }
 
 #' @rdname pf_particle

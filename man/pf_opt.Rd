@@ -10,8 +10,8 @@
 \usage{
 pf_opt_trial(
   .trial_origin_crit = 2L,
-  .trial_kick = TRUE,
-  .trial_sampler = TRUE,
+  .trial_kick = 1L,
+  .trial_sampler = 1L,
   .trial_sampler_crit = 10L,
   .trial_resample_crit = 500L,
   .trial_revert_crit = 1L,
@@ -26,11 +26,11 @@ pf_opt_control(.sampler_batch_size = 2L, .drop = TRUE)
 pf_opt_rerun_from(.rerun, .revert = 25L)
 }
 \arguments{
-\item{.trial_origin_crit, .trial_kick, .trial_sampler, .trial_sampler_crit, .trial_resample_crit, .trial_revert_crit, .trial_revert_steps, .trial_revert}{\code{\link[=pf_opt_trial]{pf_opt_trial()}} arguments, passed to \code{.trial} in \code{\link[=pf_forward]{pf_forward()}} and used to tune convergence properties. All arguments expect \code{integer} or \code{logical} inputs.
+\item{.trial_origin_crit, .trial_kick, .trial_sampler, .trial_sampler_crit, .trial_resample_crit, .trial_revert_crit, .trial_revert_steps, .trial_revert}{\code{\link[=pf_opt_trial]{pf_opt_trial()}} arguments, passed to \code{.trial} in \code{\link[=pf_forward]{pf_forward()}} and used to tune convergence properties. All arguments expect \code{integer} inputs.
 \itemize{
 \item \code{.trial_origin_crit} is an \code{integer} that specifies the critical effective sample size (ESS) for the starting samples. If the initial ESS is < \code{.trial_origin_crit}, a \code{\link{warning}} is given.
-\item \code{.trial_kick} is a \code{logical} variable that defines whether or not to trial the stochastic kick methodology.
-\item \code{.trial_sampler} is a \code{logical} variable that defines whether or not to trial the directed sampling methodology.
+\item \code{.trial_kick} is a \code{integer} that defines the number of stochastic kicks at each time step.
+\item \code{.trial_sampler} is an \code{integer} (0, 1) that defines whether or not to trial the directed sampling methodology.
 \item \code{.trial_sampler_crit} is an \code{integer} that specifies the critical threshold for directed sampling. Following stochastic kicks, if the ESS is < \code{.trial_sampler_crit}, directed sampling is implemented.
 \item \code{.trial_resample_crit} is an \code{integer} that defines the ESS for (re)sampling. Particles are resampled when the ESS is < \code{.trial_resample_crit}.
 \item \code{.trial_revert_crit} is an \code{integer} that specifies the critical threshold for a reversion. If the ESS < \code{.trial_revert_crit}, the algorithm reverts by \code{.trial_revert_steps} time steps to an earlier time step (time step two or greater).

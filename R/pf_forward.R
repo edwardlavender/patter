@@ -1,10 +1,10 @@
 #' @title PF: simulation options
 #' @description These functions define selected function arguments for [`pf_forward()`] and/or [`pf_backward_*()`].
 #'
-#' @param .trial_origin_crit,.trial_kick,.trial_sampler,.trial_sampler_crit,.trial_resample_crit,.trial_revert_crit,.trial_revert_steps,.trial_revert [`pf_opt_trial()`] arguments, passed to `.trial` in [`pf_forward()`] and used to tune convergence properties. All arguments expect `integer` or `logical` inputs.
+#' @param .trial_origin_crit,.trial_kick,.trial_sampler,.trial_sampler_crit,.trial_resample_crit,.trial_revert_crit,.trial_revert_steps,.trial_revert [`pf_opt_trial()`] arguments, passed to `.trial` in [`pf_forward()`] and used to tune convergence properties. All arguments expect `integer` inputs.
 #' * `.trial_origin_crit` is an `integer` that specifies the critical effective sample size (ESS) for the starting samples. If the initial ESS is < `.trial_origin_crit`, a [`warning`] is given.
-#' * `.trial_kick` is a `logical` variable that defines whether or not to trial the stochastic kick methodology.
-#' * `.trial_sampler` is a `logical` variable that defines whether or not to trial the directed sampling methodology.
+#' * `.trial_kick` is a `integer` that defines the number of stochastic kicks at each time step.
+#' * `.trial_sampler` is an `integer` (0, 1) that defines whether or not to trial the directed sampling methodology.
 #' * `.trial_sampler_crit` is an `integer` that specifies the critical threshold for directed sampling. Following stochastic kicks, if the ESS is < `.trial_sampler_crit`, directed sampling is implemented.
 #' * `.trial_resample_crit` is an `integer` that defines the ESS for (re)sampling. Particles are resampled when the ESS is < `.trial_resample_crit`.
 #' * `.trial_revert_crit` is an `integer` that specifies the critical threshold for a reversion. If the ESS < `.trial_revert_crit`, the algorithm reverts by `.trial_revert_steps` time steps to an earlier time step (time step two or greater).
@@ -48,8 +48,8 @@
 #' @export
 
 pf_opt_trial <- function(.trial_origin_crit = 2L,
-                         .trial_kick = TRUE,
-                         .trial_sampler = TRUE,
+                         .trial_kick = 1L,
+                         .trial_sampler = 1L,
                          .trial_sampler_crit = 10L,
                          .trial_resample_crit = 500L,
                          .trial_revert_crit = 1L,
@@ -288,21 +288,21 @@ pf_forward <- function(.obs,
     .dargs$.t <- t
 
     #### (1) Propose new particles (using kicks)
-    if (.trial$trial_kick) {
+    if (.trial$trial_kick > 0L) {
       cat_log("... ... ... Kicking particles...")
       pnow <- .pf_particles_kick(.particles = copy(ppast),
                                  .obs = .obs, .t = t, .dlist = .dlist,
                                  .rpropose = .rpropose,
                                  .rargs = .rargs,
                                  .likelihood = .likelihood,
-                                 .control = .control
+                                 .control = .control, .trial = .trial$trial_kick
                                  )
       diagnostics_t[["kick"]] <- .pf_diag_bind(attr(pnow, "diagnostics"))
     }
 
     #### (2) Propose new particles (using direct sampling)
     use_sampler <- FALSE
-    if (.trial$trial_sampler) {
+    if (.trial$trial_sampler > 0L) {
       use_sampler <- .pf_forward_trial_sampler(.diagnostics = diagnostics_t,
                                                .trial_crit = .trial$trial_sampler_crit)
       if (use_sampler) {

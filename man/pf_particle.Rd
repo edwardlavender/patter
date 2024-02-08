@@ -46,7 +46,8 @@
   .rpropose,
   .rargs = list(),
   .likelihood,
-  .control
+  .control,
+  .trial
 )
 
 .pf_particles_sampler(
