@@ -22,7 +22,7 @@
 #' * [`acs_filter_land()`] is a binary 'habitability' (land/water) filter. This is useful when the 'stochastic kick' methodology is used to generate proposal locations in systems that include inhospitable habitats. The function calculates the likelihood (0, 1) of the 'hospitable' data given sampled particles. Location proposals in `NA` cells on the bathymetry grid (`.dlist$spatial$bathy`) are dropped.
 #' * [`acs_filter_container()`] is recommended for acoustic time series. This function calculates the approximate likelihood of the next acoustic detection, given particle proposals. This is a binary filter that excludes location proposals that are incompatible with acoustic container dynamics, since proposal locations must be within a moveable distance of receiver locations. Note that receivers by default are defined on a grid and the mobility term should account for this if required (see [`check_moorings()`]). [`acs_filter_container()`] is strictly optional but facilitates algorithm convergence by filtering location proposals that are inconsistent with the location of the next detection.
 #' * [`pf_lik_ac()`] calculates the likelihood of acoustic data (detection or non detection at each operational receiver), given location proposals. Likelihood evaluations are implemented on a grid using precomputed fields for speed (see [`acs_setup_detection_kernels()`]).
-#' * [`pf_lik_dc()`] calculates the likelihood of archival (depth) data, given particle proposals. This is based on Lavender et al.'s (2023) depth-contour algorithm in which depth observations are considered valid in locations whose depth's lie between a shallow and deep limit (`.obs$depth_shallow[.t]` and `.obs$depth_deep[.t]`) but impossible otherwise. The scaling factor (`.obs$depth_deep[.t] - .obs$depth_shallow[.t]`) must be specified in `.obs$depth_scale[.t]`). This evaluation is necessarily implemented on a grid.
+#' * [`pf_lik_dc()`] calculates the likelihood of archival (depth) data, given particle proposals. This is based on a modification of Lavender et al.'s (2023) depth-contour algorithm in which depth observations are considered valid (with uniform probability density) in locations whose depth's lie between a shallow and deep limit (`.particles$bathy - .obs$depth_shallow_eps[.t]` and `.particles$bathy` + `.obs$depth_deep_eps[.t]`) but impossible otherwise. This evaluation is necessarily implemented on a grid.
 #'
 #' In [`pf_forward()`], [`acs_filter_container()`] and [`pf_lik_ac()`] effectively replace the role of [`flapper::ac()`](https://edwardlavender.github.io/flapper/reference/ac.html) function. [`pf_lik_dc()`] effectively replaces the role of [`flapper::dc()`](https://edwardlavender.github.io/flapper/reference/dc.html).
 #'
@@ -144,16 +144,20 @@ pf_lik_ac <- function(.particles, .obs, .t, .dlist, .drop) {
 pf_lik_dc <- function(.particles, .obs, .t, .dlist, .drop) {
   # Checks
   if (.t == 1L) {
-    check_names(.obs, req = c("depth_shallow", "depth_deep", "depth_scale"))
+    check_names(.obs, req = c("depth_shallow_eps", "depth_deep_eps"))
     check_dlist(.dlist = .dlist, .spatial = "bathy")
+  }
+  # DC model
+  dc <- function(.data.bathy) {
+    a <- .data.bathy - .obs$depth_shallow_eps[.t]
+    a[a < 0] <- 0
+    stats::dunif(x = .obs$depth[.t],
+                 min = a,
+                 max = .data.bathy + .obs$depth_deep_eps[.t])
   }
   # Likelihood evaluation
   .particles |>
     .pf_bathy(.dlist = .dlist) |>
-    mutate(lik =
-             .data$lik *
-             .obs$depth_scale[.t] *
-             ((.particles$bathy >= .obs$depth_shallow[.t] &
-                 .particles$bathy <= .obs$depth_deep[.t]) + 0L)) |>
+    mutate(lik = .data$lik * dc(.data$bathy)) |>
     .pf_lik_drop(.drop = .drop)
 }

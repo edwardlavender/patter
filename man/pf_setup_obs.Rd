@@ -65,7 +65,7 @@ If archival data is provided, the following column(s) are also included:
 \item \code{depth}---a number that defines the individual's depth (m) at each time step;
 }
 
-To calculate the likelihood of archival observations in \code{\link[=pf_forward]{pf_forward()}} by the default \code{\link[=pf_lik_dc]{pf_lik_dc()}} routine, a depth envelope (as defined by \code{depth_deep}, \code{depth_shallow} and \code{depth_scale} columns) is also required (see \code{\link[=pf_lik_dc]{pf_lik_dc()}}).
+To calculate the likelihood of archival observations in \code{\link[=pf_forward]{pf_forward()}} by the default \code{\link[=pf_lik_dc]{pf_lik_dc()}} routine, a depth envelope (controlled by \code{depth_deep_eps}, \code{depth_shallow_eps} columns) is also required (see \code{\link[=pf_lik_dc]{pf_lik_dc()}}).
 }
 \description{
 This function builds a timeline of observations for particle filtering. The forward filter (\code{\link[=pf_forward]{pf_forward()}}) iterates over this timeline. At each time step, the algorithm proposes candidate locations for an individual, evaluates the likelihood of each observation (e.g., acoustic and/or archival data) in the timeline at the current time step  and (re)samples valid locations using likelihood-based weights.

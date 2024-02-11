@@ -179,34 +179,24 @@ obs <- obs[1:100, ]
 head(obs)
 ```
 
-To incorporate ancillary (e.g., archival) data, we may need to include additional columns in `obs` as required by the relevant likelihood functions. In our simulation, we'll account for the likelihood of depth observations using a binary likelihood function provided by `patter` (`pf_lik_dc()`). Under this model, depth observations in sampled locations where the bathymetric depth likes between a lower and upper depth limit are equally likely, whereas observations outside those limits are impossible (Lavender et al., 2023). To implement this model, here we use a depth-error model to define lower and upper depth limits. In this example, we have to include a 'fudge' factor to account for the low resolution of the bathymetry data.
+To incorporate ancillary (e.g., archival) data, we may need to include additional columns in `obs` as required by the relevant likelihood functions. In our simulation, we'll account for the likelihood of depth observations using a uniform likelihood function provided by `patter` (`pf_lik_dc()`). Under this model, depth observations in sampled locations where the bathymetric depth lies between a lower and upper depth limit are equally likely, whereas observations outside those limits are impossible (Lavender et al., 2023). To implement this model, here we use a depth-error model to define lower and upper depth limits. In this example, we have to include a 'fudge' factor to account for the low resolution of the bathymetry data.
 
 ```{r}
 # (A) Define a depth-error model
 fudge <- 10
 cde <- function(.depth) {
   e <- 4.77 + 2.5 + sqrt(0.5^2 + (0.013 * .depth)^2) + fudge 
-  matrix(c(-(e + 5), e), nrow = 2)
+  matrix(c((e + 5), e), nrow = 2)
 }
 cde <- Vectorize(cde)
 
-# (B) Pre-calculate depth limits for efficiency
+# (B) Define shallow and deep depth errors 
 obs <-
   obs |> 
   mutate(
-    depth_shallow = depth + cde(depth)[1, ],
-    depth_deep = depth + cde(depth)[2, ], 
-    depth_scale = depth_deep - depth_shallow) |>
+    depth_shallow_eps = cde(depth)[1, ],
+    depth_deep_eps = cde(depth)[2, ]) |>
   as.data.table()
-
-# (C) Visualise depth-error model
-p <- seq_len(nrow(obs))
-plot(obs$timestep[p], obs$depth[p] * -1,
-     ylim = range(c(obs$depth_shallow[p], obs$depth_deep[p]) * -1),
-     xlab = "Time step", ylab = "Depth (m)",
-     type = "l")
-lines(obs$timestep[p], obs$depth_shallow[p] * -1, col = "lightblue")
-lines(obs$timestep[p], obs$depth_deep[p] * -1, col = "darkblue")
 ```
 
 # PF

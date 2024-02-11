@@ -35,15 +35,21 @@ out_pff$convergence
 out_pff$time
 
 #### Example (2): Implement DCPF algorithm with default options
-# Define shallow and depth limits
-obs[, depth_shallow := depth - 20]
-obs[, depth_deep := depth + 20]
-obs[, depth_scale := depth_deep - depth_shallow]
+# Define shallow and depth errors
+obs[, depth_shallow_eps := 20]
+obs[, depth_deep_eps := 20]
 # (optional) Define origin SpatRaster
-origin <- dlist$spatial$bathy
-origin <- terra::clamp(origin,
-                       lower = obs$depth_shallow[1],
-                       upper = obs$depth_deep[1])
+shallow <- dlist$spatial$bathy - obs$depth_shallow_eps[1]
+deep    <- dlist$spatial$bathy + obs$depth_deep_eps[2]
+origin  <- (obs$depth[1] >= shallow) & (obs$depth[1] <= deep)
+origin  <- terra::classify(origin, cbind(0, NA))
+# Examine origin SpatRaster
+terra::plot(origin)
+dlist$spatial$bathy |>
+  terra::mask(origin) |>
+  as.data.frame(na.rm = TRUE) |>
+  dplyr::select("bathy") |>
+  range()
 dlist$spatial$origin <- origin
 # Implement DCPF algorithm
 pf_lik_dcpf <- list(pf_lik_dc = pf_lik_dc)
