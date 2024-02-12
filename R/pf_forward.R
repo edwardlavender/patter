@@ -47,14 +47,14 @@
 #' @rdname pf_opt
 #' @export
 
-pf_opt_trial <- function(.trial_origin_crit = 2L,
+pf_opt_trial <- function(.trial_origin_crit = 1L,
                          .trial_kick = 1L,
                          .trial_sampler = 1L,
                          .trial_sampler_crit = 10L,
                          .trial_resample_crit = 500L,
                          .trial_revert_crit = 1L,
                          .trial_revert_steps = 10L,
-                         .trial_revert = 1L) {
+                         .trial_revert = 0L) {
   list(trial_origin_crit = .trial_origin_crit,
        trial_kick = .trial_kick,
        trial_sampler = .trial_sampler,

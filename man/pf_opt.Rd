@@ -9,14 +9,14 @@
 \title{PF: simulation options}
 \usage{
 pf_opt_trial(
-  .trial_origin_crit = 2L,
+  .trial_origin_crit = 1L,
   .trial_kick = 1L,
   .trial_sampler = 1L,
   .trial_sampler_crit = 10L,
   .trial_resample_crit = 500L,
   .trial_revert_crit = 1L,
   .trial_revert_steps = 10L,
-  .trial_revert = 1L
+  .trial_revert = 0L
 )
 
 pf_opt_record(.save = FALSE, .cols = NULL, .sink = NULL)
