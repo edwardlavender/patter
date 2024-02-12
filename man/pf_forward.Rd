@@ -145,7 +145,7 @@ obs[, depth_shallow_eps := 20]
 obs[, depth_deep_eps := 20]
 # (optional) Define origin SpatRaster
 shallow <- dlist$spatial$bathy - obs$depth_shallow_eps[1]
-deep    <- dlist$spatial$bathy + obs$depth_deep_eps[2]
+deep    <- dlist$spatial$bathy + obs$depth_deep_eps[1]
 origin  <- (obs$depth[1] >= shallow) & (obs$depth[1] <= deep)
 origin  <- terra::classify(origin, cbind(0, NA))
 # Examine origin SpatRaster
