@@ -82,7 +82,7 @@ pf_opt_record <- function(.save = FALSE, .cols = NULL, .sink = NULL) {
 #' @rdname pf_opt
 #' @export
 
-pf_opt_control <- function(.sampler_batch_size = 2L, .drop = TRUE) {
+pf_opt_control <- function(.sampler_batch_size = 1000L, .drop = TRUE) {
   list(drop = .drop,
        sampler_batch_size = .sampler_batch_size)
 }

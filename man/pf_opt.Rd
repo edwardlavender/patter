@@ -21,7 +21,7 @@ pf_opt_trial(
 
 pf_opt_record(.save = FALSE, .cols = NULL, .sink = NULL)
 
-pf_opt_control(.sampler_batch_size = 2L, .drop = TRUE)
+pf_opt_control(.sampler_batch_size = 1000L, .drop = TRUE)
 
 pf_opt_rerun_from(.rerun, .revert = 25L)
 }
