@@ -133,7 +133,7 @@ pf_lik_ac <- function(.particles, .obs, .t, .dlist, .drop) {
   }
 
   #### Return particles
-  filter_lik_zero(.particles = .particles, .drop = .drop)
+  filter_lik_zero(.data = .particles, .drop = .drop)
 
 }
 
