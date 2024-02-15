@@ -140,6 +140,7 @@ pf_rpropose_reachable <- function(.particles, .obs, .t, .dlist) {
   .particles <-
     .particles |>
     lazy_dt() |>
+    select("timestep", "cell_past", "x_past", "y_past", "weight") |>
     distinct(.data$cell_past, .keep_all = TRUE) |>
     as.data.table()
 
@@ -177,6 +178,7 @@ pf_rpropose_reachable <- function(.particles, .obs, .t, .dlist) {
   # Return 'proposal' (possible) cells (given .mobility only)
   # * In downstream functions, we filter & weight these
   merge(.particles, choices, by = "cell_past")
+
 }
 
 #' @rdname pf_propose

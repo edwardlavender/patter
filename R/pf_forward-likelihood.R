@@ -45,8 +45,8 @@ acs_filter_land <- function(.particles, .obs, .t, .dlist, .drop) {
   }
   if (isTRUE(.dlist$pars$spatna)) {
     .particles |>
-      lazy_dt(immutable = FALSE) |>
       mutate_bathy(.dlist = .dlist) |>
+      lazy_dt(immutable = FALSE) |>
       mutate(lik = .data$lik * ((!is.na(.data$bathy)) + 0L)) |>
       filter_lik(.drop = .drop) |>
       as.data.table()
@@ -91,7 +91,8 @@ acs_filter_container <- function(.particles, .obs, .t, .dlist, .drop) {
       .particles |>
       lazy_dt(immutable = FALSE) |>
       mutate(lik = .data$lik * ((Rfast::rowsums(dist <= .obs$buffer_future_incl_gamma[.t]) == ncol(dist)) + 0L)) |>
-      filter_lik(.drop = .drop)
+      filter_lik(.drop = .drop) |>
+      as.data.table()
 
   }
   .particles
@@ -163,8 +164,9 @@ pf_lik_dc <- function(.particles, .obs, .t, .dlist, .drop) {
   }
   # Likelihood evaluation
   .particles |>
-    lazy_dt(immutable = FALSE) |>
     mutate_bathy(.dlist = .dlist) |>
+    lazy_dt(immutable = FALSE) |>
     mutate(lik = .data$lik * dc(.data$bathy)) |>
-    filter_lik_zero(.drop = .drop)
+    filter_lik(.drop = .drop) |>
+    as.data.table()
 }

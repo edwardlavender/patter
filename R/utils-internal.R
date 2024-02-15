@@ -175,27 +175,31 @@ list_merge <- function(...) {
 #' @keywords internal
 
 # Add missing columns
-# * .data A `data.table`.
+# * .data A `data.table` (not a lazy_dt() b/c rlang::has_name())
 # * .col A `character` string.
 mutate_missing <- function(.data, .col) {
   if (rlang::has_name(.data, .col)) {
     return(.data)
   } else {
-    .data |>
-      mutate("{.col}" := NA_real_)
+    .data[, (.col) := NA_real_]
+    .data
   }
 }
 
 # Add a bathy column
+# * .data cannot be a lazy_dt()
 mutate_bathy <- function(.data, .dlist) {
   if (rlang::has_name(.data, "bathy")) {
     return(.data)
   } else {
-    .data |>
-      mutate(bathy = terra::extract(.dlist$spatial$bathy, .data$cell_now)[, 1])
+    bathy <- NULL
+    .data[, bathy := terra::extract(.dlist$spatial$bathy, .data$cell_now)[, 1]]
+    .data
   }
 }
 
+# Filter zero likelihoods
+# * .data may be a lazy_dt()
 filter_lik <- function(.data, .drop) {
   if (.drop && anyv(.data$lik, 0)) {
     return(
