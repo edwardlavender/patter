@@ -170,13 +170,14 @@ NULL
   if (.trial$trial_kick == 0L) {
     return(TRUE)
   } else {
-    # Implement sampling if (a) there are zero likelihood cells & the ESS is too low
-    contains_zero_lik <- any(.particles$lik == 0)
+    # Implement sampling if (a) there are zero likelihood cells & (b) the ESS is too low
+    contains_zero_lik <- anyv(.particles$lik, 0)
     if (contains_zero_lik) {
       crit <- .pf_diag_ess(normalise(.particles$weight * .particles$lik))
+      return(crit < .trial$trial_sampler_crit)
     }
-    return(contains_zero_lik && crit < .trial$trial_resample_crit)
   }
+  return(FALSE)
 }
 
 #' @rdname pf_forward-utils
