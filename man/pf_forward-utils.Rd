@@ -3,7 +3,6 @@
 \name{pf_forward-utils}
 \alias{pf_forward-utils}
 \alias{.pf_forward_dirs}
-\alias{.pf_forward_write_diagnostics}
 \alias{.pf_forward_startup}
 \alias{.pf_forward_start_t}
 \alias{.pf_forward_increment}
@@ -16,8 +15,6 @@
 \usage{
 .pf_forward_dirs(.record)
 
-.pf_forward_write_diagnostics(.diagnostics, .sink, .write)
-
 .pf_forward_startup(.rerun, .record)
 
 .pf_forward_start_t(.rerun, .rerun_from)
@@ -26,20 +23,13 @@
 
 .pf_forward_ppast(.particles, .history, .sink, .t, .obs)
 
-.pf_forward_trial_sampler(.diagnostics, .trial_crit)
+.pf_forward_trial_sampler(.particles, .trial)
 
 .pf_forward_revert(.t, .trial_revert_steps)
 
 .pf_forward_continue(.particles, .t, .crit, .trial_revert_crit)
 
-.pf_forward_output(
-  .rerun,
-  .start,
-  .startup,
-  .history,
-  .diagnostics,
-  .convergence
-)
+.pf_forward_output(.rerun, .start, .startup, .history, .convergence)
 }
 \description{
 These functions are internal utilities for \code{\link[=pf_forward]{pf_forward()}}.

@@ -32,7 +32,7 @@
   .control
 )
 
-.pf_lik(.particles, .obs, .t, .dlist, .stack, .diagnostics = list(), .control)
+.pf_lik(.particles, .obs, .t, .dlist, .stack, .control)
 
 .pf_lik_ac_detection(.particles, .kernels, .detections, .absences)
 

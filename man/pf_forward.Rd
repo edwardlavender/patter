@@ -28,7 +28,7 @@ pf_forward(
 \item{.dlist}{A \code{named} list of data and parameters required propose locations and calculate likelihoods (see \code{\link[=pat_setup_data]{pat_setup_data()}}, \code{\link{pf_lik}} and \code{\link{pf_propose}}). This function requires:
 \itemize{
 \item \code{.dlist$spatial$bathy}
-\item (optional) \code{.dlist$spatial$origin}, a \code{\link{SpatRaster}} used to define the origin.
+\item (optional) \code{.dlist$spatial$origin}, a \code{\link{SpatRaster}} used to define the origin. This may differ in geometry from \code{.dlist$spatial$bathy} but must have the same coordinate reference system.
 \item \code{.dlist$pars$lonlat} (required by the default \code{.rpropose} and \code{.dpropose} arguments).
 \item Any additional elements required by \code{.likelihood},\code{.rpropose} and \code{.dpropose} functions(see below).
 }}

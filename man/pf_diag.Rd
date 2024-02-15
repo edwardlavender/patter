@@ -2,15 +2,20 @@
 % Please edit documentation in R/pf_diag.R
 \name{pf_diag}
 \alias{pf_diag}
-\alias{pf_diag_convergence}
 \alias{pf_diag_summary}
 \title{PF: particle diagnostics}
 \usage{
-pf_diag_convergence(.sink, ...)
-
 pf_diag_summary(.history, ...)
 }
 \arguments{
+\item{.history}{For \code{\link[=pf_diag_summary]{pf_diag_summary()}}, \code{.history} expects particle samples, provided in any format accepted by \code{\link[=.pf_history_dt]{.pf_history_dt()}}.}
+
+\item{...}{Additional arguments.
+\itemize{
+\item In \code{\link[=pf_diag_convergence]{pf_diag_convergence()}}, \code{...} is passed to \code{\link[arrow:open_dataset]{arrow::open_dataset()}}.
+\item In \code{\link[=pf_diag_summary]{pf_diag_summary()}}, \code{...} is passed to \code{\link[=.pf_history_dt]{.pf_history_dt()}}. \code{.collect}, if used, is necessarily \code{TRUE} and should not be specified.
+}}
+
 \item{.sink}{For \code{\link[=pf_diag_convergence]{pf_diag_convergence()}}, \code{.sink} specifies particle diagnostics. The following inputs are accepted:
 \itemize{
 \item A \code{\linkS4class{pf_particles}} object;
@@ -20,14 +25,6 @@ pf_diag_summary(.history, ...)
 \item \verb{\{.record$sink\}/diagnostics/};
 }
 }}
-
-\item{...}{Additional arguments.
-\itemize{
-\item In \code{\link[=pf_diag_convergence]{pf_diag_convergence()}}, \code{...} is passed to \code{\link[arrow:open_dataset]{arrow::open_dataset()}}.
-\item In \code{\link[=pf_diag_summary]{pf_diag_summary()}}, \code{...} is passed to \code{\link[=.pf_history_dt]{.pf_history_dt()}}. \code{.collect}, if used, is necessarily \code{TRUE} and should not be specified.
-}}
-
-\item{.history}{For \code{\link[=pf_diag_summary]{pf_diag_summary()}}, \code{.history} expects particle samples, provided in any format accepted by \code{\link[=.pf_history_dt]{.pf_history_dt()}}.}
 }
 \value{
 \verb{pf_diag_*()} functions return \code{\link{data.table}}s.
@@ -53,33 +50,12 @@ Particle diagnostics are fully described in \code{\link{pf_diag-internal}}.
 \code{\link[=pf_diag_summary]{pf_diag_summary()}} summarises particle diagnostics directly from (accepted) particle samples. This can be used for \code{\link[=pf_forward]{pf_forward()}} or \code{\link[=pf_backward_*]{pf_backward_*()}}.
 }
 \examples{
-#### Example (1): Examine convergence diagnostics from `pf_forward()`
-
-# For outputs stored in memory, extract the `diagnostics` element
-dat_pff()$diagnostics
-
-# `pf_diag_convergence()` also works but is unnecessary
-pf_diag_convergence(dat_pff())
-
-# For outputs stored on file, use `pf_diag_convergence()`
-pff_folder <- dat_pff_src(.folder = NULL)
-pf_diag_convergence(pff_folder)
-pf_diag_convergence(file.path(pff_folder, "diagnostics"))
-
-# Outputs are identical
-stopifnot(isTRUE(all.equal(
-  dat_pff()$diagnostics,
-  pf_diag_convergence(pff_folder)
-)))
-
-#### Example (2): Summarise diagnostics for accepted particle samples
-
-## (A) Use particle samples from pf_forward() or pf_backward_*()
+#### Example (1): Use particle samples from pf_forward() or pf_backward_*()
 pf_diag_summary(.history = dat_pff())
 pf_diag_summary(.history = dat_pfbk())
 pf_diag_summary(.history = dat_pfbs())
 
-## (B) Use particle samples in memory or on file
+#### Example (2): Use particle samples in memory or on file
 # Particles can be provided in any format accepted by `?.pf_history_dt()`
 d1 <- pf_diag_summary(.history = dat_pfbk())
 d2 <- pf_diag_summary(.history = dat_pfbk()$history)
