@@ -35,16 +35,22 @@
 
 # Snapshot data.tables for saving in memory or to file
 .pf_snapshot <- function(.dt, .save, .select, .cols) {
-  # Copy (if we save objects in memory)
-  if (.save) {
+  # Copy data
+  # * If saved in memory
+  # * If .select = FALSE
+  # * (With .select = FALSE, we copy the data via .select)
+  if (.save && !.select) {
     .dt <- copy(.dt)
   }
   # Subset columns (to reduce file size)
-  # * Use immutable = FALSE to update by reference (i.e., .dt[, .col := NULL])
+  # * Use immutable = TRUE
+  # * This is necessary b/c the snapshot data may not contain all columns
+  # * ... required for the function to run (e.g., `weight`) & we need to
+  # * ... keep these columns in the input object
   if (.select) {
     .dt <-
       .dt |>
-      lazy_dt(immutable = FALSE) |>
+      lazy_dt(immutable = TRUE) |>
       select(any_of(.cols)) |>
       as.data.table()
   }
