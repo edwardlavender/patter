@@ -31,7 +31,9 @@ spatSampleDT <- function(.x, .spatcell = .x, .size = 1e6, .method = "random") {
                     size = .size, method = .method, replace = FALSE,
                     na.rm = TRUE, cells = FALSE, xy = TRUE,
                     values = FALSE, warn = FALSE) |>
-    lazy_dt(immutable = FALSE) |>
+    # Use data.table
+    # * `immutable` is necessarily `TRUE` here since spatSample() returns data.frame
+    lazy_dt() |>
     mutate(cell = as.integer(terra::cellFromXY(.spatcell, cbind(.data$x, .data$y))),
            x = as.numeric(.data$x),
            y = as.numeric(.data$y)) |>
