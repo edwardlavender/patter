@@ -139,8 +139,9 @@ pf_rpropose_reachable <- function(.particles, .obs, .t, .dlist) {
   # Isolate unique particles
   .particles <-
     .particles |>
-    # select("cell_past", "x_past", "y_past") |>
-    distinct(.data$cell_past, .keep_all = TRUE)
+    lazy_dt() |>
+    distinct(.data$cell_past, .keep_all = TRUE) |>
+    as.data.table()
 
   # Define reachable zone(s) (given .mobility)
   zone <-

@@ -290,22 +290,24 @@ pf_forward <- function(.obs,
                                  .likelihood = .likelihood,
                                  .control = .control, .trial = .trial$trial_kick
                                  )
+    } else {
+      pnow <- ppast
     }
 
     #### (2) Propose new particles (using direct sampling)
     use_sampler <- FALSE
     if (.trial$trial_sampler > 0L) {
-      use_sampler <- .pf_forward_trial_sampler(.diagnostics = diagnostics_t,
-                                               .trial_crit = .trial$trial_sampler_crit)
+      use_sampler <- .pf_forward_trial_sampler(.particles = pnow, .trial = .trial)
       if (use_sampler) {
-        cat_log("... ... ... Using directed sampling...")
-        pnow <- .pf_particles_sampler(.particles = copy(ppast),
-                                      .obs = .obs, .t = t, .dlist = .dlist,
-                                      .dpropose = .dpropose,
-                                      .dargs = .dargs,
-                                      .likelihood = .likelihood,
-                                      .control = .control)
-        diagnostics_t[["grid"]] <- .pf_diag_bind(attr(pnow, "diagnostics"))
+        cat_log("... ... ... Using directed sampling ...")
+        pnow_sampler <- pnow[lik == 0, ]
+        pnow_sampler <- .pf_particles_sampler(.particles = pnow_sampler,
+                                              .obs = .obs, .t = t, .dlist = .dlist,
+                                              .dpropose = .dpropose,
+                                              .dargs = .dargs,
+                                              .likelihood = .likelihood,
+                                              .control = .control)
+        pnow <- rbind(pnow, pnow_sampler, fill = TRUE)
       }
     }
 
@@ -313,38 +315,27 @@ pf_forward <- function(.obs,
     if (fnrow(pnow) > 0L) {
       # Update weights
       pnow[, weight := normalise(weight * lik)]
+      ess <- .pf_diag_ess(pnow$weight)
       # Optionally implement re-sampling, if:
-      # * ESS < .trial$trial_resample_crit
       # * use_sampler = TRUE
-      if (isTRUE((.pf_diag_ess(pnow$weight) < .trial$trial_resample_crit)) || use_sampler) {
+      # * ESS < .trial$trial_resample_crit
+      if (use_sampler || isTRUE(ess < .trial$trial_resample_crit)) {
         cat_log("... ... ... (Re)-sampling...")
         pnow <- .sample(.particles = pnow, .n = .n)
-        diagnostics_t[["resample"]] <- .pf_diag(.particles = pnow,
-                                                .weight = "weight",
-                                                .t = t,
-                                                .label = "sample")
       }
+    } else {
+      ess <- 0
     }
-    # Drop wt column to avoid user confusion
-    pnow[, wt := NULL]
-
-    #### (4) Collect diagnostics
-    diagnostics_t <- .pf_diag_collect(diagnostics_t, .iter_m = iter_m, .iter_i = iter_i)
-    if (.record$save) {
-      diagnostics[[index_diag]] <- diagnostics_t
-    }
-    .pf_write_diagnostics_abbr(diagnostics_t)
-    index_diag <- index_diag + 1L
 
     #### (5) (A) Revert to an earlier time step
-    crit <- diagnostics_t$ess[nrow(diagnostics_t)]
-    if (crit < .trial$trial_revert_crit & iter_i <= .trial$trial_revert) {
+    if (ess < .trial$trial_revert_crit & iter_i <= .trial$trial_revert) {
       # Define time step
       t <- .pf_forward_revert(.t = t, .trial_revert_steps = .trial$trial_revert_steps)
       cat_log(paste0("... ... ... Reverting to time ", t, " (on ", iter_i, "/", .trial$trial_revert, " revert attempt(s)...)"))
       iter_i <- iter_i + 1L
       # Define ppast for relevant time step
-      ppast <- .pf_forward_ppast(.particles = NULL, .history = history,
+      ppast <- .pf_forward_ppast(.particles = NULL,
+                                 .history = history,
                                  .sink = startup$output$folder_history,
                                  .t = t, .obs = .obs)
 
@@ -354,9 +345,9 @@ pf_forward <- function(.obs,
       # Check convergence
       continue <- .pf_forward_continue(.particles = pnow,
                                        .t = t,
-                                       .crit = crit,
+                                       .crit = ess,
                                        .trial_revert_crit = .trial$trial_revert_crit)
-      # Save particle samples (if possible)
+      # Record particle samples (if possible)
       if (continue) {
         snapshot <- .pf_snapshot(.dt = pnow, .save = .record$save,
                                  .select = select_cols, .cols = .record$cols)
@@ -370,7 +361,6 @@ pf_forward <- function(.obs,
                                   .start = t_onset,
                                   .startup = startup,
                                   .history = history,
-                                  .diagnostics = diagnostics,
                                   .convergence = FALSE)
         return(out)
       }
@@ -388,7 +378,6 @@ pf_forward <- function(.obs,
                      .start = t_onset,
                      .startup = startup,
                      .history = history,
-                     .diagnostics = diagnostics,
                      .convergence = TRUE)
 
 }

@@ -311,9 +311,8 @@
                                   .likelihood,
                                   .control) {
   #### Set variables
-  diagnostics <- list()
-  chunks <- parallel::splitIndices(nrow(.particles),
-                                   nrow(.particles) / .control$sampler_batch_size)
+  nrw    <- fnrow(.particles)
+  chunks <- parallel::splitIndices(nrw, nrw / .control$sampler_batch_size)
 
   #### Define reachable locations & likelihoods
   proposals <- lapply(chunks, function(index) {
@@ -326,45 +325,25 @@
             .obs = .obs, .t = .t,
             .dlist = .dlist,
             .stack = .likelihood,
-            .diagnostics = NULL,
             .control = .control)
   }) |>
-    rbindlist(fill = TRUE) |>
-    as.data.table()
-  # Get summary diagnostics
-  # * TO DO
-  # * Provide a more detailed breakdown (include diagnostics in lapply())
-  weight <- wt <- lik <- NULL
-  proposals[, wt := normalise(weight * lik)]
-  diagnostics[["lik-directed"]] <- .pf_diag(.particles = proposals,
-                                            .weight = "wt",
-                                            .t = .t,
-                                            .label = "lik-directed")
+    rbindlist(fill = TRUE)
 
-  #### Define movement densities
+  #### Update 'likelihoods' with movement densities
   pnow <- proposals
   if (fnrow(pnow) > 0L) {
-
-    #### Calculate movement densities & weights (likelihood * movement densities)
-    # Calculate weights
     .dargs$.particles <- proposals
     pnow <-
       # Calculate movement densities
       do.call(.dpropose, .dargs) |>
+      lazy_dt(immutable = FALSE) |>
       # Update 'likelihood'
       # * It is necessary to update likelihoods in this way
       # * for correct calculation/updating of the weights
-      mutate(lik = .data$lik * .data$dens,
-             wt = normalise(weight * .data$lik)) |>
+      mutate(lik = .data$lik * .data$dens) |>
       as.data.table()
-    # Update diagnostics
-    diagnostics[["move-directed"]] <- .pf_diag(.particles = proposals,
-                                               .weight = "wt",
-                                               .t = .t,
-                                               .label = "move-directed")
   }
 
   #### Return outputs
-  attr(pnow, "diagnostics") <- diagnostics
   pnow
 }

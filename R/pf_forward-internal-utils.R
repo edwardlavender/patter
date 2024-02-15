@@ -218,17 +218,17 @@ NULL
 
   # Outcome (A): convergence failure
   # * If there are no particles, return warning + FALSE
-  if (nrow(.particles) == 0L) {
+  if (fnrow(.particles) == 0L) {
     warn("Convergence error: there are no particles with positive weights at time step {.t}. Returning outputs up to time step {.t}.",
          .envir = environment())
     return(FALSE)
   }
 
   # Outcome (B): convergence warning
-  # * If the number of particles is less than the required threshold (but above zero)
+  # * If the ESS is less than the required threshold (but above zero)
   # * ... we throw a warning, but continue
   if (.crit < .trial_revert_crit) {
-    warn("Convergence warning: insufficient particles ({.crit} < {.trial_revert_crit} [`.trial_revert_crit`] particles) at timestep {.t}.",
+    warn("Convergence warning: insufficient ESS ({.crit} < {.trial_revert_crit} [`.trial_revert_crit`] ESS) at timestep {.t}.",
          .envir = environment())
   }
 
@@ -241,11 +241,11 @@ NULL
 #' @keywords internal
 
 # Collate `pf_forward()` outputs
-.pf_forward_output <- function(.rerun, .start, .startup, .history, .diagnostics, .convergence) {
+.pf_forward_output <- function(.rerun, .start, .startup, .history, .convergence) {
   .rerun$time[[.startup$control$iter_m]] <- call_timings(.start = .start)
   out  <- list(history = .history,
                path = NULL,
-               diagnostics = .pf_diag_bind(.diagnostics),
+               diagnostics = NULL,
                internal = list(startup = .startup),
                convergence = .convergence,
                time = .rerun$time)
