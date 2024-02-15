@@ -277,15 +277,12 @@
     }
   }
   # Drop residual proposals beyond study area & (optional) zero-likelihood proposals
-  output <-
-    output |>
-    lazy_dt() |>
+  output |>
+    lazy_dt(immutable = FALSE) |>
     mutate(index = NULL) |>
     filter(!is.na(cell_now)) |>
-    filter_lik_zero(.control$drop) |>
+    filter_lik(.control$drop) |>
     as.data.table()
-  # Return outputs
-  output
 }
 
 #' @rdname pf_particle

@@ -180,30 +180,30 @@ list_merge <- function(...) {
 mutate_missing <- function(.data, .col) {
   if (rlang::has_name(.data, .col)) {
     return(.data)
+  } else {
+    .data |>
+      mutate("{.col}" := NA_real_)
   }
-  .data[, (.col) := NA_real_]
-  .data
 }
 
 # Add a bathy column
 mutate_bathy <- function(.data, .dlist) {
-  if (!rlang::has_name(.data, "bathy")) {
-    bathy <- cell_now <- NULL
-    .data[, bathy := terra::extract(.dlist$spatial$bathy, cell_now)[, 1]]
+  if (rlang::has_name(.data, "bathy")) {
+    return(.data)
+  } else {
+    .data |>
+      mutate(bathy = terra::extract(.dlist$spatial$bathy, .data$cell_now)[, 1])
   }
-  .data
 }
 
-filter_lik_zero <- function(.data, .drop) {
+filter_lik <- function(.data, .drop) {
   if (.drop && anyv(.data$lik, 0)) {
     return(
       .data |>
-        lazy_dt() |>
-        filter(.data$lik > 0) |>
-        as.data.table()
+        filter(.data$lik > 0)
     )
   } else {
-    return(.data)
+    .data
   }
 }
 
