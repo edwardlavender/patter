@@ -65,7 +65,7 @@
 
   # Check user inputs
   # * TO DO: validate origin & bahty CRS are identical
-  check_dlist(.dlist = dlist,
+  check_dlist(.dlist = .dlist,
               .spatial = "bathy")
 
   # Extract required objects from .dlist
