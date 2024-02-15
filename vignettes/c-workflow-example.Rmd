@@ -229,8 +229,6 @@ out_pff <- pf_forward(
                      acs_filter_container = acs_filter_container, 
                      pf_lik_ac = pf_lik_ac, 
                      pf_lik_dc = pf_lik_dc),
-  # The sampler
-  .sample = pf_sample_multinomial, 
   # Other settings
   .record = pf_opt_record(.save = TRUE))
 ```
