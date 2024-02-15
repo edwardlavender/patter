@@ -101,7 +101,7 @@ pf_opt_rerun_from <- function(.rerun, .revert = 25L) {
 #' @param .obs A [`data.table`] defining the timeline and associated observations, typically from [`pf_setup_obs()`].
 #' @param .dlist A `named` list of data and parameters required propose locations and calculate likelihoods (see [`pat_setup_data()`], [`pf_lik`] and [`pf_propose`]). This function requires:
 #' * `.dlist$spatial$bathy`
-#' * (optional) `.dlist$spatial$origin`, a [`SpatRaster`] used to define the origin.
+#' * (optional) `.dlist$spatial$origin`, a [`SpatRaster`] used to define the origin. This may differ in geometry from `.dlist$spatial$bathy` but must have the same coordinate reference system.
 #' * `.dlist$pars$lonlat` (required by the default `.rpropose` and `.dpropose` arguments).
 #' * Any additional elements required by `.likelihood`,`.rpropose` and `.dpropose` functions(see below).
 #'
@@ -250,8 +250,6 @@ pf_forward <- function(.obs,
                                  .sample = .sample, .n = .n,
                                  .trial_crit = .trial$trial_origin_crit,
                                  .control = .control)
-    diagnostics_1 <- .pf_diag_collect(.diagnostics = attr(pnow, "diagnostics"),
-                                      .iter_m = iter_m, .iter_i = iter_i)
     # Record accepted cells
     snapshot <- .pf_snapshot(.dt = pnow, .save = .record$save,
                              .select = select_cols, .cols = .record$cols)
@@ -260,7 +258,6 @@ pf_forward <- function(.obs,
       diagnostics[[1L]] <- diagnostics_1
     }
     .pf_write_particles_abbr(snapshot)
-    .pf_write_diagnostics_abbr(diagnostics_1)
   }
 
   #### Initiate loop

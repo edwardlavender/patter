@@ -63,38 +63,37 @@
 # Propose origin locations
 .pf_rpropose_origin <- function(.particles = NULL, .obs, .t = 1L, .dlist, .rargs = NULL){
 
+  # Check user inputs
+  # * TO DO: validate origin & bahty CRS are identical
+  check_dlist(.dlist = dlist,
+              .spatial = "bathy")
+
   # Extract required objects from .dlist
   if (is.null(.dlist$spatial$origin)) {
     .dlist$spatial$origin <- .dlist$spatial$bathy
   }
-  if (is.null(.dlist$spatial$origin)) {
-    abort("`.dlist$spatial$origin` (and/or `.dlist$spatial$bathy`) is required.")
-  }
-  moorings          <- .dlist$data$moorings
-  detection_kernels <- .dlist$algorithm$detection_kernels
+  moorings <- .dlist$data$moorings
 
   # (1) Define 'quadrature points' within acoustic containers
   if (!is.null(moorings)) {
     # Define container for possible locations
-    # * .grid = FALSE uses a vector buffer rather than a gridded buffer, for speed
-    .grid <- FALSE
-    if (!.grid) {
-      detection_kernels <- NULL
-    }
+    # * We set detection_kernels = NULL to use a vector buffer
+    # * ... rather than a gridded buffer, for speed
     container <- .acs_container_1(.obs,
-                                  .detection_kernels = detection_kernels,
+                                  .detection_kernels = NULL,
                                   .moorings = moorings)
     # Sample cell coordinates within container
     terra::crs(container) <- terra::crs(.dlist$spatial$origin)
-    samples <- spatSampleDT(container, .spatcell = .dlist$spatial$origin)
+    samples <- spatSampleDT(container, .spatcell = .dlist$spatial$bathy)
 
     # (2) Sample quadrature points on `.origin`
   } else {
-    samples <- spatSampleDT(.x = .dlist$spatial$origin)
+    samples <- spatSampleDT(.x = .dlist$spatial$bathy)
   }
 
   # Tidy data.table
   samples |>
+    lazy_dt(immutable = FALSE) |>
     mutate(timestep = .obs$timestep[.t],
            cell_past = NA_integer_,
            x_past = NA_integer_,
@@ -113,17 +112,11 @@
                               .sample, .trial_crit) {
   # Sample particles for the current time step (pnow)
   pnow  <- .sample(.particles = .particles, .n = .n)
-  # Calculate diagnostics of sample
-  diagnostics <- list()
-  label <- "sample"
-  diagnostics[[label]] <- .pf_diag(.particles = pnow, .weight = "weight", .t = 1L, .label = label)
   # Validate sampling sufficiency
-  crit  <- diagnostics[[label]]$ess
-  if (crit < .trial_crit) {
+  if (.pf_diag_ess(pnow$weight) < .trial_crit) {
     abort("Insufficient starting locations.")
   }
   # Return outputs
-  attr(pnow, "diagnostics") <- diagnostics
   pnow
 }
 
@@ -137,50 +130,35 @@
                                  .sample, .n,
                                  .trial_crit, .control) {
   # Generate proposal location(s)
-  diagnostics <- list()
   proposals <- .pf_rpropose_origin(.obs = .obs,
                                    .dlist = .dlist)
-  # Calculate likelihood(s) & weight
-  proposals[, weight := 1 / fnrow(proposals)]
+  # Calculate likelihood(s)
   proposals <- .pf_lik(.particles = proposals,
                        .obs = .obs,
                        .t = 1L,
                        .dlist = .dlist,
                        .stack = .likelihood,
                        .control = .control)
-  diagnostics[["lik"]] <- attr(proposals, "diagnostics")
-  # Sample proposal location(s)
+  # Calculate weights
   weight <- lik <- NULL
   proposals[, weight := normalise(lik)]
+  # Sample starting locations
   pnow <- .sample(.particles = proposals, .n = .n)
   pnow <- .pf_sample_origin(.particles = proposals,
                             .n = .n, .sample = .sample,
                             .trial_crit = .trial_crit)
-  diagnostics[["sample"]] <- attr(pnow, "diagnostics")
   # Return outputs
-  attr(pnow, "diagnostics") <- diagnostics
   pnow
 }
 
 #' @rdname pf_particle
 #' @keywords internal
 
-.pf_lik <- function(.particles, .obs, .t, .dlist, .stack, .diagnostics = list(), .control) {
+.pf_lik <- function(.particles, .obs, .t, .dlist, .stack, .control) {
 
   #### Set up
-  # Global variables
-  weight <- wt <- lik <- NULL
+  lik <- NULL
   .particles[, lik := 1]
-  # Define baseline (proposal) diagnostics
-  diagnose <- !is.null(.diagnostics)
-  if (diagnose) {
-    .particles[, wt := normalise(weight)]
-    .diagnostics[["proposal"]] <-
-      .pf_diag(.particles = .particles,
-               .weight = "wt",
-               .t = .t,
-               .label = "proposal")
-  }
 
   #### Calculate likelihoods
   for (i in seq_len(length(.stack))) {
@@ -190,19 +168,10 @@
                                 .t = .t,
                                 .dlist = .dlist,
                                 .drop = .control$drop)
-      .particles[, wt := normalise(weight * lik)]
-      if (diagnose) {
-        .diagnostics[[names(.stack)[i]]] <-
-          .pf_diag(.particles = .particles,
-                   .weight = "wt",
-                   .t = .t,
-                   .label = paste0("lik-", names(.stack)[i]))
-      }
     }
   }
 
   #### Return outputs
-  attr(.particles, "diagnostics") <- .diagnostics
   .particles
 
 }
