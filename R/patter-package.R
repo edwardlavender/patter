@@ -231,6 +231,7 @@
 #' @importFrom collapse fnrow
 #' @importFrom collapse seq_col
 #' @importFrom collapse seq_row
+#' @importFrom collapse anyv
 #'
 #' @importFrom lubridate %within%
 #'
