@@ -1,30 +1,9 @@
-#### Example (1): Examine convergence diagnostics from `pf_forward()`
-
-# For outputs stored in memory, extract the `diagnostics` element
-dat_pff()$diagnostics
-
-# `pf_diag_convergence()` also works but is unnecessary
-pf_diag_convergence(dat_pff())
-
-# For outputs stored on file, use `pf_diag_convergence()`
-pff_folder <- dat_pff_src(.folder = NULL)
-pf_diag_convergence(pff_folder)
-pf_diag_convergence(file.path(pff_folder, "diagnostics"))
-
-# Outputs are identical
-stopifnot(isTRUE(all.equal(
-  dat_pff()$diagnostics,
-  pf_diag_convergence(pff_folder)
-)))
-
-#### Example (2): Summarise diagnostics for accepted particle samples
-
-## (A) Use particle samples from pf_forward() or pf_backward_*()
+#### Example (1): Use particle samples from pf_forward() or pf_backward_*()
 pf_diag_summary(.history = dat_pff())
 pf_diag_summary(.history = dat_pfbk())
 pf_diag_summary(.history = dat_pfbs())
 
-## (B) Use particle samples in memory or on file
+#### Example (2): Use particle samples in memory or on file
 # Particles can be provided in any format accepted by `?.pf_history_dt()`
 d1 <- pf_diag_summary(.history = dat_pfbk())
 d2 <- pf_diag_summary(.history = dat_pfbk()$history)

@@ -36,25 +36,6 @@
 #' @rdname pf_diag
 #' @export
 
-pf_diag_convergence <- function(.sink, ...) {
-  if (inherits(.sink, pf_class)) {
-    return(.sink$diagnostics)
-  }
-  check_dir_exists(.sink)
-  if (basename(.sink) != "diagnostics") {
-    .sink <- file.path(.sink, "diagnostics")
-  }
-  check_dir_exists(.sink)
-  .sink |>
-    arrow::open_dataset(...) |>
-    arrange(.data$iter_m, .data$iter_i, .data$timestep) |>
-    collect() |>
-    as.data.table()
-}
-
-#' @rdname pf_diag
-#' @export
-
 pf_diag_summary <- function(.history, ...) {
   .history |>
     .pf_history_dt(..., .collect = TRUE) |>
