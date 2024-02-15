@@ -154,7 +154,7 @@ NULL
 # Increment loop: current cells become past cells @ next time step
 .pf_forward_increment <- function(.particles, .obs, .t) {
   .particles |>
-    lazy_dt() |>
+    lazy_dt(immutable = FALSE) |>
     mutate(timestep = .obs$timestep[.t + 1L]) |>
     select("timestep",
            cell_past = "cell_now",
@@ -174,7 +174,7 @@ NULL
   # Define particles
   if (is.null(.particles)) {
     # Extract .particles from .history list, if available
-    # (if `.save_opts` = TRUE)
+    # (if `.save = TRUE`)
     if (length(.history) > 0L) {
       .particles <- .history[[tp]]
     } else {

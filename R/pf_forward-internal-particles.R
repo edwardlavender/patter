@@ -231,10 +231,7 @@
                                .control, .trial) {
 
   #### Set variables
-  kick  <- TRUE
   count <- 1L
-  diagnostics <- list()
-  # Global variables
   index <- cell_now <- x_now <- y_now <- lik <- NULL
 
   #### Define output data.table with blank coordinate and lik columns
@@ -251,7 +248,7 @@
 
   #### Iteratively update `output` with new locations
   .rargs$.particles <- .particles
-  while (kick && count <= .trial) {
+  while (count <= .trial) {
     # Propose particles
     proposals <- do.call(.rpropose, .rargs)
     # Calculate likelihood & weights (likelihood = weights)
@@ -259,9 +256,7 @@
                          .obs = .obs, .t = .t,
                          .dlist = .dlist,
                          .stack = .likelihood,
-                         .diagnostics = NULL,
                          .control = .control)
-    # diagnostics[[paste0("kick-", count)]] <- attr(proposals, "diagnostics")
     # Update output particles
     # * Output is updated in locations where we have generated proposals
     # * Matching is necessary b/c the default .rpropose routine drops

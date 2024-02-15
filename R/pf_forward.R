@@ -229,7 +229,6 @@ pf_forward <- function(.obs,
   iter_m         <- startup$control$iter_m
   # Wrappers
   .pf_write_particles_abbr   <- startup$wrapper$.pf_write_particles_abbr
-  .pf_write_diagnostics_abbr <- startup$wrapper$.pf_write_diagnostics_abbr
   # Output objects
   .record        <- startup$output$.record
   select_cols    <- startup$output$select_cols
@@ -254,18 +253,17 @@ pf_forward <- function(.obs,
     snapshot <- .pf_snapshot(.dt = pnow, .save = .record$save,
                              .select = select_cols, .cols = .record$cols)
     if (.record$save) {
-      history[[1L]]     <- snapshot
-      diagnostics[[1L]] <- diagnostics_1
+      history[[1L]] <- snapshot
     }
     .pf_write_particles_abbr(snapshot)
   }
 
   #### Initiate loop
   # Define starting index
-  t1         <- .pf_forward_start_t(.rerun, .rerun_from)
-  index_diag <- length(diagnostics) + 1L
+  t1    <- .pf_forward_start_t(.rerun, .rerun_from)
   # Define previous particles
-  ppast <- .pf_forward_ppast(.particles = pnow, .history = history,
+  ppast <- .pf_forward_ppast(.particles = pnow,
+                             .history = history,
                              .sink = startup$output$folder_history, .t = t1,
                              .obs = .obs)
   # Define progress bar
@@ -279,8 +277,6 @@ pf_forward <- function(.obs,
     #### Initiate time step
     cat_log(paste0("... ... Index ", t, " (timestep ", .obs$timestep[t], "):"))
     pb_tick(.pb = pb, .t = t)
-    diagnostics_t <- list()
-    # Argument lists
     .rargs$.t <- t
     .dargs$.t <- t
 
