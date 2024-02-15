@@ -40,30 +40,13 @@ NULL
   }
   check_dir_exists(.record$sink)
   folder_history <- file.path(.record$sink, "history")
-  folder_diagnostics <- file.path(.record$sink, "diagnostics")
-  lapply(c(folder_history, folder_diagnostics), \(.folder) {
+  lapply(folder_history, \(.folder) {
     if (!dir.exists(.folder)) {
       dir.create(.folder)
     }
     check_dir_empty(.folder, action = warn)
   })
-  list(history = folder_history,
-       diagnostics = folder_diagnostics)
-}
-
-#' @rdname pf_forward-utils
-#' @keywords internal
-
-# Write files (diagnostics) to output directory
-.pf_forward_write_diagnostics <- function(.diagnostics, .sink, .write) {
-  if (.write) {
-    file <- paste0(
-      paste(.diagnostics$iter_m[1],
-             .diagnostics$iter_i[1],
-             .diagnostics$timestep[1], sep = "-"),
-      ".parquet")
-    arrow::write_parquet(.diagnostics, sink = file.path(.sink, file))
-  }
+  list(history = folder_history)
 }
 
 #' @rdname pf_forward-utils
@@ -110,11 +93,6 @@ NULL
                         .filename = .particles$timestep[1],
                         .write = !is.null(.record$sink))
   }
-  .pf_write_diagnostics_abbr <- function(.diagnostics) {
-    .pf_forward_write_diagnostics(.diagnostics = .diagnostics,
-                                  .sink = folder_diagnostics,
-                                  .write = !is.null(.record$sink))
-  }
 
   #### Collate outputs
   list(
@@ -130,8 +108,7 @@ NULL
       folder_history = folder_history,
       folder_diagnostics = folder_diagnostics
     ),
-    wrapper = list(.pf_write_particles_abbr = .pf_write_particles_abbr,
-                   .pf_write_diagnostics_abbr = .pf_write_diagnostics_abbr)
+    wrapper = list(.pf_write_particles_abbr = .pf_write_particles_abbr)
   )
 }
 

@@ -233,7 +233,6 @@ pf_forward <- function(.obs,
   .record        <- startup$output$.record
   select_cols    <- startup$output$select_cols
   history        <- startup$output$history
-  diagnostics    <- startup$output$diagnostics
   # Global variables
   weight <- lik <- wt <- NULL
 
