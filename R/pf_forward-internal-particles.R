@@ -236,10 +236,12 @@
 
   #### Define output data.table with blank coordinate and lik columns
   # These will be iteratively updated below
+  # TO DO: optimise code to avoid copying .particles here
   .particles[, index := seq_row(.particles)]
   cols <- colnames(.particles)
   output <-
     .particles |>
+    lazy_dt(immutable = TRUE) |>
     mutate(cell_now = NA_integer_,
            x_now = NA_real_,
            y_now = NA_real_,
@@ -272,36 +274,31 @@
     output[pos, x_now := proposals$x_now[ind]]
     output[pos, y_now := proposals$y_now[ind]]
     output[pos, lik := proposals$lik[ind]]
-    # Identify proposals beyond the study area or with zero likelihood
-    bool <- is.na(output$cell_now) | (output$lik == 0)
-    # Optionally re-kick invalid proposals
-    if (any(bool)) {
-      count <- count + 1L
-      .rargs$.particles <-
-        output |>
-        filter(bool) |>
-        select(all_of(cols)) |>
-        as.data.table()
-    } else {
-      # Switch kick off if all particles have landed in suitable locations
-      kick <- FALSE
+    # Update loop
+    count <- count + 1L
+    if (count <= .trial) {
+      # Identify proposals beyond the study area or with zero likelihood
+      bool <- is.na(output$cell_now) | (output$lik == 0)
+      if (any(bool)) {
+        # Optionally re-kick invalid proposals
+        .rargs$.particles <-
+          output |>
+          lazy_dt() |>
+          filter(bool) |>
+          select(all_of(cols)) |>
+          as.data.table()
+      }
     }
   }
   # Drop residual proposals beyond study area & (optional) zero-likelihood proposals
   output <-
     output |>
+    lazy_dt() |>
+    mutate(index = NULL) |>
     filter(!is.na(cell_now)) |>
     .pf_lik_drop(.control$drop) |>
-    mutate(index = NULL,
-           wt = normalise(.data$weight * .data$lik)) |>
     as.data.table()
-  # Update diagnostics
-  diagnostics[["kick"]] <- .pf_diag(.particles = output,
-                                    .weight = "wt",
-                                    .t = .t,
-                                    .label = "kick")
   # Return outputs
-  attr(output, "diagnostics") <- diagnostics
   output
 }
 

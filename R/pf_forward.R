@@ -283,14 +283,13 @@ pf_forward <- function(.obs,
     #### (1) Propose new particles (using kicks)
     if (.trial$trial_kick > 0L) {
       cat_log("... ... ... Kicking particles...")
-      pnow <- .pf_particles_kick(.particles = copy(ppast),
+      pnow <- .pf_particles_kick(.particles = ppast,
                                  .obs = .obs, .t = t, .dlist = .dlist,
                                  .rpropose = .rpropose,
                                  .rargs = .rargs,
                                  .likelihood = .likelihood,
                                  .control = .control, .trial = .trial$trial_kick
                                  )
-      diagnostics_t[["kick"]] <- .pf_diag_bind(attr(pnow, "diagnostics"))
     }
 
     #### (2) Propose new particles (using direct sampling)

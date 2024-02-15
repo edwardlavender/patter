@@ -103,18 +103,20 @@ pf_rpropose_kick <- function(.particles, .obs, .t, .dlist, .rkick = rkick, ...) 
   cell_now <- NULL
   .particles[, cell_now := as.integer(terra::cellFromXY(.dlist$spatial$bathy, xy_now))]
   # Drop kicks beyond the study area
-  # * TO DO: check behaviour if all proposals are beyond the study area
-  .particles <- .particles[!is.na(cell_now), ]
+  # * Use if (any(bool)) here to avoid copying .particles unless essential
+  # * .particles[!is.na(cell_now), ] copies .particles even if there are no NAs
+  bool <- is.na(.particles$cell_now)
+  if (any(bool)) {
+    .particles <- .particles[!is.na(cell_now), ]
+  }
+  # TO DO
+  # * Check behaviour if all proposals are beyond the study area
   # Update data.table with coordinates on grid
   # * This is no longer implemented
   # * It can create movement distances > mobility
   # * This causes issues with pf_rpropose_reachable() and pf_dpropose()
   # * Now, we evaluate movement in continuous space
   # * Likelihoods are evaluated on the grid
-  # xy_now <- terra::xyFromCell(.dlist$spatial$bathy, .particles$cell_now)
-  # x_now <- y_now <- NULL
-  # .particles[, x_now := as.numeric(xy_now[, 1])]
-  # .particles[, y_now := as.numeric(xy_now[, 2])]
   .particles
 }
 
