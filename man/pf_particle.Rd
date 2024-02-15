@@ -7,7 +7,6 @@
 \alias{.pf_particles_origin}
 \alias{.pf_lik}
 \alias{.pf_lik_ac_detection}
-\alias{.pf_lik_drop}
 \alias{.pf_particles_kick}
 \alias{.pf_particles_sampler}
 \title{PF: particle internals}
@@ -35,8 +34,6 @@
 .pf_lik(.particles, .obs, .t, .dlist, .stack, .control)
 
 .pf_lik_ac_detection(.particles, .kernels, .detections, .absences)
-
-.pf_lik_drop(.particles, .drop)
 
 .pf_particles_kick(
   .particles,

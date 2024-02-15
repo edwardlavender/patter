@@ -39,7 +39,7 @@
 pf_diag_summary <- function(.history, ...) {
   .history |>
     .pf_history_dt(..., .collect = TRUE) |>
-    add_col_real(.col = "weight") |>
+    mutate_missing(.col = "weight") |>
     lazy_dt() |>
     group_by(.data$timestep) |>
     summarise(timestep = .data$timestep[1],

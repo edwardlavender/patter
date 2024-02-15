@@ -46,9 +46,9 @@ acs_filter_land <- function(.particles, .obs, .t, .dlist, .drop) {
   if (isTRUE(.dlist$pars$spatna)) {
     .particles <-
       .particles |>
-      .pf_bathy(.dlist = .dlist) |>
+      mutate_bathy(.dlist = .dlist) |>
       mutate(lik = .data$lik * ((!is.na(.data$bathy)) + 0L)) |>
-      .pf_lik_drop(.drop = .drop)
+      filter_lik_zero(.drop = .drop)
   }
   .particles
 }
@@ -133,7 +133,7 @@ pf_lik_ac <- function(.particles, .obs, .t, .dlist, .drop) {
   }
 
   #### Return particles
-  .pf_lik_drop(.particles = .particles, .drop = .drop)
+  filter_lik_zero(.particles = .particles, .drop = .drop)
 
 }
 
@@ -157,7 +157,7 @@ pf_lik_dc <- function(.particles, .obs, .t, .dlist, .drop) {
   }
   # Likelihood evaluation
   .particles |>
-    .pf_bathy(.dlist = .dlist) |>
+    mutate_bathy(.dlist = .dlist) |>
     mutate(lik = .data$lik * dc(.data$bathy)) |>
-    .pf_lik_drop(.drop = .drop)
+    filter_lik_zero(.drop = .drop)
 }

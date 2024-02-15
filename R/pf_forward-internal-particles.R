@@ -210,20 +210,6 @@
 #' @rdname pf_particle
 #' @keywords internal
 
-# Drop particles with zero likelihood
-.pf_lik_drop <- function(.particles, .drop) {
-  if (.drop) {
-      .particles <-
-        .particles |>
-        filter(.data$lik > 0) |>
-        as.data.table()
-  }
-  .particles
-}
-
-#' @rdname pf_particle
-#' @keywords internal
-
 .pf_particles_kick <- function(.particles, .obs, .t, .dlist,
                                .rpropose,
                                .rargs = list(),
@@ -296,7 +282,7 @@
     lazy_dt() |>
     mutate(index = NULL) |>
     filter(!is.na(cell_now)) |>
-    .pf_lik_drop(.control$drop) |>
+    filter_lik_zero(.control$drop) |>
     as.data.table()
   # Return outputs
   output

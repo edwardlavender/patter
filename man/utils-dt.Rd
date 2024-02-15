@@ -2,10 +2,10 @@
 % Please edit documentation in R/utils-internal.R
 \name{utils-dt}
 \alias{utils-dt}
-\alias{add_col_real}
+\alias{mutate_missing}
 \title{Utilities: data helpers}
 \usage{
-add_col_real(.data, .col)
+mutate_missing(.data, .col)
 }
 \description{
 These are internal helpers for data structures (such as \code{\link{data.table}}s and related objects) in \code{\link{patter}}.
