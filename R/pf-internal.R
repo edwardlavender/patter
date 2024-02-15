@@ -34,16 +34,17 @@
 #' @keywords internal
 
 # Snapshot data.tables for saving in memory or to file
-.pf_snapshot <- function(.dt,.save, .select, .cols) {
-  # Copy & drop attributes
-  # * This is necessary if we save objects in memory only
+.pf_snapshot <- function(.dt, .save, .select, .cols) {
+  # Copy (if we save objects in memory)
   if (.save) {
-    .dt <- copy(data.table(.dt))
+    .dt <- copy(.dt)
   }
   # Subset columns (to reduce file size)
+  # * Use immutable = FALSE to update by reference (i.e., .dt[, .col := NULL])
   if (.select) {
     .dt <-
       .dt |>
+      lazy_dt(immutable = FALSE) |>
       select(any_of(.cols)) |>
       as.data.table()
   }
