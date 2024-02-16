@@ -57,7 +57,8 @@ pf_path <- function(.history,
                                   .cols = c("cell_past", "cell_now"))
   .history[[1]] <-
     .history[[1]] |>
-    select(x0 = "cell_past", x1 = "cell_now")
+    select(x0 = "cell_past", x1 = "cell_now") |>
+    as.data.table()
 
   # Define chain text
   cat_log("... Defining chain text...")
@@ -128,7 +129,6 @@ pf_path_pivot <- function(.mat, .bathy = NULL,
     .mat |>
     collapse::pivot() |>
     as.data.table() |>
-    lazy_dt(immutable = FALSE) |>
     mutate(timestep = as.integer(rep(seq_len(ncol(.mat)), each = nrow(.mat))),
            path_id = as.integer(rep(seq_len(nrow(.mat)), ncol(.mat)))) |>
     select("path_id", "timestep", cell_id = "value") |>
@@ -140,7 +140,7 @@ pf_path_pivot <- function(.mat, .bathy = NULL,
       p |>
       mutate(cell_x = terra::xFromCell(.bathy, .data$cell_id),
              cell_y = terra::yFromCell(.bathy, .data$cell_id),
-             cell_z = terra::extract(.bathy, .data$cell_id)[, 1]) |>
+             cell_z = terra::extract(.bathy, .data$cell_id)) |>
       as.data.table()
   }
   # Add columns from .obs by matching by timestep

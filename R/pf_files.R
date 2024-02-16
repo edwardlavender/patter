@@ -76,8 +76,10 @@ pf_files <- function(.sink, .folder = NULL, ...) {
     data.table(file = files,
                name = names,
                ext = exts) |>
+    lazy_dt(immutable = TRUE) |>
     mutate(name = as.integer(.data$name)) |>
-    arrange(.data$name)
+    arrange(.data$name) |>
+    as.data.table()
   # Validate ordered list (e.g., to check there are no gaps)
   if (!isTRUE(all.equal(paste0(seq_row(out), ".", .ext),
                         basename(out$file)))) {

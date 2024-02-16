@@ -43,7 +43,8 @@
     pb_tick(.pb = .pb, .t = .pb_step)
     collapse::join(.data,
                    .current |>
-                     select("x{.t - 1}" := "cell_past", "x{.t}" := "cell_now"),
+                     select("x{.t - 1}" := "cell_past", "x{.t}" := "cell_now") |>
+                     as.data.table(),
                    how = "right",
                    validate = "m:m",
                    on = paste0("x", .t - 1),

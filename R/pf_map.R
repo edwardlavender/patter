@@ -46,7 +46,8 @@ pf_coord <- function(.history, .bathy, .obs = NULL, .cols = NULL) {
   p <-
     .history |>
     .pf_history_dt(schema = sch, .collect = TRUE) |>
-    rename(cell_id = "cell_now")
+    rename(cell_id = "cell_now") |>
+    as.data.table()
 
   # Add grid cell coordinates
   cell_xy <- terra::xyFromCell(.bathy, p$cell_id)
@@ -55,7 +56,8 @@ pf_coord <- function(.history, .bathy, .obs = NULL, .cols = NULL) {
     mutate(cell_x = as.numeric(cell_xy[, 1]),
            cell_y = as.numeric(cell_xy[, 2]),
            cell_z = terra::extract(.bathy, .data$cell_id)[, 1]) |>
-    select(any_of("timestep"), "cell_id", "cell_x", "cell_y", "cell_z", any_of("mark"))
+    select(any_of("timestep"), "cell_id", "cell_x", "cell_y", "cell_z", any_of("mark")) |>
+    as.data.table()
 
   # Add columns from `.obs` by matching by timestep (from `pf_path_pivot()`)
   if (!is.null(.obs)) {

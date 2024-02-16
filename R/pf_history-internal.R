@@ -234,9 +234,9 @@
     if (is.null(.cols)) {
       out <- .history[[.elm]]
     } else {
-      out <-
-        .history[[.elm]] |>
-        select(any_of(.cols))
+      out <- .history[[.elm]] |>
+        select(any_of(.cols)) |>
+        as.data.table()
     }
   }
   if (fnrow(out) == 0L) {
@@ -298,6 +298,7 @@
       out <-
         out |>
         arrange(.data$timestep) |>
+        collect() |>
         as.data.table()
     }
     return(out)

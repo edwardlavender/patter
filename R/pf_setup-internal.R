@@ -15,7 +15,8 @@
     mutate(receiver_id_next = lead(.data$receiver_id),
            receiver_id_next = zoo::na.locf(.data$receiver_id_next,
                                            fromLast = TRUE,
-                                           na.rm = FALSE))
+                                           na.rm = FALSE)) |>
+    as.data.table()
   out$receiver_id_next[nrow(out)][[1]] <- NA_integer_
   out$receiver_id_next
 }

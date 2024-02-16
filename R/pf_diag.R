@@ -40,12 +40,14 @@ pf_diag_summary <- function(.history, ...) {
   .history |>
     .pf_history_dt(..., .collect = TRUE) |>
     set_missing(.col = "weight") |>
+    lazy_dt() |>
     group_by(.data$timestep) |>
     summarise(timestep = .data$timestep[1],
               n = n(),
               nu = .pf_diag_nu(.data$cell_now),
               ess = .pf_diag_ess(normalise(.data$weight))
-    )
+    ) |>
+    as.data.table()
 }
 
 #' @title PF: particle diagnostics (internal)

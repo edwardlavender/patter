@@ -237,10 +237,12 @@
   cols <- colnames(.particles)
   output <-
     .particles |>
+    lazy_dt(immutable = TRUE) |>
     mutate(cell_now = NA_integer_,
            x_now = NA_real_,
            y_now = NA_real_,
-           lik = 0)
+           lik = 0) |>
+    as.data.table()
 
   #### Iteratively update `output` with new locations
   .rargs$.particles <- .particles

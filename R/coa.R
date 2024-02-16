@@ -75,7 +75,8 @@ coa <- function(.dlist, .delta_t, .split = NULL,
     group_by(.data$split, .data$bin, .data$receiver_id) |>
     mutate(n = n()) |>
     slice(1L) |>
-    ungroup()
+    ungroup() |>
+    as.data.table()
   # Plot the frequency distribution of weights
   if (.plot_weights) {
     pp <- par(mfrow = par_mf(length(unique(acoustics$split))))
@@ -99,7 +100,8 @@ coa <- function(.dlist, .delta_t, .split = NULL,
         coa_x = .data$coa_xy[, 1],
         coa_y = .data$coa_xy[, 2]
       ) |>
-      ungroup()
+      ungroup() |>
+      as.data.table()
   } else {
     # Calculate COAs using weighted.mean() if planar
     out <-
@@ -107,7 +109,8 @@ coa <- function(.dlist, .delta_t, .split = NULL,
       group_by(.data$split, .data$bin) |>
       summarise(coa_x = stats::weighted.mean(.data$receiver_x, .data$n),
                 coa_y = stats::weighted.mean(.data$receiver_y, .data$n)) |>
-      ungroup()
+      ungroup() |>
+      as.data.table()
   }
 
   #### Return outputs
@@ -115,7 +118,8 @@ coa <- function(.dlist, .delta_t, .split = NULL,
   out <-
     out |>
     select("split", "bin", "coa_x", "coa_y") |>
-    arrange(.data$split, .data$bin)
+    arrange(.data$split, .data$bin) |>
+    as.data.table()
   colnames(out) <- c(.split, "timestamp", "coa_x", "coa_y")
   # Drop split column, if unspecified
   if (!keep_split) {

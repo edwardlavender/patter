@@ -121,10 +121,12 @@ pf_setup_obs <- function(.dlist,
     end   <- min(c(max(acoustics$timestamp), max(archival$timestamp)))
     acoustics <-
       acoustics |>
-      filter(.data$timestamp >= start & .data$timestamp <= end)
+      filter(.data$timestamp >= start & .data$timestamp <= end) |>
+      as.data.table()
     archival <-
       archival |>
-      filter(.data$timestamp >= start & .data$timestamp <= end)
+      filter(.data$timestamp >= start & .data$timestamp <= end) |>
+      as.data.table()
     if (nrow(acoustics) == 0L | nrow(archival) == 0L) {
       abort("There are no remaining observations after aligning the acoustic and archival time series.")
     }
@@ -198,6 +200,7 @@ pf_setup_obs <- function(.dlist,
            any_of(c("detection_id", "detection", "receiver_id", "receiver_id_next",
                     "mobility", "buffer_past", "buffer_future",
                     "buffer_future_incl_gamma", "depth"))
-    )
+    ) |>
+    as.data.table()
 
 }
