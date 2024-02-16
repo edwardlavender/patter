@@ -143,7 +143,6 @@
   weight <- lik <- NULL
   proposals[, weight := normalise(lik)]
   # Sample starting locations
-  pnow <- .sample(.particles = proposals, .n = .n)
   pnow <- .pf_sample_origin(.particles = proposals,
                             .n = .n, .sample = .sample,
                             .trial_crit = .trial_crit)
