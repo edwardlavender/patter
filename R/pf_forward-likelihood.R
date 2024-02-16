@@ -45,7 +45,7 @@ acs_filter_land <- function(.particles, .obs, .t, .dlist, .drop) {
   }
   if (isTRUE(.dlist$pars$spatna)) {
     # Define bathy by reference
-    mutate_bathy(.data = .particles, .dlist = .dlist)
+    set_bathy(.data = .particles, .dlist = .dlist)
     # Update likelihoods by reference
     lik <- bathy <- NULL
     .particles[, lik := lik * ((!is.na(bathy) + 0L))]
@@ -156,7 +156,7 @@ pf_lik_dc <- function(.particles, .obs, .t, .dlist, .drop) {
   }
   # Likelihood evaluation
   lik <- bathy <- NULL
-  mutate_bathy(.data = .particles, .dlist = .dlist)
+  set_bathy(.data = .particles, .dlist = .dlist)
   .particles[, lik := lik * .pf_lik_dc(.x = .obs$depth[.t],
                                        .a =  bathy - .obs$depth_shallow_eps[.t],
                                        .b = bathy + .obs$depth_deep_eps[.t])]

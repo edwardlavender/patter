@@ -177,7 +177,7 @@ list_merge <- function(...) {
 # Add missing columns
 # * .data A `data.table` (not a lazy_dt() b/c rlang::has_name())
 # * .col A `character` string.
-mutate_missing <- function(.data, .col) {
+set_missing <- function(.data, .col) {
   if (rlang::has_name(.data, .col)) {
     return(.data)
   } else {
@@ -188,7 +188,7 @@ mutate_missing <- function(.data, .col) {
 
 # Add a bathy column
 # * .data cannot be a lazy_dt()
-mutate_bathy <- function(.data, .dlist) {
+set_bathy <- function(.data, .dlist) {
   if (rlang::has_name(.data, "bathy")) {
     return(.data)
   } else {
