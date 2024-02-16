@@ -44,15 +44,17 @@ acs_filter_land <- function(.particles, .obs, .t, .dlist, .drop) {
     }
   }
   if (isTRUE(.dlist$pars$spatna)) {
-    .particles |>
-      mutate_bathy(.dlist = .dlist) |>
-      lazy_dt(immutable = FALSE) |>
-      mutate(lik = .data$lik * ((!is.na(.data$bathy)) + 0L)) |>
-      filter_lik(.drop = .drop) |>
-      as.data.table()
-  } else {
-    .particles
+    # Define bathy by reference
+    mutate_bathy(.data = .particles, .dlist = .dlist)
+    # Update likelihoods by reference
+    lik <- bathy <- NULL
+    .particles[, lik := lik * ((!is.na(bathy) + 0L))]
+    # Drop likelihoods
+    if (.drop) {
+      .particles <- .particles[lik > 0, ]
+    }
   }
+  .particles
 }
 
 #' @rdname pf_lik
@@ -87,13 +89,11 @@ acs_filter_container <- function(.particles, .obs, .t, .dlist, .drop) {
     # * Particles are forced to be within (all) future containers
     # * This does not eliminate all impossible locations e.g., due to peninsulas
     # * But it is a quick way of dropping particles
-    .particles <-
-      .particles |>
-      lazy_dt(immutable = FALSE) |>
-      mutate(lik = .data$lik * ((Rfast::rowsums(dist <= .obs$buffer_future_incl_gamma[.t]) == ncol(dist)) + 0L)) |>
-      filter_lik(.drop = .drop) |>
-      as.data.table()
-
+    lik <- NULL
+    .particles[, lik := lik * ((Rfast::rowsums(dist <= .obs$buffer_future_incl_gamma[.t]) == ncol(dist)) + 0L)]
+    if (.drop) {
+      .particles <- .particles[lik > 0, ]
+    }
   }
   .particles
 }
@@ -137,10 +137,10 @@ pf_lik_ac <- function(.particles, .obs, .t, .dlist, .drop) {
   }
 
   #### Return particles
-  .particles |>
-    lazy_dt() |>
-    filter_lik(.drop = .drop) |>
-    as.data.table()
+  if (.drop) {
+    .particles <- .particles[lik > 0, ]
+  }
+  .particles
 
 }
 
@@ -154,19 +154,14 @@ pf_lik_dc <- function(.particles, .obs, .t, .dlist, .drop) {
     check_names(.obs, req = c("depth_shallow_eps", "depth_deep_eps"))
     check_dlist(.dlist = .dlist, .spatial = "bathy")
   }
-  # DC model
-  dc <- function(.data.bathy) {
-    a <- .data.bathy - .obs$depth_shallow_eps[.t]
-    a[a < 0] <- 0
-    stats::dunif(x = .obs$depth[.t],
-                 min = a,
-                 max = .data.bathy + .obs$depth_deep_eps[.t])
-  }
   # Likelihood evaluation
-  .particles |>
-    mutate_bathy(.dlist = .dlist) |>
-    lazy_dt(immutable = FALSE) |>
-    mutate(lik = .data$lik * dc(.data$bathy)) |>
-    filter_lik(.drop = .drop) |>
-    as.data.table()
+  lik <- bathy <- NULL
+  mutate_bathy(.data = .particles, .dlist = .dlist)
+  .particles[, lik := lik * .pf_lik_dc(.x = .obs$depth[.t],
+                                       .a =  bathy - .obs$depth_shallow_eps[.t],
+                                       .b = bathy + .obs$depth_deep_eps[.t])]
+  if (.drop) {
+    .particles <- .particles[lik > 0, ]
+  }
+  .particles
 }

@@ -207,6 +207,16 @@
   colProds.matrix(mat)
 }
 
+
+#' @rdname pf_particle
+#' @keywords internal
+
+# Calculate the likelihood of a depth observation (.x)
+.pf_lik_dc <- function(.x, .a, .b) {
+  .a[.a < 0] <- 0
+  stats::dunif(x = .x, min = .a, max = .b)
+}
+
 #' @rdname pf_particle
 #' @keywords internal
 
