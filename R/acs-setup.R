@@ -139,7 +139,8 @@ acs_setup_detection_overlaps <- function(.dlist) {
         if (length(pos) > 0L) {
           overlaps <- overlaps[-pos, ]
         }
-        overlaps |>
+        overlaps <-
+          overlaps |>
           select("r1", "date", "r2") |>
           as.data.table()
       }
