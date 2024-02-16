@@ -48,8 +48,7 @@
   }
   .coord |>
     mutate(id = terra::cellFromXY(.map, cbind(.data$x, .data$y))) |>
-    select("id", "x", "y", "mark") |>
-    as.data.table()
+    select("id", "x", "y", "mark")
 }
 
 #' @rdname map_coord

@@ -79,8 +79,7 @@ NULL
     mutate(cell_id = terra::cellFromXY(.bathy, cbind(.data$x, .data$y)),
            cell_x = terra::xFromCell(.bathy, .data$cell_id),
            cell_y = terra::yFromCell(.bathy, .data$cell_id),
-           cell_z = terra::extract(.bathy, .data$cell_id)[, 1]) |>
-    as.data.table()
+           cell_z = terra::extract(.bathy, .data$cell_id)[, 1])
   # Save flux parameters
   attr(paths, "flux") <- .flux_vals
 
@@ -181,11 +180,13 @@ NULL
   .mat |>
     as.data.table() |>
     collapse::pivot() |>
+    lazy_dt(immutable = FALSE) |>
     mutate(path_id = rep(seq_len(.n_path), .n_step * 2),
            coordinate = rep(rep(c("x", "y"), each = .n_path), .n_step),
            timestep = rep(seq_len(.n_step), each = .n_path * 2),
            variable = NULL
     ) |>
+    as.data.table() |>
     collapse::pivot(how = "wider", names = "coordinate") |>
     arrange(.data$path_id, .data$timestep) |>
     as.data.table()
@@ -239,6 +240,7 @@ NULL
     dist_mat |>
     as.data.table() |>
     collapse::pivot() |>
+    lazy_dt(immutable = FALSE) |>
     mutate(path_id = .path$path_id[1],
            array_id = .array$array_id[1],
            receiver_id = rep(.array$receiver_id, each = nrow(dist_mat)),
@@ -258,8 +260,7 @@ NULL
     # Drop non detections
     filter(.data$detection == 1L) |>
     mutate(detection = NULL) |>
-    arrange(.data$timestep, .data$receiver_id) |>
-    as.data.table()
+    arrange(.data$timestep, .data$receiver_id)
   if (!is.null(.return)) {
     check_names(arg = "The output data.table",
                 input = out,
@@ -267,8 +268,7 @@ NULL
                 action = msg)
     out <-
       out |>
-      select(any_of(.return)) |>
-      as.data.table()
+      select(any_of(.return))
   }
   if (nrow(out) == 0L) {
     warn("No detections generated.")

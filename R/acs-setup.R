@@ -88,7 +88,7 @@ acs_setup_detection_overlaps <- function(.dlist) {
   if (!is.null(services)) {
     services     <- as.data.frame(services)
     services$int <- lubridate::interval(services$service_start, services$service_end)
-    services_ls   <- split(services, services$receiver_id)
+    services_ls  <- split(services, services$receiver_id)
   }
   # Build list
   out <-
@@ -139,9 +139,9 @@ acs_setup_detection_overlaps <- function(.dlist) {
         if (length(pos) > 0L) {
           overlaps <- overlaps[-pos, ]
         }
-        overlaps |>
-          select("r1", "date", "r2") |>
-          as.data.table()
+        overlaps <-
+          overlaps |>
+          select("r1", "date", "r2")
       }
 
       # Return a list of overlaps

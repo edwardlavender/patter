@@ -31,8 +31,7 @@
     .dt <- copy(.dt)
   }
   # Subset columns (to reduce file size)
-  # * Use immutable = TRUE
-  # * This is necessary b/c the snapshot data may not contain all columns
+  # * We implictly copy the snapshot data here, since it may not contain all columns
   # * ... required for the function to run (e.g., `weight`) & we need to
   # * ... keep these columns in the input object
   if (.select) {

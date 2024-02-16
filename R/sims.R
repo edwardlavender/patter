@@ -475,6 +475,7 @@ sim_array <- function(.bathy = spatTemplate(), .lonlat = FALSE,
                           method = .arrangement, replace = FALSE,
                           na.rm = TRUE, xy = TRUE, cells = TRUE, values = FALSE, ...) |>
         as.data.table() |>
+        lazy_dt(immutable = FALSE) |>
         mutate(array_id = i,
                receiver_id = as.integer(row_number())) |>
         select("array_id", "receiver_id", "x", "y") |>
@@ -513,11 +514,13 @@ sim_array <- function(.bathy = spatTemplate(), .lonlat = FALSE,
   if (.lonlat) {
     arrays <-
       arrays |>
+      lazy_dt(immutable = FALSE) |>
       rename(receiver_lon = "x", receiver_lat = "y") |>
       as.data.table()
   } else {
     arrays <-
       arrays |>
+      lazy_dt(immutable = FALSE) |>
       rename(receiver_easting = "x", receiver_northing = "y") |>
       as.data.table()
   }
@@ -614,8 +617,7 @@ sim_path_walk <- function(.bathy = spatTemplate(),
     merge(length, by = c("path_id", "timestep")) |>
     rename(length = "value") |>
     merge(angle, by = c("path_id", "timestep")) |>
-    rename(angle = "value") |>
-    as.data.table()
+    rename(angle = "value")
   if (!is.null(.timestamp)) {
     timestamp <- NULL
     out[, timestamp := .timestamp[out$timestep]]
@@ -626,8 +628,7 @@ sim_path_walk <- function(.bathy = spatTemplate(),
            "length", "angle",
            "x", "y",
            "cell_x", "cell_y", "cell_z", "cell_id",
-           ) |>
-    as.data.table()
+           )
 }
 
 #' @title Simulation: acoustic detections
@@ -748,7 +749,6 @@ sim_detections <- function(.paths, .arrays,
   #### Return outputs
   out |>
     rbindlist() |>
-    arrange("array_id", "path_id", "timestep") |>
-    as.data.table()
+    arrange("array_id", "path_id", "timestep")
 
 }

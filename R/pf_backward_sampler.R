@@ -155,8 +155,7 @@ pf_backward_sampler_p <- function(.history,
         path <- density <- list()
         path[[n_step]] <-
           .history[[n_step]][i, ] |>
-          select("timestep", "cell_now", "x_now", "y_now") |>
-          as.data.table()
+          select("timestep", "cell_now", "x_now", "y_now")
 
         #### Run backwards sampler for a selected particle (i)
         cat_log("... ... ... Running sampler...")
@@ -176,11 +175,8 @@ pf_backward_sampler_p <- function(.history,
             .history[[tp]] |>
             select(cell_past = "cell_now",
                    x_past = "x_now",
-                   y_past = "y_now") |>
-            as.data.table()
-          pnow <-
-            dplyr::bind_cols(path[[t]], htp) |>
-            as.data.table()
+                   y_past = "y_now")
+          pnow <- dplyr::bind_cols(path[[t]], htp)
           .dargs$.particles <- pnow
           .dargs$.t         <- t
           pnow              <- do.call(.dpropose, .dargs)
@@ -191,7 +187,7 @@ pf_backward_sampler_p <- function(.history,
           # `cell_past` becomes `cell_now` for the next time step
           path[[tp]] <-
             path[[t]] |>
-            lazy_dt() |>
+            lazy_dt(immutable = TRUE) |>
             mutate(timestep = tp) |>
             select("timestep", cell_now = "cell_past",
                    x_now = "x_past", y_now = "y_past") |>
@@ -203,6 +199,7 @@ pf_backward_sampler_p <- function(.history,
         # Fix path[[1L]]
         path[[1L]] <-
           path[[1L]] |>
+          lazy_dt(immutable = FALSE) |>
           mutate(cell_past = NA_integer_,
                  x_past = NA_real_,
                  y_past = NA_real_,
@@ -212,13 +209,14 @@ pf_backward_sampler_p <- function(.history,
         path <-
           path |>
           rbindlist() |>
+          lazy_dt(immutable = FALSE) |>
           mutate(path_id = i, .before = 1L) |>
           as.data.table()
 
         #### Save path
         cat_log("... ... ... Recording path...")
         if (!is.null(.record$cols)) {
-          path <- path |> select(all_of(.record$cols)) |> as.data.table()
+          path <- path |> select(all_of(.record$cols))
         }
         .pf_write_particles(.particles = path, .sink = .record$sink,
                             .filename = t, .write = write)
@@ -237,8 +235,7 @@ pf_backward_sampler_p <- function(.history,
     paths <-
       paths |>
       rbindlist() |>
-      arrange(.data$path_id, .data$timestep) |>
-      as.data.table()
+      arrange(.data$path_id, .data$timestep)
   }
   .pf_backward_output(.start = t_onset,
                       .history = list(),
@@ -330,7 +327,7 @@ pf_backward_sampler_v <- function(.history,
     # (There should be at least one such particle that is valid)
     h <-
       h |>
-      lazy_dt(immutable = FALSE) |>
+      lazy_dt(immutable = TRUE) |>
       group_by(.data$index_now) |>
       # slice_sample() doesn't work with .data$dens pronoun
       slice_sample(n = 1L, weight_by = dens, replace = TRUE) |>
@@ -369,6 +366,7 @@ pf_backward_sampler_v <- function(.history,
   #### Record outputs for .history[[t]]
   .history[[1L]] <-
     .history[[1L]] |>
+    lazy_dt(immutable = FALSE) |>
     mutate(timestep = 1L,
            cell_past = NA_integer_,
            x_past = NA_real_,

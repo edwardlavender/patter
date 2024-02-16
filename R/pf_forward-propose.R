@@ -139,10 +139,8 @@ pf_rpropose_reachable <- function(.particles, .obs, .t, .dlist) {
   # Isolate unique particles
   .particles <-
     .particles |>
-    lazy_dt() |>
     select("timestep", "cell_past", "x_past", "y_past", "weight") |>
-    distinct(.data$cell_past, .keep_all = TRUE) |>
-    as.data.table()
+    distinct(.data$cell_past, .keep_all = TRUE)
 
   # Define reachable zone(s) (given .mobility)
   zone <-
@@ -165,15 +163,13 @@ pf_rpropose_reachable <- function(.particles, .obs, .t, .dlist) {
                                  include_xy = TRUE,
                                  progress = FALSE) |>
     rbindlist() |>
-    lazy_dt() |>
     filter(!is.na(.data$value)) |>
     mutate(cell = as.integer(.data$cell),
            x = as.numeric(.data$x),
            y = as.numeric(.data$y)) |>
     select("cell_past", cell_now = "cell",
            x_now = "x", y_now = "y",
-           bathy = "value") |>
-    as.data.table()
+           bathy = "value")
 
   # Return 'proposal' (possible) cells (given .mobility only)
   # * In downstream functions, we filter & weight these
@@ -212,8 +208,7 @@ pf_dpropose <- function(.particles, .obs, .t, .dlist, .drop, .dkick = dkick, ...
     if (.drop) {
       .particles <-
         .particles |>
-        filter(dens > 0) |>
-        as.data.table()
+        filter(dens > 0)
     }
     .particles
   }
