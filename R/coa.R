@@ -45,7 +45,7 @@ coa <- function(.dlist, .delta_t, .split = NULL,
   #### Define datasets
   acoustics  <- .dlist$data$acoustics
   moorings   <- .dlist$data$moorings
-  ind        <- match(acoustics$receiver_id, moorings$receiver_id)
+  ind        <- fmatch(acoustics$receiver_id, moorings$receiver_id)
   receiver_x <- receiver_y <- NULL
   acoustics[, receiver_x := moorings$receiver_x[ind]]
   acoustics[, receiver_y := moorings$receiver_y[ind]]

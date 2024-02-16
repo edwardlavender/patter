@@ -146,7 +146,7 @@ pf_path_pivot <- function(.mat, .bathy = NULL,
   # Add columns from .obs by matching by timestep
   if (!is.null(.obs)) {
     for (col in .cols) {
-      p[, (col) := .obs[[col]][match(p$timestep, .obs$timestep)]]
+      p[, (col) := .obs[[col]][fmatch(p$timestep, .obs$timestep)]]
       if (any(is.na(p[[col]]))) {
         warn("There are NAs in the {col} column in the output.",
              .envir = environment())

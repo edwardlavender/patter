@@ -54,8 +54,8 @@ acs_setup_detection_overlaps <- function(.dlist) {
   # Note that lubridate::interval() only works with data.frame() (not data.table())
   moorings     <- as.data.frame(moorings)
   moorings$int <- lubridate::interval(moorings$receiver_start, moorings$receiver_end)
-  ind_1 <- match(pairs$r1, moorings$receiver_id)
-  ind_2 <- match(pairs$r2, moorings$receiver_id)
+  ind_1 <- fmatch(pairs$r1, moorings$receiver_id)
+  ind_2 <- fmatch(pairs$r2, moorings$receiver_id)
   pairs <-
     pairs |>
     mutate(
@@ -117,7 +117,7 @@ acs_setup_detection_overlaps <- function(.dlist) {
       # * Dates must be _within_ active deployment intervals of other receivers
       overlaps <-
         CJ(r1 = r, date = active, r2 = r_pairs$r2) |>
-        mutate(r2_active = moorings$int[match(.data$r2, moorings$receiver_id)]) |>
+        mutate(r2_active = moorings$int[fmatch(.data$r2, moorings$receiver_id)]) |>
         filter(date %within% .data$r2_active) |>
         select("r1", "date", "r2") |>
         as.data.frame()
@@ -128,7 +128,7 @@ acs_setup_detection_overlaps <- function(.dlist) {
         # Add service intervals
         overlaps <-
           overlaps |>
-          mutate(r2_service = services$int[match(.data$r2, services$receiver_id)],
+          mutate(r2_service = services$int[fmatch(.data$r2, services$receiver_id)],
                  r2_service_na = .data$r2_service@start) |>
           as.data.frame()
         # Identify positions with service intervals (pos_1) that overlap with service dates (to drop)

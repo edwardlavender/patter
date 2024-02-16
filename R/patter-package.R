@@ -233,6 +233,8 @@
 #' @importFrom collapse seq_row
 #' @importFrom collapse anyv
 #'
+#' @importFrom fastmatch fmatch
+#'
 #' @importFrom lubridate %within%
 #'
 #' @importFrom arrow schema

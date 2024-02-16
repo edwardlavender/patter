@@ -442,16 +442,16 @@ test_that("sim_detections() works", {
   # * Path coordinates should correctly align with time steps
   p[, test_p_key := paste(path_id, timestep)]
   out[, test_p_key := paste(path_id, timestep)]
-  out[, test_x := p$x[match(test_p_key, p$test_p_key)]]
-  out[, test_y := p$y[match(test_p_key, p$test_p_key)]]
+  out[, test_x := p$x[fmatch(test_p_key, p$test_p_key)]]
+  out[, test_y := p$y[fmatch(test_p_key, p$test_p_key)]]
   expect_identical(out$x, out$test_x)
   expect_identical(out$y, out$test_y)
   # Validate receivers/receiver coordinates are correctly represented
   # * Receiver coordinates should correctly align with receiver IDs
   a[, test_a_key := paste(array_id, receiver_id)]
   out[, test_a_key := paste(array_id, receiver_id)]
-  out[, test_receiver_easting := a$receiver_easting[match(out$test_a_key, a$test_a_key)]]
-  out[, test_receiver_northing := a$receiver_northing[match(out$test_a_key, a$test_a_key)]]
+  out[, test_receiver_easting := a$receiver_easting[fmatch(out$test_a_key, a$test_a_key)]]
+  out[, test_receiver_northing := a$receiver_northing[fmatch(out$test_a_key, a$test_a_key)]]
   expect_identical(out$receiver_easting, out$test_receiver_easting)
   expect_identical(out$receiver_northing, out$test_receiver_northing)
 

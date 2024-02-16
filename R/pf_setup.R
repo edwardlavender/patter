@@ -179,7 +179,7 @@ pf_setup_obs <- function(.dlist,
   # Add archival data
   if (!is.null(archival)) {
     depth <- timestamp <- NULL
-    out[, depth := archival$depth[match(timestamp, archival$timestamp)]]
+    out[, depth := archival$depth[fmatch(timestamp, archival$timestamp)]]
     bool <- is.na(out$depth)
     if (any(bool)) {
       nrw <- fnrow(out)

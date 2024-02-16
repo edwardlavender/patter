@@ -262,7 +262,7 @@
     # * Here, `ind` defines, for each row in `output`, the position of the match in proposals
     # * E.g., 1 NA NA NA  2 ...
     # * `pos` defines the rows in `output` that correspond to the matches (e.g., 1, 5, ...)
-    ind     <- match(output$index, proposals$index)
+    ind     <- fmatch(output$index, proposals$index)
     matches <- !is.na(ind)
     ind     <- ind[matches]
     pos     <- which(matches)

@@ -62,7 +62,7 @@ pf_coord <- function(.history, .bathy, .obs = NULL, .cols = NULL) {
   # Add columns from `.obs` by matching by timestep (from `pf_path_pivot()`)
   if (!is.null(.obs)) {
     for (col in .cols) {
-      p[, (col) := .obs[[col]][match(p$timestep, .obs$timestep)]]
+      p[, (col) := .obs[[col]][fmatch(p$timestep, .obs$timestep)]]
       if (any(is.na(p[[col]]))) {
         warn("There are NAs in the {col} column in the output.",
              .envir = environment())
