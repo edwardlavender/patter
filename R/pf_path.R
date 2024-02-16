@@ -140,7 +140,7 @@ pf_path_pivot <- function(.mat, .bathy = NULL,
       p |>
       mutate(cell_x = terra::xFromCell(.bathy, .data$cell_id),
              cell_y = terra::yFromCell(.bathy, .data$cell_id),
-             cell_z = terra::extract(.bathy, .data$cell_id)) |>
+             cell_z = terra::extract(.bathy, .data$cell_id)[, 1]) |>
       as.data.table()
   }
   # Add columns from .obs by matching by timestep
