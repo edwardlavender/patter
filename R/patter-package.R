@@ -173,20 +173,28 @@
 #' @name patter
 "_PACKAGE"
 
-#' @importFrom utils head
-#' @importFrom utils tail
-#' @importFrom utils str
+#' @importFrom arrow schema
+#' @importFrom arrow int32
 #'
-#' @importFrom graphics par
-#' @importFrom graphics arrows
-#' @importFrom graphics points
-#' @importFrom graphics lines
-#' @importFrom graphics hist
+#' @importFrom collapse fnrow
+#' @importFrom collapse seq_col
+#' @importFrom collapse seq_row
+#' @importFrom collapse anyv
 #'
-#' @importFrom grDevices rgb
-#' @importFrom grDevices col2rgb
-#'
-#' @importFrom rlang .data
+#' @importFrom data.table data.table
+#' @importFrom data.table as.data.table
+#' @importFrom data.table rbindlist
+#' @importFrom data.table :=
+#' @importFrom data.table setcolorder
+#' @importFrom data.table .BY
+#' @importFrom data.table .EACHI
+#' @importFrom data.table .GRP
+#' @importFrom data.table .I
+#' @importFrom data.table .N
+#' @importFrom data.table .NGRP
+#' @importFrom data.table .SD
+#' @importFrom data.table copy
+#' @importFrom data.table CJ
 #'
 #' @importFrom dplyr tbl
 #' @importFrom dplyr mutate
@@ -213,31 +221,23 @@
 #'
 #' @importFrom dtplyr lazy_dt
 #'
-#' @importFrom data.table data.table
-#' @importFrom data.table as.data.table
-#' @importFrom data.table rbindlist
-#' @importFrom data.table :=
-#' @importFrom data.table setcolorder
-#' @importFrom data.table .BY
-#' @importFrom data.table .EACHI
-#' @importFrom data.table .GRP
-#' @importFrom data.table .I
-#' @importFrom data.table .N
-#' @importFrom data.table .NGRP
-#' @importFrom data.table .SD
-#' @importFrom data.table copy
-#' @importFrom data.table CJ
-#'
-#' @importFrom collapse fnrow
-#' @importFrom collapse seq_col
-#' @importFrom collapse seq_row
-#' @importFrom collapse anyv
-#'
 #' @importFrom fastmatch fmatch
+#'
+#' @importFrom graphics par
+#' @importFrom graphics arrows
+#' @importFrom graphics points
+#' @importFrom graphics lines
+#' @importFrom graphics hist
+#'
+#' @importFrom grDevices rgb
+#' @importFrom grDevices col2rgb
 #'
 #' @importFrom lubridate %within%
 #'
-#' @importFrom arrow schema
-#' @importFrom arrow int32
+#' @importFrom rlang .data
+#'
+#' @importFrom utils head
+#' @importFrom utils tail
+#' @importFrom utils str
 
 NULL
