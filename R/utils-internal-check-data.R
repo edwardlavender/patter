@@ -171,6 +171,11 @@ check_moorings <- function(.moorings, .lonlat, .bathy) {
     abort("`.moorings$receiver_id` contains duplicate elements.")
   }
 
+  #### Check receiver ranges
+  if (length(unique(.moorings$receiver_range)) != 1L) {
+    warn("Not all functions (yet) support receiver-specific detection ranges.")
+  }
+
   #### (optional) Define coordinate columns (receiver_x, receiver_y)
   if (!is.null(.lonlat)) {
 
