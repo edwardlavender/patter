@@ -71,7 +71,7 @@ Additional columns may be included from the forward run, as specified by \code{.
 }
 
 \section{\code{diagnostics}}{
-In \code{\link[=pf_forward]{pf_forward()}}, we track metrics of particle diversity (hereafter, 'particle diagnostics') through time for analysis of convergence issues, sampling sufficiency and other properties (see \code{\link{pf_diag-internal}}). Particle diagnostics are recorded for each trial and component of a stochastic process.
+\code{diagnostics} is a \code{NULL} element. In \code{\link[=pf_forward]{pf_forward()}}, we formerly tracked metrics of particle diversity ('particle diagnostics') through time for analysis of convergence issues, sampling sufficiency and other properties (see \code{\link{pf_diag-internal}}). This was expensive and is no longer implemented by default and \code{diagnostics} is now set to \code{NULL}. You can still track convergence diagnostics following particle proposals and likelihood evaluations by modifying the proposal and/or likelihood functions to write diagnostic statistics to file on the fly (see \code{\link{pf_diag-internal}}).
 
 For stochastic kicks (implemented via \code{\link[=.pf_particles_kick]{.pf_particles_kick()}}), we record:
 \itemize{
@@ -111,9 +111,7 @@ If \code{.record$save = TRUE}, particle diagnostics are collated in a single \co
 }
 }
 
-In \code{\link[=pf_forward]{pf_forward()}}, if \code{.record$save = FALSE}, \code{diagnostics} is \code{NULL} and the individual \code{\link{data.table}}s are written to file in \verb{\{.record$sink\}/diagnostics/} (see \code{\link[=pf_opt_record]{pf_opt_record()}}). To collate convergence diagnostics from file, use \code{\link[=pf_diag_convergence]{pf_diag_convergence()}}.
-
-At the time of writing, diagnostics are not computed on the fly by \code{\link[=pf_backward_*]{pf_backward_*()}}, but summary diagnostics can be computed for both \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_*]{pf_backward_*()}} via \code{\link[=pf_diag_summary]{pf_diag_summary()}}.
+In \code{\link[=pf_forward]{pf_forward()}}, if \code{.record$save = FALSE}, \code{diagnostics} is \code{NULL} and the individual \code{\link{data.table}}s are written to file in \verb{\{.record$sink\}/diagnostics/} (see \code{\link[=pf_opt_record]{pf_opt_record()}}). To collate convergence diagnostics from file, use \code{\link[=pf_diag_convergence]{pf_diag_convergence()}}. Summary diagnostics can be computed for both \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_*]{pf_backward_*()}} via \code{\link[=pf_diag_summary]{pf_diag_summary()}}.
 }
 
 \section{\code{internal}}{

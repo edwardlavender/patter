@@ -64,7 +64,7 @@
 #'
 #' # `diagnostics`
 #'
-#' In [`pf_forward()`], we track metrics of particle diversity (hereafter, 'particle diagnostics') through time for analysis of convergence issues, sampling sufficiency and other properties (see [`pf_diag-internal`]). Particle diagnostics are recorded for each trial and component of a stochastic process.
+#' `diagnostics` is a `NULL` element. In [`pf_forward()`], we formerly tracked metrics of particle diversity ('particle diagnostics') through time for analysis of convergence issues, sampling sufficiency and other properties (see [`pf_diag-internal`]). This was expensive and is no longer implemented by default and `diagnostics` is now set to `NULL`. You can still track convergence diagnostics following particle proposals and likelihood evaluations by modifying the proposal and/or likelihood functions to write diagnostic statistics to file on the fly (see [`pf_diag-internal`]).
 #'
 #' For stochastic kicks (implemented via [`.pf_particles_kick()`]), we record:
 #' * Proposal diagnostics, following stochastic kicks;
@@ -93,9 +93,7 @@
 #'    * `nu`---an `integer` vector that defines the number of unique locations (see [`.pf_diag_nu()`]).
 #'    * `ess`---a `numeric` vector that defines the effective sample size (see [`.pf_diag_ess()`]).
 #'
-#' In [`pf_forward()`], if `.record$save = FALSE`, `diagnostics` is `NULL` and the individual [`data.table`]s are written to file in `{.record$sink}/diagnostics/` (see [`pf_opt_record()`]). To collate convergence diagnostics from file, use [`pf_diag_convergence()`].
-#'
-#' At the time of writing, diagnostics are not computed on the fly by [`pf_backward_*()`], but summary diagnostics can be computed for both [`pf_forward()`] and [`pf_backward_*()`] via [`pf_diag_summary()`].
+#' In [`pf_forward()`], if `.record$save = FALSE`, `diagnostics` is `NULL` and the individual [`data.table`]s are written to file in `{.record$sink}/diagnostics/` (see [`pf_opt_record()`]). To collate convergence diagnostics from file, use [`pf_diag_convergence()`]. Summary diagnostics can be computed for both [`pf_forward()`] and [`pf_backward_*()`] via [`pf_diag_summary()`].
 #'
 #' # `internal`
 #'

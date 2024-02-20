@@ -41,7 +41,13 @@ pf_opt_rerun_from(.rerun, .revert = 25L)
 \itemize{
 \item \code{.save}---a \code{logical} variable that defines whether or not to save particle samples and diagnostics in memory. Use \code{.save = TRUE} with caution.
 \item \code{.sink}---a \code{character} string that defines a (usually) empty directory in which to write particle samples and diagnostics. \verb{\{.sink\}/history/}and \code{{.sink}/diagnostics} directories are created (if necessary) to store particle samples and diagnostics respectively.
-\item \code{.cols}---a \code{character} vector that defines the names of the columns in particle-sample \code{\link{data.table}}s to save and/or write to file at each time step. This reduces the space occupied by outputs. For \code{\link[=pf_backward_killer]{pf_backward_killer()}}, you need to retain \code{timestep}, \code{cell_past} and \code{cell_now}. For \code{\link{pf_backward_sampler}}\verb{_*()}, you need \code{timestep}, \code{cell_now}, \code{x_now} and \code{y_now} for the backward sampler. For calculation of effective sample size, \code{weight} is required. \code{NULL} retains all columns.
+\item \code{.cols}---a \code{character} vector that defines the names of the columns in particle-sample \code{\link{data.table}}s to save and/or write to file at each time step. This reduces the space occupied by outputs. \code{NULL} retains all columns.
+\itemize{
+\item For \code{\link[=pf_forward]{pf_forward()}}, in general you should retain \code{timestep}, \code{cell_now}, \code{x_now}, \code{y_now} and \code{weight}.
+\item For \code{\link[=pf_backward_killer]{pf_backward_killer()}}, you need to retain \code{timestep}, \code{cell_past} and \code{cell_now}.
+\item For \code{\link{pf_backward_sampler}}\verb{_*()}, you need \code{timestep}, \code{cell_now}, \code{x_now} and \code{y_now}.
+\item To account for particle weights and to calculate effective sample size, \code{weight} is required.
+}
 }
 
 At least one of \code{.save = TRUE} and \code{.sink} must be set.}
