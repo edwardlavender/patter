@@ -75,13 +75,13 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">acs_filter_land</span><span class="op">(</span><span class="va">.particles</span>, <span class="va">.obs</span>, <span class="va">.t</span>, <span class="va">.dlist</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">acs_filter_land</span><span class="op">(</span><span class="va">.particles</span>, <span class="va">.obs</span>, <span class="va">.t</span>, <span class="va">.dlist</span>, <span class="va">.drop</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">acs_filter_container</span><span class="op">(</span><span class="va">.particles</span>, <span class="va">.obs</span>, <span class="va">.t</span>, <span class="va">.dlist</span><span class="op">)</span></span>
+<span><span class="fu">acs_filter_container</span><span class="op">(</span><span class="va">.particles</span>, <span class="va">.obs</span>, <span class="va">.t</span>, <span class="va">.dlist</span>, <span class="va">.drop</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">pf_lik_ac</span><span class="op">(</span><span class="va">.particles</span>, <span class="va">.obs</span>, <span class="va">.t</span>, <span class="va">.dlist</span><span class="op">)</span></span>
+<span><span class="fu">pf_lik_ac</span><span class="op">(</span><span class="va">.particles</span>, <span class="va">.obs</span>, <span class="va">.t</span>, <span class="va">.dlist</span>, <span class="va">.drop</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">pf_lik_dc</span><span class="op">(</span><span class="va">.particles</span>, <span class="va">.obs</span>, <span class="va">.t</span>, <span class="va">.dlist</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">pf_lik_dc</span><span class="op">(</span><span class="va">.particles</span>, <span class="va">.obs</span>, <span class="va">.t</span>, <span class="va">.dlist</span>, <span class="va">.drop</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -106,22 +106,26 @@
 <li><p>For custom likelihood functions, <code>.dlist</code> may require other datasets.</p></li>
 </ul></dd>
 
+
+<dt>.drop</dt>
+<dd><p>A <code>logical</code> variable that defines whether or not to drop <code>.particles</code> rows with zero likelihood.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     
 
-<p>Functions return the <code>.particle</code></p>
+<p>Functions return the <code>.particles</code></p>
 <p></p>
 <p><code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> for valid proposal locations and updated likelihoods (in the <code>lik</code> column).</p>
     </div>
     <div id="details">
     <h2>Details</h2>
-    <p>In <code><a href="pf_forward.html">pf_forward()</a></code>, the likelihood of the data given proposal locations is evaluated using a named <code>list</code> of user-defined functions (one for each dataset). Each function must accept a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of proposal locations (<code>.particles</code>) alongside the arguments named above (even if they are ignored), evaluate the likelihood of the data and return an updated <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> for the subset of valid proposals and <em>updated</em> likelihoods (in the <code>lik</code> column). For computational efficiency, is is desirable that functions are ordered by the extent to which they invalidate proposal locations and that each function drops invalid proposals (since this reduces the number of subsequent likelihood calculations). For faster evaluations, it might also pay to group likelihood terms under a single wrapper function (since this eliminates the need to loop over individual terms in <code><a href="pf_particle.html">.pf_lik()</a></code>).</p>
+    <p>In <code><a href="pf_forward.html">pf_forward()</a></code>, the likelihood of the data given proposal locations is evaluated using a named <code>list</code> of user-defined functions (one for each dataset). Each function must accept a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of proposal locations (<code>.particles</code>) alongside the arguments named above (even if they are ignored), evaluate the likelihood of the data and return an updated <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> for the subset of valid proposals and <em>updated</em> likelihoods (in the <code>lik</code> column). For computational efficiency, it is desirable that functions are ordered by the extent to which they invalidate proposal locations and that each function drops invalid proposals (since this reduces the number of subsequent likelihood calculations). For faster evaluations, it might also pay to group likelihood terms under a single wrapper function (since this eliminates the need to loop over individual terms in <code><a href="pf_particle.html">.pf_lik()</a></code>).</p>
 <p>The following convenience functions are provided:</p><ul><li><p><code>acs_filter_land()</code> is a binary 'habitability' (land/water) filter. This is useful when the 'stochastic kick' methodology is used to generate proposal locations in systems that include inhospitable habitats. The function calculates the likelihood (0, 1) of the 'hospitable' data given sampled particles. Location proposals in <code>NA</code> cells on the bathymetry grid (<code>.dlist$spatial$bathy</code>) are dropped.</p></li>
-<li><p><code>acs_filter_container()</code> is recommended for acoustic time series. This function calculates the approximate likelihood of the next acoustic detection, given particle proposals. This is a binary filter that excludes location proposals that are incompatible with acoustic container dynamics. This is strictly optional but facilitates algorithm convergence by filtering location proposals that are inconsistent with the location of the next detection.</p></li>
-<li><p><code>pf_lik_ac()</code> calculates the likelihood of acoustic data (detection or non detection at each operational receiver), given location proposals.</p></li>
-<li><p><code>pf_lik_dc()</code> calculates the likelihood of archival (depth) data, given particle proposals. This is based on Lavender et al.'s (2023) depth-contour algorithm in which depth observations are considered valid in locations whose depth's lie between a shallow and deep limit (<code>.obs$depth_shallow[.t]</code> and <code>.obs$depth_deep[.t]</code>) but impossible otherwise.</p></li>
+<li><p><code>acs_filter_container()</code> is recommended for acoustic time series. This function calculates the approximate likelihood of the next acoustic detection, given particle proposals. This is a binary filter that excludes location proposals that are incompatible with acoustic container dynamics, since proposal locations must be within a moveable distance of receiver locations. Note that receivers by default are defined on a grid and the mobility term should account for this if required (see <code><a href="check_dlist.html">check_moorings()</a></code>). <code>acs_filter_container()</code> is strictly optional but facilitates algorithm convergence by filtering location proposals that are inconsistent with the location of the next detection.</p></li>
+<li><p><code>pf_lik_ac()</code> calculates the likelihood of acoustic data (detection or non detection at each operational receiver), given location proposals. Likelihood evaluations are implemented on a grid using precomputed fields for speed (see <code><a href="acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code>).</p></li>
+<li><p><code>pf_lik_dc()</code> calculates the likelihood of archival (depth) data, given particle proposals. This is based on a modification of Lavender et al.'s (2023) depth-contour algorithm in which depth observations are considered valid (with uniform probability density) in locations whose depth's lie between a shallow and deep limit (<code>.particles$bathy - .obs$depth_shallow_eps[.t]</code> and <code>.particles$bathy</code> + <code>.obs$depth_deep_eps[.t]</code>) but impossible otherwise. This evaluation is necessarily implemented on a grid.</p></li>
 </ul><p>In <code><a href="pf_forward.html">pf_forward()</a></code>, <code>acs_filter_container()</code> and <code>pf_lik_ac()</code> effectively replace the role of <a href="https://edwardlavender.github.io/flapper/reference/ac.html" class="external-link"><code><a href="https://edwardlavender.github.io/flapper/reference/ac.html" class="external-link">flapper::ac()</a></code></a> function. <code>pf_lik_dc()</code> effectively replaces the role of <a href="https://edwardlavender.github.io/flapper/reference/dc.html" class="external-link"><code><a href="https://edwardlavender.github.io/flapper/reference/dc.html" class="external-link">flapper::dc()</a></code></a>.</p>
     </div>
     <div id="see-also">
@@ -134,11 +138,11 @@
 <li><p>For tuning parameters, see <code><a href="pf_opt.html">pf_opt</a></code>.</p></li>
 </ul></li>
 <li><p><code><a href="pf_backward_-times.html">pf_backward_*()</a></code> refines outputs from the forward filter:</p><ul><li><p><code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> removes dead-ends;</p></li>
-<li><p><code><a href="pf_backward_sampler.html">pf_backward_sampler()</a></code> implements the backward sampler;</p></li>
+<li><p><code><a href="pf_backward_sampler.html">pf_backward_sampler</a></code><code>_*()</code> implements the backward sampler;</p></li>
 </ul></li>
 <li><p>To reconstruct movement paths from particle samples, use <code><a href="pf_path.html">pf_path()</a></code>.</p></li>
 <li><p>To map emergent patterns of space use, use <code><a href="pf_coord.html">pf_coord()</a></code> plus a <code>map_*()</code> function, such as <code><a href="map_pou.html">map_pou()</a></code>, <code><a href="map_dens.html">map_dens()</a></code> and/or <code><a href="map_hr.html">map_hr</a></code><code>_()</code>.</p></li>
-<li><p>For additional utilities, see supporting <code>pf_*()</code> functions, such as <code><a href="pf_files.html">pf_files()</a></code>, <code><a href="pf_files.html">pf_files_size()</a></code>, <code><a href="pf_plot_history.html">pf_plot_history()</a></code>, <code><a href="pf_diag.html">pf_diag_convergence()</a></code> and <code><a href="pf_diag.html">pf_diag_summary()</a></code>.</p></li>
+<li><p>For additional utilities, see supporting <code>pf_*()</code> functions, such as <code><a href="pf_files.html">pf_files()</a></code>, <code><a href="pf_files.html">pf_files_size()</a></code>, <code><a href="pf_plot_history.html">pf_plot_history()</a></code>, <code>pf_diag_convergence()</code> and <code><a href="pf_diag.html">pf_diag_summary()</a></code>.</p></li>
 </ul></div>
     </div>
     <div id="author">

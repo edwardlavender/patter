@@ -126,7 +126,7 @@
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index">
-<ul><li><p>To derive location samples from the forward-filter backward-sampler, see <code><a href="pf_forward.html">pf_forward()</a></code>, <code><a href="pf_backward_sampler.html">pf_backward_sampler()</a></code> and <code><a href="pf_coord.html">pf_coord()</a></code>;</p></li>
+<ul><li><p>To derive location samples from the forward-filter backward-sampler, see <code><a href="pf_forward.html">pf_forward()</a></code>, <code><a href="pf_backward_-times.html">pf_backward_*()</a></code> and <code><a href="pf_coord.html">pf_coord()</a></code>;</p></li>
 <li><p>For mapping utilisation distributions from coordinates, see <code>map_*()</code> functions (i.e., <code><a href="map_pou.html">map_pou()</a></code> and <code><a href="map_dens.html">map_dens()</a></code>;</p></li>
 </ul></div>
     </div>
@@ -149,6 +149,7 @@
 <span class="r-in"><span><span class="fu">coa</span><span class="op">(</span><span class="va">dlist</span>, .delta_t <span class="op">=</span> <span class="st">"2 hours"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="coa-1.png" alt="" width="700" height="433"></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                timestamp    coa_x   coa_y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   &lt;POSc&gt;    &lt;num&gt;   &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   1: 2016-03-17 01:00:00 709176.9 6253068</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   2: 2016-03-17 03:00:00 708972.9 6252945</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   3: 2016-03-17 05:00:00 709304.6 6253132</span>
@@ -163,6 +164,7 @@
 <span class="r-in"><span><span class="fu">coa</span><span class="op">(</span><span class="va">dlist</span>, .delta_t <span class="op">=</span> <span class="st">"4 hours"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="coa-2.png" alt="" width="700" height="433"></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                timestamp    coa_x   coa_y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   &lt;POSc&gt;    &lt;num&gt;   &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   1: 2016-03-17 01:00:00 709048.6 6252991</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   2: 2016-03-17 05:00:00 709336.7 6253145</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   3: 2016-03-17 09:00:00 709408.8 6253174</span>
@@ -184,6 +186,7 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Acoustic time stamps should be ordered chronologically.</span>
 <span class="r-in"><span><span class="fu">coa</span><span class="op">(</span><span class="va">dlist</span>, .delta_t <span class="op">=</span> <span class="st">"6 hours"</span>, .split <span class="op">=</span> <span class="st">"individual_id"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       individual_id           timestamp    coa_x   coa_y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;int&gt;              &lt;POSc&gt;    &lt;num&gt;   &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    1:            25 2016-03-17 01:00:00 709120.1 6253030</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    2:            25 2016-03-17 07:00:00 709398.4 6253169</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    3:            25 2016-03-21 19:00:00 709242.1 6253107</span>
@@ -197,7 +200,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1220:            35 2017-04-19 23:00:00 707242.1 6253707</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (3): Use lon/lat coordinates</span></span></span>
-<span class="r-in"><span><span class="va">gebco_ll</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/project.html" class="external-link">project</a></span><span class="op">(</span><span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"EPSG:4326"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">gebco_ll</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/project.html" class="external-link">project</a></span><span class="op">(</span><span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"EPSG:4326"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">dlist</span> <span class="op">&lt;-</span> <span class="fu"><a href="pat_setup_data.html">pat_setup_data</a></span><span class="op">(</span>.acoustics <span class="op">=</span> <span class="va">dat_acoustics</span>,</span></span>
 <span class="r-in"><span>                        .moorings <span class="op">=</span> <span class="va">dat_moorings</span>,</span></span>
 <span class="r-in"><span>                        .bathy <span class="op">=</span> <span class="va">gebco_ll</span>,</span></span>
@@ -208,6 +211,7 @@
 <span class="r-in"><span><span class="fu">coa</span><span class="op">(</span><span class="va">dlist</span>, .delta_t <span class="op">=</span> <span class="st">"6 hours"</span>, .split <span class="op">=</span> <span class="st">"individual_id"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="coa-3.png" alt="" width="700" height="433"></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       individual_id           timestamp     coa_x    coa_y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;int&gt;              &lt;POSc&gt;     &lt;num&gt;    &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    1:            25 2016-03-17 01:00:00 -5.612719 56.37542</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    2:            25 2016-03-17 07:00:00 -5.607875 56.37639</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    3:            25 2016-03-21 19:00:00 -5.610413 56.37602</span>

@@ -143,38 +143,30 @@ movement path.</p>
 <div class="section level3">
 <h3 id="simulate-data">Simulate data<a class="anchor" aria-label="anchor" href="#simulate-data"></a>
 </h3>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="do">#### Define study area</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co"># Define high-resolution grid</span></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>gebco <span class="ot">&lt;-</span> <span class="fu">dat_gebco</span>()</span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>gebco <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">crop</span>(gebco, terra<span class="sc">::</span><span class="fu">ext</span>(<span class="fl">706828.9</span>, <span class="fl">711135.5</span>, <span class="dv">6256889</span>, <span class="dv">6262960</span>))</span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>gebco <span class="ot">&lt;-</span> terra<span class="sc">::</span><span class="fu">disagg</span>(gebco, <span class="at">fact =</span> <span class="dv">50</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="sc">|---------</span><span class="er">|</span><span class="sc">---------</span><span class="er">|</span><span class="sc">---------</span><span class="er">|</span><span class="sc">---------</span><span class="er">|</span></span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="er">===</span></span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>                                          </span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co"># For demonstration purposes, modify depths to uniquely define grid cells</span></span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="fu">set.seed</span>(123L)</span>
-<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>gebco[] <span class="ot">&lt;-</span> gebco[] <span class="sc">+</span> <span class="dv">10</span> <span class="sc">+</span> <span class="fu">runif</span>(<span class="fu">length</span>(gebco[]), <span class="dv">0</span>, <span class="dv">15</span>) <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="fu">length</span>(gebco[]))</span>
-<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">duplicated</span>(<span class="fu">na.omit</span>(gebco[])))</span>
-<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt;   FALSE </span></span>
-<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co">#&gt; 6552500</span></span>
-<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="sc">!</span><span class="fu">any</span>(gebco[] <span class="sc">&lt;</span> <span class="dv">0</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a></span>
-<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="do">#### Define study period</span></span>
-<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>period <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">as.POSIXct</span>(<span class="st">"2016-01-01"</span>, <span class="at">tz =</span> <span class="st">"UTC"</span>), <span class="at">by =</span> <span class="st">"2 mins"</span>, <span class="at">length =</span> 500L)</span>
-<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a></span>
-<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="do">#### Simulate array &amp; path</span></span>
-<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a><span class="co"># Simulate array</span></span>
-<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a><span class="fu">set.seed</span>(123L)</span>
-<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>array <span class="ot">&lt;-</span> <span class="fu">sim_array</span>(gebco,</span>
-<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>                   <span class="at">.n_receiver =</span> <span class="dv">50</span>,</span>
-<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>                   <span class="at">.receiver_range =</span> <span class="dv">750</span>,</span>
-<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>                   <span class="at">.receiver_start =</span> <span class="fu">as.Date</span>(<span class="st">"2016-01-01"</span>),</span>
-<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>                   <span class="at">.receiver_end =</span> <span class="fu">as.Date</span>(<span class="st">"2017-01-01"</span>))</span></code></pre></div>
-<p><img src="d-demos_files/figure-html/unnamed-chunk-2-1.png" width="700"></p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Simulate movement path</span></span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#### Define study area</span></span>
+<span><span class="co"># Define high-resolution grid</span></span>
+<span><span class="va">gebco</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">gebco</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/crop.html" class="external-link">crop</a></span><span class="op">(</span><span class="va">gebco</span>, <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/ext.html" class="external-link">ext</a></span><span class="op">(</span><span class="fl">706828.9</span>, <span class="fl">711135.5</span>, <span class="fl">6256889</span>, <span class="fl">6262960</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">gebco</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/disaggregate.html" class="external-link">disagg</a></span><span class="op">(</span><span class="va">gebco</span>, fact <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
+<span><span class="co"># For demonstration purposes, modify depths to uniquely define grid cells</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123L</span><span class="op">)</span></span>
+<span><span class="va">gebco</span><span class="op">[</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">gebco</span><span class="op">[</span><span class="op">]</span> <span class="op">+</span> <span class="fl">10</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">gebco</span><span class="op">[</span><span class="op">]</span><span class="op">)</span>, <span class="fl">0</span>, <span class="fl">15</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">gebco</span><span class="op">[</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html" class="external-link">duplicated</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="va">gebco</span><span class="op">[</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/any.html" class="external-link">any</a></span><span class="op">(</span><span class="va">gebco</span><span class="op">[</span><span class="op">]</span> <span class="op">&lt;</span> <span class="fl">0</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#### Define study period</span></span>
+<span><span class="va">period</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2016-01-01"</span>, tz <span class="op">=</span> <span class="st">"UTC"</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"2 mins"</span>, length <span class="op">=</span> <span class="fl">500L</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#### Simulate array &amp; path</span></span>
+<span><span class="co"># Simulate array</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123L</span><span class="op">)</span></span>
+<span><span class="va">array</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_array.html">sim_array</a></span><span class="op">(</span><span class="va">gebco</span>,</span>
+<span>                   .n_receiver <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>                   .receiver_range <span class="op">=</span> <span class="fl">750</span>,</span>
+<span>                   .receiver_start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2016-01-01"</span><span class="op">)</span>,</span>
+<span>                   .receiver_end <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2017-01-01"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># Simulate movement path</span></span>
 <span><span class="va">origin</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fl">709144.3</span>, <span class="fl">6261561</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123L</span><span class="op">)</span></span>
 <span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sim_path_walk.html">sim_path_walk</a></span><span class="op">(</span>.bathy <span class="op">=</span> <span class="va">gebco</span>,</span>
@@ -206,10 +198,8 @@ movement path.</p>
 <span><span class="va">obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pf_setup_obs.html">pf_setup_obs</a></span><span class="op">(</span>.dlist <span class="op">=</span> <span class="va">dlist</span>,</span>
 <span>                    .step <span class="op">=</span> <span class="st">"2 mins"</span>,</span>
 <span>                    .mobility <span class="op">=</span> <span class="fl">500</span>,</span>
-<span>                    .receiver_range <span class="op">=</span> <span class="fl">750</span><span class="op">)</span></span></code></pre></div>
-<p><img src="d-demos_files/figure-html/unnamed-chunk-2-2.png" width="700"></p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">obs</span><span class="op">[</span>, <span class="va">depth_shallow</span> <span class="op">:=</span> <span class="va">depth</span><span class="op">]</span></span>
+<span>                    .receiver_range <span class="op">=</span> <span class="fl">750</span><span class="op">)</span></span>
+<span><span class="va">obs</span><span class="op">[</span>, <span class="va">depth_shallow</span> <span class="op">:=</span> <span class="va">depth</span><span class="op">]</span></span>
 <span><span class="va">obs</span><span class="op">[</span>, <span class="va">depth_deep</span> <span class="op">:=</span> <span class="va">depth</span><span class="op">]</span></span>
 <span><span class="va">obs_sbt</span> <span class="op">&lt;-</span> <span class="va">obs</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10L</span>, <span class="op">]</span></span>
 <span></span>
@@ -234,7 +224,7 @@ movement path.</p>
 <div class="section level3">
 <h3 id="forward-simulation">Forward simulation<a class="anchor" aria-label="anchor" href="#forward-simulation"></a>
 </h3>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#### (1) ACPF forward simulation (default options)</span></span>
 <span><span class="co"># &gt; The algorithm easy converges</span></span>
 <span><span class="co"># &gt; This makes sense</span></span>
@@ -260,13 +250,11 @@ movement path.</p>
 <span>                      .trial <span class="op">=</span> <span class="fu"><a href="../reference/pf_opt.html">pf_opt_trial</a></span><span class="op">(</span>.trial_sampler <span class="op">=</span> <span class="fl">0L</span><span class="op">)</span>,</span>
 <span>                      .record <span class="op">=</span> <span class="va">record</span></span>
 <span>                      <span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Convergence error: there are no particles with positive weights at</span></span>
-<span><span class="co">#&gt; time step 2. Returning outputs up to time step 2.</span></span>
 <span><span class="fu"><a href="https://testthat.r-lib.org/reference/logical-expectations.html" class="external-link">expect_false</a></span><span class="op">(</span><span class="va">out_pff</span><span class="op">$</span><span class="va">convergence</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># (B) Examine diagnostics to pin down the causes of convergence failures</span></span>
 <span><span class="co"># &gt; All particles are surviving the AC* filters</span></span>
-<span><span class="co"># &gt; (base n_u == pf_lik_ac).</span></span>
+<span><span class="co"># &gt; (base nu == pf_lik_ac).</span></span>
 <span><span class="co"># &gt; This makes sense b/c after the first time step detections weren't recorded</span></span>
 <span><span class="co"># &gt; and, in this sparse array, information in detection gaps is limited, see:</span></span>
 <span><span class="co"># &gt; obs_sbt[, detection]</span></span>
@@ -275,58 +263,6 @@ movement path.</p>
 <span><span class="co"># &gt; The obvious solution here is to enforce directed sampling, but</span></span>
 <span><span class="co"># &gt; for demonstration, we will explore some other options first.</span></span>
 <span><span class="va">out_pff</span><span class="op">$</span><span class="va">diagnostics</span></span>
-<span><span class="co">#&gt;     iter_m iter_i timestep                component trial      n    n_u</span></span>
-<span><span class="co">#&gt;  1:      1      1        1                 proposal    NA 443289 443289</span></span>
-<span><span class="co">#&gt;  2:      1      1        1      lik-acs_filter_land    NA 443289 443289</span></span>
-<span><span class="co">#&gt;  3:      1      1        1 lik-acs_filter_container    NA 443289 443289</span></span>
-<span><span class="co">#&gt;  4:      1      1        1            lik-pf_lik_ac    NA 441785 441785</span></span>
-<span><span class="co">#&gt;  5:      1      1        1            lik-pf_lik_dc    NA      1      1</span></span>
-<span><span class="co">#&gt;  6:      1      1        1            sample-origin     1    100      1</span></span>
-<span><span class="co">#&gt;  7:      1      1        2                 proposal     1    100    100</span></span>
-<span><span class="co">#&gt;  8:      1      1        2      lik-acs_filter_land     1    100    100</span></span>
-<span><span class="co">#&gt;  9:      1      1        2 lik-acs_filter_container     1    100    100</span></span>
-<span><span class="co">#&gt; 10:      1      1        2            lik-pf_lik_ac     1    100    100</span></span>
-<span><span class="co">#&gt; 11:      1      1        2            lik-pf_lik_dc     1      0      0</span></span>
-<span><span class="co">#&gt; 12:      1      1        2              sample-kick     1      0      0</span></span>
-<span><span class="co">#&gt; 13:      1      2        2                 proposal     1    100    100</span></span>
-<span><span class="co">#&gt; 14:      1      2        2      lik-acs_filter_land     1    100    100</span></span>
-<span><span class="co">#&gt; 15:      1      2        2 lik-acs_filter_container     1    100    100</span></span>
-<span><span class="co">#&gt; 16:      1      2        2            lik-pf_lik_ac     1     99     99</span></span>
-<span><span class="co">#&gt; 17:      1      2        2            lik-pf_lik_dc     1      0      0</span></span>
-<span><span class="co">#&gt; 18:      1      2        2              sample-kick     1      0      0</span></span>
-<span><span class="co">#&gt; 19:      1      3        2                 proposal     1    100    100</span></span>
-<span><span class="co">#&gt; 20:      1      3        2      lik-acs_filter_land     1    100    100</span></span>
-<span><span class="co">#&gt; 21:      1      3        2 lik-acs_filter_container     1    100    100</span></span>
-<span><span class="co">#&gt; 22:      1      3        2            lik-pf_lik_ac     1     98     98</span></span>
-<span><span class="co">#&gt; 23:      1      3        2            lik-pf_lik_dc     1      0      0</span></span>
-<span><span class="co">#&gt; 24:      1      3        2              sample-kick     1      0      0</span></span>
-<span><span class="co">#&gt;     iter_m iter_i timestep                component trial      n    n_u</span></span>
-<span><span class="co">#&gt;              ess</span></span>
-<span><span class="co">#&gt;  1: 2.255865e-06</span></span>
-<span><span class="co">#&gt;  2: 2.255865e-06</span></span>
-<span><span class="co">#&gt;  3: 2.255865e-06</span></span>
-<span><span class="co">#&gt;  4: 4.900110e-05</span></span>
-<span><span class="co">#&gt;  5: 3.128244e+00</span></span>
-<span><span class="co">#&gt;  6: 3.128244e-02</span></span>
-<span><span class="co">#&gt;  7: 1.000000e-02</span></span>
-<span><span class="co">#&gt;  8: 1.000000e-02</span></span>
-<span><span class="co">#&gt;  9: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 10: 9.511971e-02</span></span>
-<span><span class="co">#&gt; 11: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 12: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 13: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 14: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 15: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 16: 8.351750e-02</span></span>
-<span><span class="co">#&gt; 17: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 18: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 19: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 20: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 21: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 22: 8.630523e-02</span></span>
-<span><span class="co">#&gt; 23: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 24: 0.000000e+00</span></span>
-<span><span class="co">#&gt;              ess</span></span>
 <span></span>
 <span><span class="co"># (C) Increase the number of particles to improve convergence</span></span>
 <span><span class="co"># &gt; In general, ~1000 particles should be sufficient to represent a</span></span>
@@ -360,126 +296,9 @@ movement path.</p>
 <span><span class="co"># &gt; It takes ~2-50 kick attempts on each time step to achieve convergence</span></span>
 <span><span class="fu"><a href="https://testthat.r-lib.org/reference/logical-expectations.html" class="external-link">expect_true</a></span><span class="op">(</span><span class="va">out_pff</span><span class="op">$</span><span class="va">convergence</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">out_pff</span><span class="op">$</span><span class="va">diagnostics</span>, <span class="fl">50L</span><span class="op">)</span></span>
-<span><span class="co">#&gt;     iter_m iter_i timestep                component trial      n    n_u</span></span>
-<span><span class="co">#&gt;  1:      1      1        1                 proposal    NA 443289 443289</span></span>
-<span><span class="co">#&gt;  2:      1      1        1      lik-acs_filter_land    NA 443289 443289</span></span>
-<span><span class="co">#&gt;  3:      1      1        1 lik-acs_filter_container    NA 443289 443289</span></span>
-<span><span class="co">#&gt;  4:      1      1        1            lik-pf_lik_ac    NA 441785 441785</span></span>
-<span><span class="co">#&gt;  5:      1      1        1            lik-pf_lik_dc    NA      1      1</span></span>
-<span><span class="co">#&gt;  6:      1      1        1            sample-origin     1  10000      1</span></span>
-<span><span class="co">#&gt;  7:      1      1        2                 proposal     1  10000   9258</span></span>
-<span><span class="co">#&gt;  8:      1      1        2      lik-acs_filter_land     1  10000   9258</span></span>
-<span><span class="co">#&gt;  9:      1      1        2 lik-acs_filter_container     1  10000   9258</span></span>
-<span><span class="co">#&gt; 10:      1      1        2            lik-pf_lik_ac     1   9809   9067</span></span>
-<span><span class="co">#&gt; 11:      1      1        2            lik-pf_lik_dc     1      1      1</span></span>
-<span><span class="co">#&gt; 12:      1      1        2              sample-kick     1  10000      1</span></span>
-<span><span class="co">#&gt; 13:      1      1        3                 proposal     1  10000   9329</span></span>
-<span><span class="co">#&gt; 14:      1      1        3      lik-acs_filter_land     1  10000   9329</span></span>
-<span><span class="co">#&gt; 15:      1      1        3 lik-acs_filter_container     1  10000   9329</span></span>
-<span><span class="co">#&gt; 16:      1      1        3            lik-pf_lik_ac     1  10000   9329</span></span>
-<span><span class="co">#&gt; 17:      1      1        3            lik-pf_lik_dc     1      0      0</span></span>
-<span><span class="co">#&gt; 18:      1      1        3              sample-kick     1      0      0</span></span>
-<span><span class="co">#&gt; 19:      1      1        3                 proposal     2  10000   9331</span></span>
-<span><span class="co">#&gt; 20:      1      1        3      lik-acs_filter_land     2  10000   9331</span></span>
-<span><span class="co">#&gt; 21:      1      1        3 lik-acs_filter_container     2  10000   9331</span></span>
-<span><span class="co">#&gt; 22:      1      1        3            lik-pf_lik_ac     2   9999   9330</span></span>
-<span><span class="co">#&gt; 23:      1      1        3            lik-pf_lik_dc     2      0      0</span></span>
-<span><span class="co">#&gt; 24:      1      1        3              sample-kick     2      0      0</span></span>
-<span><span class="co">#&gt; 25:      1      1        3                 proposal     3  10000   9277</span></span>
-<span><span class="co">#&gt; 26:      1      1        3      lik-acs_filter_land     3  10000   9277</span></span>
-<span><span class="co">#&gt; 27:      1      1        3 lik-acs_filter_container     3  10000   9277</span></span>
-<span><span class="co">#&gt; 28:      1      1        3            lik-pf_lik_ac     3   9999   9276</span></span>
-<span><span class="co">#&gt; 29:      1      1        3            lik-pf_lik_dc     3      0      0</span></span>
-<span><span class="co">#&gt; 30:      1      1        3              sample-kick     3      0      0</span></span>
-<span><span class="co">#&gt; 31:      1      1        3                 proposal     4  10000   9333</span></span>
-<span><span class="co">#&gt; 32:      1      1        3      lik-acs_filter_land     4  10000   9333</span></span>
-<span><span class="co">#&gt; 33:      1      1        3 lik-acs_filter_container     4  10000   9333</span></span>
-<span><span class="co">#&gt; 34:      1      1        3            lik-pf_lik_ac     4   9999   9332</span></span>
-<span><span class="co">#&gt; 35:      1      1        3            lik-pf_lik_dc     4      0      0</span></span>
-<span><span class="co">#&gt; 36:      1      1        3              sample-kick     4      0      0</span></span>
-<span><span class="co">#&gt; 37:      1      1        3                 proposal     5  10000   9271</span></span>
-<span><span class="co">#&gt; 38:      1      1        3      lik-acs_filter_land     5  10000   9271</span></span>
-<span><span class="co">#&gt; 39:      1      1        3 lik-acs_filter_container     5  10000   9271</span></span>
-<span><span class="co">#&gt; 40:      1      1        3            lik-pf_lik_ac     5  10000   9271</span></span>
-<span><span class="co">#&gt; 41:      1      1        3            lik-pf_lik_dc     5      0      0</span></span>
-<span><span class="co">#&gt; 42:      1      1        3              sample-kick     5      0      0</span></span>
-<span><span class="co">#&gt; 43:      1      1        3                 proposal     6  10000   9287</span></span>
-<span><span class="co">#&gt; 44:      1      1        3      lik-acs_filter_land     6  10000   9287</span></span>
-<span><span class="co">#&gt; 45:      1      1        3 lik-acs_filter_container     6  10000   9287</span></span>
-<span><span class="co">#&gt; 46:      1      1        3            lik-pf_lik_ac     6  10000   9287</span></span>
-<span><span class="co">#&gt; 47:      1      1        3            lik-pf_lik_dc     6      0      0</span></span>
-<span><span class="co">#&gt; 48:      1      1        3              sample-kick     6      0      0</span></span>
-<span><span class="co">#&gt; 49:      1      1        3                 proposal     7  10000   9296</span></span>
-<span><span class="co">#&gt; 50:      1      1        3      lik-acs_filter_land     7  10000   9296</span></span>
-<span><span class="co">#&gt;     iter_m iter_i timestep                component trial      n    n_u</span></span>
-<span><span class="co">#&gt;              ess</span></span>
-<span><span class="co">#&gt;  1: 2.255865e-06</span></span>
-<span><span class="co">#&gt;  2: 2.255865e-06</span></span>
-<span><span class="co">#&gt;  3: 2.255865e-06</span></span>
-<span><span class="co">#&gt;  4: 4.900110e-05</span></span>
-<span><span class="co">#&gt;  5: 3.128244e+00</span></span>
-<span><span class="co">#&gt;  6: 3.128244e-04</span></span>
-<span><span class="co">#&gt;  7: 1.000000e-04</span></span>
-<span><span class="co">#&gt;  8: 1.000000e-04</span></span>
-<span><span class="co">#&gt;  9: 1.000000e-04</span></span>
-<span><span class="co">#&gt; 10: 1.003838e-03</span></span>
-<span><span class="co">#&gt; 11: 3.062286e+00</span></span>
-<span><span class="co">#&gt; 12: 3.062286e-04</span></span>
-<span><span class="co">#&gt; 13: 1.000000e-04</span></span>
-<span><span class="co">#&gt; 14: 1.000000e-04</span></span>
-<span><span class="co">#&gt; 15: 1.000000e-04</span></span>
-<span><span class="co">#&gt; 16: 9.252353e-04</span></span>
-<span><span class="co">#&gt; 17: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 18: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 19: 1.000000e-04</span></span>
-<span><span class="co">#&gt; 20: 1.000000e-04</span></span>
-<span><span class="co">#&gt; 21: 1.000000e-04</span></span>
-<span><span class="co">#&gt; 22: 9.131575e-04</span></span>
-<span><span class="co">#&gt; 23: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 24: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 25: 1.000000e-04</span></span>
-<span><span class="co">#&gt; 26: 1.000000e-04</span></span>
-<span><span class="co">#&gt; 27: 1.000000e-04</span></span>
-<span><span class="co">#&gt; 28: 9.189241e-04</span></span>
-<span><span class="co">#&gt; 29: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 30: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 31: 1.000000e-04</span></span>
-<span><span class="co">#&gt; 32: 1.000000e-04</span></span>
-<span><span class="co">#&gt; 33: 1.000000e-04</span></span>
-<span><span class="co">#&gt; 34: 9.167134e-04</span></span>
-<span><span class="co">#&gt; 35: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 36: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 37: 1.000000e-04</span></span>
-<span><span class="co">#&gt; 38: 1.000000e-04</span></span>
-<span><span class="co">#&gt; 39: 1.000000e-04</span></span>
-<span><span class="co">#&gt; 40: 9.029975e-04</span></span>
-<span><span class="co">#&gt; 41: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 42: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 43: 1.000000e-04</span></span>
-<span><span class="co">#&gt; 44: 1.000000e-04</span></span>
-<span><span class="co">#&gt; 45: 1.000000e-04</span></span>
-<span><span class="co">#&gt; 46: 9.048643e-04</span></span>
-<span><span class="co">#&gt; 47: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 48: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 49: 1.000000e-04</span></span>
-<span><span class="co">#&gt; 50: 1.000000e-04</span></span>
-<span><span class="co">#&gt;              ess</span></span>
 <span><span class="va">out_pff</span><span class="op">$</span><span class="va">diagnostics</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">timestep</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">trial</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 2</span></span></span>
-<span><span class="co">#&gt;    timestep     n</span></span>
-<span><span class="co">#&gt;       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>        1     1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>        2     1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>        3    30</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>        4    22</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>        5     1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>        6     1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>        7    30</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>        8     4</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>        9     8</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>       10     9</span></span>
 <span></span>
 <span><span class="co"># (D) Increase `.trial_revert` args to improve convergence</span></span>
 <span><span class="co"># &gt; `.trial_revert` forces the  algorithm to revert to an earlier</span></span>
@@ -501,36 +320,9 @@ movement path.</p>
 <span>                        .trial_sampler <span class="op">=</span> <span class="fl">0L</span>,</span>
 <span>                      <span class="op">)</span>,</span>
 <span>                      .record <span class="op">=</span> <span class="va">record</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Convergence error: there are no particles with positive weights at</span></span>
-<span><span class="co">#&gt; time step 7. Returning outputs up to time step 7.</span></span>
 <span><span class="co"># This may or may not converge depending on the seed</span></span>
 <span><span class="va">out_pff</span><span class="op">$</span><span class="va">convergence</span></span>
-<span><span class="co">#&gt; [1] FALSE</span></span>
 <span><span class="va">out_pff</span><span class="op">$</span><span class="va">diagnostics</span></span>
-<span><span class="co">#&gt;      iter_m iter_i timestep                component trial      n    n_u</span></span>
-<span><span class="co">#&gt;   1:      1      1        1                 proposal    NA 443289 443289</span></span>
-<span><span class="co">#&gt;   2:      1      1        1      lik-acs_filter_land    NA 443289 443289</span></span>
-<span><span class="co">#&gt;   3:      1      1        1 lik-acs_filter_container    NA 443289 443289</span></span>
-<span><span class="co">#&gt;   4:      1      1        1            lik-pf_lik_ac    NA 441785 441785</span></span>
-<span><span class="co">#&gt;   5:      1      1        1            lik-pf_lik_dc    NA      1      1</span></span>
-<span><span class="co">#&gt;  ---                                                                    </span></span>
-<span><span class="co">#&gt; 152:      1     11        7      lik-acs_filter_land     1  50000  35537</span></span>
-<span><span class="co">#&gt; 153:      1     11        7 lik-acs_filter_container     1  41609  29163</span></span>
-<span><span class="co">#&gt; 154:      1     11        7            lik-pf_lik_ac     1  37474  26237</span></span>
-<span><span class="co">#&gt; 155:      1     11        7            lik-pf_lik_dc     1      0      0</span></span>
-<span><span class="co">#&gt; 156:      1     11        7              sample-kick     1      0      0</span></span>
-<span><span class="co">#&gt;               ess</span></span>
-<span><span class="co">#&gt;   1: 2.255865e-06</span></span>
-<span><span class="co">#&gt;   2: 2.255865e-06</span></span>
-<span><span class="co">#&gt;   3: 2.255865e-06</span></span>
-<span><span class="co">#&gt;   4: 4.900110e-05</span></span>
-<span><span class="co">#&gt;   5: 3.128244e+00</span></span>
-<span><span class="co">#&gt;  ---             </span></span>
-<span><span class="co">#&gt; 152: 2.000000e-05</span></span>
-<span><span class="co">#&gt; 153: 2.403326e-05</span></span>
-<span><span class="co">#&gt; 154: 1.869655e-03</span></span>
-<span><span class="co">#&gt; 155: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 156: 0.000000e+00</span></span>
 <span></span>
 <span><span class="co"># (E) Use .rerun to rerun the algorithm from an earlier time step</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123L</span><span class="op">)</span></span>
@@ -550,67 +342,14 @@ movement path.</p>
 <span>                      .rerun <span class="op">=</span> <span class="va">out_pff</span>,</span>
 <span>                      .rerun_from <span class="op">=</span> <span class="fl">3L</span>,</span>
 <span>                      .record <span class="op">=</span> <span class="va">record</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Convergence error: there are no particles with positive weights at</span></span>
-<span><span class="co">#&gt; time step 4. Returning outputs up to time step 4.</span></span>
 <span><span class="co"># This helps but does not facilitate convergence in this example</span></span>
 <span><span class="fu"><a href="https://testthat.r-lib.org/reference/logical-expectations.html" class="external-link">expect_false</a></span><span class="op">(</span><span class="va">out_pff_2</span><span class="op">$</span><span class="va">convergence</span><span class="op">)</span></span>
 <span><span class="co"># The output contains successful particle samples:</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">out_pff_2</span><span class="op">$</span><span class="va">history</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      Length Class      Mode</span></span>
-<span><span class="co">#&gt; [1,] 10     data.table list</span></span>
-<span><span class="co">#&gt; [2,] 10     data.table list</span></span>
-<span><span class="co">#&gt; [3,] 10     data.table list</span></span>
-<span><span class="co">#&gt; [4,] 10     data.table list</span></span>
-<span><span class="co">#&gt; [5,] 10     data.table list</span></span>
-<span><span class="co">#&gt; [6,] 10     data.table list</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">out_pff_2</span><span class="op">$</span><span class="va">history</span><span class="op">)</span></span>
 <span><span class="co"># But all diagnostics (from all runs):</span></span>
 <span><span class="va">out_pff_2</span><span class="op">$</span><span class="va">diagnostics</span></span>
-<span><span class="co">#&gt;      iter_m iter_i timestep                component trial      n    n_u</span></span>
-<span><span class="co">#&gt;   1:      1      1        1                 proposal    NA 443289 443289</span></span>
-<span><span class="co">#&gt;   2:      1      1        1      lik-acs_filter_land    NA 443289 443289</span></span>
-<span><span class="co">#&gt;   3:      1      1        1 lik-acs_filter_container    NA 443289 443289</span></span>
-<span><span class="co">#&gt;   4:      1      1        1            lik-pf_lik_ac    NA 441785 441785</span></span>
-<span><span class="co">#&gt;   5:      1      1        1            lik-pf_lik_dc    NA      1      1</span></span>
-<span><span class="co">#&gt;  ---                                                                    </span></span>
-<span><span class="co">#&gt; 272:      2     11        4      lik-acs_filter_land     1  50000  35678</span></span>
-<span><span class="co">#&gt; 273:      2     11        4 lik-acs_filter_container     1  50000  35678</span></span>
-<span><span class="co">#&gt; 274:      2     11        4            lik-pf_lik_ac     1  47054  33115</span></span>
-<span><span class="co">#&gt; 275:      2     11        4            lik-pf_lik_dc     1      0      0</span></span>
-<span><span class="co">#&gt; 276:      2     11        4              sample-kick     1      0      0</span></span>
-<span><span class="co">#&gt;               ess</span></span>
-<span><span class="co">#&gt;   1: 2.255865e-06</span></span>
-<span><span class="co">#&gt;   2: 2.255865e-06</span></span>
-<span><span class="co">#&gt;   3: 2.255865e-06</span></span>
-<span><span class="co">#&gt;   4: 4.900110e-05</span></span>
-<span><span class="co">#&gt;   5: 3.128244e+00</span></span>
-<span><span class="co">#&gt;  ---             </span></span>
-<span><span class="co">#&gt; 272: 2.000000e-05</span></span>
-<span><span class="co">#&gt; 273: 2.000000e-05</span></span>
-<span><span class="co">#&gt; 274: 8.412054e-04</span></span>
-<span><span class="co">#&gt; 275: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 276: 0.000000e+00</span></span>
 <span><span class="co"># And the complete set of timings:</span></span>
 <span><span class="va">out_pff_2</span><span class="op">$</span><span class="va">time</span></span>
-<span><span class="co">#&gt; [[1]]</span></span>
-<span><span class="co">#&gt; [[1]]$start</span></span>
-<span><span class="co">#&gt; [1] "2024-01-21 21:59:24 CET"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[1]]$end</span></span>
-<span><span class="co">#&gt; [1] "2024-01-21 21:59:26 CET"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[1]]$duration</span></span>
-<span><span class="co">#&gt; Time difference of 2.41736 secs</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[2]]</span></span>
-<span><span class="co">#&gt; [[2]]$start</span></span>
-<span><span class="co">#&gt; [1] "2024-01-21 21:59:26 CET"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[2]]$end</span></span>
-<span><span class="co">#&gt; [1] "2024-01-21 21:59:28 CET"</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; [[2]]$duration</span></span>
-<span><span class="co">#&gt; Time difference of 1.646796 secs</span></span>
 <span></span>
 <span><span class="co">#### (3) ACDCPF forward simulation (default)</span></span>
 <span><span class="co"># &gt; The default implementation attempts &lt;=.trial_kick kicks &amp; then uses directed sampling</span></span>
@@ -624,166 +363,6 @@ movement path.</p>
 <span><span class="co"># &gt; But, at each time step, we are wasting effort kicking particles</span></span>
 <span><span class="fu"><a href="https://testthat.r-lib.org/reference/logical-expectations.html" class="external-link">expect_true</a></span><span class="op">(</span><span class="va">out_pff</span><span class="op">$</span><span class="va">convergence</span><span class="op">)</span></span>
 <span><span class="va">out_pff</span><span class="op">$</span><span class="va">diagnostics</span></span>
-<span><span class="co">#&gt;     iter_m iter_i timestep                component trial      n    n_u</span></span>
-<span><span class="co">#&gt;  1:      1      1        1                 proposal    NA 443289 443289</span></span>
-<span><span class="co">#&gt;  2:      1      1        1      lik-acs_filter_land    NA 443289 443289</span></span>
-<span><span class="co">#&gt;  3:      1      1        1 lik-acs_filter_container    NA 443289 443289</span></span>
-<span><span class="co">#&gt;  4:      1      1        1            lik-pf_lik_ac    NA 441785 441785</span></span>
-<span><span class="co">#&gt;  5:      1      1        1            lik-pf_lik_dc    NA      1      1</span></span>
-<span><span class="co">#&gt;  6:      1      1        1            sample-origin     1    100      1</span></span>
-<span><span class="co">#&gt;  7:      1      1        2                 proposal     1    100    100</span></span>
-<span><span class="co">#&gt;  8:      1      1        2      lik-acs_filter_land     1    100    100</span></span>
-<span><span class="co">#&gt;  9:      1      1        2 lik-acs_filter_container     1    100    100</span></span>
-<span><span class="co">#&gt; 10:      1      1        2            lik-pf_lik_ac     1    100    100</span></span>
-<span><span class="co">#&gt; 11:      1      1        2            lik-pf_lik_dc     1      0      0</span></span>
-<span><span class="co">#&gt; 12:      1      1        2              sample-kick     1      0      0</span></span>
-<span><span class="co">#&gt; 13:      1      1        2             lik-directed    NA      1      1</span></span>
-<span><span class="co">#&gt; 14:      1      1        2          sample-directed     1    100      1</span></span>
-<span><span class="co">#&gt; 15:      1      1        3                 proposal     1    100    100</span></span>
-<span><span class="co">#&gt; 16:      1      1        3      lik-acs_filter_land     1    100    100</span></span>
-<span><span class="co">#&gt; 17:      1      1        3 lik-acs_filter_container     1    100    100</span></span>
-<span><span class="co">#&gt; 18:      1      1        3            lik-pf_lik_ac     1    100    100</span></span>
-<span><span class="co">#&gt; 19:      1      1        3            lik-pf_lik_dc     1      0      0</span></span>
-<span><span class="co">#&gt; 20:      1      1        3              sample-kick     1      0      0</span></span>
-<span><span class="co">#&gt; 21:      1      1        3             lik-directed    NA      1      1</span></span>
-<span><span class="co">#&gt; 22:      1      1        3          sample-directed     1    100      1</span></span>
-<span><span class="co">#&gt; 23:      1      1        4                 proposal     1    100     99</span></span>
-<span><span class="co">#&gt; 24:      1      1        4      lik-acs_filter_land     1    100     99</span></span>
-<span><span class="co">#&gt; 25:      1      1        4 lik-acs_filter_container     1    100     99</span></span>
-<span><span class="co">#&gt; 26:      1      1        4            lik-pf_lik_ac     1     97     96</span></span>
-<span><span class="co">#&gt; 27:      1      1        4            lik-pf_lik_dc     1      0      0</span></span>
-<span><span class="co">#&gt; 28:      1      1        4              sample-kick     1      0      0</span></span>
-<span><span class="co">#&gt; 29:      1      1        4             lik-directed    NA      1      1</span></span>
-<span><span class="co">#&gt; 30:      1      1        4          sample-directed     1    100      1</span></span>
-<span><span class="co">#&gt; 31:      1      1        5                 proposal     1    100    100</span></span>
-<span><span class="co">#&gt; 32:      1      1        5      lik-acs_filter_land     1    100    100</span></span>
-<span><span class="co">#&gt; 33:      1      1        5 lik-acs_filter_container     1    100    100</span></span>
-<span><span class="co">#&gt; 34:      1      1        5            lik-pf_lik_ac     1    100    100</span></span>
-<span><span class="co">#&gt; 35:      1      1        5            lik-pf_lik_dc     1      0      0</span></span>
-<span><span class="co">#&gt; 36:      1      1        5              sample-kick     1      0      0</span></span>
-<span><span class="co">#&gt; 37:      1      1        5             lik-directed    NA      1      1</span></span>
-<span><span class="co">#&gt; 38:      1      1        5          sample-directed     1    100      1</span></span>
-<span><span class="co">#&gt; 39:      1      1        6                 proposal     1    100    100</span></span>
-<span><span class="co">#&gt; 40:      1      1        6      lik-acs_filter_land     1    100    100</span></span>
-<span><span class="co">#&gt; 41:      1      1        6 lik-acs_filter_container     1    100    100</span></span>
-<span><span class="co">#&gt; 42:      1      1        6            lik-pf_lik_ac     1    100    100</span></span>
-<span><span class="co">#&gt; 43:      1      1        6            lik-pf_lik_dc     1      0      0</span></span>
-<span><span class="co">#&gt; 44:      1      1        6              sample-kick     1      0      0</span></span>
-<span><span class="co">#&gt; 45:      1      1        6             lik-directed    NA      1      1</span></span>
-<span><span class="co">#&gt; 46:      1      1        6          sample-directed     1    100      1</span></span>
-<span><span class="co">#&gt; 47:      1      1        7                 proposal     1    100    100</span></span>
-<span><span class="co">#&gt; 48:      1      1        7      lik-acs_filter_land     1    100    100</span></span>
-<span><span class="co">#&gt; 49:      1      1        7 lik-acs_filter_container     1     86     86</span></span>
-<span><span class="co">#&gt; 50:      1      1        7            lik-pf_lik_ac     1     78     78</span></span>
-<span><span class="co">#&gt; 51:      1      1        7            lik-pf_lik_dc     1      0      0</span></span>
-<span><span class="co">#&gt; 52:      1      1        7              sample-kick     1      0      0</span></span>
-<span><span class="co">#&gt; 53:      1      1        7             lik-directed    NA      1      1</span></span>
-<span><span class="co">#&gt; 54:      1      1        7          sample-directed     1    100      1</span></span>
-<span><span class="co">#&gt; 55:      1      1        8                 proposal     1    100    100</span></span>
-<span><span class="co">#&gt; 56:      1      1        8      lik-acs_filter_land     1    100    100</span></span>
-<span><span class="co">#&gt; 57:      1      1        8 lik-acs_filter_container     1    100    100</span></span>
-<span><span class="co">#&gt; 58:      1      1        8            lik-pf_lik_ac     1     32     32</span></span>
-<span><span class="co">#&gt; 59:      1      1        8            lik-pf_lik_dc     1      0      0</span></span>
-<span><span class="co">#&gt; 60:      1      1        8              sample-kick     1      0      0</span></span>
-<span><span class="co">#&gt; 61:      1      1        8             lik-directed    NA      1      1</span></span>
-<span><span class="co">#&gt; 62:      1      1        8          sample-directed     1    100      1</span></span>
-<span><span class="co">#&gt; 63:      1      1        9                 proposal     1    100    100</span></span>
-<span><span class="co">#&gt; 64:      1      1        9      lik-acs_filter_land     1    100    100</span></span>
-<span><span class="co">#&gt; 65:      1      1        9 lik-acs_filter_container     1    100    100</span></span>
-<span><span class="co">#&gt; 66:      1      1        9            lik-pf_lik_ac     1    100    100</span></span>
-<span><span class="co">#&gt; 67:      1      1        9            lik-pf_lik_dc     1      0      0</span></span>
-<span><span class="co">#&gt; 68:      1      1        9              sample-kick     1      0      0</span></span>
-<span><span class="co">#&gt; 69:      1      1        9             lik-directed    NA      1      1</span></span>
-<span><span class="co">#&gt; 70:      1      1        9          sample-directed     1    100      1</span></span>
-<span><span class="co">#&gt; 71:      1      1       10                 proposal     1    100     99</span></span>
-<span><span class="co">#&gt; 72:      1      1       10      lik-acs_filter_land     1    100     99</span></span>
-<span><span class="co">#&gt; 73:      1      1       10 lik-acs_filter_container     1    100     99</span></span>
-<span><span class="co">#&gt; 74:      1      1       10            lik-pf_lik_ac     1     62     61</span></span>
-<span><span class="co">#&gt; 75:      1      1       10            lik-pf_lik_dc     1      0      0</span></span>
-<span><span class="co">#&gt; 76:      1      1       10              sample-kick     1      0      0</span></span>
-<span><span class="co">#&gt; 77:      1      1       10             lik-directed    NA      1      1</span></span>
-<span><span class="co">#&gt; 78:      1      1       10          sample-directed     1    100      1</span></span>
-<span><span class="co">#&gt;     iter_m iter_i timestep                component trial      n    n_u</span></span>
-<span><span class="co">#&gt;              ess</span></span>
-<span><span class="co">#&gt;  1: 2.255865e-06</span></span>
-<span><span class="co">#&gt;  2: 2.255865e-06</span></span>
-<span><span class="co">#&gt;  3: 2.255865e-06</span></span>
-<span><span class="co">#&gt;  4: 4.900110e-05</span></span>
-<span><span class="co">#&gt;  5: 3.128244e+00</span></span>
-<span><span class="co">#&gt;  6: 3.128244e-02</span></span>
-<span><span class="co">#&gt;  7: 1.000000e-02</span></span>
-<span><span class="co">#&gt;  8: 1.000000e-02</span></span>
-<span><span class="co">#&gt;  9: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 10: 9.511971e-02</span></span>
-<span><span class="co">#&gt; 11: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 12: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 13: 3.062286e+00</span></span>
-<span><span class="co">#&gt; 14: 3.062286e-02</span></span>
-<span><span class="co">#&gt; 15: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 16: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 17: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 18: 1.019045e-01</span></span>
-<span><span class="co">#&gt; 19: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 20: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 21: 9.459951e+00</span></span>
-<span><span class="co">#&gt; 22: 9.459951e-02</span></span>
-<span><span class="co">#&gt; 23: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 24: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 25: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 26: 5.321003e-01</span></span>
-<span><span class="co">#&gt; 27: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 28: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 29: 4.720604e+00</span></span>
-<span><span class="co">#&gt; 30: 4.720604e-02</span></span>
-<span><span class="co">#&gt; 31: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 32: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 33: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 34: 1.166527e-01</span></span>
-<span><span class="co">#&gt; 35: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 36: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 37: 2.016636e+01</span></span>
-<span><span class="co">#&gt; 38: 2.016636e-01</span></span>
-<span><span class="co">#&gt; 39: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 40: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 41: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 42: 1.291414e-01</span></span>
-<span><span class="co">#&gt; 43: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 44: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 45: 6.175547e+00</span></span>
-<span><span class="co">#&gt; 46: 6.175547e-02</span></span>
-<span><span class="co">#&gt; 47: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 48: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 49: 1.162791e-02</span></span>
-<span><span class="co">#&gt; 50: 1.239674e+00</span></span>
-<span><span class="co">#&gt; 51: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 52: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 53: 5.035929e+00</span></span>
-<span><span class="co">#&gt; 54: 5.035929e-02</span></span>
-<span><span class="co">#&gt; 55: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 56: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 57: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 58: 1.965224e+01</span></span>
-<span><span class="co">#&gt; 59: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 60: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 61: 1.350390e+02</span></span>
-<span><span class="co">#&gt; 62: 1.350390e+00</span></span>
-<span><span class="co">#&gt; 63: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 64: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 65: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 66: 9.654088e-02</span></span>
-<span><span class="co">#&gt; 67: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 68: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 69: 7.582005e+00</span></span>
-<span><span class="co">#&gt; 70: 7.582005e-02</span></span>
-<span><span class="co">#&gt; 71: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 72: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 73: 1.000000e-02</span></span>
-<span><span class="co">#&gt; 74: 3.260336e+00</span></span>
-<span><span class="co">#&gt; 75: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 76: 0.000000e+00</span></span>
-<span><span class="co">#&gt; 77: 1.018395e+02</span></span>
-<span><span class="co">#&gt; 78: 1.018395e+00</span></span>
-<span><span class="co">#&gt;              ess</span></span>
 <span></span>
 <span><span class="co">#### (4) ACDCPF forward simulation (directed sampling)</span></span>
 <span><span class="co"># &gt; The diagnostics above suggest we should focus on directed sampling</span></span>
@@ -799,58 +378,6 @@ movement path.</p>
 <span>                      .control <span class="op">=</span> <span class="fu"><a href="../reference/pf_opt.html">pf_opt_control</a></span><span class="op">(</span>.sampler_batch_size <span class="op">=</span> <span class="fl">100L</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://testthat.r-lib.org/reference/logical-expectations.html" class="external-link">expect_true</a></span><span class="op">(</span><span class="va">out_pff</span><span class="op">$</span><span class="va">convergence</span><span class="op">)</span></span>
 <span><span class="va">out_pff</span><span class="op">$</span><span class="va">diagnostics</span></span>
-<span><span class="co">#&gt;     iter_m iter_i timestep                component trial      n    n_u</span></span>
-<span><span class="co">#&gt;  1:      1      1        1                 proposal    NA 443289 443289</span></span>
-<span><span class="co">#&gt;  2:      1      1        1      lik-acs_filter_land    NA 443289 443289</span></span>
-<span><span class="co">#&gt;  3:      1      1        1 lik-acs_filter_container    NA 443289 443289</span></span>
-<span><span class="co">#&gt;  4:      1      1        1            lik-pf_lik_ac    NA 441785 441785</span></span>
-<span><span class="co">#&gt;  5:      1      1        1            lik-pf_lik_dc    NA      1      1</span></span>
-<span><span class="co">#&gt;  6:      1      1        1            sample-origin     1    100      1</span></span>
-<span><span class="co">#&gt;  7:      1      1        2             lik-directed    NA      1      1</span></span>
-<span><span class="co">#&gt;  8:      1      1        2          sample-directed     1    100      1</span></span>
-<span><span class="co">#&gt;  9:      1      1        3             lik-directed    NA      1      1</span></span>
-<span><span class="co">#&gt; 10:      1      1        3          sample-directed     1    100      1</span></span>
-<span><span class="co">#&gt; 11:      1      1        4             lik-directed    NA      1      1</span></span>
-<span><span class="co">#&gt; 12:      1      1        4          sample-directed     1    100      1</span></span>
-<span><span class="co">#&gt; 13:      1      1        5             lik-directed    NA      1      1</span></span>
-<span><span class="co">#&gt; 14:      1      1        5          sample-directed     1    100      1</span></span>
-<span><span class="co">#&gt; 15:      1      1        6             lik-directed    NA      1      1</span></span>
-<span><span class="co">#&gt; 16:      1      1        6          sample-directed     1    100      1</span></span>
-<span><span class="co">#&gt; 17:      1      1        7             lik-directed    NA      1      1</span></span>
-<span><span class="co">#&gt; 18:      1      1        7          sample-directed     1    100      1</span></span>
-<span><span class="co">#&gt; 19:      1      1        8             lik-directed    NA      1      1</span></span>
-<span><span class="co">#&gt; 20:      1      1        8          sample-directed     1    100      1</span></span>
-<span><span class="co">#&gt; 21:      1      1        9             lik-directed    NA      1      1</span></span>
-<span><span class="co">#&gt; 22:      1      1        9          sample-directed     1    100      1</span></span>
-<span><span class="co">#&gt; 23:      1      1       10             lik-directed    NA      1      1</span></span>
-<span><span class="co">#&gt; 24:      1      1       10          sample-directed     1    100      1</span></span>
-<span><span class="co">#&gt;     iter_m iter_i timestep                component trial      n    n_u</span></span>
-<span><span class="co">#&gt;              ess</span></span>
-<span><span class="co">#&gt;  1: 2.255865e-06</span></span>
-<span><span class="co">#&gt;  2: 2.255865e-06</span></span>
-<span><span class="co">#&gt;  3: 2.255865e-06</span></span>
-<span><span class="co">#&gt;  4: 4.900110e-05</span></span>
-<span><span class="co">#&gt;  5: 3.128244e+00</span></span>
-<span><span class="co">#&gt;  6: 3.128244e-02</span></span>
-<span><span class="co">#&gt;  7: 3.062286e+00</span></span>
-<span><span class="co">#&gt;  8: 3.062286e-02</span></span>
-<span><span class="co">#&gt;  9: 9.459951e+00</span></span>
-<span><span class="co">#&gt; 10: 9.459951e-02</span></span>
-<span><span class="co">#&gt; 11: 4.720604e+00</span></span>
-<span><span class="co">#&gt; 12: 4.720604e-02</span></span>
-<span><span class="co">#&gt; 13: 2.016636e+01</span></span>
-<span><span class="co">#&gt; 14: 2.016636e-01</span></span>
-<span><span class="co">#&gt; 15: 6.175547e+00</span></span>
-<span><span class="co">#&gt; 16: 6.175547e-02</span></span>
-<span><span class="co">#&gt; 17: 5.035929e+00</span></span>
-<span><span class="co">#&gt; 18: 5.035929e-02</span></span>
-<span><span class="co">#&gt; 19: 1.350390e+02</span></span>
-<span><span class="co">#&gt; 20: 1.350390e+00</span></span>
-<span><span class="co">#&gt; 21: 7.582005e+00</span></span>
-<span><span class="co">#&gt; 22: 7.582005e-02</span></span>
-<span><span class="co">#&gt; 23: 1.018395e+02</span></span>
-<span><span class="co">#&gt; 24: 1.018395e+00</span></span>
-<span><span class="co">#&gt;              ess</span></span>
 <span></span>
 <span><span class="co">#### (5) Complete forward simulation using directed sampling</span></span>
 <span><span class="co"># &gt; Our exploratory analyses indicated directed sampling for this dataset.</span></span>
@@ -879,12 +406,12 @@ movement path.</p>
 <div class="section level3">
 <h3 id="validation">Validation<a class="anchor" aria-label="anchor" href="#validation"></a>
 </h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#### Validate output elements</span></span>
 <span><span class="co"># Identify path segment between analysed observations</span></span>
 <span><span class="va">path</span> <span class="op">&lt;-</span></span>
 <span>  <span class="va">path</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">timestamp</span> <span class="op"><a href="https://rdrr.io/pkg/terra/man/match.html" class="external-link">%in%</a></span> <span class="va">obs</span><span class="op">$</span><span class="va">timestamp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">timestamp</span> <span class="op"><a href="https://rspatial.github.io/terra/reference/match.html" class="external-link">%in%</a></span> <span class="va">obs</span><span class="op">$</span><span class="va">timestamp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>timestep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co"># We have one set of particles for each time step</span></span>
@@ -892,7 +419,7 @@ movement path.</p>
 <span>             <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">out_pff</span><span class="op">$</span><span class="va">history</span>, \<span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="va">d</span><span class="op">$</span><span class="va">timestep</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
 <span>             <span class="op">)</span></span>
 <span><span class="co"># We have also recorded convergence diagnostics at each time step</span></span>
-<span><span class="fu"><a href="https://testthat.r-lib.org/reference/logical-expectations.html" class="external-link">expect_true</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">path</span><span class="op">$</span><span class="va">timestep</span> <span class="op"><a href="https://rdrr.io/pkg/terra/man/match.html" class="external-link">%in%</a></span> <span class="va">out_pff</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">timestep</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://testthat.r-lib.org/reference/logical-expectations.html" class="external-link">expect_true</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">path</span><span class="op">$</span><span class="va">timestep</span> <span class="op"><a href="https://rspatial.github.io/terra/reference/match.html" class="external-link">%in%</a></span> <span class="va">out_pff</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">timestep</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#### Validate reconstruction of the correct path</span></span>
 <span><span class="co"># Identify particle samples from each time step</span></span>
@@ -900,7 +427,7 @@ movement path.</p>
 <span>  <span class="va">out_pff</span><span class="op">$</span><span class="va">history</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">timestep</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>cell_now <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">cell_now</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>cell_now <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">cell_now</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">timestep</span>, cell_id <span class="op">=</span> <span class="va">cell_now</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co"># Confirm we have sampled the correct location at each time step</span></span>
@@ -915,11 +442,9 @@ movement path.</p>
 <span><span class="va">map_particles</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/map_dens.html">map_dens</a></span><span class="op">(</span><span class="va">gebco</span>,</span>
 <span>                          .coord <span class="op">=</span> <span class="fu"><a href="../reference/pf_coord.html">pf_coord</a></span><span class="op">(</span><span class="va">out_pff</span><span class="op">$</span><span class="va">history</span>, .bathy <span class="op">=</span> <span class="va">gebco</span><span class="op">)</span>, </span>
 <span>                          .plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">path</span><span class="op">$</span><span class="va">x</span>, <span class="va">path</span><span class="op">$</span><span class="va">y</span>, cex <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="d-demos_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">pp</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://testthat.r-lib.org/reference/logical-expectations.html" class="external-link">expect_true</a></span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">map_path</span>, <span class="va">map_particles</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">path</span><span class="op">$</span><span class="va">x</span>, <span class="va">path</span><span class="op">$</span><span class="va">y</span>, cex <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">pp</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://testthat.r-lib.org/reference/logical-expectations.html" class="external-link">expect_true</a></span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">map_path</span>, <span class="va">map_particles</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
   </div>

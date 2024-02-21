@@ -103,7 +103,7 @@
 <h1 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
 </h1>
 <p><a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a> is designed to reconstruct fine-scale movement paths and emergent patterns of space use in passive acoustic telemetry systems. A powerful, flexible process-orientated framework known as a forward filtering–backward sampling algorithm is used for this purpose. This framework unifies the <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a> algorithms and provides important opportunities for development, which we exploit here.</p>
-<p>The essential functions are <code><a href="reference/pf_forward.html">pf_forward()</a></code> and <code><a href="reference/pf_backward_sampler.html">pf_backward_sampler()</a></code>. <code><a href="reference/pf_forward.html">pf_forward()</a></code> is the forward filter. This simulates the possible locations of an individual moving forwards in time, accounting for all of the data (including acoustic observations, depth observations and any other observations) <em>up to</em> each time point and the animal’s movement. <code><a href="reference/pf_backward_sampler.html">pf_backward_sampler()</a></code> refines outputs from the forward filter. This function runs a simulation backwards in time and samples likely locations in line with all of the data <em>up to and after</em> each time point. The outcome is a set of location samples that represent possible trajectories and embody emergent patterns of space use.</p>
+<p>The essential functions are <code><a href="reference/pf_forward.html">pf_forward()</a></code> and <code>pf_backward_sampler_*()</code>. <code><a href="reference/pf_forward.html">pf_forward()</a></code> is the forward filter. This simulates the possible locations of an individual moving forwards in time, accounting for all of the data (including acoustic observations, depth observations and any other observations) <em>up to</em> each time point and the animal’s movement. <code>pf_backward_sampler_*()</code> refines outputs from the forward filter. This function runs a simulation backwards in time and samples likely locations in line with all of the data <em>up to and after</em> each time point. The outcome is a set of location samples that represent possible trajectories and embody emergent patterns of space use.</p>
 </div>
 <div class="section level1">
 <h1 id="evolution">Evolution<a class="anchor" aria-label="anchor" href="#evolution"></a>
@@ -311,12 +311,12 @@
 <li>
 <code><a href="reference/pf_backward_killer.html">pf_backward_killer()</a></code> to prune dead-ends;</li>
 <li>
-<code><a href="reference/pf_backward_sampler.html">pf_backward_sampler()</a></code> to run the backward sampler;</li>
+<code><a href="reference/pf_backward_sampler.html">pf_backward_sampler_p()</a></code> or [<code><a href="reference/pf_backward_sampler.html">pf_backward_sampler_v()</a></code>] to run the backward sampler;</li>
 </ul>
 <p><strong>For particle diagnostics</strong>, see:</p>
 <ul>
 <li>
-<code><a href="reference/pf_diag.html">pf_diag_convergence()</a></code> to collate convergence diagnostics;</li>
+<code>pf_diag_convergence()</code> to collate convergence diagnostics;</li>
 <li>
 <code><a href="reference/pf_diag.html">pf_diag_summary()</a></code> to collate summary diagnostics;</li>
 </ul>

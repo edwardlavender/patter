@@ -83,7 +83,7 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.particles</dt>
-<dd><p>A <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines particle samples. This includes a <code>weight</code> column that should be used for (re)sampling.</p></dd>
+<dd><p>A <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines particle samples. This includes a <code>weight</code> column that should be used for (re)sampling. <code>.particles$weights</code> are normalised to sum to one.</p></dd>
 
 
 <dt>.n</dt>
@@ -100,7 +100,7 @@
     <h2>Details</h2>
     <p><code><a href="pf_forward.html">pf_forward()</a></code> expects a sampling function in the <code>.sample</code> argument. You can write your own function or use an exported one:</p><ul><li><p><code>pf_sample_multinomial</code> implements multinomial (re)sampling.</p></li>
 <li><p><code>pf_sample_systematic()</code> implements systematic (re)sampling.</p></li>
-</ul><p>Sampling functions must accept <code>.particles</code> and <code>.n</code> arguments and return a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of <code>.n</code> particle samples.</p>
+</ul><p>Sampling functions must accept <code>.particles</code> and <code>.n</code> arguments and return a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of <code>.n</code> particle samples. The <code>weight</code> column must be reset after sampling.</p>
 <p>Systematic particle sampling (<code>pf_sample_systematic()</code>) is generally recommended.</p>
     </div>
     <div id="see-also">
@@ -113,11 +113,11 @@
 <li><p>For tuning parameters, see <code><a href="pf_opt.html">pf_opt</a></code>.</p></li>
 </ul></li>
 <li><p><code><a href="pf_backward_-times.html">pf_backward_*()</a></code> refines outputs from the forward filter:</p><ul><li><p><code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> removes dead-ends;</p></li>
-<li><p><code><a href="pf_backward_sampler.html">pf_backward_sampler()</a></code> implements the backward sampler;</p></li>
+<li><p><code><a href="pf_backward_sampler.html">pf_backward_sampler</a></code><code>_*()</code> implements the backward sampler;</p></li>
 </ul></li>
 <li><p>To reconstruct movement paths from particle samples, use <code><a href="pf_path.html">pf_path()</a></code>.</p></li>
 <li><p>To map emergent patterns of space use, use <code><a href="pf_coord.html">pf_coord()</a></code> plus a <code>map_*()</code> function, such as <code><a href="map_pou.html">map_pou()</a></code>, <code><a href="map_dens.html">map_dens()</a></code> and/or <code><a href="map_hr.html">map_hr</a></code><code>_()</code>.</p></li>
-<li><p>For additional utilities, see supporting <code>pf_*()</code> functions, such as <code><a href="pf_files.html">pf_files()</a></code>, <code><a href="pf_files.html">pf_files_size()</a></code>, <code><a href="pf_plot_history.html">pf_plot_history()</a></code>, <code><a href="pf_diag.html">pf_diag_convergence()</a></code> and <code><a href="pf_diag.html">pf_diag_summary()</a></code>.</p></li>
+<li><p>For additional utilities, see supporting <code>pf_*()</code> functions, such as <code><a href="pf_files.html">pf_files()</a></code>, <code><a href="pf_files.html">pf_files_size()</a></code>, <code><a href="pf_plot_history.html">pf_plot_history()</a></code>, <code>pf_diag_convergence()</code> and <code><a href="pf_diag.html">pf_diag_summary()</a></code>.</p></li>
 </ul></div>
     </div>
     <div id="author">
@@ -131,28 +131,30 @@
 <span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>cell_now <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>, weight <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">pf_sample_multinomial</span><span class="op">(</span><span class="va">p</span>, .n <span class="op">=</span> <span class="fl">10L</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     cell_now weight</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1:        1   0.50</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2:        3   0.25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3:        1   0.50</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:        1   0.50</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5:        2   0.25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6:        1   0.50</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7:        3   0.25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8:        1   0.50</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9:        2   0.25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:        2   0.25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        &lt;num&gt;  &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:        2    0.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:        3    0.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:        2    0.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:        3    0.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:        2    0.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:        2    0.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:        1    0.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:        3    0.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:        1    0.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:        2    0.1</span>
 <span class="r-in"><span><span class="fu">pf_sample_systematic</span><span class="op">(</span><span class="va">p</span>, .n <span class="op">=</span> <span class="fl">10L</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     cell_now weight</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1:        1   0.50</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2:        1   0.50</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3:        1   0.50</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:        1   0.50</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5:        1   0.50</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6:        2   0.25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7:        2   0.25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8:        3   0.25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9:        3   0.25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:        3   0.25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        &lt;num&gt;  &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:        1    0.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:        1    0.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:        1    0.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:        1    0.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:        1    0.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:        2    0.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:        2    0.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:        2    0.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:        3    0.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:        3    0.1</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

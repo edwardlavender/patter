@@ -86,7 +86,9 @@
 <span>  .chunk_fun <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  .use_names <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  .combine <span class="op">=</span> <span class="cn">NULL</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">cl_chunk</span><span class="op">(</span><span class="va">.cl</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -135,12 +137,15 @@
     <h2>Value</h2>
     
 
-<p>The function invisibly returns a <code>list</code> or a combined <code>list</code> (defined by <code>.combine</code>).</p>
-    </div>
+<ul><li><p><code>cl_lapply()</code> invisibly returns a <code>list</code> or a combined <code>list</code> (defined by <code>.combine</code>).</p></li>
+<li><p><code>cl_chunk()</code> returns a <code>logical</code> variable.</p></li>
+</ul></div>
     <div id="details">
     <h2>Details</h2>
     <p><code>cl_lapply()</code> is exported, as we have found it useful in other projects, but primarily intended for internal use. Use <code><a href="https://rdrr.io/pkg/pbapply/man/pboptions.html" class="external-link">pbapply::pboptions()</a></code> to control the progress bar, including the number of gradations (<code>nout</code>). <code>nout</code> also controls the number of chunks on each core. Fewer chunks reduce parallelisation overhead but also the number of gradations on the progress bar.</p>
-<p><code>cl_lapply()</code> and associated (internal) functions evolved from <a href="https://edwardlavender.github.io/flapper/reference/cl.html" class="external-link"><code>flapper::cl_*()</code></a> functions.</p>
+<p><code>cl_chunk()</code> sets the default chunk behaviour of <code>cl_lapply()</code> in wrapper functions:</p><ul><li><p>If a single core is specified, <code>cl_chunk()</code> returns <code>FALSE</code>.</p></li>
+<li><p>Otherwise, <code>cl_chunk()</code> returns <code>TRUE</code>.</p></li>
+</ul><p><code>cl_lapply()</code> and associated (internal) functions evolved from <a href="https://edwardlavender.github.io/flapper/reference/cl.html" class="external-link"><code>flapper::cl_*()</code></a> functions.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>

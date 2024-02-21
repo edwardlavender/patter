@@ -94,7 +94,7 @@
 <div class="section level3">
 <h3 id="backward-pass-0-0-0-9000">Backward pass<a class="anchor" aria-label="anchor" href="#backward-pass-0-0-0-9000"></a></h3>
 <p>The <code><a href="../reference/pf_backward_killer.html">pf_backward_killer()</a></code> is used to prune dead-ends from the forward simulation. This replaces previous functionality in <code>pf_simplify()</code> and is much faster. Pruning a 20,000 step time series with 1,000 particles at each time step now takes less than two minutes.</p>
-<p><code><a href="../reference/pf_backward_sampler.html">pf_backward_sampler()</a></code> is a major, new routine that implements the backward sampler. This is required for the reconstruction of movement trajectories.</p>
+<p><code>pf_backward_sampler_*()</code> is a major, new routine that implements the backward sampler. This is required for the reconstruction of movement trajectories.</p>
 </div>
 <div class="section level3">
 <h3 id="analysis-0-0-0-9000">Analysis<a class="anchor" aria-label="anchor" href="#analysis-0-0-0-9000"></a></h3>

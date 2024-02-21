@@ -75,16 +75,9 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">.pf_rpropose_origin</span><span class="op">(</span></span>
-<span>  .particles <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  <span class="va">.obs</span>,</span>
-<span>  .t <span class="op">=</span> <span class="fl">1L</span>,</span>
-<span>  <span class="va">.dlist</span>,</span>
-<span>  .rargs <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  .dargs <span class="op">=</span> <span class="cn">NULL</span></span>
-<span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">.pf_rpropose_origin</span><span class="op">(</span>.particles <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">.obs</span>, .t <span class="op">=</span> <span class="fl">1L</span>, <span class="va">.dlist</span>, .rargs <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.pf_sample_origin</span><span class="op">(</span><span class="va">.particles</span>, <span class="va">.n</span>, <span class="va">.sample</span>, <span class="va">.trial_crit</span>, <span class="va">.trial_count</span><span class="op">)</span></span>
+<span><span class="fu">.pf_sample_origin</span><span class="op">(</span><span class="va">.particles</span>, <span class="va">.n</span>, <span class="va">.sample</span>, <span class="va">.trial_crit</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">.pf_particles_origin</span><span class="op">(</span></span>
 <span>  .particles <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -99,21 +92,14 @@
 <span>  <span class="va">.sample</span>,</span>
 <span>  <span class="va">.n</span>,</span>
 <span>  <span class="va">.trial_crit</span>,</span>
-<span>  <span class="va">.trial_count</span>,</span>
 <span>  <span class="va">.control</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.pf_lik</span><span class="op">(</span></span>
-<span>  <span class="va">.particles</span>,</span>
-<span>  <span class="va">.obs</span>,</span>
-<span>  <span class="va">.t</span>,</span>
-<span>  <span class="va">.dlist</span>,</span>
-<span>  <span class="va">.stack</span>,</span>
-<span>  .diagnostics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  .trial <span class="op">=</span> <span class="cn">NA_integer_</span></span>
-<span><span class="op">)</span></span>
+<span><span class="fu">.pf_lik</span><span class="op">(</span><span class="va">.particles</span>, <span class="va">.obs</span>, <span class="va">.t</span>, <span class="va">.dlist</span>, <span class="va">.stack</span>, <span class="va">.control</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">.pf_lik_ac_detection</span><span class="op">(</span><span class="va">.particles</span>, <span class="va">.kernels</span>, <span class="va">.detections</span>, <span class="va">.absences</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">.pf_lik_dc</span><span class="op">(</span><span class="va">.x</span>, <span class="va">.a</span>, <span class="va">.b</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">.pf_particles_kick</span><span class="op">(</span></span>
 <span>  <span class="va">.particles</span>,</span>
@@ -121,15 +107,10 @@
 <span>  <span class="va">.t</span>,</span>
 <span>  <span class="va">.dlist</span>,</span>
 <span>  <span class="va">.rpropose</span>,</span>
-<span>  .dpropose <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  .rargs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  .dargs <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">.likelihood</span>,</span>
-<span>  <span class="va">.sample</span>,</span>
-<span>  <span class="va">.n</span>,</span>
-<span>  <span class="va">.trial_crit</span>,</span>
-<span>  <span class="va">.trial_count</span>,</span>
-<span>  <span class="va">.control</span></span>
+<span>  <span class="va">.control</span>,</span>
+<span>  <span class="va">.trial</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">.pf_particles_sampler</span><span class="op">(</span></span>
@@ -137,15 +118,9 @@
 <span>  <span class="va">.obs</span>,</span>
 <span>  <span class="va">.t</span>,</span>
 <span>  <span class="va">.dlist</span>,</span>
-<span>  .rpropose <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">.dpropose</span>,</span>
-<span>  .rargs <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  .dargs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">.likelihood</span>,</span>
-<span>  <span class="va">.sample</span>,</span>
-<span>  <span class="va">.n</span>,</span>
-<span>  <span class="va">.trial_crit</span>,</span>
-<span>  <span class="va">.trial_count</span>,</span>
 <span>  <span class="va">.control</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -155,24 +130,25 @@
     <p>Function hierarchy is as follows:</p><ul><li><p><code>pf_rpropose_*()</code> functions generate proposals;</p></li>
 <li><p><code>pf_lik_*()</code> functions calculate likelihoods;</p></li>
 <li><p><code>pf_sample_*()</code> functions sample proposals;</p></li>
-<li><p><code>pf_particle_*()</code> functions wrap proposals, likelihood calculations and sampling in an iterative framework;</p></li>
+<li><p><code>pf_particle_*()</code> functions combine proposals, likelihood calculations and, if applicable, sampling;</p></li>
 </ul><p>Proposal and likelihood functions must accept the following core arguments:</p><ul><li><p><code>.particles</code></p></li>
 <li><p><code>.obs</code></p></li>
 <li><p><code>.t</code></p></li>
 <li><p><code>.dlist</code></p></li>
+<li><p><code>.drop</code> (except for <code>rpropose</code> functions);</p></li>
 </ul><p>Proposal functions must also accept:</p><ul><li><p><code>.rargs</code></p></li>
 <li><p><code>.dargs</code></p></li>
 </ul><p><code>.pf_lik()</code> is a wrapper for specified likelihood functions (see <code><a href="pf_lik.html">pf_lik</a></code>). The function returns a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines valid proposal locations, likelihoods and weights. A <code>diagnostics</code> attribute contains proposal diagnostics. This also requires:</p><ul><li><p><code>.stack</code>---a named <code>list</code> of likelihood functions (see <code><a href="pf_lik.html">pf_lik</a></code>).</p></li>
 <li><p><code>.diagnostics</code>---an empty <code>list</code> used to store likelihood diagnostics, or <code>NULL</code>.</p></li>
-<li><p><code>.trial</code>---an <code>integer</code> that distinguishes trials.</p></li>
-</ul><p>Most likelihood functions are directly exported but some internals routines are also documented here for convenience, namely <code>.pf_lik_ac_detection()</code>. See also <code>acs_*()</code> functions.</p>
+<li><p><code>.control</code>---a named <code>list</code> of control options, from <code><a href="pf_opt.html">pf_opt_control()</a></code>.</p></li>
+</ul><p>Most likelihood functions are directly exported but some internals routines are also documented here for convenience, namely <code>.pf_lik_ac_detection()</code> and <code>.pf_lik_drop()</code>. See also <code>acs_*()</code> functions.</p>
 <p>Sampling functions must accept:</p><ul><li><p><code>.particles</code></p></li>
 <li><p><code>.n</code></p></li>
 </ul><p>Wrapper functions must accept:</p><ul><li><p>Proposal function arguments (<code>.particles</code>, <code>.obs</code>, <code>.t</code>, <code>.dlist</code>);</p></li>
 <li><p>Proposal functions (<code>.rpropose</code>,<code>.dpropose</code>) and argument lists (<code>.rargs</code>, <code>.dargs</code>);</p></li>
 <li><p>Additional likelihood arguments (<code>.likelihood</code>);</p></li>
 <li><p>Sampling arguments (<code>.sample</code>, <code>.n</code>);</p></li>
-<li><p>Iteration arguments (<code>.trial_crit</code>, <code>.trial_count</code>);</p></li>
+<li><p>Iteration arguments, if applicable (<code>.trial_crit</code>, <code>.trial_count</code>);</p></li>
 <li><p>Control arguments (<code>.control</code>);</p></li>
 </ul><p>Internal functions may support additional arguments as required.</p>
 <p>At the first time step:</p><ul><li><p><code>.pf_rpropose_origin()</code> 'proposes' starting locations (quadrature points);</p></li>

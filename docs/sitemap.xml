@@ -52,12 +52,6 @@
     <loc>/reference/acs_setup_detection_overlaps.html</loc>
   </url>
   <url>
-    <loc>/reference/acs_setup_detection_pr.html</loc>
-  </url>
-  <url>
-    <loc>/reference/acs_setup_obs.html</loc>
-  </url>
-  <url>
     <loc>/reference/call_.html</loc>
   </url>
   <url>
@@ -79,9 +73,6 @@
     <loc>/reference/coa.html</loc>
   </url>
   <url>
-    <loc>/reference/colProds.matrix.html</loc>
-  </url>
-  <url>
     <loc>/reference/datasets-algorithms.html</loc>
   </url>
   <url>
@@ -100,34 +91,13 @@
     <loc>/reference/dot-acs_absences.html</loc>
   </url>
   <url>
-    <loc>/reference/dot-acs_given_detection_particles.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-acs_setup_obs_receiver_id_next.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-is_lonlat.html</loc>
-  </url>
-  <url>
     <loc>/reference/dot-map_mark.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-pf_backward_killer_outputs.html</loc>
   </url>
   <url>
     <loc>/reference/dot-pf_backward_output.html</loc>
   </url>
   <url>
-    <loc>/reference/dot-pf_history_dt.html</loc>
-  </url>
-  <url>
     <loc>/reference/dot-pf_setup_obs_receiver_id_next.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-st_invert.html</loc>
-  </url>
-  <url>
-    <loc>/reference/geomean.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>
@@ -148,13 +118,7 @@
     <loc>/reference/map_pou.html</loc>
   </url>
   <url>
-    <loc>/reference/mktempdir.html</loc>
-  </url>
-  <url>
     <loc>/reference/pat_setup_data.html</loc>
-  </url>
-  <url>
-    <loc>/reference/patter-package.html</loc>
   </url>
   <url>
     <loc>/reference/patter-progress.html</loc>
@@ -172,9 +136,6 @@
     <loc>/reference/pf_backward_killer.html</loc>
   </url>
   <url>
-    <loc>/reference/pf_backward_killer_diagnostics.html</loc>
-  </url>
-  <url>
     <loc>/reference/pf_backward_sampler.html</loc>
   </url>
   <url>
@@ -182,9 +143,6 @@
   </url>
   <url>
     <loc>/reference/pf_coord.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_count.html</loc>
   </url>
   <url>
     <loc>/reference/pf_diag-internal.html</loc>
@@ -200,9 +158,6 @@
   </url>
   <url>
     <loc>/reference/pf_forward.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_forward_diagnostics.html</loc>
   </url>
   <url>
     <loc>/reference/pf_history.html</loc>
@@ -244,9 +199,6 @@
     <loc>/reference/pf_utils-internal.html</loc>
   </url>
   <url>
-    <loc>/reference/pf_utils_internal.html</loc>
-  </url>
-  <url>
     <loc>/reference/prettyGraphics.html</loc>
   </url>
   <url>
@@ -275,9 +227,6 @@
   </url>
   <url>
     <loc>/reference/spat.html</loc>
-  </url>
-  <url>
-    <loc>/reference/spatNormalise.html</loc>
   </url>
   <url>
     <loc>/reference/spatTemplate.html</loc>

@@ -148,8 +148,8 @@
 <li><p><code><a href="pf_opt.html">pf_opt_record()</a></code>, which sets output properties;</p></li>
 </ul></li>
 </ul><p><strong>To implement the backward pass (<code><a href="pf_backward_-times.html">pf_backward_*()</a></code>)</strong>, use:</p><ul><li><p><code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> to prune dead-ends;</p></li>
-<li><p><code><a href="pf_backward_sampler.html">pf_backward_sampler()</a></code> to run the backward sampler;</p></li>
-</ul><p><strong>For particle diagnostics</strong>, see:</p><ul><li><p><code><a href="pf_diag.html">pf_diag_convergence()</a></code> to collate convergence diagnostics;</p></li>
+<li><p><code><a href="pf_backward_sampler.html">pf_backward_sampler_p()</a></code> or <code><a href="pf_backward_sampler.html">pf_backward_sampler_v()</a></code> to run the backward sampler;</p></li>
+</ul><p><strong>For particle diagnostics</strong>, see:</p><ul><li><p><code>pf_diag_convergence()</code> to collate convergence diagnostics;</p></li>
 <li><p><code><a href="pf_diag.html">pf_diag_summary()</a></code> to collate summary diagnostics;</p></li>
 </ul><p><strong>For convenience plotting functions</strong>, see:</p><ul><li><p><code><a href="pf_plot_history.html">pf_plot_history()</a></code> to plot particle histories;</p></li>
 </ul><p><strong>For common utility functions</strong>, see:</p><ul><li><p><code><a href="pf_files.html">pf_files()</a></code> to list particle-sample files;</p></li>
@@ -157,8 +157,8 @@
 </ul><p><strong>For movement-path reconstruction</strong>, use:</p><ul><li><p><code><a href="pf_path.html">pf_path()</a></code> (and <code><a href="pf_path_pivot.html">pf_path_pivot()</a></code>) to reconstruct movement paths;</p></li>
 </ul><p><strong>For mapping utilisation distributions</strong>, use:</p><ul><li><p><code><a href="pf_coord.html">pf_coord()</a></code> to collate particle coordinates for mapping;</p></li>
 <li><p><code><a href="map_pou.html">map_pou()</a></code> to map probability-of-use;</p></li>
-<li><p><code><a href="map_dens.html">map_dens()</a></code> to create smooth maps using <code>spatstat</code>, plus the supporting functions:</p><ul><li><p><code><a href="map_dens.html">as.im.SpatRaster()</a></code>, to convert <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code>s to pixel images;</p></li>
-<li><p><code><a href="map_dens.html">as.owin.SpatRaster()</a></code>, to convert  <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code>s to observation windows;</p></li>
+<li><p><code><a href="map_dens.html">map_dens()</a></code> to create smooth maps using <code>spatstat</code>, plus the supporting functions:</p><ul><li><p><code><a href="map_dens.html">as.im.SpatRaster()</a></code>, to convert <code><a href="https://rspatial.github.io/terra/reference/SpatRaster-class.html" class="external-link">SpatRaster</a></code>s to pixel images;</p></li>
+<li><p><code><a href="map_dens.html">as.owin.SpatRaster()</a></code>, to convert  <code><a href="https://rspatial.github.io/terra/reference/SpatRaster-class.html" class="external-link">SpatRaster</a></code>s to observation windows;</p></li>
 <li><p><code><a href="map_dens.html">as.owin.sf()</a></code>, to convert <code>sf</code> objects to observation windows;</p></li>
 </ul></li>
 <li><p><code>map_hr_*()</code> to map home ranges, specifically:</p><ul><li><p><code><a href="map_hr.html">map_hr_prop()</a></code> for a custom range;</p></li>
@@ -172,7 +172,7 @@
     <p>The following convenience functions are also exported. Use:</p><ul><li><p><code><a href="sim_helpers.html">ssf()</a></code> and <code><a href="sim_helpers.html">ssv()</a></code> to <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code>;</p></li>
 <li><p><code><a href="dist_along_path.html">dist_along_path()</a></code> to calculate distances along a movement path;</p></li>
 <li><p><code><a href="degrees.html">degrees()</a></code> to create circular angles;</p></li>
-<li><p><code><a href="spatTemplate.html">spatTemplate()</a></code> to create a template <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code>;</p></li>
+<li><p><code><a href="spatTemplate.html">spatTemplate()</a></code> to create a template <code><a href="https://rspatial.github.io/terra/reference/SpatRaster-class.html" class="external-link">SpatRaster</a></code>;</p></li>
 </ul></div>
     <div id="options">
     <h2>Options</h2>

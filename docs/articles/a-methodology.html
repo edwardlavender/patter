@@ -182,7 +182,7 @@ contingent upon the past (a marginal distribution), they do not embody
 information from the future (the joint distribution). In
 <code>patter</code>, a backward sampling algorithm mitigates these issue
 to reconstruct movement trajectories (see
-<code><a href="../reference/pf_backward_sampler.html">pf_backward_sampler()</a></code>).</p>
+<code>pf_backward_*()</code>).</p>
 <p>See <code>NEWS</code> for a summary of the differences between
 <code>flapper</code> and <code>patter</code>.</p>
 </div>
@@ -316,7 +316,7 @@ the probability densities linking each pair of particles;</li>
 <li>Repeat this process until the start of the time series;</li>
 </ul>
 <p>Backward sampling is implemented via
-<code><a href="../reference/pf_backward_sampler.html">pf_backward_sampler()</a></code> and associates. As noted above, you
+<code>pf_backward_sampler_*()</code> and associates. As noted above, you
 can also reconstruct paths via <code><a href="../reference/pf_forward.html">pf_forward()</a></code> plus
 <code><a href="../reference/pf_backward_killer.html">pf_backward_killer()</a></code> (and <code><a href="../reference/pf_path.html">pf_path()</a></code>), which is
 much less computationally intensive, but subject to limitations (see
@@ -332,7 +332,7 @@ of space use. Movement paths can be reconstructed in two ways:</p>
 <code><a href="../reference/pf_backward_killer.html">pf_backward_killer()</a></code> → <code><a href="../reference/pf_path.html">pf_path()</a></code>
 </li>
 <li>(recommended) <code><a href="../reference/pf_forward.html">pf_forward()</a></code> →
-<code><a href="../reference/pf_backward_sampler.html">pf_backward_sampler()</a></code>
+<code>pf_backward_sampler_*()</code> → <code><a href="../reference/pf_path.html">pf_path()</a></code>
 </li>
 </ul>
 <p>Patterns of space use (utilisation distributions) can be

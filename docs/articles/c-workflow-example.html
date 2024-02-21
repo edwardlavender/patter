@@ -117,11 +117,11 @@ documentation.</p>
 workflow for <code>patter</code>.</strong> This comprises four main
 steps: data preparation, forward filtering, backward sampling and
 analysis. In data preparation, we prepare the data for analysis and
-pre-compute necessary algorithm inputs. In forward filtering, we
-simulate possible locations of an individual, given the data and a
-movement model, moving forwards in time. In backwards sampling, we
-further refine the set of simulated locations. We can then analyse
-reconstructed movement paths and patterns of space use.</p>
+precompute necessary algorithm inputs. In forward filtering, we simulate
+possible locations of an individual, given the data and a movement
+model, moving forwards in time. In backwards sampling, we further refine
+the set of simulated locations. We can then analyse reconstructed
+movement paths and patterns of space use.</p>
 </div>
 <div class="section level2">
 <h2 id="packages">Packages<a class="anchor" aria-label="anchor" href="#packages"></a>
@@ -146,12 +146,11 @@ packages.</p>
 <p>The first step is to define a grid over the study area. Here, we use
 an in-built bathymetry <code>SpatRaster</code> to represent the study
 area, but any grid is acceptable. <code>NA</code> defines inhospitable
-habitats (land in this case). Movements and likelihoods are represented
-on the grid, so it is desirable to use a relatively fine resolution
-where possible (especially since the speed of the forward simulation is
-(largely) independent of grid resolution).</p>
+habitats (land in this case). Some movement and likelihood functions are
+implemented on a grid, so it is desirable to use a relatively fine
+resolution where possible.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="op">(</span><span class="va">gebco</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/disaggregate.html" class="external-link">disagg</a></span><span class="op">(</span><span class="fu"><a href="../reference/datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">gebco</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/disaggregate.html" class="external-link">disagg</a></span><span class="op">(</span><span class="fu"><a href="../reference/datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; class       : SpatRaster </span></span>
 <span><span class="co">#&gt; dimensions  : 1056, 760, 1  (nrow, ncol, nlyr)</span></span>
 <span><span class="co">#&gt; resolution  : 25, 25  (x, y)</span></span>
@@ -162,7 +161,7 @@ where possible (especially since the speed of the forward simulation is
 <span><span class="co">#&gt; name        :       bathy </span></span>
 <span><span class="co">#&gt; min value   :   0.1994156 </span></span>
 <span><span class="co">#&gt; max value   : 201.8856354</span></span>
-<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gebco</span>, main <span class="op">=</span> <span class="st">"Study area"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gebco</span>, main <span class="op">=</span> <span class="st">"Study area"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="c-workflow-example_files/figure-html/unnamed-chunk-2-1.png" width="95%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
@@ -184,6 +183,7 @@ time series and a single individual to develop the workflow.</p>
 <span><span class="va">acc</span>  <span class="op">&lt;-</span> <span class="va">dat_acoustics</span><span class="op">[</span><span class="va">individual_id</span> <span class="op">==</span> <span class="fl">25</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">acc</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    individual_id           timestamp receiver_id</span></span>
+<span><span class="co">#&gt;            &lt;int&gt;              &lt;POSc&gt;       &lt;int&gt;</span></span>
 <span><span class="co">#&gt; 1:            25 2016-03-17 01:50:00          26</span></span>
 <span><span class="co">#&gt; 2:            25 2016-03-17 01:52:00          26</span></span>
 <span><span class="co">#&gt; 3:            25 2016-03-17 01:54:00          26</span></span>
@@ -195,6 +195,7 @@ time series and a single individual to develop the workflow.</p>
 <span><span class="va">arc</span>  <span class="op">&lt;-</span> <span class="va">dat_archival</span><span class="op">[</span><span class="va">individual_id</span> <span class="op">==</span> <span class="fl">25</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">arc</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    individual_id           timestamp  depth</span></span>
+<span><span class="co">#&gt;            &lt;num&gt;              &lt;POSc&gt;  &lt;num&gt;</span></span>
 <span><span class="co">#&gt; 1:            25 2016-03-16 00:00:00 159.15</span></span>
 <span><span class="co">#&gt; 2:            25 2016-03-16 00:02:00 161.01</span></span>
 <span><span class="co">#&gt; 3:            25 2016-03-16 00:04:00 162.86</span></span>
@@ -321,7 +322,7 @@ system:</p>
 <span>                                .bathy <span class="op">=</span> <span class="va">gebco</span>, </span>
 <span>                                .ddetx <span class="op">=</span> <span class="va">ddetlogistic</span>,</span>
 <span>                                .alpha <span class="op">=</span> <span class="fl">4</span>, .beta <span class="op">=</span> <span class="op">-</span><span class="fl">0.01</span><span class="op">)</span></span>
-<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">k</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">k</span><span class="op">)</span></span></code></pre></div>
 <p><img src="c-workflow-example_files/figure-html/unnamed-chunk-6-2.png" width="95%" style="display: block; margin: auto;"></p>
 <p>Once you have a model, this is plugged into
 <code><a href="../reference/acs_setup_detection_kernels.html">acs_setup_detection_kernels()</a></code> which sets up the detection
@@ -356,6 +357,7 @@ required for the analysis.</p>
 <span><span class="va">obs</span> <span class="op">&lt;-</span> <span class="va">obs</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">obs</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    timestep           timestamp       date detection_id detection receiver_id</span></span>
+<span><span class="co">#&gt;       &lt;int&gt;              &lt;POSc&gt;     &lt;char&gt;        &lt;int&gt;     &lt;int&gt;      &lt;list&gt;</span></span>
 <span><span class="co">#&gt; 1:        1 2016-03-17 01:50:00 2016-03-17            1         1          26</span></span>
 <span><span class="co">#&gt; 2:        2 2016-03-17 01:52:00 2016-03-17            2         1          26</span></span>
 <span><span class="co">#&gt; 3:        3 2016-03-17 01:54:00 2016-03-17            3         1          26</span></span>
@@ -363,6 +365,7 @@ required for the analysis.</p>
 <span><span class="co">#&gt; 5:        5 2016-03-17 01:58:00 2016-03-17            4         1          26</span></span>
 <span><span class="co">#&gt; 6:        6 2016-03-17 02:00:00 2016-03-17            5         1          26</span></span>
 <span><span class="co">#&gt;    receiver_id_next mobility buffer_past buffer_future buffer_future_incl_gamma</span></span>
+<span><span class="co">#&gt;              &lt;list&gt;    &lt;num&gt;       &lt;num&gt;         &lt;num&gt;                    &lt;num&gt;</span></span>
 <span><span class="co">#&gt; 1:               26      500         500           500                     1250</span></span>
 <span><span class="co">#&gt; 2:               26      500         500           500                     1250</span></span>
 <span><span class="co">#&gt; 3:               26      500         500          1000                     1750</span></span>
@@ -370,6 +373,7 @@ required for the analysis.</p>
 <span><span class="co">#&gt; 5:               26      500         500           500                     1250</span></span>
 <span><span class="co">#&gt; 6:               26      500         500          1000                     1750</span></span>
 <span><span class="co">#&gt;    depth</span></span>
+<span><span class="co">#&gt;    &lt;num&gt;</span></span>
 <span><span class="co">#&gt; 1: 73.78</span></span>
 <span><span class="co">#&gt; 2: 73.32</span></span>
 <span><span class="co">#&gt; 3: 73.32</span></span>
@@ -379,10 +383,10 @@ required for the analysis.</p>
 <p>To incorporate ancillary (e.g., archival) data, we may need to
 include additional columns in <code>obs</code> as required by the
 relevant likelihood functions. In our simulation, we’ll account for the
-likelihood of depth observations using a binary likelihood function
+likelihood of depth observations using a uniform likelihood function
 provided by <code>patter</code> (<code><a href="../reference/pf_lik.html">pf_lik_dc()</a></code>). Under this
 model, depth observations in sampled locations where the bathymetric
-depth likes between a lower and upper depth limit are equally likely,
+depth lies between a lower and upper depth limit are equally likely,
 whereas observations outside those limits are impossible (Lavender et
 al., 2023). To implement this model, here we use a depth-error model to
 define lower and upper depth limits. In this example, we have to include
@@ -393,27 +397,17 @@ data.</p>
 <span><span class="va">fudge</span> <span class="op">&lt;-</span> <span class="fl">10</span></span>
 <span><span class="va">cde</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.depth</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">e</span> <span class="op">&lt;-</span> <span class="fl">4.77</span> <span class="op">+</span> <span class="fl">2.5</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">0.5</span><span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="op">(</span><span class="fl">0.013</span> <span class="op">*</span> <span class="va">.depth</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="va">fudge</span> </span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="op">(</span><span class="va">e</span> <span class="op">+</span> <span class="fl">5</span><span class="op">)</span>, <span class="va">e</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">(</span><span class="va">e</span> <span class="op">+</span> <span class="fl">5</span><span class="op">)</span>, <span class="va">e</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="va">cde</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Vectorize.html" class="external-link">Vectorize</a></span><span class="op">(</span><span class="va">cde</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># (B) Pre-calculate depth limits for efficiency</span></span>
+<span><span class="co"># (B) Define shallow and deep depth errors </span></span>
 <span><span class="va">obs</span> <span class="op">&lt;-</span></span>
 <span>  <span class="va">obs</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>    depth_shallow <span class="op">=</span> <span class="va">depth</span> <span class="op">+</span> <span class="fu">cde</span><span class="op">(</span><span class="va">depth</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>,</span>
-<span>    depth_deep <span class="op">=</span> <span class="va">depth</span> <span class="op">+</span> <span class="fu">cde</span><span class="op">(</span><span class="va">depth</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span>, <span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># (C) Visualise depth-error model</span></span>
-<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">obs</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">obs</span><span class="op">$</span><span class="va">timestep</span><span class="op">[</span><span class="va">p</span><span class="op">]</span>, <span class="va">obs</span><span class="op">$</span><span class="va">depth</span><span class="op">[</span><span class="va">p</span><span class="op">]</span> <span class="op">*</span> <span class="op">-</span><span class="fl">1</span>,</span>
-<span>     ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">obs</span><span class="op">$</span><span class="va">depth_shallow</span><span class="op">[</span><span class="va">p</span><span class="op">]</span>, <span class="va">obs</span><span class="op">$</span><span class="va">depth_deep</span><span class="op">[</span><span class="va">p</span><span class="op">]</span><span class="op">)</span> <span class="op">*</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span>,</span>
-<span>     xlab <span class="op">=</span> <span class="st">"Time step"</span>, ylab <span class="op">=</span> <span class="st">"Depth (m)"</span>,</span>
-<span>     type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">obs</span><span class="op">$</span><span class="va">timestep</span><span class="op">[</span><span class="va">p</span><span class="op">]</span>, <span class="va">obs</span><span class="op">$</span><span class="va">depth_shallow</span><span class="op">[</span><span class="va">p</span><span class="op">]</span> <span class="op">*</span> <span class="op">-</span><span class="fl">1</span>, col <span class="op">=</span> <span class="st">"lightblue"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">obs</span><span class="op">$</span><span class="va">timestep</span><span class="op">[</span><span class="va">p</span><span class="op">]</span>, <span class="va">obs</span><span class="op">$</span><span class="va">depth_deep</span><span class="op">[</span><span class="va">p</span><span class="op">]</span> <span class="op">*</span> <span class="op">-</span><span class="fl">1</span>, col <span class="op">=</span> <span class="st">"darkblue"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="c-workflow-example_files/figure-html/unnamed-chunk-9-1.png" width="95%" style="display: block; margin: auto;"></p>
+<span>    depth_shallow_eps <span class="op">=</span> <span class="fu">cde</span><span class="op">(</span><span class="va">depth</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>,</span>
+<span>    depth_deep_eps <span class="op">=</span> <span class="fu">cde</span><span class="op">(</span><span class="va">depth</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span>, <span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -455,8 +449,6 @@ functions.</p>
 <span>                     acs_filter_container <span class="op">=</span> <span class="va">acs_filter_container</span>, </span>
 <span>                     pf_lik_ac <span class="op">=</span> <span class="va">pf_lik_ac</span>, </span>
 <span>                     pf_lik_dc <span class="op">=</span> <span class="va">pf_lik_dc</span><span class="op">)</span>,</span>
-<span>  <span class="co"># The sampler</span></span>
-<span>  .sample <span class="op">=</span> <span class="va">pf_sample_multinomial</span>, </span>
 <span>  <span class="co"># Other settings</span></span>
 <span>  .record <span class="op">=</span> <span class="fu"><a href="../reference/pf_opt.html">pf_opt_record</a></span><span class="op">(</span>.save <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><code><a href="../reference/pf_forward.html">pf_forward()</a></code> returns a <code>pf_particles-class</code>
@@ -465,8 +457,8 @@ of the output. We can plot the first few samples as follows:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, \<span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gebco</span>, main <span class="op">=</span> <span class="va">obs</span><span class="op">$</span><span class="va">timestep</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span></span>
-<span>  <span class="va">xy</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/xyCellFrom.html" class="external-link">xyFromCell</a></span><span class="op">(</span><span class="va">gebco</span>, <span class="va">out_pff</span><span class="op">$</span><span class="va">history</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cell_now</span><span class="op">)</span></span>
+<span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gebco</span>, main <span class="op">=</span> <span class="va">obs</span><span class="op">$</span><span class="va">timestep</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="va">xy</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/xyCellFrom.html" class="external-link">xyFromCell</a></span><span class="op">(</span><span class="va">gebco</span>, <span class="va">out_pff</span><span class="op">$</span><span class="va">history</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">cell_now</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">xy</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="c-workflow-example_files/figure-html/unnamed-chunk-11-1.png" width="95%" style="display: block; margin: auto;"></p>
@@ -498,17 +490,18 @@ utilisation distributions. To reconstruct movement paths, use
 <span>                   .cols <span class="op">=</span> <span class="st">"depth"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">out_pfp</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    path_id timestep cell_id   cell_x  cell_y   cell_z depth</span></span>
-<span><span class="co">#&gt; 1:       1        1  605508 709179.6 6253144 66.52094 73.78</span></span>
-<span><span class="co">#&gt; 2:       1        2  597906 709129.6 6253394 87.54828 73.32</span></span>
-<span><span class="co">#&gt; 3:       1        3  607783 709054.6 6253069 74.88351 73.32</span></span>
-<span><span class="co">#&gt; 4:       1        4  608552 709279.6 6253044 52.99475 73.32</span></span>
-<span><span class="co">#&gt; 5:       1        5  607020 708979.6 6253094 83.91008 73.55</span></span>
-<span><span class="co">#&gt; 6:       1        6  599425 709104.6 6253344 80.03239 68.70</span></span></code></pre></div>
+<span><span class="co">#&gt;      &lt;int&gt;    &lt;int&gt;   &lt;int&gt;    &lt;num&gt;   &lt;num&gt;    &lt;num&gt; &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:       1        1  596390 709229.6 6253444 75.20494 73.78</span></span>
+<span><span class="co">#&gt; 2:       1        2  601706 709129.6 6253269 80.03239 73.32</span></span>
+<span><span class="co">#&gt; 3:       1        3  603990 709229.6 6253194 63.35369 73.32</span></span>
+<span><span class="co">#&gt; 4:       1        4  603223 709054.6 6253219 83.21526 73.32</span></span>
+<span><span class="co">#&gt; 5:       1        5  600186 709129.6 6253319 80.03239 73.55</span></span>
+<span><span class="co">#&gt; 6:       1        6  604753 709304.6 6253169 56.53801 68.70</span></span></code></pre></div>
 <p>We can visualise an example path as follows:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gebco</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gebco</span><span class="op">)</span></span>
 <span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="va">out_pfp</span><span class="op">[</span><span class="va">out_pfp</span><span class="op">$</span><span class="va">path_id</span> <span class="op">==</span> <span class="fl">1</span>, <span class="op">]</span></span>
-<span><span class="va">s</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">p1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">s</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">p1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/arrows.html" class="external-link">arrows</a></span><span class="op">(</span>x0 <span class="op">=</span> <span class="va">p1</span><span class="op">$</span><span class="va">cell_x</span><span class="op">[</span><span class="va">s</span><span class="op">]</span>, x1 <span class="op">=</span> <span class="va">p1</span><span class="op">$</span><span class="va">cell_x</span><span class="op">[</span><span class="va">s</span> <span class="op">+</span> <span class="fl">1</span><span class="op">]</span>,</span>
 <span>       y0 <span class="op">=</span> <span class="va">p1</span><span class="op">$</span><span class="va">cell_y</span><span class="op">[</span><span class="va">s</span><span class="op">]</span>, y1 <span class="op">=</span> <span class="va">p1</span><span class="op">$</span><span class="va">cell_y</span><span class="op">[</span><span class="va">s</span> <span class="op">+</span> <span class="fl">1</span><span class="op">]</span>,</span>
 <span>       length <span class="op">=</span> <span class="fl">0.02</span><span class="op">)</span></span></code></pre></div>

@@ -87,7 +87,7 @@
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>.map</dt>
-<dd><p>A <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code> (utilisation distribution).</p></dd>
+<dd><p>A <code><a href="https://rspatial.github.io/terra/reference/SpatRaster-class.html" class="external-link">SpatRaster</a></code> (utilisation distribution).</p></dd>
 
 
 <dt>.prop</dt>
@@ -99,14 +99,14 @@
 
 
 <dt>...</dt>
-<dd><p>If <code>.add = TRUE</code>, <code>...</code> is a place holder for additional arguments passed to <code><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">terra::plot()</a></code>.</p></dd>
+<dd><p>If <code>.add = TRUE</code>, <code>...</code> is a place holder for additional arguments passed to <code><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">terra::plot()</a></code>.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     
 
-<p>The functions return a <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code>. Cells with a value of one are inside the specified range boundaries; cells with a value of zero are beyond range boundaries. If <code>.add</code> is <code>TRUE</code>, the boundaries are added to an existing plot.</p>
+<p>The functions return a <code><a href="https://rspatial.github.io/terra/reference/SpatRaster-class.html" class="external-link">SpatRaster</a></code>. Cells with a value of one are inside the specified range boundaries; cells with a value of zero are beyond range boundaries. If <code>.add</code> is <code>TRUE</code>, the boundaries are added to an existing plot.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -117,7 +117,7 @@
     <div class="dont-index"><p><code>map_*()</code> functions build maps of space use:</p><ul><li><p><code><a href="map_pou.html">map_pou()</a></code> maps probability-of-use;</p></li>
 <li><p><code><a href="map_dens.html">map_dens()</a></code> maps point density;</p></li>
 <li><p><code>map_hr</code><code>_*()</code> functions map home ranges;</p></li>
-</ul><p>All maps are represented as <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code>s.</p>
+</ul><p>All maps are represented as <code><a href="https://rspatial.github.io/terra/reference/SpatRaster-class.html" class="external-link">SpatRaster</a></code>s.</p>
 <p>To derive coordinates for mapping patterns of space use for tagged animals in passive acoustic telemetry systems, see:</p><ul><li><p><code><a href="coa.html">coa()</a></code> to calculate centre-of-activity;</p></li>
 <li><p><code><a href="pf_forward.html">pf_forward()</a></code>, <code><a href="pf_backward_-times.html">pf_backward_*()</a></code> and <code><a href="pf_coord.html">pf_coord()</a></code> to sample locations using a forward-filtering backward-sampling algorithm;</p></li>
 </ul></div>
@@ -133,7 +133,7 @@
 <span class="r-in"><span><span class="co"># Define hypothetical input SpatRaster</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/" class="external-link">terra</a></span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: terra</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> terra 1.7.65</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> terra 1.7.71</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Attaching package: ‘terra’</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The following objects are masked from ‘package:spatstat.geom’:</span>
@@ -143,14 +143,14 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The following object is masked from ‘package:data.table’:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>     shift</span>
-<span class="r-in"><span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html" class="external-link">ncell</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html" class="external-link">ncell</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">i</span> <span class="op">&lt;-</span> <span class="fl">2e4</span></span></span>
 <span class="r-in"><span><span class="va">r</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1</span></span></span>
-<span class="r-in"><span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/distance.html" class="external-link">distance</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/distance.html" class="external-link">distance</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |---------|---------|---------|---------|=========================================                                          </span>
-<span class="r-in"><span><span class="va">r</span> <span class="op">&lt;-</span> <span class="va">r</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/global.html" class="external-link">global</a></span><span class="op">(</span><span class="va">r</span>, <span class="st">"sum"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">r</span> <span class="op">&lt;-</span> <span class="va">r</span> <span class="op">/</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/global.html" class="external-link">global</a></span><span class="op">(</span><span class="va">r</span>, <span class="st">"sum"</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Examples</span></span></span>
 <span class="r-in"><span><span class="va">map</span> <span class="op">&lt;-</span> <span class="fu">map_hr_full</span><span class="op">(</span><span class="va">r</span>, .add <span class="op">=</span> <span class="cn">TRUE</span>, lwd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>

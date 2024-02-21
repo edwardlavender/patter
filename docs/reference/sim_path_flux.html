@@ -112,7 +112,7 @@
 <span></span>
 <span><span class="fu">.rstep_iter</span><span class="op">(</span></span>
 <span>  <span class="va">.xy0</span>,</span>
-<span>  .xy1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="cn">NA</span>, nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">.xy0</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">.xy0</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  .xy1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="cn">NA</span>, nrow <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">.xy0</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">.xy0</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  <span class="va">.lonlat</span>,</span>
 <span>  <span class="va">.fv</span>,</span>
 <span>  <span class="va">.rlen</span>,</span>
@@ -125,12 +125,12 @@
 <span></span>
 <span><span class="fu">.sim_path_pivot</span><span class="op">(</span><span class="va">.mat</span>, <span class="va">.n_step</span>, <span class="va">.n_path</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">.flux_pivot</span><span class="op">(</span><span class="va">.fv</span>, .n_step <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">.fv</span><span class="op">)</span>, .n_path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">.fv</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">.flux_pivot</span><span class="op">(</span><span class="va">.fv</span>, .n_step <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">.fv</span><span class="op">)</span>, .n_path <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">.fv</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="details">
     <h2>Details</h2>
-    <p>These functions facilitate the simulation of animal movement paths.</p><ul><li><p><code>.sim_path_flux()</code> implements the simulation.</p><ul><li><p>A <code><a href="https://rdrr.io/pkg/terra/man/SpatRaster-class.html" class="external-link">SpatRaster</a></code> (<code>.bathy</code>) defines the area of the simulation.</p></li>
+    <p>These functions facilitate the simulation of animal movement paths.</p><ul><li><p><code>.sim_path_flux()</code> implements the simulation.</p><ul><li><p>A <code><a href="https://rspatial.github.io/terra/reference/SpatRaster-class.html" class="external-link">SpatRaster</a></code> (<code>.bathy</code>) defines the area of the simulation.</p></li>
 <li><p>A starting location (<code>.origin</code>) on <code>.bathy</code> can be specified or  sampled at random from <code>.bathy</code>.</p></li>
 <li><p><code>.n_path</code> movement path(s) from this point are simulated using time-specific ('flux') parameters (such as step lengths and turning angles).</p></li>
 </ul></li>

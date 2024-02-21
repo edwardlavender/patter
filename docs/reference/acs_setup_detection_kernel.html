@@ -99,7 +99,7 @@
 
 
 <dt>.ddetx</dt>
-<dd><p>A function that calculates detection probability, such as <code><a href="sim_helpers.html">ddetlogistic()</a></code>. In this implementation, the function is used to translate a <code>SpatRaster</code> of distances (m) (from each grid cell to the receiver in <code>.data</code>) via <code><a href="https://rdrr.io/pkg/terra/man/app.html" class="external-link">terra::app()</a></code>. The function must accept a .<code>gamma</code> argument (even if this is ignored, see below).</p></dd>
+<dd><p>A function that calculates detection probability, such as <code><a href="sim_helpers.html">ddetlogistic()</a></code>. In this implementation, the function is used to translate a <code>SpatRaster</code> of distances (m) (from each grid cell to the receiver in <code>.data</code>) via <code><a href="https://rspatial.github.io/terra/reference/app.html" class="external-link">terra::app()</a></code>. The function must accept a .<code>gamma</code> argument (even if this is ignored, see below).</p></dd>
 
 
 <dt>...</dt>
@@ -144,7 +144,7 @@
 <span class="r-in"><span><span class="va">m</span> <span class="op">&lt;-</span> <span class="va">dlist</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">moorings</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">b</span> <span class="op">&lt;-</span> <span class="va">dlist</span><span class="op">$</span><span class="va">spatial</span><span class="op">$</span><span class="va">bathy</span></span></span>
 <span class="r-in"><span><span class="va">k</span> <span class="op">&lt;-</span> <span class="fu">acs_setup_detection_kernel</span><span class="op">(</span><span class="va">m</span>, <span class="va">b</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">k</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">k</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">m</span><span class="op">$</span><span class="va">receiver_x</span>, <span class="va">m</span><span class="op">$</span><span class="va">receiver_y</span>, pch <span class="op">=</span> <span class="st">"."</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="acs_setup_detection_kernel-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
