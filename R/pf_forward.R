@@ -233,6 +233,8 @@ pf_forward <- function(.obs,
   .dargs$.drop  <- .control$drop
   # Controls
   iter_i         <- startup$control$iter_i
+  trial_kick     <- .trial$trial_kick > 0L
+  trial_sampler  <- .trial$trial_sampler > 0L
   # Wrappers
   .pf_write_particles_abbr   <- startup$wrapper$.pf_write_particles_abbr
   # Output objects
@@ -285,7 +287,7 @@ pf_forward <- function(.obs,
     .dargs$.t <- t
 
     #### (1) Propose new particles (using kicks)
-    if (.trial$trial_kick > 0L) {
+    if (trial_kick) {
       cat_log("... ... ... Kicking particles...")
       pnow <- .pf_particles_kick(.particles = ppast,
                                  .obs = .obs, .t = t, .dlist = .dlist,
@@ -295,23 +297,27 @@ pf_forward <- function(.obs,
                                  .control = .control, .trial = .trial$trial_kick
                                  )
     } else {
-      pnow <- ppast
+      pnow_sampler <- ppast
     }
 
     #### (2) Propose new particles (using direct sampling)
     use_sampler <- FALSE
-    if (.trial$trial_sampler > 0L) {
+    if (trial_sampler) {
       use_sampler <- .pf_forward_trial_sampler(.particles = pnow, .trial = .trial)
       if (use_sampler) {
         cat_log("... ... ... Using directed sampling ...")
-        pnow_sampler <- pnow[lik == 0, ]
+        if (trial_kick) {
+          pnow_sampler <- pnow[lik == 0, ]
+        }
         pnow_sampler <- .pf_particles_sampler(.particles = pnow_sampler,
                                               .obs = .obs, .t = t, .dlist = .dlist,
                                               .dpropose = .dpropose,
                                               .dargs = .dargs,
                                               .likelihood = .likelihood,
                                               .control = .control)
-        pnow <- rbind(pnow, pnow_sampler, fill = TRUE)
+        if (trial_kick) {
+          pnow <- rbind(pnow, pnow_sampler, fill = TRUE)
+        }
       }
     }
 
