@@ -86,6 +86,7 @@ NULL
 
   #### Define wrapper functions
   .pf_write_particles_abbr <- function(.particles) {
+    # Note this requires .particles$timestamp[1] to be available
     .pf_write_particles(.particles = .particles,
                         .sink = folder_history,
                         .filename = .particles$timestep[1],

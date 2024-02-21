@@ -77,6 +77,9 @@ pf_opt_record <- function(.save = FALSE, .cols = NULL, .sink = NULL) {
   if (!.save && is.null(.sink)) {
     abort("`.save = FALSE` and `.sink = NULL`. There is nothing to do.")
   }
+  if (!is.null(.sink) && !is.null(.cols) && !("timestamp" %in% .cols)) {
+    abort("When `.sink` is provided, `.cols` must contain `timestamp` to define file names.")
+  }
   # Output list
   list(save = .save,
        cols = .cols,

@@ -51,6 +51,7 @@
 # Write files (particles) to output directory
 .pf_write_particles <- function(.particles, .sink, .filename, .write) {
   if (.write) {
+    stopifnot(!is.null(.filename))
     arrow::write_parquet(.particles, sink = file.path(.sink, paste0(.filename, ".parquet")))
   }
 }
