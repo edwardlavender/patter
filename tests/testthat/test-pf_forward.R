@@ -23,9 +23,98 @@ test_that("pf_forward() works", {
              .verbose = FALSE) |>
     expect_message("Arguments in `...` must be used.")
 
+  #### Validate output object
+  out_pff <- pf_forward(.obs = obs,
+                        .dlist = dlist,
+                        .likelihood = pf_lik_acpf,
+                        .trial = pf_opt_trial(.trial_sampler = 0L),
+                        .record = pf_opt_record(.save = TRUE))
+  check_inherits(out_pff, pf_class)
+  elements <- c("history", "path", "diagnostics", "internal", "convergence", "time")
+  expect_true(all(names(out_pff) %in% elements & elements %in% names(out_pff)))
+  check_inherits(out_pff$history[[1]], "data.table")
+  expect_null(out_pff$path)
+  expect_null(out_pff$diagnostics)
+  check_inherits(out_pff$internal, "list")
+  expect_true(out_pff$convergence)
+  check_inherits(out_pff$time, "list")
+  expect_true(all(names(out_pff$time[[1]]) %in% c("start", "end", "duration")))
+
   #### Validate .rpropose implementation
+  # Validate pairwise distances are < mobility (500 m by default)
+  out_pff_h <-
+    out_pff$history |>
+    rbindlist(fill = TRUE)
+  dists <-
+    out_pff_h |>
+    filter(!is.na(x_past)) |>
+    select(x_past, y_past, x_now, y_now) |>
+    mutate(dist = clen(cbind(x_past, y_past), cbind(x_now, y_now), .lonlat = FALSE)) |>
+    pull(dist)
+  expect_true(all(dists < obs$mobility[1]))
+  # Validate cell_now locations on the grid
+  expect_equal(out_pff_h$cell_now,
+               terra::cellFromXY(dlist$spatial$bathy, cbind(out_pff_h$x_now, out_pff_h$y_now)))
+  expect_true(all(
+    clen(
+      cbind(out_pff_h$x_now, out_pff_h$y_now),
+      terra::xyFromCell(dlist$spatial$bathy, out_pff_h$cell_now),
+      .lonlat = FALSE
+    ) < terra::res(dlist$spatial$bathy)[1]))
+  # Validate cell_past locations on the grid
+  out_pff_h_p <- out_pff_h[!is.na(cell_past), ]
+  expect_equal(out_pff_h_p$cell_past,
+               terra::cellFromXY(dlist$spatial$bathy, cbind(out_pff_h_p$x_past, out_pff_h_p$y_past)))
+  expect_true(all(
+    clen(
+      cbind(out_pff_h_p$x_past, out_pff_h_p$y_past),
+      terra::xyFromCell(dlist$spatial$bathy, out_pff_h_p$cell_past),
+      .lonlat = FALSE
+    ) < terra::res(dlist$spatial$bathy)[1]))
+
+  #### Validate .dpropose implementation
+  # Run simulation
+  out_pff <- pf_forward(.obs = obs,
+                        .dlist = dlist,
+                        .likelihood = pf_lik_acpf,
+                        .trial = pf_opt_trial(.trial_kick = 0L),
+                        .record = pf_opt_record(.save = TRUE))
+  # Validate distances
+  out_pff_h <-
+    out_pff$history |>
+    rbindlist(fill = TRUE)
+  dists <-
+    out_pff_h |>
+    filter(!is.na(x_past)) |>
+    select(x_past, y_past, x_now, y_now) |>
+    mutate(dist = clen(cbind(x_past, y_past), cbind(x_now, y_now), .lonlat = FALSE)) |>
+    pull(dist)
+  expect_true(all(dists < obs$mobility[1]))
+
+  #### Validate likelihoods, densities and weights
   # TO DO
-  # Confirm mobility
+
+  #### Validate sampling
+  # Validate .n
+  out_pff <- pf_forward(.obs = obs,
+                        .dlist = dlist,
+                        .n = 50L,
+                        .likelihood = pf_lik_acpf,
+                        .record = pf_opt_record(.save = TRUE))
+  expect_true(nrow(out_pff$history[[1]]) == 50L)
+  # Validate resampling
+  # * TO DO
+
+  #### Validate .rerun
+  out_pff <- pf_forward(.obs = obs,
+                        .dlist = dlist,
+                        .n = 50L,
+                        .likelihood = pf_lik_acpf,
+                        .rerun = out_pff,
+                        .rerun_from = 2L,
+                        .record = pf_opt_record(.save = TRUE))
+  expect_length(out_pff$history, nrow(obs))
+  expect_length(out_pff$time, 2L)
 
   #### Validate .record implementation
   # Validate .save = FALSE
