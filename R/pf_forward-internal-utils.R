@@ -80,11 +80,9 @@ NULL
   #### Define output containers
   # Lists to hold outputs
   history     <- list()
-  diagnostics <- list()
   # directories to write outputs (may be NULL)
   folders            <- .pf_forward_dirs(.record)
   folder_history     <- folders[["history"]]
-  folder_diagnostics <- folders[["diagnostics"]]
 
   #### Define wrapper functions
   .pf_write_particles_abbr <- function(.particles) {
@@ -101,12 +99,9 @@ NULL
       iter_i = iter_i
     ),
     output = list(
-      .record = .record,
       select_cols = !is.null(.record$cols),
       history = history,
-      diagnostics = diagnostics,
-      folder_history = folder_history,
-      folder_diagnostics = folder_diagnostics
+      folder_history = folder_history
     ),
     wrapper = list(.pf_write_particles_abbr = .pf_write_particles_abbr)
   )

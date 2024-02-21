@@ -230,15 +230,13 @@ pf_forward <- function(.obs,
   .dargs$.drop  <- .control$drop
   # Controls
   iter_i         <- startup$control$iter_i
-  iter_m         <- startup$control$iter_m
   # Wrappers
   .pf_write_particles_abbr   <- startup$wrapper$.pf_write_particles_abbr
   # Output objects
-  .record        <- startup$output$.record
   select_cols    <- startup$output$select_cols
   history        <- startup$output$history
   # Global variables
-  weight <- lik <- wt <- NULL
+  weight <- lik <- NULL
 
   #### Define origin
   pnow <- NULL
