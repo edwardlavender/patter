@@ -64,7 +64,6 @@ NULL
     startup$control$iter_m <- startup$control$iter_m + 1L
     # Update history & diagnostics elements
     startup$output$history     <- .rerun$history
-    startup$output$diagnostics <- list(.rerun$diagnostics)
     return(startup)
   }
 
