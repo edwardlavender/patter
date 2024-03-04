@@ -219,6 +219,7 @@ pf_dpropose <- function(.particles, .obs, .t, .dlist, .drop, .dkick = dkick, ...
     if (.drop) {
       .particles <-
         .particles |>
+        lazy_dt() |>
         filter(dens > 0) |>
         as.data.table()
     }
