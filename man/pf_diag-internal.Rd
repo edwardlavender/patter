@@ -12,9 +12,9 @@
 \usage{
 .pf_diag_any(.particles)
 
-.pf_diag_nu(.cells)
+.pf_diag_nu(.particles)
 
-.pf_diag_ess(.weight)
+.pf_diag_ess(.particles, .weight = NULL)
 
 .pf_diag(.particles, .weight, .t, .label)
 

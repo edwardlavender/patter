@@ -113,7 +113,7 @@
   # Sample particles for the current time step (pnow)
   pnow  <- .sample(.particles = .particles, .n = .n)
   # Validate sampling sufficiency
-  if (.pf_diag_ess(pnow$weight) < .trial_crit) {
+  if (.pf_diag_ess(pnow) < .trial_crit) {
     abort("Insufficient starting locations.")
   }
   # Return outputs

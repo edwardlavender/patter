@@ -181,6 +181,7 @@
 #' @importFrom collapse seq_row
 #' @importFrom collapse anyv
 #' @importFrom collapse join
+#' @importFrom collapse fndistinct
 #'
 #' @importFrom data.table data.table
 #' @importFrom data.table as.data.table

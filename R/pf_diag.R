@@ -40,13 +40,22 @@ pf_diag_summary <- function(.history, ...) {
   .history |>
     .pf_history_dt(..., .collect = TRUE) |>
     set_missing(.col = "weight") |>
-    lazy_dt() |>
+    lazy_dt(immutable = TRUE) |>
+    # Normalise weights by time step
+    # (This should be enforced by pf_forward())
+    group_by(.data$timestep) |>
+    mutate(weight = normalise(.data$weight)) |>
+    ungroup() |>
+    # Aggregate weights by time step and grid cell
+    group_by(.data$timestep, .data$cell_now) |>
+    summarise(weight = sum(.data$weight)) |>
+    ungroup() |>
+    # Summarise diagnostics by time step
     group_by(.data$timestep) |>
     summarise(timestep = .data$timestep[1],
               n = n(),
-              nu = .pf_diag_nu(.data$cell_now),
-              ess = .pf_diag_ess(normalise(.data$weight))
-    ) |>
+              nu = fndistinct(.data$cell_now),
+              ess = 1 / sum(.data$weight ^ 2)) |>
     as.data.table()
 }
 
@@ -94,19 +103,42 @@ pf_diag_summary <- function(.history, ...) {
 #' @rdname pf_diag-internal
 #' @keywords internal
 
-.pf_diag_nu <- function(.cells) {
-  length(collapse::funique(.cells))
+.pf_diag_nu <- function(.particles) {
+  fndistinct(.particles$cell_now)
 }
 
 #' @rdname pf_diag-internal
 #' @keywords internal
 
-.pf_diag_ess <- function(.weight) {
-  if (all(is.na(.weight))) {
+.pf_diag_ess <- function(.particles, .weight = NULL) {
+  # Define data.table with local (copied) weights
+  cell_now <- weight <- NULL
+  if (is.null(.weight)) {
+    pess <- .particles[, list(cell_now, weight)]
+  } else {
+    pess <- .particles[, cell_now]
+    pess[, weight := .weight]
+  }
+  # Handle missing weights
+  if (all(is.na(pess$weight))) {
     return(NA_real_)
   }
-  stopifnot(isTRUE(all.equal(sum(.weight), 1)))
-  1 / sum(.weight ^ 2)
+  # Validate weights are normalised
+  stopifnot(isTRUE(all.equal(sum(pess$weight), 1)))
+  # Calculate ESS
+  pess |>
+    lazy_dt(immutable = FALSE) |>
+    # Normalise weights
+    # * We currently assume normalised weights
+    # * This helps to make existing routines consistent
+    # mutate(weight = normalise(weight)) |>
+    # Aggregate weights across cells
+    group_by(cell_now) |>
+    summarise(sum(.data$weight)) |>
+    ungroup() |>
+    # Calculate ESS
+    summarise(ess = 1 / sum(weight ^ 2)) |>
+    pull(.data$ess)
 }
 
 #' @rdname pf_diag-internal
@@ -124,8 +156,8 @@ pf_diag_summary <- function(.history, ...) {
                     ess = 0)
   if (out$n > 0) {
     nu <- ess <- NULL
-    out[, nu := .pf_diag_nu(.particles$cell_now)]
-    out[, ess := .pf_diag_ess(.particles[[.weight]])]
+    out[, nu := .pf_diag_nu(.particles)]
+    out[, ess := .pf_diag_ess(.particles, .weight)]
   }
   out
 }
