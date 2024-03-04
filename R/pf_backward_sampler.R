@@ -270,7 +270,7 @@ pf_backward_sampler_v <- function(.history,
   .history  <- .pf_history_list(.history)
   read      <- .pf_history_read(.history)
   inout     <- .pf_history_cols(.history = .history, .record = .record,
-                                .input_cols = c("cell_now", "x_now", "y_now"))
+                                .input_cols = c("cell_now", "x_now", "y_now", "weight"))
   .record   <- inout$.record
   read_cols <- inout$read_cols
   write     <- .pf_history_write(.record)
@@ -311,14 +311,19 @@ pf_backward_sampler_v <- function(.history,
         unique = FALSE,
         sorted = FALSE) |>
       join(.history[[t]] |>
-             select("index", "cell_now", "x_now", "y_now"),
+             lazy_dt(immutable = FALSE) |>
+             select("index", "cell_now", "x_now", "y_now", "weight") |>
+             as.data.table(),
            on = c("index_now" = "index"),
            verbose = FALSE) |>
       join(.history[[tp]] |>
+             lazy_dt(immutable = TRUE) |>
              select(index,
                     cell_past = "cell_now",
                     x_past = "x_now",
-                    y_past = "y_now"),
+                    y_past = "y_now",
+                    weight_past = "weight") |>
+             as.data.table(),
            on = c("index_past" = "index"),
            verbose = FALSE)
     # Compute movement densities
@@ -331,14 +336,17 @@ pf_backward_sampler_v <- function(.history,
       h |>
       lazy_dt(immutable = FALSE) |>
       group_by(.data$index_now) |>
-      # slice_sample() doesn't work with .data$dens pronoun
+      # Use slice_sample():
+      # * Doesn't work with .data$dens pronoun
+      # * Automatically standardises weights to sum to one
+      # * TO DO, check systematic sampling here
       slice_sample(n = 1L, weight_by = dens, replace = TRUE) |>
       ungroup() |>
       mutate(timestep = t) |>
       select("timestep",
              "cell_past", "x_past", "y_past",
              "cell_now", "x_now", "y_now",
-             "dens") |>
+             "dens", "weight", "weight_past") |>
       as.data.table()
 
     #### Record outputs
@@ -355,11 +363,14 @@ pf_backward_sampler_v <- function(.history,
     }
 
     #### Move on
-    .history[[t - 1L]] <-
+    .history[[tp]] <-
       h |>
-      lazy_dt() |>
+      lazy_dt(immutable = FALSE) |>
       mutate(timestep = tp) |>
-      select("timestep", cell_now = "cell_past", x_now = "x_past", y_now = "y_past") |>
+      select("timestep",
+             cell_now = "cell_past",
+             x_now = "x_past", y_now = "y_past",
+             weight = "weight_past") |>
       as.data.table()
 
   }
@@ -368,6 +379,7 @@ pf_backward_sampler_v <- function(.history,
   #### Record outputs for .history[[t]]
   .history[[1L]] <-
     .history[[1L]] |>
+    lazy_dt(immutable = FALSE) |>
     mutate(timestep = 1L,
            cell_past = NA_integer_,
            x_past = NA_real_,
@@ -376,7 +388,7 @@ pf_backward_sampler_v <- function(.history,
     select("timestep",
            "cell_past", "x_past", "y_past",
            "cell_now", "x_now", "y_now",
-           "dens") |>
+           "dens", "weight") |>
     as.data.table()
   .history[[1L]] <- .pf_snapshot(.dt = .history[[1L]], .save = .record$save,
                                  .select = !is.null(.record$cols), .cols = .record$cols)
