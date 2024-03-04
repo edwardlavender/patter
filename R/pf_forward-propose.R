@@ -147,8 +147,8 @@ pf_rpropose_reachable <- function(.particles, .obs, .t, .dlist) {
   .particles <-
     .particles |>
     lazy_dt() |>
-    select("timestep", "cell_past", "x_past", "y_past", "weight") |>
     distinct(.data$cell_past, .keep_all = TRUE) |>
+    select("timestep", "cell_past", "x_past", "y_past", "weight") |>
     as.data.table()
 
   # Define reachable zone(s) (given .mobility)
