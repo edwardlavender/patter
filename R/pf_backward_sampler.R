@@ -309,19 +309,18 @@ pf_backward_sampler_v <- function(.history,
         index_now = .history[[t]]$index,
         index_past = .history[[tp]]$index,
         unique = FALSE,
-        sorted = FALSE
-      ) |>
-      lazy_dt() |>
-      left_join(.history[[t]] |>
-                  select("index", "cell_now", "x_now", "y_now"),
-                by = c("index_now" = "index")) |>
-      left_join(.history[[tp]] |>
-                  select(index,
-                         cell_past = "cell_now",
-                         x_past = "x_now",
-                         y_past = "y_now"),
-                by = c("index_past" = "index")) |>
-      as.data.table()
+        sorted = FALSE) |>
+      join(.history[[t]] |>
+             select("index", "cell_now", "x_now", "y_now"),
+           on = c("index_now" = "index"),
+           verbose = FALSE) |>
+      join(.history[[tp]] |>
+             select(index,
+                    cell_past = "cell_now",
+                    x_past = "x_now",
+                    y_past = "y_now"),
+           on = c("index_past" = "index"),
+           verbose = FALSE)
     # Compute movement densities
     .dargs$.particles <- h
     .dargs$.t         <- t

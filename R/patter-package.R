@@ -180,6 +180,7 @@
 #' @importFrom collapse seq_col
 #' @importFrom collapse seq_row
 #' @importFrom collapse anyv
+#' @importFrom collapse join
 #'
 #' @importFrom data.table data.table
 #' @importFrom data.table as.data.table
