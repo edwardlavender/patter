@@ -56,7 +56,7 @@ pf_files <- function(.sink, .folder = NULL, ...) {
     abort("No files identified in `.sink`.")
   }
   exts  <- tools::file_ext(files)
-  if (length(unique(exts)) != 1L) {
+  if (fndistinct(exts) != 1L) {
     abort("Multiple file types (extensions) identified in `.sink`. Do you need to pass `pattern` to `list.files()`?")
   }
   .ext <- exts[1]

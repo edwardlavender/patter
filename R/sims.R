@@ -712,7 +712,7 @@ sim_detections <- function(.paths, .arrays,
   }
   .type <- match.arg(.type)
   if (.type == "pairwise") {
-    if (length(unique(.arrays$array_id)) != length(unique(.paths$path_id))) {
+    if (fndistinct(.arrays$array_id) != fndistinct(.paths$path_id)) {
       abort("`.type = 'pairwise'` requires the number of arrays and paths to be identical.")
     }
   }

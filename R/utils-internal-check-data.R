@@ -109,7 +109,7 @@ check_acoustics <- function(.acoustics, .moorings = NULL) {
   check_names(.acoustics, req = c("timestamp", "receiver_id"))
   # Check for multiple individuals based on individual_id column
   if (rlang::has_name(.acoustics, "individual_id") &&
-      length(unique(.acoustics$individual_id)) > 1L) {
+      fndistinct(.acoustics$individual_id) > 1L) {
     msg("Multiple individuals detected in acoustic data.")
   }
   # Check timestamps
@@ -172,7 +172,7 @@ check_moorings <- function(.moorings, .lonlat, .bathy) {
   }
 
   #### Check receiver ranges
-  if (length(unique(.moorings$receiver_range)) != 1L) {
+  if (fndistinct(.moorings$receiver_range) != 1L) {
     warn("Not all functions (yet) support receiver-specific detection ranges.")
   }
 
@@ -262,7 +262,7 @@ check_archival <- function(.archival) {
   check_names(.archival, req = c("timestamp", "depth"))
   # Check for multiple individuals
   if (rlang::has_name(.archival, "individual_id") &&
-      length(unique(.archival$individual_id)) > 1L) {
+      fndistinct(.archival$individual_id) > 1L) {
     msg("Multiple individuals detected in archival data.")
   }
   # Check time stamps
@@ -272,7 +272,7 @@ check_archival <- function(.archival) {
   if (is.unsorted(.archival$timestamp)) {
     msg("Archival time stamps should be ordered chronologically.")
   }
-  if (nrow(.archival) > 1 && length(unique(diff(.archival$timestamp))) != 1L) {
+  if (nrow(.archival) > 1 && fndistinct(diff(.archival$timestamp)) != 1L) {
     msg("Archival time steps are not regularly spaced.")
   }
   # Check depths
