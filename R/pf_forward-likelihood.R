@@ -80,7 +80,8 @@ acs_filter_container <- function(.particles, .obs, .t, .dlist, .drop) {
                               as.matrix(),
                             .dlist$data$moorings |>
                               filter(.data$receiver_id %in% .obs$receiver_id_next[.t][[1]]) |>
-                              select("receiver_x", "receiver_y") |> # as.data.table() |>
+                              select("receiver_x", "receiver_y") |>
+                              # as.data.table() |>
                               as.matrix(),
                             lonlat = .dlist$par$lonlat)
     # Eliminates particles using distance threshold
