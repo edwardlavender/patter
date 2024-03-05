@@ -41,10 +41,11 @@
   .acoustics |>
     lazy_dt(immutable = TRUE) |>
     mutate(timestamp = lubridate::round_date(.data$timestamp, .step),
-           date = as.Date(timestamp)) |>
+           date = as.character(as.Date(timestamp))) |>
     group_by(.data$receiver_id, .data$timestamp) |>
     slice(1L) |>
     ungroup() |>
+    select("timestamp", "date", "receiver_id") |>
     as.data.table()
 }
 
@@ -168,6 +169,9 @@
 
   #### Define the complete set of acoustic observations (0, 1)
   # We only detections & overlapping absences at this stage
+  if (is.null(.dlist$algorithm$detection_overlaps)) {
+    warn("`.dlist$algorithm$detection_overlaps` is NULL.")
+  }
   .acoustics <-
     lapply(split(.acoustics, by = "timestamp"), function(d) {
       # Identify receivers that recorded detections
@@ -282,14 +286,14 @@
   # * The buffer value(s)
   cinfo <- cl_lapply(seq_row(.obs), .fun = function(t) {
     r <- .obs$receiver_id_next[[t]]
-    if (is.null(r)) {
+    if (all(is.na(r))) {
       return(NULL)
     }
     # Define receiver data
     m <-
       .dlist$data$moorings |>
       lazy_dt() |>
-      filter(.data$receiver_id %in% r[[1]]) |>
+      filter(.data$receiver_id %in% r) |>
       select("receiver_x", "receiver_y", "receiver_range") |>
       as.data.table()
     # Define receiver coordinates

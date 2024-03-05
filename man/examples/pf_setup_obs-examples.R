@@ -11,6 +11,9 @@ dlist     <- pat_setup_data(.acoustics = acc,
                             .archival = arc,
                             .bathy = dat_gebco(),
                             .lonlat = FALSE)
+# Include detection overlaps
+dlist$algorithm$detection_overlaps <-
+  acs_setup_detection_overlaps(dlist)
 
 #### Example (1): Implement the function for acoustic time series only
 dlist_acpf <- dlist
