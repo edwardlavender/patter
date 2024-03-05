@@ -189,9 +189,8 @@
 
   #### Define detection matrices
   # Define a blank list of acoustic observations matrices (one per time step)
-  timestamps <- seq(min(.acoustics$timestamp), max(.acoustics$timestamp), "2 mins")
-  als <- lapply(timestamps, function(x) NULL)
-  names(als) <- timestamps
+  als <- lapply(.obs$timestamp, function(x) NULL)
+  names(als) <- .obs$timestamp
   # Define the detection matrix
   # * This contains NAs for non-overlapping or non-operational receivers
   dmat <-
