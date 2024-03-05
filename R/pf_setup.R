@@ -15,7 +15,7 @@
 #' * If both datasets are provided and `.trim = FALSE`, `.period` is defined as `range(c(acoustics$timestamp, archival$timestamp))`.
 #' * If both datasets are provided and `.trim = TRUE`, `.period` is defined as the range in timestamps for the overlapping region.
 #' @param .mobility A constant that defines the maximum (Euclidean) distance the individual could move in `.step`. See the [`flapper::get_mvt_mobility_*()`](https://edwardlavender.github.io/flapper/reference/get_mvt_mobility.html) functions to estimate `.mobility` from acoustic and/or archival data.
-#' @param .receiver_range A constant that defines the receiver detection range. At the time of writing, a constant value across all receivers and time steps is currently assumed (although receiver-specific detection kernels within this range are supported by [`acs_setup_detection_kernels()`]).
+#' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
 #' @details
 #' This function defines the timeline of observations over which [`pf_forward()`] is implemented. The function implements the following routines:
@@ -70,9 +70,17 @@ pf_setup_obs <- function(.dlist,
                          .trim = TRUE,
                          .step,
                          .period = NULL,
-                         .mobility) {
+                         .mobility,
+                         .verbose = getOption("patter.verbose")) {
+
+  #### Set up messages
+  t_onset <- Sys.time()
+  cat_log <- cat_init(.verbose = .verbose)
+  cat_log(call_start(.fun = "pf_setup_obs", .start = t_onset))
+  on.exit(cat_log(call_end(.fun = "pf_setup_obs", .start = t_onset, .end = Sys.time())), add = TRUE)
 
   #### Check user inputs
+  cat_log("... Checking user inputs...")
   check_dlist(.dlist = .dlist)
   acoustics <- .dlist$data$acoustics
   archival  <- .dlist$data$archival
@@ -83,6 +91,7 @@ pf_setup_obs <- function(.dlist,
 
   #### Process acoustic and/or archival time series
   # Process time series
+  cat_log("... Processing time series...")
   if (!is.null(acoustics)) {
     acoustics <- .setup_acoustics(.acoustics = acoustics, .step = .step)
   }
@@ -91,12 +100,14 @@ pf_setup_obs <- function(.dlist,
   }
   # Align time series
   if (!is.null(acoustics) && !is.null(archival) && .trim) {
+    cat_log("... Aligning time series...")
     aligners <- .setup_alignment(.acoustics = acoustics, .archival = archival)
     acoustics <- aligners$acoustics
     archival  <- aligners$archival
   }
 
   #### Define template observations timeline
+  cat_log("... Defining observations timeline...")
   obs <- .setup_series(.acoustics = acoustics,
                        .archival = archival,
                        .period = .period,
@@ -106,21 +117,27 @@ pf_setup_obs <- function(.dlist,
   #### Add acoustic data
   if (!is.null(acoustics)) {
     # Add detection flag(s) (detection, detection_id, receiver_id)
+    cat_log("... Adding acoustic observations: detection IDs...")
     obs <- .add_acoustics_flags(.obs = obs, .acoustics = acoustics)
     # Add array ID(s)
+    cat_log("... Adding acoustic observations: array IDs...")
     obs <- .add_acoustics_arrays(.obs = obs, .dlist = .dlist, .step = .step)
     # Add acoustic observations matrices
+    cat_log("... Adding acoustic observations: matrices...")
     obs <- .add_acoustics_obs(.obs = obs, .dlist = .dlist, .acoustics = acoustics)
     # Add acoustic containers information
+    cat_log("... Adding acoustic observations: containers (slow)...")
     obs <- .add_acoustics_containers(.obs = obs, .dlist = .dlist, .mobility = .mobility)
   }
 
   #### Add archival data
   if (!is.null(archival)) {
+    cat_log("... Adding archival observations...")
     obs <- .add_archival(.obs = obs, .archival = archival)
   }
 
   #### Tidy outputs & return
+  cat_log("... Completing call...")
   obs |>
     select("timestep", "timestamp",
            any_of(c("array_id", "detection",

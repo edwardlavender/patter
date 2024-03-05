@@ -4,7 +4,14 @@
 \alias{pf_setup_obs}
 \title{PF: set up movement datasets}
 \usage{
-pf_setup_obs(.dlist, .trim = TRUE, .step, .period = NULL, .mobility)
+pf_setup_obs(
+  .dlist,
+  .trim = TRUE,
+  .step,
+  .period = NULL,
+  .mobility,
+  .verbose = getOption("patter.verbose")
+)
 }
 \arguments{
 \item{.dlist}{A named \code{list} of data and parameters from \code{\link[=pat_setup_data]{pat_setup_data()}}. This function requires:
@@ -29,7 +36,7 @@ At least one dataset must be provided. Data should be given \strong{for a single
 
 \item{.mobility}{A constant that defines the maximum (Euclidean) distance the individual could move in \code{.step}. See the \href{https://edwardlavender.github.io/flapper/reference/get_mvt_mobility.html}{\verb{flapper::get_mvt_mobility_*()}} functions to estimate \code{.mobility} from acoustic and/or archival data.}
 
-\item{.receiver_range}{A constant that defines the receiver detection range. At the time of writing, a constant value across all receivers and time steps is currently assumed (although receiver-specific detection kernels within this range are supported by \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}).}
+\item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }
 \value{
 The function returns a \code{\link{data.table}} with the following columns:
@@ -104,36 +111,35 @@ dlist     <- pat_setup_data(.acoustics = acc,
                             .archival = arc,
                             .bathy = dat_gebco(),
                             .lonlat = FALSE)
+# Include detection overlaps
+dlist$algorithm$detection_overlaps <-
+  acs_setup_detection_overlaps(dlist)
 
 #### Example (1): Implement the function for acoustic time series only
 dlist_acpf <- dlist
 dlist_acpf$data$archival <- NULL
 obs <- pf_setup_obs(.dlist = dlist_acpf,
                     .step = "2 mins",
-                    .mobility = 500,
-                    .receiver_range = 750)
+                    .mobility = 500)
 head(obs)
 
 #### Example (2): Use alternative parameters
 obs <- pf_setup_obs(.dlist = dlist_acpf,
                     .step = "2 mins",
-                    .mobility = 1000,
-                    .receiver_range = 500)
+                    .mobility = 1000)
 head(obs)
 
 #### Example (3): Implement the function for acoustic & archival time series
 obs <- pf_setup_obs(.dlist = dlist,
                     .step = "2 mins",
-                    .mobility = 500,
-                    .receiver_range = 750)
+                    .mobility = 500)
 head(obs)
 
 #### Example (4): Include full acoustic & archival time series
 obs <- pf_setup_obs(.dlist = dlist,
                     .trim = FALSE,
                     .step = "2 mins",
-                    .mobility = 500,
-                    .receiver_range = 750)
+                    .mobility = 500)
 head(obs)
 tail(obs)
 }
