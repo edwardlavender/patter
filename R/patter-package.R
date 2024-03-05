@@ -202,6 +202,7 @@
 #' @importFrom dplyr mutate
 #' @importFrom dplyr filter
 #' @importFrom dplyr summarise
+#' @importFrom dplyr reframe
 #' @importFrom dplyr group_by
 #' @importFrom dplyr ungroup
 #' @importFrom dplyr distinct

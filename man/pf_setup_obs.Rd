@@ -4,14 +4,7 @@
 \alias{pf_setup_obs}
 \title{PF: set up movement datasets}
 \usage{
-pf_setup_obs(
-  .dlist,
-  .trim = TRUE,
-  .step,
-  .period = NULL,
-  .mobility,
-  .receiver_range
-)
+pf_setup_obs(.dlist, .trim = TRUE, .step, .period = NULL, .mobility)
 }
 \arguments{
 \item{.dlist}{A named \code{list} of data and parameters from \code{\link[=pat_setup_data]{pat_setup_data()}}. This function requires:
