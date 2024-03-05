@@ -70,8 +70,7 @@ pf_setup_obs <- function(.dlist,
                          .trim = TRUE,
                          .step,
                          .period = NULL,
-                         .mobility,
-                         .receiver_range) {
+                         .mobility) {
 
   #### Check user inputs
   check_dlist(.dlist = .dlist)
@@ -82,125 +81,51 @@ pf_setup_obs <- function(.dlist,
   }
   check_inherits(.step, "character")
 
-  #### Process acoustics
-  # * Round time series & drop duplicates
-  # * List receivers with detections
+  #### Process acoustic and/or archival time series
+  # Process time series
   if (!is.null(acoustics)) {
-    acoustics <-
-      acoustics |>
-      lazy_dt(immutable = TRUE) |>
-      # Round time series & drop duplicates
-      mutate(timestamp = lubridate::round_date(.data$timestamp, .step)) |>
-      group_by(.data$receiver_id, .data$timestamp) |>
-      slice(1L) |>
-      ungroup() |>
-      # List receivers with detections at each time step
-      group_by(.data$timestamp) |>
-      summarise(receiver_id = list(unique(.data$receiver_id))) |>
-      ungroup() |>
-      arrange(timestamp) |>
-      # Add additional columns
-      mutate(detection_id = as.integer(row_number())) |>
-      as.data.table()
+    acoustics <- .setup_acoustics(.acoustics = acoustics, .step = .step)
   }
-
-  #### Process archival time series
   if (!is.null(archival)) {
-    timestamp <- NULL
-    archival[, timestamp := lubridate::round_date(timestamp, .step)]
-    # Validate duplicate observations
-    tbl <- table(archival$timestamp)
-    if (any(tbl > 1L)) {
-      abort("Multiple observations per `.step` in archival data are not currently supported. Are there multiple individuals in the archival data?")
-    }
+    archival <- .setup_archival(.archival = archival, .step = .step)
   }
-
-  #### Align time series
+  # Align time series
   if (!is.null(acoustics) && !is.null(archival) && .trim) {
-    start <- max(c(min(acoustics$timestamp), min(archival$timestamp)))
-    end   <- min(c(max(acoustics$timestamp), max(archival$timestamp)))
-    acoustics <-
-      acoustics |>
-      filter(.data$timestamp >= start & .data$timestamp <= end) |>
-      as.data.table()
-    archival <-
-      archival |>
-      filter(.data$timestamp >= start & .data$timestamp <= end) |>
-      as.data.table()
-    if (nrow(acoustics) == 0L | nrow(archival) == 0L) {
-      abort("There are no remaining observations after aligning the acoustic and archival time series.")
-    }
+    aligners <- .setup_alignment(.acoustics = acoustics, .archival = archival)
+    acoustics <- aligners$acoustics
+    archival  <- aligners$archival
   }
 
-  #### Define output time series
-  # Define regular time series
-  if (!is.null(.period)) {
-    start <- min(.period)
-    end   <- max(.period)
-  } else {
-    timestamps <- list(acoustics[["timestamp"]], archival[["timestamp"]])
-    timestamps <- list_compact(timestamps)
-    if (length(timestamps) == 1L) {
-      timestamps <- timestamps[[1]]
-    } else {
-      timestamps <- c(timestamps[[1]], timestamps[[2]])
-    }
-    start <- min(timestamps)
-    end   <- max(timestamps)
-  }
-  tss <- seq(start, end, by = .step)
-  out <- data.table(timestep = seq_len(length(tss)),
-                    timestamp = tss,
-                    date = as.character(as.Date(tss)),
-                    mobility = .mobility)
-  # Add acoustic data
+  #### Define template observations timeline
+  obs <- .setup_series(.acoustics = acoustics,
+                       .archival = archival,
+                       .period = .period,
+                       .step = .step,
+                       .mobility = .mobility)
+
+  #### Add acoustic data
   if (!is.null(acoustics)) {
-    out <-
-      out |>
-      mutate(detection = as.integer((timestamp %in% acoustics$timestamp) + 0)) |>
-      merge(acoustics, all.x = TRUE, by = "timestamp") |>
-      mutate(detection_id = as.integer(data.table::nafill(.data$detection_id, type = "locf"))) |>
-      group_by(.data$detection_id) |>
-      # Define buffers
-      mutate(step_forwards = row_number(),
-             step_backwards = rev(.data$step_forwards),
-             # We buffer the past by mobility
-             buffer_past = .mobility,
-             # We shrink the future
-             buffer_future = .mobility * .data$step_backwards,
-             buffer_future_incl_gamma = .data$buffer_future + .receiver_range) |>
-      ungroup() |>
-      arrange(.data$timestamp) |>
-      mutate(timestep = as.integer(row_number()),
-             receiver_id_next = .pf_setup_obs_receiver_id_next(.data$receiver_id)
-      ) |>
-      as.data.table()
+    # Add detection flag(s) (detection, detection_id, receiver_id)
+    obs <- .add_acoustics_flags(.obs = obs, .acoustics = acoustics)
+    # Add array ID(s)
+    obs <- .add_acoustics_arrays(.obs = obs, .dlist = .dlist, .step = .step)
+    # Add acoustic observations matrices
+    obs <- .add_acoustics_obs(.obs = obs, .dlist = .dlist, .acoustics = acoustics)
+    # Add acoustic containers information
+    obs <- .add_acoustics_containers(.obs = obs, .dlist = .dlist, .mobility = .mobility)
   }
-  # Add archival data
+
+  #### Add archival data
   if (!is.null(archival)) {
-    depth <- timestamp <- NULL
-    out[, depth := archival$depth[fmatch(timestamp, archival$timestamp)]]
-    bool <- is.na(out$depth)
-    if (any(bool)) {
-      nrw <- fnrow(out)
-      nob <- nrw - length(which(bool))
-      warn("There are {nob}/{nrw} ({round(nob / nrw * 100, digits = 1)} %) archival observations within the time series.",
-           .envir = environment())
-      if (all(bool)) {
-        warn("The depth column has been dropped.")
-        out[, depth := NULL]
-      }
-    }
+    obs <- .add_archival(.obs = obs, .archival = archival)
   }
 
   #### Tidy outputs & return
-  out |>
-    select("timestep",
-           "timestamp", "date",
-           any_of(c("detection_id", "detection", "receiver_id", "receiver_id_next",
-                    "mobility", "buffer_past", "buffer_future",
-                    "buffer_future_incl_gamma", "depth"))
-    ) |>
+  obs |>
+    select("timestep", "timestamp",
+           any_of(c("array_id", "detection",
+                    "acoustics", "container", "depth"))
+           ) |>
     as.data.table()
 
 }
