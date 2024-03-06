@@ -130,8 +130,6 @@ pf_lik_ac <- function(.particles, .obs, .t, .dlist, .drop) {
 
   #### Update likelihoods
   set_loglik(.particles, loglik)
-
-  #### Return particles
   if (.drop) {
     .particles <- .particles[loglik > -Inf, ]
   }
