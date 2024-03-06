@@ -2,11 +2,12 @@
 #' @description These convenience functions support the generation of animal movement paths and observations in _de novo_ simulations (`sim_*()` functions) and simulation-based reconstructions of movement paths ([`pf_forward()`] and [`pf_backward_*()`]).
 #'
 #' * `ss*()` functions set seeds;
+#' * `p*()` functions give probabilities;
 #' * `r*()` functions simulate random variates;
 #' * `c*()` functions calculate outcomes from random-variate inputs;
-#' * `d*()` functions return densities;
+#' * `d*()` functions return probability densities;
 #'
-#' `r*()` and `c*()` functions are used in _de novo_ simulations (via `sim_*()` functions such as [`sim_path_walk()`] and [`sim_detections()`]) and the forward simulation-based reconstruction of movement paths (in [`pf_forward()`]).
+#' `p*()`, `r*()` and `c*()` functions are used in _de novo_ simulations (via `sim_*()` functions such as [`sim_path_walk()`] and [`sim_detections()`]) and the forward simulation-based reconstruction of movement paths (in [`pf_forward()`]).
 #'
 #' `d*()` functions are primarily used in the simulation-based reconstruction of movement paths as part of the backward sampler via [`pf_backward_*()`].
 #'
@@ -17,19 +18,19 @@
 #' @param .prob Additional argument(s) for [`rbern()`] and [`dbern()`]:
 #' * `.prob` is `numeric` vector of probabilities.
 #'
-#' @param .alpha,.beta,.gamma Additional arguments for [`ddetlogistic()`] (see Details).
+#' @param .alpha,.beta,.gamma Additional arguments for [`pdetlogistic()`] (see Details).
 #' * `.alpha` is a `numeric` value for the intercept, on the scale of the logistic function.
 #' * `.beta` is a `numeric` value for the gradient, on the scale of the logistic function.
 #' * `.gamma` is a `numeric` value for the receiver detection range.
 #'
-#' @param .data,.ddet Arguments for [`rdet()`].
+#' @param .data,.pdet Arguments for [`rdet()`].
 #' * `.data` is a [`data.table`].
-#' * `.ddet` is a `function` evaluates the probability of a detection;
+#' * `.pdet` is a `function` evaluates the probability of a detection;
 #'
-#' For [`rdet()`], `.ddet` must accept the `.data` [`data.table`] as its first argument and evaluate the probability of a detection accordingly. [`rbern()`] then simulates detection(s). For `.ddet =` [`ddet`], `.data` must include a `dist` column that defines the distances between transmission locations and receivers. In [`ddet()`], `.data$dist` is passed to [`ddetlogistic()`] to calculate detection probabilities (see Details).
+#' For [`rdet()`], `.pdet` must accept the `.data` [`data.table`] as its first argument and evaluate the probability of a detection accordingly. [`rbern()`] then simulates detection(s). For `.pdet =` [`pdet`], `.data` must include a `dist` column that defines the distances between transmission locations and receivers. In [`pdet()`], `.data$dist` is passed to [`pdetlogistic()`] to calculate detection probabilities (see Details).
 #'
-#' @param .ddetx Additional arguments for [`ddet()`].
-#' * `.ddetx` is a function that evaluates the probability density of detections from a `numeric` vector (e.g,. of distances).
+#' @param .pdetx Additional arguments for [`pdet()`].
+#' * `.pdetx` is a `function` that evaluates the probability density of detections from a `numeric` vector (e.g,. of distances).
 #'
 #' @param .shape,.scale,.mobility Additional arguments for [`rtruncgamma()`] and [`dtruncgamma()`]:
 #' * `.shape` is a `numeric` value that defines the shape parameter of a Gamma distribution (see [`stats::rgamma()`]).
@@ -69,9 +70,9 @@
 #'
 #' @param ... Arguments passed to/from functions.
 #' * [`ssf()`], [`ssv()`]: not used;
-#' * [`rbern()`], [`ddet()`]: not used;
-#' * [`rdet()`], [`ddet()`]: passed to `.ddet` ( = [`ddet()`], wrapping [`ddetlogistic()`]);
-#' * [`ddetlogistic()`]: not used;
+#' * [`rbern()`], [`dbern()`]: not used;
+#' * [`rdet()`], [`pdet()`]: passed to `.pdet` ( = [`pdet()`], wrapping [`pdetlogistic()`]);
+#' * [`pdetlogistic()`]: not used;
 #' * [`rtruncgamma()`], [`dtruncgamma()`]: silently ignored;
 #' * [`rwn()`]: silently ignored;
 #' * [`rlen()`]: passed to [`rtruncgamma()`];
@@ -92,6 +93,19 @@
 #'
 #' # Detections
 #'
+#' ## Probabilities
+#'
+#' * [`pdetlogistic()`] evaluates detection probability at a receiver, given a transmission from location \eqn{\bold{s} = (x, y)} as a truncated \eqn{\text{logistic}} function of the distance (`.x`) between the transmission (\bold{s}) and receiver (\bold{r}) locations, i.e.,
+#' \deqn{
+#' \text{.prob} =
+#'  \begin{cases}
+#'    \text{logistic}(\text{.alpha} + \text{.beta} \times .x) & \text{if } .x < \text{.gamma} \\
+#'    0 & \text{otherwise}
+#'  \end{cases}
+#' }
+#' where \eqn{\text{logistic}(x) = 1 + e^{-x}}; `.alpha`, and `.beta` are parameters; and `.gamma` is the receiver's detection range.
+#' * [`pdet()`] wraps [`pdetlogistic()`] to evaluate detection probability;
+#'
 #' ## Distribution functions
 #'
 #' * `*bern()` functions are distribution functions for the Bernoulli distribution:
@@ -100,19 +114,8 @@
 #'
 #' ## Wrappers
 #'
-#' * `*det()` functions wrap `*bern()` functions for the simulation of detections at receivers:
-#'    * [`rdet()`] wraps [`ddet()`] and [`rbern()`] to simulate detections;
-#'    * [`ddet()`] wraps [`ddetlogistic()`] to calculate the probability density of detections;
-#'    * [`ddetlogistic()`] effectively wraps [`dbern()`] and evaluates the probability density of a detection event (at receiver \eqn{k} at time \eqn{t}), given a transmission from location \eqn{\bold{s} = (x, y)} (i.e., \eqn{p(\text{ev}[k, t] | \bold{s})}), as a truncated \eqn{\text{logistic}} function of the distance (`.x`) between the transmission (\bold{s}) and receiver (\bold{r}) locations, i.e.,
-#' \deqn{
-#' p(\text{ev}[k, t] | \bold{s}) =  \text{Bernoulli}(\text{.prob}) \\
-#' \text{.prob} =
-#'  \begin{cases}
-#'    \text{logistic}(\text{.alpha} + \text{.beta} \times .x) & \text{if } .x < \text{.gamma} \\
-#'    0 & \text{otherwise}
-#'  \end{cases}
-#' }
-#' where \eqn{\text{logistic}(x) = 1 + e^{-x}}; `.alpha`, and `.beta` are parameters; and `.gamma` is the receiver's detection range.
+#' * [`rdet()`] wraps [`pdet()`] and [`rbern()`] to simulate detections;
+#' * The corresponding function `ddet()` is not currently required;
 #'
 #' # Movement
 #'
@@ -205,9 +208,9 @@ dbern <- function(.x, .prob) {
 #' @rdname sim_helpers
 #' @export
 
-rdet <- function(.data, .ddet = ddet, ...) {
+rdet <- function(.data, .pdet = pdet, ...) {
   pr <- detection <- NULL
-  .data[, pr := .ddet(.data, ...)]
+  .data[, pr := .pdet(.data, ...)]
   .data[, detection := rbern(.N, .prob = pr)]
   .data
 }
@@ -215,21 +218,20 @@ rdet <- function(.data, .ddet = ddet, ...) {
 #' @rdname sim_helpers
 #' @export
 
-ddetlogistic <- function(.x,
+pdetlogistic <- function(.x,
                          .alpha = 4, .beta = -0.01,
                          .gamma = 750) {
   pr <- stats::plogis(.alpha + .beta * .x)
   pr[.x > .gamma] <- 0
-  # pr <- dbern(.x = 1L, size = 1L, prob = pr)
   pr
 }
 
 #' @rdname sim_helpers
 #' @export
 
-ddet <- function(.data, .ddetx = ddetlogistic, ...) {
+pdet <- function(.data, .pdetx = pdetlogistic, ...) {
   check_names(.data, "dist")
-  .ddetx(.data$dist, ...)
+  .pdetx(.data$dist, ...)
 }
 
 #' @rdname sim_helpers
@@ -683,7 +685,7 @@ sim_detections <- function(.paths, .arrays,
 ) {
 
   #### Check user inputs
-  # check_dots_used: .rdet -> .ddet -> ddetx used
+  # check_dots_used: .rdet -> .pdet -> pdet used
   # (dots are use in list(...) below)
   check_inherits(.paths, "data.table")
   check_inherits(.arrays, "data.table")
