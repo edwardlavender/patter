@@ -174,7 +174,7 @@ list_merge <- function(...) {
 #' @rdname utils-dt
 #' @keywords internal
 
-# Add missing columns
+# Set missing columns
 # * .data A `data.table` (not a lazy_dt() b/c rlang::has_name())
 # * .col A `character` string.
 set_missing <- function(.data, .col) {
@@ -186,7 +186,7 @@ set_missing <- function(.data, .col) {
   }
 }
 
-# Add a bathy column
+# Set the bathy column
 # * .data cannot be a lazy_dt()
 set_bathy <- function(.data, .dlist) {
   if (rlang::has_name(.data, "bathy")) {
@@ -196,6 +196,14 @@ set_bathy <- function(.data, .dlist) {
     .data[, bathy := terra::extract(.dlist$spatial$bathy, .data$cell_now)[, 1]]
     .data
   }
+}
+
+# Set (update) loglikelihoods
+# * .data cannot be a lazy_dt()
+set_loglik <- function(.data, .loglik) {
+  loglik <- NULL
+  .data[, loglik := sum(loglik, .loglik)]
+  .data
 }
 
 # Filter zero likelihoods
