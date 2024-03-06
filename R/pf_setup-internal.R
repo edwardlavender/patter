@@ -284,6 +284,11 @@
   # Define the required list of container information for each time step
   # * A matrix of receiver coordinates
   # * The buffer value(s)
+
+  # TO DO
+  # * Improve speed here by iterating over unique receiver_id_next records (not time steps)
+  # * and matching the data onto the time series
+
   cinfo <- cl_lapply(seq_row(.obs), .fun = function(t) {
     r <- .obs$receiver_id_next[[t]]
     if (all(is.na(r))) {

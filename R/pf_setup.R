@@ -1,9 +1,10 @@
 #' @title PF: set up movement datasets
-#' @description This function builds a timeline of observations for particle filtering. The forward filter ([`pf_forward()`]) iterates over this timeline. At each time step, the algorithm proposes candidate locations for an individual, evaluates the likelihood of each observation (e.g., acoustic and/or archival data) in the timeline at the current time step  and (re)samples valid locations using likelihood-based weights.
+#' @description This function builds a timeline of observations for particle filtering. The forward filter ([`pf_forward()`]) iterates over this timeline. At each time step, the algorithm proposes candidate locations for an individual, evaluates the likelihood of each observation (e.g., acoustic and/or archival data) in the timeline at the current time step and optionally (re)samples valid locations using a set of weights that incorporate the likelihood.
 #'
 #' @param .dlist A named `list` of data and parameters from [`pat_setup_data()`]. This function requires:
 #' * (optional) `.dlist$data$acoustics`, with the following columns: `timestamp` and `receiver_id`.
 #' * (optional) `.dlist$data$archival`, with the following columns: `timestamp` and `depth`.
+#' * (optional) If `.dlist$data$acoustics` is provided, `.dlist$algorithm$detection_overlaps` is required if there are receivers with overlapping detection containers;
 #'
 #' At least one dataset must be provided. Data should be given **for a single individual**. Other datasets are not currently integrated within this function but can be included afterwards (see Details).
 #'
@@ -20,45 +21,41 @@
 #' @details
 #' This function defines the timeline of observations over which [`pf_forward()`] is implemented. The function implements the following routines:
 #'
-#' * Acoustic progressing (if applicable);
+#' * Acoustic progressing (if applicable):
 #'    - Acoustic time series are rounded to the nearest `.step`;
-#'    - All receivers that recorded detection(s) in each time interval are listed;
 #'    - Duplicate detections (at the same receiver in the same time interval) are dropped;
 #'
-#' * Archival processing (if applicable);
+#' * Archival processing (if applicable):
 #'    - Archival time series are rounded to the nearest `.step`;
 #'    - Multiple records (in the same time interval) are not permitted (in this instance, you need to aggregate observations manually or reduce `.step`);
 #'
-#' * Alignment (if applicable)
+#' * Alignment (if applicable):
 #'    - Acoustic and archival time series are optionally trimmed to the time period for which they overlap;
 #'
-#' * Time series
+#' * Time series:
 #'    - Acoustic and/or archival time series are mapped onto a regular time series;
-#'    - Information required by [`pf_forward()`] is added;
+#'    - Information required by [`pf_forward()`] (and built-in likelihood functions) is added;
 #'
 #' At the time of writing, this function only supports acoustic and archival data. However, ancillary observations can easily be included in [`pf_forward()`] as extra columns in this [`data.table`].
 #'
 #' @return The function returns a [`data.table`] with the following columns:
 #' * `timestep`---an `integer` that defines the time step;
 #' * `timestamp`---a regular sequences of `POSIXct` time stamps;
-#' * `date`---a `character` that defines the date;
-#' * `mobility`---a `double` that defines `.mobility`;
 #'
 #' If acoustic data is provided, the following column(s) are also included:
-#' * `detection_id`---an `integer` vector that uniquely defines each detection;
+#' * `array_id`---an `integer` vector that uniquely distinguishes each array design;
 #' * `detection`---an `integer` that distinguishes the time steps at which detections were (1) or were not (0) recorded;
-#' * `receiver_id`---a `list` that defines the receiver(s) that recorded detection(s) at each time step;
-#' * `receiver_id_next`---a `list` that defines the receiver(s) that recorded the next detection(s);
-#' * `buffer_past`---a `double` that controls container growth from the past to the present;
-#' * `buffer_future`---a `double` that controls container shrinkage from the future to the present;
-#' * `buffer_future_incl_gamma`---a `double` (`buffer_future` + `.receiver_range`) that controls container shrinkage for [`pf_forward()`];
-#'
-#' These columns are required to calculate the likelihood of acoustic observations (the detection or lack thereof at each operational receiver) in [`pf_forward()`] by the default [`pf_lik`] routines.
+#' * `acoustics`---a `list` of one-row acoustic observation matrices. In [`pf_forward()`], this information is used to calculate the likelihood of acoustic observations at proposal locations (see [`pf_lik_ac()`]).
+#'    * If `detection = 1`, the `matrix` contains one named column for each receiver that recorded a detection and each overlapping receiver. (It is not necessary to include all receivers in this `matrix`.) The entries 1 and 0 distinguish the receivers at which detections were recorded/not recorded. This information is used to calculate the likelihood of acoustic observations at time steps with detection(s).
+#'    * If `detection = 0`, the `list` element is `NULL`. We do not need to store empty detection matrices because the likelihood of non detection at all operational receivers in a given array design is extracted from pre-computed layers (see [`acs_setup_detection_kernels()`]).
+#' * `container`---a `list` of acoustic container information. In [`pf_forward()`], this information is used to eliminate proposal locations that are too far away from the location(s) of the next detection(s) (see [`acs_filter_container()`]). Each `list` contains:
+#'    * `coord`---a two-column `matrix` of coordinates for the receiver(s) that recorded the next detection;
+#'    * `buffer`---a `numeric` vector of the (Euclidean) distance from each pair of receiver coordinates within which the individual must have been located at each time step. The distance depends on the time between detections, the individual's `.mobility` and the receiver-specific detection range;
 #'
 #' If archival data is provided, the following column(s) are also included:
 #' * `depth`---a number that defines the individual's depth (m) at each time step;
 #'
-#' To calculate the likelihood of archival observations in [`pf_forward()`] by the default [`pf_lik_dc()`] routine, a depth envelope (controlled by `depth_deep_eps`, `depth_shallow_eps` columns) is also required (see [`pf_lik_dc()`]).
+#' To calculate the likelihood of archival observations in [`pf_forward()`] by the default [`pf_lik_dc()`] routine, a depth envelope (controlled by `depth_deep_eps` and `depth_shallow_eps` columns) is also required (see [`pf_lik_dc()`]).
 #'
 #' @example man/examples/pf_setup_obs-examples.R
 #'
