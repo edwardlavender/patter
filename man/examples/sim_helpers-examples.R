@@ -24,20 +24,20 @@ dists <- data.table(individual_id = 1L,
                     dist = runif(100, 0, 1000))
 # Simulate detections using default arguments
 rdet(.data = data.table(dists))[]
-# Customise arguments passed to .ddet -> ddet() -> ddetlogistic()
+# Customise arguments passed to .pdet -> pdet() -> pdetlogistic()
 rdet(.data = dists, .gamma = 10)[]
-# Customise .ddet model
+# Customise .pdet model
 # * See below.
 
-#### Probability density of detections
-# Use ddetlogistic() to evaluate densities via a logistic function of distances
-ddetlogistic(1:10)
-ddetlogistic(1:10, .gamma = 500)
-# Use ddet() wrapper function
-ddet(dists)
-ddet(dists, .gamma = 500)
-# Customise .ddetx model
-ddetlinear <- function(.x, .alpha = 1, .beta = -0.002, .gamma = 500) {
+#### Detection probability
+# Use pdetlogistic() to evaluate detection Pr as a logistic function of distance
+pdetlogistic(1:10)
+pdetlogistic(1:10, .gamma = 500)
+# Use pdet() wrapper function
+pdet(dists)
+pdet(dists, .gamma = 500)
+# Customise .pdetx model
+pdetlinear <- function(.x, .alpha = 1, .beta = -0.002, .gamma = 500) {
   pr <- .alpha + .beta * .x
   pr <- pmax(pr, 0)
   pr <- pmin(pr, 1)
@@ -45,13 +45,13 @@ ddetlinear <- function(.x, .alpha = 1, .beta = -0.002, .gamma = 500) {
   # pr <- dbern(.x = 1L, size = 1L, prob = pr)
   pr
 }
-plot(1:500, ddetlinear(1:500),
+plot(1:500, pdetlinear(1:500),
      xlim = c(0, 500), ylim = c(0, 1),
      xlab = "Detection probability", ylab = "Distance (m)",
      type = "l")
-ddet(dists, .ddetx = ddetlinear)
-# Use ddetlinear in rdet()
-det <- rdet(.data = dists, .ddetx = ddetlinear)
+pdet(dists, .pdetx = pdetlinear)
+# Use pdetlinear in rdet()
+det <- rdet(.data = dists, .pdetx = pdetlinear)
 points(det$dist, det$detection)
 
 

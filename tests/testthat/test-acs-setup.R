@@ -44,11 +44,11 @@ test_that("acs_setup_detection_kernel() works", {
   # Test default implementation
   p <- acs_setup_detection_kernel(m, .bathy = dat_gebco())
   expect_equal(terra::extract(p, data.frame(m$receiver_x, m$receiver_y))[1, 2],
-               ddetlogistic(0))
-  # Test customisation of .ddetx arguments
+               pdetlogistic(0))
+  # Test customisation of .pdetx arguments
   p <- acs_setup_detection_kernel(m, .bathy = dat_gebco(), .alpha = 0, .beta = 0)
   expect_equal(terra::extract(p, data.frame(m$receiver_x, m$receiver_y))[1, 2],
-               ddetlogistic(0, .alpha = 0, .beta = 0))
+               pdetlogistic(0, .alpha = 0, .beta = 0))
   # Test unused arguments
   acs_setup_detection_kernel(m, .bathy = dat_gebco(), .blah = 1) |>
     expect_error("unused argument (.blah = 1)", fixed = TRUE)
@@ -83,7 +83,7 @@ test_that("acs_setup_detection_kernels() works", {
   })
   # Define kernels
   k <- acs_setup_detection_kernels(dlist,
-                                   .ddetkernel = acs_setup_detection_kernel)
+                                   .pdetkernel = acs_setup_detection_kernel)
 
   #### Check array designs
   expect_true(all.equal(
@@ -114,9 +114,9 @@ test_that("acs_setup_detection_kernels() works", {
 
   #### Check validation of invalid inputs
   # Define invalid input
-  ddetkernel <- function(.mooring, .bathy, .mask = TRUE, .error = NA) {
+  pdetkernel <- function(.mooring, .bathy, .mask = TRUE, .error = NA) {
     # Define helper function to calculate detection probability given distance (m)
-    .ddetx <- function(distance) {
+    .pdetx <- function(distance) {
       pr <- stats::plogis(2.5 + -0.02 * distance)
       pr[distance > .mooring$receiver_range] <- 0
       pr
@@ -131,7 +131,7 @@ test_that("acs_setup_detection_kernels() works", {
       dist <- terra::mask(dist, .bathy)
     }
     # Convert distances to detection pr
-    pr <- terra::app(dist, .ddetx)
+    pr <- terra::app(dist, .pdetx)
     # Introduce error: set the receiver 3 location to 0 or NA
     if (.mooring$receiver_id == 3L) {
       pr[cell] <- .error
@@ -140,19 +140,19 @@ test_that("acs_setup_detection_kernels() works", {
   }
   # Check warnings (NA at receiver)
   acs_setup_detection_kernels(dlist,
-                              .ddetkernel = ddetkernel) |>
+                              .pdetkernel = pdetkernel) |>
     expect_warning("Detection probability is NA at receiver 3.", fixed = TRUE)
   # Check warnings (0 at receiver)
   acs_setup_detection_kernels(dlist,
-                              .ddetkernel = ddetkernel, .error = 0) |>
+                              .pdetkernel = pdetkernel, .error = 0) |>
     expect_warning("Detection probability is 0 at receiver 3.", fixed = TRUE)
 
   # Check dot handling
   acs_setup_detection_kernels(dlist,
-                              .ddetkernel = acs_setup_detection_kernel,
+                              .pdetkernel = acs_setup_detection_kernel,
                               .alpha = 4)
   acs_setup_detection_kernels(dlist,
-                              .ddetkernel = acs_setup_detection_kernel,
+                              .pdetkernel = acs_setup_detection_kernel,
                               .blah = 4) |>
     expect_error("unused argument (.blah = 4)", fixed = TRUE)
 
