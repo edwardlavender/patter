@@ -7,6 +7,7 @@
 \alias{.setup_archival}
 \alias{.setup_alignment}
 \alias{.setup_series}
+\alias{.get_absences}
 \alias{.add_acoustics_arrays}
 \alias{.add_acoustics_flags}
 \alias{.add_acoustics_obs}
@@ -24,6 +25,8 @@
 .setup_alignment(.acoustics, .archival)
 
 .setup_series(.acoustics, .archival, .period, .step, .mobility)
+
+.get_absences(.date, .detections, .overlaps)
 
 .add_acoustics_arrays(.obs, .dlist, .step)
 

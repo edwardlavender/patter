@@ -163,36 +163,51 @@
   container
 }
 
-#' @title AC* helper: detection absences
-#' @description Given a detection at one or more receivers on a given date, this function defines the set of remaining, active, overlapping receivers that did not record detections.
-#' @param .date A `character` that defines the date.
-#' @param .detections An `integer` vector that defines the receiver(s) that recorded detection(s) at the current time step.
-#' @param .overlaps A named `list` from [`acs_setup_detection_overlaps()`] that defines receiver overlaps. `NULL` is permitted.
-#' @details In the AC* algorithms, at the moment of detection, likelihood of the acoustic data given a particle sample depends on depends on both the receivers that record detections and those that did not (eqn S5 in Lavender et al., 2023). This function is used to restrict the set of receivers to which eqn S5 needs to be applied.
-#'
-#' # Warning
-#' For speed, this function performs no internal checks.
-#'
-#' @return The function returns an `integer` vector that defines the set of receivers that overlap with `.detections` but did not record detections. `NULL` indicates no overlapping receivers.
-#' @seealso This function defines the `absences` argument for [`.pf_lik_ac_detection()`].
-#' @author Edward Lavender
+#' @title AC* helper: AC* kernels
+#' @description These functions support [`acs_setup_detection_kernels()`].
+#' @name acs_setup_detection_kernels-internal
+
+#' @rdname .acs_setup_detection_kernels-internal
 #' @keywords internal
 
-.acs_absences <- function(.date, .detections, .overlaps){
-  absences <- NULL
-  if (!is.null(.overlaps)) {
-    # Define overlapping receivers (i.e., those with detection 'absences')
-    absences <-
-      lapply(.detections, function(r) {
-        .overlaps[[r]][[.date]]
-      }) |>
-      unlist() |>
-      unique()
-    # Define the set of overlapping receivers that did not record detections
-    absences <- absences[!(absences %in% .detections)]
-    if (length(absences) == 0L) {
-      absences <- NULL
-    }
-  }
-  absences
+.acs_setup_detection_kernels_1 <- function(.dlist, .pdetkernel) {
+
+  #### Check user inputs
+  check_dlist(.dlist = .dlist,
+              .dataset = "moorings",
+              .spatial = "bathy",
+              .par = "spatna")
+  moorings <- .dlist$data$moorings
+  check_names(.dlist$data$moorings, req = c("receiver_x", "receiver_y"))
+  bathy    <- .dlist$spatial$bathy
+
+  #### Calculate detection Pr around each receiver
+  # (used to up-weight areas around a receiver with a detection)
+  receiver_specific_kernels <-
+    pbapply::pblapply(split(moorings, moorings$receiver_id), function(m) {
+      # Define receiver coordinates
+      mxy <- cbind(m$receiver_x, m$receiver_y)
+      # Define detection container around receiver
+      container <-
+        mxy |>
+        terra::vect(crs = terra::crs(bathy)) |>
+        terra::buffer(width = m$receiver_range, quadsegs = 1e3L)
+      # Crop bathy for improved speed
+      b <- terra::crop(bathy, container, snap = "out")
+      # Define kernel using user-provided function
+      k <- .pdetkernel(.mooring = m, .bathy = b, .mask = .dlist$pars$spatna, ...)
+      # Calculate Pr at receiver and check it is not NA or 0
+      pr_at_receiver <- terra::extract(k, mxy)[1, 1]
+      if (is.na(pr_at_receiver)) {
+        warn("Detection probability is NA at receiver {m$receiver_id}.",
+             .envir = environment())
+      } else if (pr_at_receiver == 0) {
+        warn("Detection probability is 0 at receiver {m$receiver_id}.",
+             .envir = environment())
+      }
+      # Return kernel
+      k
+    })
+  names(receiver_specific_kernels) <- as.character(moorings$receiver_id)
+  receiver_specific_kernels
 }
