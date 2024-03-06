@@ -216,10 +216,12 @@
 #' @rdname pf_particle
 #' @keywords internal
 
-# Calculate the likelihood of a depth observation (.x)
+# Calculate the log-likelihood of a depth observation (.x)
 .pf_lik_dc <- function(.x, .a, .b) {
   .a[.a < 0] <- 0
-  stats::dunif(x = .x, min = .a, max = .b)
+  ll <- stats::dunif(x = .x, min = .a, max = .b, log = TRUE)
+  ll[is.na(ll)] <- -Inf # log(0)
+  ll
 }
 
 #' @rdname pf_particle

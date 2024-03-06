@@ -82,6 +82,7 @@ acs_filter_container <- function(.particles, .obs, .t, .dlist, .drop) {
                .loglik = .acs_filter_container(.dist = dist, .buffer = .obs$container[[.t]]$buffer))
     # Drop zero likelihoods
     if (.drop) {
+      loglik <- NULL
       .particles <- .particles[loglik > -Inf, ]
     }
   }
@@ -147,14 +148,16 @@ pf_lik_dc <- function(.particles, .obs, .t, .dlist, .drop) {
     check_names(.obs, req = c("depth_shallow_eps", "depth_deep_eps"))
     check_dlist(.dlist = .dlist, .spatial = "bathy")
   }
-  # Likelihood evaluation
-  lik <- bathy <- NULL
+  # Set log-likelihoods by reference
   set_bathy(.data = .particles, .dlist = .dlist)
-  .particles[, lik := lik * .pf_lik_dc(.x = .obs$depth[.t],
-                                       .a =  bathy - .obs$depth_shallow_eps[.t],
-                                       .b = bathy + .obs$depth_deep_eps[.t])]
+  set_loglik(.data = .particles,
+             .loglik = .pf_lik_dc(.x = .obs$depth[.t],
+                                  .a =  bathy - .obs$depth_shallow_eps[.t],
+                                  .b = bathy + .obs$depth_deep_eps[.t]))
+  # Drop zero likelihoods
   if (.drop) {
-    .particles <- .particles[lik > 0, ]
+    loglik <- NULL
+    .particles <- .particles[loglik > -Inf, ]
   }
   .particles
 }
