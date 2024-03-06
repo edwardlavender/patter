@@ -140,7 +140,7 @@ check_acoustics <- function(.acoustics, .moorings = NULL) {
 #' @rdname check_dlist
 #' @keywords internal
 
-check_moorings <- function(.moorings, .acoustics, .lonlat, .bathy) {
+check_moorings <- function(.moorings, .acoustics = NULL, .lonlat, .bathy) {
 
   #### Check class
   if (is.null(.moorings)) {
@@ -179,12 +179,14 @@ check_moorings <- function(.moorings, .acoustics, .lonlat, .bathy) {
   }
   # Check for receivers with deployment periods entirely outside the range of acoustic observations
   # * This requires a temporary data.frame (`deps`)
-  deps <- as.data.frame(.moorings)
-  deps$interval <- lubridate::interval(deps$receiver_start, deps$receiver_end)
-  deps$within   <- deps$interval %within% lubridate::interval(min(.acoustics$timestamp), max(.acoustics$timestamp))
-  bool <- !deps$within
-  if (any(bool)) {
-    warn("The deployment period(s) of some receiver(s) ({str_items(deps$receiver_id[which(bool)])}) in `.moorings` are entirely outside the range of acoustic observations. Consider excluding these receivers for improved efficiency (e.g., in `acs_setup_detection_kernels()`, which pre-calculates the likelihood of non detection at all operational receivers _for each array design_.", .envir = environment())
+  if (!is.null(.acoustics)) {
+    deps <- as.data.frame(.moorings)
+    deps$interval <- lubridate::interval(deps$receiver_start, deps$receiver_end)
+    deps$within   <- deps$interval %within% lubridate::interval(min(.acoustics$timestamp), max(.acoustics$timestamp))
+    bool <- !deps$within
+    if (any(bool)) {
+      warn("The deployment period(s) of some receiver(s) ({str_items(deps$receiver_id[which(bool)])}) in `.moorings` are entirely outside the range of acoustic observations. Consider excluding these receivers for improved efficiency (e.g., in `acs_setup_detection_kernels()`, which pre-calculates the likelihood of non detection at all operational receivers _for each array design_.", .envir = environment())
+    }
   }
 
   #### Check receiver ranges
