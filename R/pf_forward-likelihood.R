@@ -46,12 +46,11 @@ acs_filter_land <- function(.particles, .obs, .t, .dlist, .drop) {
   if (isTRUE(.dlist$pars$spatna)) {
     # Define bathy by reference
     set_bathy(.data = .particles, .dlist = .dlist)
-    # Update likelihoods by reference
-    lik <- bathy <- NULL
-    .particles[, lik := lik * ((!is.na(bathy) + 0L))]
+    # Update log-likelihoods by reference
+    set_loglik(.particles, .loglik = log(!is.na(.particles$bathy) + 0L))
     # Drop likelihoods
     if (.drop) {
-      .particles <- .particles[lik > 0, ]
+      .particles <- .particles[loglik > -Inf, ]
     }
   }
   .particles
