@@ -5,7 +5,7 @@
 #' * `.dlist$data$moorings`, with the following columns: `receiver_id`, `receiver_x`, `receiver_y`, `receiver_start`, `receiver_end` and `receiver_range`.
 #' *  (optional) `.dlist$data$services`, with the following columns: `receiver_id`, `service_start` and `service_end`.
 #'
-#' @details An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual. In such an algorithm, at the moment of detection, the likelihood of detection(s) is evaluated, given particle samples. The outputs of this function are used to restrict the likelihood calculations to the set of receivers that overlap with the receiver(s) at which an individual is detected. This improves efficiency.
+#' @details An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual (see [`pf_forward()`]). In such an algorithm, at the moment of detection, the likelihood of detection(s) is evaluated, given particle samples. The outputs of this function are used to restrict the likelihood calculations to the set of receivers that overlap with the receiver(s) at which an individual is detected. This improves efficiency.
 #'
 #' In this function, receiver deployments that overlap in time (accounting for deployment and servicing dates) are identified by [`make_matrix_receivers()`]. Spatially overlapping receiver pairs are defined as those for which the Euclidean distance between receiver coordinates is less than the combined detection range. This approach is fast but crude because it ignores the influence of other variables, such as land barriers, on detectability. This means that some 'overlapping receivers' may not in reality overlap. In this situation, downstream calculations may be a little less efficient. However, since overlapping receivers tend to be few in number, the efficiency penalty for this approximation should be negligible. We formerly used detection kernels (see [`acs_setup_detection_kernels()`]) to identify receiver overlaps, but this is much more expensive in situations with large numbers of receivers and high-resolution grids and this approach is no longer used.
 #'
@@ -18,7 +18,7 @@
 #' dlist <- dat_dlist()
 #' # Prepare detection overlaps
 #' # * Store detection overlaps in dlist$algorithms
-#' # * It is expected in this slot by `pf_lik_ac()`
+#' # * It is expected in this slot by `pf_setup_obs()`
 #' dlist$algorithm$overlaps <- acs_setup_detection_overlaps(dlist)
 #'
 #' @seealso To implement an AC*PF algorithm, see:
@@ -27,8 +27,8 @@
 #'    * [`acs_setup_detection_overlaps()`], which identifies detection overlaps;
 #'    * [`acs_setup_detection_kernel()`], which prepares a detection kernel;
 #'    * [`acs_setup_detection_kernels()`], which prepares detection kernels;
-#' 3. [`pf_lik_ac()`] to define the likelihood of acoustic data;
-#' 4. [`pf_forward()`] to run the simulation;
+#' 3. [`pf_setup_obs()`] to define a timeline of observations
+#' 4. [`pf_forward()`] to run the simulation (using [`pf_lik_ac()`] to evaluate the likelihood of acoustic observations);
 #'
 #' @author Edward Lavender
 #' @export
@@ -159,13 +159,13 @@ acs_setup_detection_overlaps <- function(.dlist) {
 
 #' @title AC* set up: detection probability
 #' @description This function is part of a set of `acs_setup_*()` functions that prepare the layers required to evaluate the likelihood of acoustic observations in an AC*PF algorithm. The function is an example detection probability function, of the kind required by [`acs_setup_detection_kernels()`].
-#' @param .mooring A one-row [`data.table`] that defines the location of an acoustic receiver and associated information required to calculate detection probability via `.ddetx`. In this function, receiver coordinate columns (`receiver_x` and `receiver_y`) and the detection range (`receiver_range`) is required.
+#' @param .mooring A one-row [`data.table`] that defines the location of an acoustic receiver and associated information required to calculate detection probability via `.pdetx`. In this function, receiver coordinate columns (`receiver_x` and `receiver_y`) and the detection range (`receiver_range`) is required.
 #' @param .bathy A [`SpatRaster`] that defines the grid on which detection probability is calculated.
 #' @param .mask A `logical` variable that defines whether or not to mask the detection kernel by `.bathy`. Use `.mask = TRUE` if `.bathy` contains `NA`s.
-#' @param .ddetx A function that calculates detection probability, such as [`ddetlogistic()`]. In this implementation, the function is used to translate a [`SpatRaster`] of distances (m) (from each grid cell to the receiver in `.data`) via [`terra::app()`]. The function must accept a .`gamma` argument (even if this is ignored, see below).
-#' @param ... Additional arguments passed to `.ddetx`. These arguments as passed to [`ddetlogistic()`]  by default. `.gamma` is set internally to `.mooring$receiver_range`.
+#' @param .pdetx A function that calculates detection probability, such as [`pdetlogistic()`]. In this implementation, the function is used to translate a [`SpatRaster`] of distances (m) (from each grid cell to the receiver in `.data`) via [`terra::app()`]. The function must accept a .`gamma` argument (even if this is ignored, see below).
+#' @param ... Additional arguments passed to `.pdetx`. These arguments are passed to [`pdetlogistic()`]  by default. `.gamma` is set internally to `.mooring$receiver_range`.
 #'
-#' @details An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual. At each time step in such an algorithm, we evaluate the likelihood of acoustic observations (the presence or absence of detections at each operational receiver, accounting for receiver placement) given particle samples. The likelihood of the acoustic observations depends upon how detection probability declines away from receiver(s) in space; i.e., the shape of a 'detection kernel' (see [`acs_setup_detection_kernels()`]). For any one receiver, the form of the kernel depends on the input to the `.ddetkernel` in [`acs_setup_detection_kernels()`]. This function exemplifies one possible input to this argument, which is a model in which detection probability declines logistically with distance from a receiver.
+#' @details An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual (see [`pf_forward()`]). At each time step in such an algorithm, we evaluate the likelihood of acoustic observations (the presence or absence of detections at each operational receiver, accounting for receiver placement) given particle samples. The likelihood of the acoustic observations depends upon how detection probability declines away from receiver(s) in space; i.e., the shape of a 'detection kernel' (see [`acs_setup_detection_kernels()`]). For any one receiver, the form of the kernel depends on the input to the `.pdetkernel` in [`acs_setup_detection_kernels()`]. This function exemplifies one possible input to this argument, which is a model in which detection probability declines logistically with distance from a receiver.
 #'
 #' # Warning
 #'
@@ -190,7 +190,7 @@ acs_setup_detection_overlaps <- function(.dlist) {
 acs_setup_detection_kernel <- function(.mooring,
                                        .bathy,
                                        .mask = TRUE,
-                                       .ddetx = ddetlogistic, ...) {
+                                       .pdetx = pdetlogistic, ...) {
   # Checks
   # * check_dots_used: terra::app() used
   check_dots_allowed(".gamma", ...)
@@ -205,36 +205,30 @@ acs_setup_detection_kernel <- function(.mooring,
     dist <- terra::mask(dist, .bathy)
   }
   # Convert distances to detection pr
-  terra::app(dist, .ddetx, .gamma = .mooring$receiver_range, ...)
+  terra::app(dist, .pdetx, .gamma = .mooring$receiver_range, ...)
 }
 
 #' @title AC* set up: detection kernels
 #' @description This function is part of a set of `acs_setup_*()` functions that prepare the layers required to evaluate the likelihood of acoustic observations in an AC*PF algorithm. The function prepares the detection kernels.
 #' @param .dlist A named `list` of data and parameters from [`pat_setup_data()`]. This function requires:
-#' * `.dlist$data$moorings`, with the following columns: `receiver_id`, `receiver_start`, `receiver_end`, `receiver_x` and `receiver_y`, plus any columns used internally by `.ddetkernel` (see below).
-#' * `.dlist$data$services`, with the following columns: `receiver_id`, `service_start` and `service_end` (see [`make_matrix_receivers()`]).
+#' * `.dlist$data$moorings`, with the following columns: `receiver_id`, `receiver_start`, `receiver_end`, `receiver_x` and `receiver_y`, plus any columns used internally by `.pdetkernel` (see below).
+#' * (optional) `.dlist$data$services`, with the following columns: `receiver_id`, `service_start` and `service_end` (see [`make_matrix_receivers()`]).
 #' * `.dlist$spatial$bathy`, which defines the grid on which detection kernels are represented. `NA`s are used as a mask.
 #' * `.dlist$pars$spatna`, which defines whether or not masking is required.
-#' @param .ddetkernel,... A `function` that defines the detection kernel as a [`SpatRaster`] around a receiver (see [`acs_setup_detection_kernel()`] for an example). This must accept three arguments (even if they are ignored):
+#' @param .pdetkernel,... A `function` that defines the detection kernel as a [`SpatRaster`] around a receiver (see [`acs_setup_detection_kernel()`] for an example). This must accept three arguments (even if they are ignored):
 #' * `.mooring`---A one-row [`data.table`] that contains the information in `.dlist$data$moorings` for a specific receiver;
 #' * `.bathy`---the `.dlist$spatial$bathy` [`SpatRaster`];
 #' * `.mask`---a `logical` variable passed down from `.dlist$pars$spatna`;
 #' * `...` Additional arguments passed via [`acs_setup_detection_kernels()`];
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
-#' @details An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual. At each time step in such an algorithm, we evaluate the likelihood of acoustic observations (the presence or absence of detections at each operational receiver, accounting for receiver placement) given particle samples. A detection kernel is a spatial representation of the likelihood of a detection _around a specific receiver_. This typically declines with distance around a receiver, hence the default formulation of the `.ddetkernel` function. This function permits receiver-specific kernels, if required (but time-varying kernels are not currently supported). Pre-calculating detection kernels is a potentially slow operation, especially for large and/or high-resolution grids (and we would like to improve this in future). However, this penalty is only required once and greatly improves the speed of downstream likelihood calculations in [`pf_lik_ac()`] in [`pf_forward()`], which only needs to appropriately combine the relevant values at each time step.
+#' @details An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual (see [`pf_forward()`]). At each time step in such an algorithm, we evaluate the likelihood of acoustic observations (the presence or absence of detections at each operational receiver, accounting for receiver placement) given particle samples. The likelihood is evaluated using a Bernoulli distribution and a detection probability parameter. A detection kernel is a spatial representation of detection probability _around a specific receiver_. This typically declines with distance around a receiver, hence the default formulation of the `.pdetkernel` function. This function permits receiver-specific kernels, if required (but time-varying kernels are not currently supported and require custom likelihood functions in [`pf_forward()`]). Pre-calculating detection kernels is a potentially slow operation, especially for large and/or high-resolution grids (and we would like to improve this in future). However, this penalty is only required once and improves the speed of downstream likelihood calculations in [`pf_lik_ac()`] in [`pf_forward()`].
 #'
 #' @return The function returns a named `list`, with the following elements:
-#' * **`receiver_specific_kernels`**. A `list`, with one element for all integers from 1 to the maximum receiver number. Any elements that do not correspond to receivers contain a `NULL` element. List elements that correspond to receivers contain a [`SpatRaster`] of the detection kernel around the relevant receiver. Cells values define the likelihood of a detection in that location, as modelled by `.ddetkernel`. In an AC*PF algorithm, at the moment of detection, these kernels effectively up-weight particles near to the receiver(s) that recorded detections.
-#' * **`receiver_specific_inv_kernels`**. A `list`, as for `receiver_specific_kernels`, but in which elements contain the inverse detection kernels (i.e., 1 - detection kernel). In an AC*PF algorithm, at the moment of detection, inverse detection kernels effectively down-weight particles in the overlapping regions between the receiver(s) that recorded detections those that did not.
-#' * **`array_design`**. A `data.frame` that defines the number and deployment times of each unique array design, resulting from receiver deployment, servicing and removal. In the times between detections, this is used to select the appropriate 'background' likelihood surface (see below). This contains the following columns:
-#'   * `array_id`. An `integer` vector that defines each unique array design.
-#'   * `array_start_date`. A `Date` that defines the start date of each array design.
-#'   * `array_end_date`. A `Date` that defines the end date of each array design.
-#'   * `array_interval`. A [`lubridate::Interval-class`] vector that defines the deployment period of each array design.
-#' * **`array_design_by_date`**. A named `list` that defines, for each date (list element), the array design on that date (based on `array_id` in `array_design`).
-#' * **`bkg_surface_by_design`**. A `list`, with one element for each array design, that defines the detection surface across all receivers deployed in that phase of the study. In areas that are covered by the detection kernel of a single receiver, the detection surface depends only on the kernel for that receiver (via `.ddetkernel`). In areas covered by multiple, overlapping kernels, the surface is influenced by the combination of overlapping kernels.
-#' * **`bkg_inv_surface_by_design`**. A `list`, as above for `bkg_surface_by_design`, but which contains the inverse detection surface (i.e., 1 - `bkg_surface_by_design`). In the AC*PF algorithm(s), in the gaps between detections, this effectively up-weights particles away from receivers (or, equivalently, down-weights particles near to receivers).
+#' * **`pkernel`**. A named `list`, with one element for each receiver. Each element is a [`SpatRaster`] of the detection kernel around that receiver. Cells values define the probability of a detection, as modelled by `.pdetkernel`. In an AC*PF algorithm, these kernels are used to calculate the likelihood of the acoustic data (detections/non-detections). This process effectively up-weights particles near to the receiver(s) that recorded detections and down-weights particles further afield.
+#' * **`loglik`**. A named `list`, with one element for each array design. Each element is a [`SpatRaster`] that defines the log-likelihood of non-detection at all operational receivers in that array. In an AC*PF algorithm, during detection gaps, we can extract the log-likelihood of the acoustic data (non detection) at particle locations directly from this layer.
+#'
+#' To improve speed in [`pf_forward()`], use `terra:::readAll()` to force [`SpatRaster`]s into memory, if possible.
 #'
 #' @example man/examples/acs_setup_detection_kernels-examples.R
 #'
@@ -246,12 +240,8 @@ acs_setup_detection_kernel <- function(.mooring,
 
 acs_setup_detection_kernels <-
   function(.dlist,
-           .ddetkernel = acs_setup_detection_kernel,
+           .pdetkernel = acs_setup_detection_kernel,
            .verbose = getOption("patter.verbose"), ...) {
-
-
-    #########################
-    #### Initiation, set up and checks
 
     #### Initiation
     t_onset <- Sys.time()
@@ -259,185 +249,22 @@ acs_setup_detection_kernels <-
     cat_log(call_start(.fun = "acs_setup_detection_kernels", .start = t_onset))
     on.exit(cat_log(call_end(.fun = "acs_setup_detection_kernels", .start = t_onset, .end = Sys.time())), add = TRUE)
 
-    #### Check user inputs
-    # check_dots_used: acs_setup_detection_kernel() used
-    check_dlist(.dlist = .dlist,
-                .dataset = "moorings",
-                .spatial = "bathy",
-                .par = "spatna")
-    moorings <- .dlist$data$moorings
-    check_names(.dlist$data$moorings, req = c("receiver_x", "receiver_y"))
-    bathy    <- .dlist$spatial$bathy
+    #### Calculate detection probability kernels
+    # When an individual is detected, we calculate the likelihood of the acoustic data (0, 1)
+    # at relevant receivers according to the probability of a detection extracted from these layers.
+    cat_log("... Getting Pr(detection)...")
+    pk1 <- .acs_setup_detection_kernels_pk1(.dlist = .dlist,
+                                            .pdetkernel = .pdetkernel)
 
+    #### Calculate inverse detection probability kernels
+    cat_log("... Getting Pr(non-detection)...")
+    pk0 <- .acs_setup_detection_kernels_pk0(.pk1 = pk1)
 
-    #########################
-    ####  Receiver-specific kernels (for detection)
-
-    #### Calculate detection Pr around each receiver
-    # (used to up-weight areas around a receiver with a detection)
-    cat_log("... Getting receiver-specific kernels (for detection)...")
-    receiver_specific_kernels <-
-      pbapply::pblapply(split(moorings, moorings$receiver_id), function(m) {
-        # Define receiver coordinates
-        mxy <-
-          m |>
-          select("receiver_x", "receiver_y") |>
-          as.matrix()
-        # Define detection container around receiver
-        container <-
-          mxy |>
-          terra::vect(crs = terra::crs(bathy)) |>
-          terra::buffer(width = m$receiver_range, quadsegs = 1e3L)
-        # Crop bathy for improved speed
-        b <- terra::crop(bathy, container, snap = "out")
-        # Define kernel using user-provided function
-        k <- .ddetkernel(.mooring = m, .bathy = b, .mask = .dlist$pars$spatna, ...)
-        # Calculate Pr at receiver and check it is not NA or 0
-        pr_at_receiver <- terra::extract(k, mxy)[1, 1]
-        if (is.na(pr_at_receiver)) {
-          warn("Detection probability is NA at receiver {m$receiver_id}.",
-               .envir = environment())
-        } else if (pr_at_receiver == 0) {
-          warn("Detection probability is 0 at receiver {m$receiver_id}.",
-               .envir = environment())
-        }
-        # Return kernel
-        k
-      })
-    names(receiver_specific_kernels) <- as.character(moorings$receiver_id)
-
-    #### Calculate inverse detection Pr around each receiver
-    # (used in calculations to down-weight areas, around a receiver that recorded detections,
-    # ... that overlap with receivers that didn't record a detection)
-    cat_log("... Getting receiver-specific inverse kernels...")
-    receiver_specific_inv_kernels <- lapply(receiver_specific_kernels, function(k) 1 - k)
-    names(receiver_specific_inv_kernels) <- names(receiver_specific_kernels)
-
-
-    #########################
-    #### Area-wide kernel (for non detection)
-
-    #### Get dates of changes in array design
-    cat_log("... Getting area-wide kernels (for non-detection)...")
-    cat_log("... ... Geting unique array designs...")
-    # Get receiver status matrix from moorings and services (in units of days, time unit is Date)
-    rs_mat <- make_matrix_receivers(.dlist = .dlist,
-                                    .delta_t = "days",
-                                    .as_POSIXct = NULL)
-    # Get receiver status change points (dates when the array design changed)
-    rs_mat_cp <- unique(rs_mat)
-    # Define the time interval for each array design
-    array_design <- data.frame(
-      array_id = 1:nrow(rs_mat_cp),
-      array_start_date = as.Date(rownames(rs_mat_cp))
-    )
-    array_design$array_end_date <-
-      lead(array_design$array_start_date) - 1
-    array_design$array_end_date[nrow(array_design)] <-
-      max(moorings$receiver_end)
-    array_design$array_interval <-
-      lubridate::interval(
-        array_design$array_start_date,
-        array_design$array_end_date
-      )
-    # Define array designs by date
-    array_design_by_date <-
-      lapply(split(array_design, array_design$array_id), function(d) {
-        data.frame(array_id = d$array_id[1],
-                   date = seq(d$array_start_date, d$array_end_date, "days"))
-      }) |> rbindlist()
-    cdates <- as.character(array_design_by_date$date)
-    array_design_by_date        <- lapply(array_design_by_date$array_id, \(x) x)
-    names(array_design_by_date) <- as.character(cdates)
-
-    #### For each unique array design, create the area-wide kernel surface that represents detection Pr/inverse detection Pr
-    cat_log("... ... Geting area-wide kernels for each array design...")
-    bkgs_by_design <-
-      pbapply::pblapply(1:nrow(rs_mat_cp), function(icp) {
-
-        #### Identify active receivers on that date
-        # icp <- 1
-        cat_log(paste0("\n... ... ... For design ", icp, "/", nrow(rs_mat_cp), "..."))
-        cp <- rs_mat_cp[icp, , drop = FALSE]
-        rs_active <- colnames(cp)[which(cp == 1)]
-
-        #### Pull out necessary kernels for active receivers from detection_kernels_by_xy into a list
-        cat_log("... ... ... ... Extracting kernels for active receivers...")
-        detection_kernels_inv_by_rs_active <-
-          lapply(rs_active, function(ra) receiver_specific_inv_kernels[[ra]])
-
-        #### Calculate the probability of not being detected in each cell
-        cat_log("... ... ... ... Combining kernels...")
-        if (length(rs_active) == 1) {
-          bkg_inv <- detection_kernels_inv_by_rs_active[[1]]
-        } else {
-          # Get the extent of the list of (inverse) detection kernels
-          # (hopefully this is considerably smaller than the total extent)
-          ext <- terra::ext(do.call(terra::sprc, detection_kernels_inv_by_rs_active))
-          # Align SpatRasters
-          detection_kernels_inv_by_rs_active <-
-            lapply(detection_kernels_inv_by_rs_active, function(r) {
-              terra::extend(r, ext, fill = 1)
-            })
-          # Calculate the background surface
-          detection_kernels_inv_for_rs_active <- do.call(c, detection_kernels_inv_by_rs_active)
-          bkg_inv <- terra::app(detection_kernels_inv_for_rs_active, prod)
-        }
-        # Get the probability of at least one detection in each grid cell:
-        bkg <- 1 - bkg_inv
-
-        #### Return surfaces
-        list(bkg = bkg, bkg_inv = bkg_inv)
-      })
-    bkg_by_design     <- lapply(bkgs_by_design, function(elm) elm$bkg)
-    bkg_inv_by_design <- lapply(bkgs_by_design, function(elm) elm$bkg_inv)
-
-    #### Process SpatRasters
-    # We extend SpatRasters back onto bathy (slow).
-    # This is required since we extract values by `cell_now` in pf_forward() & associated routines.
-    # This is faster than extracting by coordinates.
-    # But we pay a substantial time penalty and object-size penalty now if bathy is large.
-    # For the extension, we use spatExtendMask().
-    # TO DO: check whether masking (which is slow), as implemented by spatExtendMask, is strictly required.
-    cat_log("... Processing kernels ...")
-    cat_log("... ... Receiver-specific kernels (1/4)...")
-    receiver_specific_kernels     <- pbapply::pblapply(receiver_specific_kernels,
-                                                       spatExtendMask, .y = bathy, .fill = 0,
-                                                       .mask = .dlist$pars$spatna)
-    cat_log("... ... Receiver-specific inverse kernels (2/4)...")
-    receiver_specific_inv_kernels <- pbapply::pblapply(receiver_specific_inv_kernels,
-                                                       spatExtendMask, .y = bathy, .fill = 1,
-                                                       .mask = .dlist$pars$spatna)
-    cat_log("... ... Background surfaces (3/4)...")
-    bkg_by_design                 <- pbapply::pblapply(bkg_by_design,
-                                                       spatExtendMask, .y = bathy, .fill = 0,
-                                                       .mask = .dlist$pars$spatna)
-    cat_log("... ... Inverse background surfaces (4/4)...")
-    bkg_inv_by_design             <- pbapply::pblapply(bkg_inv_by_design,
-                                                       spatExtendMask, .y = bathy, .fill = 1,
-                                                       .mask = .dlist$pars$spatna)
-
-    #### Build output list
-    cat_log("... Listing outputs ...")
-    # For receiver-specific detection probability kernel lists,
-    # add NULL elements to the list for any receivers
-    # in the range 1:max(rs) that are not in rs.
-    # This means we can use receiver numbers to go straight
-    # ... to the correct element in the list from the integer receiver ID.
-    receiver_specific_kernels <- lapply(seq_len(max(moorings$receiver_id)), function(i) {
-      receiver_specific_kernels[[as.character(i)]]
-    })
-    receiver_specific_inv_kernels <- lapply(seq_len(max(moorings$receiver_id)), function(i) {
-      receiver_specific_inv_kernels[[as.character(i)]]
-    })
+    #### Calculate log-likelihood of no detection at all operational receivers for each array design
+    cat_log("... Getting log-likelihood surfaces for non-detection...")
+    ll <- .acs_setup_detection_kernels_ll(.dlist = dlist, .pk0 = pk0)
 
     #### Return outputs
-    out <- list()
-    out$receiver_specific_kernels     <- receiver_specific_kernels
-    out$receiver_specific_inv_kernels <- receiver_specific_inv_kernels
-    out$array_design                  <- array_design
-    out$array_design_by_date          <- array_design_by_date
-    out$bkg_surface_by_design         <- bkg_by_design
-    out$bkg_inv_surface_by_design     <- bkg_inv_by_design
-    out
+    cat_log("... Listing outputs ...")
+    list(pkernel = pk1, loglik = ll)
   }

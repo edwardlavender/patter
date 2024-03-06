@@ -20,7 +20,7 @@ The function returns a nested \code{list}, with one element for all integers fro
 This function is part of a set of \verb{acs_setup_*()} functions that prepare the layers required to evaluate the likelihood of acoustic observations in an AC*PF algorithm. The function identifies receivers with overlapping detection containers in space and time.
 }
 \details{
-An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual. In such an algorithm, at the moment of detection, the likelihood of detection(s) is evaluated, given particle samples. The outputs of this function are used to restrict the likelihood calculations to the set of receivers that overlap with the receiver(s) at which an individual is detected. This improves efficiency.
+An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual (see \code{\link[=pf_forward]{pf_forward()}}). In such an algorithm, at the moment of detection, the likelihood of detection(s) is evaluated, given particle samples. The outputs of this function are used to restrict the likelihood calculations to the set of receivers that overlap with the receiver(s) at which an individual is detected. This improves efficiency.
 
 In this function, receiver deployments that overlap in time (accounting for deployment and servicing dates) are identified by \code{\link[=make_matrix_receivers]{make_matrix_receivers()}}. Spatially overlapping receiver pairs are defined as those for which the Euclidean distance between receiver coordinates is less than the combined detection range. This approach is fast but crude because it ignores the influence of other variables, such as land barriers, on detectability. This means that some 'overlapping receivers' may not in reality overlap. In this situation, downstream calculations may be a little less efficient. However, since overlapping receivers tend to be few in number, the efficiency penalty for this approximation should be negligible. We formerly used detection kernels (see \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}) to identify receiver overlaps, but this is much more expensive in situations with large numbers of receivers and high-resolution grids and this approach is no longer used.
 
@@ -31,7 +31,7 @@ This function replaces \href{https://edwardlavender.github.io/flapper/reference/
 dlist <- dat_dlist()
 # Prepare detection overlaps
 # * Store detection overlaps in dlist$algorithms
-# * It is expected in this slot by `pf_lik_ac()`
+# * It is expected in this slot by `pf_setup_obs()`
 dlist$algorithm$overlaps <- acs_setup_detection_overlaps(dlist)
 
 }
@@ -45,8 +45,8 @@ To implement an AC*PF algorithm, see:
 \item \code{\link[=acs_setup_detection_kernel]{acs_setup_detection_kernel()}}, which prepares a detection kernel;
 \item \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}, which prepares detection kernels;
 }
-\item \code{\link[=pf_lik_ac]{pf_lik_ac()}} to define the likelihood of acoustic data;
-\item \code{\link[=pf_forward]{pf_forward()}} to run the simulation;
+\item \code{\link[=pf_setup_obs]{pf_setup_obs()}} to define a timeline of observations
+\item \code{\link[=pf_forward]{pf_forward()}} to run the simulation (using \code{\link[=pf_lik_ac]{pf_lik_ac()}} to evaluate the likelihood of acoustic observations);
 }
 }
 \author{

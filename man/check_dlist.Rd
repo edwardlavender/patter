@@ -13,7 +13,7 @@ check_bathy(.bathy)
 
 check_acoustics(.acoustics, .moorings = NULL)
 
-check_moorings(.moorings, .acoustics, .lonlat, .bathy)
+check_moorings(.moorings, .acoustics = NULL, .lonlat, .bathy)
 
 check_services(.services, .moorings)
 

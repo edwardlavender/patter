@@ -21,36 +21,24 @@ dlist <- pat_setup_data(.moorings = m,
 
 #### Example (1): Implement function using specified inputs
 # Implement function
-k <- acs_setup_detection_kernels(dlist,
-                                 .ddetkernel = acs_setup_detection_kernel)
+k <- acs_setup_detection_kernels(.dlist = dlist,
+                                 .pdetkernel = acs_setup_detection_kernel)
 # Examine list elements
 summary(k)
-# Examine example receiver-specific kernels
-pp <- par(mfrow = c(1, 2))
-lapply(c(3, 4), \(id) {
-  terra::plot(k$receiver_specific_kernels[[id]])
+# Examine detection probability kernels
+pp <- par(mfrow = c(1, 3))
+lapply(as.character(m$receiver_id), \(id) {
+  terra::plot(k$pkernel[[id]])
   points(m[m$receiver_id == id, .(receiver_easting, receiver_northing)],
          cex = 2)
 }) |> invisible()
 par(pp)
-# Examine example receiver-specific inverse kernels
-pp <- par(mfrow = c(1, 2))
-lapply(c(3, 4), \(id) {
-  terra::plot(k$receiver_specific_inv_kernels[[id]])
+# Examine likelihood of non detection for each unique array design
+n <- length(k$loglik)
+pp <- par(mfrow = c(1, n))
+lapply(seq_len(n), \(id) {
+  terra::plot(exp(k$loglik[[id]]))
   points(m[m$receiver_id == id, .(receiver_easting, receiver_northing)],
          cex = 2)
-}) |> invisible()
-par(pp)
-# Examine background detection surfaces
-# (for each unique combination of receivers that were deployed)
-pp <- par(mfrow = c(1, 2))
-lapply(k$bkg_surface_by_design, \(bkg) {
-  terra::plot(bkg)
-}) |> invisible()
-par(pp)
-# Examine background inverse detection surfaces
-pp <- par(mfrow = c(1, 2))
-lapply(k$bkg_inv_surface_by_design, \(bkg) {
-  terra::plot(bkg)
 }) |> invisible()
 par(pp)

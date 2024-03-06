@@ -9,7 +9,7 @@ This function is based on \href{https://edwardlavender.github.io/flapper/referen
 \usage{
 acs_setup_detection_kernels(
   .dlist,
-  .ddetkernel = acs_setup_detection_kernel,
+  .pdetkernel = acs_setup_detection_kernel,
   .verbose = getOption("patter.verbose"),
   ...
 )
@@ -17,13 +17,13 @@ acs_setup_detection_kernels(
 \arguments{
 \item{.dlist}{A named \code{list} of data and parameters from \code{\link[=pat_setup_data]{pat_setup_data()}}. This function requires:
 \itemize{
-\item \code{.dlist$data$moorings}, with the following columns: \code{receiver_id}, \code{receiver_start}, \code{receiver_end}, \code{receiver_x} and \code{receiver_y}, plus any columns used internally by \code{.ddetkernel} (see below).
-\item \code{.dlist$data$services}, with the following columns: \code{receiver_id}, \code{service_start} and \code{service_end} (see \code{\link[=make_matrix_receivers]{make_matrix_receivers()}}).
+\item \code{.dlist$data$moorings}, with the following columns: \code{receiver_id}, \code{receiver_start}, \code{receiver_end}, \code{receiver_x} and \code{receiver_y}, plus any columns used internally by \code{.pdetkernel} (see below).
+\item (optional) \code{.dlist$data$services}, with the following columns: \code{receiver_id}, \code{service_start} and \code{service_end} (see \code{\link[=make_matrix_receivers]{make_matrix_receivers()}}).
 \item \code{.dlist$spatial$bathy}, which defines the grid on which detection kernels are represented. \code{NA}s are used as a mask.
 \item \code{.dlist$pars$spatna}, which defines whether or not masking is required.
 }}
 
-\item{.ddetkernel, ...}{A \code{function} that defines the detection kernel as a \code{\link{SpatRaster}} around a receiver (see \code{\link[=acs_setup_detection_kernel]{acs_setup_detection_kernel()}} for an example). This must accept three arguments (even if they are ignored):
+\item{.pdetkernel, ...}{A \code{function} that defines the detection kernel as a \code{\link{SpatRaster}} around a receiver (see \code{\link[=acs_setup_detection_kernel]{acs_setup_detection_kernel()}} for an example). This must accept three arguments (even if they are ignored):
 \itemize{
 \item \code{.mooring}---A one-row \code{\link{data.table}} that contains the information in \code{.dlist$data$moorings} for a specific receiver;
 \item \code{.bathy}---the \code{.dlist$spatial$bathy} \code{\link{SpatRaster}};
@@ -36,25 +36,17 @@ acs_setup_detection_kernels(
 \value{
 The function returns a named \code{list}, with the following elements:
 \itemize{
-\item \strong{\code{receiver_specific_kernels}}. A \code{list}, with one element for all integers from 1 to the maximum receiver number. Any elements that do not correspond to receivers contain a \code{NULL} element. List elements that correspond to receivers contain a \code{\link{SpatRaster}} of the detection kernel around the relevant receiver. Cells values define the likelihood of a detection in that location, as modelled by \code{.ddetkernel}. In an AC*PF algorithm, at the moment of detection, these kernels effectively up-weight particles near to the receiver(s) that recorded detections.
-\item \strong{\code{receiver_specific_inv_kernels}}. A \code{list}, as for \code{receiver_specific_kernels}, but in which elements contain the inverse detection kernels (i.e., 1 - detection kernel). In an AC*PF algorithm, at the moment of detection, inverse detection kernels effectively down-weight particles in the overlapping regions between the receiver(s) that recorded detections those that did not.
-\item \strong{\code{array_design}}. A \code{data.frame} that defines the number and deployment times of each unique array design, resulting from receiver deployment, servicing and removal. In the times between detections, this is used to select the appropriate 'background' likelihood surface (see below). This contains the following columns:
-\itemize{
-\item \code{array_id}. An \code{integer} vector that defines each unique array design.
-\item \code{array_start_date}. A \code{Date} that defines the start date of each array design.
-\item \code{array_end_date}. A \code{Date} that defines the end date of each array design.
-\item \code{array_interval}. A \code{\link[lubridate:Interval-class]{lubridate::Interval}} vector that defines the deployment period of each array design.
+\item \strong{\code{pkernel}}. A named \code{list}, with one element for each receiver. Each element is a \code{\link{SpatRaster}} of the detection kernel around that receiver. Cells values define the probability of a detection, as modelled by \code{.pdetkernel}. In an AC*PF algorithm, these kernels are used to calculate the likelihood of the acoustic data (detections/non-detections). This process effectively up-weights particles near to the receiver(s) that recorded detections and down-weights particles further afield.
+\item \strong{\code{loglik}}. A named \code{list}, with one element for each array design. Each element is a \code{\link{SpatRaster}} that defines the log-likelihood of non-detection at all operational receivers in that array. In an AC*PF algorithm, during detection gaps, we can extract the log-likelihood of the acoustic data (non detection) at particle locations directly from this layer.
 }
-\item \strong{\code{array_design_by_date}}. A named \code{list} that defines, for each date (list element), the array design on that date (based on \code{array_id} in \code{array_design}).
-\item \strong{\code{bkg_surface_by_design}}. A \code{list}, with one element for each array design, that defines the detection surface across all receivers deployed in that phase of the study. In areas that are covered by the detection kernel of a single receiver, the detection surface depends only on the kernel for that receiver (via \code{.ddetkernel}). In areas covered by multiple, overlapping kernels, the surface is influenced by the combination of overlapping kernels.
-\item \strong{\code{bkg_inv_surface_by_design}}. A \code{list}, as above for \code{bkg_surface_by_design}, but which contains the inverse detection surface (i.e., 1 - \code{bkg_surface_by_design}). In the AC*PF algorithm(s), in the gaps between detections, this effectively up-weights particles away from receivers (or, equivalently, down-weights particles near to receivers).
-}
+
+To improve speed in \code{\link[=pf_forward]{pf_forward()}}, use \code{terra:::readAll()} to force \code{\link{SpatRaster}}s into memory, if possible.
 }
 \description{
 This function is part of a set of \verb{acs_setup_*()} functions that prepare the layers required to evaluate the likelihood of acoustic observations in an AC*PF algorithm. The function prepares the detection kernels.
 }
 \details{
-An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual. At each time step in such an algorithm, we evaluate the likelihood of acoustic observations (the presence or absence of detections at each operational receiver, accounting for receiver placement) given particle samples. A detection kernel is a spatial representation of the likelihood of a detection \emph{around a specific receiver}. This typically declines with distance around a receiver, hence the default formulation of the \code{.ddetkernel} function. This function permits receiver-specific kernels, if required (but time-varying kernels are not currently supported). Pre-calculating detection kernels is a potentially slow operation, especially for large and/or high-resolution grids (and we would like to improve this in future). However, this penalty is only required once and greatly improves the speed of downstream likelihood calculations in \code{\link[=pf_lik_ac]{pf_lik_ac()}} in \code{\link[=pf_forward]{pf_forward()}}, which only needs to appropriately combine the relevant values at each time step.
+An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual (see \code{\link[=pf_forward]{pf_forward()}}). At each time step in such an algorithm, we evaluate the likelihood of acoustic observations (the presence or absence of detections at each operational receiver, accounting for receiver placement) given particle samples. The likelihood is evaluated using a Bernoulli distribution and a detection probability parameter. A detection kernel is a spatial representation of detection probability \emph{around a specific receiver}. This typically declines with distance around a receiver, hence the default formulation of the \code{.pdetkernel} function. This function permits receiver-specific kernels, if required (but time-varying kernels are not currently supported and require custom likelihood functions in \code{\link[=pf_forward]{pf_forward()}}). Pre-calculating detection kernels is a potentially slow operation, especially for large and/or high-resolution grids (and we would like to improve this in future). However, this penalty is only required once and improves the speed of downstream likelihood calculations in \code{\link[=pf_lik_ac]{pf_lik_ac()}} in \code{\link[=pf_forward]{pf_forward()}}.
 }
 \examples{
 require(data.table)
@@ -80,37 +72,25 @@ dlist <- pat_setup_data(.moorings = m,
 
 #### Example (1): Implement function using specified inputs
 # Implement function
-k <- acs_setup_detection_kernels(dlist,
-                                 .ddetkernel = acs_setup_detection_kernel)
+k <- acs_setup_detection_kernels(.dlist = dlist,
+                                 .pdetkernel = acs_setup_detection_kernel)
 # Examine list elements
 summary(k)
-# Examine example receiver-specific kernels
-pp <- par(mfrow = c(1, 2))
-lapply(c(3, 4), \(id) {
-  terra::plot(k$receiver_specific_kernels[[id]])
+# Examine detection probability kernels
+pp <- par(mfrow = c(1, 3))
+lapply(as.character(m$receiver_id), \(id) {
+  terra::plot(k$pkernel[[id]])
   points(m[m$receiver_id == id, .(receiver_easting, receiver_northing)],
          cex = 2)
 }) |> invisible()
 par(pp)
-# Examine example receiver-specific inverse kernels
-pp <- par(mfrow = c(1, 2))
-lapply(c(3, 4), \(id) {
-  terra::plot(k$receiver_specific_inv_kernels[[id]])
+# Examine likelihood of non detection for each unique array design
+n <- length(k$loglik)
+pp <- par(mfrow = c(1, n))
+lapply(seq_len(n), \(id) {
+  terra::plot(exp(k$loglik[[id]]))
   points(m[m$receiver_id == id, .(receiver_easting, receiver_northing)],
          cex = 2)
-}) |> invisible()
-par(pp)
-# Examine background detection surfaces
-# (for each unique combination of receivers that were deployed)
-pp <- par(mfrow = c(1, 2))
-lapply(k$bkg_surface_by_design, \(bkg) {
-  terra::plot(bkg)
-}) |> invisible()
-par(pp)
-# Examine background inverse detection surfaces
-pp <- par(mfrow = c(1, 2))
-lapply(k$bkg_inv_surface_by_design, \(bkg) {
-  terra::plot(bkg)
 }) |> invisible()
 par(pp)
 }
@@ -124,8 +104,8 @@ To implement an AC*PF algorithm, see:
 \item \code{\link[=acs_setup_detection_kernel]{acs_setup_detection_kernel()}}, which prepares a detection kernel;
 \item \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}, which prepares detection kernels;
 }
-\item \code{\link[=pf_lik_ac]{pf_lik_ac()}} to define the likelihood of acoustic data;
-\item \code{\link[=pf_forward]{pf_forward()}} to run the simulation;
+\item \code{\link[=pf_setup_obs]{pf_setup_obs()}} to define a timeline of observations
+\item \code{\link[=pf_forward]{pf_forward()}} to run the simulation (using \code{\link[=pf_lik_ac]{pf_lik_ac()}} to evaluate the likelihood of acoustic observations);
 }
 }
 \author{

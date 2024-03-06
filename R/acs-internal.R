@@ -167,10 +167,10 @@
 #' @description These functions support [`acs_setup_detection_kernels()`].
 #' @name acs_setup_detection_kernels-internal
 
-#' @rdname .acs_setup_detection_kernels-internal
+#' @rdname acs_setup_detection_kernels-internal
 #' @keywords internal
 
-.acs_setup_detection_kernels_1 <- function(.dlist, .pdetkernel) {
+.acs_setup_detection_kernels_pk1 <- function(.dlist, .pdetkernel, ...) {
 
   #### Check user inputs
   check_dlist(.dlist = .dlist,
@@ -210,4 +210,57 @@
     })
   names(receiver_specific_kernels) <- as.character(moorings$receiver_id)
   receiver_specific_kernels
+}
+
+#' @rdname acs_setup_detection_kernels-internal
+#' @keywords internal
+
+.acs_setup_detection_kernels_pk0 <- function(.pk1) {
+  pk0 <- lapply(.pk1, function(k) 1 - k)
+  names(pk0) <- names(pk0)
+  pk0
+}
+
+#' @rdname acs_setup_detection_kernels-internal
+#' @keywords internal
+
+.acs_setup_detection_kernels_ll <- function(.dlist, .pk0) {
+
+  # Define array designs
+  rs_mat <- make_matrix_receivers(.dlist = .dlist,
+                                  .delta_t = "days",
+                                  .as_POSIXct = NULL)
+  rs_mat_cp <- unique(rs_mat)
+
+  # Iterate over array designs & get log-likelihood surfaces for non detection
+  pbapply::pblapply(1:nrow(rs_mat_cp), function(icp) {
+
+    #### Identify active receivers for array
+    # icp <- 1
+    cp <- rs_mat_cp[icp, , drop = FALSE]
+    rs_active <- colnames(cp)[which(cp == 1)]
+
+    #### Log relevant kernels for Pr(non-detection):
+    log_pk0_by_rs_active <-
+      lapply(rs_active, function(ra) log(.pk0[[ra]]))
+
+    #### Evaluate log-likelihood of non detection at all active receivers
+    if (length(rs_active) == 1) {
+      # dbinom(0, size = 1L, prop = <kernel for active receiver>, log = TRUE) =
+      return(log_pk0_by_rs_active[[1]])
+    } else {
+      # Get the extent of the list of (inverse) detection kernels
+      # (hopefully this is considerably smaller than the total extent)
+      ext <- terra::ext(do.call(terra::sprc, log_pk0_by_rs_active))
+      # Align SpatRasters
+      log_pk0_by_rs_active <-
+        lapply(log_pk0_by_rs_active, function(r) {
+          terra::extend(r, ext, fill = log(1))
+        })
+      # Calculate the background surface
+      ll <- do.call(c, log_pk0_by_rs_active)
+      return(terra::app(ll, "sum"))
+    }
+  })
+
 }
