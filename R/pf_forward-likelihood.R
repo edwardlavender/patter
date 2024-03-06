@@ -48,8 +48,9 @@ acs_filter_land <- function(.particles, .obs, .t, .dlist, .drop) {
     set_bathy(.data = .particles, .dlist = .dlist)
     # Update log-likelihoods by reference
     set_loglik(.particles, .loglik = log(!is.na(.particles$bathy) + 0L))
-    # Drop likelihoods
+    # Drop zero likelihoods
     if (.drop) {
+      loglik <- NULL
       .particles <- .particles[loglik > -Inf, ]
     }
   }
@@ -64,34 +65,24 @@ acs_filter_container <- function(.particles, .obs, .t, .dlist, .drop) {
 
   #### Checks
   if (.t == 1L) {
-    check_names(.obs, req = c("receiver_id_next", "buffer_future_incl_gamma"))
+    check_names(.obs, req = "container")
     check_dlist(.dlist,
-               .dataset = "moorings",
-               .par = "lonlat")
+                .par = "lonlat")
     rlang::check_installed("Rfast")
   }
 
   #### Filter
   if (.t > 1 && .t < fnrow(.obs)) {
     # Calculate distances between particle samples & the receivers that recorded the next detection
-    dist <- terra::distance(.particles |>
-                              select("x_now", "y_now") |>
-                              as.matrix(),
-                            .dlist$data$moorings |>
-                              filter(.data$receiver_id %in% .obs$receiver_id_next[.t][[1]]) |>
-                              select("receiver_x", "receiver_y") |>
-                              # as.data.table() |>
-                              as.matrix(),
+    dist <- terra::distance(x = cbind(.particles$x_now, .particles$y_now),
+                            y = .obs$container[[.t]]$coord,
                             lonlat = .dlist$par$lonlat)
-    # Eliminates particles using distance threshold
-    # * Particles are always within `mobility` of the past container
-    # * Particles are forced to be within (all) future containers
-    # * This does not eliminate all impossible locations e.g., due to peninsulas
-    # * But it is a quick way of dropping particles
-    lik <- NULL
-    .particles[, lik := lik * ((Rfast::rowsums(dist <= .obs$buffer_future_incl_gamma[.t]) == ncol(dist)) + 0L)]
+    # Set log-likelihoods by reference
+    set_loglik(.particles,
+               .loglik = .acs_filter_container(.dist = dist, .buffer = .obs$container[[.t]]$buffer))
+    # Drop zero likelihoods
     if (.drop) {
-      .particles <- .particles[lik > 0, ]
+      .particles <- .particles[loglik > -Inf, ]
     }
   }
   .particles

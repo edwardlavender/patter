@@ -6,7 +6,7 @@
 \alias{.pf_sample_origin}
 \alias{.pf_particles_origin}
 \alias{.pf_lik}
-\alias{.pf_lik_ac_detection}
+\alias{.acs_filter_container}
 \alias{.pf_lik_dc}
 \alias{.pf_particles_kick}
 \alias{.pf_particles_sampler}
@@ -34,7 +34,7 @@
 
 .pf_lik(.particles, .obs, .t, .dlist, .stack, .control)
 
-.pf_lik_ac_detection(.particles, .kernels, .detections, .absences)
+.acs_filter_container(.dist, .buffer)
 
 .pf_lik_dc(.x, .a, .b)
 

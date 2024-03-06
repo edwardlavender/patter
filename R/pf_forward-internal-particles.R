@@ -178,6 +178,41 @@
 #' @rdname pf_particle
 #' @keywords internal
 
+# Internal function for acs_filter_container()
+.acs_filter_container <- function(.dist, .buffer) {
+
+  # Arguments
+  # * .dist is the distance matrix (rows = particles, columns = future receivers)
+  # * .buffer is a vector of maximum distances from receivers
+
+  # Scope
+  # * Particles are forced to be within (all) future containers
+  # * This does not eliminate all impossible locations e.g., due to peninsulas
+  # * But it is a quick way of dropping particles
+
+  # Routine
+  n <- length(.buffer)
+  if (n == 1L) {
+    # Single receiver
+    # * If the next detection was at one receiver
+    # * ... we simply check whether each particle is within the required radius
+    bool <- .dist < .buffer
+  } else {
+    # Multiple receivers:
+    # * If the next detection was at multiple receivers
+    # * .... each particle must be within the required radius of each receiver
+    ind <- seq_len(n)
+    txt <-
+      paste(
+        paste0(".dist[, ", ind, "] < .buffer[", ind, "]"),
+        collapse = " & "
+      )
+    bool <- eval(parse(text = txt))
+  }
+  log(bool + 0L)
+
+}
+
 # Calculate the likelihood of detection(s)
 .pf_lik_ac_detection <- function(.particles, .kernels, .detections, .absences) {
 
@@ -205,7 +240,6 @@
   # Calculate Pr (all data | position)
   colProds.matrix(mat)
 }
-
 
 #' @rdname pf_particle
 #' @keywords internal
