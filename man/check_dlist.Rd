@@ -13,7 +13,7 @@ check_bathy(.bathy)
 
 check_acoustics(.acoustics, .moorings = NULL)
 
-check_moorings(.moorings, .lonlat, .bathy)
+check_moorings(.moorings, .acoustics, .lonlat, .bathy)
 
 check_services(.services, .moorings)
 
@@ -93,7 +93,8 @@ These are internal functions that ensure that input dataset(s) meet \code{\link{
 }
 \item Properties:
 \itemize{
-\item \code{receiver_start} should precede \code{receiver_end} (not currently validated);
+\item \code{receiver_start} should precede \code{receiver_end};
+\item Receiver deployment periods should (usually) at least partially overlap with the time period of acoustic observations;
 \item Receiver coordinates must be valid (not currently validated);
 }
 }
