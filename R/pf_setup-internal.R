@@ -115,6 +115,28 @@
 #' @rdname pf_setup-internal
 #' @keywords internal
 
+.get_absences <- function(.date, .detections, .overlaps){
+  absences <- NULL
+  if (!is.null(.overlaps)) {
+    # Define overlapping receivers (i.e., those with detection 'absences')
+    absences <-
+      lapply(.detections, function(r) {
+        .overlaps[[r]][[.date]]
+      }) |>
+      unlist() |>
+      unique()
+    # Define the set of overlapping receivers that did not record detections
+    absences <- absences[!(absences %in% .detections)]
+    if (length(absences) == 0L) {
+      absences <- NULL
+    }
+  }
+  absences
+}
+
+#' @rdname pf_setup-internal
+#' @keywords internal
+
 # Add acoustic array IDs
 .add_acoustics_arrays <- function(.obs, .dlist, .step) {
   # Define array IDs
@@ -177,7 +199,7 @@
       # Identify receivers that recorded detections
       # d$receiver_id
       # Identify overlapping receiver(s) that did not record detection(s)
-      a <- .acs_absences(.date = d$date[1],
+      a <- .get_absences(.date = d$date[1],
                          .detections = d$receiver_id,
                          .overlaps = .dlist$algorithm$detection_overlaps)
       # Expand data accordingly
