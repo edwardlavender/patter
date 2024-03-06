@@ -96,39 +96,44 @@ pf_lik_ac <- function(.particles, .obs, .t, .dlist, .drop) {
 
   #### Checks
   if (.t == 1L) {
-    check_names(.obs, c("detection", "receiver_id", "date"))
-    check_dlist(.dlist, .algorithm = c("detection_kernels", "detection_overlaps"))
+    check_names(.obs, c("array_id", "detection", "acoustics"))
+    check_dlist(.dlist, .algorithm = "detection_kernels")
   }
 
-  #### Calculate likelihood _detection_ given position
-  lik <- NULL
+  #### Calculate likelihood _detection/non-detection_ given positions
+  # For each particle, evaluate the likelihood of all relevant acoustic data
   if (.obs$detection[.t] == 1L) {
-    # (1) Calculate AC weights _given_detection_ at current time step
-    # Identify receiver(s) that recorded detections at the selected time step
-    detections_current <- .obs$receiver_id[.t][[1]]
-    # Identify remaining (active) receivers which did not record a detection (if any)
-    absences_current <- .acs_absences(.date = .obs$date[.t],
-                                      .detections = detections_current,
-                                      .overlaps = .dlist$algorithm$detection_overlaps)
-    # Calculate weights
-    .particles[, lik := lik * .pf_lik_ac_detection(.particles = .particles,
-                                                   .kernels = .dlist$algorithm$detection_kernels,
-                                                   .detections = detections_current,
-                                                   .absences = absences_current)]
+    pxy  <- cbind(.particles$x_now, .particles$y_now)
+    amat <- .obs$acoustics[[.t]]
+    loglik <-
+      lapply(colnames(amat), function(r) {
+        # For each particle, extract probability of detection at receiver
+        # * This is much faster for receiver kernels in memory
+        prob <- terra::extract(k$pkernel[[r]], pxy)[, 1]
+        prob[is.na(prob)] <- 0
+        # For each particle, evaluate the log-likelihood of the acoustic data at that receiver
+        dbinom(amat[.t, r], size = 1L, prob = prob, log = TRUE)
+      }) |>
+      dplyr::bind_cols() |>
+      # Combine likelihoods across receivers
+      Rfast::colsums()
 
-    #### Calculate likelihood given _non detection_
-  } else {
-    .particles[, lik := lik *
-                 terra::extract(
-                   .dlist$algorithm$detection_kernels$bkg_inv_surface_by_design[[.dlist$algorithm$detection_kernels$array_design_by_date[[.obs$date[.t]]]]],
-                   .particles$cell_now
-                 )[, 1]
-    ]
+  #### Calculate likelihood _non detections_ at all receivers given positions
+  } else if (.obs$detection[.t] == 0L) {
+    loglik <-
+      terra::extract(
+        .dlist$algorithm$detection_kernels$loglik[[.obs$array_id[.t]]],
+        cbind(.particles$x_now, .particles$y_now))[, 1]
+    loglik[is.na(loglik)] <- -Inf # log(0)
+
   }
+
+  #### Update likelihoods
+  set_loglik(.particles, loglik)
 
   #### Return particles
   if (.drop) {
-    .particles <- .particles[lik > 0, ]
+    .particles <- .particles[loglik > -Inf, ]
   }
   .particles
 
