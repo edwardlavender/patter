@@ -209,10 +209,10 @@ set_loglik <- function(.data, .loglik) {
 # Filter zero likelihoods
 # * .data may be a lazy_dt()
 filter_lik <- function(.data, .drop) {
-  if (.drop && anyv(.data$lik, 0)) {
+  if (.drop && anyv(.data$lik, -Inf)) {
     return(
       .data |>
-        filter(.data$lik > 0)
+        filter(.data$lik > -Inf)
     )
   } else {
     .data
@@ -229,6 +229,13 @@ filter_lik <- function(.data, .drop) {
 
 normalise <- function(x) {
   x / sum(x)
+}
+
+#' @rdname utils-stats
+#' @keywords internal
+
+lognormalise <- function(x) {
+  x - logSumExp(x)
 }
 
 #' @rdname utils-stats

@@ -31,15 +31,19 @@
 
 pf_sample_multinomial <- function(.particles, .n) {
   if (fnrow(.particles) > 0L) {
-    # stopifnot(rlang::has_name(.particles, "weight"))
-    stopifnot(isTRUE(all.equal(sum(.particles$weight), 1)))
+    stopifnot(rlang::has_name(.particles, "logwt"))
+    # Define weights
+    wt <- exp(.particles$logwt)
+    # Validate normalisation
+    stopifnot(isTRUE(all.equal(sum(wt), 1)))
+    # Sample particles
     .particles <- .particles[sample.int(.N,
                                         size = .n,
                                         replace = TRUE,
-                                        prob = .particles$weight), ]
-    # Reset the weights
-    weight <- NULL
-    .particles[, weight := 1 / fnrow(.particles)]
+                                        prob = wt), ]
+    # Reset weights
+    logwt <- NULL
+    .particles[, logwt := log(1 / fnrow(.particles))]
   }
   .particles
 }
@@ -49,10 +53,13 @@ pf_sample_multinomial <- function(.particles, .n) {
 
 pf_sample_systematic <- function(.particles, .n) {
   if (fnrow(.particles) > 0L) {
+    stopifnot(rlang::has_name(.particles, "logwt"))
+    # Define weights
+    wt <- exp(.particles$logwt)
+    # Validate normalisation
+    stopifnot(isTRUE(all.equal(sum(wt), 1)))
     # Cumulative sum of weights
-    # stopifnot(rlang::has_name(.particles, "weight"))
-    stopifnot(isTRUE(all.equal(sum(.particles$weight), 1)))
-    cwt <- cumsum(.particles$weight)
+    cwt <- cumsum(wt)
     # Simulate starting point
     u1 <- stats::runif(n = 1, 0, 1 / .n)
     # Define grid
@@ -60,8 +67,8 @@ pf_sample_systematic <- function(.particles, .n) {
     # Select particles
     .particles <- .particles[findInterval(u, cwt) + 1, ]
     # Reset the weights
-    weight <- NULL
-    .particles[, weight := 1 / fnrow(.particles)]
+    logwt <- NULL
+    .particles[, logwt := log(1 / fnrow(.particles))]
   }
   .particles
 }

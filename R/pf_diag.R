@@ -110,21 +110,21 @@ pf_diag_summary <- function(.history, ...) {
 #' @rdname pf_diag-internal
 #' @keywords internal
 
-.pf_diag_ess <- function(.particles, .weight = NULL) {
+.pf_diag_ess <- function(.particles, .logwt = NULL) {
   # Define data.table with local (copied) weights
-  cell_now <- weight <- NULL
-  if (is.null(.weight)) {
-    pess <- .particles[, list(cell_now, weight)]
+  cell_now <- logwt <- NULL
+  if (is.null(.logwt)) {
+    pess <- .particles[, list(cell_now, logwt)]
   } else {
     pess <- .particles[, cell_now]
-    pess[, weight := .weight]
+    pess[, logwt := logwt]
   }
   # Handle missing weights
-  if (all(is.na(pess$weight))) {
+  if (all(is.na(pess$logwt))) {
     return(NA_real_)
   }
   # Validate weights are normalised
-  stopifnot(isTRUE(all.equal(sum(pess$weight), 1)))
+  stopifnot(isTRUE(all.equal(exp(logSumExp(pess$logwt)), 1)))
   # Calculate ESS
   pess |>
     lazy_dt(immutable = FALSE) |>
@@ -134,10 +134,10 @@ pf_diag_summary <- function(.history, ...) {
     # mutate(weight = normalise(weight)) |>
     # Aggregate weights across cells
     group_by(cell_now) |>
-    summarise(sum(.data$weight)) |>
+    summarise(logwt = logSumExp(.data$logwt)) |>
     ungroup() |>
     # Calculate ESS
-    summarise(ess = 1 / sum(weight ^ 2)) |>
+    summarise(ess = exp(-logSumExp(2 * .data$logwt))) |>
     pull(.data$ess)
 }
 
@@ -148,7 +148,7 @@ pf_diag_summary <- function(.history, ...) {
   # Define baseline statistics
   # * nu & ess = 0 (not NA)
   # * This is updated below, unless out$n = 0
-  # * THis is required for `use_sampler` in pf_forward()
+  # * This is required for `use_sampler` in pf_forward()
   out <- data.table(timestep = .t,
                     component = .label,
                     n = fnrow(.particles),

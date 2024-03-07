@@ -140,8 +140,8 @@
                        .stack = .likelihood,
                        .control = .control)
   # Calculate weights
-  weight <- lik <- NULL
-  proposals[, weight := normalise(lik)]
+  logwt <- loglik <- NULL
+  proposals[, logwt := lognormalise(loglik)]
   # Sample starting locations
   pnow <- .pf_sample_origin(.particles = proposals,
                             .n = .n, .sample = .sample,
@@ -248,7 +248,7 @@
     mutate(cell_now = NA_integer_,
            x_now = NA_real_,
            y_now = NA_real_,
-           lik = 0) |>
+           loglik = -Inf) |>
     as.data.table()
 
   #### Iteratively update `output` with new locations
@@ -281,7 +281,7 @@
     count <- count + 1L
     if (count <= .trial) {
       # Identify proposals beyond the study area or with zero likelihood
-      bool <- is.na(output$cell_now) | (output$lik == 0)
+      bool <- is.na(output$cell_now) | (output$loglik == -Inf)
       if (any(bool)) {
         # Optionally re-kick invalid proposals
         .rargs$.particles <-
@@ -340,7 +340,7 @@
       # Update 'likelihood'
       # * It is necessary to update likelihoods in this way
       # * for correct calculation/updating of the weights
-      mutate(lik = .data$lik * .data$dens) |>
+      mutate(loglik = .data$loglik + .data$logdens) |>
       as.data.table()
   }
 

@@ -241,7 +241,7 @@ pf_forward <- function(.obs,
   select_cols    <- startup$output$select_cols
   history        <- startup$output$history
   # Global variables
-  weight <- lik <- NULL
+  logwt <- loglik <- NULL
 
   #### Define origin
   pnow <- NULL
@@ -307,7 +307,7 @@ pf_forward <- function(.obs,
       if (use_sampler) {
         cat_log("... ... ... Using directed sampling ...")
         if (trial_kick) {
-          pnow_sampler <- pnow[lik == 0, ]
+          pnow_sampler <- pnow[loglik == -Inf, ]
         }
         pnow_sampler <- .pf_particles_sampler(.particles = pnow_sampler,
                                               .obs = .obs, .t = t, .dlist = .dlist,
@@ -324,7 +324,7 @@ pf_forward <- function(.obs,
     #### (3) (optional) Resampling
     if (fnrow(pnow) > 0L) {
       # Update weights
-      pnow[, weight := normalise(weight * lik)]
+      pnow[, weight := lognormalise(logwt + loglik)]
       ess <- .pf_diag_ess(pnow)
       # Optionally implement re-sampling, if:
       # * use_sampler = TRUE

@@ -18,6 +18,7 @@ Imports:
     fastmatch,
     glue,
     lubridate,
+    matrixStats,
     pbapply,
     rlang,
     terra
