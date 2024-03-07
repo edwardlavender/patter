@@ -2,7 +2,7 @@
 #'
 #' @description These are particle sampling functions for [`pf_forward()`].
 #'
-#' @param .particles A [`data.table`] that defines particle samples. This includes a `weight` column that should be used for (re)sampling. `.particles$weights` are normalised to sum to one.
+#' @param .particles A [`data.table`] that defines particle samples. This includes a `logwt` column that should be used for (re)sampling. Weights should be normalised.
 #' @param .n An `integer` that defines the number of particle samples at each time step.
 #'
 #' @details
@@ -10,7 +10,7 @@
 #'  * [`pf_sample_multinomial`] implements multinomial (re)sampling.
 #'  * [`pf_sample_systematic()`] implements systematic (re)sampling.
 #'
-#' Sampling functions must accept `.particles` and `.n` arguments and return a [`data.table`] of `.n` particle samples. The `weight` column must be reset after sampling.
+#' Sampling functions must accept `.particles` and `.n` arguments and return a [`data.table`] of `.n` particle samples. The `logwt` column must be reset after sampling.
 #'
 #' Systematic particle sampling ([`pf_sample_systematic()`]) is generally recommended.
 #'
@@ -18,7 +18,7 @@
 #'
 #' @examples
 #' require(data.table)
-#' p <- data.table(cell_now = c(1, 2, 3), weight = c(0.5, 0.25, 0.25))
+#' p <- data.table(cell_now = c(1, 2, 3), logwt = log(c(0.5, 0.25, 0.25)))
 #' pf_sample_multinomial(p, .n = 10L)
 #' pf_sample_systematic(p, .n = 10L)
 #'

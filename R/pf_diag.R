@@ -39,23 +39,23 @@
 pf_diag_summary <- function(.history, ...) {
   .history |>
     .pf_history_dt(..., .collect = TRUE) |>
-    set_missing(.col = "weight") |>
+    set_missing(.col = "logwt") |>
     lazy_dt(immutable = TRUE) |>
     # Normalise weights by time step
     # (This should be enforced by pf_forward())
     group_by(.data$timestep) |>
-    mutate(weight = normalise(.data$weight)) |>
+    mutate(weight = lognormalise(.data$logwt)) |>
     ungroup() |>
     # Aggregate weights by time step and grid cell
     group_by(.data$timestep, .data$cell_now) |>
-    summarise(weight = sum(.data$weight)) |>
+    summarise(weight = logExpSum(.data$weight)) |>
     ungroup() |>
     # Summarise diagnostics by time step
     group_by(.data$timestep) |>
     summarise(timestep = .data$timestep[1],
               n = n(),
               nu = fndistinct(.data$cell_now),
-              ess = 1 / sum(.data$weight ^ 2)) |>
+              ess = exp(-logsumexp(2 * .data$logwt))) |>
     as.data.table()
 }
 

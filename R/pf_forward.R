@@ -324,7 +324,7 @@ pf_forward <- function(.obs,
     #### (3) (optional) Resampling
     if (fnrow(pnow) > 0L) {
       # Update weights
-      pnow[, weight := lognormalise(logwt + loglik)]
+      pnow[, logwt := lognormalise(logwt + loglik)]
       ess <- .pf_diag_ess(pnow)
       # Optionally implement re-sampling, if:
       # * use_sampler = TRUE

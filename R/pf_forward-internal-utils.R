@@ -132,7 +132,7 @@ NULL
            cell_past = "cell_now",
            x_past = "x_now",
            y_past = "y_now",
-           "weight") |>
+           "logwt") |>
     as.data.table()
 }
 
