@@ -164,18 +164,18 @@ pf_lik_temp <- function(.particles, .obs, .t, .dlist, .drop) {
   .particles[, temp := terra::extract(x = .dlist$spatial$temp,
                                       y = locs,
                                       layer = .obs$hour[.t])$value]
-  # Calculate temp likelihood
+  # Calculate log-likelihood
   # * We use a simple binary model for illustration
   # * Under this model, temperature observations that are not
   # * ... within a cool/warm limit are impossible
-  .particles[, lik_temp := (temp >= .obs$temp_cool[.t] &
-                              temp <= .obs$temp_warm[.t]) + 0, ]
-  # Update likelihood
-  lik <- NULL
-  .particles[, lik := lik * lik_temp]
+  loglik_temp <- loglik <- NULL
+  .particles[, loglik_temp := log((temp >= .obs$temp_cool[.t] &
+                                     temp <= .obs$temp_warm[.t]) + 0), ]
+  # Update log-likelihood
+  .particles[, loglik := loglik + loglik_temp]
   # (optional) Filter impossible locations
   if (.drop) {
-    .particles <- .particles[lik > 0, ]
+    .particles <- .particles[loglik > -Inf, ]
   }
   .particles
 }

@@ -235,9 +235,9 @@
 
   #### Set variables
   count <- 1L
-  index <- cell_now <- x_now <- y_now <- lik <- NULL
+  index <- cell_now <- x_now <- y_now <- loglik <- NULL
 
-  #### Define output data.table with blank coordinate and lik columns
+  #### Define output data.table with blank coordinate and loglik columns
   # These will be iteratively updated below
   # TO DO: optimise code to avoid copying .particles here
   .particles[, index := seq_row(.particles)]
@@ -276,7 +276,7 @@
     output[pos, cell_now := proposals$cell_now[ind]]
     output[pos, x_now := proposals$x_now[ind]]
     output[pos, y_now := proposals$y_now[ind]]
-    output[pos, lik := proposals$lik[ind]]
+    output[pos, loglik := proposals$loglik[ind]]
     # Update loop
     count <- count + 1L
     if (count <= .trial) {

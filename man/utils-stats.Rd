@@ -3,10 +3,13 @@
 \name{utils-stats}
 \alias{utils-stats}
 \alias{normalise}
+\alias{lognormalise}
 \alias{colProds.matrix}
 \title{Utilities: statistics helpers}
 \usage{
 normalise(x)
+
+lognormalise(x)
 
 colProds.matrix(.data, .cols = seq_col(.data))
 }

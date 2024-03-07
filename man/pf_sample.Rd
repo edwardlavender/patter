@@ -11,7 +11,7 @@ pf_sample_multinomial(.particles, .n)
 pf_sample_systematic(.particles, .n)
 }
 \arguments{
-\item{.particles}{A \code{\link{data.table}} that defines particle samples. This includes a \code{weight} column that should be used for (re)sampling. \code{.particles$weights} are normalised to sum to one.}
+\item{.particles}{A \code{\link{data.table}} that defines particle samples. This includes a \code{logwt} column that should be used for (re)sampling. Weights should be normalised.}
 
 \item{.n}{An \code{integer} that defines the number of particle samples at each time step.}
 }
@@ -28,13 +28,13 @@ These are particle sampling functions for \code{\link[=pf_forward]{pf_forward()}
 \item \code{\link[=pf_sample_systematic]{pf_sample_systematic()}} implements systematic (re)sampling.
 }
 
-Sampling functions must accept \code{.particles} and \code{.n} arguments and return a \code{\link{data.table}} of \code{.n} particle samples. The \code{weight} column must be reset after sampling.
+Sampling functions must accept \code{.particles} and \code{.n} arguments and return a \code{\link{data.table}} of \code{.n} particle samples. The \code{logwt} column must be reset after sampling.
 
 Systematic particle sampling (\code{\link[=pf_sample_systematic]{pf_sample_systematic()}}) is generally recommended.
 }
 \examples{
 require(data.table)
-p <- data.table(cell_now = c(1, 2, 3), weight = c(0.5, 0.25, 0.25))
+p <- data.table(cell_now = c(1, 2, 3), logwt = log(c(0.5, 0.25, 0.25)))
 pf_sample_multinomial(p, .n = 10L)
 pf_sample_systematic(p, .n = 10L)
 

@@ -208,11 +208,11 @@ set_loglik <- function(.data, .loglik) {
 
 # Filter zero likelihoods
 # * .data may be a lazy_dt()
-filter_lik <- function(.data, .drop) {
-  if (.drop && anyv(.data$lik, -Inf)) {
+filter_loglik <- function(.data, .drop) {
+  if (.drop && anyv(.data$loglik, -Inf)) {
     return(
       .data |>
-        filter(.data$lik > -Inf)
+        filter(.data$loglik > -Inf)
     )
   } else {
     .data

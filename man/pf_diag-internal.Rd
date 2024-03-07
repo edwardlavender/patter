@@ -14,7 +14,7 @@
 
 .pf_diag_nu(.particles)
 
-.pf_diag_ess(.particles, .weight = NULL)
+.pf_diag_ess(.particles, .logwt = NULL)
 
 .pf_diag(.particles, .weight, .t, .label)
 
