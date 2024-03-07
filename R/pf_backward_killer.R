@@ -43,7 +43,7 @@ pf_backward_killer <- function(.history,
   read_cols <- inout$read_cols
   write     <- .pf_history_write(.record)
   # Global variables
-  weight <- NULL
+  logwt <- NULL
 
   # Define progress bar
   timestep_final <- length(.history)
@@ -83,8 +83,8 @@ pf_backward_killer <- function(.history,
           as.data.table()
         cat_log(paste0("... ... ... Output: ", nrow(.history[[tp]]), " rows in `.history[[t - 1]]`..."))
         # Re-normalise weights
-        if (rlang::has_name(.history[[tp]], "weight")) {
-          .history[[tp]][, weight := normalise(weight)]
+        if (rlang::has_name(.history[[tp]], "logwt")) {
+          .history[[tp]][, logwt := lognormalise(logwt)]
         }
       }
     }
