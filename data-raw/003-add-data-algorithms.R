@@ -59,8 +59,7 @@ dlist$algorithm$detection_kernels  <- acs_setup_detection_kernels(dlist)
 # Collate observations
 obs <- pf_setup_obs(.dlist = dlist,
                     .step = "2 mins",
-                    .mobility = 500,
-                    .receiver_range = dat_moorings$receiver_range[1])
+                    .mobility = 500)
 obs <- obs[1:25, ]
 
 #### Implement coa()
