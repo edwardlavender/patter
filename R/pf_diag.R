@@ -116,7 +116,7 @@ pf_diag_summary <- function(.history, ...) {
     return(NA_real_)
   }
   # Validate weights are normalised
-  stopifnot(isTRUE(all.equal(exp(logExpSum(.logwt)), 1)))
+  stopifnot(isTRUE(all.equal(exp(logSumExp(.logwt)), 1)))
   # Calculate ESS
   exp(-logSumExp(2 * .logwt))
 }
