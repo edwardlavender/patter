@@ -48,14 +48,14 @@ pf_diag_summary <- function(.history, ...) {
     ungroup() |>
     # Aggregate weights by time step and grid cell
     group_by(.data$timestep, .data$cell_now) |>
-    summarise(weight = logExpSum(.data$weight)) |>
+    summarise(weight = logSumExp(.data$weight)) |>
     ungroup() |>
     # Summarise diagnostics by time step
     group_by(.data$timestep) |>
     summarise(timestep = .data$timestep[1],
               n = n(),
               nu = fndistinct(.data$cell_now),
-              ess = exp(-logExpSum(2 * .data$logwt))) |>
+              ess = exp(-logSumExp(2 * .data$logwt))) |>
     as.data.table()
 }
 
