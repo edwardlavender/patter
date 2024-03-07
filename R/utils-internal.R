@@ -202,7 +202,7 @@ set_bathy <- function(.data, .dlist) {
 # * .data cannot be a lazy_dt()
 set_loglik <- function(.data, .loglik) {
   loglik <- NULL
-  .data[, loglik := sum(loglik, .loglik)]
+  .data[, loglik := loglik + .loglik]
   .data
 }
 
