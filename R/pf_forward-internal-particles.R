@@ -293,7 +293,7 @@
     lazy_dt(immutable = FALSE) |>
     mutate(index = NULL) |>
     filter(!is.na(cell_now)) |>
-    filter_lik(.control$drop) |>
+    filter_loglik(.control$drop) |>
     as.data.table()
 }
 
