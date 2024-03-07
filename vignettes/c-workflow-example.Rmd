@@ -172,9 +172,9 @@ To implement the algorithms, we require a single time series, along which observ
 
 ```{r}
 obs <- pf_setup_obs(.dlist = dlist,
+                    .trim = TRUE,
                     .step = "2 mins", 
-                    .mobility = 500, 
-                    .receiver_range = moorings$receiver_range[1])
+                    .mobility = 500)
 obs <- obs[1:100, ]
 head(obs)
 ```
@@ -301,12 +301,17 @@ map_hr_home(.map = dens, .add = TRUE)
 
 ## Map point density for centres of activity as comparison
 # Extract acoustic detections for modelled observations 
-obs_acc <- 
-  obs |> 
-  select(timestamp, receiver_id, detection) |>
+obs_acc <- obs[detection == 1L, ]
+obs_acc <- lapply(split(obs_acc, obs_acc$timestep), function(d) {
+  amat <- d$acoustics[[1]]
+  data.table(timestep = d$timestep[1], 
+             receiver_id = as.integer(names(amat)), 
+             detection = as.integer(amat))
+}) |> 
+  rbindlist() |> 
   filter(detection == 1L) |> 
+  mutate(timestamp = obs$timestamp[match(timestep, obs$timestep)]) |>
   as.data.table()
-obs_acc <- obs_acc[, .(receiver_id = unlist(receiver_id)), by = .(timestamp)]
 dlist_coa <- pat_setup_data(.acoustics = obs_acc, 
                             .moorings = moorings, 
                             .bathy = gebco, 
