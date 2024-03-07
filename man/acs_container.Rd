@@ -2,31 +2,16 @@
 % Please edit documentation in R/acs-internal.R
 \name{acs_container}
 \alias{acs_container}
-\alias{.acs_container_detection.SpatRaster}
-\alias{.acs_container_detection.SpatVector}
-\alias{.acs_container_detection}
-\alias{.acs_container_future.SpatRaster}
-\alias{.acs_container_future.SpatVector}
-\alias{.acs_container_future}
-\alias{.acs_container_1}
+\alias{.acs_container}
+\alias{.acs_container_init}
 \title{AC* helper: AC* container(s)}
 \usage{
-.acs_container_detection.SpatRaster(.receivers, .detection_kernels)
+.acs_container(.cinfo)
 
-.acs_container_detection.SpatVector(.receivers, .moorings)
-
-.acs_container_detection(.receivers, .detection_kernels, .moorings)
-
-.acs_container_future.SpatRaster(.receivers, .detection_kernels, .buffer)
-
-.acs_container_future.SpatVector(.receivers, .moorings, .buffer)
-
-.acs_container_future(.receivers, .detection_kernels, .moorings, .buffer)
-
-.acs_container_1(.obs, .detection_kernels, .moorings)
+.acs_container_init(.obs)
 }
 \value{
-The functions return a \code{\link{SpatRaster}} or a \code{\link{SpatVector}}.
+The functions return a \code{\link{SpatVector}}.
 }
 \description{
 \code{\link[=.acs_container_1]{.acs_container_1()}} is designed for implementations of the AC\emph{PF algorithm by \code{\link[=pf_forward]{pf_forward()}}. The function defines the first AC} container in \code{\link[=.pf_rpropose_origin]{.pf_rpropose_origin()}}.
