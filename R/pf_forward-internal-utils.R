@@ -168,7 +168,7 @@ NULL
     # Implement sampling if (a) there are zero likelihood cells & (b) the ESS is too low
     contains_zero_lik <- anyv(.particles$loglik, -Inf)
     if (contains_zero_lik) {
-      crit <- .pf_diag_ess(.particles, .logwt = lognormalise(.particles$logwt + .particles$loglik))
+      crit <- .pf_diag_ess(lognormalise(.particles$logwt + .particles$loglik))
       return(crit < .trial$trial_sampler_crit)
     }
   }

@@ -110,83 +110,13 @@ pf_diag_summary <- function(.history, ...) {
 #' @rdname pf_diag-internal
 #' @keywords internal
 
-.pf_diag_ess <- function(.particles, .logwt = NULL) {
-  # Define data.table with local (copied) weights
-  cell_now <- logwt <- NULL
-  if (is.null(.logwt)) {
-    pess <- .particles[, list(cell_now, logwt)]
-  } else {
-    pess <- .particles[, cell_now]
-    pess[, logwt := logwt]
-  }
+.pf_diag_ess <- function(.logwt) {
   # Handle missing weights
-  if (all(is.na(pess$logwt))) {
+  if (all(is.na(.logwt))) {
     return(NA_real_)
   }
   # Validate weights are normalised
-  stopifnot(isTRUE(all.equal(exp(logSumExp(pess$logwt)), 1)))
+  stopifnot(isTRUE(all.equal(exp(logSumExp(logwt)), 1)))
   # Calculate ESS
-  pess |>
-    lazy_dt(immutable = FALSE) |>
-    # Normalise weights
-    # * We currently assume normalised weights
-    # * This helps to make existing routines consistent
-    # mutate(weight = normalise(weight)) |>
-    # Aggregate weights across cells
-    group_by(cell_now) |>
-    summarise(logwt = logSumExp(.data$logwt)) |>
-    ungroup() |>
-    # Calculate ESS
-    summarise(ess = exp(-logSumExp(2 * .data$logwt))) |>
-    pull(.data$ess)
-}
-
-#' @rdname pf_diag-internal
-#' @keywords internal
-
-.pf_diag <- function(.particles, .weight, .t, .label) {
-  # Define baseline statistics
-  # * nu & ess = 0 (not NA)
-  # * This is updated below, unless out$n = 0
-  # * This is required for `use_sampler` in pf_forward()
-  out <- data.table(timestep = .t,
-                    component = .label,
-                    n = fnrow(.particles),
-                    nu = 0L,
-                    ess = 0)
-  if (out$n > 0) {
-    nu <- ess <- NULL
-    out[, nu := .pf_diag_nu(.particles)]
-    out[, ess := .pf_diag_ess(.particles, .weight)]
-  }
-  out
-}
-
-#' @rdname pf_diag-internal
-#' @keywords internal
-
-.pf_diag_bind <- function(.diagnostics) {
-  if (length(.diagnostics) == 0L) {
-    .diagnostics <- NULL
-  } else {
-    collapse::unlist2d(.diagnostics, idcols = FALSE, DT = TRUE)
-  }
-}
-
-#' @rdname pf_diag-internal
-#' @keywords internal
-
-.pf_diag_collect <- function(.diagnostics, .iter_m, .iter_i) {
-  # Collect diagnostics from particle attributes
-  diagnostics <- .pf_diag_bind(.diagnostics)
-  # Define number of manual iterations
-  iter_m <- NULL
-  diagnostics[, iter_m := .iter_m]
-  # Define number of internal iterations
-  iter_i <- NULL
-  diagnostics[, iter_i := .iter_i]
-  setcolorder(diagnostics, c("iter_m", "iter_i",
-                             "timestep", "component",
-                             "n", "nu", "ess"))
-  diagnostics
+  exp(-logSumExp(2 * .logwt))
 }
