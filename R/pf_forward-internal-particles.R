@@ -64,7 +64,7 @@
 .pf_rpropose_origin <- function(.particles = NULL, .obs, .t = 1L, .dlist, .rargs = NULL){
 
   # Check user inputs
-  # * TO DO: validate origin & bahty CRS are identical
+  # * TO DO: validate origin & bathy CRS are identical
   check_dlist(.dlist = .dlist,
               .spatial = "bathy")
 
@@ -72,23 +72,18 @@
   if (is.null(.dlist$spatial$origin)) {
     .dlist$spatial$origin <- .dlist$spatial$bathy
   }
-  moorings <- .dlist$data$moorings
 
   # (1) Define 'quadrature points' within acoustic containers
-  if (!is.null(moorings)) {
+  if (rlang::has_name(.obs, "detection")) {
     # Define container for possible locations
-    # * We set detection_kernels = NULL to use a vector buffer
-    # * ... rather than a gridded buffer, for speed
-    container <- .acs_container_1(.obs,
-                                  .detection_kernels = NULL,
-                                  .moorings = moorings)
+    container <- .acs_container_init(.obs = .obs, .dlist = .dlist)
     # Sample cell coordinates within container
     terra::crs(container) <- terra::crs(.dlist$spatial$origin)
     samples <- spatSampleDT(container, .spatcell = .dlist$spatial$bathy)
 
     # (2) Sample quadrature points on `.origin`
   } else {
-    samples <- spatSampleDT(.x = .dlist$spatial$bathy)
+    samples <- spatSampleDT(.x = .dlist$spatial$origin)
   }
 
   # Tidy data.table
@@ -96,8 +91,8 @@
     lazy_dt(immutable = FALSE) |>
     mutate(timestep = .obs$timestep[.t],
            cell_past = NA_integer_,
-           x_past = NA_integer_,
-           y_past = NA_integer_,
+           x_past = NA_real_,
+           y_past = NA_real_,
            cell_now = .data$cell_id) |>
     select("timestep",
            "cell_past", "x_past", "y_past",
