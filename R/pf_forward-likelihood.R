@@ -107,17 +107,16 @@ pf_lik_ac <- function(.particles, .obs, .t, .dlist, .drop) {
     pxy  <- cbind(.particles$x_now, .particles$y_now)
     amat <- .obs$acoustics[[.t]]
     loglik <-
-      lapply(colnames(amat), function(r) {
+      lapply(names(amat), function(r) {
         # For each particle, extract probability of detection at receiver
         # * This is much faster for receiver kernels in memory
-        prob <- terra::extract(k$pkernel[[r]], pxy)[, 1]
+        prob <- terra::extract(.dlist$algorithm$detection_kernels$pkernel[[r]], pxy)[, 1]
         prob[is.na(prob)] <- 0
         # For each particle, evaluate the log-likelihood of the acoustic data at that receiver
-        dbinom(amat[.t, r], size = 1L, prob = prob, log = TRUE)
-      }) |>
-      dplyr::bind_cols() |>
+        dbinom(amat[r], size = 1L, prob = prob, log = TRUE)
+      })
       # Combine likelihoods across receivers
-      Rfast::colsums()
+    loglik <- Rfast::rowsums(do.call(cbind, loglik))
 
   #### Calculate likelihood _non detections_ at all receivers given positions
   } else if (.obs$detection[.t] == 0L) {
