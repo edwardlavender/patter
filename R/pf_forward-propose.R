@@ -206,21 +206,21 @@ pf_dpropose <- function(.particles, .obs, .t, .dlist, .drop, .dkick = dkick, ...
   # Handle empty data.tables
   # * These result when all proposals have zero likelihood
   if (fnrow(.particles) == 0L) {
-    dens <- NULL
-    return(.particles[, dens := numeric()])
+    logdens <- NULL
+    return(.particles[, logdens := numeric()])
   } else {
     # Calculate densities
     x_past <- y_past <- x_now <- y_now <- NULL
-    .particles[, dens := .dkick(.xy0 = .particles[, list(x_past, y_past)],
-                                .xy1 = .particles[, list(x_now, y_now)],
-                                ...,
-                                .obs = .obs, .t = .t, .dlist = .dlist)]
+    .particles[, logdens := log(.dkick(.xy0 = .particles[, list(x_past, y_past)],
+                                       .xy1 = .particles[, list(x_now, y_now)],
+                                       ...,
+                                       .obs = .obs, .t = .t, .dlist = .dlist))]
     # Isolate particles with positive densities
     if (.drop) {
       .particles <-
         .particles |>
         lazy_dt() |>
-        filter(dens > 0) |>
+        filter(logdens > -Inf) |>
         as.data.table()
     }
     .particles
