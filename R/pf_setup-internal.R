@@ -167,7 +167,7 @@
     group_by(.data$timestamp) |>
     summarise(receiver_id = list(unique(.data$receiver_id))) |>
     ungroup() |>
-    arrange(timestamp) |>
+    arrange(.data$timestamp) |>
     mutate(detection_id = as.integer(row_number())) |>
     as.data.table()
 
