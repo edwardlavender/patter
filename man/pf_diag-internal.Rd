@@ -5,22 +5,13 @@
 \alias{.pf_diag_any}
 \alias{.pf_diag_nu}
 \alias{.pf_diag_ess}
-\alias{.pf_diag}
-\alias{.pf_diag_bind}
-\alias{.pf_diag_collect}
 \title{PF: particle diagnostics (internal)}
 \usage{
 .pf_diag_any(.particles)
 
 .pf_diag_nu(.particles)
 
-.pf_diag_ess(.particles, .logwt = NULL)
-
-.pf_diag(.particles, .weight, .t, .label)
-
-.pf_diag_bind(.diagnostics)
-
-.pf_diag_collect(.diagnostics, .iter_m, .iter_i)
+.pf_diag_ess(.logwt)
 }
 \description{
 These are internal functions that calculate diagnostic statistics from selected particle samples.

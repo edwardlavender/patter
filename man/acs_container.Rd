@@ -8,13 +8,13 @@
 \usage{
 .acs_container(.cinfo)
 
-.acs_container_init(.obs)
+.acs_container_init(.obs, .dlist)
 }
 \value{
 The functions return a \code{\link{SpatVector}}.
 }
 \description{
-\code{\link[=.acs_container_1]{.acs_container_1()}} is designed for implementations of the AC\emph{PF algorithm by \code{\link[=pf_forward]{pf_forward()}}. The function defines the first AC} container in \code{\link[=.pf_rpropose_origin]{.pf_rpropose_origin()}}.
+\code{\link[=.acs_container_init]{.acs_container_init()}} is designed for implementations of the AC\emph{PF algorithm by \code{\link[=pf_forward]{pf_forward()}}. The function defines the first AC} container in \code{\link[=.pf_rpropose_origin]{.pf_rpropose_origin()}}.
 }
 \details{
 At the first time step, the acoustic container is the intersection between the container(s) around the receivers that recorded the first detection (if applicable) and the container(s) around the receivers that recorded the next detection.
