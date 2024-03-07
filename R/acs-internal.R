@@ -111,7 +111,7 @@
   # * Pr(detection | position) is calculated accordingly
 
   # Define positions with detections
-  pos_detections <- which(!sapply(.obs$receiver_id, is.null))
+  pos_detections <- which(obs$detection == 1L)
   if (length(pos_detections) == 0L) {
     abort("There are no detections in the acoustic time series.")
   }
