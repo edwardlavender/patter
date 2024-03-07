@@ -151,8 +151,8 @@ pf_lik_dc <- function(.particles, .obs, .t, .dlist, .drop) {
   set_bathy(.data = .particles, .dlist = .dlist)
   set_loglik(.data = .particles,
              .loglik = .pf_lik_dc(.x = .obs$depth[.t],
-                                  .a =  bathy - .obs$depth_shallow_eps[.t],
-                                  .b = bathy + .obs$depth_deep_eps[.t]))
+                                  .a =  .particles$bathy - .obs$depth_shallow_eps[.t],
+                                  .b = .particles$bathy + .obs$depth_deep_eps[.t]))
   # Drop zero likelihoods
   if (.drop) {
     loglik <- NULL
