@@ -156,8 +156,8 @@
 .pf_lik <- function(.particles, .obs, .t, .dlist, .stack, .control) {
 
   #### Set up
-  lik <- NULL
-  .particles[, lik := 1]
+  loglik <- NULL
+  .particles[, loglik := 0] # log(1)
 
   #### Calculate likelihoods
   for (i in seq_len(length(.stack))) {
