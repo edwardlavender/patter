@@ -123,7 +123,7 @@ pf_setup_obs <- function(.dlist,
     cat_log("... Adding acoustic observations: matrices...")
     obs <- .add_acoustics_obs(.obs = obs, .dlist = .dlist, .acoustics = acoustics)
     # Add acoustic containers information
-    cat_log("... Adding acoustic observations: containers (slow)...")
+    cat_log("... Adding acoustic observations: containers...")
     obs <- .add_acoustics_containers(.obs = obs, .dlist = .dlist, .mobility = .mobility)
   }
 

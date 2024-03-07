@@ -285,11 +285,11 @@
 
 # Add acoustic container information
 # * At each time step we filter particles outside of detection containers
-# * This requires information the coordinates of future receivers
-# * And the
+# * This requires the coordinates of future receivers
+# * And a vector of allowable distances from those receivers
 .add_acoustics_containers <- function(.obs, .dlist, .mobility) {
 
-  # Define receivers & buffers
+  #### Define receivers & buffers
   .obs <-
     .obs |>
     # Define the receiver(s) at which the individual was next detected
@@ -303,38 +303,34 @@
     arrange(.data$timestamp) |>
     as.data.table()
 
-  # Define the required list of container information for each time step
-  # * A matrix of receiver coordinates
-  # * The buffer value(s)
-
-  # TO DO
-  # * Improve speed here by iterating over unique receiver_id_next records (not time steps)
-  # * and matching the data onto the time series
-
-  cinfo <- cl_lapply(seq_row(.obs), .fun = function(t) {
-    r <- .obs$receiver_id_next[[t]]
-    if (all(is.na(r))) {
-      return(NULL)
-    }
-    # Define receiver data
-    m <-
+  #### Define container information (cinfo)
+  # For each time step, we need:
+  # - A matrix of receiver coordinates at which the individual was next detected
+  # - A vector of maximum distances from those receivers (based on mobility, time and detection range)
+  # To derive this information we:
+  # * Unlist the .obs data by time step
+  # * Match receiver coordinates and ranges onto data.table
+  # * Collect all coordinates and buffers for each time steop
+  receiver_id_next <- buffer_future <- timestep <- NULL
+  cinfo <- .obs[, list(receiver_id_next = unlist(receiver_id_next), buffer_future), by = list(timestep)]
+  cinfo <- cinfo[!is.na(receiver_id_next), ]
+  cinfo <-
+    join(
+      cinfo,
       .dlist$data$moorings |>
-      lazy_dt() |>
-      filter(.data$receiver_id %in% r) |>
-      select("receiver_x", "receiver_y", "receiver_range") |>
-      as.data.table()
-    # Define receiver coordinates
-    mxy <- cbind(m$receiver_x, m$receiver_y)
-    # Define receiver buffer(s), dependent upon on:
-    # * `buffer_future` (mobility & delta T)
-    # * `receiver_range` (receiver-specific)
-    mbu <- .obs$buffer_future[t] + m$receiver_range
-    list(coord = mxy, buffer = mbu)
-  })
+        select("receiver_id", "receiver_x", "receiver_y", "receiver_range") |>
+        as.data.table(),
+      on = c("receiver_id_next" = "receiver_id"),
+      verbose = FALSE
+    ) |>
+    group_by(.data$timestep) |>
+    summarise(container = list(list(coord = cbind(receiver_x, receiver_y),
+                                    buffer = buffer_future + receiver_range))) |>
+    as.data.table()
 
   # Add to data.table
   container <- NULL
-  .obs[, container := cinfo]
+  .obs[, container := cinfo$container[match(timestep, cinfo$timestep)]]
   .obs
 
 }
