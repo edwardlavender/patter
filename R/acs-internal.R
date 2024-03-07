@@ -51,7 +51,7 @@
     receivers_current <- as.integer(names(amat)[amat == 1L])
     # Define coordinates & detection ranges
     m <-
-      dlist$data$moorings |>
+      .dlist$data$moorings |>
       filter(.data$receiver_id %in% receivers_current) |>
       as.data.table()
     # Define container as SpatVector
@@ -166,7 +166,7 @@
 
     #### Evaluate log-likelihood of non detection at all active receivers
     if (length(rs_active) == 1) {
-      # dbinom(0, size = 1L, prop = <kernel for active receiver>, log = TRUE) =
+      # stats::dbinom(0, size = 1L, prop = <kernel for active receiver>, log = TRUE) =
       return(log_pk0_by_rs_active[[1]])
     } else {
       # Get the extent of the list of (inverse) detection kernels

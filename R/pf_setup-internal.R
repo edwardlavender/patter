@@ -41,7 +41,7 @@
   .acoustics |>
     lazy_dt(immutable = TRUE) |>
     mutate(timestamp = lubridate::round_date(.data$timestamp, .step),
-           date = as.character(as.Date(timestamp))) |>
+           date = as.character(as.Date(.data$timestamp))) |>
     group_by(.data$receiver_id, .data$timestamp) |>
     slice(1L) |>
     ungroup() |>
@@ -149,7 +149,7 @@
     select("array_id", "timestamp") |>
     as.data.table()
   # Add to data.table
-  array_id <- NULL
+  array_id <- timestamp <- NULL
   .obs[, array_id := arrays$array_id[fmatch(timestamp, arrays$timestamp)]]
   .obs
 }
@@ -173,7 +173,7 @@
 
   # Add to data.table
   .obs |>
-    mutate(detection = as.integer((timestamp %in% .acoustics$timestamp) + 0)) |>
+    mutate(detection = as.integer((.data$timestamp %in% .acoustics$timestamp) + 0)) |>
     merge(.acoustics, all.x = TRUE, by = "timestamp") |>
     as.data.table()
 }
@@ -241,7 +241,7 @@
         # Drop any NAs
         # * Focus on operational receivers
         # * Focus on the set of overlapping receivers (if applicable)
-        return(acc[, complete.cases(acc[, ])])
+        return(acc[, stats::complete.cases(acc[, ])])
       }
     })
   names(dls) <- rnms
@@ -313,10 +313,10 @@
   # * Collect all coordinates and buffers for each time steop
   receiver_id_next <- buffer_future <- timestep <- NULL
   cinfo <- .obs[, list(receiver_id_next = unlist(receiver_id_next), buffer_future), by = list(timestep)]
-  cinfo <- cinfo[!is.na(receiver_id_next), ]
   cinfo <-
+    cinfo |>
+    filter(!is.na(.data$receiver_id_next)) |>
     join(
-      cinfo,
       .dlist$data$moorings |>
         select("receiver_id", "receiver_x", "receiver_y", "receiver_range") |>
         as.data.table(),
@@ -324,8 +324,8 @@
       verbose = FALSE
     ) |>
     group_by(.data$timestep) |>
-    summarise(container = list(list(coord = cbind(receiver_x, receiver_y),
-                                    buffer = buffer_future + receiver_range))) |>
+    summarise(container = list(list(coord = cbind(.data$receiver_x, .data$receiver_y),
+                                    buffer = .data$buffer_future + .data$receiver_range))) |>
     as.data.table()
 
   # Add to data.table

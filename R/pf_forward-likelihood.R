@@ -113,7 +113,7 @@ pf_lik_ac <- function(.particles, .obs, .t, .dlist, .drop) {
         prob <- terra::extract(.dlist$algorithm$detection_kernels$pkernel[[r]], pxy)[, 1]
         prob[is.na(prob)] <- 0
         # For each particle, evaluate the log-likelihood of the acoustic data at that receiver
-        dbinom(amat[r], size = 1L, prob = prob, log = TRUE)
+        stats::dbinom(amat[r], size = 1L, prob = prob, log = TRUE)
       })
       # Combine likelihoods across receivers
     loglik <- Rfast::rowsums(do.call(cbind, loglik))

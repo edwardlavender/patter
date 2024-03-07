@@ -55,7 +55,7 @@ pf_diag_summary <- function(.history, ...) {
     summarise(timestep = .data$timestep[1],
               n = n(),
               nu = fndistinct(.data$cell_now),
-              ess = exp(-logsumexp(2 * .data$logwt))) |>
+              ess = exp(-logExpSum(2 * .data$logwt))) |>
     as.data.table()
 }
 
@@ -116,7 +116,7 @@ pf_diag_summary <- function(.history, ...) {
     return(NA_real_)
   }
   # Validate weights are normalised
-  stopifnot(isTRUE(all.equal(exp(logSumExp(.logwt)), 1)))
+  stopifnot(isTRUE(all.equal(exp(logExpSum(.logwt)), 1)))
   # Calculate ESS
   exp(-logSumExp(2 * .logwt))
 }

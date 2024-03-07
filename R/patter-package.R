@@ -237,7 +237,7 @@
 #'
 #' @importFrom lubridate %within%
 #'
-#' @importFrom matrixStats logSumExp
+#' @importFrom matrixStats logExpSum
 #'
 #' @importFrom rlang .data
 #'

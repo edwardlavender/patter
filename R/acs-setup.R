@@ -262,7 +262,7 @@ acs_setup_detection_kernels <-
 
     #### Calculate log-likelihood of no detection at all operational receivers for each array design
     cat_log("... Getting log-likelihood surfaces for non-detection...")
-    ll <- .acs_setup_detection_kernels_ll(.dlist = dlist, .pk0 = pk0)
+    ll <- .acs_setup_detection_kernels_ll(.dlist = .dlist, .pk0 = pk0)
 
     #### Return outputs
     cat_log("... Listing outputs ...")
