@@ -18,6 +18,9 @@
 #'
 #' This function replaces [`flapper::pf_plot_history()`](https://edwardlavender.github.io/flapper/reference/pf_plot_history.html).
 #'
+#' # Warning
+#' This function plots all particles, irrespective of their weights.
+#'
 #' @return The function is called for its side effects. It returns `invisible(TRUE)`.
 #' @example man/examples/pf_plot_history-examples.R
 #' @inherit pf_forward seealso
