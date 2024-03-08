@@ -99,6 +99,12 @@ pf_lik_ac <- function(.particles, .obs, .t, .dlist, .drop) {
   if (.t == 1L) {
     check_names(.obs, c("array_id", "detection", "acoustics"))
     check_dlist(.dlist, .algorithm = "detection_kernels")
+    if (!terra::inMemory(.dlist$algorithm$detection_kernels$pkernel[[1]])) {
+      warn("`.dlist$algorithm$detection_kernels$pkernel` SpatRaster(s) are not in memory.")
+    }
+    if (!terra::inMemory(.dlist$algorithm$detection_kernels$loglik[[1]])) {
+      warn("`.dlist$algorithm$detection_kernels$loglik` SpatRaster(s) are not in memory.")
+    }
   }
 
   #### Calculate likelihood _detection/non-detection_ given positions

@@ -110,7 +110,7 @@ pf_opt_rerun_from <- function(.rerun, .revert = 25L) {
 #' * `.dlist$spatial$bathy`
 #' * (optional) `.dlist$spatial$origin`, a [`SpatRaster`] used to define the origin. This may differ in geometry from `.dlist$spatial$bathy` but must have the same coordinate reference system.
 #' * `.dlist$pars$lonlat` (required by the default `.rpropose` and `.dpropose` arguments).
-#' * Any additional elements required by `.likelihood`,`.rpropose` and `.dpropose` functions(see below).
+#' * Any additional elements required by `.likelihood`,`.rpropose` and `.dpropose` functions (see below).
 #'
 #' @param .rpropose,.dpropose,.rargs,.dargs Proposal functions and associated argument lists (see [`pf_propose`]).
 #' * `.rpropose` is a function that proposes new locations for the individual, given previous locations. By default, this is a 'stochastic kick' function that simulates new locations by randomly kicking previous particles (see [`pf_rpropose_kick()`] and Details).
@@ -212,6 +212,10 @@ pf_forward <- function(.obs,
   #### Check user inputs
   t_onset <- Sys.time()
   # .pf_checks()
+  check_dlist(.dlist = .dlist, .spatial = "bathy")
+  if (!terra::inMemory(.dlist$spatial$bathy)) {
+    warn("`.dlist$spatial$bathy` is not in memory.")
+  }
 
   #### Set up messages
   cat_log <- cat_init(.verbose = .verbose)
