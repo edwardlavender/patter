@@ -24,11 +24,9 @@ out_pff <- pf_forward(.obs = obs,
 ## Examine output object
 # The function returns a named list:
 summary(out_pff)
-# The `history` element contains a list of particle samples
+# `history` contains a list of particle samples
 head(out_pff$history[[1]])
 head(out_pff$history[[2]])
-# The `diagnostics` element contains data.table of particle diagnostics
-head(out_pff$diagnostics, 20)
 # `convergence` records convergence (TRUE/FALSE)
 out_pff$convergence
 # `time` records timings
@@ -86,8 +84,7 @@ out_pff <- pf_forward(.obs = obs,
                       .dpropose = pf_dpropose,
                       .dargs = list(.shape = 1, .scale = 100),
                       .likelihood = pf_lik_acdcpf,
-                      .record = pf_opt_record(.save = TRUE),
-                      .control = pf_opt_control(.sampler_batch_size = 100L))
+                      .record = pf_opt_record(.save = TRUE))
 
 # E.g., customise rlen() .mobility parameter
 # > Restricted mobility leads to convergence failure
@@ -98,8 +95,7 @@ out_pff <- pf_forward(.obs = obs,
                       .dpropose = pf_dpropose,
                       .dargs = list(.mobility = 100),
                       .likelihood = pf_lik_acdcpf,
-                      .record = pf_opt_record(.save = TRUE),
-                      .control = pf_opt_control(.sampler_batch_size = 100L))
+                      .record = pf_opt_record(.save = TRUE))
 # > Pairwise steps are < .mobility + grid resolution/2
 for (i in 2:length(out_pff$history)) {
   print(i)
@@ -107,17 +103,6 @@ for (i in 2:length(out_pff$history)) {
                out_pff$history[[i]][, .(x_now, y_now)], .lonlat = FALSE)
   stopifnot(max(dist) < 100 + terra::res(dlist$spatial$bathy)[1] / 2)
 }
-# > Sequential steps are < .mobility + grid resolution/2
-out_pfbk <- pf_backward_killer(out_pff$history,
-                               .record = pf_opt_record(.save = TRUE))
-out_path <-
-  pf_path(out_pfbk$history, .bathy = dlist$spatial$bathy) |>
-  group_by(path_id) |>
-  mutate(dist = dist_along_path(cbind(cell_x, cell_y), .lonlat = FALSE)) |>
-  ungroup() |>
-  as.data.table()
-stopifnot(max(out_path$dist, na.rm = TRUE) <
-  100 + terra::res(dlist$spatial$bathy)[1] / 2)
 
 ## E.g. customise rlen() and dlen() models
 # Write a new model with step lengths simulated from a lognormal distribution
@@ -129,8 +114,7 @@ out_pff <- pf_forward(.obs = obs,
                       .rargs = list(.rlen = rlnorm, meanlog = 5, sdlog = 0.25),
                       .dargs = list(.dlen = dlnorm, meanlog = 5, sdlog = 0.25),
                       .likelihood = pf_lik_acdcpf,
-                      .record = pf_opt_record(.save = TRUE),
-                      .control = pf_opt_control(.sampler_batch_size = 100L))
+                      .record = pf_opt_record(.save = TRUE))
 
 #### Example (5): Customise likelihood
 # We can implement different algorithms by modifying the .likelihood list (above)
@@ -193,8 +177,6 @@ out_pff <- pf_forward(.obs = obs,
                       .likelihood = list(pf_lik_ac = pf_lik_ac,
                                          pf_lik_temp = pf_lik_temp),
                       .record = pf_opt_record(.save = TRUE))
-# Note that the temperature likelihood (deliberately) has no influence here:
-out_pff$diagnostics
 
 #### Example (6): Customise (re)sampling
 # Adjust the number of particles
@@ -205,15 +187,6 @@ out_pff <- pf_forward(.obs = obs,
                       .n = 1000L,
                       .record = pf_opt_record(.save = TRUE))
 nrow(out_pff$history[[1]])
-# Use systematic resampling
-# * This triggers directed sampling, so we boost sampler_batch_size for improved speed
-ssv()
-out_pff <- pf_forward(.obs = obs,
-                      .dlist = dlist,
-                      .likelihood = pf_lik_acpf,
-                      .sample = pf_sample_systematic,
-                      .control = pf_opt_control(.sampler_batch_size = 100L),
-                      .record = pf_opt_record(.save = TRUE))
 
 #### Example (7): Control convergence via `.trial_` arguments
 # See `vignette("c-demos", package = "patter")` for detailed examples
@@ -234,7 +207,7 @@ out_pff_2 <- pf_forward(.obs = obs,
                         .rerun = out_pff_1, .rerun_from = 5L)
 
 #### Example (9): Adjust record options
-# Use `sink` to write to particles to file (recommended)
+# Use `sink` to write to particles to file (slow)
 pff_folder <- file.path(tempdir(), "forward")
 dir.create(pff_folder)
 ssv()
@@ -242,14 +215,12 @@ out_pff <- pf_forward(.obs = obs,
                       .dlist = dlist,
                       .likelihood = pf_lik_acpf,
                       .record = pf_opt_record(.save = FALSE, .sink = pff_folder))
-# > `save = FALSE` suppresses outputs in memory:
+# > `save = FALSE` does not save outputs in memory:
 out_pff$history
-out_pff$diagnostics
 # > `sink` directs outputs to file:
-list.files(pff_folder)
-head(pf_files(file.path(pff_folder, "history")))
+head(pf_files(file.path(pff_folder)))
 # > Check file size (MB)
-pf_files_size(file.path(pff_folder, "history"))
+pf_files_size(file.path(pff_folder))
 # Use `cols` to restrict the output columns
 cols <- c("timestep", "cell_now", "x_now", "y_now")
 ssv()
@@ -259,7 +230,7 @@ out_pff <- pf_forward(.obs = obs,
                       .record = pf_opt_record(.save = FALSE,
                                               .sink = pff_folder,
                                               .cols = cols))
-pf_files_size(file.path(pff_folder, "history"))
+pf_files_size(file.path(pff_folder))
 unlink(pff_folder, recursive = TRUE)
 
 #### Example (10): Adjust standard `patter-progress` options
