@@ -44,11 +44,11 @@ pf_diag_summary <- function(.history, ...) {
     # Normalise weights by time step
     # (This should be enforced by pf_forward())
     group_by(.data$timestep) |>
-    mutate(weight = lognormalise(.data$logwt)) |>
+    mutate(logwt = lognormalise(.data$logwt)) |>
     ungroup() |>
     # Aggregate weights by time step and grid cell
     group_by(.data$timestep, .data$cell_now) |>
-    summarise(weight = logSumExp(.data$weight)) |>
+    summarise(logwt = logSumExp(.data$weight)) |>
     ungroup() |>
     # Summarise diagnostics by time step
     group_by(.data$timestep) |>
