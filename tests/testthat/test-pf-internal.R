@@ -1,14 +1,14 @@
 test_that(".pf_history_dt() works", {
 
   # Define inputs
-  pfbk_folder <- dat_pfbk_src()
-  out_pfbk    <- dat_pfbk()
+  pff_folder <- dat_pff_src()
+  out_pff    <- dat_pff()
 
   # Implement .pf_history_dt()
-  a <- .pf_history_dt(out_pfbk)
-  b <- .pf_history_dt(out_pfbk$history)
-  c <- .pf_history_dt(pf_files(pfbk_folder))
-  d <- .pf_history_dt(pfbk_folder,
+  a <- .pf_history_dt(out_pff)
+  b <- .pf_history_dt(out_pff$history)
+  c <- .pf_history_dt(pf_files(pff_folder))
+  d <- .pf_history_dt(pff_folder,
                       schema = schema(
                         timestep = int32(),
                         cell_past = int32(),

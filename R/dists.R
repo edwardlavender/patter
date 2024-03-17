@@ -17,12 +17,6 @@
 #'
 #' dist_along_path(p)
 #'
-#' #### Example (2): illustration with a `patter` movement-path data.table
-#' dat_pfp() |>
-#'   group_by(path_id) |>
-#'   mutate(dist = dist_along_path(cbind(cell_x, cell_y))) |>
-#'   as.data.table()
-#'
 #' @seealso
 #' * For [`patter`] `dist_*()` functions, see:
 #'     * [`dist_along_path()`] to calculate distances along a path;
