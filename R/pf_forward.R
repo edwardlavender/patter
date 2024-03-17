@@ -222,7 +222,7 @@ pf_forward <- function(.obs,
   cat_log(call_start(.fun = "pf_forward", .start = t_onset))
   on.exit(cat_log(call_end(.fun = "pf_forward", .start = t_onset, .end = Sys.time())), add = TRUE)
 
-  #### Define startup objects (e.g., empty output lists)
+  #### Define start-up objects (e.g., empty output lists)
   cat_log("... Setting up simulation...")
   startup <- .pf_forward_startup(.rerun = .rerun,
                                  .record = .record)
