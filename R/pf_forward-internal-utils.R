@@ -60,21 +60,13 @@ NULL
   if (length(.rerun) > 0L) {
     # Pull startup values
     startup <- .rerun$internal$startup
-    # Increment manual iteration counter
-    startup$control$iter_m <- startup$control$iter_m + 1L
     # Update history & diagnostics elements
-    startup$output$history     <- .rerun$history
+    startup$output$history <- .rerun$history
     return(startup)
   }
 
   #### Validate inputs
   # TO DO, use .pf_check()
-
-  #### Prepare controls
-  # Number of manual iterations
-  iter_m <- 1L
-  # Number of internal iterations
-  iter_i <- 1L
 
   #### Define output containers
   # Lists to hold outputs
@@ -94,10 +86,6 @@ NULL
 
   #### Collate outputs
   list(
-    control = list(
-      iter_m = iter_m,
-      iter_i = iter_i
-    ),
     output = list(
       select_cols = !is.null(.record$cols),
       history = history,

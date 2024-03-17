@@ -236,7 +236,6 @@ pf_forward <- function(.obs,
   .dargs$.dlist <- .dlist
   .dargs$.drop  <- .control$drop
   # Controls
-  iter_i         <- startup$control$iter_i
   trial_kick     <- .trial$trial_kick > 0L
   trial_sampler  <- .trial$trial_sampler > 0L
   # Wrappers
