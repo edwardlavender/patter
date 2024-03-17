@@ -269,11 +269,11 @@ pf_forward <- function(.obs,
 
   #### Initiate loop
   # Define starting index
-  t1    <- .pf_forward_start_t(.rerun, .rerun_from)
+  t1    <- .pf_forward_start_t(.rerun = .rerun, .rerun_from = .rerun_from)
   # Define previous particles
   ppast <- .pf_forward_ppast(.particles = pnow,
                              .history = history,
-                             .sink = startup$output$folder_history, .t = t1,
+                             .sink = .record$sink, .t = t1,
                              .obs = .obs)
   # Define progress bar
   pb <- pb_init(.min = t1, .max = fnrow(.obs))
@@ -373,7 +373,6 @@ pf_forward <- function(.obs,
   #### Return outputs
   .pf_forward_output(.rerun = .rerun,
                      .start = t_onset,
-                     .startup = startup,
                      .history = history,
                      .convergence = TRUE)
 

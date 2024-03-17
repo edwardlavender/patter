@@ -78,15 +78,9 @@ dat_pff <- function() {
 #' @rdname datasets-algorithms
 #' @export
 
-dat_pff_src <- function(.folder = c("history", "diagnostics")) {
-  if (is.null(.folder)) {
-    system.file("extdata", "acpf", "forward",
-                package = "patter", mustWork = TRUE)
-  } else {
-    .folder <- match.arg(.folder)
-    system.file("extdata", "acpf", "forward", .folder,
-                package = "patter", mustWork = TRUE)
-  }
+dat_pff_src <- function() {
+  system.file("extdata", "acpf", "forward",
+              package = "patter", mustWork = TRUE)
 }
 
 #' @rdname datasets-algorithms
