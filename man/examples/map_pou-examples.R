@@ -27,5 +27,5 @@ map_pou(gebco, .coord = out_coa[, .(x = coa_x, y = coa_y)])
 
 #### Example (3): Use a time series of coordinates from pf_*()
 # Use example dataset
-coord <- pf_coord(dat_pfbk(), .bathy = gebco)
+coord <- pf_coord(dat_pff(), .bathy = gebco)
 map_pou(gebco, .coord = coord)

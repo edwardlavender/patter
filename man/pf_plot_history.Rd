@@ -91,45 +91,40 @@ pf_plot_history(.dlist = dlist,
 
 #### Example (2): Plot selected samples (from the backward pass)
 pf_plot_history(.dlist = dlist,
-                .forward = dat_pfbk(),
+                .forward = dat_pff(),
                 .steps = 1L)
 
 #### Example (3) Plot particles from both forward and backward runs
-# Dead ends are shown in red
-pf_plot_history(.dlist = dlist,
-                .forward = dat_pff(),
-                .backward = dat_pfbk(),
-                .steps = 1L)
+# (TO REVISE)
 
 #### Example (4): Plot multiple time steps
 # Specify selected steps
 pf_plot_history(.dlist = dlist,
-                .forward = dat_pfbk(),
+                .forward = dat_pff(),
                 .steps = 1:5L)
 # Plot all steps (default: .step = NULL)
 pf_plot_history(.dlist = dlist,
-                .forward = dat_pfbk())
+                .forward = dat_pff())
 # Use `.prompt = TRUE`
 pf_plot_history(.dlist = dlist,
-                .forward = dat_pfbk(),
+                .forward = dat_pff(),
                 .prompt = TRUE)
 
 #### Example (5): Customise the plot
 # Customise the SpatRaster surface
 pf_plot_history(.dlist = dlist,
-                .forward = dat_pfbk(),
+                .forward = dat_pff(),
                 .steps = 1L,
                 .add_surface = list(col = grDevices::cm.colors(256)))
 # Customise the particle samples
 pf_plot_history(.dlist = dlist,
-                .forward = dat_pfbk(),
+                .forward = dat_pff(),
                 .steps = 1L,
                 .add_forward = list(pch = ".", col = "blue"))
 
 #### Example (6): Write images to file
 pf_plot_history(.dlist = dlist,
                 .forward = dat_pff(),
-                .backward = dat_pfbk(),
                 .add_forward = list(pch = 21, cex = 0.5),
                 .png = list(filename = frames))
 

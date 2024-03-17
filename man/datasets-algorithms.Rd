@@ -6,11 +6,6 @@
 \alias{dat_obs}
 \alias{dat_pff}
 \alias{dat_pff_src}
-\alias{dat_pfbk}
-\alias{dat_pfbk_src}
-\alias{dat_pfbs}
-\alias{dat_pfbs_src}
-\alias{dat_pfp}
 \alias{dat_coa}
 \title{Datasets: example algorithm outputs}
 \source{
@@ -24,16 +19,6 @@ dat_obs()
 dat_pff()
 
 dat_pff_src()
-
-dat_pfbk()
-
-dat_pfbk_src()
-
-dat_pfbs()
-
-dat_pfbs_src()
-
-dat_pfp()
 
 dat_coa()
 }
@@ -52,11 +37,6 @@ These functions load example outputs from key \code{\link{patter}} functions, in
 \item \code{\link[=dat_pff]{dat_pff()}} reads an example output from \code{\link[=pf_setup_obs]{pf_setup_obs()}};
 \item \code{\link[=dat_pff]{dat_pff()}} reads an example output from \code{\link[=pf_forward]{pf_forward()}};
 \item \code{\link[=dat_pff_src]{dat_pff_src()}} is the directory in which example \code{.parquet} files from \code{\link[=pf_forward]{pf_forward()}} are stored;
-\item \code{\link[=dat_pfbk]{dat_pfbk()}} reads an example output from \code{\link[=pf_backward_killer]{pf_backward_killer()}};
-\item \code{\link[=dat_pff_src]{dat_pff_src()}} is the directory in which example \code{.parquet} files from \code{\link[=pf_backward_killer]{pf_backward_killer()}} are stored;
-\item \code{\link[=dat_pfbs]{dat_pfbs()}} reads an example output from \code{\link[=pf_backward_sampler_v]{pf_backward_sampler_v()}};
-\item \code{\link[=dat_pfbs_src]{dat_pfbs_src()}} is the directory in which example \code{.parquet} files from \code{\link[=pf_backward_sampler_v]{pf_backward_sampler_v()}} are stored;
-\item \code{\link[=dat_pfp]{dat_pfp()}} reads an example output from \code{\link[=pf_path]{pf_path()}};
 \item \code{\link[=dat_coa]{dat_coa()}} reads an example output from \code{\link[=coa]{coa()}};
 }
 }
@@ -65,20 +45,11 @@ These functions load example outputs from key \code{\link{patter}} functions, in
 dat_dlist() |> summary()
 dat_obs() |> dplyr::glimpse()
 dat_pff() |> summary()
-dat_pfbk() |> summary()
-dat_pfbs() |> summary()
-dat_pfp() |> summary()
 dat_coa() |> summary()
 
 # Directory of inbuilt parquet files from `pf_forward()`
 dat_pff_src()
 pf_files(dat_pff_src())
-
-# Directory of inbuilt parquet files from `pf_backward_killer()`
-dat_pfbk_src()
-
-# Directory of inbuilt parquet files frim `pf_backward_sampler_v()`
-dat_pfbs_src()
 
 }
 \seealso{

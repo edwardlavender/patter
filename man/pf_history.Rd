@@ -105,35 +105,6 @@ This function is used in iterative routines, supported by \code{\link[=.pf_histo
 }
 }
 
-\examples{
-\dontrun{
-
-# .pf_history_dt() examples
-
-require(arrow)
-
-# Use pf_particles-class object
-.pf_history_dt(dat_pfbk())
-
-# Use `history` element
-.pf_history_dt(dat_pfbk()$history)
-
-# Use directory (and optionally select a subset of columns)
-pfbk_folder <- dat_pfbk_
-sch <- schema(timestep = int32(),
-              cell_now = int32(),
-              x_now = double(),
-              y_now = double())
-.pf_history_dt(pfbk_folder, schema = sch)
-
-# Use directory with `.collect = FALSE`
-.pf_history_dt(pfbk_folder, schema = sch, .collect = FALSE)
-
-# Use a file list
-.pf_history_dt(pf_files(pfbk_folder))
-}
-
-}
 \author{
 Edward Lavender
 }
