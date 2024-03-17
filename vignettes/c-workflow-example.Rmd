@@ -249,35 +249,11 @@ par(pp)
 
 `pf_backward_*()` implements the backward pass. 
 
-```{r}
-out_pfb <- pf_backward_killer(.history = out_pff$history, 
-                              .record = pf_opt_record(.save = TRUE))
-```
-
 # Outputs
 
 ## Movement paths 
 
-Particle samples can be used to reconstruct movement paths and build utilisation distributions. To reconstruct movement paths, use `pf_path()`:
-
-```{r}
-out_pfp <- pf_path(out_pfb$history, 
-                   .bathy = gebco, 
-                   .obs = obs, 
-                   .cols = "depth")
-head(out_pfp)
-```
-
-We can visualise an example path as follows:
-
-```{r}
-terra::plot(gebco)
-p1 <- out_pfp[out_pfp$path_id == 1, ]
-s  <- seq_len(nrow(p1))
-arrows(x0 = p1$cell_x[s], x1 = p1$cell_x[s + 1],
-       y0 = p1$cell_y[s], y1 = p1$cell_y[s + 1],
-       length = 0.02)
-```
+Particle samples can be used to reconstruct movement paths and build utilisation distributions. 
 
 ## Utilisation distribution
 
@@ -285,7 +261,7 @@ To build a utilisation distribution, we can use `map_pou()` and/or `map_dens()`.
 
 ```{r}
 ## Define particle coordinates
-coord <- pf_coord(.history = out_pfb$history, .bathy = gebco)
+coord <- pf_coord(.history = out_pff$history, .bathy = gebco)
 
 ## Map POU (plus home range contours)
 pou <- map_pou(.map = gebco, .coord = coord, .plot = TRUE)

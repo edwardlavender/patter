@@ -358,7 +358,6 @@ pf_forward <- function(.obs,
       # For convergence failures, collate outputs & return up to current time step
       out <- .pf_forward_output(.rerun = .rerun,
                                 .start = t_onset,
-                                .startup = startup,
                                 .history = history,
                                 .convergence = FALSE)
       return(out)
