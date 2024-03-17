@@ -23,7 +23,7 @@ dat_obs()
 
 dat_pff()
 
-dat_pff_src(.folder = c("history", "diagnostics"))
+dat_pff_src()
 
 dat_pfbk()
 
@@ -72,8 +72,6 @@ dat_coa() |> summary()
 
 # Directory of inbuilt parquet files from `pf_forward()`
 dat_pff_src()
-dat_pff_src(.folder = "history")
-dat_pff_src(.folder = "diagnostics")
 pf_files(dat_pff_src())
 
 # Directory of inbuilt parquet files from `pf_backward_killer()`

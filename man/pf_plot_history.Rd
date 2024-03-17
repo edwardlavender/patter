@@ -54,6 +54,10 @@ For each \code{.step}, \code{\link[terra:plot]{terra::plot()}} is used to plot \
 
 This function replaces \href{https://edwardlavender.github.io/flapper/reference/pf_plot_history.html}{\code{flapper::pf_plot_history()}}.
 }
+\section{Warning}{
+This function plots all particles, irrespective of their weights.
+}
+
 \examples{
 #### Set up
 # Define directories
