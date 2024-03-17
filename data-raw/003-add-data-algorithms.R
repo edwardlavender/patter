@@ -85,40 +85,8 @@ out_pff <- pf_forward(.obs = obs,
                                                         "cell_past", "cell_now",
                                                         "x_now", "y_now", "loglik", "logwt")))
 
-#### Implement pf_backward_killer()
-# NB: If pf_forward() is re-run, pf_backward_*() must also be re-run.
-sink      <- NULL
-if (overwrite) {
-  pfbk_folder <- file.path("inst", "extdata", "acpf", "backward", "killer")
-  unlink(pfbk_folder, recursive = TRUE)
-  dir.create(pfbk_folder, recursive = TRUE)
-  sink <- pfbk_folder
-}
-out_pfbk <- pf_backward_killer(.history = out_pff$history,
-                               .record = pf_opt_record(.save = TRUE, .sink = sink))
-
-#### Implement pf_backward_sampler_*()
-# NB: If pf_forward() is re-run, pf_backward_*() must also be re-run.
-sink      <- NULL
-if (overwrite) {
-  pfbs_folder <- file.path("inst", "extdata", "acpf", "backward", "sampler")
-  unlink(pfbs_folder, recursive = TRUE)
-  dir.create(pfbs_folder, recursive = TRUE)
-  sink <- pfbs_folder
-}
-ssf()
-out_pfbs <- pf_backward_sampler_v(.history = out_pff$history,
-                                  .obs = NULL,
-                                  .dlist = dlist,
-                                  .record = pf_opt_record(.save = TRUE, .sink = sink))
-
-#### Implement pf_path()
-out_pfp <- pf_path(out_pfbs$history, .bathy = dlist$spatial$bathy)
-
-#### Implement map_pou()
-out_pou <- map_pou(.map = dlist$spatial$bathy,
-                   .coord = pf_coord(.history = out_pfbs$history, .bathy = dlist$spatial$bathy))
-out_pou <- terra::wrap(out_pou)
+#### Implement pf_backward() routines
+# (TO DO)
 
 
 #########################
@@ -131,9 +99,6 @@ dat_obs   <- obs
 dat_dlist <- dlist
 dat_coa   <- out_coa
 dat_pff   <- out_pff
-dat_pfbk  <- out_pfbk
-dat_pfbs  <- out_pfbs
-dat_pfp   <- out_pfp
 # Update contents
 summary(dat_dlist)
 dat_dlist$spatial$bathy <- terra::wrap(dat_dlist$spatial$bathy)
@@ -144,10 +109,7 @@ datasets <-
   list(dat_obs = dat_obs,
        dat_dlist = dat_dlist,
        dat_coa = dat_coa,
-       dat_pff = dat_pff,
-       dat_pfbk = dat_pfbk,
-       dat_pfbs = dat_pfbs,
-       dat_pfp = dat_pfp)
+       dat_pff = dat_pff)
 
 #### Check dataset sizes (MB)
 # ./data/
