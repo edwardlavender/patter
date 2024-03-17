@@ -341,48 +341,32 @@ pf_forward <- function(.obs,
       ess <- 0
     }
 
-    #### (5) (A) Revert to an earlier time step
-    if (ess < .trial$trial_revert_crit & iter_i <= .trial$trial_revert) {
-      # Define time step
-      t <- .pf_forward_revert(.t = t, .trial_revert_steps = .trial$trial_revert_steps)
-      cat_log(paste0("... ... ... Reverting to time ", t, " (on ", iter_i, "/", .trial$trial_revert, " revert attempt(s)...)"))
-      iter_i <- iter_i + 1L
-      # Define ppast for relevant time step
-      ppast <- .pf_forward_ppast(.particles = NULL,
-                                 .history = history,
-                                 .sink = startup$output$folder_history,
-                                 .t = t, .obs = .obs)
-
-    } else {
-
-      #### (5) (B) Continue or finish simulation
-      # Check convergence
-      continue <- .pf_forward_continue(.particles = pnow,
-                                       .t = t,
-                                       .crit = ess,
-                                       .trial_revert_crit = .trial$trial_revert_crit)
-      # Record particle samples (if possible)
-      if (continue) {
-        snapshot <- .pf_snapshot(.dt = pnow, .save = .record$save,
-                                 .select = select_cols, .cols = .record$cols)
-        if (.record$save) {
-          history[[t]] <- snapshot
-        }
-        .pf_write_particles_abbr(.particles = snapshot)
-      } else {
-        # For convergence failures, collate outputs & return up to current time step
-        out <- .pf_forward_output(.rerun = .rerun,
-                                  .start = t_onset,
-                                  .startup = startup,
-                                  .history = history,
-                                  .convergence = FALSE)
-        return(out)
+    #### (4) Continue simulation
+    # Check convergence
+    continue <- .pf_forward_continue(.particles = pnow,
+                                     .t = t,
+                                     .crit = ess,
+                                     .trial_revert_crit = .trial$trial_revert_crit)
+    # Record particle samples (if possible)
+    if (continue) {
+      snapshot <- .pf_snapshot(.dt = pnow, .save = .record$save,
+                               .select = select_cols, .cols = .record$cols)
+      if (.record$save) {
+        history[[t]] <- snapshot
       }
-
-      #### Move on
-      ppast <- .pf_forward_increment(.particles = pnow, .obs = .obs, .t = t)
-      t <- t + 1L
+      .pf_write_particles_abbr(.particles = snapshot)
+    } else {
+      # For convergence failures, collate outputs & return up to current time step
+      out <- .pf_forward_output(.rerun = .rerun,
+                                .start = t_onset,
+                                .startup = startup,
+                                .history = history,
+                                .convergence = FALSE)
+      return(out)
     }
+    # Move on
+    ppast <- .pf_forward_increment(.particles = pnow, .obs = .obs, .t = t)
+    t <- t + 1L
 
   }
   pb_close(.pb = pb)
