@@ -48,7 +48,7 @@ pf_diag_summary <- function(.history, ...) {
     ungroup() |>
     # Aggregate weights by time step and grid cell
     group_by(.data$timestep, .data$cell_now) |>
-    summarise(logwt = logSumExp(.data$weight)) |>
+    summarise(logwt = logSumExp(.data$logwt)) |>
     ungroup() |>
     # Summarise diagnostics by time step
     group_by(.data$timestep) |>

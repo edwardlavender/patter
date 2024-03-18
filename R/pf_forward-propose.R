@@ -141,6 +141,7 @@ pf_rpropose_reachable <- function(.particles, .obs, .t, .dlist) {
     rlang::check_installed("sf")
     rlang::check_installed("exactextractr")
     check_dlist(.dlist = .dlist, .spatial = "bathy")
+    check_names(input = .obs, req = "mobility")
   }
 
   # Isolate unique particles

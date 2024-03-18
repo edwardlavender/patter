@@ -30,12 +30,9 @@ test_that("pf_forward() works", {
                         .trial = pf_opt_trial(.trial_sampler = 0L),
                         .record = pf_opt_record(.save = TRUE))
   check_inherits(out_pff, pf_class)
-  elements <- c("history", "path", "diagnostics", "internal", "convergence", "time")
+  elements <- c("history", "convergence", "time")
   expect_true(all(names(out_pff) %in% elements & elements %in% names(out_pff)))
   check_inherits(out_pff$history[[1]], "data.table")
-  expect_null(out_pff$path)
-  expect_null(out_pff$diagnostics)
-  check_inherits(out_pff$internal, "list")
   expect_true(out_pff$convergence)
   check_inherits(out_pff$time, "list")
   expect_true(all(names(out_pff$time[[1]]) %in% c("start", "end", "duration")))

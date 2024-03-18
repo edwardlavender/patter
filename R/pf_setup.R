@@ -111,6 +111,9 @@ pf_setup_obs <- function(.dlist,
                        .step = .step,
                        .mobility = .mobility)
 
+  #### Add movement parameters
+  obs[, mobility := mobility]
+
   #### Add acoustic data
   if (!is.null(acoustics)) {
     # Add detection flag(s) (detection, detection_id, receiver_id)
@@ -136,7 +139,7 @@ pf_setup_obs <- function(.dlist,
   #### Tidy outputs & return
   cat_log("... Completing call...")
   obs |>
-    select("timestep", "timestamp",
+    select("timestep", "timestamp", "mobility",
            any_of(c("array_id", "detection",
                     "acoustics", "container", "depth"))
            ) |>
