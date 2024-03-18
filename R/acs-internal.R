@@ -1,5 +1,5 @@
 #' @title AC* helper: AC* container(s)
-#' @description [`.acs_container_init()`] is designed for implementations of the AC*PF algorithm by [`pf_forward()`]. The function defines the first AC* container in [`.pf_rpropose_origin()`].
+#' @description These functions define acoustic containers for ACPF algorithm(s).
 #'
 #' @details
 #' At the first time step, the acoustic container is the intersection between the container(s) around the receivers that recorded the first detection (if applicable) and the container(s) around the receivers that recorded the next detection.
@@ -12,6 +12,7 @@
 #' @rdname acs_container
 #' @keywords internal
 
+# Define an acoustic container around the next receiver(s)
 .acs_container <- function(.cinfo) {
   # Define future container as SpatVector (for speed)
   # * Buffer receivers intersect
@@ -27,6 +28,7 @@
 #' @rdname acs_container
 #' @keywords internal
 
+# Define the initial acoustic container, accounting for the current detection & the future
 .acs_container_init <- function(.obs, .dlist) {
 
   #### Define starting surface based on AC algorithm & extensions
@@ -90,6 +92,7 @@
 #' @rdname acs_setup_detection_kernels-internal
 #' @keywords internal
 
+# Compute detection kernels (pk1)
 .acs_setup_detection_kernels_pk1 <- function(.dlist, .pdetkernel, ...) {
 
   #### Check user inputs
@@ -138,6 +141,7 @@
 #' @rdname acs_setup_detection_kernels-internal
 #' @keywords internal
 
+# Compute inverse detection kernels (pk0)
 .acs_setup_detection_kernels_pk0 <- function(.pk1) {
   pk0 <- lapply(.pk1, function(k) 1 - k)
   names(pk0) <- names(pk0)
@@ -147,6 +151,7 @@
 #' @rdname acs_setup_detection_kernels-internal
 #' @keywords internal
 
+# Compute background (inverse) log-likelihood surfaces
 .acs_setup_detection_kernels_ll <- function(.dlist, .pk0) {
 
   # Define array designs
