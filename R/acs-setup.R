@@ -1,13 +1,13 @@
 #' @title AC* set up: detection container overlaps
-#' @description This function is part of a set of `acs_setup_*()` functions that prepare the layers required to evaluate the likelihood of acoustic observations in an AC*PF algorithm. The function identifies receivers with overlapping detection containers in space and time.
+#' @description This function is part of a set of `acs_setup_*()` functions that prepare the layers required to evaluate the likelihood of acoustic observations in an AC*PF algorithm using the inbuilt functions. The function identifies receivers with overlapping detection containers in space and time.
 #'
 #' @param .dlist A named `list` of data and parameters from [`pat_setup_data()`]. This function requires:
 #' * `.dlist$data$moorings`, with the following columns: `receiver_id`, `receiver_x`, `receiver_y`, `receiver_start`, `receiver_end` and `receiver_range`.
 #' *  (optional) `.dlist$data$services`, with the following columns: `receiver_id`, `service_start` and `service_end`.
 #'
-#' @details An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual (see [`pf_forward()`]). In such an algorithm, at the moment of detection, the likelihood of detection(s) is evaluated, given particle samples. The outputs of this function are used to restrict the likelihood calculations to the set of receivers that overlap with the receiver(s) at which an individual is detected. This improves efficiency.
+#' @details An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual (see [`pf_forward()`]). [`pf_setup_obs()`] prepares the timeline of observations for particle filtering. Information from [`acs_setup_detection_overlaps()`] is used in this routine to assemble the acoustic time series: at each time step with a detection, we define an observation matrix (0, 1) comprising the subset of receiver(s) that recorded detections and the overlapping receiver(s). In [`pf_forward()`], the likelihood of each acoustic observation is evaluated, given particle samples. Thanks to [`acs_setup_detection_containers()`], at the moment of detection, likelihood calculations are restricted to the set of receivers that overlap with the receiver(s) at which an individual is detected. This improves efficiency.
 #'
-#' In this function, receiver deployments that overlap in time (accounting for deployment and servicing dates) are identified by [`make_matrix_receivers()`]. Spatially overlapping receiver pairs are defined as those for which the Euclidean distance between receiver coordinates is less than the combined detection range. This approach is fast but crude because it ignores the influence of other variables, such as land barriers, on detectability. This means that some 'overlapping receivers' may not in reality overlap. In this situation, downstream calculations may be a little less efficient. However, since overlapping receivers tend to be few in number, the efficiency penalty for this approximation should be negligible. We formerly used detection kernels (see [`acs_setup_detection_kernels()`]) to identify receiver overlaps, but this is much more expensive in situations with large numbers of receivers and high-resolution grids and this approach is no longer used.
+#' In [`acs_setup_detection_overlaps()`], receiver deployments that overlap in time (accounting for deployment and servicing dates) are identified by [`make_matrix_receivers()`]. Spatially overlapping receiver pairs are defined as those for which the Euclidean distance between receiver coordinates is less than the combined detection range. This approach is fast but crude because it ignores the influence of other variables, such as land barriers, on detectability. This means that some 'overlapping receivers' may not in reality overlap. In this situation, downstream calculations may be a little less efficient. However, since overlapping receivers tend to be few in number, the efficiency penalty for this approximation should be negligible. We formerly used detection kernels (see [`acs_setup_detection_kernels()`]) to identify receiver overlaps, but this is much more expensive in situations with large numbers of receivers and high-resolution grids and this approach is no longer used.
 #'
 #' This function replaces [`flapper::get_detection_containers_overlaps()`](https://edwardlavender.github.io/flapper/reference/get_detection_containers_overlap.html).
 #'
@@ -16,10 +16,11 @@
 #' @examples
 #' # Set up data list(see `?pat_setup_data()`)
 #' dlist <- dat_dlist()
+#'
 #' # Prepare detection overlaps
-#' # * Store detection overlaps in dlist$algorithms
+#' # * Store detection overlaps in `dlist$algorithms$detection_overlaps`
 #' # * It is expected in this slot by `pf_setup_obs()`
-#' dlist$algorithm$overlaps <- acs_setup_detection_overlaps(dlist)
+#' dlist$algorithm$detection_overlaps <- acs_setup_detection_overlaps(dlist)
 #'
 #' @seealso To implement an AC*PF algorithm, see:
 #' 1. [`pat_setup_data()`] to set up datasets;
@@ -27,7 +28,7 @@
 #'    * [`acs_setup_detection_overlaps()`], which identifies detection overlaps;
 #'    * [`acs_setup_detection_kernel()`], which prepares a detection kernel;
 #'    * [`acs_setup_detection_kernels()`], which prepares detection kernels;
-#' 3. [`pf_setup_obs()`] to define a timeline of observations
+#' 3. [`pf_setup_obs()`] to define a timeline of observations;
 #' 4. [`pf_forward()`] to run the simulation (using [`pf_lik_ac()`] to evaluate the likelihood of acoustic observations);
 #'
 #' @author Edward Lavender
@@ -158,11 +159,11 @@ acs_setup_detection_overlaps <- function(.dlist) {
 }
 
 #' @title AC* set up: detection probability
-#' @description This function is part of a set of `acs_setup_*()` functions that prepare the layers required to evaluate the likelihood of acoustic observations in an AC*PF algorithm. The function is an example detection probability function, of the kind required by [`acs_setup_detection_kernels()`].
+#' @description This function is part of a set of `acs_setup_*()` functions that prepare the layers required to evaluate the likelihood of acoustic observations in an AC*PF algorithm using the inbuilt functions. The function is an example detection probability function, of the kind required by [`acs_setup_detection_kernels()`].
 #' @param .mooring A one-row [`data.table`] that defines the location of an acoustic receiver and associated information required to calculate detection probability via `.pdetx`. In this function, receiver coordinate columns (`receiver_x` and `receiver_y`) and the detection range (`receiver_range`) is required.
 #' @param .bathy A [`SpatRaster`] that defines the grid on which detection probability is calculated.
 #' @param .mask A `logical` variable that defines whether or not to mask the detection kernel by `.bathy`. Use `.mask = TRUE` if `.bathy` contains `NA`s.
-#' @param .pdetx A function that calculates detection probability, such as [`pdetlogistic()`]. In this implementation, the function is used to translate a [`SpatRaster`] of distances (m) (from each grid cell to the receiver in `.data`) via [`terra::app()`]. The function must accept a .`gamma` argument (even if this is ignored, see below).
+#' @param .pdetx A function that calculates detection probability, such as [`pdetlogistic()`]. In this implementation, the function is used to translate a [`SpatRaster`] of distances (m) (from each grid cell to the receiver in `.mooring`) via [`terra::app()`]. The function must accept a .`gamma` argument (even if this is ignored, see below).
 #' @param ... Additional arguments passed to `.pdetx`. These arguments are passed to [`pdetlogistic()`]  by default. `.gamma` is set internally to `.mooring$receiver_range`.
 #'
 #' @details An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual (see [`pf_forward()`]). At each time step in such an algorithm, we evaluate the likelihood of acoustic observations (the presence or absence of detections at each operational receiver, accounting for receiver placement) given particle samples. The likelihood of the acoustic observations depends upon how detection probability declines away from receiver(s) in space; i.e., the shape of a 'detection kernel' (see [`acs_setup_detection_kernels()`]). For any one receiver, the form of the kernel depends on the input to the `.pdetkernel` in [`acs_setup_detection_kernels()`]. This function exemplifies one possible input to this argument, which is a model in which detection probability declines logistically with distance from a receiver.
@@ -175,9 +176,14 @@ acs_setup_detection_overlaps <- function(.dlist) {
 #' @return The function returns a [`SpatRaster`] that defines the detection kernel around a specific receiver.
 #'
 #' @examples
+#' # Set up data list(see `?pat_setup_data()`)
 #' dlist <- dat_dlist()
+#'
+#' # Define function inputs
 #' m <- dlist$data$moorings[1, ]
 #' b <- dlist$spatial$bathy
+#'
+#' # Generate a detection kernel
 #' k <- acs_setup_detection_kernel(m, b)
 #' terra::plot(k)
 #' points(m$receiver_x, m$receiver_y, pch = ".")
@@ -209,7 +215,7 @@ acs_setup_detection_kernel <- function(.mooring,
 }
 
 #' @title AC* set up: detection kernels
-#' @description This function is part of a set of `acs_setup_*()` functions that prepare the layers required to evaluate the likelihood of acoustic observations in an AC*PF algorithm. The function prepares the detection kernels.
+#' @description This function is part of a set of `acs_setup_*()` functions that prepare the layers required to evaluate the likelihood of acoustic observations in an AC*PF algorithm using the inbuilt functions. The function prepares the detection kernels.
 #' @param .dlist A named `list` of data and parameters from [`pat_setup_data()`]. This function requires:
 #' * `.dlist$data$moorings`, with the following columns: `receiver_id`, `receiver_start`, `receiver_end`, `receiver_x` and `receiver_y`, plus any columns used internally by `.pdetkernel` (see below).
 #' * (optional) `.dlist$data$services`, with the following columns: `receiver_id`, `service_start` and `service_end` (see [`make_matrix_receivers()`]).
@@ -217,18 +223,26 @@ acs_setup_detection_kernel <- function(.mooring,
 #' * `.dlist$pars$spatna`, which defines whether or not masking is required.
 #' @param .pdetkernel,... A `function` that defines the detection kernel as a [`SpatRaster`] around a receiver (see [`acs_setup_detection_kernel()`] for an example). This must accept three arguments (even if they are ignored):
 #' * `.mooring`---A one-row [`data.table`] that contains the information in `.dlist$data$moorings` for a specific receiver;
-#' * `.bathy`---the `.dlist$spatial$bathy` [`SpatRaster`];
-#' * `.mask`---a `logical` variable passed down from `.dlist$pars$spatna`;
+#' * `.bathy`---A cropped `.dlist$spatial$bathy` [`SpatRaster`];
+#' * `.mask`---A `logical` variable passed down from `.dlist$pars$spatna`;
 #' * `...` Additional arguments passed via [`acs_setup_detection_kernels()`];
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
-#' @details An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual (see [`pf_forward()`]). At each time step in such an algorithm, we evaluate the likelihood of acoustic observations (the presence or absence of detections at each operational receiver, accounting for receiver placement) given particle samples. The likelihood is evaluated using a Bernoulli distribution and a detection probability parameter. A detection kernel is a spatial representation of detection probability _around a specific receiver_. This typically declines with distance around a receiver, hence the default formulation of the `.pdetkernel` function. This function permits receiver-specific kernels, if required (but time-varying kernels are not currently supported and require custom likelihood functions in [`pf_forward()`]). Pre-calculating detection kernels is a potentially slow operation, especially for large and/or high-resolution grids (and we would like to improve this in future). However, this penalty is only required once and improves the speed of downstream likelihood calculations in [`pf_lik_ac()`] in [`pf_forward()`].
+#' @details An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual (see [`pf_forward()`]). At each time step in such an algorithm, we evaluate the likelihood of acoustic observations (the presence or absence of detections at each operational receiver, accounting for receiver placement) given particle samples. The likelihood is of each acoustic observation given each particle evaluated using a Bernoulli distribution and a detection probability parameter.
+#'
+#' The first purpose of this function is to pre-compute detection kernels. A detection kernel is a spatial representation of detection probability _around a specific receiver_. Detection kernels are computed iteratively. For each receiver, we crop `.dlist$spatial$bathy` to the detection range of that receiver and compute the detection kernel via `.pdetkernel`. This function is formulated such that detection probability declines with distance away from the receiver. Receiver-specific kernels are supported (but time-varying kernels require custom likelihood functions in [`pf_forward()`]). In [`pf_forward()`], we evaluate the log-likelihood of acoustic observations given particle locations via [`pf_lik_ac()`] using a Binomial distribution given the probabilities extracted from these layers (avoiding on-the-fly computation).
+#'
+#' The second purpose of this function is to pre-compute the log-likelihood of non-detection at all operational receivers. The log-likelihood surface is calculated for each array design within the domain spanned by the operational receivers. In the gaps between detection, we extract log-likelihood of non detections, given particle locations, directly from these layers (avoiding on-the-fly computation).
+#'
+#' Within the domain of receiver(s), detection kernels and non-detection log-likelihood surfaces are masked by `NA`s on `.dlist$spatial$bathy`. (Detection kernels are set to `0` and log-likelihoods to `log(0)` in cells that are `NA`.) However, since detection kernels (and in some instances non-detection log-likelihood surfaces) only span a subset of the study area, it may still necessary to account for inhospitable habitats in [`pf_forward()`], either via the movement model or via a likelihood function (see [`acs_filter_land()`]).
+#'
+#' Pre-calculating detection kernels is a potentially slow operation, especially for large and/or high-resolution grids (and we would like to improve this in future). However, this penalty is only required once and improves the speed of downstream likelihood calculations in [`pf_lik_ac()`] in [`pf_forward()`].
+#'
+#' To improve speed in [`pf_forward()`], use `terra:::readAll()` to force [`SpatRaster`]s into memory, if possible.
 #'
 #' @return The function returns a named `list`, with the following elements:
 #' * **`pkernel`**. A named `list`, with one element for each receiver. Each element is a [`SpatRaster`] of the detection kernel around that receiver. Cells values define the probability of a detection, as modelled by `.pdetkernel`. In an AC*PF algorithm, these kernels are used to calculate the likelihood of the acoustic data (detections/non-detections). This process effectively up-weights particles near to the receiver(s) that recorded detections and down-weights particles further afield.
 #' * **`loglik`**. A named `list`, with one element for each array design. Each element is a [`SpatRaster`] that defines the log-likelihood of non-detection at all operational receivers in that array. In an AC*PF algorithm, during detection gaps, we can extract the log-likelihood of the acoustic data (non detection) at particle locations directly from this layer.
-#'
-#' To improve speed in [`pf_forward()`], use `terra:::readAll()` to force [`SpatRaster`]s into memory, if possible.
 #'
 #' @example man/examples/acs_setup_detection_kernels-examples.R
 #'

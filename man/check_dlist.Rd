@@ -55,6 +55,10 @@ These are internal functions that ensure that input dataset(s) meet \code{\link{
 \item Absolute values (m) are recommended;
 \item At the time of writing (December 2023), planar grids are better tested;
 }
+\item Source:
+\itemize{
+\item The data source may be in memory or on disk, but the former is much faster;
+}
 }
 \item \code{\link[=check_acoustics]{check_acoustics()}} checks detection time series:
 \itemize{

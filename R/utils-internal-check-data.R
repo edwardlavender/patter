@@ -16,6 +16,8 @@
 #'        * A square grid is recommended;
 #'        * Absolute values (m) are recommended;
 #'        * At the time of writing (December 2023), planar grids are better tested;
+#'    - Source:
+#'        * The data source may be in memory or on disk, but the former is much faster;
 #'
 #' * [`check_acoustics()`] checks detection time series:
 #'    - Class: [`data.table`];
@@ -78,20 +80,27 @@ check_bathy <- function(.bathy) {
   if (is.null(.bathy)) {
     return(.bathy)
   }
+  # Check class
   check_inherits(.bathy, "SpatRaster")
+  # Check names
   if (names(.bathy) != "bathy") {
     warn("`.bathy` name updated from '{names(.bathy)}' to 'bathy'.",
          .envir = environment())
     names(.bathy) <- "bathy"
   }
-
+  # Check resolution
   res <- terra::res(.bathy)
   if (!isTRUE(all.equal(res[1], res[2]))) {
     msg("A square bathymetry grid is recommended.")
   }
+  # Check values
   min_val <- terra::global(.bathy, "min", na.rm = TRUE)
   if (min_val < 0) {
     msg("A bathymetry grid with absolute values is recommended. Use NA to define inhospitable habitats (such as land).")
+  }
+  # Check source
+  if (!terra::inMemory(.bathy)) {
+    msg("There is a heavy speed penalty for bathymetry grids that do not exist in memory.")
   }
   .bathy
 }

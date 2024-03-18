@@ -26,8 +26,8 @@ acs_setup_detection_kernels(
 \item{.pdetkernel, ...}{A \code{function} that defines the detection kernel as a \code{\link{SpatRaster}} around a receiver (see \code{\link[=acs_setup_detection_kernel]{acs_setup_detection_kernel()}} for an example). This must accept three arguments (even if they are ignored):
 \itemize{
 \item \code{.mooring}---A one-row \code{\link{data.table}} that contains the information in \code{.dlist$data$moorings} for a specific receiver;
-\item \code{.bathy}---the \code{.dlist$spatial$bathy} \code{\link{SpatRaster}};
-\item \code{.mask}---a \code{logical} variable passed down from \code{.dlist$pars$spatna};
+\item \code{.bathy}---A cropped \code{.dlist$spatial$bathy} \code{\link{SpatRaster}};
+\item \code{.mask}---A \code{logical} variable passed down from \code{.dlist$pars$spatna};
 \item \code{...} Additional arguments passed via \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}};
 }}
 
@@ -39,14 +39,22 @@ The function returns a named \code{list}, with the following elements:
 \item \strong{\code{pkernel}}. A named \code{list}, with one element for each receiver. Each element is a \code{\link{SpatRaster}} of the detection kernel around that receiver. Cells values define the probability of a detection, as modelled by \code{.pdetkernel}. In an AC*PF algorithm, these kernels are used to calculate the likelihood of the acoustic data (detections/non-detections). This process effectively up-weights particles near to the receiver(s) that recorded detections and down-weights particles further afield.
 \item \strong{\code{loglik}}. A named \code{list}, with one element for each array design. Each element is a \code{\link{SpatRaster}} that defines the log-likelihood of non-detection at all operational receivers in that array. In an AC*PF algorithm, during detection gaps, we can extract the log-likelihood of the acoustic data (non detection) at particle locations directly from this layer.
 }
-
-To improve speed in \code{\link[=pf_forward]{pf_forward()}}, use \code{terra:::readAll()} to force \code{\link{SpatRaster}}s into memory, if possible.
 }
 \description{
-This function is part of a set of \verb{acs_setup_*()} functions that prepare the layers required to evaluate the likelihood of acoustic observations in an AC*PF algorithm. The function prepares the detection kernels.
+This function is part of a set of \verb{acs_setup_*()} functions that prepare the layers required to evaluate the likelihood of acoustic observations in an AC*PF algorithm using the inbuilt functions. The function prepares the detection kernels.
 }
 \details{
-An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual (see \code{\link[=pf_forward]{pf_forward()}}). At each time step in such an algorithm, we evaluate the likelihood of acoustic observations (the presence or absence of detections at each operational receiver, accounting for receiver placement) given particle samples. The likelihood is evaluated using a Bernoulli distribution and a detection probability parameter. A detection kernel is a spatial representation of detection probability \emph{around a specific receiver}. This typically declines with distance around a receiver, hence the default formulation of the \code{.pdetkernel} function. This function permits receiver-specific kernels, if required (but time-varying kernels are not currently supported and require custom likelihood functions in \code{\link[=pf_forward]{pf_forward()}}). Pre-calculating detection kernels is a potentially slow operation, especially for large and/or high-resolution grids (and we would like to improve this in future). However, this penalty is only required once and improves the speed of downstream likelihood calculations in \code{\link[=pf_lik_ac]{pf_lik_ac()}} in \code{\link[=pf_forward]{pf_forward()}}.
+An AC*PF algorithm is a particle filtering algorithm that incorporates acoustic observations to reconstruct the possible movements of an individual (see \code{\link[=pf_forward]{pf_forward()}}). At each time step in such an algorithm, we evaluate the likelihood of acoustic observations (the presence or absence of detections at each operational receiver, accounting for receiver placement) given particle samples. The likelihood is of each acoustic observation given each particle evaluated using a Bernoulli distribution and a detection probability parameter.
+
+The first purpose of this function is to pre-compute detection kernels. A detection kernel is a spatial representation of detection probability \emph{around a specific receiver}. Detection kernels are computed iteratively. For each receiver, we crop \code{.dlist$spatial$bathy} to the detection range of that receiver and compute the detection kernel via \code{.pdetkernel}. This function is formulated such that detection probability declines with distance away from the receiver. Receiver-specific kernels are supported (but time-varying kernels require custom likelihood functions in \code{\link[=pf_forward]{pf_forward()}}). In \code{\link[=pf_forward]{pf_forward()}}, we evaluate the log-likelihood of acoustic observations given particle locations via \code{\link[=pf_lik_ac]{pf_lik_ac()}} using a Binomial distribution given the probabilities extracted from these layers (avoiding on-the-fly computation).
+
+The second purpose of this function is to pre-compute the log-likelihood of non-detection at all operational receivers. The log-likelihood surface is calculated for each array design within the domain spanned by the operational receivers. In the gaps between detection, we extract log-likelihood of non detections, given particle locations, directly from these layers (avoiding on-the-fly computation).
+
+Within the domain of receiver(s), detection kernels and non-detection log-likelihood surfaces are masked by \code{NA}s on \code{.dlist$spatial$bathy}. (Detection kernels are set to \code{0} and log-likelihoods to \code{log(0)} in cells that are \code{NA}.) However, since detection kernels (and in some instances non-detection log-likelihood surfaces) only span a subset of the study area, it may still necessary to account for inhospitable habitats in \code{\link[=pf_forward]{pf_forward()}}, either via the movement model or via a likelihood function (see \code{\link[=acs_filter_land]{acs_filter_land()}}).
+
+Pre-calculating detection kernels is a potentially slow operation, especially for large and/or high-resolution grids (and we would like to improve this in future). However, this penalty is only required once and improves the speed of downstream likelihood calculations in \code{\link[=pf_lik_ac]{pf_lik_ac()}} in \code{\link[=pf_forward]{pf_forward()}}.
+
+To improve speed in \code{\link[=pf_forward]{pf_forward()}}, use \code{terra:::readAll()} to force \code{\link{SpatRaster}}s into memory, if possible.
 }
 \examples{
 require(data.table)
@@ -104,7 +112,7 @@ To implement an AC*PF algorithm, see:
 \item \code{\link[=acs_setup_detection_kernel]{acs_setup_detection_kernel()}}, which prepares a detection kernel;
 \item \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}, which prepares detection kernels;
 }
-\item \code{\link[=pf_setup_obs]{pf_setup_obs()}} to define a timeline of observations
+\item \code{\link[=pf_setup_obs]{pf_setup_obs()}} to define a timeline of observations;
 \item \code{\link[=pf_forward]{pf_forward()}} to run the simulation (using \code{\link[=pf_lik_ac]{pf_lik_ac()}} to evaluate the likelihood of acoustic observations);
 }
 }

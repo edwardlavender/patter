@@ -213,9 +213,6 @@ pf_forward <- function(.obs,
   t_onset <- Sys.time()
   # .pf_checks()
   check_dlist(.dlist = .dlist, .spatial = "bathy")
-  if (!terra::inMemory(.dlist$spatial$bathy)) {
-    warn("`.dlist$spatial$bathy` is not in memory.")
-  }
 
   #### Set up messages
   cat_log <- cat_init(.verbose = .verbose)
