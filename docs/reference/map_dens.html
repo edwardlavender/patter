@@ -160,7 +160,7 @@
 <li><p><code><a href="map_hr.html">map_hr</a></code><code>_*()</code> functions map home ranges;</p></li>
 </ul><p>All maps are represented as <code>SpatRaster</code>s.</p>
 <p>To derive coordinates for mapping patterns of space use for tagged animals in passive acoustic telemetry systems, see:</p><ul><li><p><code><a href="coa.html">coa()</a></code> to calculate centre-of-activity;</p></li>
-<li><p><code><a href="pf_forward.html">pf_forward()</a></code>, <code>pf_backward_*()</code> and <code><a href="pf_coord.html">pf_coord()</a></code> to sample locations using a forward-filtering backward-sampling algorithm;</p></li>
+<li><p><code><a href="pf_forward.html">pf_forward()</a></code> and associates to sample locations using particle filtering;</p></li>
 </ul></div>
     </div>
 
@@ -170,6 +170,7 @@
 <span class="r-in"><span><span class="co"># Packages</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: dplyr</span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="http://spatstat.org/" class="external-link">spatstat.explore</a></span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: spatstat.explore</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: spatstat.data</span>
@@ -206,14 +207,14 @@
 <span class="r-in"><span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Use x, y coordinates</span></span></span>
 <span class="r-in"><span><span class="fu">map_dens</span><span class="op">(</span><span class="va">gebco</span>, .coord <span class="op">=</span> <span class="va">cxy</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 14:27:38... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 17:06:45... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.map`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building XYM... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining `ppp` object... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 14:27:38 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 17:06:45 (duration: ~0 sec(s)). </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
@@ -225,7 +226,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> max value   : 6.436507e-05 </span>
 <span class="r-in"><span><span class="co"># Other formats are acceptable</span></span></span>
 <span class="r-in"><span><span class="fu">map_dens</span><span class="op">(</span><span class="va">gebco</span>, .coord <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">cxy</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 14:27:38... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 17:06:45... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.map`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building XYM... </span>
@@ -233,7 +234,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
 <span class="r-plt img"><img src="map_dens-1.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 14:27:39 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 17:06:46 (duration: ~1 sec(s)). </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
@@ -244,14 +245,14 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> min value   : 5.658579e-05 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> max value   : 6.436507e-05 </span>
 <span class="r-in"><span><span class="fu">map_dens</span><span class="op">(</span><span class="va">gebco</span>, .coord <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">cxy</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 14:27:39... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 17:06:46... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.map`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building XYM... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining `ppp` object... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 14:27:40 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 17:06:46 (duration: ~0 sec(s)). </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
@@ -263,14 +264,14 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> max value   : 6.436507e-05 </span>
 <span class="r-in"><span><span class="co"># cell_x and cell_y coordinates are acceptable</span></span></span>
 <span class="r-in"><span><span class="fu">map_dens</span><span class="op">(</span><span class="va">gebco</span>, .coord <span class="op">=</span> <span class="va">cxy</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span>cell_x <span class="op">=</span> <span class="va">x</span>, cell_y <span class="op">=</span> <span class="va">y</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 14:27:40... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 17:06:46... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.map`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building XYM... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining `ppp` object... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 14:27:40 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 17:06:47 (duration: ~1 sec(s)). </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
@@ -282,19 +283,19 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> max value   : 6.436507e-05 </span>
 <span class="r-in"><span><span class="co"># A SpatRaster is also acceptable</span></span></span>
 <span class="r-in"><span><span class="va">pou</span> <span class="op">&lt;-</span> <span class="fu"><a href="map_pou.html">map_pou</a></span><span class="op">(</span><span class="va">gebco</span>, .coord <span class="op">=</span> <span class="va">cxy</span>, .plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` called @ 2024-03-18 14:27:40... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` called @ 2024-03-18 17:06:47... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building XYM... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building SpatRaster... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` call ended @ 2024-03-18 14:27:40 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` call ended @ 2024-03-18 17:06:47 (duration: ~0 sec(s)). </span>
 <span class="r-in"><span><span class="fu">map_dens</span><span class="op">(</span><span class="va">pou</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 14:27:40... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 17:06:47... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.map`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building XYM... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Defining `ppp` object... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 14:27:40 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 17:06:47 (duration: ~0 sec(s)). </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
@@ -309,7 +310,7 @@
 <span class="r-in"><span><span class="co"># Use example dataset</span></span></span>
 <span class="r-in"><span><span class="va">out_coa</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_coa</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">map_dens</span><span class="op">(</span><span class="va">gebco</span>, .coord <span class="op">=</span> <span class="va">out_coa</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span>x <span class="op">=</span> <span class="va">coa_x</span>, y <span class="op">=</span> <span class="va">coa_y</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 14:27:40... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 17:06:47... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.map`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building XYM... </span>
@@ -317,7 +318,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
 <span class="r-plt img"><img src="map_dens-2.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 14:27:41 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 17:06:48 (duration: ~1 sec(s)). </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
@@ -330,9 +331,13 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (3): Use a time series of coordinates from pf_*()</span></span></span>
 <span class="r-in"><span><span class="co"># Use example dataset</span></span></span>
+<span class="r-in"><span><span class="co"># * We use particles from the forward filter (`?pf_forward()`);</span></span></span>
+<span class="r-in"><span><span class="co"># * Particles are equally weighted b/c re-sampling was implemented every time step;</span></span></span>
+<span class="r-in"><span><span class="co"># * It is better to use outputs from the forward-filter backward-smoother;</span></span></span>
+<span class="r-in"><span><span class="co"># * Make sure you account for particle weights via re-sampling or 'marks';</span></span></span>
 <span class="r-in"><span><span class="va">coord</span> <span class="op">&lt;-</span> <span class="fu"><a href="pf_coord.html">pf_coord</a></span><span class="op">(</span><span class="fu"><a href="datasets-algorithms.html">dat_pff</a></span><span class="op">(</span><span class="op">)</span>, .bathy <span class="op">=</span> <span class="va">gebco</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">map_dens</span><span class="op">(</span><span class="va">gebco</span>, .coord <span class="op">=</span> <span class="va">coord</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 14:27:41... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 17:06:48... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.map`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building XYM... </span>
@@ -340,7 +345,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
 <span class="r-plt img"><img src="map_dens-3.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 14:27:41 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 17:06:48 (duration: ~0 sec(s)). </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
@@ -354,7 +359,7 @@
 <span class="r-in"><span><span class="co">#### Example (4): Control smoothing via `spatstat.explore::density.ppp()`</span></span></span>
 <span class="r-in"><span><span class="co"># E.g. use fixed bandwidth:</span></span></span>
 <span class="r-in"><span><span class="fu">map_dens</span><span class="op">(</span><span class="va">gebco</span>, .coord <span class="op">=</span> <span class="va">coord</span>, sigma <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 14:27:41... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 17:06:48... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.map`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building XYM... </span>
@@ -362,7 +367,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
 <span class="r-plt img"><img src="map_dens-4.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 14:27:41 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 17:06:48 (duration: ~0 sec(s)). </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
@@ -373,7 +378,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> min value   : -2.266664e-18 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> max value   :  2.959996e-02 </span>
 <span class="r-in"><span><span class="fu">map_dens</span><span class="op">(</span><span class="va">gebco</span>, .coord <span class="op">=</span> <span class="va">coord</span>, sigma <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 14:27:41... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 17:06:48... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.map`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building XYM... </span>
@@ -381,7 +386,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
 <span class="r-plt img"><img src="map_dens-5.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 14:27:41 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 17:06:48 (duration: ~0 sec(s)). </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
@@ -393,7 +398,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> max value   :  1.862968e-02 </span>
 <span class="r-in"><span><span class="co"># E.g., perform automatic bandwidth selection using cross validation:</span></span></span>
 <span class="r-in"><span><span class="fu">map_dens</span><span class="op">(</span><span class="va">gebco</span>, .coord <span class="op">=</span> <span class="va">coord</span>, sigma <span class="op">=</span> <span class="va">bw.diggle</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 14:27:41... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 17:06:48... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.map`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building XYM... </span>
@@ -401,7 +406,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
 <span class="r-plt img"><img src="map_dens-6.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 14:27:41 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 17:06:48 (duration: ~0 sec(s)). </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
@@ -412,7 +417,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> min value   : -1.635538e-18 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> max value   :  1.770208e-02 </span>
 <span class="r-in"><span><span class="fu">map_dens</span><span class="op">(</span><span class="va">gebco</span>, .coord <span class="op">=</span> <span class="va">coord</span>, sigma <span class="op">=</span> <span class="va">bw.scott</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 14:27:41... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 17:06:48... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.map`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building XYM... </span>
@@ -420,7 +425,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
 <span class="r-plt img"><img src="map_dens-7.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 14:27:42 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 17:06:49 (duration: ~1 sec(s)). </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
@@ -431,7 +436,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> min value   : -1.151513e-18 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> max value   :  1.505622e-02 </span>
 <span class="r-in"><span><span class="fu">map_dens</span><span class="op">(</span><span class="va">gebco</span>, .coord <span class="op">=</span> <span class="va">coord</span>, sigma <span class="op">=</span> <span class="va">bw.ppl</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 14:27:42... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 17:06:49... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.map`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building XYM... </span>
@@ -439,7 +444,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
 <span class="r-plt img"><img src="map_dens-8.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 14:27:43 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 17:06:50 (duration: ~1 sec(s)). </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
@@ -450,7 +455,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> min value   : -9.726544e-19 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> max value   :  1.650431e-02 </span>
 <span class="r-in"><span><span class="fu">map_dens</span><span class="op">(</span><span class="va">gebco</span>, .coord <span class="op">=</span> <span class="va">coord</span>, sigma <span class="op">=</span> <span class="va">bw.CvL</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 14:27:43... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-03-18 17:06:50... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Processing `.map`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building XYM... </span>
@@ -458,7 +463,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Estimating density surface... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Scaling density surface... </span>
 <span class="r-plt img"><img src="map_dens-9.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 14:27:43 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-03-18 17:06:50 (duration: ~0 sec(s)). </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>

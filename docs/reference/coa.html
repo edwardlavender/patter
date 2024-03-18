@@ -126,8 +126,8 @@
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index">
-<ul><li><p>To derive location samples from the forward-filter backward-sampler, see <code><a href="pf_forward.html">pf_forward()</a></code>, <code>pf_backward_*()</code> and <code><a href="pf_coord.html">pf_coord()</a></code>;</p></li>
-<li><p>For mapping utilisation distributions from coordinates, see <code>map_*()</code> functions (i.e., <code><a href="map_pou.html">map_pou()</a></code> and <code><a href="map_dens.html">map_dens()</a></code>;</p></li>
+<ul><li><p>To derive location samples from a particle filtering algorithm, see <code><a href="pf_forward.html">pf_forward()</a></code> and associates;</p></li>
+<li><p>For mapping utilisation distributions from coordinates, see <code>map_*()</code> functions (i.e., <code><a href="map_pou.html">map_pou()</a></code> and <code><a href="map_dens.html">map_dens()</a></code>);</p></li>
 </ul></div>
     </div>
     <div id="author">
@@ -140,12 +140,13 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (1): Calculate COAs for an example individual</span></span></span>
-<span class="r-in"><span><span class="va">acc</span>   <span class="op">&lt;-</span> <span class="va">dat_acoustics</span><span class="op">[</span><span class="va">individual_id</span> <span class="op">==</span> <span class="va">dat_acoustics</span><span class="op">$</span><span class="va">individual_id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">gebco</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">acc</span>    <span class="op">&lt;-</span> <span class="va">dat_acoustics</span><span class="op">[</span><span class="va">individual_id</span> <span class="op">==</span> <span class="va">dat_acoustics</span><span class="op">$</span><span class="va">individual_id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">gebco</span>  <span class="op">&lt;-</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">dlist</span>  <span class="op">&lt;-</span> <span class="fu"><a href="pat_setup_data.html">pat_setup_data</a></span><span class="op">(</span>.acoustics <span class="op">=</span> <span class="va">acc</span>,</span></span>
 <span class="r-in"><span>                         .moorings <span class="op">=</span> <span class="va">dat_moorings</span>,</span></span>
 <span class="r-in"><span>                         .bathy <span class="op">=</span> <span class="va">gebco</span>,</span></span>
 <span class="r-in"><span>                         .lonlat <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> There is a heavy speed penalty for bathymetry grids that do not exist in memory.</span>
 <span class="r-in"><span><span class="fu">coa</span><span class="op">(</span><span class="va">dlist</span>, .delta_t <span class="op">=</span> <span class="st">"2 hours"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="coa-1.png" alt="" width="700" height="433"></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                timestamp    coa_x   coa_y</span>
@@ -184,6 +185,7 @@
 <span class="r-in"><span>                        .lonlat <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Multiple individuals detected in acoustic data.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Acoustic time stamps should be ordered chronologically.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> There is a heavy speed penalty for bathymetry grids that do not exist in memory.</span>
 <span class="r-in"><span><span class="fu">coa</span><span class="op">(</span><span class="va">dlist</span>, .delta_t <span class="op">=</span> <span class="st">"6 hours"</span>, .split <span class="op">=</span> <span class="st">"individual_id"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       individual_id           timestamp    coa_x   coa_y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;int&gt;              &lt;POSc&gt;    &lt;num&gt;   &lt;num&gt;</span>

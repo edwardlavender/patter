@@ -3,6 +3,7 @@
 #'
 #' @param .trial_origin_crit,.trial_kick,.trial_sampler,.trial_sampler_crit,.trial_resample_crit,.trial_revert_crit,.trial_revert_steps,.trial_revert [`pf_opt_trial()`] arguments, passed to `.trial` in [`pf_forward()`]. All arguments expect `integer` inputs.
 #' * `.trial_origin_crit` is an `integer` that specifies the critical effective sample size (ESS) for the starting samples. If the initial ESS is < `.trial_origin_crit`, a [`warning`] is given.
+#' * `.trial_kick` is an `integer` (0, 1) that defines whether or not to trial the stochastic-kick methodology.
 #' * `.trial_sampler` is an `integer` (0, 1) that defines whether or not to trial the directed sampling methodology.
 #' * `.trial_sampler_crit` is an `integer` that specifies the critical threshold for directed sampling. Following stochastic kicks, if the ESS is < `.trial_sampler_crit`, directed sampling is implemented.
 #' * `.trial_resample_crit` is an `integer` that defines the ESS for (re)sampling. Particles are resampled when the ESS is < `.trial_resample_crit`.
@@ -48,10 +49,12 @@
 #' @export
 
 pf_opt_trial <- function(.trial_origin_crit = 1L,
+                         .trial_kick = 1L,
                          .trial_sampler = 1L,
                          .trial_sampler_crit = 10L,
                          .trial_resample_crit = 500L) {
   list(trial_origin_crit = .trial_origin_crit,
+       trial_kick = .trial_kick,
        trial_sampler = .trial_sampler,
        trial_sampler_crit = .trial_sampler_crit,
        trial_resample_crit = .trial_resample_crit)
