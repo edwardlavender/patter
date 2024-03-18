@@ -10,13 +10,9 @@
 \usage{
 pf_opt_trial(
   .trial_origin_crit = 1L,
-  .trial_kick = 1L,
   .trial_sampler = 1L,
   .trial_sampler_crit = 10L,
-  .trial_resample_crit = 500L,
-  .trial_revert_crit = 1L,
-  .trial_revert_steps = 10L,
-  .trial_revert = 0L
+  .trial_resample_crit = 500L
 )
 
 pf_opt_record(.save = FALSE, .cols = NULL, .sink = NULL)
@@ -26,36 +22,32 @@ pf_opt_control(.sampler_batch_size = 1000L, .drop = TRUE)
 pf_opt_rerun_from(.rerun, .revert = 25L)
 }
 \arguments{
-\item{.trial_origin_crit, .trial_kick, .trial_sampler, .trial_sampler_crit, .trial_resample_crit, .trial_revert_crit, .trial_revert_steps, .trial_revert}{\code{\link[=pf_opt_trial]{pf_opt_trial()}} arguments, passed to \code{.trial} in \code{\link[=pf_forward]{pf_forward()}} and used to tune convergence properties. All arguments expect \code{integer} inputs.
+\item{.trial_origin_crit, .trial_kick, .trial_sampler, .trial_sampler_crit, .trial_resample_crit, .trial_revert_crit, .trial_revert_steps, .trial_revert}{\code{\link[=pf_opt_trial]{pf_opt_trial()}} arguments, passed to \code{.trial} in \code{\link[=pf_forward]{pf_forward()}}. All arguments expect \code{integer} inputs.
 \itemize{
 \item \code{.trial_origin_crit} is an \code{integer} that specifies the critical effective sample size (ESS) for the starting samples. If the initial ESS is < \code{.trial_origin_crit}, a \code{\link{warning}} is given.
-\item \code{.trial_kick} is a \code{integer} that defines the number of stochastic kicks at each time step.
 \item \code{.trial_sampler} is an \code{integer} (0, 1) that defines whether or not to trial the directed sampling methodology.
 \item \code{.trial_sampler_crit} is an \code{integer} that specifies the critical threshold for directed sampling. Following stochastic kicks, if the ESS is < \code{.trial_sampler_crit}, directed sampling is implemented.
 \item \code{.trial_resample_crit} is an \code{integer} that defines the ESS for (re)sampling. Particles are resampled when the ESS is < \code{.trial_resample_crit}.
-\item \code{.trial_revert_crit} is an \code{integer} that specifies the critical threshold for a reversion. If the ESS < \code{.trial_revert_crit}, the algorithm reverts by \code{.trial_revert_steps} time steps to an earlier time step (time step two or greater).
-\item \code{.trial_revert} is an \code{integer} that specifies the total number of reversions permitted. This is reset on algorithm reruns (see \code{.rerun}).
 }}
 
-\item{.save, .sink, .cols}{\code{\link[=pf_opt_record]{pf_opt_record()}} arguments, passed to \code{.record} in \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_*]{pf_backward_*()}}.
+\item{.save, .sink, .cols}{\code{\link[=pf_opt_record]{pf_opt_record()}} arguments, passed to \code{.record}.
 \itemize{
 \item \code{.save}---a \code{logical} variable that defines whether or not to save particle samples and diagnostics in memory. Use \code{.save = TRUE} with caution.
-\item \code{.sink}---a \code{character} string that defines a (usually) empty directory in which to write particle samples and diagnostics. \verb{\{.sink\}/history/}and \code{{.sink}/diagnostics} directories are created (if necessary) to store particle samples and diagnostics respectively.
+\item \code{.sink}---a \code{character} string that defines a (usually) empty directory in which to write particles (as \code{.parquet} files).
 \item \code{.cols}---a \code{character} vector that defines the names of the columns in particle-sample \code{\link{data.table}}s to save and/or write to file at each time step. This reduces the space occupied by outputs. \code{NULL} retains all columns.
 \itemize{
-\item For \code{\link[=pf_forward]{pf_forward()}}, in general you should retain \code{timestep}, \code{cell_now}, \code{x_now}, \code{y_now} and \code{weight}.
-\item For \code{\link[=pf_backward_killer]{pf_backward_killer()}}, you need to retain \code{timestep}, \code{cell_past} and \code{cell_now}.
-\item For \code{\link{pf_backward_sampler}}\verb{_*()}, you need \code{timestep}, \code{cell_now}, \code{x_now} and \code{y_now}.
-\item To account for particle weights and to calculate effective sample size, \code{weight} is required.
+\item For \code{\link[=pf_forward]{pf_forward()}}, in general at a minimum you should retain \code{timestep}, \code{x_now}, \code{y_now} and \code{logwt};
+\item For other routines, you may require additional columns (TO DO);
+\item To account for particle weights and to calculate effective sample size, \code{logwt} is required;
 }
 }
 
 At least one of \code{.save = TRUE} and \code{.sink} must be set.}
 
-\item{.drop, .sampler_batch_size}{\code{\link[=pf_opt_control]{pf_opt_control()}} arguments, passed to \code{.control} in \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_*]{pf_backward_*()}}.
+\item{.drop, .sampler_batch_size}{\code{\link[=pf_opt_control]{pf_opt_control()}} arguments, passed to \code{.control}.
 \itemize{
-\item \code{.drop} A \code{logical} variable that defines whether or not to drop particles with zero likelihood or density.
-\item \code{.sampler_batch_size}---for \code{\link[=pf_forward]{pf_forward()}} (specifically, \code{\link[=.pf_particles_sampler]{.pf_particles_sampler()}}), \code{.sampler_batch_size} is an \code{integer} that controls the batch size (the number of particles processed simultaneously) in directed sampling. Increase the batch size to improve speed; decrease the batch size to avoid memory constraints. The appropriate batch size depends on grid resolution and memory availability.
+\item \code{.drop}---A \code{logical} variable that defines whether or not to drop particles with zero likelihood or density.
+\item \code{.sampler_batch_size}---An \code{integer} that controls the batch size (the number of particles processed simultaneously) in directed sampling. Increase the batch size to improve speed; decrease the batch size to avoid memory constraints. The appropriate batch size depends on grid resolution and memory availability.
 }}
 
 \item{.rerun, .revert}{\code{\link[=pf_opt_rerun_from]{pf_opt_rerun_from()}} arguments.
@@ -73,10 +65,10 @@ At least one of \code{.save = TRUE} and \code{.sink} must be set.}
 }
 }
 \description{
-These functions define selected function arguments for \code{\link[=pf_forward]{pf_forward()}} and/or \code{\link[=pf_backward_*]{pf_backward_*()}}.
+These functions define selected function arguments for \code{\link[=pf_forward]{pf_forward()}} and associated routines.
 }
 \details{
-These functions are defined separately for convenience of documentation. Note that they do not define global options and must be passed to \code{\link[=pf_forward]{pf_forward()}} arguments.
+These functions are defined separately for convenience of documentation. They do not define global options and must be passed to as arguments to relevant functions.
 }
 \examples{
 pf_opt_trial()
@@ -87,25 +79,25 @@ pf_opt_rerun_from(dat_pff(), .revert = 10L)
 
 }
 \seealso{
-The forward filtering--backward sampling algorithm samples locations (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
+The particle filter samples locations (particles) that represent the possible locations of an individual through time, accounting for the data and the individual's movement.
 \itemize{
 \item To set up data, use \code{\link[=pat_setup_data]{pat_setup_data()}}.
-\item \code{\link[=pf_forward]{pf_forward()}} implements the forward filter:
+\item To implement the particle filter, use \code{\link[=pf_forward]{pf_forward()}}:
 \itemize{
-\item To set up an observations timeline, use \code{\link[=pf_setup_obs]{pf_setup_obs()}}.
-\item For proposal (movement) models, see \code{\link{pf_propose}}.
-\item For likelihood functions, to evaluate the likelihood of the data at proposal locations, see \code{\link{pf_lik}}.
-\item For sampling functions, to (re)sample plausible proposal locations, see \code{\link{pf_sample}}.
-\item For tuning parameters, see \code{\link{pf_opt}}.
+\item To set up an observations timeline, use \code{\link[=pf_setup_obs]{pf_setup_obs()}};
+\item For proposal (movement) models, see \code{\link{pf_propose}};
+\item For likelihood functions, to evaluate the likelihood of the data at proposal locations, see \code{\link{pf_lik}};
+\item For sampling functions, to (re)sample plausible proposal locations, see \code{\link{pf_sample}};
+\item For tuning parameters, see \code{\link{pf_opt}};
 }
-\item \code{\link[=pf_backward_*]{pf_backward_*()}} refines outputs from the forward filter:
+\item To map patterns of space use, use:
 \itemize{
-\item \code{\link[=pf_backward_killer]{pf_backward_killer()}} removes dead-ends;
-\item \code{\link{pf_backward_sampler}}\verb{_*()} implements the backward sampler;
+\item The backward smoother (TO DO);
+\item \code{\link[=pf_coord]{pf_coord()}} to extract coordinates;
+\item A \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()};
 }
-\item To reconstruct movement paths from particle samples, use \code{\link[=pf_path]{pf_path()}}.
-\item To map emergent patterns of space use, use \code{\link[=pf_coord]{pf_coord()}} plus a \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()}.
-\item For additional utilities, see supporting \verb{pf_*()} functions, such as \code{\link[=pf_files]{pf_files()}}, \code{\link[=pf_files_size]{pf_files_size()}}, \code{\link[=pf_plot_history]{pf_plot_history()}}, \code{\link[=pf_diag_convergence]{pf_diag_convergence()}} and \code{\link[=pf_diag_summary]{pf_diag_summary()}}.
+\item To reconstruct movement paths, use the backward sampler (TO DO).
+\item For additional utilities, see supporting \verb{pf_*()} functions, such as \code{\link[=pf_files]{pf_files()}}, \code{\link[=pf_files_size]{pf_files_size()}}, \code{\link[=pf_plot_history]{pf_plot_history()}} and \code{\link[=pf_diag_summary]{pf_diag_summary()}}.
 }
 }
 \author{

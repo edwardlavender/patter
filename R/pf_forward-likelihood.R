@@ -5,7 +5,7 @@
 #' * `timestep`---an `integer` that defines the time step;
 #' * `cell_now`---an `integer` that defines the grid cell(s) of proposal location(s);
 #' * `x_now`,`y_now`---`double`s that define proposal location coordinates;
-#' * `loglik`---a `double` that defines the log-likelihood. At each time step, this begins as a vector of `0`s **that should be progressively updated by each likelihood function**.
+#' * `loglik`---a `double` that defines the log-likelihood. At each time step, this begins as a vector of `0`s (`log(1)`) **that should be progressively updated by each likelihood function**.
 #' @param .obs,.t (optional) The `.obs` [`data.table`] (from [`pf_forward()`]) and an `integer` that defines the time step (used to index `.obs`).
 #' @param .dlist (optional) The `.dlist` `list` (from [`pf_forward()`]).
 #' * For [`acs_filter_land()`], `.dlist` should contain `.dlist$spatial$bathy` and `.dlist$pars$spatna`.
@@ -13,20 +13,20 @@
 #' * For [`pf_lik_ac()`], `.dlist` should contain `.dlist$algorithm$detection_kernels` (from [`acs_setup_detection_kernels()`].
 #' * For [`pf_lik_dc()`], `.dlist` should contain `.dlist$spatial$bathy`.
 #' * For custom likelihood functions, `.dlist` may require other datasets.
-#' @param .drop A `logical` variable that defines whether or not to drop `.particles` rows with zero likelihood.
+#' @param .drop A `logical` variable that defines whether or not to drop `.particles` rows with zero likelihood (-Inf log-likelihood).
 #'
 #' @details
 #' In [`pf_forward()`], the log-likelihood of the data given proposal locations is evaluated using a named `list` of user-defined functions (one for each dataset). Each function must accept a [`data.table`] of proposal locations (`.particles`) alongside the arguments named above (even if they are ignored), evaluate the log-likelihood of the data and return an updated [`data.table`] for the subset of valid proposals and _updated_ log-likelihoods (in the `loglik` column). For computational efficiency, it is desirable that functions are ordered by the extent to which they invalidate proposal locations and that each function drops invalid proposals (since this reduces the number of subsequent likelihood calculations). For faster evaluations, it might also pay to group likelihood terms under a single wrapper function (since this eliminates the need to loop over individual terms in [`.pf_lik()`]).
 #'
 #' The following convenience functions are provided:
-#' * [`acs_filter_land()`] is a binary 'habitability' (land/water) filter. This is useful when the 'stochastic kick' methodology is used to generate proposal locations in systems that include inhospitable habitats. The function calculates the log-likelihood (-Inf, 0) of the 'hospitable' data given sampled particles. Location proposals in `NA` cells on the bathymetry grid (`.dlist$spatial$bathy`) are dropped.
-#' * [`acs_filter_container()`] is recommended for acoustic time series. This is a binary filter that excludes location proposals that are incompatible with acoustic container dynamics, since proposal locations must be within a moveable distance of receiver locations. Note that receivers by default are defined on a grid and the mobility term should account for this if required (see [`check_moorings()`]). [`acs_filter_container()`] is strictly optional but facilitates algorithm convergence by filtering location proposals that are inconsistent with the location of the next detection.
+#' * [`acs_filter_land()`] is a binary 'habitability' (land/water) filter. This is useful if stochastic kicks may simulate movements into inhospitable habitats. The function calculates the log-likelihood (-Inf, 0) of the 'hospitable' data given sampled particles. Location proposals in `NA` cells on the bathymetry grid (`.dlist$spatial$bathy`) are optionally dropped.
+#' * [`acs_filter_container()`] is recommended for acoustic time series. This is a binary filter that excludes location proposals that are incompatible with acoustic container dynamics, since proposal locations must be within a moveable distance of receiver locations. Note that receivers by default are defined on a grid and the mobility term should account for this if required (see [`check_moorings()`]). [`acs_filter_container()`] is strictly optional but may facilitate algorithm convergence by filtering location proposals that are inconsistent with the location of the next detection.
 #' * [`pf_lik_ac()`] calculates the log-likelihood of acoustic data (detection or non detection at each operational receiver), given location proposals. Likelihood evaluations are implemented on a grid using precomputed fields for speed (see [`acs_setup_detection_kernels()`]).
 #' * [`pf_lik_dc()`] calculates the log-likelihood of archival (depth) data, given particle proposals. This is based on a modification of Lavender et al.'s (2023) depth-contour algorithm in which depth observations are considered valid (with uniform probability density) in locations whose depth's lie between a shallow and deep limit (`.particles$bathy - .obs$depth_shallow_eps[.t]` and `.particles$bathy` + `.obs$depth_deep_eps[.t]`) but impossible otherwise. This evaluation is necessarily implemented on a grid.
 #'
 #' In [`pf_forward()`], [`acs_filter_container()`] and [`pf_lik_ac()`] effectively replace the role of [`flapper::ac()`](https://edwardlavender.github.io/flapper/reference/ac.html) function. [`pf_lik_dc()`] effectively replaces the role of [`flapper::dc()`](https://edwardlavender.github.io/flapper/reference/dc.html).
 #'
-#' @return Functions return the `.particles` [`data.table`] for valid proposal locations and updated likelihoods (in the `loglik` column).
+#' @return Likelihood functions should return the `.particles` [`data.table`] with an updated log-likelihood (`loglik`) column, optionally filtered to include valid proposals.
 #'
 #' @inherit pf_forward seealso
 #' @author Edward Lavender
@@ -168,7 +168,7 @@ pf_lik_dc <- function(.particles, .obs, .t, .dlist, .drop) {
                                   .a =  .particles$bathy - .obs$depth_shallow_eps[.t],
                                   .b = .particles$bathy + .obs$depth_deep_eps[.t]))
   # Drop zero likelihoods
-  if (.drop) {
+  if (.drop && anyv(.particles$loglik, -Inf)) {
     loglik <- NULL
     .particles <- .particles[loglik > -Inf, ]
   }

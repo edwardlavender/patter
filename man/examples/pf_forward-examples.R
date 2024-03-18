@@ -2,7 +2,7 @@ require(data.table)
 require(dtplyr)
 require(dplyr, warn.conflicts = FALSE)
 
-#### Set up forward simulation
+#### Set up data list and observations timeline
 # Set up data list(see `?pat_setup_data()`)
 dlist <- dat_dlist()
 # Add AC* algorithm layers
@@ -11,11 +11,19 @@ dlist$algorithm$detection_kernels  <- acs_setup_detection_kernels(dlist)
 # Set up observations (see `?pf_setup_obs()`)
 obs <- dat_obs()
 
-#### Example (1): Implement ACPF algorithm with default options
-## Implement simulation
+#### Define sub-models
+# Define movement model
+# * We will use the following defaults:
+# * `?pf_rpropose_kick()`
+# * `?pf_dpropose()`
+# Define likelihood functions
+# * We will use the following convenience functions:
 pf_lik_acpf <- list(acs_filter_land = acs_filter_land,
                     acs_filter_container = acs_filter_container,
                     pf_lik_ac = pf_lik_ac)
+
+#### Example (1): Implement ACPF algorithm with default options
+## Run simulation
 ssv()
 out_pff <- pf_forward(.obs = obs,
                       .dlist = dlist,
@@ -234,7 +242,7 @@ pf_files_size(file.path(pff_folder))
 unlink(pff_folder, recursive = TRUE)
 
 #### Example (10): Adjust standard `patter-progress` options
-# Use a log.txt file
+# Use a log.txt file (slow)
 log.txt <- tempfile(fileext = ".txt")
 ssv()
 out_pff <- pf_forward(.obs = obs,

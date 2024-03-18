@@ -60,25 +60,25 @@ pxy <- pf_coord(dat_pff(), .bathy = gebco,
 # See `map_*()` functions e.g. `?map_dens()`
 }
 \seealso{
-The forward filtering--backward sampling algorithm samples locations (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
+The particle filter samples locations (particles) that represent the possible locations of an individual through time, accounting for the data and the individual's movement.
 \itemize{
 \item To set up data, use \code{\link[=pat_setup_data]{pat_setup_data()}}.
-\item \code{\link[=pf_forward]{pf_forward()}} implements the forward filter:
+\item To implement the particle filter, use \code{\link[=pf_forward]{pf_forward()}}:
 \itemize{
-\item To set up an observations timeline, use \code{\link[=pf_setup_obs]{pf_setup_obs()}}.
-\item For proposal (movement) models, see \code{\link{pf_propose}}.
-\item For likelihood functions, to evaluate the likelihood of the data at proposal locations, see \code{\link{pf_lik}}.
-\item For sampling functions, to (re)sample plausible proposal locations, see \code{\link{pf_sample}}.
-\item For tuning parameters, see \code{\link{pf_opt}}.
+\item To set up an observations timeline, use \code{\link[=pf_setup_obs]{pf_setup_obs()}};
+\item For proposal (movement) models, see \code{\link{pf_propose}};
+\item For likelihood functions, to evaluate the likelihood of the data at proposal locations, see \code{\link{pf_lik}};
+\item For sampling functions, to (re)sample plausible proposal locations, see \code{\link{pf_sample}};
+\item For tuning parameters, see \code{\link{pf_opt}};
 }
-\item \code{\link[=pf_backward_*]{pf_backward_*()}} refines outputs from the forward filter:
+\item To map patterns of space use, use:
 \itemize{
-\item \code{\link[=pf_backward_killer]{pf_backward_killer()}} removes dead-ends;
-\item \code{\link{pf_backward_sampler}}\verb{_*()} implements the backward sampler;
+\item The backward smoother (TO DO);
+\item \code{\link[=pf_coord]{pf_coord()}} to extract coordinates;
+\item A \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()};
 }
-\item To reconstruct movement paths from particle samples, use \code{\link[=pf_path]{pf_path()}}.
-\item To map emergent patterns of space use, use \code{\link[=pf_coord]{pf_coord()}} plus a \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()}.
-\item For additional utilities, see supporting \verb{pf_*()} functions, such as \code{\link[=pf_files]{pf_files()}}, \code{\link[=pf_files_size]{pf_files_size()}}, \code{\link[=pf_plot_history]{pf_plot_history()}}, \code{\link[=pf_diag_convergence]{pf_diag_convergence()}} and \code{\link[=pf_diag_summary]{pf_diag_summary()}}.
+\item To reconstruct movement paths, use the backward sampler (TO DO).
+\item For additional utilities, see supporting \verb{pf_*()} functions, such as \code{\link[=pf_files]{pf_files()}}, \code{\link[=pf_files_size]{pf_files_size()}}, \code{\link[=pf_plot_history]{pf_plot_history()}} and \code{\link[=pf_diag_summary]{pf_diag_summary()}}.
 }
 }
 \author{

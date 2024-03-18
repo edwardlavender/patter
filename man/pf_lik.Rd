@@ -22,7 +22,7 @@ pf_lik_dc(.particles, .obs, .t, .dlist, .drop)
 \item \code{timestep}---an \code{integer} that defines the time step;
 \item \code{cell_now}---an \code{integer} that defines the grid cell(s) of proposal location(s);
 \item \code{x_now},\code{y_now}---\code{double}s that define proposal location coordinates;
-\item \code{loglik}---a \code{double} that defines the log-likelihood. At each time step, this begins as a vector of \code{0}s \strong{that should be progressively updated by each likelihood function}.
+\item \code{loglik}---a \code{double} that defines the log-likelihood. At each time step, this begins as a vector of \code{0}s (\code{log(1)}) \strong{that should be progressively updated by each likelihood function}.
 }}
 
 \item{.obs, .t}{(optional) The \code{.obs} \code{\link{data.table}} (from \code{\link[=pf_forward]{pf_forward()}}) and an \code{integer} that defines the time step (used to index \code{.obs}).}
@@ -36,10 +36,10 @@ pf_lik_dc(.particles, .obs, .t, .dlist, .drop)
 \item For custom likelihood functions, \code{.dlist} may require other datasets.
 }}
 
-\item{.drop}{A \code{logical} variable that defines whether or not to drop \code{.particles} rows with zero likelihood.}
+\item{.drop}{A \code{logical} variable that defines whether or not to drop \code{.particles} rows with zero likelihood (-Inf log-likelihood).}
 }
 \value{
-Functions return the \code{.particles} \code{\link{data.table}} for valid proposal locations and updated likelihoods (in the \code{loglik} column).
+Likelihood functions should return the \code{.particles} \code{\link{data.table}} with an updated log-likelihood (\code{loglik}) column, optionally filtered to include valid proposals.
 }
 \description{
 These are likelihood functions for the forward simulation. \code{\link[=pf_forward]{pf_forward()}} expects a named \code{list} of likelihood functions that evaluate the log-likelihood of each dataset given location proposals. Convenience functions are provided that calculate the log-likelihood of acoustic and archival data, given location proposals.
@@ -49,8 +49,8 @@ In \code{\link[=pf_forward]{pf_forward()}}, the log-likelihood of the data given
 
 The following convenience functions are provided:
 \itemize{
-\item \code{\link[=acs_filter_land]{acs_filter_land()}} is a binary 'habitability' (land/water) filter. This is useful when the 'stochastic kick' methodology is used to generate proposal locations in systems that include inhospitable habitats. The function calculates the log-likelihood (-Inf, 0) of the 'hospitable' data given sampled particles. Location proposals in \code{NA} cells on the bathymetry grid (\code{.dlist$spatial$bathy}) are dropped.
-\item \code{\link[=acs_filter_container]{acs_filter_container()}} is recommended for acoustic time series. This is a binary filter that excludes location proposals that are incompatible with acoustic container dynamics, since proposal locations must be within a moveable distance of receiver locations. Note that receivers by default are defined on a grid and the mobility term should account for this if required (see \code{\link[=check_moorings]{check_moorings()}}). \code{\link[=acs_filter_container]{acs_filter_container()}} is strictly optional but facilitates algorithm convergence by filtering location proposals that are inconsistent with the location of the next detection.
+\item \code{\link[=acs_filter_land]{acs_filter_land()}} is a binary 'habitability' (land/water) filter. This is useful if stochastic kicks may simulate movements into inhospitable habitats. The function calculates the log-likelihood (-Inf, 0) of the 'hospitable' data given sampled particles. Location proposals in \code{NA} cells on the bathymetry grid (\code{.dlist$spatial$bathy}) are optionally dropped.
+\item \code{\link[=acs_filter_container]{acs_filter_container()}} is recommended for acoustic time series. This is a binary filter that excludes location proposals that are incompatible with acoustic container dynamics, since proposal locations must be within a moveable distance of receiver locations. Note that receivers by default are defined on a grid and the mobility term should account for this if required (see \code{\link[=check_moorings]{check_moorings()}}). \code{\link[=acs_filter_container]{acs_filter_container()}} is strictly optional but may facilitate algorithm convergence by filtering location proposals that are inconsistent with the location of the next detection.
 \item \code{\link[=pf_lik_ac]{pf_lik_ac()}} calculates the log-likelihood of acoustic data (detection or non detection at each operational receiver), given location proposals. Likelihood evaluations are implemented on a grid using precomputed fields for speed (see \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}).
 \item \code{\link[=pf_lik_dc]{pf_lik_dc()}} calculates the log-likelihood of archival (depth) data, given particle proposals. This is based on a modification of Lavender et al.'s (2023) depth-contour algorithm in which depth observations are considered valid (with uniform probability density) in locations whose depth's lie between a shallow and deep limit (\code{.particles$bathy - .obs$depth_shallow_eps[.t]} and \code{.particles$bathy} + \code{.obs$depth_deep_eps[.t]}) but impossible otherwise. This evaluation is necessarily implemented on a grid.
 }
@@ -58,25 +58,25 @@ The following convenience functions are provided:
 In \code{\link[=pf_forward]{pf_forward()}}, \code{\link[=acs_filter_container]{acs_filter_container()}} and \code{\link[=pf_lik_ac]{pf_lik_ac()}} effectively replace the role of \href{https://edwardlavender.github.io/flapper/reference/ac.html}{\code{flapper::ac()}} function. \code{\link[=pf_lik_dc]{pf_lik_dc()}} effectively replaces the role of \href{https://edwardlavender.github.io/flapper/reference/dc.html}{\code{flapper::dc()}}.
 }
 \seealso{
-The forward filtering--backward sampling algorithm samples locations (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
+The particle filter samples locations (particles) that represent the possible locations of an individual through time, accounting for the data and the individual's movement.
 \itemize{
 \item To set up data, use \code{\link[=pat_setup_data]{pat_setup_data()}}.
-\item \code{\link[=pf_forward]{pf_forward()}} implements the forward filter:
+\item To implement the particle filter, use \code{\link[=pf_forward]{pf_forward()}}:
 \itemize{
-\item To set up an observations timeline, use \code{\link[=pf_setup_obs]{pf_setup_obs()}}.
-\item For proposal (movement) models, see \code{\link{pf_propose}}.
-\item For likelihood functions, to evaluate the likelihood of the data at proposal locations, see \code{\link{pf_lik}}.
-\item For sampling functions, to (re)sample plausible proposal locations, see \code{\link{pf_sample}}.
-\item For tuning parameters, see \code{\link{pf_opt}}.
+\item To set up an observations timeline, use \code{\link[=pf_setup_obs]{pf_setup_obs()}};
+\item For proposal (movement) models, see \code{\link{pf_propose}};
+\item For likelihood functions, to evaluate the likelihood of the data at proposal locations, see \code{\link{pf_lik}};
+\item For sampling functions, to (re)sample plausible proposal locations, see \code{\link{pf_sample}};
+\item For tuning parameters, see \code{\link{pf_opt}};
 }
-\item \code{\link[=pf_backward_*]{pf_backward_*()}} refines outputs from the forward filter:
+\item To map patterns of space use, use:
 \itemize{
-\item \code{\link[=pf_backward_killer]{pf_backward_killer()}} removes dead-ends;
-\item \code{\link{pf_backward_sampler}}\verb{_*()} implements the backward sampler;
+\item The backward smoother (TO DO);
+\item \code{\link[=pf_coord]{pf_coord()}} to extract coordinates;
+\item A \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()};
 }
-\item To reconstruct movement paths from particle samples, use \code{\link[=pf_path]{pf_path()}}.
-\item To map emergent patterns of space use, use \code{\link[=pf_coord]{pf_coord()}} plus a \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()}.
-\item For additional utilities, see supporting \verb{pf_*()} functions, such as \code{\link[=pf_files]{pf_files()}}, \code{\link[=pf_files_size]{pf_files_size()}}, \code{\link[=pf_plot_history]{pf_plot_history()}}, \code{\link[=pf_diag_convergence]{pf_diag_convergence()}} and \code{\link[=pf_diag_summary]{pf_diag_summary()}}.
+\item To reconstruct movement paths, use the backward sampler (TO DO).
+\item For additional utilities, see supporting \verb{pf_*()} functions, such as \code{\link[=pf_files]{pf_files()}}, \code{\link[=pf_files_size]{pf_files_size()}}, \code{\link[=pf_plot_history]{pf_plot_history()}} and \code{\link[=pf_diag_summary]{pf_diag_summary()}}.
 }
 }
 \author{
