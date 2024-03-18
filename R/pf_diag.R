@@ -48,35 +48,26 @@ pf_diag_summary <- function(.history, ...) {
     as.data.table()
 }
 
-#' @title PF: particle diagnostics (internal)
+#' @title PF: particle diagnostics
 #' @description These are internal functions that calculate diagnostic statistics from selected particle samples.
 #'
 #' @details
 #' # Particle diagnostics
 #'
 #' Particle diagnostics measure how the diversity of particle samples evolves through time. Current diagnostic metrics include the number of unique particle samples at each time step and the effective sample size. Particle diagnostics have multiple uses:
-#' * **Convergence.** Diagnostics from the forward run can indicate the causes of convergence failures. This is possible because [`pf_forward()`] keeps track of diagnostics at every stage of the algorithm, recording at each time step the diversity of particle proposals, the diversity remaining after each likelihood function evaluation and the diversity following (re)-sampling. See [`pf_particles-class`] and `vignette("d-demos", package = "patter")` for an illustration.
+#' * **Convergence.** We formerly tracked particle diagnostics in [`pf_forward()`] to facilitate identification of the causes of convergence failures, but this is not currently implemented.
 #' * **Sampling.** Diagnostics indicate sampling sufficiency. In general, a low ratio of the number of unique particles to the total number of particles indicates effective coverage of the possible locations of an individual.
-#' * **Particle degeneracy.** Diagnostics measure particle degeneracy, i.e., the decay in the number of unique particles through time as trajectories are rendered invalid by observations. Comparison of particle diagnostics between [`pf_backward_killer()`] and [`pf_backward_sampler`]`_*()` is particularly valuable in this context. Both functions perform a backward refinement of particles from [`pf_forward()`]; however, the former is simple but fast, while the latter is sophisticated but expensive. Tracking particle diagnostics can indicate whether [`pf_backward_sampler`]`_*()` is worth the cost.
+#' * **Particle degeneracy.** Diagnostics measure particle degeneracy, i.e., the decay in the number of unique particles through time as trajectories are rendered invalid by observations.
 #'
 #' # Internal routines
 #'
 #' * [`.pf_diag_any()`] identifies whether or not any particle samples remain;
 #' * [`.pf_diag_nu()`] counts the number of unique particle samples (grid cells);
-#' * [`.pf_diag_ess()`] calculates effective sample size from normalised particle weights;
-#' * [`.pf_diag()`] is a wrapper function that calculates diagnostics;
-#' * [`.pf_diag_bind()`] binds `list`s of diagnostics together;
-#' * [`.pf_diag_collect()`] wraps [`.pf_diag_bind()`] and assigns required columns;
-#'
-#' # Exported wrappers
-#'
-#' In [`pf_forward()`], convergence diagnostics are necessarily calculated on the fly by [`.pf_diag`]`_()` functions. To collate convergence diagnostics from [`pf_forward()`], use [`pf_diag_convergence()`]. However, note that the forward simulation necessitates the calculation of multiple diagnostics at each time step and [`pf_diag_convergence()`] attempts to collate all diagnostics in memory, which is not memory safe.
-#'
-#' To collate summary diagnostics from [`pf_forward()`] or [`pf_backward_*()`], use [`pf_diag_summary()`]. This function calculates a single set of diagnostics is calculated for each time step, so this function is (effectively) memory safe.
+#' * [`.pf_diag_ess()`] calculates effective sample size from normalised particle (log) weights;
 #'
 #' @seealso
-#' * [`pf_forward()`] and [`pf_backward_*()`] implement the forward simulation and the backward pass;
-#' * [`pf_diag_convergence()`] and [`pf_diag_summary()`] collect diagnostics;
+#' * [`pf_forward()`] and associates implement particle filtering algorithms;
+#' * [`pf_diag_summary()`] summarises diagnostics;
 #' * [`.pf_diag`]`_()` functions are internal routines that calculate diagnostic statistics;
 #'
 #' @author Edward Lavender

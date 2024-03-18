@@ -13,18 +13,20 @@
 #'
 #' The function is normally used to to create an ordered `list` of the `parquet` files that contain particle samples, but it can be used in any situation with files named as described above (e.g., to `list` `png` files from [`pf_plot_history()`]).
 #'
-#' At the time of writing, [`pf_files()`] cannot be used to list particle-diagnostic files from [`pf_forward()`] and should only be used for particle samples. However, [`pf_files_size()`] can be used to estimate the total file size in any directory.
+#' [`pf_files_size()`] can be used to estimate the total file size in any directory.
 #'
 #' @return
 #' * [`pf_files()`] returns an ordered `list` of file paths.
 #' * [`pf_files_size()`] returns a number.
 #'
 #' @examples
-#' # Use `pf_files()` to list files from `pf_forward()`
+#' # Use `pf_files()` to list files
+#' # * Use example files from `pf_forward()`
 #' pff_folder <- dat_pff_src()
 #' files <- pf_files(.sink = pff_folder)
 #'
 #' # Use `pf_files_size()` to calculate file size
+#' pf_files_size(pff_folder)
 #' pf_files_size(pff_folder, .unit = "GB")
 #' pf_files_size(pff_folder, .unit = "TB")
 #'

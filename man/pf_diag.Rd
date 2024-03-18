@@ -51,8 +51,8 @@ stopifnot(isTRUE(all.equal(d1, d4)))
 }
 \seealso{
 \itemize{
-\item \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_*]{pf_backward_*()}} implement the forward simulation and the backward pass;
-\item \code{\link[=pf_diag_convergence]{pf_diag_convergence()}} and \code{\link[=pf_diag_summary]{pf_diag_summary()}} collect diagnostics;
+\item \code{\link[=pf_forward]{pf_forward()}} and associates implement particle filtering algorithms;
+\item \code{\link[=pf_diag_summary]{pf_diag_summary()}} summarises diagnostics;
 \item \code{\link{.pf_diag}}\verb{_()} functions are internal routines that calculate diagnostic statistics;
 }
 }
