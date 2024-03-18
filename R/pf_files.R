@@ -21,8 +21,8 @@
 #'
 #' @examples
 #' # Use `pf_files()` to list files from `pf_forward()`
-#' pff_folder <- dat_pff_src(.folder = NULL)
-#' files      <- pf_files(.sink = pff_folder)
+#' pff_folder <- dat_pff_src()
+#' files <- pf_files(.sink = pff_folder)
 #'
 #' # Use `pf_files_size()` to calculate file size
 #' pf_files_size(pff_folder, .unit = "GB")

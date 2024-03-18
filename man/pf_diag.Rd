@@ -15,16 +15,6 @@ pf_diag_summary(.history, ...)
 \item In \code{\link[=pf_diag_convergence]{pf_diag_convergence()}}, \code{...} is passed to \code{\link[arrow:open_dataset]{arrow::open_dataset()}}.
 \item In \code{\link[=pf_diag_summary]{pf_diag_summary()}}, \code{...} is passed to \code{\link[=.pf_history_dt]{.pf_history_dt()}}. \code{.collect}, if used, is necessarily \code{TRUE} and should not be specified.
 }}
-
-\item{.sink}{For \code{\link[=pf_diag_convergence]{pf_diag_convergence()}}, \code{.sink} specifies particle diagnostics. The following inputs are accepted:
-\itemize{
-\item A \code{\linkS4class{pf_particles}} object;
-\item A \code{character} string that defines the directory containing \code{parquet} files, specified in one of the following formats:
-\itemize{
-\item \code{{.record$sink}} (as specified in \code{\link[=pf_forward]{pf_forward()}});
-\item \verb{\{.record$sink\}/diagnostics/};
-}
-}}
 }
 \value{
 \verb{pf_diag_*()} functions return \code{\link{data.table}}s.

@@ -112,7 +112,8 @@ pf_setup_obs <- function(.dlist,
                        .mobility = .mobility)
 
   #### Add movement parameters
-  obs[, mobility := mobility]
+  mobility <- NULL
+  obs[, mobility := .mobility]
 
   #### Add acoustic data
   if (!is.null(acoustics)) {

@@ -35,7 +35,9 @@ test_that("Distribution functions work", {
   rangcrw(.n = 1, .prior = 10, .rho = 1) |> expect_equal(10)
 
   #### Test rangcrw() returns correct correlation (with some error)
+  ssf()
   a1 <- rangcrw(.n = 1e6)
+  ssf()
   a2 <- rangcrw(.n = 1e6, .prior = a1, .rho = 0.999)
   rho <- circular::cor.circular(degrees(a1), degrees(a2))
   expect_true(all.equal(0.999, rho, tolerance = 0.01))

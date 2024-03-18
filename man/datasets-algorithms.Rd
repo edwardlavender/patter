@@ -22,9 +22,6 @@ dat_pff_src()
 
 dat_coa()
 }
-\arguments{
-\item{.folder}{For \code{\link[=dat_pff_src]{dat_pff_src()}}, \code{.folder} is \code{NULL} or a \code{character} that defines the name of the folder in which outputs are stored (\code{history} for particle samples or \code{diagnostics} for particle diagnostics). \code{NULL} returns the path to the directory containing both \verb{history/} and \verb{diagnostics/}. See the documentation for \code{\link[=pf_forward]{pf_forward()}} and \code{\linkS4class{pf_particles}} objects for further details.}
-}
 \value{
 The functions return a dataset or a \code{character} string that defines the path to a dataset. See the corresponding function documentation for full details.
 }

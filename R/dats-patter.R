@@ -2,8 +2,6 @@
 #'
 #' @description These functions load example outputs from key [`patter`] functions, including those required to implement the forward filtering–backward sampling algorithm. They are included in the package to streamline function examples and tests.
 #'
-#' @param .folder For [`dat_pff_src()`], `.folder` is `NULL` or a `character` that defines the name of the folder in which outputs are stored (`history` for particle samples or `diagnostics` for particle diagnostics). `NULL` returns the path to the directory containing both `history/` and `diagnostics/`. See the documentation for [`pf_forward()`] and [`pf_particles-class`] objects for further details.
-#'
 #' @details
 #' * [`dat_dlist()`] reads example output from [`pat_setup_data()`];
 #' * [`dat_pff()`] reads an example output from [`pf_setup_obs()`];

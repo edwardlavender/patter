@@ -179,7 +179,7 @@ NULL
 
 # Collate `pf_forward()` outputs
 .pf_forward_output <- function(.rerun, .start, .history, .convergence) {
-  .rerun$time <- append(.rerun$time, call_timings(.start = .start))
+  .rerun$time <- rbind(.rerun$time, call_timings(.start = .start))
   out  <- list(history = .history,
                convergence = .convergence,
                time = .rerun$time)

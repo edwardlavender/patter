@@ -34,7 +34,7 @@ test_that("pf_forward() works", {
   expect_true(all(names(out_pff) %in% elements & elements %in% names(out_pff)))
   check_inherits(out_pff$history[[1]], "data.table")
   expect_true(out_pff$convergence)
-  check_inherits(out_pff$time, "list")
+  check_inherits(out_pff$time, "data.table")
   expect_true(all(names(out_pff$time[[1]]) %in% c("start", "end", "duration")))
 
   #### Validate .rpropose implementation
@@ -111,7 +111,7 @@ test_that("pf_forward() works", {
                         .rerun_from = 2L,
                         .record = pf_opt_record(.save = TRUE))
   expect_length(out_pff$history, nrow(obs))
-  expect_length(out_pff$time, 2L)
+  expect_true(nrow(out_pff$time) == 2L)
 
   #### Validate .record implementation
   # Validate .save = FALSE
@@ -133,7 +133,7 @@ test_that("pf_forward() works", {
   cl_lapply(seq_len(nrow(obs)), function(i) {
     expect_equal(
       out_pff$history[[i]],
-      arrow::read_parquet(file.path(sink, "history", paste0(i, ".parquet")))
+      arrow::read_parquet(file.path(sink, paste0(i, ".parquet")))
     )
   })
   unlink(sink, recursive = TRUE)
@@ -149,7 +149,7 @@ test_that("pf_forward() works", {
                                                 .cols = cols))
   cl_lapply(seq_len(nrow(obs)), function(i) {
     d1 <-  out_pff$history[[i]]
-    d2 <-   arrow::read_parquet(file.path(sink, "history", paste0(i, ".parquet")))
+    d2 <-   arrow::read_parquet(file.path(sink, paste0(i, ".parquet")))
     # Confirm objects are identical
     expect_equal(d1, d2)
     # Confirm column names are defined by cols

@@ -9,13 +9,22 @@ test_that("coa() works", {
     ungroup() |>
     as.data.table()
 
+  # Define moorings
+  moorings <-
+    dat_moorings |>
+    as.data.table() |>
+    mutate(interval = lubridate::interval(receiver_start, receiver_end)) |>
+    filter(lubridate::int_overlaps(interval,
+                                   lubridate::interval(min(acc$timestamp), max(acc$timestamp)))) |>
+    as.data.table()
+
   # Prepare data
   d_utm <- pat_setup_data(.acoustics = acc,
-                          .moorings = dat_moorings,
+                          .moorings = moorings,
                           .bathy = dat_gebco(),
                           .lonlat = FALSE)
   d_ll  <- pat_setup_data(.acoustics = acc,
-                          .moorings = dat_moorings,
+                          .moorings = moorings,
                           .bathy = terra::project(dat_gebco(), "EPSG:4236"),
                           .lonlat = TRUE)
   acc <-

@@ -1,10 +1,5 @@
 #' @title PF: particle diagnostics
 #' @description These functions collate particle diagnostics from [`pf_forward()`] and [`pf_backward_*()`].
-#' @param .sink For [`pf_diag_convergence()`], `.sink` specifies particle diagnostics. The following inputs are accepted:
-#' * A [`pf_particles-class`] object;
-#' * A `character` string that defines the directory containing `parquet` files, specified in one of the following formats:
-#'    * `{.record$sink}` (as specified in [`pf_forward()`]);
-#'    * `{.record$sink}/diagnostics/`;
 #'
 #' @param .history For [`pf_diag_summary()`], `.history` expects particle samples, provided in any format accepted by [`.pf_history_dt()`].
 #'
