@@ -25,7 +25,7 @@ pf_plot_history(
 
 \item{.forward}{Particle samples, provided in any format accepted by \code{\link[=.pf_history_list]{.pf_history_list()}}. Particle samples should be from \code{\link[=pf_forward]{pf_forward()}} if \code{.backward} is supplied. \code{cell_now}, \code{x_now} and \code{y_now} columns are required.}
 
-\item{.backward}{(optional) If .\code{forward} contains particle samples from the forward run, \code{.backward} can contain particle samples from the backward pass (e.g., \code{\link[=pf_backward_killer]{pf_backward_killer()}}), provided in any format accepted by \code{\link[=.pf_history_list]{.pf_history_list()}}. The \code{cell_now} column is required.}
+\item{.backward}{(optional) If .\code{forward} contains particle samples from the forward run, \code{.backward} can contain particle samples from a backward simulation, provided in any format accepted by \code{\link[=.pf_history_list]{.pf_history_list()}}. The \code{cell_now} column is required.}
 
 \item{.steps}{\code{NULL} or an \code{integer} vector of the time steps for which to map particle samples. \code{NULL} specifies all time steps.}
 
@@ -50,14 +50,10 @@ The function is called for its side effects. It returns \code{invisible(TRUE)}.
 This function maps particle histories for selected time steps or entire time series and can be used to create animations.
 }
 \details{
-For each \code{.step}, \code{\link[terra:plot]{terra::plot()}} is used to plot \code{.dlist$spatial$bathy}. Particle samples in \code{.forward} are added onto the grid via \code{\link[graphics:points]{graphics::points()}}. If \code{.backward} is supplied, particles in \code{.forward} should be derived from the forward run. Particles in \code{.forward} but not \code{.backward} (i.e., dead ends) are shown in red (unless \code{.add_forward$col} is overridden).
+For each \code{.step}, \code{\link[terra:plot]{terra::plot()}} is used to plot \code{.dlist$spatial$bathy}. Particle samples in \code{.forward} are added onto the grid via \code{\link[graphics:points]{graphics::points()}}. Particle weights are currently ignored. If \code{.backward} is supplied, particles in \code{.forward} should be derived from the forward run. Particles in \code{.forward} but not \code{.backward} (i.e., dead ends) are shown in red (unless \code{.add_forward$col} is overridden).
 
 This function replaces \href{https://edwardlavender.github.io/flapper/reference/pf_plot_history.html}{\code{flapper::pf_plot_history()}}.
 }
-\section{Warning}{
-This function plots all particles, irrespective of their weights.
-}
-
 \examples{
 #### Set up
 # Define directories
@@ -69,7 +65,7 @@ dir.create(mp4s, recursive = TRUE)
 # Define data list
 dlist <- dat_dlist()
 
-#### Example (1): Plot selected samples (from the forward run)
+#### Example (1): Plot selected samples (from the forward simulation)
 # Particles can be provided in any format accepted by `?.pf_history_list()`
 # Here, we use precomputed samples:
 # * Use particles in memory
@@ -89,13 +85,11 @@ pf_plot_history(.dlist = dlist,
                 .forward = pf_files(dat_pff_src()),
                 .steps = 1L)
 
-#### Example (2): Plot selected samples (from the backward pass)
-pf_plot_history(.dlist = dlist,
-                .forward = dat_pff(),
-                .steps = 1L)
+#### Example (2): Plot selected samples (from the backward simulation)
+# (TO DO)
 
-#### Example (3) Plot particles from both forward and backward runs
-# (TO REVISE)
+#### Example (3) Plot particles from both forward and backward simulation
+# (TO DO)
 
 #### Example (4): Plot multiple time steps
 # Specify selected steps
@@ -128,7 +122,7 @@ pf_plot_history(.dlist = dlist,
                 .add_forward = list(pch = 21, cex = 0.5),
                 .png = list(filename = frames))
 
-#### Example (7): make animations
+#### Example (7): Make animations
 if (rlang::is_installed("av")) {
 
   # There are lots of tools to create animations:

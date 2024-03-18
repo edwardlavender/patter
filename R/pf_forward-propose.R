@@ -10,7 +10,7 @@
 #'
 #' @param .particles,.drop Additional required arguments for all `.rpropose` and/or `.dpropose` functions:
 #' * `.particles`---a [`data.table`] of particle samples from the previous time step;
-#' #' * `.drop`---for `.dpropose`, `.drop` is a `logical` variable that defines whether or not to drop particles with zero density;
+#' * `.drop`---for `.dpropose`, `.drop` is a `logical` variable that defines whether or not to drop particles with zero density;
 #'
 #' @param .rkick,.dkick,... Additional arguments for [`pf_rpropose_kick()`] and [`pf_dpropose()`] respectively.
 #' * `.rkick` is a `function`, like [`rkick()`], that simulates new locations;
@@ -31,11 +31,11 @@
 #'
 #' The `.rpropose` argument in [`pf_forward()`] expects a stochastic-kick routine and [`pf_rpropose_kick()`] is the default. This is used to simulate proposal locations by 'kicking' particles into new locations as specified by a movement model (`.rkick`).
 #'
-#' [`pf_rpropose_kick()`] is a simple wrapper for [`rkick()`] that passes the `.particles` [`data.table`] to the function as required and then updates `.particles` with simulated locations (`x_now` and `y_now` columns). Coordinates are defined on a continuous domain, as required to ensure consistency among routines, but grid cells IDs (on `.dlist$spatial$bathy`) are included in the output (in a `cell_now` column). (Proposals beyond the grid are silently dropped.) This means that the simulation of stochastic kicks remains accurate irrespective of the spatial resolution of likelihood evaluations (i.e., whether or not likelihoods are evaluated at particle locations or on a grid). [`rkick()`] itself is a wrapper for `.rstep` = [`rstep`] that accepts (but silently ignores) the `.obs`, `.t` and `.dlist` objects (except `.dlist$pars$lonlat`, which is passed to the `.lonlat` argument of `.rstep`). In [`pf_rpropose_kick`], arguments passed via `...` are passed to `.rkick`, which under default settings means `.rstep = ` = [`rstep`] (i.e., `.rlen` and `.rang` or additional arguments passed to those arguments). At the time of writing, correlated random walks are not easy for users to implement, but this should improve in future.
+#' [`pf_rpropose_kick()`] is a simple wrapper for [`rkick()`] that passes the `.particles` [`data.table`] to the function as required and then updates `.particles` with simulated locations (`x_now` and `y_now` columns). Stochastic kicks are implemented iteratively to avoid inhospitable habitats (`NA`s on `.dlist$spatial$bathy`). Coordinates are defined on a continuous domain, as required to ensure consistency among routines, but grid cells IDs (on `.dlist$spatial$bathy`) are included in the output (in a `cell_now` column). (Proposals beyond the grid that remain after all iterations are silently dropped.) This means that the simulation of stochastic kicks remains accurate irrespective of the spatial resolution of likelihood evaluations (i.e., whether or not likelihoods are evaluated at particle locations or on a grid). [`rkick()`] itself is a wrapper for `.rstep` = [`rstep`] that accepts (but silently ignores) the `.obs`, `.t` and `.dlist` objects (except `.dlist$pars$lonlat`, which is passed to the `.lonlat` argument of `.rstep`). In [`pf_rpropose_kick`], arguments passed via `...` are passed to `.rkick`, which under default settings means `.rstep = ` = [`rstep`] (i.e., `.rlen` and `.rang` or additional arguments passed to those arguments). Under the default routines, particles are kicked in two dimensions.
 #'
-#' In [`pf_forward()`], if stochastic kicks fail to produce a sufficient number of valid particle samples, [`pf_rpropose_reachable()`] may be called under-the-hood for directed sampling (see [`pf_opt_trial()`]). For selected particles, this function identifies the set of reachable locations, by drawing a circle of radius `.obs$mobility[.t]` around each particle at time `.t`. The coordinates of reachable locations (within these circles) are defined at the centroids of each grid cell. We evaluate the likelihood of reachable locations and the probability density of moving into each location and then sample locations according to the (normalised) product of these two variables. The `.dpropose` argument in [`pf_forward()`] is required to calculate the probability density of moving between locations. `.dpropose` is a function that must accept the usual `.particles`, `.obs`, `.t`, `.dlist` and `...` arguments and return a [`data.table`], for the subset of valid locations, with a `dens` column that defines probability densities. The function must be able to handle empty [`data.table`]s, which are passed down the call stack if all proposal (reachable) locations have zero likelihood. Note that since in [`pf_rpropose_reachable()`] coordinates are necessarily defined on a grid, a discretisation error is introduced that can prevent movement into valid cells, even if the edges of those cells are reachable, since coordinates are defined at cell centres. In general, this error should be negligible, but it may be important with low-resolution grids and/or in situations where there are very few valid locations. A possible solution in this instance is to increase `.obs$mobility` and the `.mobility` (maximum moveable distance) parameter for `.dpropose` (but not `.rpropose`) by half a grid cell. This is not currently implemented automatically.
+#' In [`pf_forward()`], if stochastic kicks fail to produce a sufficient number of valid particle samples, [`pf_rpropose_reachable()`] may be called under-the-hood for directed sampling (see [`pf_opt_trial()`]). For selected particles, this function identifies the set of reachable locations, by drawing a circle of radius `.obs$mobility[.t]` around each particle at time `.t`. The coordinates of reachable locations (within these circles) are defined at the centroids of each grid cell. We evaluate the likelihood of reachable locations and the log-probability density of moving into each location and then sample locations according to the (normalised) product of the likelihoods and movement densities. The `.dpropose` argument in [`pf_forward()`] is required to calculate the log-probability density of moving between locations. `.dpropose` is a function that must accept the usual `.particles`, `.obs`, `.t`, `.dlist` and `...` arguments and return a [`data.table`], for the subset of valid locations, with a `logdens` column that defines log-probability densities. The function must be able to handle empty [`data.table`]s, which are passed down the call stack if all proposal (reachable) locations have negative infinity log-likelihood. Note that since in [`pf_rpropose_reachable()`] coordinates are necessarily defined on a grid, a discretisation error is introduced that can prevent movement into valid cells, even if the edges of those cells are reachable, since coordinates are defined at cell centres. In general, this error should be negligible, but it may be important with low-resolution grids and/or in situations where there are very few valid locations. A possible solution in this instance is to increase `.obs$mobility` and the `.mobility` (maximum moveable distance) parameter for `.dpropose` (but not `.rpropose`) by half a grid cell. This is not currently implemented automatically.
 #'
-#' [`pf_dpropose()`] is the default `.dpropose` routine. Under default settings, this is a simple wrapper for [`dkick()`] that handles empty [data.table]s or passes the relevant coordinate columns, for the accepted locations from the previous time step ((`x_past`, `y_past`) in `.particles`) and the proposal locations for the current time step ((`x_now`, `y_now`) in `.particles`) to `.dkick`. Under default settings, `.dkick =` [`dkick`]. [`dkick()`] wraps itself wraps a `.dstep` function such as [`dstep()`], accepting (but silently ignoring) the `.obs`, `.t` and `.dlist` arguments (except `.dlist$pars$lonlat`). In this situation, `...` arguments are passed to `.dstep`.
+#' [`pf_dpropose()`] is the default `.dpropose` routine. Under default settings, this is a simple wrapper for [`dkick()`] that handles empty [data.table]s or passes the relevant coordinate columns, for the accepted locations from the previous time step ((`x_past`, `y_past`) in `.particles`) and the proposal locations for the current time step ((`x_now`, `y_now`) in `.particles`) to `log(.dkick(...))`. Under default settings, `.dkick =` [`dkick`]. [`dkick()`] wraps itself wraps a `.dstep` function such as [`dstep()`], accepting (but silently ignoring) the `.obs`, `.t` and `.dlist` arguments (except `.dlist$pars$lonlat`). In this situation, `...` arguments are passed to `.dstep`.
 #'
 #' In [`pf_forward()`], use `.rpropose` and `.dpropose` to write fully custom routines, if required. Use `.rargs` and `.dargs` to customise the default routines. For movement models that require `.obs`, `.t` and `.dlist`, use custom `.rkick` and `.dkick` functions. Otherwise, you can simply customise `.rstep` and `.dstep` (for instance, by revising the models used to simulate step lengths and turning angles, or the parameters passed to those models).
 #'
@@ -49,7 +49,7 @@
 #'    * `cell_now`---an `integer` vector of cell IDs;
 #'    * `x_now` and `y_now`---`numeric` vectors of coordinates;
 #' * `.dpropose`:
-#'    * `dens`---a `numeric` vector that defines the probability density of movements from `(x_past, y_past)` to `(x_now, y_now)`;
+#'    * `logdens`---a `numeric` vector that defines the log-probability density of movements from `(x_past, y_past)` to `(x_now, y_now)`;
 #'
 #' @inherit pf_forward seealso
 #' @author Edward Lavender
@@ -232,6 +232,7 @@ pf_dpropose <- function(.particles, .obs, .t, .dlist, .drop, .dkick = dkick, ...
 
   # Handle empty data.tables
   # * These result when all proposals have zero likelihood
+  logdens <- NULL
   if (fnrow(.particles) == 0L) {
     logdens <- NULL
     return(.particles[, logdens := numeric()])
@@ -242,13 +243,9 @@ pf_dpropose <- function(.particles, .obs, .t, .dlist, .drop, .dkick = dkick, ...
                                        .xy1 = .particles[, list(x_now, y_now)],
                                        ...,
                                        .obs = .obs, .t = .t, .dlist = .dlist))]
-    # Isolate particles with positive densities
+    # Drop particles with zero density
     if (.drop && anyv(.particles$logdens, -Inf)) {
-      .particles <-
-        .particles |>
-        lazy_dt() |>
-        filter(logdens > -Inf) |>
-        as.data.table()
+      .particles <- .particles[logdens > -Inf, ]
     }
     .particles
   }

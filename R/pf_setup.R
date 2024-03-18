@@ -1,12 +1,12 @@
 #' @title PF: set up movement datasets
-#' @description This function builds a timeline of observations for particle filtering. The forward filter ([`pf_forward()`]) iterates over this timeline. At each time step, the algorithm proposes candidate locations for an individual, evaluates the likelihood of each observation (e.g., acoustic and/or archival data) in the timeline at the current time step and optionally (re)samples valid locations using a set of weights that incorporate the likelihood.
+#' @description This function builds a timeline of observations for particle filtering ([`pf_forward()`]). The filter  iterates over this timeline. At each time step, the filter proposes candidate locations for an individual, evaluates the likelihood of each contemporary observation (e.g., acoustic and/or archival data) in the timeline and optionally (re)samples valid locations using a set of weights that incorporate the likelihood.
 #'
 #' @param .dlist A named `list` of data and parameters from [`pat_setup_data()`]. This function requires:
 #' * (optional) `.dlist$data$acoustics`, with the following columns: `timestamp` and `receiver_id`.
 #' * (optional) `.dlist$data$archival`, with the following columns: `timestamp` and `depth`.
 #' * (optional) If `.dlist$data$acoustics` is provided, `.dlist$algorithm$detection_overlaps` is required if there are receivers with overlapping detection containers;
 #'
-#' At least one dataset must be provided. Data should be given **for a single individual**. Other datasets are not currently integrated within this function but can be included afterwards (see Details).
+#' At least one dataset (`.dlist$data$acoustics` and/or `.dlist$data$archival`) must be provided. Data should be given **for a single individual**. Other datasets are not currently integrated within this function but can be included afterwards (see Details).
 #'
 #' @param .trim If both acoustic and archival data are supplied, `.trim` is `logical` variable that defines whether or not to trim the time series to the time period for which they overlap.
 #' @param .step An character, passed to [`lubridate::period()`], [`lubridate::round_date()`] and [`seq()`] that defines the duration between sequential time steps (e.g., `"2 mins"`).
@@ -39,12 +39,13 @@
 #' At the time of writing, this function only supports acoustic and archival data. However, ancillary observations can easily be included in [`pf_forward()`] as extra columns in this [`data.table`].
 #'
 #' @return The function returns a [`data.table`] with the following columns:
-#' * `timestep`---an `integer` that defines the time step;
+#' * `timestep`---an `integer` vector that defines the time step;
 #' * `timestamp`---a regular sequences of `POSIXct` time stamps;
+#' * `mobility`---a `numeric` vector that defines the mobility;
 #'
 #' If acoustic data is provided, the following column(s) are also included:
 #' * `array_id`---an `integer` vector that uniquely distinguishes each array design;
-#' * `detection`---an `integer` that distinguishes the time steps at which detections were (1) or were not (0) recorded;
+#' * `detection`---an `integer` vector that distinguishes time steps at which detections were (1) or were not (0) recorded;
 #' * `acoustics`---a `list` of one-row acoustic observation matrices. In [`pf_forward()`], this information is used to calculate the likelihood of acoustic observations at proposal locations (see [`pf_lik_ac()`]).
 #'    * If `detection = 1`, the `matrix` contains one named column for each receiver that recorded a detection and each overlapping receiver. (It is not necessary to include all receivers in this `matrix`.) The entries 1 and 0 distinguish the receivers at which detections were recorded/not recorded. This information is used to calculate the likelihood of acoustic observations at time steps with detection(s).
 #'    * If `detection = 0`, the `list` element is `NULL`. We do not need to store empty detection matrices because the likelihood of non detection at all operational receivers in a given array design is extracted from pre-computed layers (see [`acs_setup_detection_kernels()`]).

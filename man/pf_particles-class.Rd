@@ -25,22 +25,22 @@ In \code{\link[=pf_forward]{pf_forward()}}, the columns in this table depend on 
 \item \code{x_past}, \code{y_past}---\code{numeric} vectors that define the coordinates of previous particle samples;
 \item \code{cell_now}---an \code{integer} vector that identifies the grid cells of current particle samples;
 \item \code{x_now}, \code{y_now}---\code{numeric} vectors that define the coordinates of current particle samples;
-\item \code{lik}---a \code{numeric} vector of likelihoods;
-\item \code{weight}---a \code{numeric} vectors of weights;
+\item \code{loglik}---a \code{numeric} vector of log-likelihoods;
+\item \code{logwt}---a \code{numeric} vectors of log-weights;
 }
 
 Coordinates are defined in continuous space by \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}} and on the grid by \code{\link[=pf_rpropose_reachable]{pf_rpropose_reachable()}}.
 
-The likelihood column (\code{lik}) is the product of the likelihood scores from each likelihood function. (Successive likelihood functions should \emph{update} this column.)
+The log-likelihood column (\code{loglik}) is the sum of the log-likelihoods from each likelihood function. (Successive likelihood functions should \emph{update} this column.)
 
-The weight column (\code{weight}) contains particle weights. Weights are proportional to the product of weights from the previous time step, the likelihood at the current time step (and the movement density, in the case of directed sampling). After resampling, we obtain \code{.n} equally weighted particles. Weights are normalised to sum to one at each time step.
+The log-weight column (\code{logwt}) contains particle log-weights. Weights are proportional to the product of weights from the previous time step, the likelihood at the current time step (and the movement density, in the case of directed sampling). After re-sampling, we obtain \code{.n} equally weighted particles. Weights are normalised at each time step.
 
-Additional columns may be included in \code{history} if computed by inputted likelihood functions. At the time of writing, most default likelihood functions calculate likelihoods without defining additional columns. However, \code{\link[=pf_lik_dc]{pf_lik_dc()}} adds \code{bathy} column, with values extracted from \code{.dlist$spatial$bathy}.
-If directed sampling is used, \code{bathy} and \code{dens} columns are included where required (after the first time step). \code{dens} is \code{numeric} vector that defines the probability density of moving from \verb{(x_past, y_past}) to \verb{(x_now, y_now)}.
+Additional columns (e.g., \code{.bathy}) may be included in \code{history} if computed by inputted likelihood functions.
+If directed sampling is used, \code{bathy} and \code{logdens} columns are included where required (after the first time step). \code{logdens} is \code{numeric} vector that defines the log-probability density of moving from \verb{(x_past, y_past}) to \verb{(x_now, y_now)}.
 
-Since columns are recorded only when required, not all columns are recorded at each time step. To combine \code{\link{data.table}}s, use \code{\link[=.pf_history_dt]{.pf_history_dt()}}.
+Since columns are recorded only when required, not all columns are recorded at each time step. To combine \code{\link{data.table}}s, use \code{\link[=.pf_history_dt]{.pf_history_dt()}} (or \verb{data.table::rbindlist(... fill = TRUE)}).
 
-If \code{.record$save = FALSE}, \code{.history} is an empty \code{list} and the individual \code{\link{data.table}}s are written to file in \verb{\{.record$sink\}/history/} (see \code{\link[=pf_opt_record]{pf_opt_record()}}).
+If \code{.record$save = FALSE}, \code{.history} is an empty \code{list} and the individual \code{\link{data.table}}s are written to file in \code{{.record$sink}} (see \code{\link[=pf_opt_record]{pf_opt_record()}}).
 }
 
 \section{\code{convergence}}{

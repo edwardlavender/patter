@@ -22,22 +22,22 @@
 #' * `x_past`, `y_past`---`numeric` vectors that define the coordinates of previous particle samples;
 #' * `cell_now`---an `integer` vector that identifies the grid cells of current particle samples;
 #' * `x_now`, `y_now`---`numeric` vectors that define the coordinates of current particle samples;
-#' * `lik`---a `numeric` vector of likelihoods;
-#' * `weight`---a `numeric` vectors of weights;
+#' * `loglik`---a `numeric` vector of log-likelihoods;
+#' * `logwt`---a `numeric` vectors of log-weights;
 #'
 #' Coordinates are defined in continuous space by [`pf_rpropose_kick()`] and on the grid by [`pf_rpropose_reachable()`].
 #'
-#' The likelihood column (`lik`) is the product of the likelihood scores from each likelihood function. (Successive likelihood functions should _update_ this column.)
+#' The log-likelihood column (`loglik`) is the sum of the log-likelihoods from each likelihood function. (Successive likelihood functions should _update_ this column.)
 #'
-#' The weight column (`weight`) contains particle weights. Weights are proportional to the product of weights from the previous time step, the likelihood at the current time step (and the movement density, in the case of directed sampling). After resampling, we obtain `.n` equally weighted particles. Weights are normalised to sum to one at each time step.
+#' The log-weight column (`logwt`) contains particle log-weights. Weights are proportional to the product of weights from the previous time step, the likelihood at the current time step (and the movement density, in the case of directed sampling). After re-sampling, we obtain `.n` equally weighted particles. Weights are normalised at each time step.
 #'
-#' Additional columns may be included in `history` if computed by inputted likelihood functions. At the time of writing, most default likelihood functions calculate likelihoods without defining additional columns. However, [`pf_lik_dc()`] adds `bathy` column, with values extracted from `.dlist$spatial$bathy`.
+#' Additional columns (e.g., `.bathy`) may be included in `history` if computed by inputted likelihood functions.
 
-#' If directed sampling is used, `bathy` and `dens` columns are included where required (after the first time step). `dens` is `numeric` vector that defines the probability density of moving from `(x_past, y_past`) to `(x_now, y_now)`.
+#' If directed sampling is used, `bathy` and `logdens` columns are included where required (after the first time step). `logdens` is `numeric` vector that defines the log-probability density of moving from `(x_past, y_past`) to `(x_now, y_now)`.
 #'
-#' Since columns are recorded only when required, not all columns are recorded at each time step. To combine [`data.table`]s, use [`.pf_history_dt()`].
+#' Since columns are recorded only when required, not all columns are recorded at each time step. To combine [`data.table`]s, use [`.pf_history_dt()`] (or `data.table::rbindlist(... fill = TRUE)`).
 #'
-#' If `.record$save = FALSE`, `.history` is an empty `list` and the individual [`data.table`]s are written to file in `{.record$sink}/history/` (see [`pf_opt_record()`]).
+#' If `.record$save = FALSE`, `.history` is an empty `list` and the individual [`data.table`]s are written to file in `{.record$sink}` (see [`pf_opt_record()`]).
 
 #' # `convergence`
 #'

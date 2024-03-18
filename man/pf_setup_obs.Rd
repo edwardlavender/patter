@@ -21,7 +21,7 @@ pf_setup_obs(
 \item (optional) If \code{.dlist$data$acoustics} is provided, \code{.dlist$algorithm$detection_overlaps} is required if there are receivers with overlapping detection containers;
 }
 
-At least one dataset must be provided. Data should be given \strong{for a single individual}. Other datasets are not currently integrated within this function but can be included afterwards (see Details).}
+At least one dataset (\code{.dlist$data$acoustics} and/or \code{.dlist$data$archival}) must be provided. Data should be given \strong{for a single individual}. Other datasets are not currently integrated within this function but can be included afterwards (see Details).}
 
 \item{.trim}{If both acoustic and archival data are supplied, \code{.trim} is \code{logical} variable that defines whether or not to trim the time series to the time period for which they overlap.}
 
@@ -42,14 +42,15 @@ At least one dataset must be provided. Data should be given \strong{for a single
 \value{
 The function returns a \code{\link{data.table}} with the following columns:
 \itemize{
-\item \code{timestep}---an \code{integer} that defines the time step;
+\item \code{timestep}---an \code{integer} vector that defines the time step;
 \item \code{timestamp}---a regular sequences of \code{POSIXct} time stamps;
+\item \code{mobility}---a \code{numeric} vector that defines the mobility;
 }
 
 If acoustic data is provided, the following column(s) are also included:
 \itemize{
 \item \code{array_id}---an \code{integer} vector that uniquely distinguishes each array design;
-\item \code{detection}---an \code{integer} that distinguishes the time steps at which detections were (1) or were not (0) recorded;
+\item \code{detection}---an \code{integer} vector that distinguishes time steps at which detections were (1) or were not (0) recorded;
 \item \code{acoustics}---a \code{list} of one-row acoustic observation matrices. In \code{\link[=pf_forward]{pf_forward()}}, this information is used to calculate the likelihood of acoustic observations at proposal locations (see \code{\link[=pf_lik_ac]{pf_lik_ac()}}).
 \itemize{
 \item If \code{detection = 1}, the \code{matrix} contains one named column for each receiver that recorded a detection and each overlapping receiver. (It is not necessary to include all receivers in this \code{matrix}.) The entries 1 and 0 distinguish the receivers at which detections were recorded/not recorded. This information is used to calculate the likelihood of acoustic observations at time steps with detection(s).
@@ -70,7 +71,7 @@ If archival data is provided, the following column(s) are also included:
 To calculate the likelihood of archival observations in \code{\link[=pf_forward]{pf_forward()}} by the default \code{\link[=pf_lik_dc]{pf_lik_dc()}} routine, a depth envelope (controlled by \code{depth_deep_eps} and \code{depth_shallow_eps} columns) is also required (see \code{\link[=pf_lik_dc]{pf_lik_dc()}}).
 }
 \description{
-This function builds a timeline of observations for particle filtering. The forward filter (\code{\link[=pf_forward]{pf_forward()}}) iterates over this timeline. At each time step, the algorithm proposes candidate locations for an individual, evaluates the likelihood of each observation (e.g., acoustic and/or archival data) in the timeline at the current time step and optionally (re)samples valid locations using a set of weights that incorporate the likelihood.
+This function builds a timeline of observations for particle filtering (\code{\link[=pf_forward]{pf_forward()}}). The filter  iterates over this timeline. At each time step, the filter proposes candidate locations for an individual, evaluates the likelihood of each contemporary observation (e.g., acoustic and/or archival data) in the timeline and optionally (re)samples valid locations using a set of weights that incorporate the likelihood.
 }
 \details{
 This function defines the timeline of observations over which \code{\link[=pf_forward]{pf_forward()}} is implemented. The function implements the following routines:

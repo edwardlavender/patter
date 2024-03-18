@@ -8,7 +8,7 @@ dir.create(mp4s, recursive = TRUE)
 # Define data list
 dlist <- dat_dlist()
 
-#### Example (1): Plot selected samples (from the forward run)
+#### Example (1): Plot selected samples (from the forward simulation)
 # Particles can be provided in any format accepted by `?.pf_history_list()`
 # Here, we use precomputed samples:
 # * Use particles in memory
@@ -28,13 +28,11 @@ pf_plot_history(.dlist = dlist,
                 .forward = pf_files(dat_pff_src()),
                 .steps = 1L)
 
-#### Example (2): Plot selected samples (from the backward pass)
-pf_plot_history(.dlist = dlist,
-                .forward = dat_pff(),
-                .steps = 1L)
+#### Example (2): Plot selected samples (from the backward simulation)
+# (TO DO)
 
-#### Example (3) Plot particles from both forward and backward runs
-# (TO REVISE)
+#### Example (3) Plot particles from both forward and backward simulation
+# (TO DO)
 
 #### Example (4): Plot multiple time steps
 # Specify selected steps
@@ -67,7 +65,7 @@ pf_plot_history(.dlist = dlist,
                 .add_forward = list(pch = 21, cex = 0.5),
                 .png = list(filename = frames))
 
-#### Example (7): make animations
+#### Example (7): Make animations
 if (rlang::is_installed("av")) {
 
   # There are lots of tools to create animations:

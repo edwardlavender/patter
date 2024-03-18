@@ -20,12 +20,11 @@
 #' * `.rargs`
 #' * `.dargs`
 #'
-#' [`.pf_lik()`] is a wrapper for specified likelihood functions (see [`pf_lik`]). The function returns a [`data.table`] that defines valid proposal locations, likelihoods and weights. A `diagnostics` attribute contains proposal diagnostics. This also requires:
+#' [`.pf_lik()`] is a wrapper for specified likelihood functions (see [`pf_lik`]). The function returns a [`data.table`] that defines proposal locations, log-likelihoods and log-weights. This also requires:
 #' * `.stack`---a named `list` of likelihood functions (see [`pf_lik`]).
-#' * `.diagnostics`---an empty `list` used to store likelihood diagnostics, or `NULL`.
 #' * `.control`---a named `list` of control options, from [`pf_opt_control()`].
 #'
-#' Most likelihood functions are directly exported but some internals routines are also documented here for convenience, namely [`.pf_lik_ac_detection()`] and [`.pf_lik_drop()`]. See also `acs_*()` functions.
+#' Most likelihood functions are directly exported but some internals routines are also documented here for convenience. See also `acs_*()` functions.
 #'
 #' Sampling functions must accept:
 #' * `.particles`
@@ -36,7 +35,7 @@
 #' * Proposal functions (`.rpropose`,`.dpropose`) and argument lists (`.rargs`, `.dargs`);
 #' * Additional likelihood arguments (`.likelihood`);
 #' * Sampling arguments (`.sample`, `.n`);
-#' * Iteration arguments, if applicable (`.trial_crit`, `.trial_count`);
+#' * Iteration arguments, if applicable (`.trial_crit`);
 #' * Control arguments (`.control`);
 #'
 #' Internal functions may support additional arguments as required.
