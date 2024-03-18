@@ -125,6 +125,9 @@
         warn("Detection probability is 0 at receiver {m$receiver_id}.",
              .envir = environment())
       }
+      # Set NAs to zero for pf_forward()
+      # * In pf_lik_ac(), NAs may still occur for particles outside of detection containers
+      k <- terra::classify(k, cbind(NA, 0))
       # Return kernel
       k
     })
@@ -179,7 +182,17 @@
         })
       # Calculate the background surface
       ll <- do.call(c, log_pk0_by_rs_active)
-      return(terra::app(ll, "sum"))
+      ll <- terra::app(ll, "sum")
+      # Mask areas on land
+      # * Within the domain of ll, areas on land are set to log(0)
+      # * But not that beyond ll, particles may or may not be on land
+      # * So in pf_forward(), acs_filter_land() remains necessary
+      if (.dlist$pars$spatna) {
+        ll <- terra::mask(ll,
+                          terra::crop(.dlist$spatial$bathy, ll),
+                          maskvalues = NA, updatevalue = log(0))
+      }
+      ll
     }
   })
 

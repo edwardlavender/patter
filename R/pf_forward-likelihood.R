@@ -117,11 +117,14 @@ pf_lik_ac <- function(.particles, .obs, .t, .dlist, .drop) {
         # For each particle, extract probability of detection at receiver
         # * This is much faster for receiver kernels in memory
         prob <- terra::extract(.dlist$algorithm$detection_kernels$pkernel[[r]], pxy)[, 1]
+        # Convert NAs to zero
+        # * NAs are given for particles beyond the range of the detection container
+        # * (or particles on land)
         prob[is.na(prob)] <- 0
         # For each particle, evaluate the log-likelihood of the acoustic data at that receiver
         stats::dbinom(amat[r], size = 1L, prob = prob, log = TRUE)
       })
-      # Combine likelihoods across receivers
+    # Combine likelihoods across receivers
     loglik <- Rfast::rowsums(do.call(cbind, loglik))
 
   #### Calculate likelihood _non detections_ at all receivers given positions
@@ -130,7 +133,11 @@ pf_lik_ac <- function(.particles, .obs, .t, .dlist, .drop) {
       terra::extract(
         .dlist$algorithm$detection_kernels$loglik[[.obs$array_id[.t]]],
         cbind(.particles$x_now, .particles$y_now))[, 1]
-    loglik[is.na(loglik)] <- -Inf # log(0)
+    # Convert NA to log(1)
+    # * NAs occur for particles beyond the range of all receivers
+    # * At the moment of a detection absence, the likelihood in this region is log(1)
+    # * Land must be masked separately e.g., via acs_filter_land()
+    loglik[is.na(loglik)] <- log(1)
 
   }
 

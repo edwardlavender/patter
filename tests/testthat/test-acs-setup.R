@@ -75,40 +75,36 @@ test_that("acs_setup_detection_kernels() works", {
   #### Implement function
   # Define output for example receiver
   m <- dlist$data$moorings
-  pr <- lapply(seq_len(max(m$receiver_id)), function(id) {
-    if (!(id %in% m$receiver_id)) return(NULL)
-    # Test default implementation
-    acs_setup_detection_kernel(m[m$receiver_id == id, , drop = FALSE],
-                               .bathy = dat_gebco())
+  pr <- lapply(m$receiver_id, function(id) {
+    acs_setup_detection_kernel(m[receiver_id == id, ], .bathy = dat_gebco())
   })
+  names(pr) <- as.character(m$receiver_id)
   # Define kernels
   k <- acs_setup_detection_kernels(dlist,
                                    .pdetkernel = acs_setup_detection_kernel)
 
-  #### Check array designs
-  expect_true(all.equal(
-    k$array_design[, 1:3],
-    data.frame(array_id = c(1, 2),
-               array_start_date = as.Date(c("2016-01-01", "2016-01-02")),
-               array_end_date = as.Date(c("2016-01-01", "2016-01-05")))
-  ))
-
-  #### Check receiver specific kernels & inverse kernels
-  sapply(1:2, \(i) is.null(k$receiver_specific_kernels[[i]]))
-  sapply(3:5, \(i) !is.null(k$receiver_specific_kernels[[i]]))
-  lapply(3:5, function(i) {
+  #### Check receiver specific kernels
+  check_names(k, c("pkernel", "loglik"))
+  lapply(seq_len(length(k$pkernel)), function(i) {
     # Check receiver-specific kernels
-    expect_true(terra::all.equal(k$receiver_specific_kernels[[i]], pr[[i]]))
-    # Check receiver-specific inverse kernels
-    expect_true(terra::all.equal(k$receiver_specific_inv_kernels[[i]], 1 - pr[[i]]))
+    expect_true(terra::all.equal(k$pkernel[[i]],
+                                 terra::crop(pr[[i]], k$pkernel[[i]])))
   }) |> invisible()
 
-  #### Check background surface by design
-  expect_true(terra::all.equal(k$bkg_surface_by_design[[1]], pr[[4]]))
-
-  #### Check inverse background surface by design
-  a <- k$bkg_inv_surface_by_design[[2]]
-  b <- (1 - pr[[3]]) * (1 - pr[[4]]) * (1 - pr[[5]])
+  #### Check background (inverse) log-likelihood surfaces
+  # On 2016-01-01 when receiver 4 is active:
+  a <- k$loglik[[1]]
+  b <- log(1 - pr[["4"]])
+  b <- terra::crop(b, a)
+  names(a) <- names(b) <- "layer"
+  expect_true(terra::all.equal(a, b))
+  # On 2016-01-02 when all receivers were active
+  a <- k$loglik[[2]]
+  b <- log(1 - pr[["3"]]) + log(1 - pr[["4"]]) + log(1 - pr[["5"]])
+  b <- terra::crop(b, a)
+  b <- terra::mask(b,
+                   terra::crop(dat_gebco(), b),
+                   updatevalue = -Inf)
   names(a) <- names(b) <- "layer"
   expect_true(terra::all.equal(a, b))
 

@@ -254,7 +254,7 @@ acs_setup_detection_kernels <-
     # at relevant receivers according to the probability of a detection extracted from these layers.
     cat_log("... Getting Pr(detection)...")
     pk1 <- .acs_setup_detection_kernels_pk1(.dlist = .dlist,
-                                            .pdetkernel = .pdetkernel)
+                                            .pdetkernel = .pdetkernel, ...)
 
     #### Calculate inverse detection probability kernels
     cat_log("... Getting Pr(non-detection)...")
