@@ -228,73 +228,20 @@
                                .likelihood,
                                .control, .trial) {
 
-  #### Set variables
-  count <- 1L
-  index <- cell_now <- x_now <- y_now <- loglik <- NULL
-
-  #### Define output data.table with blank coordinate and loglik columns
-  # These will be iteratively updated below
-  # TO DO: optimise code to avoid copying .particles here
-  .particles[, index := seq_row(.particles)]
-  cols <- colnames(.particles)
-  output <-
-    .particles |>
-    lazy_dt(immutable = TRUE) |>
-    mutate(cell_now = NA_integer_,
-           x_now = NA_real_,
-           y_now = NA_real_,
-           loglik = -Inf) |>
-    as.data.table()
-
-  #### Iteratively update `output` with new locations
+  # Propose particles
   .rargs$.particles <- .particles
-  while (count <= .trial) {
-    # Propose particles
-    proposals <- do.call(.rpropose, .rargs)
-    # Calculate likelihood & weights (likelihood = weights)
-    proposals <- .pf_lik(.particles = proposals,
-                         .obs = .obs, .t = .t,
-                         .dlist = .dlist,
-                         .stack = .likelihood,
-                         .control = .control)
-    # Update output particles
-    # * Output is updated in locations where we have generated proposals
-    # * Matching is necessary b/c the default .rpropose routine drops
-    # * ... locations beyond the study area (as necessary for likelihood routines)
-    # * Here, `ind` defines, for each row in `output`, the position of the match in proposals
-    # * E.g., 1 NA NA NA  2 ...
-    # * `pos` defines the rows in `output` that correspond to the matches (e.g., 1, 5, ...)
-    ind     <- fmatch(output$index, proposals$index)
-    matches <- !is.na(ind)
-    ind     <- ind[matches]
-    pos     <- which(matches)
-    output[pos, cell_now := proposals$cell_now[ind]]
-    output[pos, x_now := proposals$x_now[ind]]
-    output[pos, y_now := proposals$y_now[ind]]
-    output[pos, loglik := proposals$loglik[ind]]
-    # Update loop
-    count <- count + 1L
-    if (count <= .trial) {
-      # Identify proposals beyond the study area or with zero likelihood
-      bool <- is.na(output$cell_now) | (output$loglik == -Inf)
-      if (any(bool)) {
-        # Optionally re-kick invalid proposals
-        .rargs$.particles <-
-          output |>
-          lazy_dt() |>
-          filter(bool) |>
-          select(all_of(cols)) |>
-          as.data.table()
-      }
-    }
-  }
-  # Drop residual proposals beyond study area & (optional) zero-likelihood proposals
-  output |>
-    lazy_dt(immutable = FALSE) |>
-    mutate(index = NULL) |>
-    filter(!is.na(cell_now)) |>
-    filter_loglik(.control$drop) |>
-    as.data.table()
+  proposals         <- do.call(.rpropose, .rargs)
+
+  # Evaluate likelihoods
+  proposals <- .pf_lik(.particles = proposals,
+                       .obs = .obs, .t = .t,
+                       .dlist = .dlist,
+                       .stack = .likelihood,
+                       .control = .control)
+
+  # Return outputs
+  proposals
+
 }
 
 #' @rdname pf_particle

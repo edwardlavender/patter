@@ -158,7 +158,7 @@ pf_lik_temp <- function(.particles, .obs, .t, .dlist, .drop) {
   # Update log-likelihood
   .particles[, loglik := loglik + loglik_temp]
   # (optional) Filter impossible locations
-  if (.drop) {
+  if (.drop && collapse::anyv(.particles$loglik, -Inf)) {
     .particles <- .particles[loglik > -Inf, ]
   }
   .particles

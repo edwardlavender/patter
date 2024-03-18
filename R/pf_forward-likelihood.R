@@ -49,7 +49,7 @@ acs_filter_land <- function(.particles, .obs, .t, .dlist, .drop) {
     # Update log-likelihoods by reference
     set_loglik(.particles, .loglik = log(!is.na(.particles$bathy) + 0L))
     # Drop zero likelihoods
-    if (.drop) {
+    if (.drop && anyv(.particles$loglik, -Inf)) {
       loglik <- NULL
       .particles <- .particles[loglik > -Inf, ]
     }
@@ -81,7 +81,7 @@ acs_filter_container <- function(.particles, .obs, .t, .dlist, .drop) {
     set_loglik(.particles,
                .loglik = .acs_filter_container(.dist = dist, .buffer = .obs$container[[.t]]$buffer))
     # Drop zero likelihoods
-    if (.drop) {
+    if (.drop && anyv(.particles$loglik, -Inf)) {
       loglik <- NULL
       .particles <- .particles[loglik > -Inf, ]
     }
@@ -143,7 +143,8 @@ pf_lik_ac <- function(.particles, .obs, .t, .dlist, .drop) {
 
   #### Update likelihoods
   set_loglik(.particles, loglik)
-  if (.drop) {
+  if (.drop && anyv(.particles$loglik, -Inf)) {
+    loglik <- NULL
     .particles <- .particles[loglik > -Inf, ]
   }
   .particles

@@ -91,7 +91,8 @@ dkick <- function(.xy0, .xy1,
 #' @export
 
 pf_rpropose_kick <- function(.particles, .obs, .t, .dlist, .rkick = rkick, ...) {
-  # Check inputs once
+
+  #### Check inputs once
   # * The loop in pf_forward() starts on .t = 2L
   # * We assume pf_rpropose_kick() is activated on this step
   if (.t == 2L) {
@@ -100,31 +101,56 @@ pf_rpropose_kick <- function(.particles, .obs, .t, .dlist, .rkick = rkick, ...) 
                 .par = "lonlat",
                 .spatial = "bathy")
   }
-  # Kick each particle from previous location into new proposal locations
-  x_now <- y_now <- x_past <- y_past <- NULL
-  xy_now <- .rkick(.xy0 = .particles[, list(x_past, y_past)],
-                   .obs = .obs, .t = .t, .dlist = .dlist, ...)
-  # Update data.table with coordinates
-  .particles[, x_now := as.numeric(xy_now[, 1])]
-  .particles[, y_now := as.numeric(xy_now[, 2])]
+
+  #### Define placeholders for new locations
+  index <- x_now <- y_now <- bathy <- NULL
+  .particles[, index := seq_len(.N)]
+  .particles[, x_now := NA_real_]
+  .particles[, y_now := NA_real_]
+  .particles[, bathy := NA_real_]
+  pos <- .particles$index
+
+  #### Iteratively kick particles from previous locations into new locations
+  counter  <- 0L
+  while (length(pos) > 0L && counter < 100L) {
+    # Kick particles into new locations
+    xy_now <- .rkick(.xy0 = cbind(.particles$x_past[pos], .particles$y_past[pos]),
+                     .obs = .obs, .t = .t, .dlist = .dlist, ...)
+    # Lookup land
+    z <- terra::extract(.dlist$spatial$bathy, xy_now)[, 1]
+    # Update .particles data.table with valid jumps
+    bool <- !is.na(z)
+    if (any(bool)) {
+      .particles[pos, x_now := xy_now[, 1]]
+      .particles[pos, y_now := xy_now[, 2]]
+      .particles[pos, bathy := z]
+    }
+    if (any(!bool)) {
+      pos <- .particles$index[is.na(.particles$x_now)]
+    } else {
+      pos <- integer(0L)
+    }
+    counter <- counter + 1L
+  }
+
+  #### Update data.table with coordinates
+  .particles[, index := NULL]
+  .particles[, x_now := as.numeric(x_now)]
+  .particles[, y_now := as.numeric(y_now)]
   cell_now <- NULL
   .particles[, cell_now := as.integer(terra::cellFromXY(.dlist$spatial$bathy, xy_now))]
-  # Drop kicks beyond the study area
+
+  #### Drop kicks beyond the study area
   # * Use if (any(bool)) here to avoid copying .particles unless essential
-  # * .particles[!is.na(cell_now), ] copies .particles even if there are no NAs
+  # * (.particles[!is.na(cell_now), ] copies .particles even if there are no NAs)
   bool <- is.na(.particles$cell_now)
   if (any(bool)) {
     .particles <- .particles[!is.na(cell_now), ]
   }
-  # TO DO
-  # * Check behaviour if all proposals are beyond the study area
-  # Update data.table with coordinates on grid
-  # * This is no longer implemented
-  # * It can create movement distances > mobility
-  # * This causes issues with pf_rpropose_reachable() and pf_dpropose()
-  # * Now, we evaluate movement in continuous space
-  # * Likelihoods are evaluated on the grid
+
+  #### Return outputs
   .particles
+
 }
 
 #' @rdname pf_propose
@@ -217,7 +243,7 @@ pf_dpropose <- function(.particles, .obs, .t, .dlist, .drop, .dkick = dkick, ...
                                        ...,
                                        .obs = .obs, .t = .t, .dlist = .dlist))]
     # Isolate particles with positive densities
-    if (.drop) {
+    if (.drop && anyv(.particles$logdens, -Inf)) {
       .particles <-
         .particles |>
         lazy_dt() |>
