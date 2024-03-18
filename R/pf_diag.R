@@ -1,29 +1,23 @@
 #' @title PF: particle diagnostics
-#' @description These functions collate particle diagnostics from [`pf_forward()`] and [`pf_backward_*()`].
+#' @description These functions collate particle diagnostics.
 #'
-#' @param .history For [`pf_diag_summary()`], `.history` expects particle samples, provided in any format accepted by [`.pf_history_dt()`].
+#' @param .history Particle samples, provided in any format accepted by [`.pf_history_dt()`].
 #'
-#' @param ... Additional arguments.
-#' * In [`pf_diag_convergence()`], `...` is passed to [`arrow::open_dataset()`].
-#' * In [`pf_diag_summary()`], `...` is passed to [`.pf_history_dt()`]. `.collect`, if used, is necessarily `TRUE` and should not be specified.
+#' @param ... Additional arguments passed to [`.pf_history_dt()`]. `.collect`, if used, is necessarily `TRUE` and should not be specified.
 #'
 #' @details Particle diagnostics are fully described in [`pf_diag-internal`].
 #'
-#' [`pf_diag_convergence()`] collates convergence diagnostic outputs from [`pf_forward()`]. If [`pf_forward()`] is implemented with `.record$save = TRUE`, the outputted [`pf_particles-class`] object from [`pf_forward()`] includes a pre-compiled [`data.table`] of diagnostics (see [`pf_opt_record()`]). [`pf_diag_convergence()`] accepts a [`pf_particles-class`] object, but there is really no need for this, as a `diagnostics` element is already present in this object. Instead, [`pf_diag_convergence()`] is primarily designed to collate particle diagnostics on file. [`pf_forward()`] writes particle diagnostics to `{.record$sink}/diagnostics` (see [`pf_opt_record()`]). You can supply `{.record$sink}` or `{.record$sink}/diagnostics/` to this function. The individual [`data.table`]s are collated to match the form in which they are provided by [`pf_forward()`] when `.record$save = TRUE`.
-#'
-#' [`pf_diag_summary()`] summarises particle diagnostics directly from (accepted) particle samples. This can be used for [`pf_forward()`] or [`pf_backward_*()`].
+#' [`pf_diag_summary()`] summarises particle diagnostics.
 #'
 #' @example man/examples/pf_diag-examples.R
 #'
 #' @return `pf_diag_*()` functions return [`data.table`]s.
 #'
-#' [`pf_diag_convergence()`] returns the `diagnostics` [`data.table`] of a `pf_particles-class` object.
-#'
 #' [`pf_diag_summary`] returns a summary [`data.table`] with the following columns:
 #' * `timestep`---an `integer` that defines the time step;
 #' * `n`---an `integer` that defines the number of particles;
 #' * `nu`---an `integer` that defines the number of unique location samples (see [`.pf_diag_nu()`]);
-#' * `ess`---a `double` that defines the effective sample size or `NA_real_` if the `lik` column is unavailable (see [`.pf_diag_ess()`]);
+#' * `ess`---a `double` that defines the effective sample size or `NA_real_` if the `logwt` column is unavailable (see [`.pf_diag_ess()`]);
 #'
 #' @inherit pf_diag-internal seealso
 #' @name pf_diag

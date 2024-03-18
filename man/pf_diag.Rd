@@ -8,41 +8,33 @@
 pf_diag_summary(.history, ...)
 }
 \arguments{
-\item{.history}{For \code{\link[=pf_diag_summary]{pf_diag_summary()}}, \code{.history} expects particle samples, provided in any format accepted by \code{\link[=.pf_history_dt]{.pf_history_dt()}}.}
+\item{.history}{Particle samples, provided in any format accepted by \code{\link[=.pf_history_dt]{.pf_history_dt()}}.}
 
-\item{...}{Additional arguments.
-\itemize{
-\item In \code{\link[=pf_diag_convergence]{pf_diag_convergence()}}, \code{...} is passed to \code{\link[arrow:open_dataset]{arrow::open_dataset()}}.
-\item In \code{\link[=pf_diag_summary]{pf_diag_summary()}}, \code{...} is passed to \code{\link[=.pf_history_dt]{.pf_history_dt()}}. \code{.collect}, if used, is necessarily \code{TRUE} and should not be specified.
-}}
+\item{...}{Additional arguments passed to \code{\link[=.pf_history_dt]{.pf_history_dt()}}. \code{.collect}, if used, is necessarily \code{TRUE} and should not be specified.}
 }
 \value{
 \verb{pf_diag_*()} functions return \code{\link{data.table}}s.
-
-\code{\link[=pf_diag_convergence]{pf_diag_convergence()}} returns the \code{diagnostics} \code{\link{data.table}} of a \code{pf_particles-class} object.
 
 \code{\link{pf_diag_summary}} returns a summary \code{\link{data.table}} with the following columns:
 \itemize{
 \item \code{timestep}---an \code{integer} that defines the time step;
 \item \code{n}---an \code{integer} that defines the number of particles;
 \item \code{nu}---an \code{integer} that defines the number of unique location samples (see \code{\link[=.pf_diag_nu]{.pf_diag_nu()}});
-\item \code{ess}---a \code{double} that defines the effective sample size or \code{NA_real_} if the \code{lik} column is unavailable (see \code{\link[=.pf_diag_ess]{.pf_diag_ess()}});
+\item \code{ess}---a \code{double} that defines the effective sample size or \code{NA_real_} if the \code{logwt} column is unavailable (see \code{\link[=.pf_diag_ess]{.pf_diag_ess()}});
 }
 }
 \description{
-These functions collate particle diagnostics from \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_*]{pf_backward_*()}}.
+These functions collate particle diagnostics.
 }
 \details{
 Particle diagnostics are fully described in \code{\link{pf_diag-internal}}.
 
-\code{\link[=pf_diag_convergence]{pf_diag_convergence()}} collates convergence diagnostic outputs from \code{\link[=pf_forward]{pf_forward()}}. If \code{\link[=pf_forward]{pf_forward()}} is implemented with \code{.record$save = TRUE}, the outputted \code{\linkS4class{pf_particles}} object from \code{\link[=pf_forward]{pf_forward()}} includes a pre-compiled \code{\link{data.table}} of diagnostics (see \code{\link[=pf_opt_record]{pf_opt_record()}}). \code{\link[=pf_diag_convergence]{pf_diag_convergence()}} accepts a \code{\linkS4class{pf_particles}} object, but there is really no need for this, as a \code{diagnostics} element is already present in this object. Instead, \code{\link[=pf_diag_convergence]{pf_diag_convergence()}} is primarily designed to collate particle diagnostics on file. \code{\link[=pf_forward]{pf_forward()}} writes particle diagnostics to \code{{.record$sink}/diagnostics} (see \code{\link[=pf_opt_record]{pf_opt_record()}}). You can supply \code{{.record$sink}} or \verb{\{.record$sink\}/diagnostics/} to this function. The individual \code{\link{data.table}}s are collated to match the form in which they are provided by \code{\link[=pf_forward]{pf_forward()}} when \code{.record$save = TRUE}.
-
-\code{\link[=pf_diag_summary]{pf_diag_summary()}} summarises particle diagnostics directly from (accepted) particle samples. This can be used for \code{\link[=pf_forward]{pf_forward()}} or \code{\link[=pf_backward_*]{pf_backward_*()}}.
+\code{\link[=pf_diag_summary]{pf_diag_summary()}} summarises particle diagnostics.
 }
 \examples{
-#### Example (1): Use particle samples from pf_forward() or pf_backward_*()
+#### Example (1): Use particle samples from particle-filtering routines
+# (TO DO)
 pf_diag_summary(.history = dat_pff())
-# (TO REVISE)
 
 #### Example (2): Use particle samples in memory or on file
 # Particles can be provided in any format accepted by `?.pf_history_dt()`
@@ -55,7 +47,7 @@ stopifnot(isTRUE(all.equal(d1, d3)))
 stopifnot(isTRUE(all.equal(d1, d4)))
 
 ## (C) Examine trends in particle diagnostics
-# (TO REVISE)
+# (TO DO)
 }
 \seealso{
 \itemize{

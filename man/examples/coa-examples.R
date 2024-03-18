@@ -1,8 +1,8 @@
 require(data.table)
 
 #### Example (1): Calculate COAs for an example individual
-acc   <- dat_acoustics[individual_id == dat_acoustics$individual_id[1], ]
-gebco <- dat_gebco()
+acc    <- dat_acoustics[individual_id == dat_acoustics$individual_id[1], ]
+gebco  <- dat_gebco()
 dlist  <- pat_setup_data(.acoustics = acc,
                          .moorings = dat_moorings,
                          .bathy = gebco,

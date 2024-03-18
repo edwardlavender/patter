@@ -23,7 +23,7 @@
 #'
 #' To derive coordinates for mapping patterns of space use for tagged animals in passive acoustic telemetry systems, see:
 #' * [`coa()`] to calculate centre-of-activity;
-#' * [`pf_forward()`], [`pf_backward_*()`] and [`pf_coord()`] to sample locations using a forward-filtering backward-sampling algorithm;
+#' * [`pf_forward()`] and associates to sample locations using particle filtering;
 #'
 #' @author Edward Lavender
 #' @export

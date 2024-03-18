@@ -26,7 +26,7 @@ dat_coa()
 The functions return a dataset or a \code{character} string that defines the path to a dataset. See the corresponding function documentation for full details.
 }
 \description{
-These functions load example outputs from key \code{\link{patter}} functions, including those required to implement the forward filtering–backward sampling algorithm. They are included in the package to streamline function examples and tests.
+These functions load example outputs from key \code{\link{patter}} functions. They are included in the package to streamline function examples and tests.
 }
 \details{
 \itemize{

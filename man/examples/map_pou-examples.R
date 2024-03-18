@@ -27,5 +27,9 @@ map_pou(gebco, .coord = out_coa[, .(x = coa_x, y = coa_y)])
 
 #### Example (3): Use a time series of coordinates from pf_*()
 # Use example dataset
+# * We use particles from the forward filter (`?pf_forward()`);
+# * Particles are equally weighted b/c re-sampling was implemented every time step;
+# * It is better to use outputs from the forward-filter backward-smoother;
+# * Make sure you account for particle weights via re-sampling or 'marks';
 coord <- pf_coord(dat_pff(), .bathy = gebco)
 map_pou(gebco, .coord = coord)

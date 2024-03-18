@@ -66,6 +66,11 @@ obs <- obs[1:25, ]
 out_coa <- coa(dlist, .delta_t = "4 hours")
 
 #### Implement pf_forward()
+# Define output columns
+cols <- c("timestep",
+          "cell_past", "cell_now",
+          "x_now", "y_now", "loglik", "logwt")
+# Set up directories
 sink      <- NULL
 if (overwrite) {
   pff_folder <- file.path("inst", "extdata", "acpf", "forward")
@@ -74,16 +79,19 @@ if (overwrite) {
   sink <- pff_folder
 }
 ssf()
-out_pff <- pf_forward(.obs = obs,
-                      .dlist = dlist,
-                      .likelihood = list(acs_filter_land = acs_filter_land,
-                                         acs_filter_container = acs_filter_container,
-                                         pf_lik_ac = pf_lik_ac),
-                      .record = pf_opt_record(.save = TRUE,
-                                              .sink = sink,
-                                              .cols = c("timestep",
-                                                        "cell_past", "cell_now",
-                                                        "x_now", "y_now", "loglik", "logwt")))
+# Implement filter
+# * Force re-sampling at every time step (for convenience)
+out_pff <-
+  pf_forward(.obs = obs,
+             .dlist = dlist,
+             .likelihood = list(acs_filter_land = acs_filter_land,
+                                acs_filter_container = acs_filter_container,
+                                pf_lik_ac = pf_lik_ac),
+             .trial = pf_opt_trial(.trial_resample_crit = Inf),
+             .record = pf_opt_record(.save = TRUE,
+                                     .sink = sink,
+                                     .cols = cols)
+  )
 
 #### Implement pf_backward() routines
 # (TO DO)

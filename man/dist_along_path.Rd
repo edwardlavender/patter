@@ -21,14 +21,11 @@ This function calculates distances between sequential coordinates in a matrix.
 This function is a simple wrapper for \code{\link[terra:distance]{terra::distance()}}.
 }
 \examples{
-require(data.table)
-require(dplyr)
-
-#### Example (1): Illustration with synthetic data
+# Define matrix of sequential locations
 p <- matrix(c(1, 2,
               3, 4,
               5, 6), ncol = 2, byrow = TRUE)
-
+# Calculate distances along path
 dist_along_path(p)
 
 }

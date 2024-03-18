@@ -1,6 +1,6 @@
-#### Example (1): Use particle samples from pf_forward() or pf_backward_*()
+#### Example (1): Use particle samples from particle-filtering routines
+# (TO DO)
 pf_diag_summary(.history = dat_pff())
-# (TO REVISE)
 
 #### Example (2): Use particle samples in memory or on file
 # Particles can be provided in any format accepted by `?.pf_history_dt()`
@@ -13,4 +13,4 @@ stopifnot(isTRUE(all.equal(d1, d3)))
 stopifnot(isTRUE(all.equal(d1, d4)))
 
 ## (C) Examine trends in particle diagnostics
-# (TO REVISE)
+# (TO DO)

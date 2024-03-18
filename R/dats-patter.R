@@ -1,6 +1,6 @@
 #' @title Datasets: example algorithm outputs
 #'
-#' @description These functions load example outputs from key [`patter`] functions, including those required to implement the forward filtering–backward sampling algorithm. They are included in the package to streamline function examples and tests.
+#' @description These functions load example outputs from key [`patter`] functions. They are included in the package to streamline function examples and tests.
 #'
 #' @details
 #' * [`dat_dlist()`] reads example output from [`pat_setup_data()`];

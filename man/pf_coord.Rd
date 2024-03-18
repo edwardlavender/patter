@@ -9,9 +9,9 @@ pf_coord(.history, .bathy, .obs = NULL, .cols = NULL)
 \arguments{
 \item{.history}{Particle samples, provided in any format accepted by \code{\link[=.pf_history_dt]{.pf_history_dt()}}. Particle samples may be sourced from:
 \itemize{
-\item \code{\link[=pf_forward]{pf_forward()}} (a marginal distribution);
-\item \code{\link[=pf_backward_killer]{pf_backward_killer()}} (a 'partial' joint distribution);
-\item \code{\link[=pf_backward_sampler_v]{pf_backward_sampler_v()}} (the full joint distribution);
+\item The forward filter (\code{\link[=pf_forward]{pf_forward()}});
+\item The backward smoother (TO DO);
+\item The backward sampler (TO DO);
 }
 
 Particle samples must contain the \code{timestep} and \code{cell_now} columns.}
@@ -48,7 +48,7 @@ pf_coord(dat_pff()$history, .bathy = gebco)
 pf_coord(dat_pff_src(), .bathy = gebco)
 pf_coord(pf_files(dat_pff_src()), .bathy = gebco)
 
-#### Example (2): Use particle samples from the forward run or the backward pass
+#### Example (2): Use particle samples from different routines
 # (TO DO)
 
 #### Example (3): Include additional columns in the output

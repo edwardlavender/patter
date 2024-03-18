@@ -54,8 +54,8 @@ This function replaces \href{https://edwardlavender.github.io/flapper/reference/
 require(data.table)
 
 #### Example (1): Calculate COAs for an example individual
-acc   <- dat_acoustics[individual_id == dat_acoustics$individual_id[1], ]
-gebco <- dat_gebco()
+acc    <- dat_acoustics[individual_id == dat_acoustics$individual_id[1], ]
+gebco  <- dat_gebco()
 dlist  <- pat_setup_data(.acoustics = acc,
                          .moorings = dat_moorings,
                          .bathy = gebco,
@@ -80,8 +80,8 @@ coa(dlist, .delta_t = "6 hours", .split = "individual_id")
 }
 \seealso{
 \itemize{
-\item To derive location samples from the forward-filter backward-sampler, see \code{\link[=pf_forward]{pf_forward()}}, \code{\link[=pf_backward_*]{pf_backward_*()}} and \code{\link[=pf_coord]{pf_coord()}};
-\item For mapping utilisation distributions from coordinates, see \verb{map_*()} functions (i.e., \code{\link[=map_pou]{map_pou()}} and \code{\link[=map_dens]{map_dens()}};
+\item To derive location samples from a particle filtering algorithm, see \code{\link[=pf_forward]{pf_forward()}} and associates;
+\item For mapping utilisation distributions from coordinates, see \verb{map_*()} functions (i.e., \code{\link[=map_pou]{map_pou()}} and \code{\link[=map_dens]{map_dens()}});
 }
 }
 \author{
