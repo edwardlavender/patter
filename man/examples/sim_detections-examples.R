@@ -28,20 +28,20 @@ p <- sim_path_walk(.n_path = 1L)
 dist <- 1:1000
 sim_detections(.paths = p, .arrays = a, .gamma = 0)
 # E.g., detection probability is perfect, we get detections at every receiver
-plot(dist, ddetlogistic(dist, .alpha = Inf, .beta = 1, .gamma = Inf))
+plot(dist, pdetlogistic(dist, .alpha = Inf, .beta = 1, .gamma = Inf))
 sim_detections(.paths = p, .arrays = a, .alpha = Inf, .beta = 1, .gamma = Inf)
 # Customise the default function via receiver-specific parameters
 a$receiver_range <- runif(nrow(a), 100, 500)
-ddetreceiver <- function(.data) {
-  ddetlogistic(.x = .data$dist,
+pdetreceiver <- function(.data) {
+  pdetlogistic(.x = .data$dist,
                .alpha = 2.5, .beta = -0.02,
                .gamma = .data$receiver_range)
 }
-sim_detections(.paths = p, .arrays = a, .ddet = ddetreceiver)
+sim_detections(.paths = p, .arrays = a, .pdet = pdetreceiver)
 # Use a different model that uses information in .arrays/.paths
 # * E.g., a logistic model that depends on distance & receiver type
 a$receiver_type <- sample(c(0, 1), nrow(a), replace = TRUE)
-ddetdrt <- function(.distance, .receiver_type,
+pdetdrt <- function(.distance, .receiver_type,
                    .alpha = 2.5,
                    .beta_1 = -0.02, .beta_2 = 2,
                    .gamma = 500) {
@@ -50,12 +50,12 @@ ddetdrt <- function(.distance, .receiver_type,
   pr
 }
 dist <- 1:500
-plot(dist, ddetdrt(dist, 0), type = "l")
-lines(dist, ddetdrt(dist, 1), col = "red")
-ddet2 <- function(.data) {
-  ddetdrt(.distance = .data$dist, .receiver_type = .data$receiver_type)
+plot(dist, pdetdrt(dist, 0), type = "l")
+lines(dist, pdetdrt(dist, 1), col = "red")
+pdet2 <- function(.data) {
+  pdetdrt(.distance = .data$dist, .receiver_type = .data$receiver_type)
 }
-sim_detections(.paths = p, .arrays = a, .ddet = ddet2)
+sim_detections(.paths = p, .arrays = a, .pdet = pdet2)
 
 #### Example (6): Handle multiple paths/arrays
 # Simulate observations between each array/path pair

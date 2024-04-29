@@ -46,6 +46,9 @@
     <loc>/reference/acs_setup_detection_kernel.html</loc>
   </url>
   <url>
+    <loc>/reference/acs_setup_detection_kernels-internal.html</loc>
+  </url>
+  <url>
     <loc>/reference/acs_setup_detection_kernels.html</loc>
   </url>
   <url>
@@ -88,16 +91,10 @@
     <loc>/reference/dist_along_path.html</loc>
   </url>
   <url>
-    <loc>/reference/dot-acs_absences.html</loc>
-  </url>
-  <url>
     <loc>/reference/dot-map_mark.html</loc>
   </url>
   <url>
-    <loc>/reference/dot-pf_backward_output.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-pf_setup_obs_receiver_id_next.html</loc>
+    <loc>/reference/dot-pf_path_pivot_checks.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>
@@ -128,15 +125,6 @@
   </url>
   <url>
     <loc>/reference/pb_.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_backward_-times.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_backward_killer.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_backward_sampler.html</loc>
   </url>
   <url>
     <loc>/reference/pf_check.html</loc>
@@ -175,15 +163,6 @@
     <loc>/reference/pf_particles-class.html</loc>
   </url>
   <url>
-    <loc>/reference/pf_path.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_path_.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_path_pivot.html</loc>
-  </url>
-  <url>
     <loc>/reference/pf_plot_history.html</loc>
   </url>
   <url>
@@ -191,6 +170,9 @@
   </url>
   <url>
     <loc>/reference/pf_sample.html</loc>
+  </url>
+  <url>
+    <loc>/reference/pf_setup-internal.html</loc>
   </url>
   <url>
     <loc>/reference/pf_setup_obs.html</loc>

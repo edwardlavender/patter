@@ -51,7 +51,7 @@ pat_setup_data <- function(.acoustics = NULL,
   #### Check movement datasets
   # Acoustics
   data$acoustics <- check_acoustics(.acoustics = .acoustics, .moorings = .moorings)
-  # Moorings
+  # Lon/lat
   if (!is.null(.moorings)) {
     if (is.null(.lonlat)) {
       .lonlat <-  .is_lonlat(.moorings)
@@ -60,7 +60,9 @@ pat_setup_data <- function(.acoustics = NULL,
       warn("`.moorings` should be accompanied by `.bathy` and `.lonlat` to define receiver coordinate (`receiver_x` and `receiver_y`) columns.")
     }
   }
+  # moorings
   data$moorings  <- check_moorings(.moorings = .moorings,
+                                   .acoustics = data$acoustics,
                                    .lonlat = .lonlat,
                                    .bathy = .bathy)
   data$services  <- check_services(.services = .services, .moorings = .moorings)

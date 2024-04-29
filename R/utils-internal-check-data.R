@@ -16,6 +16,8 @@
 #'        * A square grid is recommended;
 #'        * Absolute values (m) are recommended;
 #'        * At the time of writing (December 2023), planar grids are better tested;
+#'    - Source:
+#'        * The data source may be in memory or on disk, but the former is much faster;
 #'
 #' * [`check_acoustics()`] checks detection time series:
 #'    - Class: [`data.table`];
@@ -40,7 +42,8 @@
 #'        * `receiver_id`---an `integer` vector of unique receiver deployments (`1, ..., N`);
 #'        * `receiver_easting` and `receiver_northing` and/or `receiver_lon` and `receiver_lat`---Receiver coordinates. `receiver_easting` and `receiver_northing` must be present if `.lonlat = FALSE` and `receiver_lon` and `receiver_lat` must be present otherwise. The selected coordinate columns are copied, renamed to `receiver_x` and `receiver_y` and coerced onto the `.bathy` grid. Note that `.bathy` must be in the specified projection.
 #'    - Properties:
-#'       * `receiver_start` should precede `receiver_end` (not currently validated);
+#'       * `receiver_start` should precede `receiver_end`;
+#'       * Receiver deployment periods should (usually) at least partially overlap with the time period of acoustic observations;
 #'       * Receiver coordinates must be valid (not currently validated);
 #'
 #' * [`check_archival()`] checks archival depth time series data:
@@ -77,20 +80,27 @@ check_bathy <- function(.bathy) {
   if (is.null(.bathy)) {
     return(.bathy)
   }
+  # Check class
   check_inherits(.bathy, "SpatRaster")
+  # Check names
   if (names(.bathy) != "bathy") {
     warn("`.bathy` name updated from '{names(.bathy)}' to 'bathy'.",
          .envir = environment())
     names(.bathy) <- "bathy"
   }
-
+  # Check resolution
   res <- terra::res(.bathy)
   if (!isTRUE(all.equal(res[1], res[2]))) {
     msg("A square bathymetry grid is recommended.")
   }
+  # Check values
   min_val <- terra::global(.bathy, "min", na.rm = TRUE)
   if (min_val < 0) {
     msg("A bathymetry grid with absolute values is recommended. Use NA to define inhospitable habitats (such as land).")
+  }
+  # Check source
+  if (!terra::inMemory(.bathy)) {
+    msg("There is a heavy speed penalty for bathymetry grids that do not exist in memory.")
   }
   .bathy
 }
@@ -139,7 +149,7 @@ check_acoustics <- function(.acoustics, .moorings = NULL) {
 #' @rdname check_dlist
 #' @keywords internal
 
-check_moorings <- function(.moorings, .lonlat, .bathy) {
+check_moorings <- function(.moorings, .acoustics = NULL, .lonlat, .bathy) {
 
   #### Check class
   if (is.null(.moorings)) {
@@ -169,6 +179,26 @@ check_moorings <- function(.moorings, .lonlat, .bathy) {
   }
   if (any(duplicated(.moorings$receiver_id))) {
     abort("`.moorings$receiver_id` contains duplicate elements.")
+  }
+
+  #### Check deployment periods
+  # Check deployment dates
+  if (any(.moorings$receiver_start >= .moorings$receiver_end)) {
+    warn("Some `.moorings$receiver_start` entries are >= `.moorings$receiver_end` entries.")
+  }
+  # Check for receivers with deployment periods entirely outside the range of acoustic observations
+  # * This requires a temporary data.frame (`deps`)
+  if (!is.null(.acoustics)) {
+    deps <- as.data.frame(.moorings)
+    deps$interval <- lubridate::interval(deps$receiver_start, deps$receiver_end)
+    deps$overlaps   <- lubridate::int_overlaps(
+      deps$interval,
+      lubridate::interval(min(.acoustics$timestamp), max(.acoustics$timestamp))
+    )
+    bool <- !deps$overlaps
+    if (any(bool)) {
+      warn("The deployment period(s) of some receiver(s) ({str_items(deps$receiver_id[which(bool)])}) in `.moorings` are entirely outside the range of acoustic observations. Consider excluding these receivers for improved efficiency (e.g., in `acs_setup_detection_kernels()`, which pre-calculates the likelihood of non detection at all operational receivers _for each array design_.", .envir = environment())
+    }
   }
 
   #### Check receiver ranges

@@ -93,8 +93,7 @@ sim_array(.n_array = 5L, .plot = TRUE, .one_page = FALSE)
 \item \code{\link[=sim_path_walk]{sim_path_walk()}} simulates movement path(s) via a walk model;
 \item \code{\link[=sim_detections]{sim_detections()}} simulates detection(s) at receivers;
 }
-\item \code{\link[=pf_forward]{pf_forward()}} implements forward simulation-based reconstruction of movement paths;
-\item \code{\link[=pf_backward_*]{pf_backward_*()}} implements backward simulation-based reconstruction of movement paths;
+\item \code{\link[=pf_forward]{pf_forward()}} and associates implement the simulation-based reconstruction of movements;
 \item \code{\link{skill}} functions compared simulated and reconstructed patterns to evaluate model skill;
 }
 }

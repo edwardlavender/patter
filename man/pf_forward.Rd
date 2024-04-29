@@ -2,7 +2,7 @@
 % Please edit documentation in R/pf_forward.R
 \name{pf_forward}
 \alias{pf_forward}
-\title{PF: forward simulation}
+\title{PF: particle filter}
 \usage{
 pf_forward(
   .obs,
@@ -30,7 +30,7 @@ pf_forward(
 \item \code{.dlist$spatial$bathy}
 \item (optional) \code{.dlist$spatial$origin}, a \code{\link{SpatRaster}} used to define the origin. This may differ in geometry from \code{.dlist$spatial$bathy} but must have the same coordinate reference system.
 \item \code{.dlist$pars$lonlat} (required by the default \code{.rpropose} and \code{.dpropose} arguments).
-\item Any additional elements required by \code{.likelihood},\code{.rpropose} and \code{.dpropose} functions(see below).
+\item Any additional elements required by \code{.likelihood},\code{.rpropose} and \code{.dpropose} functions (see below).
 }}
 
 \item{.rpropose, .dpropose, .rargs, .dargs}{Proposal functions and associated argument lists (see \code{\link{pf_propose}}).
@@ -40,7 +40,7 @@ pf_forward(
 \item \code{.rargs} and \code{.dargs} are named \code{list}s of arguments passed to \code{.rpropose} and \code{.dpropose} respectively.
 }}
 
-\item{.likelihood}{A named \code{list} of likelihood functions. These are used to calculate the likelihood of each dataset at proposal locations. See \code{\link{pf_lik}} for required arguments, convenience functions and advice.}
+\item{.likelihood}{A named \code{list} of likelihood functions. These are used to calculate the log-likelihood of each dataset at proposal locations. See \code{\link{pf_lik}} for required arguments, convenience functions and advice.}
 
 \item{.n, .sample}{Sampling arguments.
 \itemize{
@@ -52,46 +52,44 @@ pf_forward(
 
 \item{.control}{A named \code{list} of control options, from \code{\link[=pf_opt_control]{pf_opt_control()}}.}
 
-\item{.rerun, .rerun_from}{Rerun options. These options are used to restart the algorithm from an earlier time step in the case of a convergence failure.
+\item{.rerun, .rerun_from}{Rerun options. These options are used to restart the algorithm from an earlier time step.
 \itemize{
 \item \code{.rerun} is the named \code{list} of algorithm outputs from a previous rerun.
 \item \code{.rerun_from} is an \code{integer} that defines the time step from which to rerun the algorithm.
-}
-
-Algorithm parameters should remain consistent on algorithm reruns.}
+}}
 
 \item{.record}{A named \code{list} of output options, from \code{\link[=pf_opt_record]{pf_opt_record()}}.}
 
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }
 \value{
-The function returns a \code{\linkS4class{pf_particles}} object. If \code{.record$sink} is specified, two directories, \verb{\{.record$sink\}/history/} and \code{{.record$sink}/diagnostics}, are also created that contain particle samples and diagnostics. Particle samples are labelled \verb{1.parquet, 2.parquet, ..., T.parquet}, where \code{T} is the number of time steps. Diagnostics are labelled \code{A-B-C}, where \code{A}, \code{B} and \code{C} are the number of manual restarts, internal reversions and time steps. Use \code{\link[=pf_diag_convergence]{pf_diag_convergence()}} to collate convergence diagnostics and \code{\link[=pf_diag_summary]{pf_diag_summary()}} for a summary.
+The function returns a \code{\linkS4class{pf_particles}} object. If \code{.record$sink} is specified, particles are written to file in a series of parquet files (\verb{1.parquet, 2.parquet, ..., T.parquet}, where \code{T} is the number of time steps).
 }
 \description{
-This function runs the forward simulation of the forward filtering--backward smoothing algorithm. The forward simulation samples possible locations (particles) of an animal at each time point given the data up to (and including) that time point and a movement model.
+This function implements the particle filter ('forward simulation'). The filter iteratively samples possible locations (particles) of an animal at each time point given the data up to (and including) that time point and a movement model.
 }
 \section{Overview}{
 \code{\link[=pf_forward]{pf_forward()}} iterates over time steps, simulating location samples (termed 'particles') that are consistent with the preceding data and a movement model at each time step. At each time step, this process comprises four steps:
 \enumerate{
 \item A proposal step, in which we propose possible locations for the individual.
-\item A likelihood step, in which we calculate the likelihood of the data given each proposal.
+\item A likelihood step, in which we evaluate the log-likelihood of the data given each proposal.
 \item A weights step, in which we translate likelihoods into sampling weights.
 \item A sampling step, in which we (re)sample valid proposal locations using the weights.
 }
 
-At the first time step, proposal locations are defined from a large number of 'quadrature points' across a \code{\link{SpatRaster}} that defines starting location(s), defined in \code{.dlist$spatial$origin} (\code{.dlist$spatial$bathy} is used if \code{.dlist$spatial$origin} is undefined). \code{NA}s/non \code{NA}s distinguish possible/impossible locations. For AC*PF algorithm implementations (i.e., implementations that incorporate acoustic data, see Algorithms, below), grid cells beyond acoustic containers are masked. For *DCPF implementations (i.e., implementations that incorporate depth data, see Algorithms, below), it is also desirable if you can, at least approximately, mask grid cells that are incompatible with the first depth observation. At the first time step, up to \code{1e6} locations ('quadrature points') are sampled from the \code{\link{SpatRaster}}. At each quadrature point, we evaluate likelihoods and calculate weights. \code{.n} starting locations (particles) are sampled, via \code{.sample}, from the set of quadrature points using the weights. If the effective sample size (ESS) of sampled locations is less than \code{.trial$trial_origin_crit}, a \code{\link{warning}} is given.
+At the first time step, proposal locations are defined from a large number of 'quadrature points' across a \code{\link{SpatRaster}} that defines starting location(s), defined in \code{.dlist$spatial$origin} (\code{.dlist$spatial$bathy} is used if \code{.dlist$spatial$origin} is undefined). \code{NA}s/non \code{NA}s distinguish possible/impossible locations. For AC*PF algorithm implementations (i.e., implementations that incorporate acoustic data, see Algorithms, below), grid cells beyond acoustic containers are masked. For *DCPF implementations (i.e., implementations that incorporate depth data, see Algorithms, below), it is also desirable if you can, at least approximately, mask grid cells that are incompatible with the first depth observation. At the first time step, up to \code{1e6} locations ('quadrature points') are sampled from the \code{\link{SpatRaster}}. At each quadrature point, we evaluate log-likelihoods and calculate log-weights. \code{.n} starting locations (particles) are sampled, via \code{.sample}, from the set of quadrature points using the weights. If the effective sample size (ESS) of sampled locations is less than \code{.trial$trial_origin_crit}, a \code{\link{warning}} is given.
 
-At subsequent time steps, proposal locations are generated via \code{.rpropose} which, by default, is a 'stochastic kick' function that 'kicks' previous particles at random into new locations (in line with the restrictions imposed by a movement model). The benefit of this approach is that it is extremely fast, but in situations in which there are relatively few possible locations for an individual, the approach can work poorly because few kicked particles end up in valid locations. A \code{list} of likelihood functions is used to evaluate the likelihood of the data, given each proposal, and filter invalid proposals. During this time, we track how the number and diversity of proposal locations declines, as the data are revealed to be incompatible with selected proposals by successive likelihood functions (see Convergence and diagnostics, below). Likelihoods are translated into weights for resampling (see below).
+At subsequent time steps, proposal locations are generated via \code{.rpropose} which, by default, is a 'stochastic kick' function that 'kicks' previous particles at random into new locations (in line with the restrictions imposed by a movement model). This approach is relatively fast, but in situations in which there are relatively few possible locations for an individual, the approach can work poorly because few kicked particles end up in valid locations. A \code{list} of likelihood functions is used to evaluate the log-likelihood of the data, given each proposal, and optionally filter invalid proposals. Log-likelihoods are translated into weights for resampling (see below).
 
-Following the stochastic-kick methodology, if the effective sample size is <= \code{.trial$trial_sampler_crit}, directed sampling is initiated. For the subset of (previous) locations for which stochastic kicks failed to generate valid samples, for each unique location, this methodology identifies the set of reachable cells, given a mobility parameter, and evaluates likelihoods and the probability density of movements into each reachable location (which are used to define sampling weights). This approach is expensive in terms of time (since it requires iteration over particles) and memory (since the complete set of valid locations is used for sampling). For this reason, it is currently only implemented for the subset of locations for which subsequent samples are lacking. Particles can be processed in batches for improved speed, up to the limits imposed by available memory (see \code{.control}). While this approach is expensive, sampling from the set of valid locations facilitates convergence.
+Following stochastic kicks, if the ESS is <= \code{.trial$trial_sampler_crit}, directed sampling is initiated. For the subset of (previous) locations for which stochastic kicks failed to generate valid samples, for each unique location, this methodology identifies the set of reachable cells, given a mobility parameter, and evaluates log-likelihoods and the log-probability density of movements into each reachable location (which are used to define sampling weights). This approach is expensive in terms of time (since it requires iteration over particles) and memory (since the complete set of valid locations is used for sampling). For this reason, it is currently only implemented for the subset of locations for which subsequent samples are lacking. Particles can be processed in batches for improved speed, up to the limits imposed by available memory (see \code{.control}). While this approach is expensive, sampling from the set of valid locations can facilitate convergence.
 
-You can opt to use either \code{.rpropose} or directed sampling via the \code{.trial_} arguments to \code{\link[=pf_opt_trial]{pf_opt_trial()}}. However, in general, it is advisable to permit the algorithm to chop-and-change between methods, depending on the number of valid proposals. This approach benefits from the speed of stochastic kicks, where possible, as well as the improved convergence properties of directed sampling, where required.
+You can opt to use either \code{.rpropose} or directed sampling via the \code{.trial_} arguments to \code{\link[=pf_opt_trial]{pf_opt_trial()}}. By default, \code{\link[=pf_forward]{pf_forward()}} chops-and-changes between methods, depending on the ESS. This approach benefits from both the speed of stochastic kicks, where possible, and the improved convergence properties of directed sampling, where required.
 
 Particle rejuvenation is another strategy that is sometimes used to facilitate convergence but this is not currently implemented.
 
-At the end of each time step, the effective sample size of weighted particles is evaluated. If the ESS is below the critical value specified in \code{.trial$trial_resample_crit} and/or directed sampling is implemented, particles are (re)-sampled, via \code{.sample}. If the ESS is less than \code{.trial$trial_revert_crit}, the algorithm can step backwards in time by \code{.trial$trial_revert_steps} and try again. This reversion will be attempted up to \code{.trial$trial_revert} times. After \code{.trial$trial_revert} times, if the algorithm reaches a time step when the ESS is less than \code{.trial$trial_revert_crit}, it will produce a \code{\link{warning}}, but attempt to continue the simulation if possible. In the case of convergence failures, you can rerun the simulation from existing outputs, starting from an earlier time step, via \code{.rerun}. However, algorithm arguments should remain constant. On algorithm reversions and reruns, particle samplers are replaced but particle diagnostics are always retained.
+At the end of each time step, the ESS of weighted particles is evaluated. If the ESS is below the critical value specified in \code{.trial$trial_resample_crit} and/or directed sampling is implemented, particles are (re)-sampled, via \code{.sample}.
 
-The algorithm iterates over the time series, proposing, weighting and (re)sampling particles as described above. Particle samples can be saved in memory or written to file, alongside particle diagnostics. If the function fails to convergence, a \code{\link{warning}} is returned alongside the outputs up to that time step. Otherwise, the function will continue to the end of the time series.
+The algorithm iterates over the time series, proposing, weighting and (re)sampling particles as described above. Particle samples can be saved in memory or written to file (with a speed penalty). If the function fails to convergence, a \code{\link{warning}} is returned alongside the outputs up to that time step. Otherwise, the function will continue to the end of the time series.
 }
 
 \section{Algorithms}{
@@ -99,7 +97,7 @@ This is highly flexible routine for the reconstruction of the possible locations
 }
 
 \section{Convergence and diagnostics}{
-While \code{\link[=pf_forward]{pf_forward()}} tries hard to reconstruct a complete time series of location samples, algorithm convergence is not guaranteed. The algorithm may reach a dead-end---a time step at which there are no valid locations into which the algorithm can step. This may be due to data errors, incorrect assumptions, insufficient sampling effort or poor tuning-parameter settings. To facilitate diagnosis of the immediate cause of convergence failures, during likelihood evaluations we keep track of 'particle diagnostics', i.e., the number of unique, valid locations before/after each likelihood evaluation alongside other statistics (see \code{\link{pf_diag-internal}} and \code{\linkS4class{pf_particles}}).
+Algorithm convergence is not guaranteed. The algorithm may reach a dead-end---a time step at which there are no valid locations into which the algorithm can step. This may be due to data errors, incorrect assumptions, insufficient sampling effort or poor tuning-parameter settings
 }
 
 \examples{
@@ -107,7 +105,7 @@ require(data.table)
 require(dtplyr)
 require(dplyr, warn.conflicts = FALSE)
 
-#### Set up forward simulation
+#### Set up data list and observations timeline
 # Set up data list(see `?pat_setup_data()`)
 dlist <- dat_dlist()
 # Add AC* algorithm layers
@@ -116,11 +114,19 @@ dlist$algorithm$detection_kernels  <- acs_setup_detection_kernels(dlist)
 # Set up observations (see `?pf_setup_obs()`)
 obs <- dat_obs()
 
-#### Example (1): Implement ACPF algorithm with default options
-## Implement simulation
+#### Define sub-models
+# Define movement model
+# * We will use the following defaults:
+# * `?pf_rpropose_kick()`
+# * `?pf_dpropose()`
+# Define likelihood functions
+# * We will use the following convenience functions:
 pf_lik_acpf <- list(acs_filter_land = acs_filter_land,
                     acs_filter_container = acs_filter_container,
                     pf_lik_ac = pf_lik_ac)
+
+#### Example (1): Implement ACPF algorithm with default options
+## Run simulation
 ssv()
 out_pff <- pf_forward(.obs = obs,
                       .dlist = dlist,
@@ -129,11 +135,9 @@ out_pff <- pf_forward(.obs = obs,
 ## Examine output object
 # The function returns a named list:
 summary(out_pff)
-# The `history` element contains a list of particle samples
+# `history` contains a list of particle samples
 head(out_pff$history[[1]])
 head(out_pff$history[[2]])
-# The `diagnostics` element contains data.table of particle diagnostics
-head(out_pff$diagnostics, 20)
 # `convergence` records convergence (TRUE/FALSE)
 out_pff$convergence
 # `time` records timings
@@ -191,8 +195,7 @@ out_pff <- pf_forward(.obs = obs,
                       .dpropose = pf_dpropose,
                       .dargs = list(.shape = 1, .scale = 100),
                       .likelihood = pf_lik_acdcpf,
-                      .record = pf_opt_record(.save = TRUE),
-                      .control = pf_opt_control(.sampler_batch_size = 100L))
+                      .record = pf_opt_record(.save = TRUE))
 
 # E.g., customise rlen() .mobility parameter
 # > Restricted mobility leads to convergence failure
@@ -203,8 +206,7 @@ out_pff <- pf_forward(.obs = obs,
                       .dpropose = pf_dpropose,
                       .dargs = list(.mobility = 100),
                       .likelihood = pf_lik_acdcpf,
-                      .record = pf_opt_record(.save = TRUE),
-                      .control = pf_opt_control(.sampler_batch_size = 100L))
+                      .record = pf_opt_record(.save = TRUE))
 # > Pairwise steps are < .mobility + grid resolution/2
 for (i in 2:length(out_pff$history)) {
   print(i)
@@ -212,17 +214,6 @@ for (i in 2:length(out_pff$history)) {
                out_pff$history[[i]][, .(x_now, y_now)], .lonlat = FALSE)
   stopifnot(max(dist) < 100 + terra::res(dlist$spatial$bathy)[1] / 2)
 }
-# > Sequential steps are < .mobility + grid resolution/2
-out_pfbk <- pf_backward_killer(out_pff$history,
-                               .record = pf_opt_record(.save = TRUE))
-out_path <-
-  pf_path(out_pfbk$history, .bathy = dlist$spatial$bathy) |>
-  group_by(path_id) |>
-  mutate(dist = dist_along_path(cbind(cell_x, cell_y), .lonlat = FALSE)) |>
-  ungroup() |>
-  as.data.table()
-stopifnot(max(out_path$dist, na.rm = TRUE) <
-  100 + terra::res(dlist$spatial$bathy)[1] / 2)
 
 ## E.g. customise rlen() and dlen() models
 # Write a new model with step lengths simulated from a lognormal distribution
@@ -234,8 +225,7 @@ out_pff <- pf_forward(.obs = obs,
                       .rargs = list(.rlen = rlnorm, meanlog = 5, sdlog = 0.25),
                       .dargs = list(.dlen = dlnorm, meanlog = 5, sdlog = 0.25),
                       .likelihood = pf_lik_acdcpf,
-                      .record = pf_opt_record(.save = TRUE),
-                      .control = pf_opt_control(.sampler_batch_size = 100L))
+                      .record = pf_opt_record(.save = TRUE))
 
 #### Example (5): Customise likelihood
 # We can implement different algorithms by modifying the .likelihood list (above)
@@ -269,18 +259,18 @@ pf_lik_temp <- function(.particles, .obs, .t, .dlist, .drop) {
   .particles[, temp := terra::extract(x = .dlist$spatial$temp,
                                       y = locs,
                                       layer = .obs$hour[.t])$value]
-  # Calculate temp likelihood
+  # Calculate log-likelihood
   # * We use a simple binary model for illustration
   # * Under this model, temperature observations that are not
   # * ... within a cool/warm limit are impossible
-  .particles[, lik_temp := (temp >= .obs$temp_cool[.t] &
-                              temp <= .obs$temp_warm[.t]) + 0, ]
-  # Update likelihood
-  lik <- NULL
-  .particles[, lik := lik * lik_temp]
+  loglik_temp <- loglik <- NULL
+  .particles[, loglik_temp := log((temp >= .obs$temp_cool[.t] &
+                                     temp <= .obs$temp_warm[.t]) + 0), ]
+  # Update log-likelihood
+  .particles[, loglik := loglik + loglik_temp]
   # (optional) Filter impossible locations
-  if (.drop) {
-    .particles <- .particles[lik > 0, ]
+  if (.drop && collapse::anyv(.particles$loglik, -Inf)) {
+    .particles <- .particles[loglik > -Inf, ]
   }
   .particles
 }
@@ -298,8 +288,6 @@ out_pff <- pf_forward(.obs = obs,
                       .likelihood = list(pf_lik_ac = pf_lik_ac,
                                          pf_lik_temp = pf_lik_temp),
                       .record = pf_opt_record(.save = TRUE))
-# Note that the temperature likelihood (deliberately) has no influence here:
-out_pff$diagnostics
 
 #### Example (6): Customise (re)sampling
 # Adjust the number of particles
@@ -310,15 +298,6 @@ out_pff <- pf_forward(.obs = obs,
                       .n = 1000L,
                       .record = pf_opt_record(.save = TRUE))
 nrow(out_pff$history[[1]])
-# Use systematic resampling
-# * This triggers directed sampling, so we boost sampler_batch_size for improved speed
-ssv()
-out_pff <- pf_forward(.obs = obs,
-                      .dlist = dlist,
-                      .likelihood = pf_lik_acpf,
-                      .sample = pf_sample_systematic,
-                      .control = pf_opt_control(.sampler_batch_size = 100L),
-                      .record = pf_opt_record(.save = TRUE))
 
 #### Example (7): Control convergence via `.trial_` arguments
 # See `vignette("c-demos", package = "patter")` for detailed examples
@@ -339,7 +318,7 @@ out_pff_2 <- pf_forward(.obs = obs,
                         .rerun = out_pff_1, .rerun_from = 5L)
 
 #### Example (9): Adjust record options
-# Use `sink` to write to particles to file (recommended)
+# Use `sink` to write to particles to file (slow)
 pff_folder <- file.path(tempdir(), "forward")
 dir.create(pff_folder)
 ssv()
@@ -347,14 +326,12 @@ out_pff <- pf_forward(.obs = obs,
                       .dlist = dlist,
                       .likelihood = pf_lik_acpf,
                       .record = pf_opt_record(.save = FALSE, .sink = pff_folder))
-# > `save = FALSE` suppresses outputs in memory:
+# > `save = FALSE` does not save outputs in memory:
 out_pff$history
-out_pff$diagnostics
 # > `sink` directs outputs to file:
-list.files(pff_folder)
-head(pf_files(file.path(pff_folder, "history")))
+head(pf_files(file.path(pff_folder)))
 # > Check file size (MB)
-pf_files_size(file.path(pff_folder, "history"))
+pf_files_size(file.path(pff_folder))
 # Use `cols` to restrict the output columns
 cols <- c("timestep", "cell_now", "x_now", "y_now")
 ssv()
@@ -364,11 +341,11 @@ out_pff <- pf_forward(.obs = obs,
                       .record = pf_opt_record(.save = FALSE,
                                               .sink = pff_folder,
                                               .cols = cols))
-pf_files_size(file.path(pff_folder, "history"))
+pf_files_size(file.path(pff_folder))
 unlink(pff_folder, recursive = TRUE)
 
 #### Example (10): Adjust standard `patter-progress` options
-# Use a log.txt file
+# Use a log.txt file (slow)
 log.txt <- tempfile(fileext = ".txt")
 ssv()
 out_pff <- pf_forward(.obs = obs,
@@ -395,25 +372,25 @@ out_pff <- pf_forward(.obs = obs,
 pbapply::pboptions(pbo)
 }
 \seealso{
-The forward filtering--backward sampling algorithm samples locations (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
+The particle filter samples locations (particles) that represent the possible locations of an individual through time, accounting for the data and the individual's movement.
 \itemize{
 \item To set up data, use \code{\link[=pat_setup_data]{pat_setup_data()}}.
-\item \code{\link[=pf_forward]{pf_forward()}} implements the forward filter:
+\item To implement the particle filter, use \code{\link[=pf_forward]{pf_forward()}}:
 \itemize{
-\item To set up an observations timeline, use \code{\link[=pf_setup_obs]{pf_setup_obs()}}.
-\item For proposal (movement) models, see \code{\link{pf_propose}}.
-\item For likelihood functions, to evaluate the likelihood of the data at proposal locations, see \code{\link{pf_lik}}.
-\item For sampling functions, to (re)sample plausible proposal locations, see \code{\link{pf_sample}}.
-\item For tuning parameters, see \code{\link{pf_opt}}.
+\item To set up an observations timeline, use \code{\link[=pf_setup_obs]{pf_setup_obs()}};
+\item For proposal (movement) models, see \code{\link{pf_propose}};
+\item For likelihood functions, to evaluate the likelihood of the data at proposal locations, see \code{\link{pf_lik}};
+\item For sampling functions, to (re)sample plausible proposal locations, see \code{\link{pf_sample}};
+\item For tuning parameters, see \code{\link{pf_opt}};
 }
-\item \code{\link[=pf_backward_*]{pf_backward_*()}} refines outputs from the forward filter:
+\item To map patterns of space use, use:
 \itemize{
-\item \code{\link[=pf_backward_killer]{pf_backward_killer()}} removes dead-ends;
-\item \code{\link{pf_backward_sampler}}\verb{_*()} implements the backward sampler;
+\item The backward smoother (TO DO);
+\item \code{\link[=pf_coord]{pf_coord()}} to extract coordinates;
+\item A \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()};
 }
-\item To reconstruct movement paths from particle samples, use \code{\link[=pf_path]{pf_path()}}.
-\item To map emergent patterns of space use, use \code{\link[=pf_coord]{pf_coord()}} plus a \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()}.
-\item For additional utilities, see supporting \verb{pf_*()} functions, such as \code{\link[=pf_files]{pf_files()}}, \code{\link[=pf_files_size]{pf_files_size()}}, \code{\link[=pf_plot_history]{pf_plot_history()}}, \code{\link[=pf_diag_convergence]{pf_diag_convergence()}} and \code{\link[=pf_diag_summary]{pf_diag_summary()}}.
+\item To reconstruct movement paths, use the backward sampler (TO DO).
+\item For additional utilities, see supporting \verb{pf_*()} functions, such as \code{\link[=pf_files]{pf_files()}}, \code{\link[=pf_files_size]{pf_files_size()}}, \code{\link[=pf_plot_history]{pf_plot_history()}} and \code{\link[=pf_diag_summary]{pf_diag_summary()}}.
 }
 }
 \author{

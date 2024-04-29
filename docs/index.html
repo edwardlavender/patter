@@ -174,9 +174,9 @@
 <li>
 <code><a href="reference/datasets-algorithms.html">dat_pff()</a></code> and <code><a href="reference/datasets-algorithms.html">dat_pff_src()</a></code> for example outputs from <code><a href="reference/pf_forward.html">pf_forward()</a></code>;</li>
 <li>
-<code><a href="reference/datasets-algorithms.html">dat_pfbk()</a></code> and <code><a href="reference/datasets-algorithms.html">dat_pfbk_src()</a></code> for example outputs from <code><a href="reference/pf_backward_killer.html">pf_backward_killer()</a></code>;</li>
+<code>dat_pfbk()</code> and <code>dat_pfbk_src()</code> for example outputs from <code>pf_backward_killer()</code>;</li>
 <li>
-<code><a href="reference/datasets-algorithms.html">dat_pfp()</a></code> for an example output from <code><a href="reference/pf_path.html">pf_path()</a></code>;</li>
+<code>dat_pfp()</code> for an example output from <code>pf_path()</code>;</li>
 <li>
 <code><a href="reference/datasets-algorithms.html">dat_coa()</a></code> for an example output from <code><a href="reference/coa.html">coa()</a></code>;</li>
 </ul>
@@ -196,7 +196,7 @@
 <p>These functions are supported by a set of simulation helpers, including:</p>
 <ul>
 <li>
-<code><a href="reference/sim_helpers.html">rbern()</a></code>, <code><a href="reference/sim_helpers.html">rdet()</a></code>, <code><a href="reference/sim_helpers.html">dbern()</a></code>, <code><a href="reference/sim_helpers.html">ddetlogistic()</a></code> and <code><a href="reference/sim_helpers.html">ddet()</a></code> for the simulation of detections;</li>
+<code><a href="reference/sim_helpers.html">rbern()</a></code>, <code><a href="reference/sim_helpers.html">rdet()</a></code>, <code><a href="reference/sim_helpers.html">dbern()</a></code>, <code><a href="reference/sim_helpers.html">pdetlogistic()</a></code> and <code><a href="reference/sim_helpers.html">pdet()</a></code> for the simulation of detections;</li>
 <li>
 <code><a href="reference/sim_helpers.html">dtruncgamma()</a></code>, <code><a href="reference/sim_helpers.html">rtruncgamma()</a></code>, <code><a href="reference/sim_helpers.html">rlen()</a></code> and <code><a href="reference/sim_helpers.html">clen()</a></code> for the simulation of step lengths;</li>
 <li>
@@ -309,9 +309,9 @@
 <p><strong>To implement the backward pass (<code>pf_backward_*()</code>)</strong>, use:</p>
 <ul>
 <li>
-<code><a href="reference/pf_backward_killer.html">pf_backward_killer()</a></code> to prune dead-ends;</li>
+<code>pf_backward_killer()</code> to prune dead-ends;</li>
 <li>
-<code><a href="reference/pf_backward_sampler.html">pf_backward_sampler_p()</a></code> or [<code><a href="reference/pf_backward_sampler.html">pf_backward_sampler_v()</a></code>] to run the backward sampler;</li>
+<code>pf_backward_sampler_p()</code> or [<code>pf_backward_sampler_v()</code>] to run the backward sampler;</li>
 </ul>
 <p><strong>For particle diagnostics</strong>, see:</p>
 <ul>
@@ -335,7 +335,7 @@
 <p><strong>For movement-path reconstruction</strong>, use:</p>
 <ul>
 <li>
-<code><a href="reference/pf_path.html">pf_path()</a></code> (and <code><a href="reference/pf_path_pivot.html">pf_path_pivot()</a></code>) to reconstruct movement paths;</li>
+<code>pf_path()</code> (and <code>pf_path_pivot()</code>) to reconstruct movement paths;</li>
 </ul>
 <p><strong>For mapping utilisation distributions</strong>, use:</p>
 <ul>

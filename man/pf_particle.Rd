@@ -6,7 +6,7 @@
 \alias{.pf_sample_origin}
 \alias{.pf_particles_origin}
 \alias{.pf_lik}
-\alias{.pf_lik_ac_detection}
+\alias{.acs_filter_container}
 \alias{.pf_lik_dc}
 \alias{.pf_particles_kick}
 \alias{.pf_particles_sampler}
@@ -34,7 +34,7 @@
 
 .pf_lik(.particles, .obs, .t, .dlist, .stack, .control)
 
-.pf_lik_ac_detection(.particles, .kernels, .detections, .absences)
+.acs_filter_container(.dist, .buffer)
 
 .pf_lik_dc(.x, .a, .b)
 
@@ -88,14 +88,13 @@ Proposal functions must also accept:
 \item \code{.dargs}
 }
 
-\code{\link[=.pf_lik]{.pf_lik()}} is a wrapper for specified likelihood functions (see \code{\link{pf_lik}}). The function returns a \code{\link{data.table}} that defines valid proposal locations, likelihoods and weights. A \code{diagnostics} attribute contains proposal diagnostics. This also requires:
+\code{\link[=.pf_lik]{.pf_lik()}} is a wrapper for specified likelihood functions (see \code{\link{pf_lik}}). The function returns a \code{\link{data.table}} that defines proposal locations, log-likelihoods and log-weights. This also requires:
 \itemize{
 \item \code{.stack}---a named \code{list} of likelihood functions (see \code{\link{pf_lik}}).
-\item \code{.diagnostics}---an empty \code{list} used to store likelihood diagnostics, or \code{NULL}.
 \item \code{.control}---a named \code{list} of control options, from \code{\link[=pf_opt_control]{pf_opt_control()}}.
 }
 
-Most likelihood functions are directly exported but some internals routines are also documented here for convenience, namely \code{\link[=.pf_lik_ac_detection]{.pf_lik_ac_detection()}} and \code{\link[=.pf_lik_drop]{.pf_lik_drop()}}. See also \verb{acs_*()} functions.
+Most likelihood functions are directly exported but some internals routines are also documented here for convenience. See also \verb{acs_*()} functions.
 
 Sampling functions must accept:
 \itemize{
@@ -109,7 +108,7 @@ Wrapper functions must accept:
 \item Proposal functions (\code{.rpropose},\code{.dpropose}) and argument lists (\code{.rargs}, \code{.dargs});
 \item Additional likelihood arguments (\code{.likelihood});
 \item Sampling arguments (\code{.sample}, \code{.n});
-\item Iteration arguments, if applicable (\code{.trial_crit}, \code{.trial_count});
+\item Iteration arguments, if applicable (\code{.trial_crit});
 \item Control arguments (\code{.control});
 }
 

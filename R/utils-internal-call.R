@@ -52,10 +52,10 @@ call_duration <- function(.start, .end, ...) {
 #' @rdname call_
 #' @keywords internal
 
-# Record call timings in a list
+# Record call timings
 call_timings <- function(.start, .end = Sys.time(), ...) {
   # check_dots_used: difftime() used
-  list(start = .start,
-       end = .end,
-       duration = difftime(.end, .start, ...))
+  data.table(start = .start,
+             end = .end,
+             duration = difftime(.end, .start, ...))
 }

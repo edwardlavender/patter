@@ -8,117 +8,51 @@
 pf_diag_summary(.history, ...)
 }
 \arguments{
-\item{.history}{For \code{\link[=pf_diag_summary]{pf_diag_summary()}}, \code{.history} expects particle samples, provided in any format accepted by \code{\link[=.pf_history_dt]{.pf_history_dt()}}.}
+\item{.history}{Particle samples, provided in any format accepted by \code{\link[=.pf_history_dt]{.pf_history_dt()}}.}
 
-\item{...}{Additional arguments.
-\itemize{
-\item In \code{\link[=pf_diag_convergence]{pf_diag_convergence()}}, \code{...} is passed to \code{\link[arrow:open_dataset]{arrow::open_dataset()}}.
-\item In \code{\link[=pf_diag_summary]{pf_diag_summary()}}, \code{...} is passed to \code{\link[=.pf_history_dt]{.pf_history_dt()}}. \code{.collect}, if used, is necessarily \code{TRUE} and should not be specified.
-}}
-
-\item{.sink}{For \code{\link[=pf_diag_convergence]{pf_diag_convergence()}}, \code{.sink} specifies particle diagnostics. The following inputs are accepted:
-\itemize{
-\item A \code{\linkS4class{pf_particles}} object;
-\item A \code{character} string that defines the directory containing \code{parquet} files, specified in one of the following formats:
-\itemize{
-\item \code{{.record$sink}} (as specified in \code{\link[=pf_forward]{pf_forward()}});
-\item \verb{\{.record$sink\}/diagnostics/};
-}
-}}
+\item{...}{Additional arguments passed to \code{\link[=.pf_history_dt]{.pf_history_dt()}}. \code{.collect}, if used, is necessarily \code{TRUE} and should not be specified.}
 }
 \value{
 \verb{pf_diag_*()} functions return \code{\link{data.table}}s.
-
-\code{\link[=pf_diag_convergence]{pf_diag_convergence()}} returns the \code{diagnostics} \code{\link{data.table}} of a \code{pf_particles-class} object.
 
 \code{\link{pf_diag_summary}} returns a summary \code{\link{data.table}} with the following columns:
 \itemize{
 \item \code{timestep}---an \code{integer} that defines the time step;
 \item \code{n}---an \code{integer} that defines the number of particles;
 \item \code{nu}---an \code{integer} that defines the number of unique location samples (see \code{\link[=.pf_diag_nu]{.pf_diag_nu()}});
-\item \code{ess}---a \code{double} that defines the effective sample size or \code{NA_real_} if the \code{lik} column is unavailable (see \code{\link[=.pf_diag_ess]{.pf_diag_ess()}});
+\item \code{ess}---a \code{double} that defines the effective sample size or \code{NA_real_} if the \code{logwt} column is unavailable (see \code{\link[=.pf_diag_ess]{.pf_diag_ess()}});
 }
 }
 \description{
-These functions collate particle diagnostics from \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_*]{pf_backward_*()}}.
+These functions collate particle diagnostics.
 }
 \details{
 Particle diagnostics are fully described in \code{\link{pf_diag-internal}}.
 
-\code{\link[=pf_diag_convergence]{pf_diag_convergence()}} collates convergence diagnostic outputs from \code{\link[=pf_forward]{pf_forward()}}. If \code{\link[=pf_forward]{pf_forward()}} is implemented with \code{.record$save = TRUE}, the outputted \code{\linkS4class{pf_particles}} object from \code{\link[=pf_forward]{pf_forward()}} includes a pre-compiled \code{\link{data.table}} of diagnostics (see \code{\link[=pf_opt_record]{pf_opt_record()}}). \code{\link[=pf_diag_convergence]{pf_diag_convergence()}} accepts a \code{\linkS4class{pf_particles}} object, but there is really no need for this, as a \code{diagnostics} element is already present in this object. Instead, \code{\link[=pf_diag_convergence]{pf_diag_convergence()}} is primarily designed to collate particle diagnostics on file. \code{\link[=pf_forward]{pf_forward()}} writes particle diagnostics to \code{{.record$sink}/diagnostics} (see \code{\link[=pf_opt_record]{pf_opt_record()}}). You can supply \code{{.record$sink}} or \verb{\{.record$sink\}/diagnostics/} to this function. The individual \code{\link{data.table}}s are collated to match the form in which they are provided by \code{\link[=pf_forward]{pf_forward()}} when \code{.record$save = TRUE}.
-
-\code{\link[=pf_diag_summary]{pf_diag_summary()}} summarises particle diagnostics directly from (accepted) particle samples. This can be used for \code{\link[=pf_forward]{pf_forward()}} or \code{\link[=pf_backward_*]{pf_backward_*()}}.
+\code{\link[=pf_diag_summary]{pf_diag_summary()}} summarises particle diagnostics.
 }
 \examples{
-#### Example (1): Use particle samples from pf_forward() or pf_backward_*()
+#### Example (1): Use particle samples from particle-filtering routines
+# (TO DO)
 pf_diag_summary(.history = dat_pff())
-pf_diag_summary(.history = dat_pfbk())
-pf_diag_summary(.history = dat_pfbs())
 
 #### Example (2): Use particle samples in memory or on file
 # Particles can be provided in any format accepted by `?.pf_history_dt()`
-d1 <- pf_diag_summary(.history = dat_pfbk())
-d2 <- pf_diag_summary(.history = dat_pfbk()$history)
-d3 <- pf_diag_summary(.history = dat_pfbk_src())
-d4 <- pf_diag_summary(.history = pf_files(dat_pfbk_src()))
+d1 <- pf_diag_summary(.history = dat_pff())
+d2 <- pf_diag_summary(.history = dat_pff()$history)
+d3 <- pf_diag_summary(.history = dat_pff_src())
+d4 <- pf_diag_summary(.history = pf_files(dat_pff_src()))
 stopifnot(isTRUE(all.equal(d1, d2)))
 stopifnot(isTRUE(all.equal(d1, d3)))
 stopifnot(isTRUE(all.equal(d1, d4)))
 
 ## (C) Examine trends in particle diagnostics
-
-# Collate particle diagnostics
-diag_f <- pf_diag_summary(dat_pff())
-diag_k <- pf_diag_summary(dat_pfbk())
-diag_s <- pf_diag_summary(dat_pfbs())
-
-# Plot diagnostic time series
-pf_plot_diag_ts <- function(.f, .k, .s, .metric = c("n", "nu", "ess"), ...){
-  # Define base plot
-  .metric <- match.arg(.metric)
-  vals    <- c(.f[[.metric]], .k[[.metric]], .s[[.metric]])
-  if (all(is.na(vals))) {
-    return(NULL)
-  }
-  ylim <- range(vals, na.rm = TRUE)
-  plot(.f$timestep, .f[[.metric]],
-       xlab = "time step", ylab = .metric,
-       ylim = ylim, type = "n", ...)
-  # Add diagnostics for each algorithm
-  add_diag <- function(x, y, col) {
-    if (!all(is.na(y))) {
-      # Add semi-transparent smoother (colour: ct)
-      ct <- col2rgb(col) / 255
-      ct <- rgb(ct[1], ct[2], ct[3], alpha = 0.25)
-      lines(stats::loess.smooth(x, y), lwd = 2, col = ct)
-      # Add points
-      points(x, y, cex = 0.5, col = col)
-    }
-    invisible(NULL)
-  }
-  add_diag(.f$timestep, .f[[.metric]], col = "red")
-  add_diag(.k$timestep, .k[[.metric]], col = "orange")
-  add_diag(.s$timestep, .s[[.metric]], col = "darkgreen")
-}
-
-# Plot time series
-# * Red:    pf_forward()
-# * Orange: pf_backward_killer()
-# * Green:  pf_backward_sampler_*()
-pp <- par(mfrow = c(1, 3))
-cl_lapply(c("n", "nu", "ess"), function(.metric) {
-  print(.metric)
-  pf_plot_diag_ts(.f = diag_f,
-                  .k = diag_k,
-                  .s = diag_s,
-                  .metric = .metric)
-})
-par(pp)
+# (TO DO)
 }
 \seealso{
 \itemize{
-\item \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_*]{pf_backward_*()}} implement the forward simulation and the backward pass;
-\item \code{\link[=pf_diag_convergence]{pf_diag_convergence()}} and \code{\link[=pf_diag_summary]{pf_diag_summary()}} collect diagnostics;
+\item \code{\link[=pf_forward]{pf_forward()}} and associates implement particle filtering algorithms;
+\item \code{\link[=pf_diag_summary]{pf_diag_summary()}} summarises diagnostics;
 \item \code{\link{.pf_diag}}\verb{_()} functions are internal routines that calculate diagnostic statistics;
 }
 }

@@ -160,7 +160,7 @@ To simulate passive acoustic telemetry data, see:
 
 These functions are supported by a set of simulation helpers, including:
 
-- `rbern()`, `rdet()`, `dbern()`, `ddetlogistic()` and `ddet()` for the
+- `rbern()`, `rdet()`, `dbern()`, `pdetlogistic()` and `pdet()` for the
   simulation of detections;
 - `dtruncgamma()`, `rtruncgamma()`, `rlen()` and `clen()` for the
   simulation of step lengths;

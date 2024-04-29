@@ -44,11 +44,11 @@ test_that("acs_setup_detection_kernel() works", {
   # Test default implementation
   p <- acs_setup_detection_kernel(m, .bathy = dat_gebco())
   expect_equal(terra::extract(p, data.frame(m$receiver_x, m$receiver_y))[1, 2],
-               ddetlogistic(0))
-  # Test customisation of .ddetx arguments
+               pdetlogistic(0))
+  # Test customisation of .pdetx arguments
   p <- acs_setup_detection_kernel(m, .bathy = dat_gebco(), .alpha = 0, .beta = 0)
   expect_equal(terra::extract(p, data.frame(m$receiver_x, m$receiver_y))[1, 2],
-               ddetlogistic(0, .alpha = 0, .beta = 0))
+               pdetlogistic(0, .alpha = 0, .beta = 0))
   # Test unused arguments
   acs_setup_detection_kernel(m, .bathy = dat_gebco(), .blah = 1) |>
     expect_error("unused argument (.blah = 1)", fixed = TRUE)
@@ -75,48 +75,44 @@ test_that("acs_setup_detection_kernels() works", {
   #### Implement function
   # Define output for example receiver
   m <- dlist$data$moorings
-  pr <- lapply(seq_len(max(m$receiver_id)), function(id) {
-    if (!(id %in% m$receiver_id)) return(NULL)
-    # Test default implementation
-    acs_setup_detection_kernel(m[m$receiver_id == id, , drop = FALSE],
-                               .bathy = dat_gebco())
+  pr <- lapply(m$receiver_id, function(id) {
+    acs_setup_detection_kernel(m[receiver_id == id, ], .bathy = dat_gebco())
   })
+  names(pr) <- as.character(m$receiver_id)
   # Define kernels
   k <- acs_setup_detection_kernels(dlist,
-                                   .ddetkernel = acs_setup_detection_kernel)
+                                   .pdetkernel = acs_setup_detection_kernel)
 
-  #### Check array designs
-  expect_true(all.equal(
-    k$array_design[, 1:3],
-    data.frame(array_id = c(1, 2),
-               array_start_date = as.Date(c("2016-01-01", "2016-01-02")),
-               array_end_date = as.Date(c("2016-01-01", "2016-01-05")))
-  ))
-
-  #### Check receiver specific kernels & inverse kernels
-  sapply(1:2, \(i) is.null(k$receiver_specific_kernels[[i]]))
-  sapply(3:5, \(i) !is.null(k$receiver_specific_kernels[[i]]))
-  lapply(3:5, function(i) {
+  #### Check receiver specific kernels
+  check_names(k, c("pkernel", "loglik"))
+  lapply(seq_len(length(k$pkernel)), function(i) {
     # Check receiver-specific kernels
-    expect_true(terra::all.equal(k$receiver_specific_kernels[[i]], pr[[i]]))
-    # Check receiver-specific inverse kernels
-    expect_true(terra::all.equal(k$receiver_specific_inv_kernels[[i]], 1 - pr[[i]]))
+    expect_true(terra::all.equal(k$pkernel[[i]],
+                                 terra::crop(pr[[i]], k$pkernel[[i]])))
   }) |> invisible()
 
-  #### Check background surface by design
-  expect_true(terra::all.equal(k$bkg_surface_by_design[[1]], pr[[4]]))
-
-  #### Check inverse background surface by design
-  a <- k$bkg_inv_surface_by_design[[2]]
-  b <- (1 - pr[[3]]) * (1 - pr[[4]]) * (1 - pr[[5]])
+  #### Check background (inverse) log-likelihood surfaces
+  # On 2016-01-01 when receiver 4 is active:
+  a <- k$loglik[[1]]
+  b <- log(1 - pr[["4"]])
+  b <- terra::crop(b, a)
+  names(a) <- names(b) <- "layer"
+  expect_true(terra::all.equal(a, b))
+  # On 2016-01-02 when all receivers were active
+  a <- k$loglik[[2]]
+  b <- log(1 - pr[["3"]]) + log(1 - pr[["4"]]) + log(1 - pr[["5"]])
+  b <- terra::crop(b, a)
+  b <- terra::mask(b,
+                   terra::crop(dat_gebco(), b),
+                   updatevalue = -Inf)
   names(a) <- names(b) <- "layer"
   expect_true(terra::all.equal(a, b))
 
   #### Check validation of invalid inputs
   # Define invalid input
-  ddetkernel <- function(.mooring, .bathy, .mask = TRUE, .error = NA) {
+  pdetkernel <- function(.mooring, .bathy, .mask = TRUE, .error = NA) {
     # Define helper function to calculate detection probability given distance (m)
-    .ddetx <- function(distance) {
+    .pdetx <- function(distance) {
       pr <- stats::plogis(2.5 + -0.02 * distance)
       pr[distance > .mooring$receiver_range] <- 0
       pr
@@ -131,7 +127,7 @@ test_that("acs_setup_detection_kernels() works", {
       dist <- terra::mask(dist, .bathy)
     }
     # Convert distances to detection pr
-    pr <- terra::app(dist, .ddetx)
+    pr <- terra::app(dist, .pdetx)
     # Introduce error: set the receiver 3 location to 0 or NA
     if (.mooring$receiver_id == 3L) {
       pr[cell] <- .error
@@ -140,19 +136,19 @@ test_that("acs_setup_detection_kernels() works", {
   }
   # Check warnings (NA at receiver)
   acs_setup_detection_kernels(dlist,
-                              .ddetkernel = ddetkernel) |>
+                              .pdetkernel = pdetkernel) |>
     expect_warning("Detection probability is NA at receiver 3.", fixed = TRUE)
   # Check warnings (0 at receiver)
   acs_setup_detection_kernels(dlist,
-                              .ddetkernel = ddetkernel, .error = 0) |>
+                              .pdetkernel = pdetkernel, .error = 0) |>
     expect_warning("Detection probability is 0 at receiver 3.", fixed = TRUE)
 
   # Check dot handling
   acs_setup_detection_kernels(dlist,
-                              .ddetkernel = acs_setup_detection_kernel,
+                              .pdetkernel = acs_setup_detection_kernel,
                               .alpha = 4)
   acs_setup_detection_kernels(dlist,
-                              .ddetkernel = acs_setup_detection_kernel,
+                              .pdetkernel = acs_setup_detection_kernel,
                               .blah = 4) |>
     expect_error("unused argument (.blah = 4)", fixed = TRUE)
 

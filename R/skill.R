@@ -37,7 +37,8 @@
 #' * To simulate observations in passive acoustic telemetry systems, see `sim_*()` functions (especially [`sim_array()`], [`sim_path_walk()`] and [`sim_detections()`]);
 #' * To translate observations into coordinates for mapping patterns of space use, see:
 #'     * [`coa()`] to calculate centres of activity;
-#'     * [`pf_forward()`] and [`pf_backward_*()`] to implement the forward filtering--backward sampling algorithm and [`pf_coord()`] extracts coordinates from particle samples;
+#'     * [`pf_forward()`] and associates to implement particle filtering algorithms;
+#'     * [`pf_coord()`] to extracts coordinates from particle samples;
 #' * To estimate utilisation distributions from simulated data and algorithm outputs, use `map_*()` functions (see [`map_pou()`], [`map_dens()`] and [`map_hr()`]);
 #' @author Edward Lavender
 #' @name skill

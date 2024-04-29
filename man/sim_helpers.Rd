@@ -7,8 +7,8 @@
 \alias{rbern}
 \alias{dbern}
 \alias{rdet}
-\alias{ddetlogistic}
-\alias{ddet}
+\alias{pdetlogistic}
+\alias{pdet}
 \alias{rtruncgamma}
 \alias{dtruncgamma}
 \alias{rwn}
@@ -30,11 +30,11 @@ rbern(.n, .prob)
 
 dbern(.x, .prob)
 
-rdet(.data, .ddet = ddet, ...)
+rdet(.data, .pdet = pdet, ...)
 
-ddetlogistic(.x, .alpha = 4, .beta = -0.01, .gamma = 750)
+pdetlogistic(.x, .alpha = 4, .beta = -0.01, .gamma = 750)
 
-ddet(.data, .ddetx = ddetlogistic, ...)
+pdet(.data, .pdetx = pdetlogistic, ...)
 
 rtruncgamma(.n = 1L, .shape = 15, .scale = 15, .mobility = 500, ...)
 
@@ -92,20 +92,20 @@ cang(.xy0, .xy1, .lonlat)
 \item \code{.prob} is \code{numeric} vector of probabilities.
 }}
 
-\item{.data, .ddet}{Arguments for \code{\link[=rdet]{rdet()}}.
+\item{.data, .pdet}{Arguments for \code{\link[=rdet]{rdet()}}.
 \itemize{
 \item \code{.data} is a \code{\link{data.table}}.
-\item \code{.ddet} is a \code{function} evaluates the probability of a detection;
+\item \code{.pdet} is a \code{function} evaluates the probability of a detection;
 }
 
-For \code{\link[=rdet]{rdet()}}, \code{.ddet} must accept the \code{.data} \code{\link{data.table}} as its first argument and evaluate the probability of a detection accordingly. \code{\link[=rbern]{rbern()}} then simulates detection(s). For \verb{.ddet =} \code{\link{ddet}}, \code{.data} must include a \code{dist} column that defines the distances between transmission locations and receivers. In \code{\link[=ddet]{ddet()}}, \code{.data$dist} is passed to \code{\link[=ddetlogistic]{ddetlogistic()}} to calculate detection probabilities (see Details).}
+For \code{\link[=rdet]{rdet()}}, \code{.pdet} must accept the \code{.data} \code{\link{data.table}} as its first argument and evaluate the probability of a detection accordingly. \code{\link[=rbern]{rbern()}} then simulates detection(s). For \verb{.pdet =} \code{\link{pdet}}, \code{.data} must include a \code{dist} column that defines the distances between transmission locations and receivers. In \code{\link[=pdet]{pdet()}}, \code{.data$dist} is passed to \code{\link[=pdetlogistic]{pdetlogistic()}} to calculate detection probabilities (see Details).}
 
 \item{...}{Arguments passed to/from functions.
 \itemize{
 \item \code{\link[=ssf]{ssf()}}, \code{\link[=ssv]{ssv()}}: not used;
-\item \code{\link[=rbern]{rbern()}}, \code{\link[=ddet]{ddet()}}: not used;
-\item \code{\link[=rdet]{rdet()}}, \code{\link[=ddet]{ddet()}}: passed to \code{.ddet} ( = \code{\link[=ddet]{ddet()}}, wrapping \code{\link[=ddetlogistic]{ddetlogistic()}});
-\item \code{\link[=ddetlogistic]{ddetlogistic()}}: not used;
+\item \code{\link[=rbern]{rbern()}}, \code{\link[=dbern]{dbern()}}: not used;
+\item \code{\link[=rdet]{rdet()}}, \code{\link[=pdet]{pdet()}}: passed to \code{.pdet} ( = \code{\link[=pdet]{pdet()}}, wrapping \code{\link[=pdetlogistic]{pdetlogistic()}});
+\item \code{\link[=pdetlogistic]{pdetlogistic()}}: not used;
 \item \code{\link[=rtruncgamma]{rtruncgamma()}}, \code{\link[=dtruncgamma]{dtruncgamma()}}: silently ignored;
 \item \code{\link[=rwn]{rwn()}}: silently ignored;
 \item \code{\link[=rlen]{rlen()}}: passed to \code{\link[=rtruncgamma]{rtruncgamma()}};
@@ -118,16 +118,16 @@ For \code{\link[=rdet]{rdet()}}, \code{.ddet} must accept the \code{.data} \code
 \item \code{\link[=cang]{cang()}}: not used;
 }}
 
-\item{.alpha, .beta, .gamma}{Additional arguments for \code{\link[=ddetlogistic]{ddetlogistic()}} (see Details).
+\item{.alpha, .beta, .gamma}{Additional arguments for \code{\link[=pdetlogistic]{pdetlogistic()}} (see Details).
 \itemize{
 \item \code{.alpha} is a \code{numeric} value for the intercept, on the scale of the logistic function.
 \item \code{.beta} is a \code{numeric} value for the gradient, on the scale of the logistic function.
 \item \code{.gamma} is a \code{numeric} value for the receiver detection range.
 }}
 
-\item{.ddetx}{Additional arguments for \code{\link[=ddet]{ddet()}}.
+\item{.pdetx}{Additional arguments for \code{\link[=pdet]{pdet()}}.
 \itemize{
-\item \code{.ddetx} is a function that evaluates the probability density of detections from a \code{numeric} vector (e.g,. of distances).
+\item \code{.pdetx} is a \code{function} that evaluates the probability density of detections from a \code{numeric} vector (e.g,. of distances).
 }}
 
 \item{.shape, .scale, .mobility}{Additional arguments for \code{\link[=rtruncgamma]{rtruncgamma()}} and \code{\link[=dtruncgamma]{dtruncgamma()}}:
@@ -179,17 +179,14 @@ The first argument to both functions must be the number of values to simulate. O
 \code{.cang} and \code{.dang} arguments are not yet implemented and must be \code{\link{missing}}.}
 }
 \description{
-These convenience functions support the generation of animal movement paths and observations in \emph{de novo} simulations (\verb{sim_*()} functions) and simulation-based reconstructions of movement paths (\code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_*]{pf_backward_*()}}).
+These convenience functions support the generation of animal movement paths and observations in \emph{de novo} simulations (\verb{sim_*()} functions) and simulation-based reconstructions of movement paths (\code{\link[=pf_forward]{pf_forward()}} and associates).
 \itemize{
 \item \verb{ss*()} functions set seeds;
+\item \verb{p*()} functions give probabilities;
 \item \verb{r*()} functions simulate random variates;
 \item \verb{c*()} functions calculate outcomes from random-variate inputs;
-\item \verb{d*()} functions return densities;
+\item \verb{d*()} functions return probability densities;
 }
-
-\verb{r*()} and \verb{c*()} functions are used in \emph{de novo} simulations (via \verb{sim_*()} functions such as \code{\link[=sim_path_walk]{sim_path_walk()}} and \code{\link[=sim_detections]{sim_detections()}}) and the forward simulation-based reconstruction of movement paths (in \code{\link[=pf_forward]{pf_forward()}}).
-
-\verb{d*()} functions are primarily used in the simulation-based reconstruction of movement paths as part of the backward sampler via \code{\link[=pf_backward_*]{pf_backward_*()}}.
 }
 \section{Reproducibility}{
 \itemize{
@@ -199,6 +196,21 @@ These convenience functions support the generation of animal movement paths and 
 }
 
 \section{Detections}{
+\subsection{Probabilities}{
+\itemize{
+\item \code{\link[=pdetlogistic]{pdetlogistic()}} evaluates detection probability at a receiver, given a transmission from location \eqn{\bold{s} = (x, y)} as a truncated \eqn{\text{logistic}} function of the distance (\code{.x}) between the transmission (\bold{s}) and receiver (\bold{r}) locations, i.e.,
+\deqn{
+\text{.prob} =
+ \begin{cases}
+   \text{logistic}(\text{.alpha} + \text{.beta} \times .x) & \text{if } .x < \text{.gamma} \\
+   0 & \text{otherwise}
+ \end{cases}
+}
+where \eqn{\text{logistic}(x) = 1 + e^{-x}}; \code{.alpha}, and \code{.beta} are parameters; and \code{.gamma} is the receiver's detection range.
+\item \code{\link[=pdet]{pdet()}} wraps \code{\link[=pdetlogistic]{pdetlogistic()}} to evaluate detection probability;
+}
+}
+
 \subsection{Distribution functions}{
 \itemize{
 \item \verb{*bern()} functions are distribution functions for the Bernoulli distribution:
@@ -211,21 +223,8 @@ These convenience functions support the generation of animal movement paths and 
 
 \subsection{Wrappers}{
 \itemize{
-\item \verb{*det()} functions wrap \verb{*bern()} functions for the simulation of detections at receivers:
-\itemize{
-\item \code{\link[=rdet]{rdet()}} wraps \code{\link[=ddet]{ddet()}} and \code{\link[=rbern]{rbern()}} to simulate detections;
-\item \code{\link[=ddet]{ddet()}} wraps \code{\link[=ddetlogistic]{ddetlogistic()}} to calculate the probability density of detections;
-\item \code{\link[=ddetlogistic]{ddetlogistic()}} effectively wraps \code{\link[=dbern]{dbern()}} and evaluates the probability density of a detection event (at receiver \eqn{k} at time \eqn{t}), given a transmission from location \eqn{\bold{s} = (x, y)} (i.e., \eqn{p(\text{ev}[k, t] | \bold{s})}), as a truncated \eqn{\text{logistic}} function of the distance (\code{.x}) between the transmission (\bold{s}) and receiver (\bold{r}) locations, i.e.,
-\deqn{
-p(\text{ev}[k, t] | \bold{s}) =  \text{Bernoulli}(\text{.prob}) \\
-\text{.prob} =
- \begin{cases}
-   \text{logistic}(\text{.alpha} + \text{.beta} \times .x) & \text{if } .x < \text{.gamma} \\
-   0 & \text{otherwise}
- \end{cases}
-}
-where \eqn{\text{logistic}(x) = 1 + e^{-x}}; \code{.alpha}, and \code{.beta} are parameters; and \code{.gamma} is the receiver's detection range.
-}
+\item \code{\link[=rdet]{rdet()}} wraps \code{\link[=pdet]{pdet()}} and \code{\link[=rbern]{rbern()}} to simulate detections;
+\item The corresponding function \code{ddet()} is not currently required;
 }
 }
 }
@@ -288,7 +287,7 @@ where \eqn{\text{logistic}(x) = 1 + e^{-x}}; \code{.alpha}, and \code{.beta} are
 \section{Warnings}{
 \itemize{
 \item \strong{Dots.} Most of the above low-level functions silently accept unused dots (\code{...}). In higher level functions (such as \code{\link[=sim_path_walk]{sim_path_walk()}}, \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}} and \code{\link[=pf_dpropose]{pf_dpropose()}}), unused dots produce an error or a warning.
-\item \strong{Correlated random walks.} It is possible to simulate correlated random walks in \code{\link[=sim_path_walk]{sim_path_walk()}} but at the time of writing this is not supported \code{\link[=pf_forward]{pf_forward()}}. Probability density functions for correlated random walks, as required for \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_*]{pf_backward_*()}} (e.g., \code{dangrw()}, \code{dangcrw()}) are not implemented.
+\item \strong{Correlated random walks.} It is possible to simulate correlated random walks in \code{\link[=sim_path_walk]{sim_path_walk()}} but at the time of writing this is not supported \code{\link[=pf_forward]{pf_forward()}}. Probability density functions for correlated random walks (e.g., \code{dangrw()}, \code{dangcrw()}) are not implemented.
 }
 }
 
@@ -319,20 +318,20 @@ dists <- data.table(individual_id = 1L,
                     dist = runif(100, 0, 1000))
 # Simulate detections using default arguments
 rdet(.data = data.table(dists))[]
-# Customise arguments passed to .ddet -> ddet() -> ddetlogistic()
+# Customise arguments passed to .pdet -> pdet() -> pdetlogistic()
 rdet(.data = dists, .gamma = 10)[]
-# Customise .ddet model
+# Customise .pdet model
 # * See below.
 
-#### Probability density of detections
-# Use ddetlogistic() to evaluate densities via a logistic function of distances
-ddetlogistic(1:10)
-ddetlogistic(1:10, .gamma = 500)
-# Use ddet() wrapper function
-ddet(dists)
-ddet(dists, .gamma = 500)
-# Customise .ddetx model
-ddetlinear <- function(.x, .alpha = 1, .beta = -0.002, .gamma = 500) {
+#### Detection probability
+# Use pdetlogistic() to evaluate detection Pr as a logistic function of distance
+pdetlogistic(1:10)
+pdetlogistic(1:10, .gamma = 500)
+# Use pdet() wrapper function
+pdet(dists)
+pdet(dists, .gamma = 500)
+# Customise .pdetx model
+pdetlinear <- function(.x, .alpha = 1, .beta = -0.002, .gamma = 500) {
   pr <- .alpha + .beta * .x
   pr <- pmax(pr, 0)
   pr <- pmin(pr, 1)
@@ -340,13 +339,13 @@ ddetlinear <- function(.x, .alpha = 1, .beta = -0.002, .gamma = 500) {
   # pr <- dbern(.x = 1L, size = 1L, prob = pr)
   pr
 }
-plot(1:500, ddetlinear(1:500),
+plot(1:500, pdetlinear(1:500),
      xlim = c(0, 500), ylim = c(0, 1),
      xlab = "Detection probability", ylab = "Distance (m)",
      type = "l")
-ddet(dists, .ddetx = ddetlinear)
-# Use ddetlinear in rdet()
-det <- rdet(.data = dists, .ddetx = ddetlinear)
+pdet(dists, .pdetx = pdetlinear)
+# Use pdetlinear in rdet()
+det <- rdet(.data = dists, .pdetx = pdetlinear)
 points(det$dist, det$detection)
 
 
@@ -535,8 +534,7 @@ compare(270)
 \item \code{\link[=sim_path_walk]{sim_path_walk()}} simulates movement path(s) via a walk model;
 \item \code{\link[=sim_detections]{sim_detections()}} simulates detection(s) at receivers;
 }
-\item \code{\link[=pf_forward]{pf_forward()}} implements forward simulation-based reconstruction of movement paths;
-\item \code{\link[=pf_backward_*]{pf_backward_*()}} implements backward simulation-based reconstruction of movement paths;
+\item \code{\link[=pf_forward]{pf_forward()}} and associates implement the simulation-based reconstruction of movements;
 \item \code{\link{skill}} functions compared simulated and reconstructed patterns to evaluate model skill;
 }
 }

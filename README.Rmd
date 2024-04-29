@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
 ```
 
 # [`patter`](https://github.com/edwardlavender/patter) for passive acoustic telemetry
-**Particle filters to reconstruct movement paths and patterns of space use in passive acoustic telemetry**
+**Particle filters for passive acoustic telemetry**
 
 <!-- badges: start -->
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
@@ -22,14 +22,17 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-[`patter`](https://github.com/edwardlavender/patter) is [R](https://www.r-project.org) package implementation of a forward filtering--backward sampling algorithm for passive acoustic telemetry. This methodology enables the reconstruction of movement paths and patterns of space use in passive acoustic telemetry systems. [`patter`](https://github.com/edwardlavender/patter) unifies a suite of methods formerly known as the [`flapper`](https://github.com/edwardlavender/flapper) algorithms (Lavender et al., 2023) and supersedes the experimental [`flapper`](https://github.com/edwardlavender/flapper) package. 
+[`patter`](https://github.com/edwardlavender/patter) is [R](https://www.r-project.org) package implementation of particle filtering, smoothing and sampling algorithms for passive acoustic telemetry. This methodology enables the reconstruction of movement paths and patterns of space use in passive acoustic telemetry systems. [`patter`](https://github.com/edwardlavender/patter) unifies a suite of methods formerly known as the [`flapper`](https://github.com/edwardlavender/flapper) algorithms (Lavender et al., 2023) and supersedes the experimental [`flapper`](https://github.com/edwardlavender/flapper) package. 
 
 # Features
 
-[`patter`](https://github.com/edwardlavender/patter) is designed to reconstruct fine-scale movement paths and emergent patterns of space use in passive acoustic telemetry systems. A powerful, flexible process-orientated framework known as a forward filtering--backward sampling algorithm is used for this purpose.
+[`patter`](https://github.com/edwardlavender/patter) is designed to reconstruct fine-scale movement paths and emergent patterns of space use in passive acoustic telemetry systems. A powerful, flexible process-orientated, particle-based framework is used for this purpose.
 This framework unifies the [`flapper`](https://github.com/edwardlavender/flapper) algorithms and provides important opportunities for development, which we exploit here. 
 
-The essential functions are `pf_forward()` and `pf_backward_sampler_*()`. `pf_forward()` is the forward filter. This simulates the possible locations of an individual moving forwards in time, accounting for all of the data (including acoustic observations, depth observations and any other observations) _up to_ each time point and the animal's movement. `pf_backward_sampler_*()` refines outputs from the forward filter. This function runs a simulation backwards in time and samples likely locations in line with all of the data _up to and after_ each time point. The outcome is a set of location samples that represent possible trajectories and embody emergent patterns of space use. 
+The essential functions are `pf_forward()`,  `pf_backward_smoother*()` and `pf_backward_sampler()`. 
+* `pf_forward()` is the particle filter. This simulates the possible locations of an individual moving forwards in time, accounting for all of the data (including acoustic observations, depth observations and any other observations) _up to_ each time point and the animal's movement (a partial marginal distribution). 
+* `pf_backward_smoother()` is a backward smoothing algorithm that refines maps of space use. This 
+* `pf_backward_sampler()` is a backward sampling algorithm that sample movement trajectories. This function runs a simulation backwards in time and samples likely locations in line with all of the data _up to and after_ each time point. The outcome is a set of location samples that represent possible trajectories and embody emergent patterns of space use. 
 
 # Evolution
 
@@ -98,7 +101,7 @@ To simulate passive acoustic telemetry data, see:
 
 These functions are supported by a set of simulation helpers, including:
 
-* `rbern()`, `rdet()`, `dbern()`, `ddetlogistic()` and `ddet()` for the simulation of detections;
+* `rbern()`, `rdet()`, `dbern()`, `pdetlogistic()` and `pdet()` for the simulation of detections;
 * `dtruncgamma()`, `rtruncgamma()`, `rlen()` and `clen()` for the simulation of step lengths;
 * `rwn()`, `rangrw()`, `rangcrw()` and `cang()` for the simulation of turning angles;
 * `rstep()`, `dstep()` and `cstep()` for the simulation of steps into new locations;

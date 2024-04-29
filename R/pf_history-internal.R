@@ -64,34 +64,6 @@
 #' * [`.pf_history_elm()`] returns a [`data.table`] for particle samples for a single time step;
 #' * [`.pf_history_dt()`] returns a [`data.table`] or an [`arrow::FileSystemDataset`] (if `.history` is a directory and `.collect = FALSE`).
 #'
-#' @examples
-#' \dontrun{
-#'
-#' # .pf_history_dt() examples
-#'
-#' require(arrow)
-#'
-#' # Use pf_particles-class object
-#' .pf_history_dt(dat_pfbk())
-#'
-#' # Use `history` element
-#' .pf_history_dt(dat_pfbk()$history)
-#'
-#' # Use directory (and optionally select a subset of columns)
-#' pfbk_folder <- dat_pfbk_
-#' sch <- schema(timestep = int32(),
-#'               cell_now = int32(),
-#'               x_now = double(),
-#'               y_now = double())
-#' .pf_history_dt(pfbk_folder, schema = sch)
-#'
-#' # Use directory with `.collect = FALSE`
-#' .pf_history_dt(pfbk_folder, schema = sch, .collect = FALSE)
-#'
-#' # Use a file list
-#' .pf_history_dt(pf_files(pfbk_folder))
-#' }
-#'
 #' @author Edward Lavender
 #' @name pf_history
 

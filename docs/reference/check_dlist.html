@@ -79,7 +79,7 @@
 <span></span>
 <span><span class="fu">check_acoustics</span><span class="op">(</span><span class="va">.acoustics</span>, .moorings <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">check_moorings</span><span class="op">(</span><span class="va">.moorings</span>, <span class="va">.lonlat</span>, <span class="va">.bathy</span><span class="op">)</span></span>
+<span><span class="fu">check_moorings</span><span class="op">(</span><span class="va">.moorings</span>, .acoustics <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">.lonlat</span>, <span class="va">.bathy</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">check_services</span><span class="op">(</span><span class="va">.services</span>, <span class="va">.moorings</span><span class="op">)</span></span>
 <span></span>
@@ -126,6 +126,8 @@
 <li><p>Absolute values (m) are recommended;</p></li>
 <li><p>At the time of writing (December 2023), planar grids are better tested;</p></li>
 </ul></li>
+<li><p>Source:</p><ul><li><p>The data source may be in memory or on disk, but the former is much faster;</p></li>
+</ul></li>
 </ul></li>
 <li><p><code>check_acoustics()</code> checks detection time series:</p><ul><li><p>Class: <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>;</p></li>
 <li><p>Columns:</p><ul><li><p><code>timestamp</code>---an ordered, <code>POSIXct</code> vector of time stamps with a defined <code>tzone</code> attribute;</p></li>
@@ -146,7 +148,8 @@
 <li><p>Columns:</p><ul><li><p><code>receiver_id</code>---an <code>integer</code> vector of unique receiver deployments (<code>1, ..., N</code>);</p></li>
 <li><p><code>receiver_easting</code> and <code>receiver_northing</code> and/or <code>receiver_lon</code> and <code>receiver_lat</code>---Receiver coordinates. <code>receiver_easting</code> and <code>receiver_northing</code> must be present if <code>.lonlat = FALSE</code> and <code>receiver_lon</code> and <code>receiver_lat</code> must be present otherwise. The selected coordinate columns are copied, renamed to <code>receiver_x</code> and <code>receiver_y</code> and coerced onto the <code>.bathy</code> grid. Note that <code>.bathy</code> must be in the specified projection.</p></li>
 </ul></li>
-<li><p>Properties:</p><ul><li><p><code>receiver_start</code> should precede <code>receiver_end</code> (not currently validated);</p></li>
+<li><p>Properties:</p><ul><li><p><code>receiver_start</code> should precede <code>receiver_end</code>;</p></li>
+<li><p>Receiver deployment periods should (usually) at least partially overlap with the time period of acoustic observations;</p></li>
 <li><p>Receiver coordinates must be valid (not currently validated);</p></li>
 </ul></li>
 </ul></li>

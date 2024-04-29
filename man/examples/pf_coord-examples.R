@@ -7,10 +7,8 @@ pf_coord(dat_pff()$history, .bathy = gebco)
 pf_coord(dat_pff_src(), .bathy = gebco)
 pf_coord(pf_files(dat_pff_src()), .bathy = gebco)
 
-#### Example (2): Use particle samples from the forward run or the backward pass
-pf_coord(dat_pff(), .bathy = gebco)
-pf_coord(dat_pfbk(), .bathy = gebco)
-pf_coord(dat_pfbs(), .bathy = gebco)
+#### Example (2): Use particle samples from different routines
+# (TO DO)
 
 #### Example (3): Include additional columns in the output
 obs <- dat_obs()

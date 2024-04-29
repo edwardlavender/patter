@@ -59,14 +59,18 @@ dlist$algorithm$detection_kernels  <- acs_setup_detection_kernels(dlist)
 # Collate observations
 obs <- pf_setup_obs(.dlist = dlist,
                     .step = "2 mins",
-                    .mobility = 500,
-                    .receiver_range = dat_moorings$receiver_range[1])
+                    .mobility = 500)
 obs <- obs[1:25, ]
 
 #### Implement coa()
 out_coa <- coa(dlist, .delta_t = "4 hours")
 
 #### Implement pf_forward()
+# Define output columns
+cols <- c("timestep",
+          "cell_past", "cell_now",
+          "x_now", "y_now", "loglik", "logwt")
+# Set up directories
 sink      <- NULL
 if (overwrite) {
   pff_folder <- file.path("inst", "extdata", "acpf", "forward")
@@ -75,51 +79,22 @@ if (overwrite) {
   sink <- pff_folder
 }
 ssf()
-out_pff <- pf_forward(.obs = obs,
-                      .dlist = dlist,
-                      .likelihood = list(acs_filter_land = acs_filter_land,
-                                         acs_filter_container = acs_filter_container,
-                                         pf_lik_ac = pf_lik_ac),
-                      .record = pf_opt_record(.save = TRUE,
-                                              .sink = sink,
-                                              .cols = c("timestep",
-                                                        "cell_past", "cell_now",
-                                                        "x_now", "y_now", "lik", "weight")))
+# Implement filter
+# * Force re-sampling at every time step (for convenience)
+out_pff <-
+  pf_forward(.obs = obs,
+             .dlist = dlist,
+             .likelihood = list(acs_filter_land = acs_filter_land,
+                                acs_filter_container = acs_filter_container,
+                                pf_lik_ac = pf_lik_ac),
+             .trial = pf_opt_trial(.trial_resample_crit = Inf),
+             .record = pf_opt_record(.save = TRUE,
+                                     .sink = sink,
+                                     .cols = cols)
+  )
 
-#### Implement pf_backward_killer()
-# NB: If pf_forward() is re-run, pf_backward_*() must also be re-run.
-sink      <- NULL
-if (overwrite) {
-  pfbk_folder <- file.path("inst", "extdata", "acpf", "backward", "killer")
-  unlink(pfbk_folder, recursive = TRUE)
-  dir.create(pfbk_folder, recursive = TRUE)
-  sink <- pfbk_folder
-}
-out_pfbk <- pf_backward_killer(.history = out_pff$history,
-                               .record = pf_opt_record(.save = TRUE, .sink = sink))
-
-#### Implement pf_backward_sampler_*()
-# NB: If pf_forward() is re-run, pf_backward_*() must also be re-run.
-sink      <- NULL
-if (overwrite) {
-  pfbs_folder <- file.path("inst", "extdata", "acpf", "backward", "sampler")
-  unlink(pfbs_folder, recursive = TRUE)
-  dir.create(pfbs_folder, recursive = TRUE)
-  sink <- pfbs_folder
-}
-ssf()
-out_pfbs <- pf_backward_sampler_v(.history = out_pff$history,
-                                  .obs = NULL,
-                                  .dlist = dlist,
-                                  .record = pf_opt_record(.save = TRUE, .sink = sink))
-
-#### Implement pf_path()
-out_pfp <- pf_path(out_pfbs$history, .bathy = dlist$spatial$bathy)
-
-#### Implement map_pou()
-out_pou <- map_pou(.map = dlist$spatial$bathy,
-                   .coord = pf_coord(.history = out_pfbs$history, .bathy = dlist$spatial$bathy))
-out_pou <- terra::wrap(out_pou)
+#### Implement pf_backward() routines
+# (TO DO)
 
 
 #########################
@@ -132,9 +107,6 @@ dat_obs   <- obs
 dat_dlist <- dlist
 dat_coa   <- out_coa
 dat_pff   <- out_pff
-dat_pfbk  <- out_pfbk
-dat_pfbs  <- out_pfbs
-dat_pfp   <- out_pfp
 # Update contents
 summary(dat_dlist)
 dat_dlist$spatial$bathy <- terra::wrap(dat_dlist$spatial$bathy)
@@ -145,10 +117,7 @@ datasets <-
   list(dat_obs = dat_obs,
        dat_dlist = dat_dlist,
        dat_coa = dat_coa,
-       dat_pff = dat_pff,
-       dat_pfbk = dat_pfbk,
-       dat_pfbs = dat_pfbs,
-       dat_pfp = dat_pfp)
+       dat_pff = dat_pff)
 
 #### Check dataset sizes (MB)
 # ./data/

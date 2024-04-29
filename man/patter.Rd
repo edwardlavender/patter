@@ -50,7 +50,7 @@ To simulate passive acoustic telemetry data, see:
 
 These functions are supported by a set of simulation helpers, including:
 \itemize{
-\item \code{\link[=rbern]{rbern()}}, \code{\link[=rdet]{rdet()}}, \code{\link[=dbern]{dbern()}}, \code{\link[=ddetlogistic]{ddetlogistic()}} and \code{\link[=ddet]{ddet()}} for the simulation of detections;
+\item \code{\link[=rbern]{rbern()}}, \code{\link[=rdet]{rdet()}}, \code{\link[=dbern]{dbern()}}, \code{\link[=pdetlogistic]{pdetlogistic()}} and \code{\link[=pdet]{pdet()}} for the simulation of detections;
 \item \code{\link[=dtruncgamma]{dtruncgamma()}}, \code{\link[=rtruncgamma]{rtruncgamma()}}, \code{\link[=rlen]{rlen()}} and \code{\link[=clen]{clen()}} for the simulation of step lengths;
 \item \code{\link[=rwn]{rwn()}}, \code{\link[=rangrw]{rangrw()}}, \code{\link[=rangcrw]{rangcrw()}} and \code{\link[=cang]{cang()}} for the simulation of turning angles;
 \item \code{\link[=rstep]{rstep()}}, \code{\link[=dstep]{dstep()}} and \code{\link[=cstep]{cstep()}} for the simulation of steps into new locations;

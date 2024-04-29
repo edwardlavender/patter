@@ -93,7 +93,7 @@
         </td>
         <td><p>COA: centres of activity</p></td>
       </tr><tr><td>
-          <p><code><a href="datasets-algorithms.html">dat_dlist()</a></code> <code><a href="datasets-algorithms.html">dat_obs()</a></code> <code><a href="datasets-algorithms.html">dat_pff()</a></code> <code><a href="datasets-algorithms.html">dat_pff_src()</a></code> <code><a href="datasets-algorithms.html">dat_pfbk()</a></code> <code><a href="datasets-algorithms.html">dat_pfbk_src()</a></code> <code><a href="datasets-algorithms.html">dat_pfbs()</a></code> <code><a href="datasets-algorithms.html">dat_pfbs_src()</a></code> <code><a href="datasets-algorithms.html">dat_pfp()</a></code> <code><a href="datasets-algorithms.html">dat_coa()</a></code> </p>
+          <p><code><a href="datasets-algorithms.html">dat_dlist()</a></code> <code><a href="datasets-algorithms.html">dat_obs()</a></code> <code><a href="datasets-algorithms.html">dat_pff()</a></code> <code><a href="datasets-algorithms.html">dat_pff_src()</a></code> <code><a href="datasets-algorithms.html">dat_coa()</a></code> </p>
         </td>
         <td><p>Datasets: example algorithm outputs</p></td>
       </tr><tr><td>
@@ -133,18 +133,6 @@
         </td>
         <td><p><code>patter</code> for passive acoustic telemetry</p></td>
       </tr><tr><td>
-          <p><code><a href="pf_backward_-times.html">pf_backward_*</a></code> </p>
-        </td>
-        <td><p>PF: backward pass</p></td>
-      </tr><tr><td>
-          <p><code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> </p>
-        </td>
-        <td><p>PF: backward killer</p></td>
-      </tr><tr><td>
-          <p><code><a href="pf_backward_sampler.html">pf_backward_sampler_p()</a></code> <code><a href="pf_backward_sampler.html">pf_backward_sampler_v()</a></code> </p>
-        </td>
-        <td><p>PF: backward sampler</p></td>
-      </tr><tr><td>
           <p><code><a href="pf_coord.html">pf_coord()</a></code> </p>
         </td>
         <td><p>PF: particle coordinates</p></td>
@@ -159,7 +147,7 @@
       </tr><tr><td>
           <p><code><a href="pf_forward.html">pf_forward()</a></code> </p>
         </td>
-        <td><p>PF: forward simulation</p></td>
+        <td><p>PF: particle filter</p></td>
       </tr><tr><td>
           <p><code><a href="pf_lik.html">acs_filter_land()</a></code> <code><a href="pf_lik.html">acs_filter_container()</a></code> <code><a href="pf_lik.html">pf_lik_ac()</a></code> <code><a href="pf_lik.html">pf_lik_dc()</a></code> </p>
         </td>
@@ -172,14 +160,6 @@
           <p><code><a href="pf_particles-class.html">pf_particles-class</a></code> </p>
         </td>
         <td><p>PF: <code>pf_particles</code> objects</p></td>
-      </tr><tr><td>
-          <p><code><a href="pf_path.html">pf_path()</a></code> </p>
-        </td>
-        <td><p>PF: path reconstruction</p></td>
-      </tr><tr><td>
-          <p><code><a href="pf_path_pivot.html">pf_path_pivot()</a></code> </p>
-        </td>
-        <td><p>PF: pivot path matrices</p></td>
       </tr><tr><td>
           <p><code><a href="pf_plot_history.html">pf_plot_history()</a></code> </p>
         </td>
@@ -205,7 +185,7 @@
         </td>
         <td><p>Simulation: acoustic detections</p></td>
       </tr><tr><td>
-          <p><code><a href="sim_helpers.html">ssf()</a></code> <code><a href="sim_helpers.html">ssv()</a></code> <code><a href="sim_helpers.html">rbern()</a></code> <code><a href="sim_helpers.html">dbern()</a></code> <code><a href="sim_helpers.html">rdet()</a></code> <code><a href="sim_helpers.html">ddetlogistic()</a></code> <code><a href="sim_helpers.html">ddet()</a></code> <code><a href="sim_helpers.html">rtruncgamma()</a></code> <code><a href="sim_helpers.html">dtruncgamma()</a></code> <code><a href="sim_helpers.html">rwn()</a></code> <code><a href="sim_helpers.html">rlen()</a></code> <code><a href="sim_helpers.html">rangrw()</a></code> <code><a href="sim_helpers.html">rangcrw()</a></code> <code><a href="sim_helpers.html">rstep()</a></code> <code><a href="sim_helpers.html">cstep()</a></code> <code><a href="sim_helpers.html">dstep()</a></code> <code><a href="sim_helpers.html">clen()</a></code> <code><a href="sim_helpers.html">cang()</a></code> </p>
+          <p><code><a href="sim_helpers.html">ssf()</a></code> <code><a href="sim_helpers.html">ssv()</a></code> <code><a href="sim_helpers.html">rbern()</a></code> <code><a href="sim_helpers.html">dbern()</a></code> <code><a href="sim_helpers.html">rdet()</a></code> <code><a href="sim_helpers.html">pdetlogistic()</a></code> <code><a href="sim_helpers.html">pdet()</a></code> <code><a href="sim_helpers.html">rtruncgamma()</a></code> <code><a href="sim_helpers.html">dtruncgamma()</a></code> <code><a href="sim_helpers.html">rwn()</a></code> <code><a href="sim_helpers.html">rlen()</a></code> <code><a href="sim_helpers.html">rangrw()</a></code> <code><a href="sim_helpers.html">rangcrw()</a></code> <code><a href="sim_helpers.html">rstep()</a></code> <code><a href="sim_helpers.html">cstep()</a></code> <code><a href="sim_helpers.html">dstep()</a></code> <code><a href="sim_helpers.html">clen()</a></code> <code><a href="sim_helpers.html">cang()</a></code> </p>
         </td>
         <td><p>Simulation: distribution functions</p></td>
       </tr><tr><td>

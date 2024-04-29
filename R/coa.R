@@ -23,8 +23,8 @@
 #' Data are arranged by `.split` and `timestamp`.
 #'
 #' @seealso
-#' * To derive location samples from the forward-filter backward-sampler, see [`pf_forward()`], [`pf_backward_*()`] and [`pf_coord()`];
-#' * For mapping utilisation distributions from coordinates, see `map_*()` functions (i.e., [`map_pou()`] and [`map_dens()`];
+#' * To derive location samples from a particle filtering algorithm, see [`pf_forward()`] and associates;
+#' * For mapping utilisation distributions from coordinates, see `map_*()` functions (i.e., [`map_pou()`] and [`map_dens()`]);
 #'
 #' @example man/examples/coa-examples.R
 #'

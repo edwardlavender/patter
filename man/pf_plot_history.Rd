@@ -25,7 +25,7 @@ pf_plot_history(
 
 \item{.forward}{Particle samples, provided in any format accepted by \code{\link[=.pf_history_list]{.pf_history_list()}}. Particle samples should be from \code{\link[=pf_forward]{pf_forward()}} if \code{.backward} is supplied. \code{cell_now}, \code{x_now} and \code{y_now} columns are required.}
 
-\item{.backward}{(optional) If .\code{forward} contains particle samples from the forward run, \code{.backward} can contain particle samples from the backward pass (e.g., \code{\link[=pf_backward_killer]{pf_backward_killer()}}), provided in any format accepted by \code{\link[=.pf_history_list]{.pf_history_list()}}. The \code{cell_now} column is required.}
+\item{.backward}{(optional) If .\code{forward} contains particle samples from the forward run, \code{.backward} can contain particle samples from a backward simulation, provided in any format accepted by \code{\link[=.pf_history_list]{.pf_history_list()}}. The \code{cell_now} column is required.}
 
 \item{.steps}{\code{NULL} or an \code{integer} vector of the time steps for which to map particle samples. \code{NULL} specifies all time steps.}
 
@@ -50,7 +50,7 @@ The function is called for its side effects. It returns \code{invisible(TRUE)}.
 This function maps particle histories for selected time steps or entire time series and can be used to create animations.
 }
 \details{
-For each \code{.step}, \code{\link[terra:plot]{terra::plot()}} is used to plot \code{.dlist$spatial$bathy}. Particle samples in \code{.forward} are added onto the grid via \code{\link[graphics:points]{graphics::points()}}. If \code{.backward} is supplied, particles in \code{.forward} should be derived from the forward run. Particles in \code{.forward} but not \code{.backward} (i.e., dead ends) are shown in red (unless \code{.add_forward$col} is overridden).
+For each \code{.step}, \code{\link[terra:plot]{terra::plot()}} is used to plot \code{.dlist$spatial$bathy}. Particle samples in \code{.forward} are added onto the grid via \code{\link[graphics:points]{graphics::points()}}. Particle weights are currently ignored. If \code{.backward} is supplied, particles in \code{.forward} should be derived from the forward run. Particles in \code{.forward} but not \code{.backward} (i.e., dead ends) are shown in red (unless \code{.add_forward$col} is overridden).
 
 This function replaces \href{https://edwardlavender.github.io/flapper/reference/pf_plot_history.html}{\code{flapper::pf_plot_history()}}.
 }
@@ -65,7 +65,7 @@ dir.create(mp4s, recursive = TRUE)
 # Define data list
 dlist <- dat_dlist()
 
-#### Example (1): Plot selected samples (from the forward run)
+#### Example (1): Plot selected samples (from the forward simulation)
 # Particles can be provided in any format accepted by `?.pf_history_list()`
 # Here, we use precomputed samples:
 # * Use particles in memory
@@ -85,51 +85,44 @@ pf_plot_history(.dlist = dlist,
                 .forward = pf_files(dat_pff_src()),
                 .steps = 1L)
 
-#### Example (2): Plot selected samples (from the backward pass)
-pf_plot_history(.dlist = dlist,
-                .forward = dat_pfbk(),
-                .steps = 1L)
+#### Example (2): Plot selected samples (from the backward simulation)
+# (TO DO)
 
-#### Example (3) Plot particles from both forward and backward runs
-# Dead ends are shown in red
-pf_plot_history(.dlist = dlist,
-                .forward = dat_pff(),
-                .backward = dat_pfbk(),
-                .steps = 1L)
+#### Example (3) Plot particles from both forward and backward simulation
+# (TO DO)
 
 #### Example (4): Plot multiple time steps
 # Specify selected steps
 pf_plot_history(.dlist = dlist,
-                .forward = dat_pfbk(),
+                .forward = dat_pff(),
                 .steps = 1:5L)
 # Plot all steps (default: .step = NULL)
 pf_plot_history(.dlist = dlist,
-                .forward = dat_pfbk())
+                .forward = dat_pff())
 # Use `.prompt = TRUE`
 pf_plot_history(.dlist = dlist,
-                .forward = dat_pfbk(),
+                .forward = dat_pff(),
                 .prompt = TRUE)
 
 #### Example (5): Customise the plot
 # Customise the SpatRaster surface
 pf_plot_history(.dlist = dlist,
-                .forward = dat_pfbk(),
+                .forward = dat_pff(),
                 .steps = 1L,
                 .add_surface = list(col = grDevices::cm.colors(256)))
 # Customise the particle samples
 pf_plot_history(.dlist = dlist,
-                .forward = dat_pfbk(),
+                .forward = dat_pff(),
                 .steps = 1L,
                 .add_forward = list(pch = ".", col = "blue"))
 
 #### Example (6): Write images to file
 pf_plot_history(.dlist = dlist,
                 .forward = dat_pff(),
-                .backward = dat_pfbk(),
                 .add_forward = list(pch = 21, cex = 0.5),
                 .png = list(filename = frames))
 
-#### Example (7): make animations
+#### Example (7): Make animations
 if (rlang::is_installed("av")) {
 
   # There are lots of tools to create animations:
@@ -161,25 +154,25 @@ if (rlang::is_installed("av")) {
 unlink(con, recursive = TRUE)
 }
 \seealso{
-The forward filtering--backward sampling algorithm samples locations (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
+The particle filter samples locations (particles) that represent the possible locations of an individual through time, accounting for the data and the individual's movement.
 \itemize{
 \item To set up data, use \code{\link[=pat_setup_data]{pat_setup_data()}}.
-\item \code{\link[=pf_forward]{pf_forward()}} implements the forward filter:
+\item To implement the particle filter, use \code{\link[=pf_forward]{pf_forward()}}:
 \itemize{
-\item To set up an observations timeline, use \code{\link[=pf_setup_obs]{pf_setup_obs()}}.
-\item For proposal (movement) models, see \code{\link{pf_propose}}.
-\item For likelihood functions, to evaluate the likelihood of the data at proposal locations, see \code{\link{pf_lik}}.
-\item For sampling functions, to (re)sample plausible proposal locations, see \code{\link{pf_sample}}.
-\item For tuning parameters, see \code{\link{pf_opt}}.
+\item To set up an observations timeline, use \code{\link[=pf_setup_obs]{pf_setup_obs()}};
+\item For proposal (movement) models, see \code{\link{pf_propose}};
+\item For likelihood functions, to evaluate the likelihood of the data at proposal locations, see \code{\link{pf_lik}};
+\item For sampling functions, to (re)sample plausible proposal locations, see \code{\link{pf_sample}};
+\item For tuning parameters, see \code{\link{pf_opt}};
 }
-\item \code{\link[=pf_backward_*]{pf_backward_*()}} refines outputs from the forward filter:
+\item To map patterns of space use, use:
 \itemize{
-\item \code{\link[=pf_backward_killer]{pf_backward_killer()}} removes dead-ends;
-\item \code{\link{pf_backward_sampler}}\verb{_*()} implements the backward sampler;
+\item The backward smoother (TO DO);
+\item \code{\link[=pf_coord]{pf_coord()}} to extract coordinates;
+\item A \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()};
 }
-\item To reconstruct movement paths from particle samples, use \code{\link[=pf_path]{pf_path()}}.
-\item To map emergent patterns of space use, use \code{\link[=pf_coord]{pf_coord()}} plus a \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()}.
-\item For additional utilities, see supporting \verb{pf_*()} functions, such as \code{\link[=pf_files]{pf_files()}}, \code{\link[=pf_files_size]{pf_files_size()}}, \code{\link[=pf_plot_history]{pf_plot_history()}}, \code{\link[=pf_diag_convergence]{pf_diag_convergence()}} and \code{\link[=pf_diag_summary]{pf_diag_summary()}}.
+\item To reconstruct movement paths, use the backward sampler (TO DO).
+\item For additional utilities, see supporting \verb{pf_*()} functions, such as \code{\link[=pf_files]{pf_files()}}, \code{\link[=pf_files_size]{pf_files_size()}}, \code{\link[=pf_plot_history]{pf_plot_history()}} and \code{\link[=pf_diag_summary]{pf_diag_summary()}}.
 }
 }
 \author{

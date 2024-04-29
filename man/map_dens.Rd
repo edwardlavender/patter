@@ -110,7 +110,11 @@ map_dens(gebco, .coord = out_coa[, .(x = coa_x, y = coa_y)])
 
 #### Example (3): Use a time series of coordinates from pf_*()
 # Use example dataset
-coord <- pf_coord(dat_pfbk(), .bathy = gebco)
+# * We use particles from the forward filter (`?pf_forward()`);
+# * Particles are equally weighted b/c re-sampling was implemented every time step;
+# * It is better to use outputs from the forward-filter backward-smoother;
+# * Make sure you account for particle weights via re-sampling or 'marks';
+coord <- pf_coord(dat_pff(), .bathy = gebco)
 map_dens(gebco, .coord = coord)
 
 #### Example (4): Control smoothing via `spatstat.explore::density.ppp()`
@@ -136,6 +140,6 @@ All maps are represented as \code{\link{SpatRaster}}s.
 To derive coordinates for mapping patterns of space use for tagged animals in passive acoustic telemetry systems, see:
 \itemize{
 \item \code{\link[=coa]{coa()}} to calculate centre-of-activity;
-\item \code{\link[=pf_forward]{pf_forward()}}, \code{\link[=pf_backward_*]{pf_backward_*()}} and \code{\link[=pf_coord]{pf_coord()}} to sample locations using a forward-filtering backward-sampling algorithm;
+\item \code{\link[=pf_forward]{pf_forward()}} and associates to sample locations using particle filtering;
 }
 }

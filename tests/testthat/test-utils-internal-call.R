@@ -49,15 +49,15 @@ test_that("call_*() functions work", {
   t2 <- as.POSIXct("2016-02-01")
   expect_equal(
     call_timings(t1, t2),
-    list(start = t1,
-         end = t2,
-         duration = difftime(t2, t1))
+    data.table(start = t1,
+               end = t2,
+               duration = difftime(t2, t1))
   )
   expect_equal(
     call_timings(t1, t2, units = "mins"),
-    list(start = t1,
-         end = t2,
-         duration = difftime(t2, t1, units = "mins"))
+    data.table(start = t1,
+               end = t2,
+               duration = difftime(t2, t1, units = "mins"))
   )
 
 })

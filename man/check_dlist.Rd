@@ -13,7 +13,7 @@ check_bathy(.bathy)
 
 check_acoustics(.acoustics, .moorings = NULL)
 
-check_moorings(.moorings, .lonlat, .bathy)
+check_moorings(.moorings, .acoustics = NULL, .lonlat, .bathy)
 
 check_services(.services, .moorings)
 
@@ -55,6 +55,10 @@ These are internal functions that ensure that input dataset(s) meet \code{\link{
 \item Absolute values (m) are recommended;
 \item At the time of writing (December 2023), planar grids are better tested;
 }
+\item Source:
+\itemize{
+\item The data source may be in memory or on disk, but the former is much faster;
+}
 }
 \item \code{\link[=check_acoustics]{check_acoustics()}} checks detection time series:
 \itemize{
@@ -93,7 +97,8 @@ These are internal functions that ensure that input dataset(s) meet \code{\link{
 }
 \item Properties:
 \itemize{
-\item \code{receiver_start} should precede \code{receiver_end} (not currently validated);
+\item \code{receiver_start} should precede \code{receiver_end};
+\item Receiver deployment periods should (usually) at least partially overlap with the time period of acoustic observations;
 \item Receiver coordinates must be valid (not currently validated);
 }
 }

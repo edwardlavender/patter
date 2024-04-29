@@ -10,11 +10,8 @@ An S3 class that defines the named \code{list} returned by \code{\link[=pf_forwa
 \code{\linkS4class{pf_particles}} is a label used to denote outputs from selected functions in \code{\link{patter}}. The structure of this class is not strictly defined and primarily exists to streamline documentation. At the time of writing, \code{\linkS4class{pf_particles}} objects may comprise the following elements:
 \itemize{
 \item \code{history}---a \code{list} of particle samples;
-\item \code{paths}---a \code{\link{data.table}} of paths;
-\item \code{diagnostics}---a \code{\link{data.table}} of diagnostics;
-\item \code{internal}---a \code{list} of internal objects;
 \item \code{convergence}---a \code{logical} value that defines convergence success;
-\item \code{time}---a \code{list} of timings;
+\item \code{time}---a \code{data.table} of timings;
 }
 }
 
@@ -28,94 +25,22 @@ In \code{\link[=pf_forward]{pf_forward()}}, the columns in this table depend on 
 \item \code{x_past}, \code{y_past}---\code{numeric} vectors that define the coordinates of previous particle samples;
 \item \code{cell_now}---an \code{integer} vector that identifies the grid cells of current particle samples;
 \item \code{x_now}, \code{y_now}---\code{numeric} vectors that define the coordinates of current particle samples;
-\item \code{lik}---a \code{numeric} vector of likelihoods;
-\item \code{weight}---a \code{numeric} vectors of weights;
+\item \code{loglik}---a \code{numeric} vector of log-likelihoods;
+\item \code{logwt}---a \code{numeric} vectors of log-weights;
 }
 
 Coordinates are defined in continuous space by \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}} and on the grid by \code{\link[=pf_rpropose_reachable]{pf_rpropose_reachable()}}.
 
-The likelihood column (\code{lik}) is the product of the likelihood scores from each likelihood function. (Successive likelihood functions should \emph{update} this column.)
+The log-likelihood column (\code{loglik}) is the sum of the log-likelihoods from each likelihood function. (Successive likelihood functions should \emph{update} this column.)
 
-The weight column (\code{weight}) contains particle weights. Weights are proportional to the product of weights from the previous time step, the likelihood at the current time step (and the movement density, in the case of directed sampling). After resampling, we obtain \code{.n} equally weighted particles. Weights are normalised to sum to one at each time step.
+The log-weight column (\code{logwt}) contains particle log-weights. Weights are proportional to the product of weights from the previous time step, the likelihood at the current time step (and the movement density, in the case of directed sampling). After re-sampling, we obtain \code{.n} equally weighted particles. Weights are normalised at each time step.
 
-Additional columns may be included in \code{history} if computed by inputted likelihood functions. At the time of writing, most default likelihood functions calculate likelihoods without defining additional columns. However, \code{\link[=pf_lik_dc]{pf_lik_dc()}} adds \code{bathy} column, with values extracted from \code{.dlist$spatial$bathy}.
-If directed sampling is used, \code{bathy} and \code{dens} columns are included where required (after the first time step). \code{dens} is \code{numeric} vector that defines the probability density of moving from \verb{(x_past, y_past}) to \verb{(x_now, y_now)}.
+Additional columns (e.g., \code{.bathy}) may be included in \code{history} if computed by inputted likelihood functions.
+If directed sampling is used, \code{bathy} and \code{logdens} columns are included where required (after the first time step). \code{logdens} is \code{numeric} vector that defines the log-probability density of moving from \verb{(x_past, y_past}) to \verb{(x_now, y_now)}.
 
-Since columns are recorded only when required, not all columns are recorded at each time step. To combine \code{\link{data.table}}s, use \code{\link[=.pf_history_dt]{.pf_history_dt()}}.
+Since columns are recorded only when required, not all columns are recorded at each time step. To combine \code{\link{data.table}}s, use \code{\link[=.pf_history_dt]{.pf_history_dt()}} (or \verb{data.table::rbindlist(... fill = TRUE)}).
 
-If \code{.record$save = FALSE}, \code{.history} is an empty \code{list} and the individual \code{\link{data.table}}s are written to file in \verb{\{.record$sink\}/history/} (see \code{\link[=pf_opt_record]{pf_opt_record()}}).
-
-\code{\link[=pf_backward_killer]{pf_backward_killer()}} simply drops dead-ends (rows) from the time series and leaves the columns from \code{\link[=pf_forward]{pf_forward()}} intact (unless \code{.record$cols} is supplied).
-
-\code{\link[=pf_backward_sampler_v]{pf_backward_sampler_v()}} retains or updates the following columns, or a subset thereof as specified by \code{.record$cols}:
-\itemize{
-\item \code{timestep}
-\item \code{cell_past}, \code{x_past}, \code{y_past}
-\item \code{cell_now}, \code{x_now}, \code{y_now}
-\item \code{dens}
-}
-
-\code{\link[=pf_backward_sampler_p]{pf_backward_sampler_p()}} tracks paths, not particle histories, so this element is empty.
-}
-
-\section{\code{paths}}{
-\code{paths} is a \code{\link{data.table}} of movement paths. Currently, this is only populated by \code{\link[=pf_backward_sampler_p]{pf_backward_sampler_p()}}. By default, the following columns are retained:
-\itemize{
-\item \code{path_id}---an \code{integer} vector of path IDs;
-\item \code{timestep}---an \code{integer} vector of time steps;
-\item \code{cell_past}, \code{x_past}, \code{y_past}, \code{cell_now}, \code{x_now}, \code{y_now}---Cell IDs and coordinates for particle samples;
-\item \code{dens}---a \code{numeric} vector of movement densities from \code{cell_past} into \code{cell_now};
-}
-
-Additional columns may be included from the forward run, as specified by \code{.record$cols}.
-}
-
-\section{\code{diagnostics}}{
-\code{diagnostics} is a \code{NULL} element. In \code{\link[=pf_forward]{pf_forward()}}, we formerly tracked metrics of particle diversity ('particle diagnostics') through time for analysis of convergence issues, sampling sufficiency and other properties (see \code{\link{pf_diag-internal}}). This was expensive and is no longer implemented by default and \code{diagnostics} is now set to \code{NULL}. You can still track convergence diagnostics following particle proposals and likelihood evaluations by modifying the proposal and/or likelihood functions to write diagnostic statistics to file on the fly (see \code{\link{pf_diag-internal}}).
-
-For stochastic kicks (implemented via \code{\link[=.pf_particles_kick]{.pf_particles_kick()}}), we record:
-\itemize{
-\item Proposal diagnostics, following stochastic kicks;
-\item Likelihood diagnostics, following the evaluation of each likelihood function;
-\item Sampling diagnostics, following sampling;
-}
-
-For directed sampling (implemented via \code{\link[=.pf_particles_sampler]{.pf_particles_sampler()}}), we record:
-\itemize{
-\item Proposal/likelihood diagnostics, following a combined proposal plus likelihood step;
-\item Sampling diagnostics, following sampling;
-}
-
-Diagnostics are tracked for all trials, reversions and reruns (see \code{\link[=pf_opt_trial]{pf_opt_trial()}}) and never replaced. (This is so we can check, for instance, how many trials of a process, such as stochastic kick-based sampling, are required at each time step to generate a sufficient number of valid particles and, in so doing, improve algorithm efficiency.)
-
-If \code{.record$save = TRUE}, particle diagnostics are collated in a single \code{\link{data.table}}, with the following columns:
-\itemize{
-\item \code{iter_m}---an \code{integer} that identifies 'manual' iterations. \code{iter_m} is incremented when \code{.rerun} is used.
-\item \code{iter_i}---an \code{integer} that identifies 'internal' iterations. \code{iter_i} is incremented when the algorithm jumps back to an earlier time step (see \code{\link[=pf_opt_record]{pf_opt_record()}}).
-\item \code{timestep}---an \code{integer} vector that defines time steps.
-\item \code{component}---a \code{character} vector that defines algorithm components:
-\itemize{
-\item \code{proposal}---the proposal step (at the first time step and for stochastic kicks only);
-\item \verb{lik_*}---the likelihood step;
-\itemize{
-\item For stochastic kicks, particle diagnostics are given following each (\code{i}) likelihood evaluation and the components are named by \code{paste0("lik-", names(.likelihood)[i])};
-\item For directed sampling, particle diagnostics for the proposal and likelihood stages are combined under a single \code{lik-directed} label and not split by likelihood component. A \code{move-directed} label is included after evaluating movement densities;
-}
-\item \code{sample}---the sampling step;
-}
-\item \code{n}, \code{nu}, \code{ess}---particle diagnostics immediately following completion of each algorithm component, computed by internal \verb{.pf_diag_*()} functions:
-\itemize{
-\item \code{n}---an \code{integer} vector that defines the number of locations;
-\item \code{nu}---an \code{integer} vector that defines the number of unique locations (see \code{\link[=.pf_diag_nu]{.pf_diag_nu()}}).
-\item \code{ess}---a \code{numeric} vector that defines the effective sample size (see \code{\link[=.pf_diag_ess]{.pf_diag_ess()}}).
-}
-}
-
-In \code{\link[=pf_forward]{pf_forward()}}, if \code{.record$save = FALSE}, \code{diagnostics} is \code{NULL} and the individual \code{\link{data.table}}s are written to file in \verb{\{.record$sink\}/diagnostics/} (see \code{\link[=pf_opt_record]{pf_opt_record()}}). To collate convergence diagnostics from file, use \code{\link[=pf_diag_convergence]{pf_diag_convergence()}}. Summary diagnostics can be computed for both \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_*]{pf_backward_*()}} via \code{\link[=pf_diag_summary]{pf_diag_summary()}}.
-}
-
-\section{\code{internal}}{
-For \code{\link[=pf_forward]{pf_forward()}}, \code{internal} is named list of internal objects for algorithm reruns (see \code{.rerun} and \code{\link[=.pf_forward_startup]{.pf_forward_startup()}}).
+If \code{.record$save = FALSE}, \code{.history} is an empty \code{list} and the individual \code{\link{data.table}}s are written to file in \code{{.record$sink}} (see \code{\link[=pf_opt_record]{pf_opt_record()}}).
 }
 
 \section{\code{convergence}}{
@@ -123,29 +48,29 @@ For \code{\link[=pf_forward]{pf_forward()}}, \code{convergence} is a \code{logic
 }
 
 \section{\code{time}}{
-A \code{list} that records the \code{start}, \code{end} and \code{duration} of algorithm runs (as \code{POSIXct} and \code{\link{difftime}} objects). For \code{\link[=pf_forward]{pf_forward()}}, this is a nested \code{list}, with one element for each manual algorithm run (see \code{.rerun}).
+A \code{data.table} that records the \code{start}, \code{end} and \code{duration} of algorithm runs (as \code{POSIXct} and \code{\link{difftime}} objects).
 }
 
 \seealso{
-The forward filtering--backward sampling algorithm samples locations (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
+The particle filter samples locations (particles) that represent the possible locations of an individual through time, accounting for the data and the individual's movement.
 \itemize{
 \item To set up data, use \code{\link[=pat_setup_data]{pat_setup_data()}}.
-\item \code{\link[=pf_forward]{pf_forward()}} implements the forward filter:
+\item To implement the particle filter, use \code{\link[=pf_forward]{pf_forward()}}:
 \itemize{
-\item To set up an observations timeline, use \code{\link[=pf_setup_obs]{pf_setup_obs()}}.
-\item For proposal (movement) models, see \code{\link{pf_propose}}.
-\item For likelihood functions, to evaluate the likelihood of the data at proposal locations, see \code{\link{pf_lik}}.
-\item For sampling functions, to (re)sample plausible proposal locations, see \code{\link{pf_sample}}.
-\item For tuning parameters, see \code{\link{pf_opt}}.
+\item To set up an observations timeline, use \code{\link[=pf_setup_obs]{pf_setup_obs()}};
+\item For proposal (movement) models, see \code{\link{pf_propose}};
+\item For likelihood functions, to evaluate the likelihood of the data at proposal locations, see \code{\link{pf_lik}};
+\item For sampling functions, to (re)sample plausible proposal locations, see \code{\link{pf_sample}};
+\item For tuning parameters, see \code{\link{pf_opt}};
 }
-\item \code{\link[=pf_backward_*]{pf_backward_*()}} refines outputs from the forward filter:
+\item To map patterns of space use, use:
 \itemize{
-\item \code{\link[=pf_backward_killer]{pf_backward_killer()}} removes dead-ends;
-\item \code{\link{pf_backward_sampler}}\verb{_*()} implements the backward sampler;
+\item The backward smoother (TO DO);
+\item \code{\link[=pf_coord]{pf_coord()}} to extract coordinates;
+\item A \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()};
 }
-\item To reconstruct movement paths from particle samples, use \code{\link[=pf_path]{pf_path()}}.
-\item To map emergent patterns of space use, use \code{\link[=pf_coord]{pf_coord()}} plus a \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()}.
-\item For additional utilities, see supporting \verb{pf_*()} functions, such as \code{\link[=pf_files]{pf_files()}}, \code{\link[=pf_files_size]{pf_files_size()}}, \code{\link[=pf_plot_history]{pf_plot_history()}}, \code{\link[=pf_diag_convergence]{pf_diag_convergence()}} and \code{\link[=pf_diag_summary]{pf_diag_summary()}}.
+\item To reconstruct movement paths, use the backward sampler (TO DO).
+\item For additional utilities, see supporting \verb{pf_*()} functions, such as \code{\link[=pf_files]{pf_files()}}, \code{\link[=pf_files_size]{pf_files_size()}}, \code{\link[=pf_plot_history]{pf_plot_history()}} and \code{\link[=pf_diag_summary]{pf_diag_summary()}}.
 }
 }
 \author{

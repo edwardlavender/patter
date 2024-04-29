@@ -39,14 +39,8 @@ NULL
     return(NULL)
   }
   check_dir_exists(.record$sink)
-  folder_history <- file.path(.record$sink, "history")
-  lapply(folder_history, \(.folder) {
-    if (!dir.exists(.folder)) {
-      dir.create(.folder)
-    }
-    check_dir_empty(.folder, action = warn)
-  })
-  list(history = folder_history)
+  check_dir_empty(.record$sink, action = warn)
+  .record$sink
 }
 
 #' @rdname pf_forward-utils
@@ -55,53 +49,35 @@ NULL
 # Implement startup checks and operations
 .pf_forward_startup <- function(.rerun, .record) {
 
-  #### Use .rerun, if specified
-  # Currently, we assume that input arguments (e.g., .record_opts) are the same on reruns
-  if (length(.rerun) > 0L) {
-    # Pull startup values
-    startup <- .rerun$internal$startup
-    # Increment manual iteration counter
-    startup$control$iter_m <- startup$control$iter_m + 1L
-    # Update history & diagnostics elements
-    startup$output$history     <- .rerun$history
-    return(startup)
-  }
-
   #### Validate inputs
   # TO DO, use .pf_check()
 
-  #### Prepare controls
-  # Number of manual iterations
-  iter_m <- 1L
-  # Number of internal iterations
-  iter_i <- 1L
-
-  #### Define output containers
+  #### Define history list
   # Lists to hold outputs
-  history     <- list()
-  # directories to write outputs (may be NULL)
-  folders            <- .pf_forward_dirs(.record)
-  folder_history     <- folders[["history"]]
+  if (length(.rerun) == 0L) {
+    history <- list()
+  } else {
+    history <- .rerun$history
+  }
+
+  #### Define directories to write outputs (may be NULL)
+  folder <- .pf_forward_dirs(.record)
 
   #### Define wrapper functions
   .pf_write_particles_abbr <- function(.particles) {
     # Note this requires .particles$timestep[1] to be available
     .pf_write_particles(.particles = .particles,
-                        .sink = folder_history,
+                        .sink = folder,
                         .filename = .particles$timestep[1],
                         .write = !is.null(.record$sink))
   }
 
   #### Collate outputs
   list(
-    control = list(
-      iter_m = iter_m,
-      iter_i = iter_i
-    ),
     output = list(
       select_cols = !is.null(.record$cols),
       history = history,
-      folder_history = folder_history
+      folder_history = folder
     ),
     wrapper = list(.pf_write_particles_abbr = .pf_write_particles_abbr)
   )
@@ -132,7 +108,7 @@ NULL
            cell_past = "cell_now",
            x_past = "x_now",
            y_past = "y_now",
-           "weight") |>
+           "logwt") |>
     as.data.table()
 }
 
@@ -166,21 +142,13 @@ NULL
     return(TRUE)
   } else {
     # Implement sampling if (a) there are zero likelihood cells & (b) the ESS is too low
-    contains_zero_lik <- anyv(.particles$lik, 0)
+    contains_zero_lik <- anyv(.particles$loglik, -Inf)
     if (contains_zero_lik) {
-      crit <- .pf_diag_ess(.particles, .weight = normalise(.particles$weight * .particles$lik))
+      crit <- .pf_diag_ess(lognormalise(.particles$logwt + .particles$loglik))
       return(crit < .trial$trial_sampler_crit)
     }
   }
   return(FALSE)
-}
-
-#' @rdname pf_forward-utils
-#' @keywords internal
-
-# Revert to an earlier time step
-.pf_forward_revert <- function(.t, .trial_revert_steps) {
-  max(c(2L, .t - .trial_revert_steps))
 }
 
 #' @rdname pf_forward-utils
@@ -191,19 +159,15 @@ NULL
 
   # Outcome (A): convergence failure
   # * If there are no particles, return warning + FALSE
-  if (fnrow(.particles) == 0L) {
+  if (!any(.particles$logwt > -Inf)) {
     warn("Convergence error: there are no particles with positive weights at time step {.t}. Returning outputs up to time step {.t}.",
          .envir = environment())
     return(FALSE)
   }
 
   # Outcome (B): convergence warning
-  # * If the ESS is less than the required threshold (but above zero)
-  # * ... we throw a warning, but continue
-  if (.crit < .trial_revert_crit) {
-    warn("Convergence warning: insufficient ESS ({.crit} < {.trial_revert_crit} [`.trial_revert_crit`] ESS) at timestep {.t}.",
-         .envir = environment())
-  }
+  # Warn if f the ESS is less than the required threshold (but above zero)
+  # This is not currently implemented
 
   # Option (C): success (continue)
   TRUE
@@ -214,12 +178,9 @@ NULL
 #' @keywords internal
 
 # Collate `pf_forward()` outputs
-.pf_forward_output <- function(.rerun, .start, .startup, .history, .convergence) {
-  .rerun$time[[.startup$control$iter_m]] <- call_timings(.start = .start)
+.pf_forward_output <- function(.rerun, .start, .history, .convergence) {
+  .rerun$time <- rbind(.rerun$time, call_timings(.start = .start))
   out  <- list(history = .history,
-               path = NULL,
-               diagnostics = NULL,
-               internal = list(startup = .startup),
                convergence = .convergence,
                time = .rerun$time)
   class(out) <- c(class(out), pf_class)

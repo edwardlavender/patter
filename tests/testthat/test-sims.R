@@ -35,7 +35,9 @@ test_that("Distribution functions work", {
   rangcrw(.n = 1, .prior = 10, .rho = 1) |> expect_equal(10)
 
   #### Test rangcrw() returns correct correlation (with some error)
+  ssf()
   a1 <- rangcrw(.n = 1e6)
+  ssf()
   a2 <- rangcrw(.n = 1e6, .prior = a1, .rho = 0.999)
   rho <- circular::cor.circular(degrees(a1), degrees(a2))
   expect_true(all.equal(0.999, rho, tolerance = 0.01))
@@ -44,20 +46,20 @@ test_that("Distribution functions work", {
 
 test_that("*det*() functions work", {
   expect_equal(
-    ddet(data.table(dist = 100)),
-    ddetlogistic(100)
+    pdet(data.table(dist = 100)),
+    pdetlogistic(100)
   )
   expect_equal(
-    ddet(data.table(dist = 100), .beta = -0.03),
-    ddetlogistic(100, .beta = -0.03)
+    pdet(data.table(dist = 100), .beta = -0.03),
+    pdetlogistic(100, .beta = -0.03)
   )
 
-  ddet2 <- function(.data) {
-    ddetlogistic(.x = .data$dist, .gamma = .data$receiver_range)
+  pdet2 <- function(.data) {
+    pdetlogistic(.x = .data$dist, .gamma = .data$receiver_range)
   }
   expect_equal(
-    ddet2(data.table(distance = c(50, 100), receiver_range = c(20, 150))),
-    c(0, ddetlogistic(100, .gamma = 150))
+    pdet2(data.table(distance = c(50, 100), receiver_range = c(20, 150))),
+    c(0, pdetlogistic(100, .gamma = 150))
   )
 
 })
@@ -358,7 +360,7 @@ test_that(".sim_detections() works", {
   )
   # Validate detection probability calculations
   expect_equal(
-    ddetlogistic(out$dist),
+    pdetlogistic(out$dist),
     out$pr
   )
   # Validate simulation of detections

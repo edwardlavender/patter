@@ -8,7 +8,6 @@
 \alias{.pf_forward_increment}
 \alias{.pf_forward_ppast}
 \alias{.pf_forward_trial_sampler}
-\alias{.pf_forward_revert}
 \alias{.pf_forward_continue}
 \alias{.pf_forward_output}
 \title{PF helper: internal utilities}
@@ -25,11 +24,9 @@
 
 .pf_forward_trial_sampler(.particles, .trial)
 
-.pf_forward_revert(.t, .trial_revert_steps)
-
 .pf_forward_continue(.particles, .t, .crit, .trial_revert_crit)
 
-.pf_forward_output(.rerun, .start, .startup, .history, .convergence)
+.pf_forward_output(.rerun, .start, .history, .convergence)
 }
 \description{
 These functions are internal utilities for \code{\link[=pf_forward]{pf_forward()}}.

@@ -71,18 +71,15 @@
     </div>
 
     <div class="ref-description">
-    <p>An S3 class that defines the named <code>list</code> returned by <code><a href="pf_forward.html">pf_forward()</a></code> and <code><a href="pf_backward_-times.html">pf_backward_*()</a></code>.</p>
+    <p>An S3 class that defines the named <code>list</code> returned by <code><a href="pf_forward.html">pf_forward()</a></code> and <code>pf_backward_*()</code>.</p>
     </div>
 
 
     <div id="structure">
     <h2>Structure</h2>
     <p><code>pf_particles</code> is a label used to denote outputs from selected functions in <code><a href="patter.html">patter</a></code>. The structure of this class is not strictly defined and primarily exists to streamline documentation. At the time of writing, <code>pf_particles</code> objects may comprise the following elements:</p><ul><li><p><code>history</code>---a <code>list</code> of particle samples;</p></li>
-<li><p><code>paths</code>---a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of paths;</p></li>
-<li><p><code>diagnostics</code>---a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of diagnostics;</p></li>
-<li><p><code>internal</code>---a <code>list</code> of internal objects;</p></li>
 <li><p><code>convergence</code>---a <code>logical</code> value that defines convergence success;</p></li>
-<li><p><code>time</code>---a <code>list</code> of timings;</p></li>
+<li><p><code>time</code>---a <code>data.table</code> of timings;</p></li>
 </ul></div>
     <div id="history">
     <h2><code>history</code></h2>
@@ -101,48 +98,6 @@
 If directed sampling is used, <code>bathy</code> and <code>dens</code> columns are included where required (after the first time step). <code>dens</code> is <code>numeric</code> vector that defines the probability density of moving from <code>(x_past, y_past</code>) to <code>(x_now, y_now)</code>.</p>
 <p>Since columns are recorded only when required, not all columns are recorded at each time step. To combine <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>s, use <code><a href="pf_history.html">.pf_history_dt()</a></code>.</p>
 <p>If <code>.record$save = FALSE</code>, <code>.history</code> is an empty <code>list</code> and the individual <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>s are written to file in <code>{.record$sink}/history/</code> (see <code><a href="pf_opt.html">pf_opt_record()</a></code>).</p>
-<p><code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> simply drops dead-ends (rows) from the time series and leaves the columns from <code><a href="pf_forward.html">pf_forward()</a></code> intact (unless <code>.record$cols</code> is supplied).</p>
-<p><code><a href="pf_backward_sampler.html">pf_backward_sampler_v()</a></code> retains or updates the following columns, or a subset thereof as specified by <code>.record$cols</code>:</p><ul><li><p><code>timestep</code></p></li>
-<li><p><code>cell_past</code>, <code>x_past</code>, <code>y_past</code></p></li>
-<li><p><code>cell_now</code>, <code>x_now</code>, <code>y_now</code></p></li>
-<li><p><code>dens</code></p></li>
-</ul><p><code><a href="pf_backward_sampler.html">pf_backward_sampler_p()</a></code> tracks paths, not particle histories, so this element is empty.</p>
-    </div>
-    <div id="paths">
-    <h2><code>paths</code></h2>
-    <p><code>paths</code> is a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of movement paths. Currently, this is only populated by <code><a href="pf_backward_sampler.html">pf_backward_sampler_p()</a></code>. By default, the following columns are retained:</p><ul><li><p><code>path_id</code>---an <code>integer</code> vector of path IDs;</p></li>
-<li><p><code>timestep</code>---an <code>integer</code> vector of time steps;</p></li>
-<li><p><code>cell_past</code>, <code>x_past</code>, <code>y_past</code>, <code>cell_now</code>, <code>x_now</code>, <code>y_now</code>---Cell IDs and coordinates for particle samples;</p></li>
-<li><p><code>dens</code>---a <code>numeric</code> vector of movement densities from <code>cell_past</code> into <code>cell_now</code>;</p></li>
-</ul><p>Additional columns may be included from the forward run, as specified by <code>.record$cols</code>.</p>
-    </div>
-    <div id="diagnostics">
-    <h2><code>diagnostics</code></h2>
-    <p><code>diagnostics</code> is a <code>NULL</code> element. In <code><a href="pf_forward.html">pf_forward()</a></code>, we formerly tracked metrics of particle diversity ('particle diagnostics') through time for analysis of convergence issues, sampling sufficiency and other properties (see <code><a href="pf_diag-internal.html">pf_diag-internal</a></code>). This was expensive and is no longer implemented by default and <code>diagnostics</code> is now set to <code>NULL</code>. You can still track convergence diagnostics following particle proposals and likelihood evaluations by modifying the proposal and/or likelihood functions to write diagnostic statistics to file on the fly (see <code><a href="pf_diag-internal.html">pf_diag-internal</a></code>).</p>
-<p>For stochastic kicks (implemented via <code><a href="pf_particle.html">.pf_particles_kick()</a></code>), we record:</p><ul><li><p>Proposal diagnostics, following stochastic kicks;</p></li>
-<li><p>Likelihood diagnostics, following the evaluation of each likelihood function;</p></li>
-<li><p>Sampling diagnostics, following sampling;</p></li>
-</ul><p>For directed sampling (implemented via <code><a href="pf_particle.html">.pf_particles_sampler()</a></code>), we record:</p><ul><li><p>Proposal/likelihood diagnostics, following a combined proposal plus likelihood step;</p></li>
-<li><p>Sampling diagnostics, following sampling;</p></li>
-</ul><p>Diagnostics are tracked for all trials, reversions and reruns (see <code><a href="pf_opt.html">pf_opt_trial()</a></code>) and never replaced. (This is so we can check, for instance, how many trials of a process, such as stochastic kick-based sampling, are required at each time step to generate a sufficient number of valid particles and, in so doing, improve algorithm efficiency.)</p>
-<p>If <code>.record$save = TRUE</code>, particle diagnostics are collated in a single <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>, with the following columns:</p><ul><li><p><code>iter_m</code>---an <code>integer</code> that identifies 'manual' iterations. <code>iter_m</code> is incremented when <code>.rerun</code> is used.</p></li>
-<li><p><code>iter_i</code>---an <code>integer</code> that identifies 'internal' iterations. <code>iter_i</code> is incremented when the algorithm jumps back to an earlier time step (see <code><a href="pf_opt.html">pf_opt_record()</a></code>).</p></li>
-<li><p><code>timestep</code>---an <code>integer</code> vector that defines time steps.</p></li>
-<li><p><code>component</code>---a <code>character</code> vector that defines algorithm components:</p><ul><li><p><code>proposal</code>---the proposal step (at the first time step and for stochastic kicks only);</p></li>
-<li><p><code>lik_*</code>---the likelihood step;</p><ul><li><p>For stochastic kicks, particle diagnostics are given following each (<code>i</code>) likelihood evaluation and the components are named by <code>paste0("lik-", names(.likelihood)[i])</code>;</p></li>
-<li><p>For directed sampling, particle diagnostics for the proposal and likelihood stages are combined under a single <code>lik-directed</code> label and not split by likelihood component. A <code>move-directed</code> label is included after evaluating movement densities;</p></li>
-</ul></li>
-<li><p><code>sample</code>---the sampling step;</p></li>
-</ul></li>
-<li><p><code>n</code>, <code>nu</code>, <code>ess</code>---particle diagnostics immediately following completion of each algorithm component, computed by internal <code>.pf_diag_*()</code> functions:</p><ul><li><p><code>n</code>---an <code>integer</code> vector that defines the number of locations;</p></li>
-<li><p><code>nu</code>---an <code>integer</code> vector that defines the number of unique locations (see <code><a href="pf_diag-internal.html">.pf_diag_nu()</a></code>).</p></li>
-<li><p><code>ess</code>---a <code>numeric</code> vector that defines the effective sample size (see <code><a href="pf_diag-internal.html">.pf_diag_ess()</a></code>).</p></li>
-</ul></li>
-</ul><p>In <code><a href="pf_forward.html">pf_forward()</a></code>, if <code>.record$save = FALSE</code>, <code>diagnostics</code> is <code>NULL</code> and the individual <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>s are written to file in <code>{.record$sink}/diagnostics/</code> (see <code><a href="pf_opt.html">pf_opt_record()</a></code>). To collate convergence diagnostics from file, use <code>pf_diag_convergence()</code>. Summary diagnostics can be computed for both <code><a href="pf_forward.html">pf_forward()</a></code> and <code><a href="pf_backward_-times.html">pf_backward_*()</a></code> via <code><a href="pf_diag.html">pf_diag_summary()</a></code>.</p>
-    </div>
-    <div id="internal">
-    <h2><code>internal</code></h2>
-    <p>For <code><a href="pf_forward.html">pf_forward()</a></code>, <code>internal</code> is named list of internal objects for algorithm reruns (see <code>.rerun</code> and <code><a href="pf_forward-utils.html">.pf_forward_startup()</a></code>).</p>
     </div>
     <div id="convergence">
     <h2><code>convergence</code></h2>
@@ -150,23 +105,23 @@ If directed sampling is used, <code>bathy</code> and <code>dens</code> columns a
     </div>
     <div id="time">
     <h2><code>time</code></h2>
-    <p>A <code>list</code> that records the <code>start</code>, <code>end</code> and <code>duration</code> of algorithm runs (as <code>POSIXct</code> and <code><a href="https://rdrr.io/r/base/difftime.html" class="external-link">difftime</a></code> objects). For <code><a href="pf_forward.html">pf_forward()</a></code>, this is a nested <code>list</code>, with one element for each manual algorithm run (see <code>.rerun</code>).</p>
+    <p>A <code>data.table</code> that records the <code>start</code>, <code>end</code> and <code>duration</code> of algorithm runs (as <code>POSIXct</code> and <code><a href="https://rdrr.io/r/base/difftime.html" class="external-link">difftime</a></code> objects).</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index"><p>The forward filtering--backward sampling algorithm samples locations (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.</p><ul><li><p>To set up data, use <code><a href="pat_setup_data.html">pat_setup_data()</a></code>.</p></li>
-<li><p><code><a href="pf_forward.html">pf_forward()</a></code> implements the forward filter:</p><ul><li><p>To set up an observations timeline, use <code><a href="pf_setup_obs.html">pf_setup_obs()</a></code>.</p></li>
-<li><p>For proposal (movement) models, see <code><a href="pf_propose.html">pf_propose</a></code>.</p></li>
-<li><p>For likelihood functions, to evaluate the likelihood of the data at proposal locations, see <code><a href="pf_lik.html">pf_lik</a></code>.</p></li>
-<li><p>For sampling functions, to (re)sample plausible proposal locations, see <code><a href="pf_sample.html">pf_sample</a></code>.</p></li>
-<li><p>For tuning parameters, see <code><a href="pf_opt.html">pf_opt</a></code>.</p></li>
+    <div class="dont-index"><p>The particle filter samples locations (particles) that represent the possible locations of an individual through time, accounting for the data and the individual's movement.</p><ul><li><p>To set up data, use <code><a href="pat_setup_data.html">pat_setup_data()</a></code>.</p></li>
+<li><p>To implement the particle filter, use <code><a href="pf_forward.html">pf_forward()</a></code>:</p><ul><li><p>To set up an observations timeline, use <code><a href="pf_setup_obs.html">pf_setup_obs()</a></code>;</p></li>
+<li><p>For proposal (movement) models, see <code><a href="pf_propose.html">pf_propose</a></code>;</p></li>
+<li><p>For likelihood functions, to evaluate the likelihood of the data at proposal locations, see <code><a href="pf_lik.html">pf_lik</a></code>;</p></li>
+<li><p>For sampling functions, to (re)sample plausible proposal locations, see <code><a href="pf_sample.html">pf_sample</a></code>;</p></li>
+<li><p>For tuning parameters, see <code><a href="pf_opt.html">pf_opt</a></code>;</p></li>
 </ul></li>
-<li><p><code><a href="pf_backward_-times.html">pf_backward_*()</a></code> refines outputs from the forward filter:</p><ul><li><p><code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> removes dead-ends;</p></li>
-<li><p><code><a href="pf_backward_sampler.html">pf_backward_sampler</a></code><code>_*()</code> implements the backward sampler;</p></li>
+<li><p>To map patterns of space use, use:</p><ul><li><p>The backward smoother (TO DO);</p></li>
+<li><p><code><a href="pf_coord.html">pf_coord()</a></code> to extract coordinates;</p></li>
+<li><p>A <code>map_*()</code> function, such as <code><a href="map_pou.html">map_pou()</a></code>, <code><a href="map_dens.html">map_dens()</a></code> and/or <code><a href="map_hr.html">map_hr</a></code><code>_()</code>;</p></li>
 </ul></li>
-<li><p>To reconstruct movement paths from particle samples, use <code><a href="pf_path.html">pf_path()</a></code>.</p></li>
-<li><p>To map emergent patterns of space use, use <code><a href="pf_coord.html">pf_coord()</a></code> plus a <code>map_*()</code> function, such as <code><a href="map_pou.html">map_pou()</a></code>, <code><a href="map_dens.html">map_dens()</a></code> and/or <code><a href="map_hr.html">map_hr</a></code><code>_()</code>.</p></li>
-<li><p>For additional utilities, see supporting <code>pf_*()</code> functions, such as <code><a href="pf_files.html">pf_files()</a></code>, <code><a href="pf_files.html">pf_files_size()</a></code>, <code><a href="pf_plot_history.html">pf_plot_history()</a></code>, <code>pf_diag_convergence()</code> and <code><a href="pf_diag.html">pf_diag_summary()</a></code>.</p></li>
+<li><p>To reconstruct movement paths, use the backward sampler (TO DO).</p></li>
+<li><p>For additional utilities, see supporting <code>pf_*()</code> functions, such as <code><a href="pf_files.html">pf_files()</a></code>, <code><a href="pf_files.html">pf_files_size()</a></code>, <code><a href="pf_plot_history.html">pf_plot_history()</a></code> and <code><a href="pf_diag.html">pf_diag_summary()</a></code>.</p></li>
 </ul></div>
     </div>
     <div id="author">

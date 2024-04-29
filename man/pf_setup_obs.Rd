@@ -10,7 +10,7 @@ pf_setup_obs(
   .step,
   .period = NULL,
   .mobility,
-  .receiver_range
+  .verbose = getOption("patter.verbose")
 )
 }
 \arguments{
@@ -18,9 +18,10 @@ pf_setup_obs(
 \itemize{
 \item (optional) \code{.dlist$data$acoustics}, with the following columns: \code{timestamp} and \code{receiver_id}.
 \item (optional) \code{.dlist$data$archival}, with the following columns: \code{timestamp} and \code{depth}.
+\item (optional) If \code{.dlist$data$acoustics} is provided, \code{.dlist$algorithm$detection_overlaps} is required if there are receivers with overlapping detection containers;
 }
 
-At least one dataset must be provided. Data should be given \strong{for a single individual}. Other datasets are not currently integrated within this function but can be included afterwards (see Details).}
+At least one dataset (\code{.dlist$data$acoustics} and/or \code{.dlist$data$archival}) must be provided. Data should be given \strong{for a single individual}. Other datasets are not currently integrated within this function but can be included afterwards (see Details).}
 
 \item{.trim}{If both acoustic and archival data are supplied, \code{.trim} is \code{logical} variable that defines whether or not to trim the time series to the time period for which they overlap.}
 
@@ -36,62 +37,63 @@ At least one dataset must be provided. Data should be given \strong{for a single
 
 \item{.mobility}{A constant that defines the maximum (Euclidean) distance the individual could move in \code{.step}. See the \href{https://edwardlavender.github.io/flapper/reference/get_mvt_mobility.html}{\verb{flapper::get_mvt_mobility_*()}} functions to estimate \code{.mobility} from acoustic and/or archival data.}
 
-\item{.receiver_range}{A constant that defines the receiver detection range. At the time of writing, a constant value across all receivers and time steps is currently assumed (although receiver-specific detection kernels within this range are supported by \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}).}
+\item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }
 \value{
 The function returns a \code{\link{data.table}} with the following columns:
 \itemize{
-\item \code{timestep}---an \code{integer} that defines the time step;
+\item \code{timestep}---an \code{integer} vector that defines the time step;
 \item \code{timestamp}---a regular sequences of \code{POSIXct} time stamps;
-\item \code{date}---a \code{character} that defines the date;
-\item \code{mobility}---a \code{double} that defines \code{.mobility};
+\item \code{mobility}---a \code{numeric} vector that defines the mobility;
 }
 
 If acoustic data is provided, the following column(s) are also included:
 \itemize{
-\item \code{detection_id}---an \code{integer} vector that uniquely defines each detection;
-\item \code{detection}---an \code{integer} that distinguishes the time steps at which detections were (1) or were not (0) recorded;
-\item \code{receiver_id}---a \code{list} that defines the receiver(s) that recorded detection(s) at each time step;
-\item \code{receiver_id_next}---a \code{list} that defines the receiver(s) that recorded the next detection(s);
-\item \code{buffer_past}---a \code{double} that controls container growth from the past to the present;
-\item \code{buffer_future}---a \code{double} that controls container shrinkage from the future to the present;
-\item \code{buffer_future_incl_gamma}---a \code{double} (\code{buffer_future} + \code{.receiver_range}) that controls container shrinkage for \code{\link[=pf_forward]{pf_forward()}};
+\item \code{array_id}---an \code{integer} vector that uniquely distinguishes each array design;
+\item \code{detection}---an \code{integer} vector that distinguishes time steps at which detections were (1) or were not (0) recorded;
+\item \code{acoustics}---a \code{list} of one-row acoustic observation matrices. In \code{\link[=pf_forward]{pf_forward()}}, this information is used to calculate the likelihood of acoustic observations at proposal locations (see \code{\link[=pf_lik_ac]{pf_lik_ac()}}).
+\itemize{
+\item If \code{detection = 1}, the \code{matrix} contains one named column for each receiver that recorded a detection and each overlapping receiver. (It is not necessary to include all receivers in this \code{matrix}.) The entries 1 and 0 distinguish the receivers at which detections were recorded/not recorded. This information is used to calculate the likelihood of acoustic observations at time steps with detection(s).
+\item If \code{detection = 0}, the \code{list} element is \code{NULL}. We do not need to store empty detection matrices because the likelihood of non detection at all operational receivers in a given array design is extracted from pre-computed layers (see \code{\link[=acs_setup_detection_kernels]{acs_setup_detection_kernels()}}).
 }
-
-These columns are required to calculate the likelihood of acoustic observations (the detection or lack thereof at each operational receiver) in \code{\link[=pf_forward]{pf_forward()}} by the default \code{\link{pf_lik}} routines.
+\item \code{container}---a \code{list} of acoustic container information. In \code{\link[=pf_forward]{pf_forward()}}, this information is used to eliminate proposal locations that are too far away from the location(s) of the next detection(s) (see \code{\link[=acs_filter_container]{acs_filter_container()}}). Each \code{list} contains:
+\itemize{
+\item \code{coord}---a two-column \code{matrix} of coordinates for the receiver(s) that recorded the next detection;
+\item \code{buffer}---a \code{numeric} vector of the (Euclidean) distance from each pair of receiver coordinates within which the individual must have been located at each time step. The distance depends on the time between detections, the individual's \code{.mobility} and the receiver-specific detection range;
+}
+}
 
 If archival data is provided, the following column(s) are also included:
 \itemize{
 \item \code{depth}---a number that defines the individual's depth (m) at each time step;
 }
 
-To calculate the likelihood of archival observations in \code{\link[=pf_forward]{pf_forward()}} by the default \code{\link[=pf_lik_dc]{pf_lik_dc()}} routine, a depth envelope (controlled by \code{depth_deep_eps}, \code{depth_shallow_eps} columns) is also required (see \code{\link[=pf_lik_dc]{pf_lik_dc()}}).
+To calculate the likelihood of archival observations in \code{\link[=pf_forward]{pf_forward()}} by the default \code{\link[=pf_lik_dc]{pf_lik_dc()}} routine, a depth envelope (controlled by \code{depth_deep_eps} and \code{depth_shallow_eps} columns) is also required (see \code{\link[=pf_lik_dc]{pf_lik_dc()}}).
 }
 \description{
-This function builds a timeline of observations for particle filtering. The forward filter (\code{\link[=pf_forward]{pf_forward()}}) iterates over this timeline. At each time step, the algorithm proposes candidate locations for an individual, evaluates the likelihood of each observation (e.g., acoustic and/or archival data) in the timeline at the current time step  and (re)samples valid locations using likelihood-based weights.
+This function builds a timeline of observations for particle filtering (\code{\link[=pf_forward]{pf_forward()}}). The filter  iterates over this timeline. At each time step, the filter proposes candidate locations for an individual, evaluates the likelihood of each contemporary observation (e.g., acoustic and/or archival data) in the timeline and optionally (re)samples valid locations using a set of weights that incorporate the likelihood.
 }
 \details{
 This function defines the timeline of observations over which \code{\link[=pf_forward]{pf_forward()}} is implemented. The function implements the following routines:
 \itemize{
-\item Acoustic progressing (if applicable);
+\item Acoustic progressing (if applicable):
 \itemize{
 \item Acoustic time series are rounded to the nearest \code{.step};
-\item All receivers that recorded detection(s) in each time interval are listed;
 \item Duplicate detections (at the same receiver in the same time interval) are dropped;
 }
-\item Archival processing (if applicable);
+\item Archival processing (if applicable):
 \itemize{
 \item Archival time series are rounded to the nearest \code{.step};
 \item Multiple records (in the same time interval) are not permitted (in this instance, you need to aggregate observations manually or reduce \code{.step});
 }
-\item Alignment (if applicable)
+\item Alignment (if applicable):
 \itemize{
 \item Acoustic and archival time series are optionally trimmed to the time period for which they overlap;
 }
-\item Time series
+\item Time series:
 \itemize{
 \item Acoustic and/or archival time series are mapped onto a regular time series;
-\item Information required by \code{\link[=pf_forward]{pf_forward()}} is added;
+\item Information required by \code{\link[=pf_forward]{pf_forward()}} (and built-in likelihood functions) is added;
 }
 }
 
@@ -111,59 +113,58 @@ dlist     <- pat_setup_data(.acoustics = acc,
                             .archival = arc,
                             .bathy = dat_gebco(),
                             .lonlat = FALSE)
+# Include detection overlaps
+dlist$algorithm$detection_overlaps <-
+  acs_setup_detection_overlaps(dlist)
 
 #### Example (1): Implement the function for acoustic time series only
 dlist_acpf <- dlist
 dlist_acpf$data$archival <- NULL
 obs <- pf_setup_obs(.dlist = dlist_acpf,
                     .step = "2 mins",
-                    .mobility = 500,
-                    .receiver_range = 750)
+                    .mobility = 500)
 head(obs)
 
 #### Example (2): Use alternative parameters
 obs <- pf_setup_obs(.dlist = dlist_acpf,
                     .step = "2 mins",
-                    .mobility = 1000,
-                    .receiver_range = 500)
+                    .mobility = 1000)
 head(obs)
 
 #### Example (3): Implement the function for acoustic & archival time series
 obs <- pf_setup_obs(.dlist = dlist,
                     .step = "2 mins",
-                    .mobility = 500,
-                    .receiver_range = 750)
+                    .mobility = 500)
 head(obs)
 
 #### Example (4): Include full acoustic & archival time series
 obs <- pf_setup_obs(.dlist = dlist,
                     .trim = FALSE,
                     .step = "2 mins",
-                    .mobility = 500,
-                    .receiver_range = 750)
+                    .mobility = 500)
 head(obs)
 tail(obs)
 }
 \seealso{
-The forward filtering--backward sampling algorithm samples locations (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
+The particle filter samples locations (particles) that represent the possible locations of an individual through time, accounting for the data and the individual's movement.
 \itemize{
 \item To set up data, use \code{\link[=pat_setup_data]{pat_setup_data()}}.
-\item \code{\link[=pf_forward]{pf_forward()}} implements the forward filter:
+\item To implement the particle filter, use \code{\link[=pf_forward]{pf_forward()}}:
 \itemize{
-\item To set up an observations timeline, use \code{\link[=pf_setup_obs]{pf_setup_obs()}}.
-\item For proposal (movement) models, see \code{\link{pf_propose}}.
-\item For likelihood functions, to evaluate the likelihood of the data at proposal locations, see \code{\link{pf_lik}}.
-\item For sampling functions, to (re)sample plausible proposal locations, see \code{\link{pf_sample}}.
-\item For tuning parameters, see \code{\link{pf_opt}}.
+\item To set up an observations timeline, use \code{\link[=pf_setup_obs]{pf_setup_obs()}};
+\item For proposal (movement) models, see \code{\link{pf_propose}};
+\item For likelihood functions, to evaluate the likelihood of the data at proposal locations, see \code{\link{pf_lik}};
+\item For sampling functions, to (re)sample plausible proposal locations, see \code{\link{pf_sample}};
+\item For tuning parameters, see \code{\link{pf_opt}};
 }
-\item \code{\link[=pf_backward_*]{pf_backward_*()}} refines outputs from the forward filter:
+\item To map patterns of space use, use:
 \itemize{
-\item \code{\link[=pf_backward_killer]{pf_backward_killer()}} removes dead-ends;
-\item \code{\link{pf_backward_sampler}}\verb{_*()} implements the backward sampler;
+\item The backward smoother (TO DO);
+\item \code{\link[=pf_coord]{pf_coord()}} to extract coordinates;
+\item A \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()};
 }
-\item To reconstruct movement paths from particle samples, use \code{\link[=pf_path]{pf_path()}}.
-\item To map emergent patterns of space use, use \code{\link[=pf_coord]{pf_coord()}} plus a \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()}.
-\item For additional utilities, see supporting \verb{pf_*()} functions, such as \code{\link[=pf_files]{pf_files()}}, \code{\link[=pf_files_size]{pf_files_size()}}, \code{\link[=pf_plot_history]{pf_plot_history()}}, \code{\link[=pf_diag_convergence]{pf_diag_convergence()}} and \code{\link[=pf_diag_summary]{pf_diag_summary()}}.
+\item To reconstruct movement paths, use the backward sampler (TO DO).
+\item For additional utilities, see supporting \verb{pf_*()} functions, such as \code{\link[=pf_files]{pf_files()}}, \code{\link[=pf_files_size]{pf_files_size()}}, \code{\link[=pf_plot_history]{pf_plot_history()}} and \code{\link[=pf_diag_summary]{pf_diag_summary()}}.
 }
 }
 \author{

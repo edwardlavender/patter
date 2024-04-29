@@ -101,7 +101,7 @@
 
 
 <dt>.backward</dt>
-<dd><p>(optional) If .<code>forward</code> contains particle samples from the forward run, <code>.backward</code> can contain particle samples from the backward pass (e.g., <code><a href="pf_backward_killer.html">pf_backward_killer()</a></code>), provided in any format accepted by <code><a href="pf_history.html">.pf_history_list()</a></code>. The <code>cell_now</code> column is required.</p></dd>
+<dd><p>(optional) If .<code>forward</code> contains particle samples from the forward run, <code>.backward</code> can contain particle samples from the backward pass (e.g., <code>pf_backward_killer()</code>), provided in any format accepted by <code><a href="pf_history.html">.pf_history_list()</a></code>. The <code>cell_now</code> column is required.</p></dd>
 
 
 <dt>.steps</dt>
@@ -141,21 +141,25 @@
     <p>For each <code>.step</code>, <code><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">terra::plot()</a></code> is used to plot <code>.dlist$spatial$bathy</code>. Particle samples in <code>.forward</code> are added onto the grid via <code><a href="https://rdrr.io/r/graphics/points.html" class="external-link">graphics::points()</a></code>. If <code>.backward</code> is supplied, particles in <code>.forward</code> should be derived from the forward run. Particles in <code>.forward</code> but not <code>.backward</code> (i.e., dead ends) are shown in red (unless <code>.add_forward$col</code> is overridden).</p>
 <p>This function replaces <a href="https://edwardlavender.github.io/flapper/reference/pf_plot_history.html" class="external-link"><code><a href="https://edwardlavender.github.io/flapper/reference/pf_plot_history.html" class="external-link">flapper::pf_plot_history()</a></code></a>.</p>
     </div>
+    <div id="warning">
+    <h2>Warning</h2>
+    <p>This function plots all particles, irrespective of their weights.</p>
+    </div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index"><p>The forward filtering--backward sampling algorithm samples locations (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.</p><ul><li><p>To set up data, use <code><a href="pat_setup_data.html">pat_setup_data()</a></code>.</p></li>
-<li><p><code><a href="pf_forward.html">pf_forward()</a></code> implements the forward filter:</p><ul><li><p>To set up an observations timeline, use <code><a href="pf_setup_obs.html">pf_setup_obs()</a></code>.</p></li>
-<li><p>For proposal (movement) models, see <code><a href="pf_propose.html">pf_propose</a></code>.</p></li>
-<li><p>For likelihood functions, to evaluate the likelihood of the data at proposal locations, see <code><a href="pf_lik.html">pf_lik</a></code>.</p></li>
-<li><p>For sampling functions, to (re)sample plausible proposal locations, see <code><a href="pf_sample.html">pf_sample</a></code>.</p></li>
-<li><p>For tuning parameters, see <code><a href="pf_opt.html">pf_opt</a></code>.</p></li>
+    <div class="dont-index"><p>The particle filter samples locations (particles) that represent the possible locations of an individual through time, accounting for the data and the individual's movement.</p><ul><li><p>To set up data, use <code><a href="pat_setup_data.html">pat_setup_data()</a></code>.</p></li>
+<li><p>To implement the particle filter, use <code><a href="pf_forward.html">pf_forward()</a></code>:</p><ul><li><p>To set up an observations timeline, use <code><a href="pf_setup_obs.html">pf_setup_obs()</a></code>;</p></li>
+<li><p>For proposal (movement) models, see <code><a href="pf_propose.html">pf_propose</a></code>;</p></li>
+<li><p>For likelihood functions, to evaluate the likelihood of the data at proposal locations, see <code><a href="pf_lik.html">pf_lik</a></code>;</p></li>
+<li><p>For sampling functions, to (re)sample plausible proposal locations, see <code><a href="pf_sample.html">pf_sample</a></code>;</p></li>
+<li><p>For tuning parameters, see <code><a href="pf_opt.html">pf_opt</a></code>;</p></li>
 </ul></li>
-<li><p><code><a href="pf_backward_-times.html">pf_backward_*()</a></code> refines outputs from the forward filter:</p><ul><li><p><code><a href="pf_backward_killer.html">pf_backward_killer()</a></code> removes dead-ends;</p></li>
-<li><p><code><a href="pf_backward_sampler.html">pf_backward_sampler</a></code><code>_*()</code> implements the backward sampler;</p></li>
+<li><p>To map patterns of space use, use:</p><ul><li><p>The backward smoother (TO DO);</p></li>
+<li><p><code><a href="pf_coord.html">pf_coord()</a></code> to extract coordinates;</p></li>
+<li><p>A <code>map_*()</code> function, such as <code><a href="map_pou.html">map_pou()</a></code>, <code><a href="map_dens.html">map_dens()</a></code> and/or <code><a href="map_hr.html">map_hr</a></code><code>_()</code>;</p></li>
 </ul></li>
-<li><p>To reconstruct movement paths from particle samples, use <code><a href="pf_path.html">pf_path()</a></code>.</p></li>
-<li><p>To map emergent patterns of space use, use <code><a href="pf_coord.html">pf_coord()</a></code> plus a <code>map_*()</code> function, such as <code><a href="map_pou.html">map_pou()</a></code>, <code><a href="map_dens.html">map_dens()</a></code> and/or <code><a href="map_hr.html">map_hr</a></code><code>_()</code>.</p></li>
-<li><p>For additional utilities, see supporting <code>pf_*()</code> functions, such as <code><a href="pf_files.html">pf_files()</a></code>, <code><a href="pf_files.html">pf_files_size()</a></code>, <code>pf_plot_history()</code>, <code>pf_diag_convergence()</code> and <code><a href="pf_diag.html">pf_diag_summary()</a></code>.</p></li>
+<li><p>To reconstruct movement paths, use the backward sampler (TO DO).</p></li>
+<li><p>For additional utilities, see supporting <code>pf_*()</code> functions, such as <code><a href="pf_files.html">pf_files()</a></code>, <code><a href="pf_files.html">pf_files_size()</a></code>, <code>pf_plot_history()</code> and <code><a href="pf_diag.html">pf_diag_summary()</a></code>.</p></li>
 </ul></div>
     </div>
     <div id="author">
@@ -198,31 +202,27 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (2): Plot selected samples (from the backward pass)</span></span></span>
 <span class="r-in"><span><span class="fu">pf_plot_history</span><span class="op">(</span>.dlist <span class="op">=</span> <span class="va">dlist</span>,</span></span>
-<span class="r-in"><span>                .forward <span class="op">=</span> <span class="fu"><a href="datasets-algorithms.html">dat_pfbk</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                .forward <span class="op">=</span> <span class="fu"><a href="datasets-algorithms.html">dat_pff</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                .steps <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="pf_plot_history-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (3) Plot particles from both forward and backward runs</span></span></span>
-<span class="r-in"><span><span class="co"># Dead ends are shown in red</span></span></span>
-<span class="r-in"><span><span class="fu">pf_plot_history</span><span class="op">(</span>.dlist <span class="op">=</span> <span class="va">dlist</span>,</span></span>
-<span class="r-in"><span>                .forward <span class="op">=</span> <span class="fu"><a href="datasets-algorithms.html">dat_pff</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                .backward <span class="op">=</span> <span class="fu"><a href="datasets-algorithms.html">dat_pfbk</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                .steps <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="pf_plot_history-3.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="co"># (TO REVISE)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (4): Plot multiple time steps</span></span></span>
 <span class="r-in"><span><span class="co"># Specify selected steps</span></span></span>
 <span class="r-in"><span><span class="fu">pf_plot_history</span><span class="op">(</span>.dlist <span class="op">=</span> <span class="va">dlist</span>,</span></span>
-<span class="r-in"><span>                .forward <span class="op">=</span> <span class="fu"><a href="datasets-algorithms.html">dat_pfbk</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                .forward <span class="op">=</span> <span class="fu"><a href="datasets-algorithms.html">dat_pff</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                .steps <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5L</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="pf_plot_history-2.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="pf_plot_history-3.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="pf_plot_history-4.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="pf_plot_history-5.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="co"># Plot all steps (default: .step = NULL)</span></span></span>
+<span class="r-in"><span><span class="fu">pf_plot_history</span><span class="op">(</span>.dlist <span class="op">=</span> <span class="va">dlist</span>,</span></span>
+<span class="r-in"><span>                .forward <span class="op">=</span> <span class="fu"><a href="datasets-algorithms.html">dat_pff</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="pf_plot_history-6.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="pf_plot_history-7.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="pf_plot_history-8.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="co"># Plot all steps (default: .step = NULL)</span></span></span>
-<span class="r-in"><span><span class="fu">pf_plot_history</span><span class="op">(</span>.dlist <span class="op">=</span> <span class="va">dlist</span>,</span></span>
-<span class="r-in"><span>                .forward <span class="op">=</span> <span class="fu"><a href="datasets-algorithms.html">dat_pfbk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="pf_plot_history-9.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="pf_plot_history-10.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="pf_plot_history-11.png" alt="" width="700" height="433"></span>
@@ -245,13 +245,13 @@
 <span class="r-plt img"><img src="pf_plot_history-28.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="pf_plot_history-29.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="pf_plot_history-30.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="co"># Use `.prompt = TRUE`</span></span></span>
+<span class="r-in"><span><span class="fu">pf_plot_history</span><span class="op">(</span>.dlist <span class="op">=</span> <span class="va">dlist</span>,</span></span>
+<span class="r-in"><span>                .forward <span class="op">=</span> <span class="fu"><a href="datasets-algorithms.html">dat_pff</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                .prompt <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="pf_plot_history-31.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="pf_plot_history-32.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="pf_plot_history-33.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="co"># Use `.prompt = TRUE`</span></span></span>
-<span class="r-in"><span><span class="fu">pf_plot_history</span><span class="op">(</span>.dlist <span class="op">=</span> <span class="va">dlist</span>,</span></span>
-<span class="r-in"><span>                .forward <span class="op">=</span> <span class="fu"><a href="datasets-algorithms.html">dat_pfbk</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                .prompt <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="pf_plot_history-34.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="pf_plot_history-35.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="pf_plot_history-36.png" alt="" width="700" height="433"></span>
@@ -274,28 +274,24 @@
 <span class="r-plt img"><img src="pf_plot_history-53.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="pf_plot_history-54.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="pf_plot_history-55.png" alt="" width="700" height="433"></span>
-<span class="r-plt img"><img src="pf_plot_history-56.png" alt="" width="700" height="433"></span>
-<span class="r-plt img"><img src="pf_plot_history-57.png" alt="" width="700" height="433"></span>
-<span class="r-plt img"><img src="pf_plot_history-58.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (5): Customise the plot</span></span></span>
 <span class="r-in"><span><span class="co"># Customise the SpatRaster surface</span></span></span>
 <span class="r-in"><span><span class="fu">pf_plot_history</span><span class="op">(</span>.dlist <span class="op">=</span> <span class="va">dlist</span>,</span></span>
-<span class="r-in"><span>                .forward <span class="op">=</span> <span class="fu"><a href="datasets-algorithms.html">dat_pfbk</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                .forward <span class="op">=</span> <span class="fu"><a href="datasets-algorithms.html">dat_pff</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                .steps <span class="op">=</span> <span class="fl">1L</span>,</span></span>
 <span class="r-in"><span>                .add_surface <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>col <span class="op">=</span> <span class="fu">grDevices</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">cm.colors</a></span><span class="op">(</span><span class="fl">256</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="pf_plot_history-59.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="pf_plot_history-56.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># Customise the particle samples</span></span></span>
 <span class="r-in"><span><span class="fu">pf_plot_history</span><span class="op">(</span>.dlist <span class="op">=</span> <span class="va">dlist</span>,</span></span>
-<span class="r-in"><span>                .forward <span class="op">=</span> <span class="fu"><a href="datasets-algorithms.html">dat_pfbk</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                .forward <span class="op">=</span> <span class="fu"><a href="datasets-algorithms.html">dat_pff</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                .steps <span class="op">=</span> <span class="fl">1L</span>,</span></span>
 <span class="r-in"><span>                .add_forward <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>pch <span class="op">=</span> <span class="st">"."</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="pf_plot_history-60.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="pf_plot_history-57.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (6): Write images to file</span></span></span>
 <span class="r-in"><span><span class="fu">pf_plot_history</span><span class="op">(</span>.dlist <span class="op">=</span> <span class="va">dlist</span>,</span></span>
 <span class="r-in"><span>                .forward <span class="op">=</span> <span class="fu"><a href="datasets-algorithms.html">dat_pff</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                .backward <span class="op">=</span> <span class="fu"><a href="datasets-algorithms.html">dat_pfbk</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                .add_forward <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>pch <span class="op">=</span> <span class="fl">21</span>, cex <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                .png <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>filename <span class="op">=</span> <span class="va">frames</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -326,7 +322,7 @@
 <span class="r-in"><span>  <span class="co"># Sys.open(output)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//RtmpnhvLJK/patter/mp4/ani.mp4"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/nl/ygb3g6tj24z06jddbqqhj6hw0000gn/T//Rtmp0OscYG/patter/mp4/ani.mp4"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Clean up</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">con</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>

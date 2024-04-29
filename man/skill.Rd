@@ -68,7 +68,8 @@ Lavender, E. et al. (2022). Benthic animal-borne sensors and citizen science com
 \item To translate observations into coordinates for mapping patterns of space use, see:
 \itemize{
 \item \code{\link[=coa]{coa()}} to calculate centres of activity;
-\item \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_*]{pf_backward_*()}} to implement the forward filtering--backward sampling algorithm and \code{\link[=pf_coord]{pf_coord()}} extracts coordinates from particle samples;
+\item \code{\link[=pf_forward]{pf_forward()}} and associates to implement particle filtering algorithms;
+\item \code{\link[=pf_coord]{pf_coord()}} to extracts coordinates from particle samples;
 }
 \item To estimate utilisation distributions from simulated data and algorithm outputs, use \verb{map_*()} functions (see \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and \code{\link[=map_hr]{map_hr()}});
 }

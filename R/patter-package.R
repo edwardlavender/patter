@@ -40,7 +40,7 @@
 #'
 #' These functions are supported by a set of simulation helpers, including:
 #'
-#' * [`rbern()`], [`rdet()`], [`dbern()`], [`ddetlogistic()`] and [`ddet()`] for the simulation of detections;
+#' * [`rbern()`], [`rdet()`], [`dbern()`], [`pdetlogistic()`] and [`pdet()`] for the simulation of detections;
 #' * [`dtruncgamma()`], [`rtruncgamma()`], [`rlen()`] and [`clen()`] for the simulation of step lengths;
 #' * [`rwn()`], [`rangrw()`], [`rangcrw()`] and [`cang()`] for the simulation of turning angles;
 #' * [`rstep()`], [`dstep()`] and [`cstep()`] for the simulation of steps into new locations;
@@ -202,6 +202,7 @@
 #' @importFrom dplyr mutate
 #' @importFrom dplyr filter
 #' @importFrom dplyr summarise
+#' @importFrom dplyr reframe
 #' @importFrom dplyr group_by
 #' @importFrom dplyr ungroup
 #' @importFrom dplyr distinct
@@ -235,6 +236,8 @@
 #' @importFrom grDevices col2rgb
 #'
 #' @importFrom lubridate %within%
+#'
+#' @importFrom matrixStats logSumExp
 #'
 #' @importFrom rlang .data
 #'

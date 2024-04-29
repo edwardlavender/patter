@@ -124,7 +124,7 @@
     <div class="dont-index">
 <ul><li><p>To simulate observations in passive acoustic telemetry systems, see <code>sim_*()</code> functions (especially <code><a href="sim_array.html">sim_array()</a></code>, <code><a href="sim_path_walk.html">sim_path_walk()</a></code> and <code><a href="sim_detections.html">sim_detections()</a></code>);</p></li>
 <li><p>To translate observations into coordinates for mapping patterns of space use, see:</p><ul><li><p><code><a href="coa.html">coa()</a></code> to calculate centres of activity;</p></li>
-<li><p><code><a href="pf_forward.html">pf_forward()</a></code> and <code><a href="pf_backward_-times.html">pf_backward_*()</a></code> to implement the forward filtering--backward sampling algorithm and <code><a href="pf_coord.html">pf_coord()</a></code> extracts coordinates from particle samples;</p></li>
+<li><p><code><a href="pf_forward.html">pf_forward()</a></code> and <code>pf_backward_*()</code> to implement the forward filtering--backward sampling algorithm and <code><a href="pf_coord.html">pf_coord()</a></code> extracts coordinates from particle samples;</p></li>
 </ul></li>
 <li><p>To estimate utilisation distributions from simulated data and algorithm outputs, use <code>map_*()</code> functions (see <code><a href="map_pou.html">map_pou()</a></code>, <code><a href="map_dens.html">map_dens()</a></code> and <code><a href="map_hr.html">map_hr()</a></code>);</p></li>
 </ul></div>
@@ -144,15 +144,15 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Calculate skill metrics</span></span></span>
 <span class="r-in"><span><span class="fu">skill_mb</span><span class="op">(</span><span class="va">mod</span>, <span class="va">obs</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.0006272663</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.0008261203</span>
 <span class="r-in"><span><span class="fu">skill_me</span><span class="op">(</span><span class="va">mod</span>, <span class="va">obs</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.7984737</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.7971368</span>
 <span class="r-in"><span><span class="fu">skill_rmse</span><span class="op">(</span><span class="va">mod</span>, <span class="va">obs</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.000635</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9993891</span>
 <span class="r-in"><span><span class="fu">skill_R</span><span class="op">(</span><span class="va">mod</span>, <span class="va">obs</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.2725825</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.2743669</span>
 <span class="r-in"><span><span class="fu">skill_d</span><span class="op">(</span><span class="va">mod</span>, <span class="va">obs</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.3737934</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.3728823</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

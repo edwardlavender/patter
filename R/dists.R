@@ -7,21 +7,12 @@
 #' @return The function returns a `numeric` vector. Each element (`i`) is the distance from the corresponding coordinates (`.xy[, i]`) to the next set of coordinates (`.xy[, i + 1]`). The final value is `NA_real_`.
 #'
 #' @examples
-#' require(data.table)
-#' require(dplyr)
-#'
-#' #### Example (1): Illustration with synthetic data
+#' # Define matrix of sequential locations
 #' p <- matrix(c(1, 2,
 #'               3, 4,
 #'               5, 6), ncol = 2, byrow = TRUE)
-#'
+#' # Calculate distances along path
 #' dist_along_path(p)
-#'
-#' #### Example (2): illustration with a `patter` movement-path data.table
-#' dat_pfp() |>
-#'   group_by(path_id) |>
-#'   mutate(dist = dist_along_path(cbind(cell_x, cell_y))) |>
-#'   as.data.table()
 #'
 #' @seealso
 #' * For [`patter`] `dist_*()` functions, see:
