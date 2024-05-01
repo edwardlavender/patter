@@ -5,9 +5,42 @@
 \title{Glossary}
 \description{
 This is a glossary of key arguments in \code{\link{patter}}.
+}
+\section{\code{.map}.}{
+\code{.map} is \code{\link{SpatRaster}} that defines the area of interest. \code{NAs} define inhospitable regions (such as land).
+}
+
+\section{\code{.move}.}{
+\code{.move} is a \code{character} that defines a movement model structure implemented in Julia (that is, a \code{ModelMove} constructor). \verb{.move_*()} functions are convenience wrappers for the constuction of movement models. Currently implemented options are:
 \itemize{
-\item \code{.map}  A \code{\link{SpatRaster}} that defines the region of interest. Receivers are not simulated in \code{NA} regions.
-\item \code{.move} TO DO character, must match Julia
-\item \code{.state} TO DO character, must match movement model, comment built in options
+\item \code{\link[=move_xy]{move_xy()}}, which specifies a movement model in terms of the distribution of step lengths and turning angles;
+\item \code{\link[=move_xyzd]{move_xyzd()}}, which specifies a movement model in terms of the distribution of step lengths, changes in turning angles and changes in depth;
+}
+
+The movement model must match the state (see below).
+}
+
+\section{\code{.state}.}{
+\code{.state} is \code{character} that defines the animal's state subtype. In the simplest case, an animal's state is a two-dimensional vector of \code{x} and \code{y} coordinates that define its location. In more complex scenarios, the state may include additional dimensions, such as a depth (\code{z}) component.
+
+In \code{\link{patter}}, \code{.state} is a \code{character} string that defines the animal's state subtype. This must match a \code{State} subtype in \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}. Currently supported options are:
+\itemize{
+\item \code{"StateXY"}, which maps to \code{StateXY} in \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}.
+\item \code{"StateXYZD"}, which maps to \code{StateXYZD} in \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}.
+}
+
+In \code{\link[=sim_path_walk]{sim_path_walk()}} and the particle filter, .\code{state} controls the simulation of initial locations and subsequent method dispatch in \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}:
+\itemize{
+\item \code{"StateXY"} requires simulation of initial \code{x} and \code{y} coordinates.
+\item \code{"StateXYZD"} requires the simulation of \code{x}, \code{y} and \code{z} coordinates and an initial direction.
+}
+
+The \code{\link{data.frame}} of initial state(s) is then coerced to a vector of \code{State}s in \code{Julia} for the simulation. In \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}, the simulation of subsequent states depends on the input state and the movement model.
+
+The state must match the movement model (see \code{.move}):
+\itemize{
+\item For \code{"StateXY"}, a movement model that simulates step lengths and turning angles and updates state components (that is, \code{x} and \code{y} coordinates) is required;
+\item For \code{"StateXYZD"}, a movement model that simulates step lengths, changes in turning angles and changes in depth and updates \code{x}, \code{y}, \code{z} and direction state components is required.
 }
 }
+
