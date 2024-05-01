@@ -7,7 +7,7 @@
 #' @keywords internal
 
 # Set the `env` variable in Julia
-set_env <- function(x) {
+set_map <- function(x) {
   stopifnot(inherits(x, "SpatRaster"))
   file <- terra::sources(x)
   if (file == "") {

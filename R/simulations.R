@@ -110,7 +110,7 @@ sim_array <- function(.map = spatTemplate(),
     on.exit(par(pp), add = TRUE)
     lapply(seq_len(length(arrays)), function(i) {
       terra::plot(.map, main = paste("Array", i))
-      points(arrays[[i]]$x, arrays[[i]]$y)
+      points(arrays[[i]]$receiver_x, arrays[[i]]$receiver_y)
     }) |> invisible()
   }
 
