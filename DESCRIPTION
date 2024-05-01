@@ -10,8 +10,20 @@ Description: Particle filters, smoothers and sampling algorithms for animal move
 License: MIT + file LICENSE
 Imports:
     data.table,
+    dplyr,
+    dtplyr,
+    collapse,
+    glue,
+    here,
+    JuliaCall,
+    lubridate,
+    rlang,
     terra
 Suggests:
+    knitr, 
+    rmarkdown,
+    spelling, 
+    testthat (>= 3.0.0)
 Depends: R (>= 4.1)
 Config/testthat/edition: 3
 URL: https://github.com/edwardlavender/patter/
