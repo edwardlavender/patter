@@ -28,14 +28,12 @@ library(sf)
 #########################
 #### Prepare spatial datasets
 
-if (FALSE) {
-  dat_gebco <- flapper::dat_gebco
-  dat_gebco <- terra::rast(dat_gebco)
-  blank <- terra::rast(terra::ext(dat_gebco), res = 100)
-  dat_gebco <- terra::resample(dat_gebco, blank, method = "bilinear")
-  names(dat_gebco) <- "bathy"
-  # terra::plot(dat_gebco)
-}
+dat_gebco <- flapper::dat_gebco
+dat_gebco <- terra::rast(dat_gebco)
+blank <- terra::rast(terra::ext(dat_gebco), res = 100)
+dat_gebco <- terra::resample(dat_gebco, blank, method = "bilinear")
+names(dat_gebco) <- "bathy"
+# terra::plot(dat_gebco)
 
 
 #########################
@@ -60,17 +58,16 @@ dat_moorings <-
   mutate(receiver_id = receiver_id,
          receiver_start = receiver_start_date,
          receiver_end =  receiver_end_date,
-         receiver_lat = receiver_lat,
-         receiver_lon = receiver_long,
-         receiver_easting = rxy[, 1],
-         receiver_northing = rxy[, 2],
-         receiver_range = 750
+         receiver_x = rxy[, 1],
+         receiver_y = rxy[, 2],
+         receiver_alpha = 4,
+         receiver_beta = -0.01,
+         receiver_gamma = 750
          ) |>
   select(receiver_id,
          receiver_start, receiver_end,
-         receiver_easting, receiver_northing,
-         receiver_lat, receiver_lon,
-         receiver_range) |>
+         receiver_x, receiver_y,
+         receiver_alpha, receiver_beta, receiver_gamma) |>
   as.data.table()
 
 #### Acoustic data
