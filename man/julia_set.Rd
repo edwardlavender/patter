@@ -10,7 +10,7 @@
 \usage{
 set_env(x)
 
-set_initial_states(.state = "StateXY", .xinit = NULL, .bathy = NULL, .n = 100L)
+set_initial_states(.state = "StateXY", .xinit = NULL, .map = NULL, .n = 100L)
 
 set_move(cmd)
 

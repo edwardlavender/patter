@@ -25,7 +25,7 @@ set_env <- function(x) {
 # * This is required to simulate movement paths & for the particle filter
 set_initial_states <- function(.state = "StateXY",
                                .xinit = NULL,
-                               .bathy = NULL,
+                               .map = NULL,
                                .n = 100L) {
 
   #### If unprovided, sample `.xinit`
@@ -33,7 +33,7 @@ set_initial_states <- function(.state = "StateXY",
     x <- y <- z <- ang <- NULL
     # Define initial coordinates (x, y)
     .xinit <-
-      .bathy |>
+      .map |>
       terra::spatSample(size = .n,
                         method = "random",
                         na.rm = TRUE,

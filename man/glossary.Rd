@@ -6,7 +6,7 @@
 \description{
 This is a glossary of key arguments in \code{\link{patter}}.
 \itemize{
-\item \code{.bathy}  A \code{\link{SpatRaster}} that defines the region of interest. Receivers are not simulated in \code{NA} regions.
+\item \code{.map}  A \code{\link{SpatRaster}} that defines the region of interest. Receivers are not simulated in \code{NA} regions.
 \item \code{.move} TO DO character, must match Julia
 \item \code{.state} TO DO character, must match movement model, comment built in options
 }

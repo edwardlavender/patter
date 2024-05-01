@@ -7,7 +7,7 @@
 sim_path_walk(
   .state = "StateXY",
   .xinit = NULL,
-  .bathy,
+  .map,
   .n_path = 1L,
   .move,
   .n_step = 10L,
@@ -19,14 +19,14 @@ sim_path_walk(
 \arguments{
 \item{.state}{A \code{character} that defines the state (see \code{\link{glossary}}).}
 
-\item{.xinit, .bathy, .n_path}{Initial state arguments.
+\item{.xinit, .map, .n_path}{Initial state arguments.
 \itemize{
 \item \code{.xinit} specifies the initial states for the simulation (one for each movement path).
 \itemize{
-\item If \code{.xinit} is \code{NULL}, initial states are sampled from \code{.bathy}.
+\item If \code{.xinit} is \code{NULL}, initial states are sampled from \code{.map}.
 \item If \code{.xinit} is a \code{\link{data.frame}} with one column for each state dimension.
 }
-\item \code{.bathy} is a \code{\link{SpatRaster}} that defines the area within which movements are simulated that is required if \code{.xinit = NULL} (see \code{\link{glossary}}.
+\item \code{.map} is a \code{\link{SpatRaster}} that defines the area within which movements are simulated that is required if \code{.xinit = NULL} (see \code{\link{glossary}}.
 \item \code{.n_path} is an \code{integer} that defines the number of paths to simulate.
 }}
 
@@ -38,7 +38,7 @@ sim_path_walk(
 
 \item{.plot, .one_page}{Plot options.
 \itemize{
-\item \code{.plot} is a \code{logical} variable that defined whether or not to plot \code{.bathy} and simulated path(s). Each path is plotted on a separate plot.
+\item \code{.plot} is a \code{logical} variable that defined whether or not to plot \code{.map} and simulated path(s). Each path is plotted on a separate plot.
 \item \code{.one_page} is a logical variable that defines whether or not to produce all plots on a single page.
 }}
 }
@@ -48,7 +48,7 @@ sim_path_walk(
 \item \code{path_id}---an \code{integer} vector that identifies each path;
 \item \code{timestep}---an \code{integer} vector that defines the time step;
 \item \code{timestamp}---(optional) a \code{POSIXct} vector of time stamps;
-\item \code{cell_id}, \code{cell_x}, \code{cell_y}, \code{cell_z}---\code{integer}/\code{numeric} vectors that define the locations of the simulated positions on \code{.bathy};
+\item \code{cell_id}, \code{cell_x}, \code{cell_y}, \code{cell_z}---\code{integer}/\code{numeric} vectors that define the locations of the simulated positions on \code{.map};
 \item \code{x},\code{y},\code{...}---\code{numeric} vectors that define the components of the state;
 }
 }
@@ -58,7 +58,7 @@ sim_path_walk(
 \details{
 This function simulates movement paths via \code{Patter.sim_walk()}:
 \itemize{
-\item The internal function \code{\link[=set_initial_states]{set_initial_states()}} is used to set the initial state(s) for the simulation; that is, initial coordinates and other variables (one for each \code{.n_path}). If \code{.state} is one of the built-in options (see \code{\link{glossary}}), initial state(s) can be sampled from \code{.bathy}. Otherwise, a \code{\link{data.frame}} of initial states must be provided. Initial states provided in the \code{\link{data.frame}} are  re-sampled, with replacement, if required, such that there is one initial state for each simulated path. Initial states are assigned to an \code{xinit} object in Julia, which is a vector of \code{State} structures.
+\item The internal function \code{\link[=set_initial_states]{set_initial_states()}} is used to set the initial state(s) for the simulation; that is, initial coordinates and other variables (one for each \code{.n_path}). If \code{.state} is one of the built-in options (see \code{\link{glossary}}), initial state(s) can be sampled from \code{.map}. Otherwise, a \code{\link{data.frame}} of initial states must be provided. Initial states provided in the \code{\link{data.frame}} are  re-sampled, with replacement, if required, such that there is one initial state for each simulated path. Initial states are assigned to an \code{xinit} object in Julia, which is a vector of \code{State} structures.
 \item Using the initial states, the Julia function \code{Patter.sim_walk()} simulates movements using the movement model.
 \item The resultant movement paths are brought back into \code{R} for convenient visualisation and analysis.
 }

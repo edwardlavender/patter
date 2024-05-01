@@ -5,7 +5,7 @@
 \title{Simulation: acoustic arrays}
 \usage{
 sim_array(
-  .bathy = spatTemplate(),
+  .map = spatTemplate(),
   .arrangement = "random",
   .n_receiver = 10L,
   ...,
@@ -18,7 +18,7 @@ sim_array(
 )
 }
 \arguments{
-\item{.bathy}{A \code{\link{SpatRaster}} that defines the region of interest (see \code{\link{glossary}}). Receivers are not simulated in \code{NA} regions.}
+\item{.map}{A \code{\link{SpatRaster}} that defines the region of interest (see \code{\link{glossary}}). Receivers are not simulated in \code{NA} regions.}
 
 \item{.arrangement, .n_receiver, ...}{Arguments passed to \code{\link[terra:sample]{terra::spatSample()}}.
 \itemize{

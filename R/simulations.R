@@ -1,6 +1,6 @@
 #' @title Simulation: acoustic arrays
 #' @description This function simulates acoustic arrays (i.e., networks of acoustic receiver(s)) on a grid.
-#' @param .bathy A [`SpatRaster`] that defines the region of interest (see [`glossary`]). Receivers are not simulated in `NA` regions.
+#' @param .map A [`SpatRaster`] that defines the region of interest (see [`glossary`]). Receivers are not simulated in `NA` regions.
 #' @param .arrangement,.n_receiver,... Arguments passed to [`terra::spatSample()`].
 #' * `.arrangement` is a `character` that defines the receiver arrangement (passed to the `method` argument).
 #' * `.n_receiver` is an `integer` that defines the number of receivers to simulate (passed to the `size` argument).
@@ -51,7 +51,7 @@
 #' @author Edward Lavender
 #' @export
 
-sim_array <- function(.bathy = spatTemplate(),
+sim_array <- function(.map = spatTemplate(),
                       .arrangement = "random", .n_receiver = 10L, ...,
                       .receiver_start = NULL, .receiver_end = NULL, .receiver_range = NULL,
                       .n_array = 1L,
@@ -78,7 +78,7 @@ sim_array <- function(.bathy = spatTemplate(),
     lapply(seq_len(.n_array), function(i) {
       # Sample receiver locations
       array <-
-        .bathy |>
+        .map |>
         terra::spatSample(size = .n_receiver,
                           method = .arrangement, replace = FALSE,
                           na.rm = TRUE, xy = TRUE, cells = TRUE, values = FALSE, ...) |>
@@ -109,7 +109,7 @@ sim_array <- function(.bathy = spatTemplate(),
     pp <- one_page(.one_page, length(arrays))
     on.exit(par(pp), add = TRUE)
     lapply(seq_len(length(arrays)), function(i) {
-      terra::plot(.bathy, main = paste("Array", i))
+      terra::plot(.map, main = paste("Array", i))
       points(arrays[[i]]$x, arrays[[i]]$y)
     }) |> invisible()
   }
@@ -125,22 +125,22 @@ sim_array <- function(.bathy = spatTemplate(),
 #' @description [`sim_path_walk()`] simulates discrete-time animal movement paths from walk models (e.g., random walks, biased random walks, correlated random walks).
 #'
 #' @param .state A `character` that defines the state (see [`glossary`]).
-#' @param .xinit,.bathy,.n_path Initial state arguments.
+#' @param .xinit,.map,.n_path Initial state arguments.
 #' * `.xinit` specifies the initial states for the simulation (one for each movement path).
-#'    - If `.xinit` is `NULL`, initial states are sampled from `.bathy`.
+#'    - If `.xinit` is `NULL`, initial states are sampled from `.map`.
 #'    - If `.xinit` is a [`data.frame`] with one column for each state dimension.
-#' * `.bathy` is a [`SpatRaster`] that defines the area within which movements are simulated that is required if `.xinit = NULL` (see [`glossary`].
+#' * `.map` is a [`SpatRaster`] that defines the area within which movements are simulated that is required if `.xinit = NULL` (see [`glossary`].
 #' * `.n_path` is an `integer` that defines the number of paths to simulate.
 #' @param .move A character string that defines the movement model (see [`move`] and [`glossary`]).
 #' @param .n_step An `integer` that defines the number of time steps.
 #' @param .timestamp (optional) A vector of time stamps, one for each time step, for inclusion in the output [`data.table`] as a `timestamp` column.
 #' @param .plot,.one_page Plot options.
-#' * `.plot` is a `logical` variable that defined whether or not to plot `.bathy` and simulated path(s). Each path is plotted on a separate plot.
+#' * `.plot` is a `logical` variable that defined whether or not to plot `.map` and simulated path(s). Each path is plotted on a separate plot.
 #' * `.one_page` is a logical variable that defines whether or not to produce all plots on a single page.
 #'
 #' @details
 #' This function simulates movement paths via `Patter.sim_walk()`:
-#' * The internal function [`set_initial_states()`] is used to set the initial state(s) for the simulation; that is, initial coordinates and other variables (one for each `.n_path`). If `.state` is one of the built-in options (see [`glossary`]), initial state(s) can be sampled from `.bathy`. Otherwise, a [`data.frame`] of initial states must be provided. Initial states provided in the [`data.frame`] are  re-sampled, with replacement, if required, such that there is one initial state for each simulated path. Initial states are assigned to an `xinit` object in Julia, which is a vector of `State` structures.
+#' * The internal function [`set_initial_states()`] is used to set the initial state(s) for the simulation; that is, initial coordinates and other variables (one for each `.n_path`). If `.state` is one of the built-in options (see [`glossary`]), initial state(s) can be sampled from `.map`. Otherwise, a [`data.frame`] of initial states must be provided. Initial states provided in the [`data.frame`] are  re-sampled, with replacement, if required, such that there is one initial state for each simulated path. Initial states are assigned to an `xinit` object in Julia, which is a vector of `State` structures.
 #' * Using the initial states, the Julia function `Patter.sim_walk()` simulates movements using the movement model.
 #' * The resultant movement paths are brought back into `R` for convenient visualisation and analysis.
 #'
@@ -158,7 +158,7 @@ sim_array <- function(.bathy = spatTemplate(),
 #' * `path_id`---an `integer` vector that identifies each path;
 #' * `timestep`---an `integer` vector that defines the time step;
 #' * `timestamp`---(optional) a `POSIXct` vector of time stamps;
-#' * `cell_id`, `cell_x`, `cell_y`, `cell_z`---`integer`/`numeric` vectors that define the locations of the simulated positions on `.bathy`;
+#' * `cell_id`, `cell_x`, `cell_y`, `cell_z`---`integer`/`numeric` vectors that define the locations of the simulated positions on `.map`;
 #' * `x`,`y`,`...`---`numeric` vectors that define the components of the state;
 #'
 #' @seealso TO DO
@@ -170,7 +170,7 @@ NULL
 #' @export
 
 sim_path_walk <- function(.state = "StateXY",
-                          .xinit = NULL, .bathy, .n_path = 1L,
+                          .xinit = NULL, .map, .n_path = 1L,
                           .move,
                           .n_step = 10L, .timestamp = NULL,
                           .plot = TRUE, .one_page = FALSE) {
@@ -185,7 +185,7 @@ sim_path_walk <- function(.state = "StateXY",
   #### Set initial state
   # * `.xinit` = NULL: we create and export .xinit
   # * `.xinit` = data.frame: we resample (if required) & export
-  set_initial_states(.state = .state, .xinit = .xinit, .bathy = .bathy, .n = .n_path)
+  set_initial_states(.state = .state, .xinit = .xinit, .map = .map, .n = .n_path)
 
   #### Set movement model
   set_move(.move)
@@ -208,10 +208,10 @@ sim_path_walk <- function(.state = "StateXY",
     mutate(
       path_id = as.integer(.data$path_id),
       timestep = as.integer(.data$timestep),
-      cell_id = terra::cellFromXY(.bathy, cbind(.data$x, .data$y)),
-      cell_x = as.numeric(terra::xFromCell(.bathy, .data$cell_id)),
-      cell_y = as.numeric(terra::yFromCell(.bathy, .data$cell_id)),
-      cell_z = terra::extract(.bathy, .data$cell_id)[, 1]) |>
+      cell_id = terra::cellFromXY(.map, cbind(.data$x, .data$y)),
+      cell_x = as.numeric(terra::xFromCell(.map, .data$cell_id)),
+      cell_y = as.numeric(terra::yFromCell(.map, .data$cell_id)),
+      cell_z = terra::extract(.map, .data$cell_id)[, 1]) |>
     # Tidy columns
     select("path_id", "timestep", any_of("timestamp"),
            "cell_x", "cell_y", "cell_z", "cell_id",
@@ -245,7 +245,7 @@ sim_path_walk <- function(.state = "StateXY",
     pp <- one_page(.one_page, fndistinct(paths$path_id))
     on.exit(par(pp), add = TRUE)
     lapply(split(paths, paths$path_id), function(d) {
-      terra::plot(.bathy, main = d$path_id[1])
+      terra::plot(.map, main = d$path_id[1])
       add_sp_path(d$x, d$y, length = 0)
     }) |> invisible()
   }
