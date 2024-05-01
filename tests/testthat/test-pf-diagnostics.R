@@ -1,6 +1,0 @@
-# .pf_diag_any()
-# .pf_diag_nu()
-# .pf_diag_ess()
-# .pf_diag()
-# .pf_diag_bind()
-# .pf_diag_collect()

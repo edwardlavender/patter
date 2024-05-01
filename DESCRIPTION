@@ -1,40 +1,17 @@
 Package: patter
-Title: Particle Filters For Passive Acoustic Telemetry
+Title: Particle Filters, Smoothers and Samplers for Movement Modelling
 Version: 0.0.0.9000
 Authors@R: 
     person("Edward", "Lavender", 
            email = "edward.lavender@eawag.ch", 
            role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-8040-7489"))
-Description: A forward filtering--backward sampling algorithm for passive acoustic telemetry. This methodology enables the reconstruction of movement paths and patterns of space use in passive acoustic telemetry systems. The methodology unifies a suite of methods formerly known as the flapper algorithms and supersedes the {flapper} package.
+Description: Particle filters, smoothers and sampling algorithms for animal movement modelling, with a focus on passive acoustic telemetry systems. This methodology enables the reconstruction of movement paths and patterns of space use. The methodology unifies a suite of methods formerly known as the flapper algorithms and supersedes the {flapper} package.
 License: MIT + file LICENSE
 Imports:
-    arrow,
-    collapse,
-    circular,
     data.table,
-    dplyr,
-    dtplyr,
-    fastmatch,
-    glue,
-    lubridate,
-    matrixStats,
-    pbapply,
-    rlang,
     terra
 Suggests:
-    av, 
-    exactextractr,
-    geosphere, 
-    knitr,
-    Rfast,
-    rmarkdown,
-    spatstat.explore,
-    spatstat.geom, 
-    spelling, 
-    sf, 
-    testthat (>= 3.0.0), 
-    zoo
 Depends: R (>= 4.1)
 Config/testthat/edition: 3
 URL: https://github.com/edwardlavender/patter/
