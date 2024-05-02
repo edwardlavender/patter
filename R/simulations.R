@@ -185,14 +185,14 @@ sim_path_walk <- function(.state = "StateXY",
   #### Set initial state
   # * `.xinit` = NULL: we create and export .xinit
   # * `.xinit` = data.frame: we resample (if required) & export
-  set_initial_states(.state = .state, .xinit = .xinit, .map = .map, .n = .n_path)
+  set_states_init(.state = .state, .xinit = .xinit, .map = .map, .n = .n_path)
 
   #### Set movement model
   set_move(.move)
 
   #### Simulate random walk
   set_path(as.integer(.n_step))
-  paths       <- julia_eval('Patter.rget_state_df(path)')
+  paths       <- julia_eval('Patter.r_get_states(paths)')
   paths       <- as.data.table(paths)
   state_dims  <- colnames(paths)[(!colnames(paths) %in% c("path_id", "timestep"))]
 

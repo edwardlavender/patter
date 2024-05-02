@@ -23,32 +23,37 @@ set_map <- function(x) {
 
 # Set the vector of initial states (xinit) in Julia
 # * This is required to simulate movement paths & for the particle filter
-set_initial_states <- function(.state = "StateXY",
-                               .xinit = NULL,
-                               .map = NULL,
-                               .n = 100L) {
+set_states_init <- function(.state = "StateXY",
+                            .xinit = NULL,
+                            .map = NULL,
+                            .n = 100L) {
 
-  #### If unprovided, sample `.xinit`
+  #### If un-provided, sample `.xinit`
   if (is.null(.xinit)) {
-    x <- y <- z <- angle <- NULL
+
+    # Check user inputs
+    if (!(.state %in% c("StateXY", "StateXYZD"))) {
+      abort("For custom states, you need to provide `.xinit`.")
+    }
+
     # Define initial coordinates (x, y)
+    map_value <- x <- y <- z <- angle <- NULL
     .xinit <-
       .map |>
       terra::spatSample(size = .n,
                         method = "random",
                         na.rm = TRUE,
-                        xy = TRUE) |>
+                        xy = TRUE,
+                        values = TRUE) |>
       as.data.table()
-    colnames(.xinit) <- c("x", "y", "z")
+    colnames(.xinit) <- c("x", "y", "map_value")
+    .xinit <- .xinit[, list(map_value, x, y)]
+
     # Define additional state dimensions (as required)
-    # * User defined State structures require specification of `.xinit` & a `Patter.jget_xinit()` method
-    if (.state == "StateXY") {
-      .xinit <- .xinit[, list(x, y)]
-    } else if (.state == "StateXYZD") {
-      .xinit[, z := z * runif(.N)]
+    # * User defined State structures require specification of `.xinit` & a `Patter.julia_get_xinit()` method
+    if (.state == "StateXYZD") {
+      .xinit[, z := map_value * runif(.N)]
       .xinit[, angle := runif(.N) * 2 * pi]
-    } else {
-      abort("For custom states, you need to provide `.xinit`.")
     }
 
     ### If provided, re-sample `.xinit` .`n` times (if required)
@@ -61,14 +66,14 @@ set_initial_states <- function(.state = "StateXY",
 
   #### Export `.xinit` to Julia
   julia_assign("xinit_df", .xinit)
-  julia_command(glue('xinit = Patter.jget_xinit({.state}, xinit_df);'))
+  julia_command(glue('xinit = Patter.julia_get_xinit({.state}, xinit_df);'))
   nothing()
 }
 
 #' @rdname julia_set
 #' @keywords internal
 
-# Set a movement mode ('move') in Julia
+# Set a movement model ('move') in Julia
 set_move <- function(cmd) {
   julia_command(glue('move = {cmd};'))
   nothing()
@@ -79,6 +84,6 @@ set_move <- function(cmd) {
 
 # Set simulated path(s) in Julia
 set_path <- function(.n_step) {
-  julia_command(glue('path = sim_walk(xinit = xinit, move = move, nt = {.n_step});'))
+  julia_command(glue('paths = sim_path_walk(xinit = xinit, move = move, nt = {.n_step});'))
   nothing()
 }
