@@ -56,8 +56,8 @@ rxy <- terra::xyFromCell(dat_gebco,
 dat_moorings <-
   dat_moorings |>
   mutate(receiver_id = receiver_id,
-         receiver_start = receiver_start_date,
-         receiver_end =  receiver_end_date,
+         receiver_start = as.POSIXct(receiver_start_date, tz = "UTC"),
+         receiver_end =  as.POSIXct(receiver_end_date, tz = "UTC"),
          receiver_x = rxy[, 1],
          receiver_y = rxy[, 2],
          receiver_alpha = 4,
