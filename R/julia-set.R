@@ -30,7 +30,7 @@ set_initial_states <- function(.state = "StateXY",
 
   #### If unprovided, sample `.xinit`
   if (is.null(.xinit)) {
-    x <- y <- z <- ang <- NULL
+    x <- y <- z <- angle <- NULL
     # Define initial coordinates (x, y)
     .xinit <-
       .map |>
@@ -46,7 +46,7 @@ set_initial_states <- function(.state = "StateXY",
       .xinit <- .xinit[, list(x, y)]
     } else if (.state == "StateXYZD") {
       .xinit[, z := z * runif(.N)]
-      .xinit[, ang := runif(.N) * 2 * pi]
+      .xinit[, angle := runif(.N) * 2 * pi]
     } else {
       abort("For custom states, you need to provide `.xinit`.")
     }
