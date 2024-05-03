@@ -165,11 +165,13 @@ sim_path_walk <- function(.map,
   set_states_init(.state = .state, .xinit = .xinit, .map = .map, .n = .n_path)
 
   #### Set movement model
+  set_timeline(.timeline)
   set_move(.move)
 
   #### Simulate random walk
-  set_timeline(.timeline)
   set_path()
+
+  #### Get paths in R
   paths       <- julia_eval('Patter.r_get_states(paths)')
   paths       <- as.data.table(paths)
   state_dims  <- colnames(paths)[(!colnames(paths) %in% c("path_id", "timestep"))]
