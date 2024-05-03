@@ -21,6 +21,7 @@
 
 move_xy <- function(length = "truncated(Gamma(1, 250.0), upper = 750.0)",
                     angle = "Uniform(-pi, pi)") {
+  julia_check_exists("env")
   glue('ModelMoveXY(env, {length}, {angle});')
 }
 
@@ -34,5 +35,6 @@ move_xyz <- function() {
 move_xyzd <- function(length = "truncated(Gamma(1.0, 750.0), upper = 750.0)",
                       angle_delta = "Normal(0, 0.5)",
                       z_delta = "Normal(0, 3.5)") {
+  julia_check_exists("env")
   glue('ModelMoveXYZD(env, {length}, {angle_delta}, {z_delta});')
 }
