@@ -99,6 +99,7 @@ set_timeline <- function(.timeline) {
 
 # Set simulated path(s) in Julia
 set_path <- function() {
+  julia_check_exists("xinit", "move", "timeline")
   julia_command(glue('paths = simulate_path_walk(xinit = xinit, move = move, timeline = timeline);'))
   nothing()
 }
