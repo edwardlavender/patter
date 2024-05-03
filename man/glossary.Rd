@@ -11,7 +11,7 @@ This is a glossary of key arguments in \code{\link{patter}}.
 }
 
 \section{\code{.move}.}{
-\code{.move} is a \code{character} that defines a movement model structure implemented in Julia (that is, a \code{ModelMove} constructor). \verb{.move_*()} functions are convenience wrappers for the constuction of movement models. Currently implemented options are:
+\code{.move} is a \code{character} that defines a movement model structure implemented in Julia (that is, a \code{ModelMove} constructor). \verb{.move_*()} functions are convenience wrappers for the construction of movement models. Currently implemented options are:
 \itemize{
 \item \code{\link[=move_xy]{move_xy()}}, which specifies a movement model in terms of the distribution of step lengths and turning angles;
 \item \code{\link[=move_xyzd]{move_xyzd()}}, which specifies a movement model in terms of the distribution of step lengths, changes in turning angles and changes in depth;

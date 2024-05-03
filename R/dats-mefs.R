@@ -9,9 +9,8 @@
 #' [`dat_moorings`] defines passive acoustic telemetry receiver locations and associated information. This includes the following columns:
 #'   * `receiver_id`---an `integer` vector that defines unique receiver deployments;
 #'   * `receiver_start`, `receiver_end`---`Date` vectors that define receiver deployment start and end dates;
-#'   * `receiver_easting`, `receiver_northing`---`numeric` vectors that define receiver coordinates in UTM 29N;
-#'   * `receiver_lon`, `receiver_lat`---`numeric` vectors that define receiver coordinates in degrees longitude/latitude;
-#'   * `receiver_range`---a `numeric` vector that defines the detection range, which was taken as a constant (750 m) across all receivers;
+#'   * `receiver_x`, `receiver_y`---`numeric` vectors that define receiver coordinates (in UTM 29N);
+#'   * `receiver_alpha`, `receiver_beta`, `receiver_gamma`---a `numeric` vectors that define detection probability parameters;
 #'
 #' Data are arranged by `receiver_id`.
 #'

@@ -37,9 +37,8 @@ These are sample datasets collated by the Movement Ecology of Flapper Skate (MEF
 \itemize{
 \item \code{receiver_id}---an \code{integer} vector that defines unique receiver deployments;
 \item \code{receiver_start}, \code{receiver_end}---\code{Date} vectors that define receiver deployment start and end dates;
-\item \code{receiver_easting}, \code{receiver_northing}---\code{numeric} vectors that define receiver coordinates in UTM 29N;
-\item \code{receiver_lon}, \code{receiver_lat}---\code{numeric} vectors that define receiver coordinates in degrees longitude/latitude;
-\item \code{receiver_range}---a \code{numeric} vector that defines the detection range, which was taken as a constant (750 m) across all receivers;
+\item \code{receiver_x}, \code{receiver_y}---\code{numeric} vectors that define receiver coordinates (in UTM 29N);
+\item \code{receiver_alpha}, \code{receiver_beta}, \code{receiver_gamma}---a \code{numeric} vectors that define detection probability parameters;
 }
 
 Data are arranged by \code{receiver_id}.

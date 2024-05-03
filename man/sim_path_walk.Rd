@@ -5,20 +5,30 @@
 \title{Simulation: movement walks}
 \usage{
 sim_path_walk(
-  .state = "StateXY",
   .map,
+  .timeline,
+  .state = "StateXY",
   .xinit = NULL,
   .n_path = 1L,
   .move,
-  .timeline = NULL,
   .plot = TRUE,
   .one_page = FALSE
 )
 }
 \arguments{
-\item{.state}{A \code{character} that defines the state (see \code{\link{glossary}}).}
+\item{.map}{A \code{\link{SpatRaster}} that defines the study area for the simulation (see \code{\link{glossary}}). Here, \code{.map} is used to:
+\itemize{
+\item Simulate initial states if \code{.xinit = NULL} (via \code{\link[=set_states_init]{set_states_init()}});
+\item Extract \code{.map} coordinates for the simulated path(s);
+}}
 
-\item{.map}{is a \code{\link{SpatRaster}} that defines the study area (see \code{\link{glossary}}. This is used to simulate initial states if \code{.xinit = NULL} (via \code{\link[=set_states_init]{set_states_init()}}) and to extract \code{.map} coordinates for the simulated path(s).}
+\item{.timeline}{A \code{POSIXct} vector of time stamps that defines the timeline for the simulation. Here, \code{.timeline} is used to:
+\itemize{
+\item Define the number of time steps for the simulation;
+\item Define the time resolution of the simulation;
+}}
+
+\item{.state}{A \code{character} that defines the state type (see \code{\link{glossary}}).}
 
 \item{.xinit, .n_path}{Initial state arguments.
 \itemize{
@@ -32,22 +42,18 @@ sim_path_walk(
 
 \item{.move}{A character string that defines the movement model (see \code{\link{move}} and \code{\link{glossary}}).}
 
-\item{.timeline}{(optional) A \code{POSIXct} vector of time stamps, one for each time step.}
-
 \item{.plot, .one_page}{Plot options.
 \itemize{
 \item \code{.plot} is a \code{logical} variable that defined whether or not to plot \code{.map} and simulated path(s). Each path is plotted on a separate plot.
 \item \code{.one_page} is a logical variable that defines whether or not to produce all plots on a single page.
 }}
-
-\item{.n_step}{An \code{integer} that defines the number of time steps.}
 }
 \value{
 \code{\link[=sim_path_walk]{sim_path_walk()}} returns a \code{\link{data.table}} with the following columns:
 \itemize{
 \item \code{path_id}---an \code{integer} vector that identifies each path;
 \item \code{timestep}---an \code{integer} vector that defines the time step;
-\item \code{timestamp}---(optional) a \code{POSIXct} vector of time stamps;
+\item \code{timestamp}---a \code{POSIXct} vector of time stamps;
 \item \code{cell_id}, \code{cell_x}, \code{cell_y}, \code{cell_z}---\code{integer}/\code{numeric} vectors that define the locations of the simulated positions on \code{.map};
 \item \code{x},\code{y},\code{...}---\code{numeric} vectors that define the components of the state;
 }
@@ -58,21 +64,19 @@ sim_path_walk(
 \details{
 This function simulates movement paths via \code{Patter.simulate_path_walk()}:
 \itemize{
-\item The internal function \code{\link[=set_initial_states]{set_initial_states()}} is used to set the initial state(s) for the simulation; that is, initial coordinates and other variables (one for each \code{.n_path}). If \code{.state} is one of the built-in options (see \code{\link{glossary}}), initial state(s) can be sampled from \code{.map}. Otherwise, a \code{\link{data.frame}} of initial states must be provided. Initial states provided in the \code{\link{data.frame}} are  re-sampled, with replacement, if required, such that there is one initial state for each simulated path. Initial states are assigned to an \code{xinit} object in Julia, which is a vector of \code{State} structures.
-\item Using the initial states, the Julia function \code{Patter.simulate_path_walk()} simulates movements using the movement model.
-\item The resultant movement paths are brought back into \code{R} for convenient visualisation and analysis.
+\item The internal function \code{\link[=set_states_init]{set_states_init()}} is used to set the initial state(s) for the simulation; that is, initial coordinates and other variables (one for each \code{.n_path}). If \code{.state} is one of the built-in options (see \code{\link{glossary}}), initial state(s) can be sampled from \code{.map}. Otherwise, a \code{\link{data.frame}} of initial states must be provided. Initial states provided in the \code{\link{data.frame}} are  re-sampled, with replacement, if required, such that there is one initial state for each simulated path. Initial states are assigned to an \code{xinit} object in Julia, which is a vector of \code{State}s.
+\item Using the initial states, the Julia function \code{Patter.simulate_path_walk()} simulates movement path(s) using the movement model.
+\item Movement paths are passed back to \code{R} for convenient visualisation and analysis.
 }
 
-To use a new \code{.state}, you need to:
+To use a new \code{.state} and/or movement model type in \code{\link[=sim_path_walk]{sim_path_walk()}}:
 \itemize{
 \item Define a \code{State} subtype in \code{Julia} and provide the name as a \code{character} string to this function;
-\item Define a \code{\link{data.frame}} of initial states, provided to \code{\link[=sim_path_walk]{sim_path_walk()}} via \code{.xinit};
+\item Define a \code{\link{data.frame}} of initial states and provide it to \code{.xinit};
 \item Define a corresponding \code{ModelMove} subtype in \code{Julia};
-\item Instantiate a \code{ModelMove} instance in \code{Julia};
-\item Write a \code{Patter.r_get_states} method to translate the states into a \code{DataFrame} that can be passed to \code{R};
+\item Instantiate a \code{ModelMove} instance (that is, define a specific movement model) in \code{Julia};
+\item Write a \code{Patter.r_get_states()} method to translate the Vector of \code{State}s from \code{Patter.simulate_path_walk()} into a \code{DataFrame} that can be passed to \code{R};
 }
-
-To use a new type of movement model, follow the last two steps above.
 
 \code{\link[=sim_path_walk]{sim_path_walk()}} replaces \href{https://edwardlavender.github.io/flapper/reference/sim_path_sa.html}{\code{flapper::sim_path_sa()}}. Other \href{https://edwardlavender.github.io/flapper/reference/sim_path_-times.html}{\verb{flapper::sim_path_*()}} functions are not currently implemented in \code{\link{patter}}.
 }

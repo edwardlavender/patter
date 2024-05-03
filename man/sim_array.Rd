@@ -5,33 +5,38 @@
 \title{Simulation: acoustic arrays}
 \usage{
 sim_array(
-  .map = spatTemplate(),
+  .map,
+  .timeline,
   .arrangement = "random",
   .n_receiver = 10L,
   ...,
-  .receiver_start = NULL,
-  .receiver_end = NULL,
-  .receiver_range = NULL,
+  .receiver_alpha = 4,
+  .receiver_beta = -0.01,
+  .receiver_gamma = 750,
   .n_array = 1L,
   .plot = TRUE,
   .one_page = FALSE
 )
 }
 \arguments{
-\item{.map}{A \code{\link{SpatRaster}} that defines the region of interest (see \code{\link{glossary}}). Receivers are not simulated in \code{NA} regions.}
+\item{.map}{A \code{\link{SpatRaster}} that defines the region of interest (see \code{\link{glossary}}). Here, \code{map} is used to:
+\itemize{
+\item Sample receiver locations in appropriate (non \code{NA}) regions, via \code{\link[terra:sample]{terra::spatSample()}};
+}}
 
-\item{.arrangement, .n_receiver, ...}{Arguments passed to \code{\link[terra:sample]{terra::spatSample()}}.
+\item{.timeline}{A \code{POSIXct} vector of time stamps that defines the timeline for the simulation. Here, \code{.timeline} is used to:
+\itemize{
+\item Define receiver deployment periods (that is, \code{receiver_start} and \code{receiver_end} columns in the output \code{\link{data.table}}). Receiver deployment periods are defined by \code{min(.timeline)} and \code{max(.timeline)} and constant for all receivers.
+}}
+
+\item{.arrangement, .n_receiver, ...}{Arguments passed to \code{\link[terra:sample]{terra::spatSample()}}, used to sample receiver locations.
 \itemize{
 \item \code{.arrangement} is a \code{character} that defines the receiver arrangement (passed to the \code{method} argument).
 \item \code{.n_receiver} is an \code{integer} that defines the number of receivers to simulate (passed to the \code{size} argument).
-\item \code{...} ... Additional arguments, passed to \code{\link[terra:sample]{terra::spatSample()}}, excluding: \code{x}, \code{size}, \code{method}, \code{replace}, \code{na.rm}, \code{xy}, \code{cells} and \code{values}.
+\item \code{...} Additional arguments, passed to \code{\link[terra:sample]{terra::spatSample()}}, excluding \code{x}, \code{size}, \code{method}, \code{replace}, \code{na.rm}, \code{xy}, \code{cells} and \code{values}.
 }}
 
-\item{.receiver_start, .receiver_end, .receiver_range}{(optional) Additional columns to include in the output:
-\itemize{
-\item \code{.receiver_start} and \code{.receiver_end} are \code{Date} or \code{POSIXct} inputs that specify the deployment time period;
-\item \code{.receiver_range} is a \code{numeric} input that defines the detection range;
-}
+\item{.receiver_alpha, .receiver_beta, .receiver_gamma}{(optional) \code{numeric} constants for the default detection probability parameters for inclusion in the output \code{\link{data.table}};
 
 Single inputs are expected to these arguments, which are constant across all receivers.}
 
@@ -46,39 +51,45 @@ The function returns a \code{data.table} with the following columns:
 \itemize{
 \item \code{array_id}---an \code{integer} vector of array IDs,
 \item \code{receiver_id}---an \code{integer} vector of receiver IDs;
+\item \code{receiver_start}, \code{receiver_end}---\code{POSIXct} vectors that defines receiver deployment periods;
 \item \code{receiver_x} and \code{receiver_y}---\code{numeric} vectors that defines receiver coordinates;
-\item \code{receiver_start}---receiver start dates (if defined);
-\item \code{receiver_end}---receiver end dates (if defined);
-\item \code{receiver_range}---receiver detection ranges (if defined);
+\item \code{receiver_alpha}, \code{receiver_beta}, \code{receiver_gamma}---\code{numeric} vectors of detection probability parameters, if defined;
 }
 }
 \description{
 This function simulates acoustic arrays (i.e., networks of acoustic receiver(s)) on a grid.
 }
 \details{
-Receiver locations are simulated using \code{\link[terra:sample]{terra::spatSample()}}.
-
 This function replaces \href{https://edwardlavender.github.io/flapper/reference/sim_array.html}{\code{flapper::sim_array()}}.
 }
 \examples{
+#### Define simulation arguments
+map      <- dat_gebco()
+timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
+                length.out = 1000L, by = "2 mins")
+
 #### Example (1): The default implementation
-# The function returns a data.table
-a <- sim_array()
-a
+array <- sim_array(.map = map, .timeline  = timeline)
+head(array)
 
 #### Example (2): Customise receiver placement/number
-a <- sim_array(.arrangement = "regular", .n_receiver = 100)
+array <- sim_array(.map = map, .timeline = timeline,
+                   .arrangement = "regular", .n_receiver = 100L)
 
-#### Example (3): Add additional columns for downstream functions
-a <- sim_array(.receiver_start = as.Date("2013-01-01"),
-               .receiver_end = as.Date("2014-01-01"),
-               .receiver_range = 750)
+#### Example (3): Customise detection probability parameters
+# (This information is used by the default downstream functions)
+array <- sim_array(.map = map, .timeline = timeline,
+                   .receiver_alpha = 4.5,
+                   .receiver_beta = -0.02,
+                   .receiver_gamma = 500)
 
 #### Example (4): Control the plot(s)
-sim_array(.plot = FALSE)
-sim_array(.n_array = 5L, .plot = TRUE, .one_page = TRUE)
-sim_array(.n_array = 5L, .plot = TRUE, .one_page = FALSE)
-
+sim_array(.map = map, .timeline = timeline,
+          .plot = FALSE)
+sim_array(.map = map, .timeline = timeline,
+          .n_array = 5L, .plot = TRUE, .one_page = TRUE)
+sim_array(.map = map, .timeline = timeline,
+          .n_array = 5L, .plot = TRUE, .one_page = FALSE)
 }
 \seealso{
 TO DO

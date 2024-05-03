@@ -1,13 +1,15 @@
 #' @title Simulation: acoustic arrays
 #' @description This function simulates acoustic arrays (i.e., networks of acoustic receiver(s)) on a grid.
-#' @param .map A [`SpatRaster`] that defines the region of interest (see [`glossary`]). Receivers are not simulated in `NA` regions.
-#' @param .arrangement,.n_receiver,... Arguments passed to [`terra::spatSample()`].
+#'
+#' @param .map A [`SpatRaster`] that defines the region of interest (see [`glossary`]). Here, `map` is used to:
+#' * Sample receiver locations in appropriate (non `NA`) regions, via [`terra::spatSample()`];
+#' @param .timeline A `POSIXct` vector of time stamps that defines the timeline for the simulation. Here, `.timeline` is used to:
+#' * Define receiver deployment periods (that is, `receiver_start` and `receiver_end` columns in the output [`data.table`]). Receiver deployment periods are defined by `min(.timeline)` and `max(.timeline)` and constant for all receivers.
+#' @param .arrangement,.n_receiver,... Arguments passed to [`terra::spatSample()`], used to sample receiver locations.
 #' * `.arrangement` is a `character` that defines the receiver arrangement (passed to the `method` argument).
 #' * `.n_receiver` is an `integer` that defines the number of receivers to simulate (passed to the `size` argument).
-#' * `...` ... Additional arguments, passed to [`terra::spatSample()`], excluding: `x`, `size`, `method`, `replace`, `na.rm`, `xy`, `cells` and `values`.
-#' @param .receiver_start,.receiver_end,.receiver_range (optional) Additional columns to include in the output:
-#'  * `.receiver_start` and `.receiver_end` are `Date` or `POSIXct` inputs that specify the deployment time period;
-#'  * `.receiver_range` is a `numeric` input that defines the detection range;
+#' * `...` Additional arguments, passed to [`terra::spatSample()`], excluding `x`, `size`, `method`, `replace`, `na.rm`, `xy`, `cells` and `values`.
+#' @param .receiver_alpha,.receiver_beta,.receiver_gamma (optional) `numeric` constants for the default detection probability parameters for inclusion in the output [`data.table`];
 #'
 #'  Single inputs are expected to these arguments, which are constant across all receivers.
 #'
@@ -16,44 +18,25 @@
 #' @param .one_page If `.plot = TRUE`, `.one_page` is a `logical` variable that defines whether or not to produce plots on a single page.
 #'
 #' @details
-#' Receiver locations are simulated using [`terra::spatSample()`].
-#'
 #' This function replaces [`flapper::sim_array()`](https://edwardlavender.github.io/flapper/reference/sim_array.html).
 #'
 #' @return The function returns a `data.table` with the following columns:
 #' * `array_id`---an `integer` vector of array IDs,
 #' * `receiver_id`---an `integer` vector of receiver IDs;
+#' * `receiver_start`, `receiver_end`---`POSIXct` vectors that defines receiver deployment periods;
 #' * `receiver_x` and `receiver_y`---`numeric` vectors that defines receiver coordinates;
-#' * `receiver_start`---receiver start dates (if defined);
-#' * `receiver_end`---receiver end dates (if defined);
-#' * `receiver_range`---receiver detection ranges (if defined);
+#' * `receiver_alpha`, `receiver_beta`, `receiver_gamma`---`numeric` vectors of detection probability parameters, if defined;
 #'
-#' @examples
-#' #### Example (1): The default implementation
-#' # The function returns a data.table
-#' a <- sim_array()
-#' a
-#'
-#' #### Example (2): Customise receiver placement/number
-#' a <- sim_array(.arrangement = "regular", .n_receiver = 100)
-#'
-#' #### Example (3): Add additional columns for downstream functions
-#' a <- sim_array(.receiver_start = as.Date("2013-01-01"),
-#'                .receiver_end = as.Date("2014-01-01"),
-#'                .receiver_range = 750)
-#'
-#' #### Example (4): Control the plot(s)
-#' sim_array(.plot = FALSE)
-#' sim_array(.n_array = 5L, .plot = TRUE, .one_page = TRUE)
-#' sim_array(.n_array = 5L, .plot = TRUE, .one_page = FALSE)
+#' @example man/example/sim_array.R
 #'
 #' @seealso TO DO
 #' @author Edward Lavender
 #' @export
 
-sim_array <- function(.map = spatTemplate(),
+sim_array <- function(.map,
+                      .timeline,
                       .arrangement = "random", .n_receiver = 10L, ...,
-                      .receiver_start = NULL, .receiver_end = NULL, .receiver_range = NULL,
+                      .receiver_alpha = 4, .receiver_beta = -0.01, .receiver_gamma = 750,
                       .n_array = 1L,
                       .plot = TRUE, .one_page = FALSE) {
 
@@ -61,17 +44,7 @@ sim_array <- function(.map = spatTemplate(),
   # check_dots_used: terra::spatSample() used
   check_dots_allowed(c("x", "size", "method", "replace", "na.rm", "xy", "cells", "values"), ...)
   check_dots_for_missing_period(formals(), list(...))
-  # * Check `.receiver_end` is after `.receiver_start` (if supplied)
-  lapply(list(.receiver_start, .receiver_end, .receiver_range), \(x) {
-    if (!is.null(x) && length(x) != 1L) {
-      abort("Single inputs are expected for `.receiver_start`, `.receiver_end` and `.receiver_range`.")
-    }
-  })
-  if (!is.null(.receiver_start) && !is.null(.receiver_end)) {
-    if (.receiver_end <= .receiver_start) {
-      warn("`.receiver_end` should be after `.receiver_start`.")
-    }
-  }
+  .timeline <- check_timeline(.timeline)
 
   #### Simulate arrays
   arrays <-
@@ -84,21 +57,25 @@ sim_array <- function(.map = spatTemplate(),
                           na.rm = TRUE, xy = TRUE, cells = TRUE, values = FALSE, ...) |>
         as.data.table() |>
         mutate(array_id = i,
-               receiver_id = as.integer(row_number())) |>
-        select("array_id", "receiver_id", "receiver_x" = "x", "receiver_y" = "y") |>
+               receiver_id = as.integer(row_number()),
+               receiver_start = min(.timeline),
+               receiver_end = max(.timeline)) |>
+        select("array_id", "receiver_id",
+               "receiver_start", "receiver_end",
+               "receiver_x" = "x", "receiver_y" = "y") |>
         as.data.table()
       # Add optional columns
-      if (!is.null(.receiver_start)) {
-        receiver_start <- NULL
-        array[, receiver_start := .receiver_start]
+      if (!is.null(.receiver_alpha)) {
+        receiver_alpha <- NULL
+        array[, receiver_alpha := .receiver_alpha]
       }
-      if (!is.null(.receiver_end)) {
-        receiver_end <- NULL
-        array[, receiver_end := .receiver_end]
+      if (!is.null(.receiver_beta)) {
+        receiver_beta <- NULL
+        array[, receiver_beta := .receiver_beta]
       }
-      if (!is.null(.receiver_range)) {
-        receiver_range <- NULL
-        array[, receiver_range := .receiver_range]
+      if (!is.null(.receiver_gamma)) {
+        receiver_gamma <- NULL
+        array[, receiver_gamma := .receiver_gamma]
       }
       # Return simulated array (moorings data.table)
       array
@@ -124,41 +101,42 @@ sim_array <- function(.map = spatTemplate(),
 #' @title Simulation: movement walks
 #' @description [`sim_path_walk()`] simulates discrete-time animal movement paths from walk models (e.g., random walks, biased random walks, correlated random walks).
 #'
-#' @param .state A `character` that defines the state (see [`glossary`]).
-#' @param .map is a [`SpatRaster`] that defines the study area (see [`glossary`]. This is used to simulate initial states if `.xinit = NULL` (via [`set_states_init()`]) and to extract `.map` coordinates for the simulated path(s).
+#' @param .map A [`SpatRaster`] that defines the study area for the simulation (see [`glossary`]). Here, `.map` is used to:
+#' * Simulate initial states if `.xinit = NULL` (via [`set_states_init()`]);
+#' * Extract `.map` coordinates for the simulated path(s);
+#' @param .timeline A `POSIXct` vector of time stamps that defines the timeline for the simulation. Here, `.timeline` is used to:
+#' * Define the number of time steps for the simulation;
+#' * Define the time resolution of the simulation;
+#' @param .state A `character` that defines the state type (see [`glossary`]).
 #' @param .xinit,.n_path Initial state arguments.
 #' * `.xinit` specifies the initial states for the simulation (one for each movement path).
 #'    - If `.xinit` is `NULL`, initial states are sampled from `.map`.
 #'    - If `.xinit` is a [`data.frame`] with one column for each state dimension.
 #' * `.n_path` is an `integer` that defines the number of paths to simulate.
 #' @param .move A character string that defines the movement model (see [`move`] and [`glossary`]).
-#' @param .n_step An `integer` that defines the number of time steps.
-#' @param .timeline (optional) A `POSIXct` vector of time stamps, one for each time step.
 #' @param .plot,.one_page Plot options.
 #' * `.plot` is a `logical` variable that defined whether or not to plot `.map` and simulated path(s). Each path is plotted on a separate plot.
 #' * `.one_page` is a logical variable that defines whether or not to produce all plots on a single page.
 #'
 #' @details
 #' This function simulates movement paths via `Patter.simulate_path_walk()`:
-#' * The internal function [`set_initial_states()`] is used to set the initial state(s) for the simulation; that is, initial coordinates and other variables (one for each `.n_path`). If `.state` is one of the built-in options (see [`glossary`]), initial state(s) can be sampled from `.map`. Otherwise, a [`data.frame`] of initial states must be provided. Initial states provided in the [`data.frame`] are  re-sampled, with replacement, if required, such that there is one initial state for each simulated path. Initial states are assigned to an `xinit` object in Julia, which is a vector of `State` structures.
-#' * Using the initial states, the Julia function `Patter.simulate_path_walk()` simulates movements using the movement model.
-#' * The resultant movement paths are brought back into `R` for convenient visualisation and analysis.
+#' * The internal function [`set_states_init()`] is used to set the initial state(s) for the simulation; that is, initial coordinates and other variables (one for each `.n_path`). If `.state` is one of the built-in options (see [`glossary`]), initial state(s) can be sampled from `.map`. Otherwise, a [`data.frame`] of initial states must be provided. Initial states provided in the [`data.frame`] are  re-sampled, with replacement, if required, such that there is one initial state for each simulated path. Initial states are assigned to an `xinit` object in Julia, which is a vector of `State`s.
+#' * Using the initial states, the Julia function `Patter.simulate_path_walk()` simulates movement path(s) using the movement model.
+#' * Movement paths are passed back to `R` for convenient visualisation and analysis.
 #'
-#' To use a new `.state`, you need to:
+#' To use a new `.state` and/or movement model type in [`sim_path_walk()`]:
 #' * Define a `State` subtype in `Julia` and provide the name as a `character` string to this function;
-#' * Define a [`data.frame`] of initial states, provided to [`sim_path_walk()`] via `.xinit`;
+#' * Define a [`data.frame`] of initial states and provide it to `.xinit`;
 #' * Define a corresponding `ModelMove` subtype in `Julia`;
-#' * Instantiate a `ModelMove` instance in `Julia`;
-#' * Write a `Patter.r_get_states` method to translate the states into a `DataFrame` that can be passed to `R`;
-#'
-#' To use a new type of movement model, follow the last two steps above.
+#' * Instantiate a `ModelMove` instance (that is, define a specific movement model) in `Julia`;
+#' * Write a `Patter.r_get_states()` method to translate the Vector of `State`s from `Patter.simulate_path_walk()` into a `DataFrame` that can be passed to `R`;
 #'
 #' [`sim_path_walk()`] replaces [`flapper::sim_path_sa()`](https://edwardlavender.github.io/flapper/reference/sim_path_sa.html). Other [`flapper::sim_path_*()`](https://edwardlavender.github.io/flapper/reference/sim_path_-times.html) functions are not currently implemented in [`patter`].
 #'
 #' @return [`sim_path_walk()`] returns a [`data.table`] with the following columns:
 #' * `path_id`---an `integer` vector that identifies each path;
 #' * `timestep`---an `integer` vector that defines the time step;
-#' * `timestamp`---(optional) a `POSIXct` vector of time stamps;
+#' * `timestamp`---a `POSIXct` vector of time stamps;
 #' * `cell_id`, `cell_x`, `cell_y`, `cell_z`---`integer`/`numeric` vectors that define the locations of the simulated positions on `.map`;
 #' * `x`,`y`,`...`---`numeric` vectors that define the components of the state;
 #'
@@ -170,10 +148,11 @@ NULL
 #' @rdname sim_path_walk
 #' @export
 
-sim_path_walk <- function(.state = "StateXY",
-                          .map,
+sim_path_walk <- function(.map,
+                          .timeline,
+                          .state = "StateXY",
                           .xinit = NULL, .n_path = 1L,
-                          .move, .timeline = NULL,
+                          .move,
                           .plot = TRUE, .one_page = FALSE) {
 
   #### Check user inputs
@@ -196,7 +175,6 @@ sim_path_walk <- function(.state = "StateXY",
   state_dims  <- colnames(paths)[(!colnames(paths) %in% c("path_id", "timestep"))]
 
   #### Tidy data.table
-  browser()
   paths <-
     paths |>
     mutate(

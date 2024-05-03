@@ -8,7 +8,7 @@
 #'
 #' # `.move`.
 #'
-#' `.move` is a `character` that defines a movement model structure implemented in Julia (that is, a `ModelMove` constructor). `.move_*()` functions are convenience wrappers for the constuction of movement models. Currently implemented options are:
+#' `.move` is a `character` that defines a movement model structure implemented in Julia (that is, a `ModelMove` constructor). `.move_*()` functions are convenience wrappers for the construction of movement models. Currently implemented options are:
 #' * [`move_xy()`], which specifies a movement model in terms of the distribution of step lengths and turning angles;
 #' * [`move_xyzd()`], which specifies a movement model in terms of the distribution of step lengths, changes in turning angles and changes in depth;
 #'

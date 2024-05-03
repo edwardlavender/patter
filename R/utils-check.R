@@ -106,6 +106,17 @@ check_tz <-
 #' @rdname check_utils
 #' @keywords internal
 
+check_timeline <- function(input, arg = deparse(substitute(input))) {
+  check_inherits(input, "POSIXct")
+  input <- check_tz(input = input, arg = arg)
+  stopifnot(!is.unsorted(input))
+  stopifnot(!any(is.na(input)))
+  invisible(input)
+}
+
+#' @rdname check_utils
+#' @keywords internal
+
 check_new_colnames <- function(.data, .new) {
   bool <- .new %in% colnames(.data)
   if (any(bool)) {
