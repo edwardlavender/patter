@@ -1,5 +1,5 @@
 #' @title Simulation: acoustic arrays
-#' @description This function simulates acoustic arrays (i.e., networks of acoustic receiver(s)) on a grid.
+#' @description Simulate acoustic arrays (i.e., networks of acoustic receiver(s)) on a grid.
 #'
 #' @param .map A [`SpatRaster`] that defines the region of interest (see [`glossary`]). Here, `map` is used to:
 #' * Sample receiver locations in appropriate (non `NA`) regions, via [`terra::spatSample()`];
@@ -99,7 +99,7 @@ sim_array <- function(.map,
 
 
 #' @title Simulation: movement walks
-#' @description [`sim_path_walk()`] simulates discrete-time animal movement paths from walk models (e.g., random walks, biased random walks, correlated random walks).
+#' @description Simulate discrete-time animal movement paths from walk models (e.g., random walks, biased random walks, correlated random walks).
 #'
 #' @param .map A [`SpatRaster`] that defines the study area for the simulation (see [`glossary`]). Here, `.map` is used to:
 #' * Simulate initial states if `.xinit = NULL` (via [`set_states_init()`]);
@@ -213,3 +213,31 @@ sim_path_walk <- function(.map,
 
 }
 
+
+#' @title Simulation: observations
+#' @description Simulate a time series of observations, such as acoustic detections and depths, arising from simulated animal movement path(s).
+#'
+#' @param .timeline A `POSIXct` vector of time stamps that defines the timeline for the simulation. This should match the `.timeline` used to simulate movement paths (see [`sim_path_walk()`]).
+#' @param .models A `character` vector of `ModelObs` subtype(s) defined in `Julia` (see [`glossary`]).
+#' @param .parameters A `list` of [`data.table`]s, one for each model in `.models`, that define, for each sensor of that type, the model parameters.
+#'
+#' @details
+#' This function wraps the `Patter.simulate_obs()` Julia function. The function iterates over simulated paths defined in the Julia workspace by [`sim_path_walk()`]. For each path and time step, the function simulates observation(s). Collectively, `.models` and `.parameters` define the observation models used for the simulation (that is, a `Vector` of `ModelObs` instances). In `Julia`, simulated observations are stored in a hash table (`Dict`) called `yobs`, which is translated into a named `list` that is returned by `R`.
+#'
+#' @returns The function returns a named `list`, with one element for each sensor type, that is `.models` element. Each element is a `list` of `data.table`s, one for each simulated path. Each row is a time step. The columns depend on the model type.
+#'
+#' @author Edward Lavender
+#' @export
+
+# Simulate observations:
+sim_observations <- function(.timeline, .models, .parameters) {
+  set_timeline(.timeline)
+  set_parameters(.parameters)
+  set_models(.models)
+  set_yobs()
+  out <- lapply(.models, function(model) {
+    julia_eval(glue("Patter.r_get_dataset(yobs, {model})"))
+  })
+  names(out) <- .models
+  out
+}

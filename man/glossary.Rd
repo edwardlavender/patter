@@ -10,6 +10,11 @@ This is a glossary of key arguments in \code{\link{patter}}.
 \code{.map} is \code{\link{SpatRaster}} that defines the area of interest. \code{NAs} define inhospitable regions (such as land).
 }
 
+\section{\code{.models}}{
+TO DO (RENAME .models and \code{.move})
+\code{ModelObs}
+}
+
 \section{\code{.move}.}{
 \code{.move} is a \code{character} that defines a movement model structure implemented in Julia (that is, a \code{ModelMove} constructor). \verb{.move_*()} functions are convenience wrappers for the construction of movement models. Currently implemented options are:
 \itemize{

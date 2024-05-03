@@ -57,7 +57,7 @@ The function returns a \code{data.table} with the following columns:
 }
 }
 \description{
-This function simulates acoustic arrays (i.e., networks of acoustic receiver(s)) on a grid.
+Simulate acoustic arrays (i.e., networks of acoustic receiver(s)) on a grid.
 }
 \details{
 This function replaces \href{https://edwardlavender.github.io/flapper/reference/sim_array.html}{\code{flapper::sim_array()}}.

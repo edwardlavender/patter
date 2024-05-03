@@ -59,7 +59,7 @@ sim_path_walk(
 }
 }
 \description{
-\code{\link[=sim_path_walk]{sim_path_walk()}} simulates discrete-time animal movement paths from walk models (e.g., random walks, biased random walks, correlated random walks).
+Simulate discrete-time animal movement paths from walk models (e.g., random walks, biased random walks, correlated random walks).
 }
 \details{
 This function simulates movement paths via \code{Patter.simulate_path_walk()}:

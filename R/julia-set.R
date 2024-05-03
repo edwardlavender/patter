@@ -6,7 +6,8 @@
 #' @rdname julia_set
 #' @keywords internal
 
-# Set the `env` variable in Julia
+# Set the map (`env`) in Julia
+# * `env` is the name used by move_*() functions
 set_map <- function(x) {
   stopifnot(inherits(x, "SpatRaster"))
   file <- terra::sources(x)
@@ -21,8 +22,8 @@ set_map <- function(x) {
 #' @rdname julia_set
 #' @keywords internal
 
-# Set the vector of initial states (xinit) in Julia
-# * This is required to simulate movement paths & for the particle filter
+# Set the vector of initial states (`xinit`) in Julia
+# * This is required for `sim_path_walk()` and `pf_filter()`
 set_states_init <- function(.state = "StateXY",
                             .map = NULL,
                             .xinit = NULL,
@@ -76,17 +77,16 @@ set_states_init <- function(.state = "StateXY",
 #' @rdname julia_set
 #' @keywords internal
 
-# Set a movement model ('move') in Julia
+# Set a movement model (`move`) in Julia
 set_move <- function(cmd) {
   julia_command(glue('move = {cmd};'))
   nothing()
 }
 
-
 #' @rdname julia_set
 #' @keywords internal
 
-# Set a time line
+# Set a timeline in Julia
 set_timeline <- function(.timeline) {
   .timeline <- julia_timeline(.timeline)
   julia_assign("timeline", .timeline)
@@ -101,5 +101,49 @@ set_timeline <- function(.timeline) {
 set_path <- function() {
   julia_check_exists("xinit", "move", "timeline")
   julia_command(glue('paths = simulate_path_walk(xinit = xinit, move = move, timeline = timeline);'))
+  nothing()
+}
+
+#' @rdname julia_set
+#' @keywords internal
+
+# Set a Vector of sensor parameter DataFrame(s) in Julia
+# * Required for `sim_yobs()`
+set_parameters <- function(.parameters) {
+  check_inherits(.parameters, "list")
+  .parameters <- unname(.parameters)
+  julia_assign("parameters", .parameters)
+  nothing()
+}
+
+#' @rdname julia_set
+#' @keywords internal
+
+# Set a Vector of model type strings in Julia
+# * Required for `sim_yobs()` via `set_models()`
+set_model_types <- function(.models) {
+  julia_assign("model_type_strings", .models)
+  julia_command('model_types = Patter.julia_get_model_types(model_type_strings);')
+}
+
+#' @rdname julia_set
+#' @keywords internal
+
+# Set a Vector of ModelObs structures (`models`) in Julia
+# * Required for `sim_yobs()`
+set_models <- function(.models) {
+  set_model_types(.models)
+  julia_check_exists("parameters", "model_types")
+  julia_command('models = Patter.julia_get_models(parameters, model_types);')
+  nothing()
+}
+
+#' @rdname julia_set
+#' @keywords internal
+
+# Simulate a dictionary of observations (`yobs`) in Julia
+set_yobs <- function() {
+  julia_check_exists("paths", "models", "timeline")
+  julia_command('yobs = simulate_yobs(paths = paths, models = models, timeline = timeline);')
   nothing()
 }
