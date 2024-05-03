@@ -24,14 +24,17 @@ set_map <- function(x) {
 # Set the vector of initial states (xinit) in Julia
 # * This is required to simulate movement paths & for the particle filter
 set_states_init <- function(.state = "StateXY",
-                            .xinit = NULL,
                             .map = NULL,
+                            .xinit = NULL,
                             .n = 100L) {
 
   #### If un-provided, sample `.xinit`
   if (is.null(.xinit)) {
 
     # Check user inputs
+    if (is.null(.map)) {
+      abort("`.map` is required if `.xinit` is NULL.")
+    }
     if (!(.state %in% c("StateXY", "StateXYZD"))) {
       abort("For custom states, you need to provide `.xinit`.")
     }
@@ -79,11 +82,23 @@ set_move <- function(cmd) {
   nothing()
 }
 
+
+#' @rdname julia_set
+#' @keywords internal
+
+# Set a time line
+set_timeline <- function(.timeline) {
+  .timeline <- julia_timeline(.timeline)
+  julia_assign("timeline", .timeline)
+  nothing()
+}
+
+
 #' @rdname julia_set
 #' @keywords internal
 
 # Set simulated path(s) in Julia
-set_path <- function(.n_step) {
-  julia_command(glue('paths = sim_path_walk(xinit = xinit, move = move, nt = {.n_step});'))
+set_path <- function() {
+  julia_command(glue('paths = simulate_path_walk(xinit = xinit, move = move, timeline = timeline);'))
   nothing()
 }

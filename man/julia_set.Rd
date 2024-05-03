@@ -2,19 +2,22 @@
 % Please edit documentation in R/julia-set.R
 \name{julia_set}
 \alias{julia_set}
-\alias{set_env}
-\alias{set_initial_states}
+\alias{set_map}
+\alias{set_states_init}
 \alias{set_move}
+\alias{set_timeline}
 \alias{set_path}
 \title{Julia: set objects in Julia}
 \usage{
-set_env(x)
+set_map(x)
 
-set_initial_states(.state = "StateXY", .xinit = NULL, .map = NULL, .n = 100L)
+set_states_init(.state = "StateXY", .map = NULL, .xinit = NULL, .n = 100L)
 
 set_move(cmd)
 
-set_path(.n_step)
+set_timeline(.timeline)
+
+set_path()
 }
 \description{
 These are internal functions that assign objects to variable names in Julia.

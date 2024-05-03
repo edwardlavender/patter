@@ -125,30 +125,31 @@ sim_array <- function(.map = spatTemplate(),
 #' @description [`sim_path_walk()`] simulates discrete-time animal movement paths from walk models (e.g., random walks, biased random walks, correlated random walks).
 #'
 #' @param .state A `character` that defines the state (see [`glossary`]).
-#' @param .xinit,.map,.n_path Initial state arguments.
+#' @param .map is a [`SpatRaster`] that defines the study area (see [`glossary`]. This is used to simulate initial states if `.xinit = NULL` (via [`set_states_init()`]) and to extract `.map` coordinates for the simulated path(s).
+#' @param .xinit,.n_path Initial state arguments.
 #' * `.xinit` specifies the initial states for the simulation (one for each movement path).
 #'    - If `.xinit` is `NULL`, initial states are sampled from `.map`.
 #'    - If `.xinit` is a [`data.frame`] with one column for each state dimension.
-#' * `.map` is a [`SpatRaster`] that defines the area within which movements are simulated that is required if `.xinit = NULL` (see [`glossary`].
 #' * `.n_path` is an `integer` that defines the number of paths to simulate.
 #' @param .move A character string that defines the movement model (see [`move`] and [`glossary`]).
 #' @param .n_step An `integer` that defines the number of time steps.
-#' @param .timestamp (optional) A vector of time stamps, one for each time step, for inclusion in the output [`data.table`] as a `timestamp` column.
+#' @param .timeline (optional) A `POSIXct` vector of time stamps, one for each time step.
 #' @param .plot,.one_page Plot options.
 #' * `.plot` is a `logical` variable that defined whether or not to plot `.map` and simulated path(s). Each path is plotted on a separate plot.
 #' * `.one_page` is a logical variable that defines whether or not to produce all plots on a single page.
 #'
 #' @details
-#' This function simulates movement paths via `Patter.sim_walk()`:
+#' This function simulates movement paths via `Patter.simulate_path_walk()`:
 #' * The internal function [`set_initial_states()`] is used to set the initial state(s) for the simulation; that is, initial coordinates and other variables (one for each `.n_path`). If `.state` is one of the built-in options (see [`glossary`]), initial state(s) can be sampled from `.map`. Otherwise, a [`data.frame`] of initial states must be provided. Initial states provided in the [`data.frame`] are  re-sampled, with replacement, if required, such that there is one initial state for each simulated path. Initial states are assigned to an `xinit` object in Julia, which is a vector of `State` structures.
-#' * Using the initial states, the Julia function `Patter.sim_walk()` simulates movements using the movement model.
+#' * Using the initial states, the Julia function `Patter.simulate_path_walk()` simulates movements using the movement model.
 #' * The resultant movement paths are brought back into `R` for convenient visualisation and analysis.
 #'
 #' To use a new `.state`, you need to:
-#' * Define a `State` subtype in `Julia` and provide the name as a character string to this function;
-#' * Define a [`data.frame`] of initial states;
+#' * Define a `State` subtype in `Julia` and provide the name as a `character` string to this function;
+#' * Define a [`data.frame`] of initial states, provided to [`sim_path_walk()`] via `.xinit`;
 #' * Define a corresponding `ModelMove` subtype in `Julia`;
-#' * Specify the movement model components to this function;
+#' * Instantiate a `ModelMove` instance in `Julia`;
+#' * Write a `Patter.r_get_states` method to translate the states into a `DataFrame` that can be passed to `R`;
 #'
 #' To use a new type of movement model, follow the last two steps above.
 #'
@@ -170,17 +171,14 @@ NULL
 #' @export
 
 sim_path_walk <- function(.state = "StateXY",
-                          .xinit = NULL, .map, .n_path = 1L,
-                          .move,
-                          .n_step = 10L, .timestamp = NULL,
+                          .map,
+                          .xinit = NULL, .n_path = 1L,
+                          .move, .timeline = NULL,
                           .plot = TRUE, .one_page = FALSE) {
 
   #### Check user inputs
   check_inherits(.state, "character")
   check_inherits(.move, "character")
-  if (!is.null(.timestamp) && .n_step != length(.timestamp)) {
-    abort("`.n_step` must match `length(.timestamp)`.")
-  }
 
   #### Set initial state
   # * `.xinit` = NULL: we create and export .xinit
@@ -191,54 +189,36 @@ sim_path_walk <- function(.state = "StateXY",
   set_move(.move)
 
   #### Simulate random walk
-  set_path(as.integer(.n_step))
+  set_timeline(.timeline)
+  set_path()
   paths       <- julia_eval('Patter.r_get_states(paths)')
   paths       <- as.data.table(paths)
   state_dims  <- colnames(paths)[(!colnames(paths) %in% c("path_id", "timestep"))]
 
   #### Tidy data.table
-  # Add time stamps
-  if (!is.null(.timestamp)) {
-    timestamp <- timestep <- NULL
-    paths[, timestamp := timestamp[match(timestep, seq_len(.n_step))]]
-  }
-  # Add bathymetry
+  browser()
   paths <-
     paths |>
     mutate(
+      # Define path_id, time step and time stamp
       path_id = as.integer(.data$path_id),
       timestep = as.integer(.data$timestep),
+      timestamp = .timeline[.data$timestep],
+      # Add map coordinates
       cell_id = terra::cellFromXY(.map, cbind(.data$x, .data$y)),
       cell_x = as.numeric(terra::xFromCell(.map, .data$cell_id)),
       cell_y = as.numeric(terra::yFromCell(.map, .data$cell_id)),
       cell_z = terra::extract(.map, .data$cell_id)[, 1]) |>
     # Tidy columns
-    select("path_id", "timestep", any_of("timestamp"),
+    select("path_id", "timestep", "timestamp",
            "cell_x", "cell_y", "cell_z", "cell_id",
            state_dims
     ) |>
     as.data.table()
-  # Validate simulation (check for NAs)
-  is_na <- is.na(paths$cell_z)
-  if (any(is_na)) {
-    # Identify paths with NAs (i.e., paths on land)
-    path_with_na <- unique(paths$path_id[is_na])
-    # Drop invalid paths
-    warn("{length(path_with_na)}/{.n_path} path(s) in inhospitable locations.",
-         .envir = environment())
-    paths <-
-      paths |>
-      filter(!(.data$path_id %in% path_with_na)) |>
-      as.data.table()
-    # Return empty data.table if required
-    if (nrow(paths) == 0L) {
-      warn("Output is an empty data.table.")
-      return(paths)
-    }
-    # Update path IDs
-    path_id <- NULL
-    paths[path_id := rleid(path_id)]
-  }
+
+  #### Validate simulation (check for NAs)
+  # This is no longer required as Patter.simulate_move() is implemented with n_trial = Inf
+  # This ensures consistency between Patter.jl & patter
 
   #### Visualise paths & return
   if (.plot) {

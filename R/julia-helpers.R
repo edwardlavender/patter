@@ -6,7 +6,7 @@ julia_print <- function(x) {
 }
 
 # Format time stamps for julia
-julia_timestamp <- function(x) {
+julia_timeline <- function(x) {
   check_inherits(x, "POSIXct")
   x <- check_tz(x)
   as.POSIXct(format(x, "%Y-%m-%d %H:%M:%S"), tz = lubridate::tz(x))
