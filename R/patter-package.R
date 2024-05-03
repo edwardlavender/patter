@@ -32,6 +32,7 @@
 #' @importFrom JuliaCall julia_assign
 #' @importFrom JuliaCall julia_command
 #' @importFrom JuliaCall julia_eval
+#' @importFrom JuliaCall julia_exists
 #' @importFrom JuliaCall julia_installed_package
 #' @importFrom JuliaCall julia_install_package
 #' @importFrom JuliaCall julia_update_package
