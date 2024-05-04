@@ -7,10 +7,11 @@
 \alias{set_move}
 \alias{set_timeline}
 \alias{set_path}
-\alias{set_parameters}
 \alias{set_model_types}
 \alias{set_models}
-\alias{set_yobs}
+\alias{set_parameters}
+\alias{set_yobs_via_sim}
+\alias{set_datasets}
 \title{Julia: set objects in Julia}
 \usage{
 set_map(x)
@@ -23,13 +24,15 @@ set_timeline(.timeline)
 
 set_path()
 
-set_parameters(.parameters)
-
 set_model_types(.models)
 
 set_models(.models)
 
-set_yobs()
+set_parameters(.parameters)
+
+set_yobs_via_sim()
+
+set_datasets(.datasets)
 }
 \description{
 These are internal functions that assign objects to variable names in Julia.

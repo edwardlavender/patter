@@ -24,7 +24,7 @@ sim_array(
 \item Sample receiver locations in appropriate (non \code{NA}) regions, via \code{\link[terra:sample]{terra::spatSample()}};
 }}
 
-\item{.timeline}{A \code{POSIXct} vector of time stamps that defines the timeline for the simulation. Here, \code{.timeline} is used to:
+\item{.timeline}{A \code{POSIXct} vector of regularly spaced time stamps that defines the timeline for the simulation. Here, \code{.timeline} is used to:
 \itemize{
 \item Define receiver deployment periods (that is, \code{receiver_start} and \code{receiver_end} columns in the output \code{\link{data.table}}). Receiver deployment periods are defined by \code{min(.timeline)} and \code{max(.timeline)} and constant for all receivers.
 }}

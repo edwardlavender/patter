@@ -6,8 +6,11 @@
 #' @name patter
 "_PACKAGE"
 
+#' @importFrom collapse join
 #' @importFrom collapse fndistinct
+#' @importFrom collapse fnrow
 #'
+#' @importFrom data.table copy
 #' @importFrom data.table data.table
 #' @importFrom data.table as.data.table
 #' @importFrom data.table .N
@@ -16,10 +19,22 @@
 #' @importFrom data.table :=
 #'
 #' @importFrom dplyr any_of
-#' @importFrom dplyr mutate
+#' @importFrom dplyr arrange
+#' @importFrom dplyr everything
 #' @importFrom dplyr filter
+#' @importFrom dplyr group_by
+#' @importFrom dplyr if_else
+#' @importFrom dplyr mutate
+#' @importFrom dplyr n
+#' @importFrom dplyr reframe
+#' @importFrom dplyr rename
 #' @importFrom dplyr row_number
 #' @importFrom dplyr select
+#' @importFrom dplyr slice
+#' @importFrom dplyr summarise
+#' @importFrom dplyr ungroup
+#'
+#' @importFrom dtplyr lazy_dt
 #'
 #' @importFrom glue glue
 #'
@@ -39,6 +54,10 @@
 #' @importFrom JuliaCall julia_library
 #' @importFrom JuliaCall julia_setup
 #'
+#' @importFrom lubridate interval
+#' @importFrom lubridate int_overlaps
+#' @importFrom lubridate int_start int_end
+#' @importFrom lubridate round_date
 #' @importFrom lubridate %within%
 #'
 #' @importFrom rlang .data

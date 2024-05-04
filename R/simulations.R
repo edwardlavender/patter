@@ -3,7 +3,7 @@
 #'
 #' @param .map A [`SpatRaster`] that defines the region of interest (see [`glossary`]). Here, `map` is used to:
 #' * Sample receiver locations in appropriate (non `NA`) regions, via [`terra::spatSample()`];
-#' @param .timeline A `POSIXct` vector of time stamps that defines the timeline for the simulation. Here, `.timeline` is used to:
+#' @param .timeline A `POSIXct` vector of regularly spaced time stamps that defines the timeline for the simulation. Here, `.timeline` is used to:
 #' * Define receiver deployment periods (that is, `receiver_start` and `receiver_end` columns in the output [`data.table`]). Receiver deployment periods are defined by `min(.timeline)` and `max(.timeline)` and constant for all receivers.
 #' @param .arrangement,.n_receiver,... Arguments passed to [`terra::spatSample()`], used to sample receiver locations.
 #' * `.arrangement` is a `character` that defines the receiver arrangement (passed to the `method` argument).
@@ -104,7 +104,7 @@ sim_array <- function(.map,
 #' @param .map A [`SpatRaster`] that defines the study area for the simulation (see [`glossary`]). Here, `.map` is used to:
 #' * Simulate initial states if `.xinit = NULL` (via [`set_states_init()`]);
 #' * Extract `.map` coordinates for the simulated path(s);
-#' @param .timeline A `POSIXct` vector of time stamps that defines the timeline for the simulation. Here, `.timeline` is used to:
+#' @param .timeline A `POSIXct` vector of regularly spaced time stamps that defines the timeline for the simulation. Here, `.timeline` is used to:
 #' * Define the number of time steps for the simulation;
 #' * Define the time resolution of the simulation;
 #' @param .state A `character` that defines the state type (see [`glossary`]).
@@ -217,7 +217,7 @@ sim_path_walk <- function(.map,
 #' @title Simulation: observations
 #' @description Simulate a time series of observations, such as acoustic detections and depths, arising from simulated animal movement path(s).
 #'
-#' @param .timeline A `POSIXct` vector of time stamps that defines the timeline for the simulation. This should match the `.timeline` used to simulate movement paths (see [`sim_path_walk()`]).
+#' @param .timeline A `POSIXct` vector of regularly spaced time stamps that defines the timeline for the simulation. This should match the `.timeline` used to simulate movement paths (see [`sim_path_walk()`]).
 #' @param .models A `character` vector of `ModelObs` subtype(s) defined in `Julia` (see [`glossary`]).
 #' @param .parameters A `list` of [`data.table`]s, one for each model in `.models`, that define, for each sensor of that type, the model parameters.
 #'
@@ -234,7 +234,7 @@ sim_observations <- function(.timeline, .models, .parameters) {
   set_timeline(.timeline)
   set_parameters(.parameters)
   set_models(.models)
-  set_yobs()
+  set_yobs_via_sim()
   out <- lapply(.models, function(model) {
     julia_eval(glue("Patter.r_get_dataset(yobs, {model})"))
   })

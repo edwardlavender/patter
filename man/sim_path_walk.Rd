@@ -22,7 +22,7 @@ sim_path_walk(
 \item Extract \code{.map} coordinates for the simulated path(s);
 }}
 
-\item{.timeline}{A \code{POSIXct} vector of time stamps that defines the timeline for the simulation. Here, \code{.timeline} is used to:
+\item{.timeline}{A \code{POSIXct} vector of regularly spaced time stamps that defines the timeline for the simulation. Here, \code{.timeline} is used to:
 \itemize{
 \item Define the number of time steps for the simulation;
 \item Define the time resolution of the simulation;

@@ -107,20 +107,8 @@ set_path <- function() {
 #' @rdname julia_set
 #' @keywords internal
 
-# Set a Vector of sensor parameter DataFrame(s) in Julia
-# * Required for `sim_yobs()`
-set_parameters <- function(.parameters) {
-  check_inherits(.parameters, "list")
-  .parameters <- unname(.parameters)
-  julia_assign("parameters", .parameters)
-  nothing()
-}
-
-#' @rdname julia_set
-#' @keywords internal
-
 # Set a Vector of model type strings in Julia
-# * Required for `sim_yobs()` via `set_models()`
+# * Required for `set_yobs_*()` via `set_models()`
 set_model_types <- function(.models) {
   julia_assign("model_type_strings", .models)
   julia_command('model_types = Patter.julia_get_model_types(model_type_strings);')
@@ -130,7 +118,7 @@ set_model_types <- function(.models) {
 #' @keywords internal
 
 # Set a Vector of ModelObs structures (`models`) in Julia
-# * Required for `sim_yobs()`
+# * Required for `set_yobs_*()`
 set_models <- function(.models) {
   set_model_types(.models)
   julia_check_exists("parameters", "model_types")
@@ -141,9 +129,55 @@ set_models <- function(.models) {
 #' @rdname julia_set
 #' @keywords internal
 
-# Simulate a dictionary of observations (`yobs`) in Julia
-set_yobs <- function() {
+# Set a Vector of sensor parameter DataFrame(s) in Julia
+# * Required for `set_yobs_via_sim()`
+set_parameters <- function(.parameters) {
+  check_inherits(.parameters, "list")
+  .parameters <- unname(.parameters)
+  julia_assign("parameters", .parameters)
+  nothing()
+}
+
+#' @rdname julia_set
+#' @keywords internal
+
+# Set a dictionary of observations (`yobs`) via `simulate_obs()` in Julia
+set_yobs_via_sim <- function() {
   julia_check_exists("paths", "models", "timeline")
   julia_command('yobs = simulate_yobs(paths = paths, models = models, timeline = timeline);')
+  nothing()
+}
+
+#' @rdname julia_set
+#' @keywords internal
+
+# Set a Vector of datasets DataFrames in Julia
+# * Required for `set_yobs_via_datasets()`
+set_datasets <- function(.datasets) {
+  # Check .datasets is a list
+  check_inherits(.datasets, "list")
+  # Check dataset names & fix time stamps
+  timestamp <- NULL
+  lapply(.datasets, function(.dataset) {
+    # Check required names
+    check_names(.dataset, c("timestamp", "sensor_id", "obs"))
+    # Check rows
+    if (fnrow(.dataset) == 0L) {
+      abort("There are no rows in the dataset.")
+    }
+    # Format time stamps (by reference) for correct export to Julia
+    .dataset[, timestamp := julia_timeline(timestamp)]
+  })
+  # Export datasets
+  .datasets <- unname(.datasets)
+  julia_assign("datasets", .datasets)
+  nothing()
+}
+
+# Set a dictionary of observations (`yobs`) using real datasets in Julia
+set_yobs_via_datasets <- function(.datasets, .models) {
+  set_datasets(.datasets)
+  set_models(.models)
+  julia_command('yobs = assemble_yobs(datasets, models);')
   nothing()
 }
