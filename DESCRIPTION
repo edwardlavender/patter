@@ -1,5 +1,5 @@
 Package: patter
-Title: Particle Filters, Smoothers and Samplers for Movement Modelling
+Title: Particle Filters, Smoothers and Samplers for Animal Movement Modelling
 Version: 0.0.0.9000
 Authors@R: 
     person("Edward", "Lavender", 
