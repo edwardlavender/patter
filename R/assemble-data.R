@@ -31,7 +31,7 @@
 #'
 #' These routines are only required for real-world analyses. (In _de novo_ simulations, the hash-table of observations is defined in `Julia` by `simulate_obs()`.)
 #'
-#' @example
+#' @example man/example/assemble-data.R
 #' @seealso TO DO
 #' @author Edward Lavender
 #' @name assemble

@@ -58,6 +58,9 @@ In \code{Julia}, datasets are translated into a hash-table (\code{Dict}) of obse
 
 These routines are only required for real-world analyses. (In \emph{de novo} simulations, the hash-table of observations is defined in \code{Julia} by \code{simulate_obs()}.)
 }
+\examples{
+
+}
 \seealso{
 TO DO
 }
