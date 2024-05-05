@@ -12,11 +12,13 @@
 \alias{set_parameters}
 \alias{set_yobs_via_sim}
 \alias{set_datasets}
+\alias{set_yobs_via_datasets}
+\alias{set_particles}
 \title{Julia: set objects in Julia}
 \usage{
 set_map(x)
 
-set_states_init(.map, .timeline, .datasets, .models, .pars, .state, .xinit, .n)
+set_states_init(.xinit, .state)
 
 set_move(cmd)
 
@@ -33,6 +35,10 @@ set_parameters(.parameters)
 set_yobs_via_sim()
 
 set_datasets(.datasets)
+
+set_yobs_via_datasets(.datasets, .models)
+
+set_particles(.n_move, .n_resample, .n_record)
 }
 \description{
 These are internal functions that assign objects to variable names in Julia.
