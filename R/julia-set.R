@@ -15,7 +15,7 @@ set_map <- function(x) {
     file <- tempfile(fileext = ".tif")
     terra::writeRaster(x, file)
   }
-  julia_command(glue('env = GeoArrays.read("{file}")'))
+  julia_command(glue('env = GeoArrays.read("{file}");'))
   nothing()
 }
 
@@ -24,7 +24,7 @@ set_map <- function(x) {
 
 # Set the vector of initial states (`xinit`) in Julia
 # * This is required for `sim_path_walk()` and `pf_filter()`
-set_states_init <- function(.xinit) {
+set_states_init <- function(.xinit, .state) {
   # Export initial states to Julia as `xinit`
   julia_assign("xinit_df", .xinit)
   julia_command(glue('xinit = Patter.julia_get_xinit({.state}, xinit_df);'))
@@ -131,10 +131,40 @@ set_datasets <- function(.datasets) {
   nothing()
 }
 
+#' @rdname julia_set
+#' @keywords internal
+
 # Set a dictionary of observations (`yobs`) using real datasets in Julia
 set_yobs_via_datasets <- function(.datasets, .models) {
   set_datasets(.datasets)
   set_models(.models)
   julia_command('yobs = assemble_yobs(datasets, models);')
+  nothing()
+}
+
+#' @rdname julia_set
+#' @keywords internal
+
+# Run the particle filter in Julia
+set_particles <- function(.n_move, .n_resample, .n_record) {
+  # Check inputs
+  julia_check_exists("timeline", "xinit", "yobs", "move")
+  .n_move     <- as.integer(.n_move)
+  .n_resample <- as.integer(.n_resample)
+  .n_record   <- as.integer(.n_record)
+  # Run the filter
+  julia_command(
+    glue(
+      '
+      particles = particle_filter(timeline = timeline,
+                                  xinit = xinit,
+                                  yobs = yobs,
+                                  move = move,
+                                  n_move = {.n_move},
+                                  resample_ess = {.n_resample},
+                                  n_record = {.n_record})
+    '
+    )
+  )
   nothing()
 }

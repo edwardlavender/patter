@@ -168,7 +168,7 @@ sim_path_walk <- function(.map,
                             .state = NULL,
                             .xinit = .xinit,
                             .n = .n_path)
-  set_states_init(.xinit = .xinit)
+  set_states_init(.xinit = .xinit, .state = .state)
 
   #### Set movement model
   set_timeline(.timeline)
