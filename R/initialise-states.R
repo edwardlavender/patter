@@ -78,6 +78,9 @@ sim_states_init <- function(.map,
   }
 
   #### Re-sample `.xinit` .`n` times (if required)
+  # This is required if:
+  # * spatSample does not return `.n` samples
+  # * The user supplies `.xinit` with fewer than specified rows
   if (nrow(.xinit) != .n) {
     .xinit <- .xinit[sample.int(.N, size = .n, replace = TRUE), ]
   }
