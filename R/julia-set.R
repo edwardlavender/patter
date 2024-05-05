@@ -137,8 +137,8 @@ set_datasets <- function(.datasets) {
 # Set a dictionary of observations (`yobs`) using real datasets in Julia
 set_yobs_via_datasets <- function(.datasets, .models) {
   set_datasets(.datasets)
-  set_models(.models)
-  julia_command('yobs = assemble_yobs(datasets, models);')
+  set_model_types(.models)
+  julia_command('yobs = assemble_yobs(datasets, model_types);')
   nothing()
 }
 
@@ -150,7 +150,7 @@ set_particles <- function(.n_move, .n_resample, .n_record) {
   # Check inputs
   julia_check_exists("timeline", "xinit", "yobs", "move")
   .n_move     <- as.integer(.n_move)
-  .n_resample <- as.integer(.n_resample)
+  .n_resample <- paste0(as.integer(.n_record), ".0")
   .n_record   <- as.integer(.n_record)
   # Run the filter
   julia_command(
@@ -161,8 +161,8 @@ set_particles <- function(.n_move, .n_resample, .n_record) {
                                   yobs = yobs,
                                   move = move,
                                   n_move = {.n_move},
-                                  resample_ess = {.n_resample},
-                                  n_record = {.n_record})
+                                  n_record = {.n_record},
+                                  n_resample = {.n_resample});
     '
     )
   )

@@ -73,15 +73,14 @@ sim_states_init <- function(.map,
     # - A `Patter.julia_get_xinit()` method
     .xinit <- states_init(.state = char_to_class(.state), .coords = coord)
 
-  ### If provided, re-sample `.xinit` .`n` times (if required)
   } else {
-    check_inherits(.xinit, "data.frame")
-    if (nrow(.xinit) != .n) {
-      .xinit <- .xinit[sample.int(.N, size = .n, replace = TRUE)]
-    }
+    check_inherits(.xinit, "data.table")
   }
 
-  .xinit
+  #### Re-sample `.xinit` .`n` times (if required)
+  if (nrow(.xinit) != .n) {
+    .xinit <- .xinit[sample.int(.N, size = .n, replace = TRUE), ]
+  }
 
 }
 
@@ -234,11 +233,11 @@ map_init.ModelObsDepthNormalTrunc <- function(.map,
   }
   depth <- .dataset$obs[pos]
   # Define the corresponding structure parameters
-  deep_depth_eps <- .dataset$deep_depth_eps[pos]
+  depth_deep_eps <- .dataset$depth_deep_eps[pos]
   # Mask map between limits
-  # * .map + deep_depth_eps must be >= depth
+  # * .map + depth_deep_eps must be >= depth
   terra::mask(.map,
-              .map >= depth + deep_depth_eps,
+              .map >= depth + depth_deep_eps,
               maskvalues = 0)
 }
 
@@ -277,7 +276,8 @@ coords_init <- function(.map, .n) {
                       method = "random",
                       na.rm = TRUE,
                       xy = TRUE,
-                      values = TRUE) |>
+                      values = TRUE,
+                      warn = FALSE) |>
     as.data.table()
   colnames(.xinit) <- c("x", "y", "map_value")
   .xinit[, list(map_value, x, y)]
