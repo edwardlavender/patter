@@ -49,3 +49,7 @@ The state must match the movement model (see \code{.move}):
 }
 }
 
+\section{\code{.yobs}}{
+TO DO. A \code{list} of datasets. Must have columns sensor_id etc. Copy text from assemble_*().
+}
+
