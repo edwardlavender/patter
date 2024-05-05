@@ -9,7 +9,7 @@
 \alias{call_timings}
 \title{Utilities: function call properties}
 \usage{
-call_time(.time, form = "\%Y-\%m-\%d \%H:\%M:\%S")
+call_time(.time, .form = "\%Y-\%m-\%d \%H:\%M:\%S")
 
 call_start(.fun = as.character(sys.call(-1L)), .start = Sys.time())
 

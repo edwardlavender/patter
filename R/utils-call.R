@@ -7,8 +7,8 @@
 #' @keywords internal
 
 # Format a time for cat()
-call_time <- function(.time, form = "%Y-%m-%d %H:%M:%S") {
-  format(.time, form)
+call_time <- function(.time, .form = "%Y-%m-%d %H:%M:%S") {
+  format(.time, .form)
 }
 
 #' @rdname call_
