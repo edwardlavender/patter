@@ -24,51 +24,26 @@ set_map <- function(x) {
 
 # Set the vector of initial states (`xinit`) in Julia
 # * This is required for `sim_path_walk()` and `pf_filter()`
-set_states_init <- function(.state = "StateXY",
-                            .map = NULL,
-                            .xinit = NULL,
-                            .n = 100L) {
-
-  #### If un-provided, sample `.xinit`
-  if (is.null(.xinit)) {
-
-    # Check user inputs
-    if (is.null(.map)) {
-      abort("`.map` is required if `.xinit` is NULL.")
-    }
-    if (!(.state %in% c("StateXY", "StateXYZD"))) {
-      abort("For custom states, you need to provide `.xinit`.")
-    }
-
-    # Define initial coordinates (x, y)
-    map_value <- x <- y <- z <- angle <- NULL
-    .xinit <-
-      .map |>
-      terra::spatSample(size = .n,
-                        method = "random",
-                        na.rm = TRUE,
-                        xy = TRUE,
-                        values = TRUE) |>
-      as.data.table()
-    colnames(.xinit) <- c("x", "y", "map_value")
-    .xinit <- .xinit[, list(map_value, x, y)]
-
-    # Define additional state dimensions (as required)
-    # * User defined State structures require specification of `.xinit` & a `Patter.julia_get_xinit()` method
-    if (.state == "StateXYZD") {
-      .xinit[, z := map_value * runif(.N)]
-      .xinit[, angle := runif(.N) * 2 * pi]
-    }
-
-    ### If provided, re-sample `.xinit` .`n` times (if required)
-  } else {
-    check_inherits(.xinit, "data.frame")
-    if (nrow(.xinit) != .n) {
-      .xinit <- .xinit[sample.int(.N, size = .n, replace = TRUE)]
-    }
-  }
-
-  #### Export `.xinit` to Julia
+# * `.xinit` = NULL: we create and export `.xinit`
+# * `.xinit` = data.frame: we resample (if required) & export
+set_states_init <- function(.map,
+                            .timeline,
+                            .datasets,
+                            .models,
+                            .pars,
+                            .state,
+                            .xinit,
+                            .n) {
+  # Simulate initial states
+  .xinit <- sim_states_init(.map = .map,
+                            .timeline = .timeline,
+                            .datasets = .datasets,
+                            .models = .models,
+                            .pars = .pars,
+                            .state = .state,
+                            .xinit = .xinit,
+                            .n = .n)
+  # Export initial states to Julia as `xinit`
   julia_assign("xinit_df", .xinit)
   julia_command(glue('xinit = Patter.julia_get_xinit({.state}, xinit_df);'))
   nothing()

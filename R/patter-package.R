@@ -9,6 +9,7 @@
 #' @importFrom collapse join
 #' @importFrom collapse fndistinct
 #' @importFrom collapse fnrow
+#' @importFrom collapse seq_row
 #'
 #' @importFrom data.table copy
 #' @importFrom data.table data.table

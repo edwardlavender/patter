@@ -102,7 +102,7 @@ sim_array <- function(.map,
 #' @description Simulate discrete-time animal movement paths from walk models (e.g., random walks, biased random walks, correlated random walks).
 #'
 #' @param .map A [`SpatRaster`] that defines the study area for the simulation (see [`glossary`]). Here, `.map` is used to:
-#' * Simulate initial states if `.xinit = NULL` (via [`set_states_init()`]);
+#' * Simulate initial states if `.xinit = NULL` (via [`sim_states_init()`]);
 #' * Extract `.map` coordinates for the simulated path(s);
 #' @param .timeline A `POSIXct` vector of regularly spaced time stamps that defines the timeline for the simulation. Here, `.timeline` is used to:
 #' * Define the number of time steps for the simulation;
@@ -110,8 +110,8 @@ sim_array <- function(.map,
 #' @param .state A `character` that defines the state type (see [`glossary`]).
 #' @param .xinit,.n_path Initial state arguments.
 #' * `.xinit` specifies the initial states for the simulation (one for each movement path).
-#'    - If `.xinit` is `NULL`, initial states are sampled from `.map`.
-#'    - If `.xinit` is a [`data.frame`] with one column for each state dimension.
+#'    - If `.xinit` is `NULL`, initial states are sampled from `.map` (via [`sim_states_init()`]).
+#'    - Otherwise, `.xinit` must be a [`data.table`] with one column for each state dimension.
 #' * `.n_path` is an `integer` that defines the number of paths to simulate.
 #' @param .move A character string that defines the movement model (see [`move`] and [`glossary`]).
 #' @param .plot,.one_page Plot options.
@@ -120,13 +120,13 @@ sim_array <- function(.map,
 #'
 #' @details
 #' This function simulates movement paths via `Patter.simulate_path_walk()`:
-#' * The internal function [`set_states_init()`] is used to set the initial state(s) for the simulation; that is, initial coordinates and other variables (one for each `.n_path`). If `.state` is one of the built-in options (see [`glossary`]), initial state(s) can be sampled from `.map`. Otherwise, a [`data.frame`] of initial states must be provided. Initial states provided in the [`data.frame`] are  re-sampled, with replacement, if required, such that there is one initial state for each simulated path. Initial states are assigned to an `xinit` object in Julia, which is a vector of `State`s.
+#' * The internal function [`sim_states_init()`] is used to set the initial state(s) for the simulation; that is, initial coordinates and other variables (one for each `.n_path`). If `.state` is one of the built-in options (see [`glossary`]), initial state(s) can be sampled from `.map`. Otherwise, additional methods or a [`data.table`] of initial states must be provided (see [`sim_states_init()`]). Initial states provided in `.xinit` are re-sampled, with replacement, if required, such that there is one initial state for each simulated path. Initial states are assigned to an `xinit` object in Julia, which is a vector of `State`s.
 #' * Using the initial states, the Julia function `Patter.simulate_path_walk()` simulates movement path(s) using the movement model.
 #' * Movement paths are passed back to `R` for convenient visualisation and analysis.
 #'
 #' To use a new `.state` and/or movement model type in [`sim_path_walk()`]:
 #' * Define a `State` subtype in `Julia` and provide the name as a `character` string to this function;
-#' * Define a [`data.frame`] of initial states and provide it to `.xinit`;
+#' * To initialise the simulation, write a [`states_init()`] method to enable automated sampling of initial states via [`sim_states_init()`] or provide a [`data.table`] of initial states to `.xinit`;
 #' * Define a corresponding `ModelMove` subtype in `Julia`;
 #' * Instantiate a `ModelMove` instance (that is, define a specific movement model) in `Julia`;
 #' * Write a `Patter.r_get_states()` method to translate the Vector of `State`s from `Patter.simulate_path_walk()` into a `DataFrame` that can be passed to `R`;
@@ -160,9 +160,14 @@ sim_path_walk <- function(.map,
   check_inherits(.move, "character")
 
   #### Set initial state
-  # * `.xinit` = NULL: we create and export .xinit
-  # * `.xinit` = data.frame: we resample (if required) & export
-  set_states_init(.state = .state, .xinit = .xinit, .map = .map, .n = .n_path)
+  set_states_init(.map = .map,
+                  .timeline = NULL,
+                  .datasets = NULL,
+                  .models = NULL,
+                  .pars = NULL,
+                  .state = .state,
+                  .xinit = .xinit,
+                  .n = .n_path)
 
   #### Set movement model
   set_timeline(.timeline)

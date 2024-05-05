@@ -18,7 +18,7 @@ sim_path_walk(
 \arguments{
 \item{.map}{A \code{\link{SpatRaster}} that defines the study area for the simulation (see \code{\link{glossary}}). Here, \code{.map} is used to:
 \itemize{
-\item Simulate initial states if \code{.xinit = NULL} (via \code{\link[=set_states_init]{set_states_init()}});
+\item Simulate initial states if \code{.xinit = NULL} (via \code{\link[=sim_states_init]{sim_states_init()}});
 \item Extract \code{.map} coordinates for the simulated path(s);
 }}
 
@@ -34,8 +34,8 @@ sim_path_walk(
 \itemize{
 \item \code{.xinit} specifies the initial states for the simulation (one for each movement path).
 \itemize{
-\item If \code{.xinit} is \code{NULL}, initial states are sampled from \code{.map}.
-\item If \code{.xinit} is a \code{\link{data.frame}} with one column for each state dimension.
+\item If \code{.xinit} is \code{NULL}, initial states are sampled from \code{.map} (via \code{\link[=sim_states_init]{sim_states_init()}}).
+\item Otherwise, \code{.xinit} must be a \code{\link{data.table}} with one column for each state dimension.
 }
 \item \code{.n_path} is an \code{integer} that defines the number of paths to simulate.
 }}
@@ -64,7 +64,7 @@ Simulate discrete-time animal movement paths from walk models (e.g., random walk
 \details{
 This function simulates movement paths via \code{Patter.simulate_path_walk()}:
 \itemize{
-\item The internal function \code{\link[=set_states_init]{set_states_init()}} is used to set the initial state(s) for the simulation; that is, initial coordinates and other variables (one for each \code{.n_path}). If \code{.state} is one of the built-in options (see \code{\link{glossary}}), initial state(s) can be sampled from \code{.map}. Otherwise, a \code{\link{data.frame}} of initial states must be provided. Initial states provided in the \code{\link{data.frame}} are  re-sampled, with replacement, if required, such that there is one initial state for each simulated path. Initial states are assigned to an \code{xinit} object in Julia, which is a vector of \code{State}s.
+\item The internal function \code{\link[=sim_states_init]{sim_states_init()}} is used to set the initial state(s) for the simulation; that is, initial coordinates and other variables (one for each \code{.n_path}). If \code{.state} is one of the built-in options (see \code{\link{glossary}}), initial state(s) can be sampled from \code{.map}. Otherwise, additional methods or a \code{\link{data.table}} of initial states must be provided (see \code{\link[=sim_states_init]{sim_states_init()}}). Initial states provided in \code{.xinit} are re-sampled, with replacement, if required, such that there is one initial state for each simulated path. Initial states are assigned to an \code{xinit} object in Julia, which is a vector of \code{State}s.
 \item Using the initial states, the Julia function \code{Patter.simulate_path_walk()} simulates movement path(s) using the movement model.
 \item Movement paths are passed back to \code{R} for convenient visualisation and analysis.
 }
@@ -72,7 +72,7 @@ This function simulates movement paths via \code{Patter.simulate_path_walk()}:
 To use a new \code{.state} and/or movement model type in \code{\link[=sim_path_walk]{sim_path_walk()}}:
 \itemize{
 \item Define a \code{State} subtype in \code{Julia} and provide the name as a \code{character} string to this function;
-\item Define a \code{\link{data.frame}} of initial states and provide it to \code{.xinit};
+\item To initialise the simulation, write a \code{\link[=states_init]{states_init()}} method to enable automated sampling of initial states via \code{\link[=sim_states_init]{sim_states_init()}} or provide a \code{\link{data.table}} of initial states to \code{.xinit};
 \item Define a corresponding \code{ModelMove} subtype in \code{Julia};
 \item Instantiate a \code{ModelMove} instance (that is, define a specific movement model) in \code{Julia};
 \item Write a \code{Patter.r_get_states()} method to translate the Vector of \code{State}s from \code{Patter.simulate_path_walk()} into a \code{DataFrame} that can be passed to \code{R};

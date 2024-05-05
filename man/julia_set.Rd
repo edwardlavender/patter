@@ -16,7 +16,7 @@
 \usage{
 set_map(x)
 
-set_states_init(.state = "StateXY", .map = NULL, .xinit = NULL, .n = 100L)
+set_states_init(.map, .timeline, .datasets, .models, .pars, .state, .xinit, .n)
 
 set_move(cmd)
 
