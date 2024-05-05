@@ -24,25 +24,7 @@ set_map <- function(x) {
 
 # Set the vector of initial states (`xinit`) in Julia
 # * This is required for `sim_path_walk()` and `pf_filter()`
-# * `.xinit` = NULL: we create and export `.xinit`
-# * `.xinit` = data.frame: we resample (if required) & export
-set_states_init <- function(.map,
-                            .timeline,
-                            .datasets,
-                            .models,
-                            .pars,
-                            .state,
-                            .xinit,
-                            .n) {
-  # Simulate initial states
-  .xinit <- sim_states_init(.map = .map,
-                            .timeline = .timeline,
-                            .datasets = .datasets,
-                            .models = .models,
-                            .pars = .pars,
-                            .state = .state,
-                            .xinit = .xinit,
-                            .n = .n)
+set_states_init <- function(.xinit) {
   # Export initial states to Julia as `xinit`
   julia_assign("xinit_df", .xinit)
   julia_command(glue('xinit = Patter.julia_get_xinit({.state}, xinit_df);'))

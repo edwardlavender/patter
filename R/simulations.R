@@ -160,14 +160,15 @@ sim_path_walk <- function(.map,
   check_inherits(.move, "character")
 
   #### Set initial state
-  set_states_init(.map = .map,
-                  .timeline = NULL,
-                  .datasets = NULL,
-                  .models = NULL,
-                  .pars = NULL,
-                  .state = .state,
-                  .xinit = .xinit,
-                  .n = .n_path)
+  .xinit <- sim_states_init(.map = .map,
+                            .timeline = NULL,
+                            .datasets = NULL,
+                            .models = NULL,
+                            .pars = NULL,
+                            .state = NULL,
+                            .xinit = .xinit,
+                            .n = .n_path)
+  set_states_init(.xinit = .xinit)
 
   #### Set movement model
   set_timeline(.timeline)
