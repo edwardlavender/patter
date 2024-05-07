@@ -84,6 +84,7 @@ sim_states_init <- function(.map,
   if (nrow(.xinit) != .n) {
     .xinit <- .xinit[sample.int(.N, size = .n, replace = TRUE), ]
   }
+  .xinit
 
 }
 
