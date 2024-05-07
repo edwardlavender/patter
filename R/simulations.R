@@ -165,7 +165,7 @@ sim_path_walk <- function(.map,
                             .datasets = NULL,
                             .models = NULL,
                             .pars = NULL,
-                            .state = NULL,
+                            .state = .state,
                             .xinit = .xinit,
                             .n = .n_path)
   set_states_init(.xinit = .xinit, .state = .state)
@@ -241,8 +241,8 @@ sim_observations <- function(.timeline, .models, .parameters) {
   set_parameters(.parameters)
   set_models(.models)
   set_yobs_via_sim()
-  out <- lapply(.models, function(model) {
-    julia_eval(glue("Patter.r_get_dataset(yobs, {model})"))
+  out <- lapply(.models, function(.model) {
+    julia_eval(glue("Patter.r_get_dataset(yobs, {.model})"))
   })
   names(out) <- .models
   out
