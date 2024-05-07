@@ -44,13 +44,7 @@ julia_connect <- function(...,
 
   #### Test Julia
   cat_log("... Validating Julia installation...")
-  two <- tryCatch(julia_eval("1 + 1"), error = function(e) e)
-  if (inherits(two, "error")) {
-    abort("Test julia_eval('1 + 1') failed: \n {two$message}", .envir = environment())
-  }
-  if (!isTRUE(all.equal(two, 2))) {
-    abort("Test julia_eval('1 + 1') returns {two}.", .envir = environment())
-  }
+  works <- julia_works(.action = abort)
 
   #### Generate Julia Project (if necessary)
   if (!dir.exists(JULIA_PROJ) && !file.exists(file.path(JULIA_PROJ, "Project.toml"))) {
@@ -69,7 +63,7 @@ julia_connect <- function(...,
 
   #### Install packages within Julia Project
   cat_log("... Validating dependencies...")
-  pkgs <- c("Patter", "Distributions", "GeoArrays")
+  pkgs <- c("Patter", "Distributions", "GeoArrays", "JLD2", "Random")
   lapply(pkgs, function(pkg) {
     # Check whether or not we need to install or update the package
     install <- ifelse(julia_installed_package(pkg) == "nothing", TRUE, FALSE)

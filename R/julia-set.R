@@ -6,6 +6,18 @@
 #' @rdname julia_set
 #' @keywords internal
 
+# Set a seed in R and Julia
+set_seed <- function(seed) {
+  set.seed(seed)
+  if (julia_works(.action = warn)) {
+    julia_command(glue('Random.seed!({seed});'))
+  }
+  invisible(seed)
+}
+
+#' @rdname julia_set
+#' @keywords internal
+
 # Set the map (`env`) in Julia
 # * `env` is the name used by move_*() functions
 set_map <- function(x) {
