@@ -1,3 +1,12 @@
+# Test if Julia works
+julia_works <- function(.action = abort) {
+  works <- isTRUE(try(julia_eval('true'), silent = TRUE))
+  if (isFALSE(works)) {
+    .action("Julia is not connected.")
+  }
+  works
+}
+
 # Glimpse an R object in Julia
 julia_glimpse <- function(x) {
   julia_assign("x", x)
@@ -15,6 +24,13 @@ julia_print <- function(x) {
 julia_summary <- function(x) {
   julia_command(glue('summary({x})'))
   nothing()
+}
+
+# Save an object from Julia
+julia_save <- function(x, file = x) {
+  file <- glue("{tools::file_path_sans_ext(file)}.jld2")
+  julia_command(glue('@save "{file}" {x};'))
+  tools::file_path_as_absolute(file)
 }
 
 # Format time stamps for julia
