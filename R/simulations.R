@@ -244,6 +244,7 @@ sim_observations <- function(.timeline, .models, .parameters) {
   out <- lapply(.models, function(.model) {
     julia_eval(glue("Patter.r_get_dataset(yobs, {.model})"))
   })
+  out <- lapply(out, \(l) lapply(l, \(d) as.data.table(d)))
   names(out) <- .models
   out
 }
