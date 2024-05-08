@@ -3,8 +3,9 @@
 #' @param .map A [`SpatRaster`] that defines the study area for the simulation (see [`glossary`]). Here, `.map` is used to:
 #' * Sample initial coordinates, via [`coords_init()`], if `.xinit = NULL`;
 #'
-#' @param .timeline,.datasets,.models,.pars (optional) Additional arguments used to restrict `.map`, via [`map_init()`], before sampling initial states;
-#' * `.timeline`---A `POSIXct` vector of regularly spaced time stamps that defines the timeline for the simulation;
+#' @param .timeline,.direction,.datasets,.models,.pars (optional) Additional arguments used to restrict `.map`, via [`map_init()`], before sampling initial states;
+#' * `.timeline`---A sorted, `POSIXct` vector of regularly spaced time stamps that defines the timeline for the simulation;
+#' * `.direction`---A `character` string that defines the direction of the simulation (`"forward"` or `"backward"`);
 #' * `.datasets`---A `list` of observation datasets;
 #' * `.models`---A `character` vector of `ModelObs` subtypes;
 #' * `.pars`---A named `list` of additional arguments, passed to [`map_init()`];
@@ -24,9 +25,9 @@
 #'
 #' The region(s) within `.map` from which initial coordinates are sampled can be optionally restricted by the provision of the observation datasets and the associated model subtypes (via [`map_init_iter()`]). This option does not apply to [`sim_path_walk()`] but is used in [`pf_filter()`] where `.models` is supplied. In this instance, [`map_init_iter()`] iterates over each model and uses the [`map_init()`] generic to update `.map`. The following methods are implemented:
 #' * [`map_init.default()`]. The default methods returns `.map` unchanged.
-#' * [`map_init.ModelObsAcousticLogisTrunc()`]. This method uses acoustic observations to restrict `.map` via Lavender et al.'s (2023) acoustic--container algorithm. The function identifies the receiver(s) that recorded detection(s) immediately before, at and following the first time step (`timeline[1]`). The 'container' within which the individual must be located from the perspective of each receiver is defined by the time difference and the individual's mobility (that is, the maximum moveable distance the individual could move between two time steps), which must be specified in `pars$mobility`. The intersection between all containers defines the possible locations of the individual at the first time step.
-#' * [`map_init.ModelObsDepthUniform()`]. This method uses the depth observations to restrict `.map` (which should represent the bathymetry in a region). The individual must be within a region in which the observed depth at `timeline[1]` is within a depth envelope around the bathymetric depth defined by the parameters `depth_shallow_eps` and `depth_deep_eps`. (If there is no observation at `timeline[1]`, `.map` is returned unchanged.)
-#' * [`map_init.ModelObsDepthNormalTrunc()`]. This method also uses depth observations to restrict `.map`. The individual must be in a location where the bathymetric depth plus the `depth_deep_eps` parameter at `timeline[1]` is greater than or equal to the observed depth at `timeline[1]`. (If there is no observation at `timeline[1]`, `.map` is returned unchanged.)
+#' * [`map_init.ModelObsAcousticLogisTrunc()`]. This method uses acoustic observations to restrict `.map` via Lavender et al.'s (2023) acoustic--container algorithm. The function identifies the receiver(s) that recorded detection(s) immediately before, at and following the first time step (`.timeline[start]`, where `start` is `1` if `.direction = "forward` and `length(.timeline)` otherwise). The 'container' within which the individual must be located from the perspective of each receiver is defined by the time difference and the individual's mobility (that is, the maximum moveable distance the individual could move between two time steps), which must be specified in `pars$mobility`. The intersection between all containers defines the possible locations of the individual at the first time step.
+#' * [`map_init.ModelObsDepthUniform()`]. This method uses the depth observations to restrict `.map` (which should represent the bathymetry in a region). The individual must be within a region in which the observed depth at `.timeline[start]` is within a depth envelope around the bathymetric depth defined by the parameters `depth_shallow_eps` and `depth_deep_eps`. (If there is no observation at `.timeline[start]`, `.map` is returned unchanged.)
+#' * [`map_init.ModelObsDepthNormalTrunc()`]. This method also uses depth observations to restrict `.map`. The individual must be in a location where the bathymetric depth plus the `depth_deep_eps` parameter at `.timeline[start]` is greater than or equal to the observed depth at `.timeline[start]`. (If there is no observation at `.timeline[start]`, `.map` is returned unchanged.)
 #'
 #' To handle custom `ModelObs` subtypes, process `.map` beforehand or write an appropriate [`map_init()`] method.
 #'
@@ -43,6 +44,7 @@
 # Simulate initial states (wrapper function)
 sim_states_init <- function(.map,
                             .timeline,
+                            .direction,
                             .datasets,
                             .models,
                             .pars,
@@ -59,6 +61,7 @@ sim_states_init <- function(.map,
     if (!is.null(.models)) {
       .map <- map_init_iter(.map = .map,
                             .timeline = .timeline,
+                            .direction = .direction,
                             .datasets = .datasets,
                             .models = .models,
                             .pars = .pars)
@@ -92,7 +95,7 @@ sim_states_init <- function(.map,
 #' @keywords internal
 
 # Define an initial map from which to sample datasets
-map_init <- function(.map, .timeline, .dataset, .model, .pars) {
+map_init <- function(.map, .timeline, .direction, .dataset, .model, .pars) {
   UseMethod("map_init", .model)
 }
 
@@ -100,7 +103,7 @@ map_init <- function(.map, .timeline, .dataset, .model, .pars) {
 #' @keywords internal
 
 # The default method (for unknown models) returns `.map`
-map_init.default <- function(.map, .timeline, .dataset, .model, .pars) {
+map_init.default <- function(.map, .timeline, .direction, .dataset, .model, .pars) {
   .map
 }
 
@@ -110,6 +113,7 @@ map_init.default <- function(.map, .timeline, .dataset, .model, .pars) {
 # For ModelObsAcousticLogisTrunc, we use the AC algorithm
 map_init.ModelObsAcousticLogisTrunc <- function(.map,
                                                 .timeline,
+                                                .direction,
                                                 .dataset,
                                                 .model,
                                                 .pars) {
@@ -126,7 +130,7 @@ map_init.ModelObsAcousticLogisTrunc <- function(.map,
 
   #### Define a list of container info
   # Define a timeline of detections
-  t1 <- .timeline[1]
+  t1 <- ifelse(.direction == "forward", .timeline[1], .timeline[length(.timeline)])
   step_units <- diffunit(.timeline)
   .dataset <-
     .dataset |>
@@ -151,7 +155,7 @@ map_init.ModelObsAcousticLogisTrunc <- function(.map,
   cinfo <- rbindlist(list(before, at, after))
   # Define distance from receiver:
   buffer <- NULL
-  cinfo[, buffer := receiver_gamma + gap * .pars$mobility]
+  cinfo[, buffer := receiver_gamma + abs(gap) * .pars$mobility]
 
   #### Define acoustic containers as SpatVectors
   # terra::plot(.map)
@@ -201,11 +205,12 @@ map_init.ModelObsAcousticLogisTrunc <- function(.map,
 # For ModelObsDepthUniform, we restrict .map use the depth observation
 map_init.ModelObsDepthUniform <- function(.map,
                                           .timeline,
+                                          .direction,
                                           .dataset,
                                           .model,
                                           .pars) {
   # Identify the first depth observation
-  t1    <- .timeline[1]
+  t1    <- ifelse(.direction == "forward", .timeline[1], .timeline[length(.timeline)])
   pos   <- which(.dataset$timestamp == t1)
   if (length(pos) == 0L) {
     return(.map)
@@ -226,11 +231,12 @@ map_init.ModelObsDepthUniform <- function(.map,
 # For ModelObsDepthNormalTrunc, we restrict .map use the depth observation
 map_init.ModelObsDepthNormalTrunc <- function(.map,
                                               .timeline,
+                                              .direction,
                                               .dataset,
                                               .model,
                                               .pars) {
   # Identify the first depth observation
-  t1    <- .timeline[1]
+  t1    <- ifelse(.direction == "forward", .timeline[1], .timeline[length(.timeline)])
   pos   <- which(.dataset$timestamp == t1)
   if (length(pos) == 0L) {
     return(.map)
@@ -252,6 +258,7 @@ map_init.ModelObsDepthNormalTrunc <- function(.map,
 # Iteratively update .map (according for each input dataset) using map_init methods
 map_init_iter <- function(.map,
                           .timeline,
+                          .direction,
                           .datasets,
                           .models,
                           .pars) {
@@ -259,8 +266,9 @@ map_init_iter <- function(.map,
   .model_classes <- chars_to_classes(.models)
   # Iteratively update map using the input datasets
   for (i in seq_len(length(.models))) {
-    .map <- map_init(.timeline = .timeline,
-                     .map = .map,
+    .map <- map_init(.map = .map,
+                     .timeline = .timeline,
+                     .direction = .direction,
                      .dataset = .datasets[[i]],
                      .model = .model_classes[[i]],
                      .pars = .pars)

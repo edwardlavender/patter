@@ -158,7 +158,7 @@ set_yobs_via_datasets <- function(.datasets, .models) {
 #' @keywords internal
 
 # Run the particle filter in Julia
-set_particles <- function(.n_move, .n_resample, .n_record) {
+set_particles <- function(.n_move, .n_resample, .n_record, .direction) {
   # Check inputs
   julia_check_exists("timeline", "xinit", "yobs", "move")
   .n_move     <- as.integer(.n_move)
@@ -174,7 +174,8 @@ set_particles <- function(.n_move, .n_resample, .n_record) {
                                   move = move,
                                   n_move = {.n_move},
                                   n_record = {.n_record},
-                                  n_resample = {.n_resample});
+                                  n_resample = {.n_resample},
+                                  direction = "{.direction}");
     '
     )
   )

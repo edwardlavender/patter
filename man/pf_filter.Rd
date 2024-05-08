@@ -17,6 +17,7 @@ pf_filter(
   .n_particle = 1000L,
   .n_resample = .n_record * 0.5,
   .n_record = 1000L,
+  .direction = c("forward", "backward"),
   .verbose = getOption("patter.verbose")
 )
 }
@@ -55,6 +56,12 @@ pf_filter(
 \item{.n_resample}{A \code{double} that defines the effective sample size at which to re-sample particles.}
 
 \item{.n_record}{An \code{integer} that defines the number of recorded particles at each time step.}
+
+\item{.direction}{A \code{character} string that defines the direction of the filter:
+\itemize{
+\item \code{"forward"} runs the filter from \code{.timeline[1]:.timeline[length(.timeline)]};
+\item \code{"backward"} runs the filter from \code{.timeline[length(.timeline)]:.timeline[1]}
+}}
 
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }

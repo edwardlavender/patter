@@ -18,6 +18,9 @@
 #' @param .n_particle An `integer` that defines the number of particles.
 #' @param .n_resample A `double` that defines the effective sample size at which to re-sample particles.
 #' @param .n_record An `integer` that defines the number of recorded particles at each time step.
+#' @param .direction A `character` string that defines the direction of the filter:
+#' * `"forward"` runs the filter from `.timeline[1]:.timeline[length(.timeline)]`;
+#' * `"backward"` runs the filter from `.timeline[length(.timeline)]:.timeline[1]`
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
 #' @details
@@ -72,6 +75,7 @@ pf_filter <- function(.map,
                       .n_particle = 1000L,
                       .n_resample = .n_record * 0.5,
                       .n_record = 1e3L,
+                      .direction = c("forward", "backward"),
                       .verbose = getOption("patter.verbose")) {
 
   #### Set up messages
@@ -84,12 +88,16 @@ pf_filter <- function(.map,
   cat_log(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Checking user inputs..."))
   check_inherits(.state, "character")
   check_inherits(.model_move, "character")
+  .direction <- match.arg(.direction)
 
   #### Set initial state
+  # TO DO
+  # * Add direction
   cat_log(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Setting initial states..."))
   set_timeline(.timeline)
   .xinit <- sim_states_init(.map = .map,
                             .timeline = .timeline,
+                            .direction = .direction,
                             .datasets = .yobs,
                             .models = .model_obs,
                             .pars = .xinit_pars,
@@ -105,7 +113,10 @@ pf_filter <- function(.map,
 
   #### Run filter
   cat_log(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Running filter..."))
-  set_particles(.n_move = .n_move, .n_resample = .n_resample, .n_record = .n_record)
+  set_particles(.n_move = .n_move,
+                .n_resample = .n_resample,
+                .n_record = .n_record,
+                .direction = .direction)
 
   #### Get particles in R
   # TO DO
@@ -113,11 +124,9 @@ pf_filter <- function(.map,
   # * Or remove inclusion of bathymetry data from sim_path_walk()
   cat_log(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Collating outputs..."))
   out <- julia_eval('Patter.r_get_particles(particles);')
+  timestep <- timestamp <- NULL
   out$diagnostics <-
     out$diagnostics |>
-    lazy_dt() |>
-    mutate(timestep = row_number()) |>
-    select("timestep", "timestamp",  everything()) |>
     as.data.table()
   out$states <-
     out$states |>

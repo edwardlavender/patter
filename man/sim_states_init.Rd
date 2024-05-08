@@ -15,19 +15,29 @@
 \alias{states_init.StateXYZD}
 \title{Simulation: initial states}
 \usage{
-sim_states_init(.map, .timeline, .datasets, .models, .pars, .state, .xinit, .n)
+sim_states_init(
+  .map,
+  .timeline,
+  .direction,
+  .datasets,
+  .models,
+  .pars,
+  .state,
+  .xinit,
+  .n
+)
 
-map_init(.map, .timeline, .dataset, .model, .pars)
+map_init(.map, .timeline, .direction, .dataset, .model, .pars)
 
-\method{map_init}{default}(.map, .timeline, .dataset, .model, .pars)
+\method{map_init}{default}(.map, .timeline, .direction, .dataset, .model, .pars)
 
-\method{map_init}{ModelObsAcousticLogisTrunc}(.map, .timeline, .dataset, .model, .pars)
+\method{map_init}{ModelObsAcousticLogisTrunc}(.map, .timeline, .direction, .dataset, .model, .pars)
 
-\method{map_init}{ModelObsDepthUniform}(.map, .timeline, .dataset, .model, .pars)
+\method{map_init}{ModelObsDepthUniform}(.map, .timeline, .direction, .dataset, .model, .pars)
 
-\method{map_init}{ModelObsDepthNormalTrunc}(.map, .timeline, .dataset, .model, .pars)
+\method{map_init}{ModelObsDepthNormalTrunc}(.map, .timeline, .direction, .dataset, .model, .pars)
 
-map_init_iter(.map, .timeline, .datasets, .models, .pars)
+map_init_iter(.map, .timeline, .direction, .datasets, .models, .pars)
 
 coords_init(.map, .n)
 
@@ -45,9 +55,10 @@ states_init(.state, .coords)
 \item Sample initial coordinates, via \code{\link[=coords_init]{coords_init()}}, if \code{.xinit = NULL};
 }}
 
-\item{.timeline, .datasets, .models, .pars}{(optional) Additional arguments used to restrict \code{.map}, via \code{\link[=map_init]{map_init()}}, before sampling initial states;
+\item{.timeline, .direction, .datasets, .models, .pars}{(optional) Additional arguments used to restrict \code{.map}, via \code{\link[=map_init]{map_init()}}, before sampling initial states;
 \itemize{
-\item \code{.timeline}---A \code{POSIXct} vector of regularly spaced time stamps that defines the timeline for the simulation;
+\item \code{.timeline}---A sorted, \code{POSIXct} vector of regularly spaced time stamps that defines the timeline for the simulation;
+\item \code{.direction}---A \code{character} string that defines the direction of the simulation (\code{"forward"} or \code{"backward"});
 \item \code{.datasets}---A \code{list} of observation datasets;
 \item \code{.models}---A \code{character} vector of \code{ModelObs} subtypes;
 \item \code{.pars}---A named \code{list} of additional arguments, passed to \code{\link[=map_init]{map_init()}};
@@ -77,9 +88,9 @@ If \code{.xinit = NULL}, initial coordinates are sampled from \code{.map}.
 The region(s) within \code{.map} from which initial coordinates are sampled can be optionally restricted by the provision of the observation datasets and the associated model subtypes (via \code{\link[=map_init_iter]{map_init_iter()}}). This option does not apply to \code{\link[=sim_path_walk]{sim_path_walk()}} but is used in \code{\link[=pf_filter]{pf_filter()}} where \code{.models} is supplied. In this instance, \code{\link[=map_init_iter]{map_init_iter()}} iterates over each model and uses the \code{\link[=map_init]{map_init()}} generic to update \code{.map}. The following methods are implemented:
 \itemize{
 \item \code{\link[=map_init.default]{map_init.default()}}. The default methods returns \code{.map} unchanged.
-\item \code{\link[=map_init.ModelObsAcousticLogisTrunc]{map_init.ModelObsAcousticLogisTrunc()}}. This method uses acoustic observations to restrict \code{.map} via Lavender et al.'s (2023) acoustic--container algorithm. The function identifies the receiver(s) that recorded detection(s) immediately before, at and following the first time step (\code{timeline[1]}). The 'container' within which the individual must be located from the perspective of each receiver is defined by the time difference and the individual's mobility (that is, the maximum moveable distance the individual could move between two time steps), which must be specified in \code{pars$mobility}. The intersection between all containers defines the possible locations of the individual at the first time step.
-\item \code{\link[=map_init.ModelObsDepthUniform]{map_init.ModelObsDepthUniform()}}. This method uses the depth observations to restrict \code{.map} (which should represent the bathymetry in a region). The individual must be within a region in which the observed depth at \code{timeline[1]} is within a depth envelope around the bathymetric depth defined by the parameters \code{depth_shallow_eps} and \code{depth_deep_eps}. (If there is no observation at \code{timeline[1]}, \code{.map} is returned unchanged.)
-\item \code{\link[=map_init.ModelObsDepthNormalTrunc]{map_init.ModelObsDepthNormalTrunc()}}. This method also uses depth observations to restrict \code{.map}. The individual must be in a location where the bathymetric depth plus the \code{depth_deep_eps} parameter at \code{timeline[1]} is greater than or equal to the observed depth at \code{timeline[1]}. (If there is no observation at \code{timeline[1]}, \code{.map} is returned unchanged.)
+\item \code{\link[=map_init.ModelObsAcousticLogisTrunc]{map_init.ModelObsAcousticLogisTrunc()}}. This method uses acoustic observations to restrict \code{.map} via Lavender et al.'s (2023) acoustic--container algorithm. The function identifies the receiver(s) that recorded detection(s) immediately before, at and following the first time step (\code{.timeline[start]}, where \code{start} is \code{1} if \verb{.direction = "forward} and \code{length(.timeline)} otherwise). The 'container' within which the individual must be located from the perspective of each receiver is defined by the time difference and the individual's mobility (that is, the maximum moveable distance the individual could move between two time steps), which must be specified in \code{pars$mobility}. The intersection between all containers defines the possible locations of the individual at the first time step.
+\item \code{\link[=map_init.ModelObsDepthUniform]{map_init.ModelObsDepthUniform()}}. This method uses the depth observations to restrict \code{.map} (which should represent the bathymetry in a region). The individual must be within a region in which the observed depth at \code{.timeline[start]} is within a depth envelope around the bathymetric depth defined by the parameters \code{depth_shallow_eps} and \code{depth_deep_eps}. (If there is no observation at \code{.timeline[start]}, \code{.map} is returned unchanged.)
+\item \code{\link[=map_init.ModelObsDepthNormalTrunc]{map_init.ModelObsDepthNormalTrunc()}}. This method also uses depth observations to restrict \code{.map}. The individual must be in a location where the bathymetric depth plus the \code{depth_deep_eps} parameter at \code{.timeline[start]} is greater than or equal to the observed depth at \code{.timeline[start]}. (If there is no observation at \code{.timeline[start]}, \code{.map} is returned unchanged.)
 }
 
 To handle custom \code{ModelObs} subtypes, process \code{.map} beforehand or write an appropriate \code{\link[=map_init]{map_init()}} method.

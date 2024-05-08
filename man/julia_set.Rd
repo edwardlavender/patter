@@ -2,6 +2,7 @@
 % Please edit documentation in R/julia-set.R
 \name{julia_set}
 \alias{julia_set}
+\alias{set_seed}
 \alias{set_map}
 \alias{set_states_init}
 \alias{set_move}
@@ -16,6 +17,8 @@
 \alias{set_particles}
 \title{Julia: set objects in Julia}
 \usage{
+set_seed(seed)
+
 set_map(x)
 
 set_states_init(.xinit, .state)
@@ -38,7 +41,7 @@ set_datasets(.datasets)
 
 set_yobs_via_datasets(.datasets, .models)
 
-set_particles(.n_move, .n_resample, .n_record)
+set_particles(.n_move, .n_resample, .n_record, .direction)
 }
 \description{
 These are internal functions that assign objects to variable names in Julia.
