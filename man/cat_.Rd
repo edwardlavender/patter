@@ -2,20 +2,25 @@
 % Please edit documentation in R/utils-cat.R
 \name{cat_}
 \alias{cat_}
-\alias{cat_log_file}
+\alias{cat_setup}
 \alias{cat_init}
+\alias{cat_log_file}
 \title{Utilities: \verb{cat_*()} functions}
 \usage{
-cat_log_file(.verbose)
+cat_setup(.fun, .verbose)
 
 cat_init(.verbose)
+
+cat_log_file(.verbose)
 }
 \arguments{
+\item{.fun}{A \code{character} string that defines the name of the parent function.}
+
 \item{.verbose}{A \code{logical} variable or a \code{string} that defines the path to a text file.
 \itemize{
 \item \code{.verbose = FALSE} suppresses user outputs;
 \item \code{.verbose = TRUE} sends user outputs to the console;
-\item \code{.verbose = file.path("path/to/text/file.txt")} sends user outputs to a \code{.txt} file;
+\item \code{.verbose = file.path("path", "to", "text", "file.txt")} sends user outputs to a \code{.txt} file;
 }}
 }
 \description{
@@ -24,17 +29,22 @@ cat_init(.verbose)
 \details{
 These are internal functions.
 \itemize{
+\item \code{\link[=cat_setup]{cat_setup()}} sets up messages within functions;
+\item \code{\link[=cat_init]{cat_init()}} defines a \code{\link[=cat]{cat()}} wrapper based on \code{.verbose};
 \item \code{\link[=cat_log_file]{cat_log_file()}} validates \code{.verbose} and, if necessary, creates the \code{.txt} file;
-\item \code{\link[=cat_init]{cat_init()}} wraps \code{\link[=cat_log_file]{cat_log_file()}} and defines an appropriate \code{\link[=cat]{cat()}} wrapper for use in \code{\link{patter}} function(s) according to the input to \code{.verbose};
 }
 }
 \examples{
 \dontrun{
+
 # Define example function
-wrap <- function(.verbose) {
-  cat_log <- cat_init(.verbose)
-  cat_log("Hello world")
-  invisible(NULL)
+wrap <- function(.verbose = getOption("Patter.verbose")) {
+  # Set up messages and exit handler
+  cats <- cat_setup(.fun = "wrap", .verbose = .verbose)
+  on.exit(eval(cats$exit, envir = cats$envir), add = TRUE)
+  # Run function
+  cats$cat("Running function...")
+  Sys.sleep(1)
 }
 
 # `.verbose = TRUE` sends user output to the console
