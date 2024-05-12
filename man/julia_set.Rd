@@ -20,13 +20,13 @@
 \usage{
 set_threads(.threads)
 
-set_seed(seed)
+set_seed(.seed)
 
-set_map(x)
+set_map(.x)
 
 set_states_init(.xinit, .state)
 
-set_move(cmd)
+set_move(.cmd)
 
 set_timeline(.timeline)
 

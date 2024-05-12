@@ -21,12 +21,12 @@ set_threads <- function(.threads) {
 #' @keywords internal
 
 # Set a seed in R and Julia
-set_seed <- function(seed) {
-  set.seed(seed)
+set_seed <- function(.seed) {
+  set.seed(.seed)
   if (julia_works(.action = warn)) {
-    julia_command(glue('Random.seed!({seed});'))
+    julia_command(glue('Random.seed!({.seed});'))
   }
-  invisible(seed)
+  nothing()
 }
 
 #' @rdname julia_set
@@ -34,12 +34,12 @@ set_seed <- function(seed) {
 
 # Set the map (`env`) in Julia
 # * `env` is the name used by move_*() functions
-set_map <- function(x) {
-  stopifnot(inherits(x, "SpatRaster"))
-  file <- terra::sources(x)
+set_map <- function(.x) {
+  stopifnot(inherits(.x, "SpatRaster"))
+  file <- terra::sources(.x)
   if (file == "") {
     file <- tempfile(fileext = ".tif")
-    terra::writeRaster(x, file)
+    terra::writeRaster(.x, file)
   }
   julia_command(glue('env = GeoArrays.read("{file}");'))
   nothing()
@@ -61,8 +61,8 @@ set_states_init <- function(.xinit, .state) {
 #' @keywords internal
 
 # Set a movement model (`move`) in Julia
-set_move <- function(cmd) {
-  julia_command(glue('move = {cmd};'))
+set_move <- function(.cmd) {
+  julia_command(glue('move = {.cmd};'))
   nothing()
 }
 
