@@ -26,43 +26,58 @@ assemble_archival(.timeline, .archival)
 \item Define the resolution of observations;
 }}
 
-\item{.acoustics}{For \code{\link[=assemble_acoustics]{assemble_acoustics()}}, \code{.acoustics} is a \link{data.table} of acoustic detections \strong{for a single individual}.}
+\item{.acoustics}{For \code{\link[=assemble_acoustics]{assemble_acoustics()}}, \code{.acoustics} is a \link{data.table} of acoustic detections \strong{for a single individual}. This must contain the \code{receiver_id} and \code{timestamp} columns.}
 
-\item{.moorings}{For \code{\link[=assemble_acoustics]{assemble_acoustics()}}, \code{.moorings} is a \code{\link{data.table}} of acoustic moorings.}
+\item{.moorings}{For \code{\link[=assemble_acoustics]{assemble_acoustics()}}, \code{.moorings} is a \code{\link{data.table}} of acoustic moorings. This must contain the \code{receiver_id}, \code{receiver_start}, and \code{receiver_end} columns, plus additional parameter columns.}
 
-\item{.archival}{For \code{\link[=assemble_archival]{assemble_archival()}}, \code{.archival} is a \code{\link{data.table}} of archival observations (such as depth measurements) \strong{for a single individual}.}
+\item{.archival}{For \code{\link[=assemble_archival]{assemble_archival()}}, \code{.archival} is a \code{\link{data.table}} of archival observations (such as depth measurements) \strong{for a single individual}. This must contain \code{timestamp} and \code{obs} columns plus additional parameter columns.}
 }
 \description{
-These functions assembles a timeline and observations for the particle filter.
+These functions assemble a timeline and observations for the particle filter (\code{\link[=pf_filter]{pf_filter()}}).
 }
 \details{
-\code{\link[=assemble_timeline]{assemble_timeline()}} is a simple function that defines a regular timeline, of resolution \code{.step}, from a \code{list} of input datasets. If \code{.trim = FALSE}, this defines a sequence of regular time stamps across the full range of time stamps in the input datasets. If \code{.trim = TRUE}, the timeline is trimmed to the overlapping period between datasets.
+\code{\link[=assemble_timeline]{assemble_timeline()}} is a simple function that defines a regular timeline, of resolution \code{.step}, from a \code{list} of input datasets.
+\itemize{
+\item If \code{.trim = FALSE}, this defines a sequence of regular time stamps across the full range of time stamps in the input datasets.
+\item If \code{.trim = TRUE}, the timeline is trimmed to the overlapping period between datasets.
+}
 
 \code{\link[=assemble_acoustics]{assemble_acoustics()}} and \code{\link[=assemble_archival]{assemble_archival()}} prepare timelines of acoustic and archival observations as required for the particle filter (\code{\link[=pf_filter]{pf_filter()}}). The filter expects a \code{list} of datasets (one for each data type). Each dataset must contain the following columns:
 \itemize{
 \item \code{timestamp}---a \code{POSIXct} vector of time stamps;
-\item \code{sensor_id}---a vector of sensor IDs, such as receivers;
+\item \code{sensor_id}---an \code{integer} vector of sensor IDs, such as receivers;
 \item \code{obs}---a vector of observations;
-\item Additional columns that define the parameters of the observation model, \strong{in the same order as required by the \code{ModelObs} structure};
+\item Additional columns that define the parameters of the observation model, as defined by a \code{\link{ModelObs}} structure;
 }
 
 No other columns should be included.
 \itemize{
-\item \code{\link[=assemble_acoustics]{assemble_acoustics()}} prepares a timeline of acoustic observations, as required by the filter. This function expects a 'standard' acoustic dataset (that is, a \code{\link{data.table}} like \code{\link{dat_acoustics}}) that defines detections at receivers alongside a moorings dataset (like \code{\link{dat_moorings}}) that defines receiver deployment periods. \code{\link[=assemble_acoustics]{assemble_acoustics()}} uses these datasets to assemble a complete time series of acoustic observations; that is, a \code{\link{data.table}} of time stamps and receivers that defines, for each time step and each operational receiver whether (\code{1L}) or not (\code{0L}) a detection was recorded at that time step. Duplicate observations (that is, detections at the same receiver in the same time step, are dropped.) If available in \code{.moorings}, additional columns (\code{receiver_alpha}, \code{receiver_beta} and \code{receiver_gamma}) are included as required for the default acoustic observation model (that is, \code{ModelObsAcousticLogisTrunc}). If observation model parameters vary both by receiver and through time, simply amend these columns as required.
-\item \code{\link[=assemble_archival]{assemble_archival()}} prepares a timeline of archival observations (such as depth measurements), as required by the filter. This function expects a \code{\link{data.table}} that includes, at a minimum, the \code{timestamp} and \code{obs} columns. For archival data, the \code{sensor_id} column (if unspecified) is simply set to \code{1L}. The function re-expresses time stamps at the resolution specified by \code{timeline}. Duplicate observations (that is, multiple measurements in the same time step) throw a \code{\link{warning}}.
+\item \code{\link[=assemble_acoustics]{assemble_acoustics()}} prepares a timeline of acoustic observations, as required by the filter. This function expects a 'standard' acoustic dataset (that is, a \code{\link{data.table}} like \code{\link{dat_acoustics}}) that defines detections at receivers alongside a moorings dataset (like \code{\link{dat_moorings}}) that defines receiver deployment periods. \code{\link[=assemble_acoustics]{assemble_acoustics()}} uses these datasets to assemble a complete time series of acoustic observations; that is, a \code{\link{data.table}} of time stamps and receivers that defines, for each time step and each operational receiver whether (\code{1L}) or not (\code{0L}) a detection was recorded at that time step. Duplicate observations (that is, detections at the same receiver in the same time step, are dropped.) If available in \code{.moorings}, additional columns (\code{receiver_alpha}, \code{receiver_beta} and \code{receiver_gamma}) are included as required for the default acoustic observation model (that is, \code{\link{ModelObsAcousticLogisTrunc}}). If observation model parameters vary both by receiver and through time, simply amend these columns as required.
+\item \code{\link[=assemble_archival]{assemble_archival()}} prepares a timeline of archival observations (such as depth measurements), as required by the filter. This function expects a \code{\link{data.table}} that includes, at a minimum, the \code{timestamp} and \code{obs} columns. The latter defines the observations. For archival data, the \code{sensor_id} column (if unspecified) is simply set to \code{1L}. The function re-expresses time stamps at the resolution specified by \code{timeline}. Duplicate observations (that is, multiple measurements in the same time step) throw a \code{\link{warning}}.
 }
 
 Additional datasets are easy to incorporate into the particle filter but require manual preparation in the format described above. Observations can be recorded irregularly or regularly through time but must be expressed at the temporal resolution defined by the timeline.
 
-In \code{Julia}, datasets are translated into a hash-table (\code{Dict}) of observations. For each time stamp with an observation, this includes a \code{Vector} of \code{Tuple}s, each containing the observation and associated \code{ModelObs} instance that defines the parameters of the observation model. The particle filter (\code{Patter.particle_filter()}) iterates over each time step in the timeline, uses a movement model to simulate animal movement and, for the time stamps with observations, evaluates the likelihood of those observations for the simulated locations (particles).
+In \code{Julia}, datasets are translated into a hash-table (\code{Dict}) of observations (via \href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.assemble_yobs()}}). For each time stamp with an observation, this includes a \code{Vector} of \code{Tuple}s, each containing the observation and the associated \code{\link{ModelObs}} instance that defines the parameters of the observation model. The particle filter (\href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.particle_filter()}}) iterates over each time step in the timeline, uses a movement model to simulate animal movement and, for the time stamps with observations, evaluates the likelihood of those observations for the simulated locations (particles).
 
-These routines are only required for real-world analyses. (In \emph{de novo} simulations, the hash-table of observations is defined in \code{Julia} by \code{simulate_obs()}.)
+\verb{assemble_*()} routines are only required for real-world analyses.
 }
 \examples{
 
 }
 \seealso{
-TO DO
+Particle filters and smoothers sample states (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
+\itemize{
+\item To assemble real-world datasets for the filter, see \code{\link{assemble}}\verb{_*()} functions.
+\item \code{\link[=pf_filter]{pf_filter()}} runs the filter:
+\itemize{
+\item For state types, see \code{\link{State}};
+\item For observation models, see \code{\link{ModelObs}};
+\item For movement models, see \code{\link{ModelMove}};
+}
+\item To run particle smoothing, use \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}}.
+\item To map emergent patterns of space use, use a \verb{map_*()} function.
+}
 }
 \author{
 Edward Lavender

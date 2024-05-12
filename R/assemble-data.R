@@ -1,38 +1,49 @@
 #' @title Assemble observations
-#' @description These functions assembles a timeline and observations for the particle filter.
+#' @description These functions assemble a timeline and observations for the particle filter ([`pf_filter()`]).
 #' @param .datasets,.step,.trim Arguments for [`assemble_timeline()`].
 #' * `.datasets`---A `list` of [`data.table`]s, one for each data type, each containing a `timestamp` column;
 #' * `.step`---A `character` (such as `"2 mins"`), passed to [`lubridate::round_date()`] and [`seq.POSIXt()`], that defines the resolution of the timeline;
 #' * `.trim`---A `logical` variable that defines whether or not to trim the timeline to the overlapping period between datasets;
 #' @param .timeline A `POSIXct` vector of regularly spaced time stamps that defines the timeline for the simulation. Here, `timeline` is used to:
 #' * Define the resolution of observations;
-#' @param .acoustics For [`assemble_acoustics()`], `.acoustics` is a [data.table] of acoustic detections **for a single individual**.
-#' @param .moorings For [`assemble_acoustics()`], `.moorings` is a [`data.table`] of acoustic moorings.
-#' @param .archival For [`assemble_archival()`], `.archival` is a [`data.table`] of archival observations (such as depth measurements) **for a single individual**.
+#' @param .acoustics For [`assemble_acoustics()`], `.acoustics` is a [data.table] of acoustic detections **for a single individual**. This must contain the `receiver_id` and `timestamp` columns.
+#'
+#' @param .moorings For [`assemble_acoustics()`], `.moorings` is a [`data.table`] of acoustic moorings. This must contain the `receiver_id`, `receiver_start`, and `receiver_end` columns, plus additional parameter columns.
+#'
+#' @param .archival For [`assemble_archival()`], `.archival` is a [`data.table`] of archival observations (such as depth measurements) **for a single individual**. This must contain `timestamp` and `obs` columns plus additional parameter columns.
 #'
 #' @details
-#' [`assemble_timeline()`] is a simple function that defines a regular timeline, of resolution `.step`, from a `list` of input datasets. If `.trim = FALSE`, this defines a sequence of regular time stamps across the full range of time stamps in the input datasets. If `.trim = TRUE`, the timeline is trimmed to the overlapping period between datasets.
+#' [`assemble_timeline()`] is a simple function that defines a regular timeline, of resolution `.step`, from a `list` of input datasets.
+#' * If `.trim = FALSE`, this defines a sequence of regular time stamps across the full range of time stamps in the input datasets.
+#' * If `.trim = TRUE`, the timeline is trimmed to the overlapping period between datasets.
 #'
 #'  [`assemble_acoustics()`] and [`assemble_archival()`] prepare timelines of acoustic and archival observations as required for the particle filter ([`pf_filter()`]). The filter expects a `list` of datasets (one for each data type). Each dataset must contain the following columns:
 #' * `timestamp`---a `POSIXct` vector of time stamps;
-#' * `sensor_id`---a vector of sensor IDs, such as receivers;
+#' * `sensor_id`---an `integer` vector of sensor IDs, such as receivers;
 #' * `obs`---a vector of observations;
-#' * Additional columns that define the parameters of the observation model, **in the same order as required by the `ModelObs` structure**;
+#' * Additional columns that define the parameters of the observation model, as defined by a [`ModelObs`] structure;
 #'
 #' No other columns should be included.
 #'
-#' * [`assemble_acoustics()`] prepares a timeline of acoustic observations, as required by the filter. This function expects a 'standard' acoustic dataset (that is, a [`data.table`] like [`dat_acoustics`]) that defines detections at receivers alongside a moorings dataset (like [`dat_moorings`]) that defines receiver deployment periods. [`assemble_acoustics()`] uses these datasets to assemble a complete time series of acoustic observations; that is, a [`data.table`] of time stamps and receivers that defines, for each time step and each operational receiver whether (`1L`) or not (`0L`) a detection was recorded at that time step. Duplicate observations (that is, detections at the same receiver in the same time step, are dropped.) If available in `.moorings`, additional columns (`receiver_alpha`, `receiver_beta` and `receiver_gamma`) are included as required for the default acoustic observation model (that is, `ModelObsAcousticLogisTrunc`). If observation model parameters vary both by receiver and through time, simply amend these columns as required.
+#' * [`assemble_acoustics()`] prepares a timeline of acoustic observations, as required by the filter. This function expects a 'standard' acoustic dataset (that is, a [`data.table`] like [`dat_acoustics`]) that defines detections at receivers alongside a moorings dataset (like [`dat_moorings`]) that defines receiver deployment periods. [`assemble_acoustics()`] uses these datasets to assemble a complete time series of acoustic observations; that is, a [`data.table`] of time stamps and receivers that defines, for each time step and each operational receiver whether (`1L`) or not (`0L`) a detection was recorded at that time step. Duplicate observations (that is, detections at the same receiver in the same time step, are dropped.) If available in `.moorings`, additional columns (`receiver_alpha`, `receiver_beta` and `receiver_gamma`) are included as required for the default acoustic observation model (that is, [`ModelObsAcousticLogisTrunc`]). If observation model parameters vary both by receiver and through time, simply amend these columns as required.
 #'
-#' * [`assemble_archival()`] prepares a timeline of archival observations (such as depth measurements), as required by the filter. This function expects a [`data.table`] that includes, at a minimum, the `timestamp` and `obs` columns. For archival data, the `sensor_id` column (if unspecified) is simply set to `1L`. The function re-expresses time stamps at the resolution specified by `timeline`. Duplicate observations (that is, multiple measurements in the same time step) throw a [`warning`].
+#' * [`assemble_archival()`] prepares a timeline of archival observations (such as depth measurements), as required by the filter. This function expects a [`data.table`] that includes, at a minimum, the `timestamp` and `obs` columns. The latter defines the observations. For archival data, the `sensor_id` column (if unspecified) is simply set to `1L`. The function re-expresses time stamps at the resolution specified by `timeline`. Duplicate observations (that is, multiple measurements in the same time step) throw a [`warning`].
 #'
 #' Additional datasets are easy to incorporate into the particle filter but require manual preparation in the format described above. Observations can be recorded irregularly or regularly through time but must be expressed at the temporal resolution defined by the timeline.
 #'
-#' In `Julia`, datasets are translated into a hash-table (`Dict`) of observations. For each time stamp with an observation, this includes a `Vector` of `Tuple`s, each containing the observation and associated `ModelObs` instance that defines the parameters of the observation model. The particle filter (`Patter.particle_filter()`) iterates over each time step in the timeline, uses a movement model to simulate animal movement and, for the time stamps with observations, evaluates the likelihood of those observations for the simulated locations (particles).
+#' In `Julia`, datasets are translated into a hash-table (`Dict`) of observations (via [`Patter.assemble_yobs()`](https://edwardlavender.github.io/Patter.jl/)). For each time stamp with an observation, this includes a `Vector` of `Tuple`s, each containing the observation and the associated [`ModelObs`] instance that defines the parameters of the observation model. The particle filter ([`Patter.particle_filter()`](https://edwardlavender.github.io/Patter.jl/)) iterates over each time step in the timeline, uses a movement model to simulate animal movement and, for the time stamps with observations, evaluates the likelihood of those observations for the simulated locations (particles).
 #'
-#' These routines are only required for real-world analyses. (In _de novo_ simulations, the hash-table of observations is defined in `Julia` by `simulate_obs()`.)
+#' `assemble_*()` routines are only required for real-world analyses.
 #'
 #' @example man/example/example-assemble-data.R
-#' @seealso TO DO
+#' @seealso Particle filters and smoothers sample states (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
+#' * To assemble real-world datasets for the filter, see [`assemble`]`_*()` functions.
+#' * [`pf_filter()`] runs the filter:
+#'    * For state types, see [`State`];
+#'    * For observation models, see [`ModelObs`];
+#'    * For movement models, see [`ModelMove`];
+#' * To run particle smoothing, use [`pf_smoother_two_filter()`].
+#' * To map emergent patterns of space use, use a `map_*()` function.
 #' @author Edward Lavender
 #' @name assemble
 
