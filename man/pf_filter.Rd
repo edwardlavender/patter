@@ -22,7 +22,7 @@ pf_filter(
 )
 }
 \arguments{
-\item{.map}{A \code{\link{SpatRaster}} that defines the study area for the simulation (see \code{\link{glossary}}). Here, \code{.map} is used to:
+\item{.map}{A \code{\link{SpatRaster}} that defines the study area for the simulation. Here, \code{.map} is used to:
 \itemize{
 \item Simulate initial states if \code{.xinit = NULL} (via \code{\link[=sim_states_init]{sim_states_init()}});
 }}
@@ -34,21 +34,27 @@ pf_filter(
 
 \item{.state, .xinit, .xinit_pars}{Arguments used to simulate initial states (see \code{\link[=sim_states_init]{sim_states_init()}}).
 \itemize{
-\item \code{.state}---A \code{character} that defines the state type (see \code{\link{glossary}});
+\item \code{.state}---A \code{character} that defines the \code{\link{State}} subtype;
 \item \code{.xinit}---\code{NULL} or a \code{\link{data.table}} that defines the initial states for the simulation;
-\item \code{.xinit_pars}---A named \code{list} of parameters passed to \code{\link[=sim_states_init]{sim_states_init()}};
+\item \code{.xinit_pars}---A named \code{list} of parameters passed to the \code{.pars} argument of \code{\link[=sim_states_init]{sim_states_init()}};
 }}
 
 \item{.yobs, .model_obs}{Observations and observation models.
 \itemize{
-\item \code{.yobs} is a \code{list} of formatted datasets, one for each data type (see \code{\link{glossary}}).
-\item \code{.model_obs} is a named \code{list} of \code{ModelObs} subtypes, one for each dataset in \code{yobs} (see \code{\link{glossary}}).
+\item \code{.yobs} is a \code{list} of formatted datasets, one for each data type. Each element must be a \code{\link{data.table}} with the following columns:
+\itemize{
+\item \code{timestamp}---A \code{POSIXct} vector of time stamps;
+\item \code{sensor_id}---A vector of 'sensor' IDs (such as receiver IDs);
+\item \code{obs}---A vector of observations, as recorded by the sensor(s) at the corresponding time stamp;
+\item Additional columns containing the parameters of the associated observation model instance (i.e., \code{.model_obs});
+}
+\item \code{.model_obs} is a \code{character} vector of \code{\link{ModelObs}} subtypes, one for each dataset in \code{yobs};
 }}
 
 \item{.model_move, .n_move}{The movement model.
 \itemize{
-\item \code{.model_move}---A \code{character} string that defines the movement model (see \code{\link{ModelMove}} and \code{\link{glossary}}).
-\item \code{.n_move}---An \code{integer} that defines the number of attempts to find a legal move.
+\item \code{.model_move}---A \code{character} string that defines the movement model (see \code{\link{ModelMove}});
+\item \code{.n_move}---An \code{integer} that defines the number of attempts to find a legal move;
 }}
 
 \item{.n_particle}{An \code{integer} that defines the number of particles.}
@@ -65,6 +71,9 @@ pf_filter(
 
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }
+\value{
+The function returns a \code{\linkS4class{pf_particles}} object.
+}
 \description{
 This function runs the particle filter. The filter samples possible states (typically locations, termed particles) of an animal at each time point given the data up to (and including) that time point and a movement model.
 }
@@ -79,28 +88,12 @@ At subsequent time steps, the filter comprises three stages:
 \item A weights step, in which we calculate particle weights from the log-likelihood of the data at each particle.
 \item A re-sampling step, in which we optionally re-sample valid states using the weights.
 }
-}
 
-\section{\code{Julia} back-end}{
-The filter is implemented by the \code{Julia} function \code{Patter.particle_filter()}. The algorithm is initiated using a \code{Vector} of \code{.n_particle} \code{State}s, defined from \code{.xinit} that is used to initiate the filter. For every time step in the \code{timeline}, the internal function \code{Patter.simulate_move()} simulates the movement of particles from previous states into new states using the movement model specified by \code{.model_move}, which defines a \code{ModelObs} instance in \code{Julia}. \code{Patter.simulate_move()} is an iterative wrapper for a \code{Patter.simulate_step()} method that simulates a new state using the previous state and the movement model. \code{Patter.simulate_move()} implements \code{Patter.simulate_step()} iteratively until a legal move is found (or \code{.n_move} is reached). Illegal moves are those that land in \code{NaN} locations on the map or, in the case of states that include a depth (\code{z}) component, are below the depth of the seabed. Particles that fail to generate illegal moves are eventually killed by re-sampling (see below).
-
-For each valid state, the log-probability of the data given that state is evaluated via \code{Patter.logpdf_obs()}. The maximum log-probability across all particles is recorded at each time step as an algorithm diagnostic.
-
-To multi-thread movement and likelihood evaluations, set the number of threads via \code{\link[=julia_connect]{julia_connect()}}.
-
-To implement custom movement and observation models subtypes, see the advanced vignette (TO DO).
-
-Particles are periodically re-sampled, with replacement, using the low-variance systematic re-sampling algorithm, when the effective sample size is less than or equal to \code{.n_resample}. This has the effect of eliminating impossible particles and duplicating likely ones.
-
-The algorithm continues in this way, iterating over the \code{timeline}, simulating, weighting and (re)sampling particles. At each time step, \code{.n_record} particles are saved in memory. If the function fails to converge, a \code{\link{warning}} is returned alongside the outputs up to that time step. Otherwise, the function will continue to the end of the time series.
+The filter is implemented by the \code{Julia} function \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.particle_filter()}}. To multi-thread movement and likelihood evaluations, set the number of threads via \code{\link[=julia_connect]{julia_connect()}}. To implement custom movement and observation models subtypes, see the advanced vignette (TO DO). Use \code{JuliaCall::julia_help("particle_filter")} for further information.
 }
 
 \section{Algorithms}{
 This is highly flexible routine for the reconstruction of the possible locations of an individual through time, given the data up to that time point. By modifying the observation models, it is straightforward to implement the ACPF, DCPF and ACDCPF algorithms introduced by Lavender et al. (2023) for reconstructing movements using (a) acoustic time series, (b) archival time series and (c) acoustic and archival time series. \code{\link[=pf_filter]{pf_filter()}} thus replaces (and enhances) the \href{https://edwardlavender.github.io/flapper/reference/ac.html}{\code{flapper::ac()}}, \href{https://edwardlavender.github.io/flapper/reference/dc.html}{\code{flapper::dc()}}, \href{https://edwardlavender.github.io/flapper/reference/acdc.html}{\code{flapper::acdc()}} and \href{https://edwardlavender.github.io/flapper/reference/pf.html}{\code{flapper::pf()}} functions.
-}
-
-\section{Convergence and diagnostics}{
-Algorithm convergence is not guaranteed. The algorithm may reach a dead-end---a time step at which there are no valid locations into which the algorithm can step. This may be due to data errors, incorrect assumptions, insufficient sampling effort or poor tuning-parameter settings
 }
 
 \author{
