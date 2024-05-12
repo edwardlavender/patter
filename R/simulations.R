@@ -162,6 +162,7 @@ sim_path_walk <- function(.map,
   #### Set initial state
   .xinit <- sim_states_init(.map = .map,
                             .timeline = NULL,
+                            .direction = "forward",
                             .datasets = NULL,
                             .models = NULL,
                             .pars = NULL,
