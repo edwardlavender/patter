@@ -29,40 +29,38 @@ julia_connect <- function(...,
                           .verbose = getOption("patter.verbose")) {
 
   #### Set up messages
-  t_onset <- Sys.time()
-  cat_log <- cat_init(.verbose = .verbose)
-  cat_log(call_start(.fun = "pf_filter", .start = t_onset))
-  on.exit(cat_log(call_end(.fun = "pf_filter", .start = t_onset, .end = Sys.time())), add = TRUE)
+  cats <- cat_setup(.fun = "julia_connect", .verbose = .verbose)
+  on.exit(eval(cats$exit_expr, envir = cats$exit_envir), add = TRUE)
 
   #### Set up Julia
-  cat_log("... Running Julia setup via `JuliaCall::julia_setup()`...")
+  cats$cat("... Running Julia setup via `JuliaCall::julia_setup()`...")
   set_threads(.threads = .threads)
   julia <- julia_setup(...)
 
   #### Test Julia
-  cat_log("... Validating Julia installation...")
+  cats$cat("... Validating Julia installation...")
   julia_works(.action = abort)
 
   #### (optional) Use Julia Project
   if (!is.null(JULIA_PROJ)) {
-    cat_log("... Setting up Julia project...")
+    cats$cat("... Setting up Julia project...")
     julia_proj_generate(JULIA_PROJ)
     julia_proj_activate(JULIA_PROJ)
     # Install Patter
     # * TO DO
     # * Update Patter installation
     # * Using the development version here for convenience
-    julia_command('Pkg.develop(path = "/Users/lavended/Documents/work/projects/particle-filters/patter/packages/Patter.jl")')
+    # julia_command('Pkg.develop(path = "/Users/lavended/Documents/work/projects/particle-filters/patter/packages/Patter.jl")')
   }
 
   #### Install & load packages (optionally within the Julia Project)
-  cat_log("... Handling dependencies...")
+  cats$cat("... Handling dependencies...")
   pkgs <- c("Patter", "Distributions", "GeoArrays", "JLD2", "Random")
   julia_packages(.packages = pkgs, .update = .update)
 
   #### Validate Julia settings
   nthreads <- julia_threads(.threads)
-  cat_log(paste0("... Julia set up with ", nthreads, " threads."))
+  cats$cat(paste0("... Julia set up with ", nthreads, " threads."))
 
   #### Return outputs
   invisible(julia)
