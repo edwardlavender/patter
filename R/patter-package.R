@@ -54,6 +54,7 @@
 #' @importFrom JuliaCall julia_update_package
 #' @importFrom JuliaCall julia_library
 #' @importFrom JuliaCall julia_setup
+#' @importFrom JuliaCall julia_source
 #'
 #' @importFrom lubridate interval
 #' @importFrom lubridate int_overlaps
