@@ -14,7 +14,7 @@
 \alias{set_yobs_via_sim}
 \alias{set_datasets}
 \alias{set_yobs_via_datasets}
-\alias{set_particles}
+\alias{set_pf_filter}
 \title{Julia: set objects in Julia}
 \usage{
 set_seed(seed)
@@ -41,7 +41,7 @@ set_datasets(.datasets)
 
 set_yobs_via_datasets(.datasets, .models)
 
-set_particles(.n_move, .n_resample, .n_record, .direction)
+set_pf_filter(.n_move, .n_resample, .n_record, .direction)
 }
 \description{
 These are internal functions that assign objects to variable names in Julia.

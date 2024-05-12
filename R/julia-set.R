@@ -158,26 +158,53 @@ set_yobs_via_datasets <- function(.datasets, .models) {
 #' @keywords internal
 
 # Run the particle filter in Julia
-set_particles <- function(.n_move, .n_resample, .n_record, .direction) {
+# * This defines a `pf_forward` or `pf_backward` object depending on `.direction`
+set_pf_filter <- function(.n_move, .n_resample, .n_record, .direction) {
   # Check inputs
   julia_check_exists("timeline", "xinit", "yobs", "move")
   .n_move     <- as.integer(.n_move)
   .n_resample <- paste0(as.integer(.n_record), ".0")
   .n_record   <- as.integer(.n_record)
+  # Define output name
+  output <- name_particles(.fun = "pf_filter", .direction = .direction)
   # Run the filter
   julia_command(
     glue(
       '
-      particles = particle_filter(timeline = timeline,
-                                  xinit = xinit,
-                                  yobs = yobs,
-                                  move = move,
-                                  n_move = {.n_move},
-                                  n_record = {.n_record},
-                                  n_resample = {.n_resample},
-                                  direction = "{.direction}");
+      {output} = particle_filter(timeline = timeline,
+                                 xinit = xinit,
+                                 yobs = yobs,
+                                 move = move,
+                                 n_move = {.n_move},
+                                 n_record = {.n_record},
+                                 n_resample = {.n_resample},
+                                 direction = "{.direction}");
     '
     )
   )
+  invisible(output)
+}
+
+# Set the box within which movements are always valid
+# * Required for pf_smoother_*()
+set_mobility_box <- function(.box) {
+  if (is.null(.box)) {
+    julia_command("box = nothing;")
+  } else {
+    julia_assign("box", .box)
+    julia_command("box = Patter.ext(box);")
+  }
+  nothing()
+}
+
+# Run the two-filter smoother in Julia
+set_smoother_two_filter <- function(.nMC) {
+  output <- name_particles(.fun = "pf_smoother_two_filter")
+  fwd    <- name_particles(.fun = "pf_filter", .direction = "forward")
+  bwd    <- name_particles(.fun = "pf_filter", .direction = "backward")
+  .nMC   <- as.integer(.nMC)
+  julia_check_exists(fwd, bwd, "move", "box")
+  cmd    <- glue('{output} = two_filter_smoother(xfwd = {fwd}.state, xbwd = {bwd}.state, move = move, box = box, nMC = {.nMC});')
+  julia_command(cmd)
   nothing()
 }
