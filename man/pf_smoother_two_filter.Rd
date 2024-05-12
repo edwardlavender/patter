@@ -24,6 +24,20 @@ This function implements the two-filter smoother.
 \details{
 This function wraps \href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.two_filter_smoother()}}.
 }
+\seealso{
+Particle filters and smoothers sample states (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
+\itemize{
+\item To assemble real-world datasets for the filter, see \code{\link{assemble}}\verb{_*()} functions.
+\item \code{\link[=pf_filter]{pf_filter()}} runs the filter:
+\itemize{
+\item For state types, see \code{\link{State}};
+\item For observation models, see \code{\link{ModelObs}};
+\item For movement models, see \code{\link{ModelMove}};
+}
+\item To run particle smoothing, use \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}}.
+\item To map emergent patterns of space use, use a \verb{map_*()} function.
+}
+}
 \author{
 Edward Lavender
 }

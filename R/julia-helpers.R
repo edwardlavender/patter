@@ -4,7 +4,7 @@
 #' @author Edward Lavender
 #' @name julia_helper
 
-#' @name julia_helper
+#' @rdname julia_helper
 #' @keywords internal
 
 # Test if Julia works
@@ -16,7 +16,7 @@ julia_works <- function(.action = abort) {
   works
 }
 
-#' @name julia_helper
+#' @rdname julia_helper
 #' @keywords internal
 
 # Generate a Julia project (if required)
@@ -29,7 +29,7 @@ julia_proj_generate <- function(JULIA_PROJ) {
   nothing()
 }
 
-#' @name julia_helper
+#' @rdname julia_helper
 #' @keywords internal
 
 # Activate a Julia Project
@@ -39,7 +39,7 @@ julia_proj_activate <- function(JULIA_PROJ) {
   nothing()
 }
 
-#' @name julia_helper
+#' @rdname julia_helper
 #' @keywords internal
 
 # Install/update Julia packages
@@ -63,7 +63,7 @@ julia_packages_install <- function(.packages, .update) {
   nothing()
 }
 
-#' @name julia_helper
+#' @rdname julia_helper
 #' @keywords internal
 
 # Load Julia packages
@@ -72,7 +72,7 @@ julia_packages_library <- function(.packages) {
   nothing()
 }
 
-#' @name julia_helper
+#' @rdname julia_helper
 #' @keywords internal
 
 # Handle (install/update/load) Julia packages
@@ -82,7 +82,7 @@ julia_packages <- function(.packages, .update) {
   nothing()
 }
 
-#' @name julia_helper
+#' @rdname julia_helper
 #' @keywords internal
 
 # Get the number of threads used by Julia
@@ -94,7 +94,7 @@ julia_threads <- function(.threads) {
   nthreads
 }
 
-#' @name julia_helper
+#' @rdname julia_helper
 #' @keywords internal
 
 # Glimpse an R object in Julia
@@ -104,7 +104,7 @@ julia_glimpse <- function(x) {
   nothing()
 }
 
-#' @name julia_helper
+#' @rdname julia_helper
 #' @keywords internal
 
 # Print an object in Julia
@@ -113,7 +113,7 @@ julia_print <- function(x) {
   nothing()
 }
 
-#' @name julia_helper
+#' @rdname julia_helper
 #' @keywords internal
 
 # Print the summary of object in Julia
@@ -122,7 +122,7 @@ julia_summary <- function(x) {
   nothing()
 }
 
-#' @name julia_helper
+#' @rdname julia_helper
 #' @keywords internal
 
 # Save an object from Julia
@@ -132,7 +132,7 @@ julia_save <- function(x, file = x) {
   tools::file_path_as_absolute(file)
 }
 
-#' @name julia_helper
+#' @rdname julia_helper
 #' @keywords internal
 
 # Format time stamps for julia
@@ -142,7 +142,7 @@ julia_timeline <- function(x) {
   as.POSIXct(format(x, "%Y-%m-%d %H:%M:%S"), tz = lubridate::tz(x))
 }
 
-#' @name julia_helper
+#' @rdname julia_helper
 #' @keywords internal
 
 # Check if Julia object(s) have been set
@@ -156,7 +156,7 @@ julia_check_exists <- function(...) {
   nothing()
 }
 
-#' @name julia_helper
+#' @rdname julia_helper
 #' @keywords internal
 
 # Run multi-line sections of Julia code

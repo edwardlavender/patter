@@ -66,7 +66,7 @@ pf_filter(
 \item{.direction}{A \code{character} string that defines the direction of the filter:
 \itemize{
 \item \code{"forward"} runs the filter from \code{.timeline[1]:.timeline[length(.timeline)]};
-\item \code{"backward"} runs the filter from \code{.timeline[length(.timeline)]:.timeline[1]}
+\item \code{"backward"} runs the filter from \code{.timeline[length(.timeline)]:.timeline[1]};
 }}
 
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
@@ -89,13 +89,27 @@ At subsequent time steps, the filter comprises three stages:
 \item A re-sampling step, in which we optionally re-sample valid states using the weights.
 }
 
-The filter is implemented by the \code{Julia} function \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.particle_filter()}}. To multi-thread movement and likelihood evaluations, set the number of threads via \code{\link[=julia_connect]{julia_connect()}}. To implement custom movement and observation models subtypes, see the advanced vignette (TO DO). Use \code{JuliaCall::julia_help("particle_filter")} for further information.
+The filter is implemented by the \code{Julia} function \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.particle_filter()}}. To multi-thread movement and likelihood evaluations, set the number of threads via \code{\link[=julia_connect]{julia_connect()}}. Use \code{JuliaCall::julia_help("particle_filter")} for further information.
 }
 
 \section{Algorithms}{
 This is highly flexible routine for the reconstruction of the possible locations of an individual through time, given the data up to that time point. By modifying the observation models, it is straightforward to implement the ACPF, DCPF and ACDCPF algorithms introduced by Lavender et al. (2023) for reconstructing movements using (a) acoustic time series, (b) archival time series and (c) acoustic and archival time series. \code{\link[=pf_filter]{pf_filter()}} thus replaces (and enhances) the \href{https://edwardlavender.github.io/flapper/reference/ac.html}{\code{flapper::ac()}}, \href{https://edwardlavender.github.io/flapper/reference/dc.html}{\code{flapper::dc()}}, \href{https://edwardlavender.github.io/flapper/reference/acdc.html}{\code{flapper::acdc()}} and \href{https://edwardlavender.github.io/flapper/reference/pf.html}{\code{flapper::pf()}} functions.
 }
 
+\seealso{
+Particle filters and smoothers sample states (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
+\itemize{
+\item To assemble real-world datasets for the filter, see \code{\link{assemble}}\verb{_*()} functions.
+\item \code{\link[=pf_filter]{pf_filter()}} runs the filter:
+\itemize{
+\item For state types, see \code{\link{State}};
+\item For observation models, see \code{\link{ModelObs}};
+\item For movement models, see \code{\link{ModelMove}};
+}
+\item To run particle smoothing, use \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}}.
+\item To map emergent patterns of space use, use a \verb{map_*()} function.
+}
+}
 \author{
 Edward Lavender
 }

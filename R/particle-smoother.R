@@ -4,6 +4,9 @@
 #' @param .nMC An `integer` that defines the number of Monte Carlo simulations.
 #' @param .verbose .verbose User output control (see [`patter-progress`] for supported options).
 #' @details This function wraps [`Patter.two_filter_smoother()`](https://edwardlavender.github.io/Patter.jl/).
+#' @returns
+#'
+#' @inherit assemble seealso
 #' @author Edward Lavender
 #' @export
 

@@ -48,7 +48,7 @@
 #'
 #' @example
 #'
-#' @inheritSection assemble seealso
+#' @inherit assemble seealso
 #' @author Edward Lavender
 #' @export
 
