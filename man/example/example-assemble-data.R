@@ -4,17 +4,20 @@ library(dplyr, warn.conflicts = FALSE)
 
 #### Define example dataset(s) for a selected individual
 # Acoustic time series
+# * Observation model parameters are defined in `.moorings`
 acc <-
   dat_acoustics |>
   filter(individual_id == 25L) |>
   select("timestamp", "receiver_id") |>
   as.data.table()
 # Archival time series
+# * Observation model parameters must be included
+# * Here, we define parameters for `ModelObsDepthNormalTrunc`
 arc <-
   dat_archival |>
   filter(individual_id == 25L) |>
   select("timestamp", obs = "depth") |>
-  mutate()
+  mutate(depth_sigma = 50, depth_deep_eps = 20) |>
   as.data.table()
 
 #### Example (1): Define a timeline
@@ -41,12 +44,8 @@ head(acoustics)
 
 #### Example (3): Assemble an archival timeline
 # Assemble a timeline of archival observations and model parameters
-# * Here, we include model parameters for `ModelObsDepthNormalTrunc`
 archival <- assemble_archival(.timeline = timeline,
-                              .archival =
-                                arc |>
-                                mutate(depth_sigma = 50,
-                                       depth_deep_eps = 20))
+                              .archival = arc)
 head(archival)
 
 #### Example (4): Implement particle filter
