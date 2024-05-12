@@ -1,5 +1,8 @@
 #' @title Two-filter smoother
 #' @description This function implements the two-filter smoother.
+#' @param .map,.mobility (optional) 'Mobility box' arguments.
+#' @param .nMC An `integer` that defines the number of Monte Carlo simulations.
+#' @param .verbose .verbose User output control (see [`patter-progress`] for supported options).
 #' @details This function wraps [`Patter.two_filter_smoother()`](https://edwardlavender.github.io/Patter.jl/).
 #' @author Edward Lavender
 #' @export
