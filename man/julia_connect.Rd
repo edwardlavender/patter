@@ -13,7 +13,7 @@ julia_connect(
 )
 }
 \arguments{
-\item{...}{Arguments, such as \code{JULIA_HOME}, passed to \code{\link[JuliaCall:julia_setup]{JuliaCall::julia_setup()}}.}
+\item{...}{Arguments, such as \code{JULIA_HOME}, passed to \code{\link[JuliaCall:julia_setup]{JuliaCall::julia_setup()}} (excluding \code{verbose}, which is handled below).}
 
 \item{JULIA_PROJ}{(optional) A \code{character} string that defines the directory of a \code{Julia} Project.}
 
@@ -34,13 +34,45 @@ This function connects \code{R} to \code{Julia}.
 \itemize{
 \item \code{\link{JuliaCall}} is set up via \code{\link[JuliaCall:julia_setup]{JuliaCall::julia_setup()}}, using \code{.threads} threads.
 \item The Julia installation is validated.
-\item A local Julia Project is generated in \code{JULIA_PROJ} (if specified and required) and activated. We recommend using \code{\link{patter}} within an RStudio Project, with a \code{Julia} directory at the top-level that contains the \code{Julia} project
+\item A local Julia Project is generated in \code{JULIA_PROJ} (if specified and required) and activated. We recommend using \code{\link{patter}} within an RStudio Project, with a \code{Julia} directory at the top-level that contains the \code{Julia} project.
 \item \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} and supporting dependencies are installed or updated (if required) and loaded (optionally in the local Julia Project).
 }
 
 You should run this function once per \code{R} session.
 
 To update the number of threads, restart \code{R} and re-run the function with an updated \code{.threads} argument.
+}
+\examples{
+if (FALSE) {
+
+  #### Example (1): First time use
+  # Use `...` to customise `JuliaCall::julia_setup()`
+  # Try `installJulia` if you require a Julia installation
+  julia_connect(installJulia = TRUE)
+
+  #### Example (2): Connect to Julia using default settings
+  # You may need to tell R where Julia is via `JULIA_HOME`
+  julia_connect()
+
+  #### Example (3): Use a local Julia Project (recommended)
+  proj <- file.path(tempdir(), "Julia")
+  julia_connect(JULIA_PROJ = proj)
+
+  #### Example (4): Force an update of installed packages
+  julia_connect(JULIA_PROJ = proj, .update = TRUE)
+
+  #### Example (5): Specify the number of threads
+  # You can only set threads once per R session!
+  julia_connect(JULIA_PROJ = proj, .threads = 2L)
+
+  #### Example (6): Customise user output
+  julia_connect(JULIA_PROJ = proj, .verbose = FALSE)
+
+  # Clean up
+  unlink(proj, recursive = TRUE)
+}
+
+
 }
 \author{
 Edward Lavender
