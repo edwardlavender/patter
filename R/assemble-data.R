@@ -31,7 +31,7 @@
 #'
 #' These routines are only required for real-world analyses. (In _de novo_ simulations, the hash-table of observations is defined in `Julia` by `simulate_obs()`.)
 #'
-#' @example man/example/assemble-data.R
+#' @example man/example/example-assemble-data.R
 #' @seealso TO DO
 #' @author Edward Lavender
 #' @name assemble
@@ -113,6 +113,9 @@ assemble_acoustics <- function(.timeline, .acoustics, .moorings) {
     as.data.table()
 
   # Define detection time series
+  # * TO DO
+  # * Include detections/before/after first/last observation for map_init()
+  # * (as they can restrict starting locations)
   detections <-
     .acoustics |>
     filter(.data$timestamp %within% time_int) |>
