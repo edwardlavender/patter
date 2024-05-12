@@ -27,7 +27,7 @@
 #' * `receiver_x` and `receiver_y`---`numeric` vectors that defines receiver coordinates;
 #' * `receiver_alpha`, `receiver_beta`, `receiver_gamma`---`numeric` vectors of detection probability parameters, if defined;
 #'
-#' @example man/example/sim_array.R
+#' @example man/example/example-sim_array.R
 #'
 #' @seealso TO DO
 #' @author Edward Lavender
