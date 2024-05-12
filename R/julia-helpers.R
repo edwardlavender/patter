@@ -50,3 +50,12 @@ julia_check_exists <- function(...) {
   })
   nothing()
 }
+
+# Run multi-line sections of Julia code
+julia_code <- function(x) {
+  file <- tempfile(fileext = ".jl")
+  on.exit(unlink(file), add = TRUE)
+  writeLines(x, file)
+  # readLines(file)
+  julia_source(file)
+}
