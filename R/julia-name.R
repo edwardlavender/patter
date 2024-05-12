@@ -1,4 +1,9 @@
+#' @title Julia: naming functions
+#' @description A set of internal naming functions.
+#' @author Edward Lavender
+#' @keywords internal
 
+# Name the output object from a pf_*() function
 name_particles <- function(.fun = c("pf_filter", "pf_smoother_two_filter"),
                            .direction = c("forward", "backward")) {
   .fun       <- match.arg(.fun)
