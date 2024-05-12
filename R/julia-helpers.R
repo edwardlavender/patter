@@ -59,3 +59,74 @@ julia_code <- function(x) {
   # readLines(file)
   julia_source(file)
 }
+
+# Julia threads
+set_threads <- function(.threads) {
+  if (.threads != "auto" &&
+      Sys.getenv("JULIA_NUM_THREADS") != "" &&
+      Sys.getenv("JULIA_NUM_THREADS") != .threads) {
+    warn("Restart R to update the number of threads in Julia.")
+  }
+  Sys.setenv(JULIA_NUM_THREADS = .threads)
+  nothing()
+}
+
+# Generate a Julia project (if required)
+julia_proj_generate <- function(JULIA_PROJ) {
+  if (!dir.exists(JULIA_PROJ) &&
+      !file.exists(file.path(JULIA_PROJ, "Project.toml"))) {
+
+    julia_command(glue('Pkg.generate("Julia");'))
+  }
+  nothing()
+}
+
+# Activate a Julia Project
+julia_proj_activate <- function(JULIA_PROJ) {
+  julia_command("using Revise")
+  julia_command(glue('Pkg.activate("{JULIA_PROJ}");'))
+  nothing()
+}
+
+# Install/update Julia packages
+julia_packages_install <- function(.packages, .update) {
+  lapply(.packages, function(.package) {
+    # Check whether or not we need to install or update the package
+    install  <- ifelse(julia_installed_package(.package) == "nothing", TRUE, FALSE)
+    update   <- ifelse(isFALSE(install) & .update, TRUE, FALSE)
+    .package <- ifelse(.package == "Patter",
+                       "https://github.com/edwardlavender/Patter.jl.git",
+                       .package)
+    # Run installation/update
+    if (install) {
+      julia_install_package(.package)
+    }
+    if (update) {
+      julia_update_package(.package)
+    }
+    NULL
+  })
+  nothing()
+}
+
+# Load Julia packages
+julia_packages_library <- function(.packages) {
+  lapply(.packages, \(.package) julia_library(.package))
+  nothing()
+}
+
+# Handle (install/update/load) Julia packages
+julia_packages <- function(.packages, .update) {
+  julia_packages_install(.packages, .update)
+  julia_packages_library(.packages)
+  nothing()
+}
+
+# Get the number of threads used by Julia
+julia_threads <- function(.threads) {
+  nthreads <- julia_eval("Threads.nthreads()")
+  if (.threads != "auto" && nthreads != .threads) {
+    warn("`JULIA_NUM_THREADS` could not be set via `.threads`.")
+  }
+  nthreads
+}
