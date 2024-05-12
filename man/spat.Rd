@@ -3,9 +3,15 @@
 \name{spat}
 \alias{spat}
 \alias{spatIntersect}
+\alias{spatContainsNA}
+\alias{spatMobilityBox}
 \title{Spatial helper: \verb{spat*} functions}
 \usage{
 spatIntersect(.x)
+
+spatContainsNA(.x)
+
+spatMobilityBox(.x, .mobility)
 }
 \description{
 Internal helpers for \code{terra} \code{\link{SpatRaster}} and \code{\link{SpatVector}} objects.

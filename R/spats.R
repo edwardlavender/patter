@@ -18,3 +18,30 @@ spatIntersect <- function(.x) {
   }
   int
 }
+
+#' @rdname spat
+#' @keywords internal
+
+# Check if a SpatRaster contains any NAs (TRUE, FALSE)
+spatContainsNA <- function(.x) {
+  terra::global(.x, "isNA")[1, 1] > 0
+}
+
+#' @rdname spat
+#' @keywords internal
+
+# Define a 'box' within which 2D movements are always valid
+# - This is NULL if the SpatRaster contains NAs
+# - Otherwise, it is the extent, shrunk by `.mobility`
+# - (2D Movements in this region are always valid)
+# * TO DO: generalise to spatPoly() in future
+spatMobilityBox <- function(.x, .mobility) {
+  if (spatContainsNA(.x)) {
+    NULL
+  } else {
+    # Shrink the boundary box by .mobility
+    bb <- terra::ext(.x) - .mobility
+    # Update the extent, as in Patter.ext()
+    c(min_x = bb[1], max_x = bb[2], min_y = bb[3], max_y = bb[4])
+  }
+}
