@@ -13,7 +13,7 @@
 #' * `.yobs` is a `list` of formatted datasets, one for each data type (see [`glossary`]).
 #' * `.model_obs` is a named `list` of `ModelObs` subtypes, one for each dataset in `yobs` (see [`glossary`]).
 #' @param .model_move,.n_move The movement model.
-#' * `.model_move`---A `character` string that defines the movement model (see [`move`] and [`glossary`]).
+#' * `.model_move`---A `character` string that defines the movement model (see [`ModelMove`] and [`glossary`]).
 #' * `.n_move`---An `integer` that defines the number of attempts to find a legal move.
 #' @param .n_particle An `integer` that defines the number of particles.
 #' @param .n_resample A `double` that defines the effective sample size at which to re-sample particles.

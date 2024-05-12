@@ -1,3 +1,18 @@
+#' @title States
+#' @description TO DO
+#' @author Edward Lavender
+#' @name State
+NULL
+
+
+#' @title Observation models
+#' @description TO DO
+#' @author Edward Lavender
+#' @name ModelObs
+#' @aliases ModelObsAcousticLogisTrunc
+NULL
+
+
 #' @title Movement models
 #' @description These functions formulate movement model constructors for export to Julia. Function arguments should be specified as `character` strings of Julia code that specify the distributions for components of the movement model.
 #' @param length,angle,angle_delta,z_delta Character strings that define movement model components:
@@ -14,9 +29,9 @@
 #' `move_*()` functions map onto `MoveModel` structure in [`Patter.jl`](https://github.com/edwardlavender/Patter.jl).
 #'
 #' @author Edward Lavender
-#' @name move
+#' @name ModelMove
 
-#' @rdname move
+#' @rdname ModelMove
 #' @export
 
 move_xy <- function(length = "truncated(Gamma(1, 250.0), upper = 750.0)",
@@ -29,7 +44,7 @@ move_xyz <- function() {
 
 }
 
-#' @rdname move
+#' @rdname ModelMove
 #' @export
 
 move_xyzd <- function(length = "truncated(Gamma(1.0, 750.0), upper = 750.0)",

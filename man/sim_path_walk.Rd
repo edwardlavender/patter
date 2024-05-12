@@ -40,7 +40,7 @@ sim_path_walk(
 \item \code{.n_path} is an \code{integer} that defines the number of paths to simulate.
 }}
 
-\item{.move}{A character string that defines the movement model (see \code{\link{move}} and \code{\link{glossary}}).}
+\item{.move}{A character string that defines the movement model (see \code{\link{ModelMove}} and \code{\link{glossary}}).}
 
 \item{.plot, .one_page}{Plot options.
 \itemize{

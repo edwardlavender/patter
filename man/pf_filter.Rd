@@ -47,7 +47,7 @@ pf_filter(
 
 \item{.model_move, .n_move}{The movement model.
 \itemize{
-\item \code{.model_move}---A \code{character} string that defines the movement model (see \code{\link{move}} and \code{\link{glossary}}).
+\item \code{.model_move}---A \code{character} string that defines the movement model (see \code{\link{ModelMove}} and \code{\link{glossary}}).
 \item \code{.n_move}---An \code{integer} that defines the number of attempts to find a legal move.
 }}
 

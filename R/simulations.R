@@ -113,7 +113,7 @@ sim_array <- function(.map,
 #'    - If `.xinit` is `NULL`, initial states are sampled from `.map` (via [`sim_states_init()`]).
 #'    - Otherwise, `.xinit` must be a [`data.table`] with one column for each state dimension.
 #' * `.n_path` is an `integer` that defines the number of paths to simulate.
-#' @param .move A character string that defines the movement model (see [`move`] and [`glossary`]).
+#' @param .move A character string that defines the movement model (see [`ModelMove`] and [`glossary`]).
 #' @param .plot,.one_page Plot options.
 #' * `.plot` is a `logical` variable that defined whether or not to plot `.map` and simulated path(s). Each path is plotted on a separate plot.
 #' * `.one_page` is a logical variable that defines whether or not to produce all plots on a single page.

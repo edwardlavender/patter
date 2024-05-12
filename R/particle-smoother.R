@@ -1,4 +1,9 @@
-# Two-filter smoother
+#' @title Two-filter smoother
+#' @description This function implements the two-filter smoother.
+#' @details This function wraps [`Patter.two_filter_smoother()`](https://edwardlavender.github.io/Patter.jl/).
+#' @author Edward Lavender
+#' @export
+
 pf_smoother_two_filter <- function(.map = NULL,
                                    .mobility = .map,
                                    .nMC = 100L,
