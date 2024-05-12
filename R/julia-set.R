@@ -6,6 +6,20 @@
 #' @rdname julia_set
 #' @keywords internal
 
+# Set Julia threads
+set_threads <- function(.threads) {
+  if (.threads != "auto" &&
+      Sys.getenv("JULIA_NUM_THREADS") != "" &&
+      Sys.getenv("JULIA_NUM_THREADS") != .threads) {
+    warn("Restart R to update the number of threads in Julia.")
+  }
+  Sys.setenv(JULIA_NUM_THREADS = .threads)
+  nothing()
+}
+
+#' @rdname julia_set
+#' @keywords internal
+
 # Set a seed in R and Julia
 set_seed <- function(seed) {
   set.seed(seed)

@@ -2,6 +2,7 @@
 % Please edit documentation in R/julia-set.R
 \name{julia_set}
 \alias{julia_set}
+\alias{set_threads}
 \alias{set_seed}
 \alias{set_map}
 \alias{set_states_init}
@@ -17,6 +18,8 @@
 \alias{set_pf_filter}
 \title{Julia: set objects in Julia}
 \usage{
+set_threads(.threads)
+
 set_seed(seed)
 
 set_map(x)
