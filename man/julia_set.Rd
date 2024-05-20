@@ -2,9 +2,9 @@
 % Please edit documentation in R/julia-set.R
 \name{julia_set}
 \alias{julia_set}
-\alias{set_threads}
 \alias{set_seed}
 \alias{set_map}
+\alias{set_threads}
 \alias{set_states_init}
 \alias{set_move}
 \alias{set_timeline}
@@ -18,11 +18,11 @@
 \alias{set_pf_filter}
 \title{Julia: set objects in Julia}
 \usage{
-set_threads(.threads)
-
 set_seed(.seed)
 
 set_map(.x)
+
+set_threads(.threads)
 
 set_states_init(.xinit, .state)
 
@@ -46,10 +46,45 @@ set_yobs_via_datasets(.datasets, .models)
 
 set_pf_filter(.n_move, .n_resample, .n_record, .direction)
 }
+\value{
+Exported functions return \code{invisible(NULL)}.
+}
 \description{
-These are internal functions that assign objects to variable names in Julia.
+These are functions that assign objects to variable names in Julia.
+}
+\details{
+The following functions are exported:
+\itemize{
+\item \code{\link[=set.seed]{set.seed()}} sets a seed in both \code{R} and \code{Julia}.
+\itemize{
+\item It is often a good idea to call \code{\link[=set_seed]{set_seed()}} at the start of your workflow.
+}
+\item \code{\link[=set_map]{set_map()}} exports a \code{\link{SpatRaster}} map of the study area to a variable named \code{env} in \code{Julia}.
+\itemize{
+\item Export the map at the start of your workflow.
+}
+}
+
+Other functions are internal.
+}
+\examples{
+# Connect to Julia
+proj <- julia_proj_temp()
+julia_connect(JULIA_PROJ = proj)
+
+# Set the seed in R and Julia
+set_seed(1)
+
+# Define a map of the study area & export
+# > This map defines the region(s) within which movements are allowed
+map <- dat_gebco()
+terra::plot(map)
+set_map(map)
+
+cleanup(proj)
 }
 \author{
 Edward Lavender
 }
+\keyword{export}
 \keyword{internal}

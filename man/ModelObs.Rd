@@ -12,18 +12,16 @@ In the particle filter, observation model(s) are used to weight particles (sampl
 
 The following observation models are built in to Patter.jl:
 \itemize{
-\item ModelObsAcousticLogisTrunc
-\item ModelObsDepthUniform
-\item ModelObsDepthNormalTrunc
+\item \code{ModelObsAcousticLogisTrunc}
+\item \code{ModelObsDepthUniform}
+\item \code{ModelObsDepthNormalTrunc}
 }
 
-To define a new type,such as \code{ModelObsDepthNormal} use:
+From an \code{R}-user perspective, you can think of a \code{\link{ModelObs}} subtype as an \code{S4}-\code{\link{class}}-like object, with slots for the parameters of the observation model. For example, the default acoustic observation model is a logistic function of distance that depends on two parameters (\code{receiver_alpha} and \code{receiver_beta}) that control the rate of decline in detection probability with Euclidean distance from a receiver and a third parameter that truncates detection probability at zero beyond the receiver's detection range (that is, \code{receiver_gamma}). See \code{JuliaCall::julia_help("ModelObs")} or \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} for the arguments of the built-in subtypes.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{struct ModelObsDepthNormal <: ParticleFish.ModelObs
-   sensor_id::Int
-   sigma::Float64
-end
-}\if{html}{\out{</div>}}
+In \code{\link{patter}}, observation models are required by \code{\link[=sim_observations]{sim_observations()}} (to simulate new observational datasets) and \code{\link[=pf_filter]{pf_filter()}} (which runs the particle filter). In both cases, the observation model subtypes are specified as a \code{character} vector alongside a \code{list} of \href{s}{\code{data.table}} that contain the parameter values for each model. Internally, observation model subtypes and parameters are instantiated and used to simulate observations (in \code{\link[=sim_observations]{sim_observations()}}) or evaluate the likelihood of observations (in \code{\link[=pf_filter]{pf_filter()}} and via \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.logpdf_obs()}}.
+
+For instructions for custom \code{ModelObs} subtypes, see Examples.
 }
 \author{
 Edward Lavender
