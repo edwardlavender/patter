@@ -1,5 +1,22 @@
 #' @title States
-#' @description TO DO
+#' @description [`State`] is an Abstract Type in [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) that groups state subtypes.
+#'
+#' @details
+#' [`State`] subtypes are `Julia` structures that hold the parameters that describe the state of an individual at a given time. State typically means 'location' (in two or three dimensions), but individual states may include other dimensions for those state dimensions that depend on the state time step. (For example, turning angles may be included in the [`State`] if the turning angle at one time step is dependent upon that in a previous time step.) From an `R`-user perspective, you can think of a [`State`] sub-type as an `S4`-[`class`]-like object, with slots for the state dimensions.
+#'
+#' In [`patter`], `.state` is a `character` string that defines the animal's state subtype. This must match a [`State`] subtype in [`Patter.jl`](https://github.com/edwardlavender/Patter.jl). Currently supported options are:
+#' * `"StateXY"`, which maps to `StateXY` in [`Patter.jl`](https://github.com/edwardlavender/Patter.jl).
+#' * `"StateXYZD"`, which maps to `StateXYZD` in [`Patter.jl`](https://github.com/edwardlavender/Patter.jl).
+#'
+#' `.state` is used by [`sim_path_walk()`] and [`pf_filter()`], which all effectively simulate states, where it controls the simulation of initial locations and subsequent method dispatch in [`Patter.jl`](https://github.com/edwardlavender/Patter.jl). `[`sim_states_init()`] handles the simulation of initial states in these routines, such that:
+#' * `"StateXY"` specifies the simulation of initial `x` and `y` coordinates.
+#' * `"StateXYZD"` requires the simulation of `x`, `y` and `z` coordinates and an initial direction.
+#' This generates a [`data.table`] of initial state(s) which is coerced to a vector of `State`s in `Julia` for the simulation. In [`Patter.jl`](https://github.com/edwardlavender/Patter.jl), the simulation of subsequent states depends on the input state and the movement model.
+#'
+#' The state must match the movement model (see `.move`):
+#' * For `"StateXY"`, a movement model that simulates step lengths and turning angles and updates state components (that is, `x` and `y` coordinates) is required;
+#' * For `"StateXYZD"`, a movement model that simulates step lengths, changes in turning angles and changes in depth and updates `x`, `y`, `z` and direction state components is required.
+#'
 #' @author Edward Lavender
 #' @name State
 NULL
@@ -42,6 +59,11 @@ NULL
 #' * `z_depth`---the distribution of changes in depth
 #'
 #' @details
+#'
+#' #' `.move` is a `character` that defines a movement model structure implemented in Julia (that is, a `ModelMove` constructor). `.move_*()` functions are convenience wrappers for the construction of movement models. Currently implemented options are:
+#' * [`move_xy()`], which specifies a movement model in terms of the distribution of step lengths and turning angles;
+#' * [`move_xyzd()`], which specifies a movement model in terms of the distribution of step lengths, changes in turning angles and changes in depth;
+#'
 #' `move_*()` functions are used to formulate the movement model for use in simulations and algorithms:
 #' * `move_xy()` specifies a two-dimensional (x, y) movement model parametrised in terms of step lengths and turning angles;
 #' * `move_xyzd()` specifies a four-dimensional movement model (x, y, z and d) parametrised in terms of step lengths, changes in depth and changes in turning angle;
