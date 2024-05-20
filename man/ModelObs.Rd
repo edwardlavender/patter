@@ -5,7 +5,25 @@
 \alias{ModelObsAcousticLogisTrunc}
 \title{Observation models}
 \description{
-TO DO
+\code{\link{ModelObs}} is Abstract Type in \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} that groups observation model subtypes.
+}
+\details{
+In the particle filter, observation model(s) are used to weight particles (sampled locations or states) according to the likelihood of each observation.
+
+The following observation models are built in to Patter.jl:
+\itemize{
+\item ModelObsAcousticLogisTrunc
+\item ModelObsDepthUniform
+\item ModelObsDepthNormalTrunc
+}
+
+To define a new type,such as \code{ModelObsDepthNormal} use:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{struct ModelObsDepthNormal <: ParticleFish.ModelObs
+   sensor_id::Int
+   sigma::Float64
+end
+}\if{html}{\out{</div>}}
 }
 \author{
 Edward Lavender

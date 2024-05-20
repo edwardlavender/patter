@@ -27,7 +27,7 @@ move_xyzd(
 }}
 }
 \description{
-These functions formulate movement model constructors for export to Julia. Function arguments should be specified as \code{character} strings of Julia code that specify the distributions for components of the movement model.
+These functions formulate movement model constructors for export to \code{Julia}. Function arguments should be specified as \code{character} strings of Julia code that specify the distributions for components of the movement model.
 }
 \details{
 \verb{move_*()} functions are used to formulate the movement model for use in simulations and algorithms:
