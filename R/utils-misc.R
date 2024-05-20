@@ -23,3 +23,14 @@ char_to_class <- function(.x) {
 # Convert a `character` vector to a list of classes for dispatch
 # (e.g., c("ModelObsAcousticLogisTrunc", "ModelObsDepthUniform"))
 chars_to_classes <- Vectorize(char_to_class)
+
+#' @title Utilities: clean up
+#' @description This function deletes temporary files and or directories recursively.
+#' @details This function is a simple wrapper for [`unlink`] that is used at the end of examples.
+#' @author Edward Lavender
+#' @export
+
+cleanup <- function(x) {
+  unlink(x, recursive = TRUE)
+  nothing()
+}
