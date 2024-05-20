@@ -100,13 +100,13 @@ if (julia_run()) {
   plot(obs$timestamp, obs$obs * -1, ylim = ylim, col = "royalblue", type = "l")
   lines(paths$timestamp, paths$map_value * -1, col = "grey")
 
-  #### Run the particle filter
+  #### Run the forward filter
   # (optional) Define initial states, by:
   # A) Starting the filter in the correct location by masking `.map`
   # A) Specifying a `map_init()` method based on the observation model
   # B) Specifying a complete data.table of initial state(s)
   origin <- terra::setValues(map, NA)
-  origin[paths$cell_id[1]] <- 1
+  origin[paths$cell_id[1]] <- terra::extract(map, paths$cell_id[1])
   # Define a `Patter.logpdf_obs()` method
   # * This is used to evaluate the log probability of a depth observation
   julia_command(
