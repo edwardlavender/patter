@@ -31,7 +31,7 @@ julia_connect <- function(...,
 
   #### Set up messages
   cats <- cat_setup(.fun = "julia_connect", .verbose = .verbose)
-  on.exit(eval(cats$exit_expr, envir = cats$exit_envir), add = TRUE)
+  on.exit(eval(cats$exit, envir = cats$envir), add = TRUE)
 
   #### Set up Julia
   cats$cat("... Running Julia setup via `JuliaCall::julia_setup()`...")
@@ -51,7 +51,7 @@ julia_connect <- function(...,
     # * TO DO
     # * Update Patter installation
     # * Using the development version here for convenience
-    # julia_command('Pkg.develop(path = "/Users/lavended/Documents/work/projects/particle-filters/patter/packages/Patter.jl")')
+    julia_command('Pkg.develop(path = "/Users/lavended/Documents/work/projects/particle-filters/patter/packages/Patter.jl")')
   }
 
   #### Install & load packages (optionally within the Julia Project)

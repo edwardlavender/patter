@@ -67,7 +67,7 @@ pf_filter <- function(.map,
 
   #### Set up messages
   cats <- cat_setup(.fun = "pf_forward", .verbose = .verbose)
-  on.exit(eval(cats$exit_expr, envir = cats$exit_envir), add = TRUE)
+  on.exit(eval(cats$exit, envir = cats$envir), add = TRUE)
 
   #### Check user inputs
   cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Checking user inputs..."))
