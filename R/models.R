@@ -8,20 +8,25 @@ NULL
 #' @title Observation models
 #' @description [`ModelObs`] is Abstract Type in [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) that groups observation model subtypes.
 #'
-#' @details In the particle filter, observation model(s) are used to weight particles (sampled locations or states) according to the likelihood of each observation.
+#' @details
+#' Observation model subtypes are `Julia` structures that hold the parameters of observation models. From an `R`-user perspective, you can think of a [`ModelObs`] subtype as an `S4`-[`class`]-like object, with slots for the parameters of an observation model. With an observation model structure, we can simulate new observations and evaluate the log-probability of existing observations.
 #'
-#' The following observation models are built in to Patter.jl:
+#' The following observation models are built in to [`Patter.jl`](https://edwardlavender.github.io/Patter.jl):
 #' * `ModelObsAcousticLogisTrunc`
 #' * `ModelObsDepthUniform`
 #' * `ModelObsDepthNormalTrunc`
 #'
-#' From an `R`-user perspective, you can think of a [`ModelObs`] subtype as an `S4`-[`class`]-like object, with slots for the parameters of the observation model. For example, the default acoustic observation model is a logistic function of distance that depends on two parameters (`receiver_alpha` and `receiver_beta`) that control the rate of decline in detection probability with Euclidean distance from a receiver and a third parameter that truncates detection probability at zero beyond the receiver's detection range (that is, `receiver_gamma`). See `JuliaCall::julia_help("ModelObs")` or [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) for the arguments of the built-in subtypes.
+#' See [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) or `JuliaCall::julia_help("ModelObs")` for the fields of the built-in subtypes.
 #'
-#' In [`patter`], observation models are required by [`sim_observations()`] (to simulate new observational datasets) and [`pf_filter()`] (which runs the particle filter). In both cases, the observation model subtypes are specified as a `character` vector alongside a `list` of [`data.table`](s) that contain the parameter values for each model. Internally, observation model subtypes and parameters are instantiated and used to simulate observations (in [`sim_observations()`]) or evaluate the likelihood of observations (in [`pf_filter()`] and via [`Patter.logpdf_obs()`](https://edwardlavender.github.io/Patter.jl).
+#' In [`patter`], observation models are required:
+#' * To simulate new observational datasets, via [`sim_observations()`];
+#' * To run the particle filter, via [`pf_filter()`];
 #'
-#' For instructions for custom `ModelObs` subtypes, see Examples.
+#' Observation model subtypes should be specified as a `character` vector alongside a `list` of [`data.table`](s) that contain the parameter values for each model. Internally, observation model subtypes and parameters are instantiated and used to simulate observations or in the particle filter. The simulation of observations is implemented via [`Patter.simulate_obs()`](https://edwardlavender.github.io/Patter.jl). In the particle filter, log-probabilities are evaluated by [`Patter.logpdf_obs()`](https://edwardlavender.github.io/Patter.jl). These are generic functions. Different methods are dispatched according to the input model. For the built-in [`ModelObs`] subtypes, corresponding methods for these routines are also built-in. For custom [`ModelObs`] subtypes, the methods need to be provided.
 #'
-#' @example
+#'To use custom [`ModelObs`] subtypes, see Examples.
+#'
+#' @example man/example/example-ModelObs.R
 #' @author Edward Lavender
 #' @name ModelObs
 #' @aliases ModelObsAcousticLogisTrunc
