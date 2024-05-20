@@ -4,11 +4,11 @@
 #' * `.datasets`---A `list` of [`data.table`]s, one for each data type, each containing a `timestamp` column;
 #' * `.step`---A `character` (such as `"2 mins"`), passed to [`lubridate::round_date()`] and [`seq.POSIXt()`], that defines the resolution of the timeline;
 #' * `.trim`---A `logical` variable that defines whether or not to trim the timeline to the overlapping period between datasets;
-#' @param .timeline A `POSIXct` vector of regularly spaced time stamps that defines the timeline for the simulation. Here, `timeline` is used to:
+#' @param .timeline A `POSIXct` vector of regularly spaced time stamps that defines the timeline for the simulation (optionally from [`assemble_timeline()`]). Here, `timeline` is used to:
 #' * Define the resolution of observations;
-#' @param .acoustics For [`assemble_acoustics()`], `.acoustics` is a [data.table] of acoustic detections **for a single individual**. This must contain the `receiver_id` and `timestamp` columns.
-#'
-#' @param .moorings For [`assemble_acoustics()`], `.moorings` is a [`data.table`] of acoustic moorings. This must contain the `receiver_id`, `receiver_start`, and `receiver_end` columns, plus additional parameter columns.
+#' @param .acoustics The [data.table]s for [`assemble_acoustics()`].
+#' * `.acoustics` is a [data.table] of acoustic detections **for a single individual**. This must contain the `receiver_id` and `timestamp` columns.
+#' * `.moorings` is a [`data.table`] of acoustic receiver deployments. This must contain the `receiver_id`, `receiver_start`, and `receiver_end` columns, plus additional parameter columns.
 #'
 #' @param .archival For [`assemble_archival()`], `.archival` is a [`data.table`] of archival observations (such as depth measurements) **for a single individual**. This must contain `timestamp` and `obs` columns plus additional parameter columns.
 #'
