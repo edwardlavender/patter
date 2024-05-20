@@ -1,4 +1,4 @@
-if (FALSE) {
+if (julia_run()) {
 
   #### Example (1): First time use
   # Use `...` to customise `JuliaCall::julia_setup()`
@@ -23,8 +23,7 @@ if (FALSE) {
   #### Example (6): Customise user output
   julia_connect(JULIA_PROJ = proj, .verbose = FALSE)
 
-  # Clean up
-  unlink(proj, recursive = TRUE)
+  cleanup(proj)
 }
 
 

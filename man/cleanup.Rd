@@ -6,11 +6,14 @@
 \usage{
 cleanup(x)
 }
+\arguments{
+\item{x}{A \code{character} vector (see \code{\link[=unlink]{unlink()}}).}
+}
 \description{
 This function deletes temporary files and or directories recursively.
 }
 \details{
-This function is a simple wrapper for \code{\link{unlink}} that is used at the end of examples.
+This function is a simple wrapper for \code{\link[=unlink]{unlink()}} that is used at the end of examples.
 }
 \author{
 Edward Lavender

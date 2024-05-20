@@ -26,7 +26,8 @@ chars_to_classes <- Vectorize(char_to_class)
 
 #' @title Utilities: clean up
 #' @description This function deletes temporary files and or directories recursively.
-#' @details This function is a simple wrapper for [`unlink`] that is used at the end of examples.
+#' @param x A `character` vector (see [`unlink()`]).
+#' @details This function is a simple wrapper for [`unlink()`] that is used at the end of examples.
 #' @author Edward Lavender
 #' @export
 

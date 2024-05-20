@@ -1,8 +1,19 @@
 #' @title Julia: helpers
 #' @description A set of `Julia` helper functions.
+#' @details
+#' The following functions are exported:
+#' * [`julia_run()`] defines whether or not to run examples;
 #'
 #' @author Edward Lavender
 #' @name julia_helper
+
+#' @rdname julia_helper
+#' @export
+
+# Choose whether or not to run Julia examples
+julia_run <- function() {
+  identical(Sys.getenv("AUTO_JULIA_INSTALL"), "true")
+}
 
 #' @rdname julia_helper
 #' @keywords internal

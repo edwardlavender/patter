@@ -2,6 +2,7 @@
 % Please edit documentation in R/julia-helpers.R
 \name{julia_helper}
 \alias{julia_helper}
+\alias{julia_run}
 \alias{julia_works}
 \alias{julia_proj_generate}
 \alias{julia_proj_activate}
@@ -19,6 +20,8 @@
 \alias{julia_code}
 \title{Julia: helpers}
 \usage{
+julia_run()
+
 julia_works(.action = abort)
 
 julia_proj_generate(JULIA_PROJ)
@@ -51,6 +54,12 @@ julia_code(x)
 }
 \description{
 A set of \code{Julia} helper functions.
+}
+\details{
+The following functions are exported:
+\itemize{
+\item \code{\link[=julia_run]{julia_run()}} defines whether or not to run examples;
+}
 }
 \author{
 Edward Lavender
