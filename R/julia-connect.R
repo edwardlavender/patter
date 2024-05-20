@@ -61,7 +61,7 @@ julia_connect <- function(...,
 
   #### Install & load packages (optionally within the Julia Project)
   cats$cat("... Handling dependencies...")
-  pkgs <- c("Patter", "Distributions", "GeoArrays", "JLD2", "Random")
+  pkgs <- c("Patter", "DataFrames", "Distributions", "GeoArrays", "JLD2", "Random")
   # Install Patter
   # * TO DO
   # * Update Patter installation
