@@ -23,8 +23,7 @@ julia_works <- function(.action = abort) {
 julia_proj_generate <- function(JULIA_PROJ) {
   if (!dir.exists(JULIA_PROJ) &&
       !file.exists(file.path(JULIA_PROJ, "Project.toml"))) {
-
-    julia_command(glue('Pkg.generate("Julia");'))
+    julia_command(glue('Pkg.generate("{JULIA_PROJ}");'))
   }
   nothing()
 }
@@ -37,6 +36,14 @@ julia_proj_activate <- function(JULIA_PROJ) {
   julia_command("using Revise")
   julia_command(glue('Pkg.activate("{JULIA_PROJ}");'))
   nothing()
+}
+
+#' @rdname julia_helper
+#' @keywords internal
+
+# Generate a temporary Julia project path
+julia_proj_temp <- function() {
+  file.path(tempdir(), "Julia")
 }
 
 #' @rdname julia_helper
