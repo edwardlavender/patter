@@ -15,10 +15,10 @@
 #' @name julia_set
 
 #' @rdname julia_set
-#' @keywords export
+#' @export
 
 # Set a seed in R and Julia
-set_seed <- function(.seed) {
+set_seed <- function(.seed = 123L) {
   set.seed(.seed)
   if (julia_works(.action = warn)) {
     julia_command(glue('Random.seed!({.seed});'))

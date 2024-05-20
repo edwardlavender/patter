@@ -18,7 +18,7 @@
 \alias{set_pf_filter}
 \title{Julia: set objects in Julia}
 \usage{
-set_seed(.seed)
+set_seed(.seed = 123L)
 
 set_map(.x)
 
@@ -89,5 +89,4 @@ if (julia_run()) {
 \author{
 Edward Lavender
 }
-\keyword{export}
 \keyword{internal}
