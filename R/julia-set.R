@@ -1,7 +1,46 @@
 #' @title Julia: set objects in Julia
-#' @description These are internal functions that assign objects to variable names in Julia.
+#' @description These are functions that assign objects to variable names in Julia.
+#' @details
+#' The following functions are exported:
+#' * [`set.seed()`] sets a seed in both `R` and `Julia`.
+#'    - It is often a good idea to call [`set_seed()`] at the start of your workflow.
+#' * [`set_map()`] exports a [`SpatRaster`] map of the study area to a variable named `env` in `Julia`.
+#'    - Export the map at the start of your workflow.
+#'
+#' Other functions are internal.
+#'
+#' @return Exported functions return `invisible(NULL)`.
+#' @example man/example/example-julia_set.R
 #' @author Edward Lavender
 #' @name julia_set
+
+#' @rdname julia_set
+#' @keywords export
+
+# Set a seed in R and Julia
+set_seed <- function(.seed) {
+  set.seed(.seed)
+  if (julia_works(.action = warn)) {
+    julia_command(glue('Random.seed!({.seed});'))
+  }
+  nothing()
+}
+
+#' @rdname julia_set
+#' @export
+
+# Set the map (`env`) in Julia
+# * `env` is the name used by move_*() functions
+set_map <- function(.x) {
+  stopifnot(inherits(.x, "SpatRaster"))
+  file <- terra::sources(.x)
+  if (file == "") {
+    file <- tempfile(fileext = ".tif")
+    terra::writeRaster(.x, file)
+  }
+  julia_command(glue('env = GeoArrays.read("{file}");'))
+  nothing()
+}
 
 #' @rdname julia_set
 #' @keywords internal
@@ -14,34 +53,6 @@ set_threads <- function(.threads) {
     warn("Restart R to update the number of threads in Julia.")
   }
   Sys.setenv(JULIA_NUM_THREADS = .threads)
-  nothing()
-}
-
-#' @rdname julia_set
-#' @keywords internal
-
-# Set a seed in R and Julia
-set_seed <- function(.seed) {
-  set.seed(.seed)
-  if (julia_works(.action = warn)) {
-    julia_command(glue('Random.seed!({.seed});'))
-  }
-  nothing()
-}
-
-#' @rdname julia_set
-#' @keywords internal
-
-# Set the map (`env`) in Julia
-# * `env` is the name used by move_*() functions
-set_map <- function(.x) {
-  stopifnot(inherits(.x, "SpatRaster"))
-  file <- terra::sources(.x)
-  if (file == "") {
-    file <- tempfile(fileext = ".tif")
-    terra::writeRaster(.x, file)
-  }
-  julia_command(glue('env = GeoArrays.read("{file}");'))
   nothing()
 }
 
