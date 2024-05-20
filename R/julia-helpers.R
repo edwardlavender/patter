@@ -27,6 +27,32 @@ julia_works <- function(.action = abort) {
   works
 }
 
+# Find the path to a Julia Project
+# * If missing, search global options & environmental variables
+# * If specified, return as inputted
+julia_proj_path <- function(JULIA_PROJ) {
+  if (missing(JULIA_PROJ)) {
+    # Scan global option
+    path <- getOption("JULIA_PROJ")
+    if (!is.null(path)) {
+      JULIA_PROJ <- path
+    }
+    # Scan environmental variables
+    if (missing(JULIA_PROJ)) {
+      path <- Sys.getenv("JULIA_PROJ")
+      if (path != "") {
+        JULIA_PROJ <- path
+      }
+    }
+    # If still missing, use `NULL` with a warning
+    if (missing(JULIA_PROJ)) {
+      warn("`JULIA_PROJ` not found in global options or environmental variables: using `JULIA_PROJ = NULL`.")
+      JULIA_PROJ <- NULL
+    }
+  }
+  JULIA_PROJ
+}
+
 #' @rdname julia_helper
 #' @keywords internal
 
