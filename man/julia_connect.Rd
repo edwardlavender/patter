@@ -69,7 +69,7 @@ if (julia_run()) {
   julia_connect(JULIA_PROJ = proj)
 
   #### Example (4): Force an update of installed packages
-  julia_connect(JULIA_PROJ = proj, .update = TRUE)
+  # julia_connect(JULIA_PROJ = proj, .update = TRUE)
 
   #### Example (5): Specify the number of threads
   # You can only set threads once per R session!
