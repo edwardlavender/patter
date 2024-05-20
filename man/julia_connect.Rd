@@ -6,7 +6,7 @@
 \usage{
 julia_connect(
   ...,
-  JULIA_PROJ = NULL,
+  JULIA_PROJ,
   .update = FALSE,
   .threads = "auto",
   .verbose = getOption("patter.verbose")
@@ -15,7 +15,17 @@ julia_connect(
 \arguments{
 \item{...}{Arguments, such as \code{JULIA_HOME}, passed to \code{\link[JuliaCall:julia_setup]{JuliaCall::julia_setup()}} (excluding \code{verbose}, which is handled below).}
 
-\item{JULIA_PROJ}{(optional) A \code{character} string that defines the directory of a \code{Julia} Project.}
+\item{JULIA_PROJ}{(optional) A \code{character} string that defines the directory of a \code{Julia} Project.
+
+If \code{missing}, the function scans:
+\itemize{
+\item The global option, \code{JULIA_PROJ};
+\item The environmental variable, \code{JULIA_PROJ};
+}
+
+If \code{missing} and unfound, \code{JULIA_PROJ = NULL} is used with a \code{\link{warning}}.
+
+If \code{NULL}, a \code{Julia} Project is not used and the default environment is used (e.g., \verb{~/.julia/environments/v1.10/Project.toml}).}
 
 \item{.update}{A \code{logical} variable that defines whether or not to update installed \code{Julia} packages.}
 

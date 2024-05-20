@@ -3,6 +3,15 @@
 #'
 #' @param ... Arguments, such as `JULIA_HOME`, passed to [`JuliaCall::julia_setup()`] (excluding `verbose`, which is handled below).
 #' @param JULIA_PROJ (optional) A `character` string that defines the directory of a `Julia` Project.
+#'
+#' If `missing`, the function scans:
+#' * The global option, `JULIA_PROJ`;
+#' * The environmental variable, `JULIA_PROJ`;
+#'
+#' If `missing` and unfound, `JULIA_PROJ = NULL` is used with a [`warning`].
+#'
+#' If `NULL`, a `Julia` Project is not used and the default environment is used (e.g., `~/.julia/environments/v1.10/Project.toml`).
+#'
 #' @param .update A `logical` variable that defines whether or not to update installed `Julia` packages.
 #' @param .threads A `character` (`"auto"`) or an `integer` that defines the number of threads used by multi-threaded operations in `Julia`. This can only be set once per `R` session.
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
@@ -24,7 +33,7 @@
 #' @export
 
 julia_connect <- function(...,
-                          JULIA_PROJ = NULL,
+                          JULIA_PROJ,
                           .update = FALSE,
                           .threads = "auto",
                           .verbose = getOption("patter.verbose")) {
@@ -43,20 +52,21 @@ julia_connect <- function(...,
   julia_works(.action = abort)
 
   #### (optional) Use Julia Project
+  JULIA_PROJ <- julia_proj_path(JULIA_PROJ)
   if (!is.null(JULIA_PROJ)) {
     cats$cat("... Setting up Julia project...")
     julia_proj_generate(JULIA_PROJ)
     julia_proj_activate(JULIA_PROJ)
-    # Install Patter
-    # * TO DO
-    # * Update Patter installation
-    # * Using the development version here for convenience
-    julia_command('Pkg.develop(path = "/Users/lavended/Documents/work/projects/particle-filters/patter/packages/Patter.jl")')
   }
 
   #### Install & load packages (optionally within the Julia Project)
   cats$cat("... Handling dependencies...")
   pkgs <- c("Patter", "Distributions", "GeoArrays", "JLD2", "Random")
+  # Install Patter
+  # * TO DO
+  # * Update Patter installation
+  # * Using the development version here for convenience
+  julia_command('Pkg.develop(path = "/Users/lavended/Documents/work/projects/particle-filters/patter/packages/Patter.jl")')
   julia_packages(.packages = pkgs, .update = .update)
 
   #### Validate Julia settings
