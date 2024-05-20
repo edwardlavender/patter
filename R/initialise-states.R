@@ -281,16 +281,29 @@ map_init_iter <- function(.map,
 
 # Sample .n initial coordinates (map_value, x, y) from a SpatRaster
 coords_init <- function(.map, .n) {
+  # Define global variables
   map_value <- x <- y <- NULL
-  .xinit <-
-    .map |>
-    terra::spatSample(size = .n,
-                      method = "random",
-                      na.rm = TRUE,
-                      xy = TRUE,
-                      values = TRUE,
-                      warn = FALSE) |>
-    as.data.table()
+  # Define spatSample() arguments
+  args <- list(x = .map,
+               size = .n,
+               method = "random",
+               na.rm = TRUE,
+               xy = TRUE,
+               values = TRUE,
+               warn = FALSE)
+  # Attempt SpatSample
+  # * This may fail if almost all cells are NA
+  .xinit <- tryCatch(do.call(terra::spatSample, args),
+                     error = function(e) {
+                       warn("`terra::spatSample()` failed: implementing exhaustive sampling...")
+                       e
+                     })
+  # Try `exhaustive = TRUE` if SpatSample fails
+  if (inherits(.xinit, "error")) {
+    args$exhaustive <- TRUE
+    .xinit <- do.call(terra::spatSample, args)
+  }
+  .xinit <- .xinit |> as.data.table()
   colnames(.xinit) <- c("x", "y", "map_value")
   .xinit[, list(map_value, x, y)]
 }
