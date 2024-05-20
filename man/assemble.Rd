@@ -21,14 +21,16 @@ assemble_archival(.timeline, .archival)
 \item \code{.trim}---A \code{logical} variable that defines whether or not to trim the timeline to the overlapping period between datasets;
 }}
 
-\item{.timeline}{A \code{POSIXct} vector of regularly spaced time stamps that defines the timeline for the simulation. Here, \code{timeline} is used to:
+\item{.timeline}{A \code{POSIXct} vector of regularly spaced time stamps that defines the timeline for the simulation (optionally from \code{\link[=assemble_timeline]{assemble_timeline()}}). Here, \code{timeline} is used to:
 \itemize{
 \item Define the resolution of observations;
 }}
 
-\item{.acoustics}{For \code{\link[=assemble_acoustics]{assemble_acoustics()}}, \code{.acoustics} is a \link{data.table} of acoustic detections \strong{for a single individual}. This must contain the \code{receiver_id} and \code{timestamp} columns.}
-
-\item{.moorings}{For \code{\link[=assemble_acoustics]{assemble_acoustics()}}, \code{.moorings} is a \code{\link{data.table}} of acoustic moorings. This must contain the \code{receiver_id}, \code{receiver_start}, and \code{receiver_end} columns, plus additional parameter columns.}
+\item{.acoustics}{The \link{data.table}s for \code{\link[=assemble_acoustics]{assemble_acoustics()}}.
+\itemize{
+\item \code{.acoustics} is a \link{data.table} of acoustic detections \strong{for a single individual}. This must contain the \code{receiver_id} and \code{timestamp} columns.
+\item \code{.moorings} is a \code{\link{data.table}} of acoustic receiver deployments. This must contain the \code{receiver_id}, \code{receiver_start}, and \code{receiver_end} columns, plus additional parameter columns.
+}}
 
 \item{.archival}{For \code{\link[=assemble_archival]{assemble_archival()}}, \code{.archival} is a \code{\link{data.table}} of archival observations (such as depth measurements) \strong{for a single individual}. This must contain \code{timestamp} and \code{obs} columns plus additional parameter columns.}
 }
@@ -77,7 +79,7 @@ acc <-
   as.data.table()
 # Archival time series
 # * Observation model parameters must be included
-# * Here, we define parameters for `ModelObsDepthNormalTrunc`
+# * Here, we define parameters for `?ModelObsDepthNormalTrunc`
 arc <-
   dat_archival |>
   filter(individual_id == 25L) |>
@@ -90,18 +92,18 @@ arc <-
 timeline <- seq(as.POSIXct("2016-03-01 00:00:00", tz = "UTC"),
                 as.POSIXct("2016-04-01 00:00:00"),
                 by = "2 mins")
-# Use assemble_timeline() with .trim = FALSE
+# Use `assemble_timeline()` with `.trim = FALSE`
 timeline <- assemble_timeline(list(acc, arc), .step = "2 mins")
 range(timeline)
-# Use assemble_timeline() with .trim = TRUE
+# Use `assemble_timeline()` with `.trim = TRUE`
 timeline <- assemble_timeline(list(acc, arc), .step = "2 mins", .trim = TRUE)
 timeline <- timeline[1:1440]
 range(timeline)
 
 #### Example (2): Assemble an acoustic timeline
 # Assemble a timeline of acoustic observations (0, 1) and model parameters
-# * The default acoustic observation model parameters are taken from `moorings`
-# * But can be added afterwards for custom observation models
+# * The default acoustic observation model parameters are taken from `.moorings`
+# * But can be modified or added afterwards for custom observation models
 acoustics <- assemble_acoustics(.timeline = timeline,
                                 .acoustics = acc,
                                 .moorings = dat_moorings)
@@ -116,7 +118,7 @@ head(archival)
 #### Example (4): Implement particle filter
 # Use `pf_filter()` to implement the particle filter
 # A list of assembled datasets is passed to the `yobs` argument
-# The corresponding `ModelObs` types must also be specified
+# The corresponding `ModelObs` subtypes must also be specified
 }
 \seealso{
 Particle filters and smoothers sample states (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
