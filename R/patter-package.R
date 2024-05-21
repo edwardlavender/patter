@@ -66,6 +66,8 @@
 #'
 #' @importFrom stats runif
 #'
+#' @importFrom testthat expect_true
+#'
 #' @importFrom utils head
 #' @importFrom utils tail
 #' @importFrom utils str
