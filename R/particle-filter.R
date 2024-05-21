@@ -1,7 +1,7 @@
 #' @title PF: particle filter
 #' @description This function runs the particle filter. The filter samples possible states (typically locations, termed particles) of an animal at each time point given the data up to (and including) that time point and a movement model.
 #'
-#' @param .map A [`SpatRaster`] that defines the study area for the simulation. Here, `.map` is used to:
+#' @param .map A [`SpatRaster`] that defines the study area for the simulation (see [`glossary`]). Here, `.map` is used to:
 #' * Simulate initial states if `.xinit = NULL` (via [`sim_states_init()`]);
 #' @param .timeline A `POSIXct` vector of regularly spaced time stamps that defines the timeline for the simulation. Here, `.timeline` is used to:
 #' * Define the time steps of the simulation;
@@ -10,11 +10,7 @@
 #' * `.xinit`---`NULL` or a [`data.table`] that defines the initial states for the simulation;
 #' * `.xinit_pars`---A named `list` of parameters passed to the `.pars` argument of [`sim_states_init()`];
 #' @param .yobs,.model_obs Observations and observation models.
-#' * `.yobs` is a `list` of formatted datasets, one for each data type. Each element must be a [`data.table`] with the following columns:
-#'    - `timestamp`---A `POSIXct` vector of time stamps;
-#'    - `sensor_id`---A vector of 'sensor' IDs (such as receiver IDs);
-#'    - `obs`---A vector of observations, as recorded by the sensor(s) at the corresponding time stamp;
-#'    - Additional columns containing the parameters of the associated observation model instance (i.e., `.model_obs`);
+#' * `.yobs` is a `list` of formatted datasets, one for each data type (see [`glossary`]);
 #' * `.model_obs` is a `character` vector of [`ModelObs`] sub-types, one for each dataset in `yobs`;
 #' @param .model_move,.n_move The movement model.
 #' * `.model_move`---A `character` string that defines the movement model (see [`ModelMove`]);
@@ -38,16 +34,15 @@
 #' 2. A weights step, in which we calculate particle weights from the log-likelihood of the data at each particle.
 #' 3. A re-sampling step, in which we optionally re-sample valid states using the weights.
 #'
-#' The filter is implemented by the `Julia` function [`Patter.particle_filter()`](https://github.com/edwardlavender/Patter.jl). To multi-thread movement and likelihood evaluations, set the number of threads via [`julia_connect()`]. Use `JuliaCall::julia_help("particle_filter")` for further information.
+#' The filter is implemented by the `Julia` function [`Patter.particle_filter()`](https://github.com/edwardlavender/Patter.jl). To multi-thread movement and likelihood evaluations, set the number of threads via [`julia_connect()`]. See [`Patter.particle_filter()`](https://github.com/edwardlavender/Patter.jl) or `JuliaCall::julia_help("particle_filter")` for further information.
 #'
 #' # Algorithms
 #'
-#' This is highly flexible routine for the reconstruction of the possible locations of an individual through time, given the data up to that time point. By modifying the observation models, it is straightforward to implement the ACPF, DCPF and ACDCPF algorithms introduced by Lavender et al. (2023) for reconstructing movements using (a) acoustic time series, (b) archival time series and (c) acoustic and archival time series. [`pf_filter()`] thus replaces (and enhances) the [`flapper::ac()`](https://edwardlavender.github.io/flapper/reference/ac.html), [`flapper::dc()`](https://edwardlavender.github.io/flapper/reference/dc.html), [`flapper::acdc()`](https://edwardlavender.github.io/flapper/reference/acdc.html) and [`flapper::pf()`](https://edwardlavender.github.io/flapper/reference/pf.html) functions.
+#' This is highly flexible routine for the reconstruction of the possible locations of an individual through time, given the data up to that time point. By modifying the observation models, it is straightforward to implement the ACPF, DCPF and ACDCPF algorithms introduced by Lavender et al. (2023) for reconstructing animal movements in passive acoustic telemetry systems using (a) acoustic time series, (b) archival time series and (c) acoustic and archival time series. [`pf_filter()`] thus replaces (and enhances) the [`flapper::ac()`](https://edwardlavender.github.io/flapper/reference/ac.html), [`flapper::dc()`](https://edwardlavender.github.io/flapper/reference/dc.html), [`flapper::acdc()`](https://edwardlavender.github.io/flapper/reference/acdc.html) and [`flapper::pf()`](https://edwardlavender.github.io/flapper/reference/pf.html) functions.
 #'
 #' @returns The function returns a [`pf_particles-class`] object.
 #'
-#' @example
-#'
+#' @example man/example/example-pf_filter.R
 #' @inherit assemble seealso
 #' @author Edward Lavender
 #' @export
@@ -118,6 +113,8 @@ pf_filter <- function(.map,
     select("path_id", "timestep", "timestamp", everything()) |>
     as.data.table()
   out$xinit <- .xinit
-  unclass(out)
+  out <- unclass(out)
+  class(out) <- c(class(out), "pf_particles")
+  out
 
 }

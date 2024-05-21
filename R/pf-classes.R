@@ -1,5 +1,5 @@
 #' @title PF: [`pf_particles-class`] objects
-#' @description An `S3` [`class`] that defines the named `list` returned by [`pf_filter()`] and [`pf_smoother_two_filter()`].
+#' @description An `S3`-[`class`] that defines the named `list` returned by [`pf_filter()`] and [`pf_smoother_two_filter()`].
 #'
 #' @details
 #' # Structure

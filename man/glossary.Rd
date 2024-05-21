@@ -23,7 +23,7 @@ This is a glossary of key arguments in \code{\link{patter}}.
 }
 
 \section{\code{.yobs}}{
-\code{.yobs} is a \code{list} of observational datasets, one for each data type. Each dataset must contain the following columns:
+\code{.yobs} is a \code{list} of observational datasets, one for each data type. Each element must be a \code{\link{data.table}} with the following columns:
 \itemize{
 \item \code{timestamp}---a \code{POSIXct} vector of time stamps;
 \item \code{sensor_id}---an \code{integer} vector of sensor IDs, such as receivers;
@@ -33,7 +33,7 @@ This is a glossary of key arguments in \code{\link{patter}}.
 
 No other columns should be included.
 
-For real-world analyses, see \code{\link[=assemble_*]{assemble_*()}} functions to format datasets as required. Other types of datasets require manual preparation.
+For real-world analyses, see \code{\link{assemble}}\verb{_*()} functions to format datasets as required. Other types of datasets require manual preparation.
 }
 
 \seealso{

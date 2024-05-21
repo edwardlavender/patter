@@ -20,7 +20,7 @@
 #'
 #' # `.yobs`
 #'
-#' `.yobs` is a `list` of observational datasets, one for each data type. Each dataset must contain the following columns:
+#' `.yobs` is a `list` of observational datasets, one for each data type. Each element must be a [`data.table`] with the following columns:
 #'
 #' * `timestamp`---a `POSIXct` vector of time stamps;
 #' * `sensor_id`---an `integer` vector of sensor IDs, such as receivers;
@@ -29,7 +29,7 @@
 #'
 #' No other columns should be included.
 #'
-#' For real-world analyses, see [`assemble_*()`] functions to format datasets as required. Other types of datasets require manual preparation.
+#' For real-world analyses, see [`assemble`]`_*()` functions to format datasets as required. Other types of datasets require manual preparation.
 #'
 #' @seealso [`State`], [`ModelMove`], [`ModelObs`], [`sim_path_walk()`], [`sim_observations()`], [`pf_filter()`]
 #' @author Edward Lavender

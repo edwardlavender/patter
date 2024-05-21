@@ -4,7 +4,7 @@
 \alias{pf_particles-class}
 \title{PF: \code{\linkS4class{pf_particles}} objects}
 \description{
-An \code{S3} \code{\link{class}} that defines the named \code{list} returned by \code{\link[=pf_filter]{pf_filter()}} and \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}}.
+An \code{S3}-\code{\link{class}} that defines the named \code{list} returned by \code{\link[=pf_filter]{pf_filter()}} and \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}}.
 }
 \section{Structure}{
 \code{\linkS4class{pf_particles}} is a label used to denote outputs from selected functions in \code{\link{patter}}. The structure of this class is not strictly defined and primarily exists to streamline documentation. At the time of writing, \code{\linkS4class{pf_particles}} objects may comprise the following elements:
