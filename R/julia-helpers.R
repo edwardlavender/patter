@@ -146,8 +146,8 @@ julia_threads <- function(.threads) {
 #' @keywords internal
 
 # Glimpse an R object in Julia
-julia_glimpse <- function(x) {
-  julia_assign("x", x)
+julia_glimpse <- function(.x) {
+  julia_assign("x", .x)
   julia_command("println(x);")
   nothing()
 }
@@ -156,8 +156,8 @@ julia_glimpse <- function(x) {
 #' @keywords internal
 
 # Print an object in Julia
-julia_print <- function(x) {
-  julia_command(glue('println({x})'))
+julia_print <- function(.x) {
+  julia_command(glue('println({.x})'))
   nothing()
 }
 
@@ -165,8 +165,8 @@ julia_print <- function(x) {
 #' @keywords internal
 
 # Print the summary of object in Julia
-julia_summary <- function(x) {
-  julia_command(glue('summary({x})'))
+julia_summary <- function(.x) {
+  julia_command(glue('summary({.x})'))
   nothing()
 }
 
@@ -174,20 +174,20 @@ julia_summary <- function(x) {
 #' @keywords internal
 
 # Save an object from Julia
-julia_save <- function(x, file = x) {
-  file <- glue("{tools::file_path_sans_ext(file)}.jld2")
-  julia_command(glue('@save "{file}" {x};'))
-  tools::file_path_as_absolute(file)
+julia_save <- function(.x, .file = .x) {
+  .file <- glue("{tools::file_path_sans_ext(.file)}.jld2")
+  julia_command(glue('@save "{.file}" {.x};'))
+  tools::file_path_as_absolute(.file)
 }
 
 #' @rdname julia_helper
 #' @keywords internal
 
-# Format time stamps for julia
-julia_timeline <- function(x) {
-  check_inherits(x, "POSIXct")
-  x <- check_tz(x)
-  as.POSIXct(format(x, "%Y-%m-%d %H:%M:%S"), tz = lubridate::tz(x))
+# Format time stamps for Julia
+julia_timeline <- function(.x) {
+  check_inherits(.x, "POSIXct")
+  .x <- check_tz(.x)
+  as.POSIXct(format(.x, "%Y-%m-%d %H:%M:%S"), tz = lubridate::tz(.x))
 }
 
 #' @rdname julia_helper
@@ -208,10 +208,10 @@ julia_check_exists <- function(...) {
 #' @keywords internal
 
 # Run multi-line sections of Julia code
-julia_code <- function(x) {
+julia_code <- function(.x) {
   file <- tempfile(fileext = ".jl")
   on.exit(unlink(file), add = TRUE)
-  writeLines(x, file)
+  writeLines(.x, file)
   # readLines(file)
   julia_source(file)
 }

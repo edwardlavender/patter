@@ -41,19 +41,19 @@ julia_packages(.packages, .update)
 
 julia_threads(.threads)
 
-julia_glimpse(x)
+julia_glimpse(.x)
 
-julia_print(x)
+julia_print(.x)
 
-julia_summary(x)
+julia_summary(.x)
 
-julia_save(x, file = x)
+julia_save(.x, .file = .x)
 
-julia_timeline(x)
+julia_timeline(.x)
 
 julia_check_exists(...)
 
-julia_code(x)
+julia_code(.x)
 }
 \description{
 A set of \code{Julia} helper functions.
