@@ -17,13 +17,7 @@
 #' * If `.trim = FALSE`, this defines a sequence of regular time stamps across the full range of time stamps in the input datasets.
 #' * If `.trim = TRUE`, the timeline is trimmed to the overlapping period between datasets.
 #'
-#'  [`assemble_acoustics()`] and [`assemble_archival()`] prepare timelines of acoustic and archival observations as required for the particle filter ([`pf_filter()`]). The filter expects a `list` of datasets (one for each data type). Each dataset must contain the following columns:
-#' * `timestamp`---a `POSIXct` vector of time stamps;
-#' * `sensor_id`---an `integer` vector of sensor IDs, such as receivers;
-#' * `obs`---a vector of observations;
-#' * Additional columns that define the parameters of the observation model, as defined by a [`ModelObs`] structure;
-#'
-#' No other columns should be included.
+#'  [`assemble_acoustics()`] and [`assemble_archival()`] prepare timelines of acoustic and archival observations as required for the particle filter ([`pf_filter()`]). The filter expects a `list` of datasets (one for each data type). Each dataset must contain the following columns: `timestamp`, `sensor_id`, `obs` and additional columns with the parameters of the observation model (see [`glossary`]).
 #'
 #' * [`assemble_acoustics()`] prepares a timeline of acoustic observations, as required by the filter. This function expects a 'standard' acoustic dataset (that is, a [`data.table`] like [`dat_acoustics`]) that defines detections at receivers alongside a moorings dataset (like [`dat_moorings`]) that defines receiver deployment periods. [`assemble_acoustics()`] uses these datasets to assemble a complete time series of acoustic observations; that is, a [`data.table`] of time stamps and receivers that defines, for each time step and each operational receiver whether (`1L`) or not (`0L`) a detection was recorded at that time step. Duplicate observations (that is, detections at the same receiver in the same time step, are dropped.) If available in `.moorings`, additional columns (`receiver_alpha`, `receiver_beta` and `receiver_gamma`) are included as required for the default acoustic observation model (that is, [`ModelObsAcousticLogisTrunc`]). If observation model parameters vary both by receiver and through time, simply amend these columns as required.
 #'
