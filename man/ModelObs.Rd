@@ -2,19 +2,21 @@
 % Please edit documentation in R/models.R
 \name{ModelObs}
 \alias{ModelObs}
-\alias{ModelObsAcousticLogisTrunc}
+\alias{ModelObsAcousticLogisTrunc,}
+\alias{ModelObsDepthUniform,}
+\alias{ModelObsDepthNormalTrunc}
 \title{Observation models}
 \description{
 \code{\link{ModelObs}} is Abstract Type in \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} that groups observation model subtypes.
 }
 \details{
-Observation model subtypes are \code{Julia} structures that hold the parameters of observation models. From an \code{R}-user perspective, you can think of a \code{\link{ModelObs}} subtype as an \code{S4}-\code{\link{class}}-like object, with slots for the parameters of an observation model. With an observation model structure, we can simulate new observations and evaluate the log-probability of existing observations.
+Observation model subtypes are \code{Julia} structures that hold the parameters of observation models. From an \code{R}-user perspective, you can think of a \code{\link{ModelObs}} sub-type as an \code{S4}-\code{\link{class}}-like object, with slots for the parameters of an observation model. With an observation model structure, we can simulate new observations and evaluate the log-probability of existing observations.
 
 The following observation models are built in to \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}}:
 \itemize{
-\item \code{ModelObsAcousticLogisTrunc}
-\item \code{ModelObsDepthUniform}
-\item \code{ModelObsDepthNormalTrunc}
+\item \code{\link{ModelObsAcousticLogisTrunc}}
+\item \code{\link{ModelObsDepthUniform}}
+\item \code{\link{ModelObsDepthNormalTrunc}}
 }
 
 See \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} or \code{JuliaCall::julia_help("ModelObs")} for the fields of the built-in subtypes.

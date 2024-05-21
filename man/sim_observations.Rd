@@ -9,7 +9,7 @@ sim_observations(.timeline, .models, .parameters)
 \arguments{
 \item{.timeline}{A \code{POSIXct} vector of regularly spaced time stamps that defines the timeline for the simulation. This should match the \code{.timeline} used to simulate movement paths (see \code{\link[=sim_path_walk]{sim_path_walk()}}).}
 
-\item{.models}{A \code{character} vector of \code{ModelObs} subtype(s) defined in \code{Julia} (see \code{\link{glossary}}).}
+\item{.models}{A \code{character} vector of \code{ModelObs} sub-type(s) defined in \code{Julia} (see \code{\link{glossary}}).}
 
 \item{.parameters}{A \code{list} of \code{\link{data.table}}s, one for each model in \code{.models}, that define, for each sensor of that type, the model parameters.}
 }

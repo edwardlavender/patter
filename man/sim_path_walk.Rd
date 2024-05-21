@@ -71,9 +71,9 @@ This function simulates movement paths via \code{Patter.simulate_path_walk()}:
 
 To use a new \code{.state} and/or movement model type in \code{\link[=sim_path_walk]{sim_path_walk()}}:
 \itemize{
-\item Define a \code{State} subtype in \code{Julia} and provide the name as a \code{character} string to this function;
+\item Define a \code{State} sub-type in \code{Julia} and provide the name as a \code{character} string to this function;
 \item To initialise the simulation, write a \code{\link[=states_init]{states_init()}} method to enable automated sampling of initial states via \code{\link[=sim_states_init]{sim_states_init()}} or provide a \code{\link{data.table}} of initial states to \code{.xinit};
-\item Define a corresponding \code{ModelMove} subtype in \code{Julia};
+\item Define a corresponding \code{ModelMove} sub-type in \code{Julia};
 \item Instantiate a \code{ModelMove} instance (that is, define a specific movement model) in \code{Julia};
 \item Write a \code{Patter.r_get_states()} method to translate the Vector of \code{State}s from \code{Patter.simulate_path_walk()} into a \code{DataFrame} that can be passed to \code{R};
 }

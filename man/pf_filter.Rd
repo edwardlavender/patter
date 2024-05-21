@@ -34,7 +34,7 @@ pf_filter(
 
 \item{.state, .xinit, .xinit_pars}{Arguments used to simulate initial states (see \code{\link[=sim_states_init]{sim_states_init()}}).
 \itemize{
-\item \code{.state}---A \code{character} that defines the \code{\link{State}} subtype;
+\item \code{.state}---A \code{character} that defines the \code{\link{State}} sub-type;
 \item \code{.xinit}---\code{NULL} or a \code{\link{data.table}} that defines the initial states for the simulation;
 \item \code{.xinit_pars}---A named \code{list} of parameters passed to the \code{.pars} argument of \code{\link[=sim_states_init]{sim_states_init()}};
 }}

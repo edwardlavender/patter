@@ -125,9 +125,9 @@ sim_array <- function(.map,
 #' * Movement paths are passed back to `R` for convenient visualisation and analysis.
 #'
 #' To use a new `.state` and/or movement model type in [`sim_path_walk()`]:
-#' * Define a `State` subtype in `Julia` and provide the name as a `character` string to this function;
+#' * Define a `State` sub-type in `Julia` and provide the name as a `character` string to this function;
 #' * To initialise the simulation, write a [`states_init()`] method to enable automated sampling of initial states via [`sim_states_init()`] or provide a [`data.table`] of initial states to `.xinit`;
-#' * Define a corresponding `ModelMove` subtype in `Julia`;
+#' * Define a corresponding `ModelMove` sub-type in `Julia`;
 #' * Instantiate a `ModelMove` instance (that is, define a specific movement model) in `Julia`;
 #' * Write a `Patter.r_get_states()` method to translate the Vector of `State`s from `Patter.simulate_path_walk()` into a `DataFrame` that can be passed to `R`;
 #'
@@ -225,7 +225,7 @@ sim_path_walk <- function(.map,
 #' @description Simulate a time series of observations, such as acoustic detections and depths, arising from simulated animal movement path(s).
 #'
 #' @param .timeline A `POSIXct` vector of regularly spaced time stamps that defines the timeline for the simulation. This should match the `.timeline` used to simulate movement paths (see [`sim_path_walk()`]).
-#' @param .models A `character` vector of `ModelObs` subtype(s) defined in `Julia` (see [`glossary`]).
+#' @param .models A `character` vector of `ModelObs` sub-type(s) defined in `Julia` (see [`glossary`]).
 #' @param .parameters A `list` of [`data.table`]s, one for each model in `.models`, that define, for each sensor of that type, the model parameters.
 #'
 #' @details

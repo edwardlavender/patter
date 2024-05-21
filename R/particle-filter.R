@@ -6,7 +6,7 @@
 #' @param .timeline A `POSIXct` vector of regularly spaced time stamps that defines the timeline for the simulation. Here, `.timeline` is used to:
 #' * Define the time steps of the simulation;
 #' @param .state,.xinit,.xinit_pars Arguments used to simulate initial states (see [`sim_states_init()`]).
-#' * `.state`---A `character` that defines the [`State`] subtype;
+#' * `.state`---A `character` that defines the [`State`] sub-type;
 #' * `.xinit`---`NULL` or a [`data.table`] that defines the initial states for the simulation;
 #' * `.xinit_pars`---A named `list` of parameters passed to the `.pars` argument of [`sim_states_init()`];
 #' @param .yobs,.model_obs Observations and observation models.
