@@ -221,7 +221,7 @@ map_init.ModelObsDepthUniform <- function(.map,
   depth_deep_eps    <- .dataset$depth_deep_eps[pos]
   # Mask map between limits
   terra::mask(.map,
-              map - depth_shallow_eps <= depth & .map + depth_deep_eps >= depth,
+              .map - depth_shallow_eps <= depth & .map + depth_deep_eps >= depth,
               maskvalues = 0)
 }
 
