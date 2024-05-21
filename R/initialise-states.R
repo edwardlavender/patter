@@ -221,7 +221,7 @@ map_init.ModelObsDepthUniform <- function(.map,
   depth_deep_eps    <- .dataset$depth_deep_eps[pos]
   # Mask map between limits
   terra::mask(.map,
-              .map >= depth - depth_shallow_eps & .map <= depth + depth_deep_eps,
+              map - depth_shallow_eps <= depth & .map + depth_deep_eps >= depth,
               maskvalues = 0)
 }
 
@@ -247,7 +247,7 @@ map_init.ModelObsDepthNormalTrunc <- function(.map,
   # Mask map between limits
   # * .map + depth_deep_eps must be >= depth
   terra::mask(.map,
-              .map >= depth + depth_deep_eps,
+              .map + depth_deep_eps >= depth,
               maskvalues = 0)
 }
 
@@ -304,6 +304,9 @@ coords_init <- function(.map, .n) {
     .xinit <- do.call(terra::spatSample, args)
   }
   if (inherits(.xinit, "error") | fnrow(.xinit) == 0L) {
+    if (isTRUE(spatAllNA(.map))) {
+      warn("`.map` from `map_init()` only contains NAs.")
+    }
     abort("Failed to sample initial coordinates from `.map`.")
   }
   .xinit <- .xinit |> as.data.table()
