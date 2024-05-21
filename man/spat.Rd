@@ -4,12 +4,15 @@
 \alias{spat}
 \alias{spatIntersect}
 \alias{spatContainsNA}
+\alias{spatAllNA}
 \alias{spatMobilityBox}
 \title{Spatial helper: \verb{spat*} functions}
 \usage{
 spatIntersect(.x)
 
 spatContainsNA(.x)
+
+spatAllNA(.x)
 
 spatMobilityBox(.x, .mobility)
 }
