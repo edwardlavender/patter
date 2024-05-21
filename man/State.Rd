@@ -6,10 +6,10 @@
 \alias{StateXYZD}
 \title{States}
 \description{
-\code{\link{State}} is an Abstract Type in \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} that groups state subtypes.
+\code{\link{State}} is an Abstract Type in \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} that groups state sub-types.
 }
 \details{
-\code{\link{State}} subtypes are \code{Julia} structures that hold the parameters that describe the state of an individual at a given time. State typically means 'location' (in two or three dimensions), but individual states may include other dimensions for those state dimensions that depend on the state time step. (For example, turning angles may be included in the \code{\link{State}} if the turning angle at one time step is dependent upon that in a previous time step.) From an \code{R}-user perspective, you can think of a \code{\link{State}} sub-type as an \code{S4}-\code{\link{class}}-like object, with slots for the state dimensions.
+\code{\link{State}} sub-types are \code{Julia} structures that hold the parameters that describe the state of an individual at a given time. State typically means 'location' (in two or three dimensions), but individual states may include other dimensions for those state dimensions that depend on the state time step. (For example, turning angles may be included in the \code{\link{State}} if the turning angle at one time step is dependent upon that in a previous time step.) From an \code{R}-user perspective, you can think of a \code{\link{State}} sub-type as an \code{S4}-\code{\link{class}}-like object, with slots for the state dimensions.
 
 In \code{\link{patter}}, \code{.state} is a \code{character} string that defines the animal's state sub-type. This must match a \code{\link{State}} sub-type in \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}. Currently supported options are:
 \itemize{
@@ -32,7 +32,7 @@ The state must match the movement model (see \code{.move}):
 \item For \code{"StateXYZD"}, a movement model that simulates step lengths, changes in turning angles and changes in depth and updates \code{x}, \code{y}, \code{z} and direction state components is required.
 }
 
-To use custom \code{\link{ModelObs}} subtypes, see Examples.
+To use custom \code{\link{ModelObs}} sub-types, see Examples.
 }
 \examples{
 # Patter contains multiple built-in `State` and `ModelMove` subtypes that you can use

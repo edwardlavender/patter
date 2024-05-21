@@ -7,10 +7,10 @@
 \alias{ModelObsDepthNormalTrunc}
 \title{Observation models}
 \description{
-\code{\link{ModelObs}} is Abstract Type in \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} that groups observation model subtypes.
+\code{\link{ModelObs}} is Abstract Type in \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} that groups observation model sub-types.
 }
 \details{
-Observation model subtypes are \code{Julia} structures that hold the parameters of observation models. From an \code{R}-user perspective, you can think of a \code{\link{ModelObs}} sub-type as an \code{S4}-\code{\link{class}}-like object, with slots for the parameters of an observation model. With an observation model structure, we can simulate new observations and evaluate the log-probability of existing observations.
+Observation model sub-types are \code{Julia} structures that hold the parameters of observation models. From an \code{R}-user perspective, you can think of a \code{\link{ModelObs}} sub-type as an \code{S4}-\code{\link{class}}-like object, with slots for the parameters of an observation model. With an observation model structure, we can simulate new observations and evaluate the log-probability of existing observations.
 
 The following observation models are built in to \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}}:
 \itemize{
@@ -19,7 +19,7 @@ The following observation models are built in to \href{https://edwardlavender.gi
 \item \code{\link{ModelObsDepthNormalTrunc}}
 }
 
-See \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} or \code{JuliaCall::julia_help("ModelObs")} for the fields of the built-in subtypes.
+See \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} or \code{JuliaCall::julia_help("ModelObs")} for the fields of the built-in sub-types.
 
 In \code{\link{patter}}, observation models are required:
 \itemize{
@@ -27,9 +27,9 @@ In \code{\link{patter}}, observation models are required:
 \item To run the particle filter, via \code{\link[=pf_filter]{pf_filter()}};
 }
 
-Observation model subtypes should be specified as a \code{character} vector alongside a \code{list} of \href{s}{\code{data.table}} that contain the parameter values for each model. Internally, observation model subtypes and parameters are instantiated and used to simulate observations or in the particle filter. The simulation of observations is implemented via \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.simulate_obs()}}. In the particle filter, log-probabilities are evaluated by \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.logpdf_obs()}}. These are generic functions. Different methods are dispatched according to the input model. For the built-in \code{\link{ModelObs}} subtypes, corresponding methods for these routines are also built-in. For custom \code{\link{ModelObs}} subtypes, the methods need to be provided.
+Observation model sub-types should be specified as a \code{character} vector alongside a \code{list} of \href{s}{\code{data.table}} that contain the parameter values for each model. Internally, observation model sub-types and parameters are instantiated and used to simulate observations or in the particle filter. The simulation of observations is implemented via \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.simulate_obs()}}. In the particle filter, log-probabilities are evaluated by \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.logpdf_obs()}}. These are generic functions. Different methods are dispatched according to the input model. For the built-in \code{\link{ModelObs}} sub-types, corresponding methods for these routines are also built-in. For custom \code{\link{ModelObs}} sub-types, the methods need to be provided.
 
-To use custom \code{\link{ModelObs}} subtypes, see Examples.
+To use custom \code{\link{ModelObs}} sub-types, see Examples.
 }
 \examples{
 # Patter contains multiple built-in `ModelObs` subtypes that you can use

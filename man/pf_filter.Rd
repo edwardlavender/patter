@@ -48,7 +48,7 @@ pf_filter(
 \item \code{obs}---A vector of observations, as recorded by the sensor(s) at the corresponding time stamp;
 \item Additional columns containing the parameters of the associated observation model instance (i.e., \code{.model_obs});
 }
-\item \code{.model_obs} is a \code{character} vector of \code{\link{ModelObs}} subtypes, one for each dataset in \code{yobs};
+\item \code{.model_obs} is a \code{character} vector of \code{\link{ModelObs}} sub-types, one for each dataset in \code{yobs};
 }}
 
 \item{.model_move, .n_move}{The movement model.

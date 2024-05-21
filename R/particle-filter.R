@@ -15,7 +15,7 @@
 #'    - `sensor_id`---A vector of 'sensor' IDs (such as receiver IDs);
 #'    - `obs`---A vector of observations, as recorded by the sensor(s) at the corresponding time stamp;
 #'    - Additional columns containing the parameters of the associated observation model instance (i.e., `.model_obs`);
-#' * `.model_obs` is a `character` vector of [`ModelObs`] subtypes, one for each dataset in `yobs`;
+#' * `.model_obs` is a `character` vector of [`ModelObs`] sub-types, one for each dataset in `yobs`;
 #' @param .model_move,.n_move The movement model.
 #' * `.model_move`---A `character` string that defines the movement model (see [`ModelMove`]);
 #' * `.n_move`---An `integer` that defines the number of attempts to find a legal move;
