@@ -12,7 +12,7 @@
 \details{
 \code{\link{State}} sub-types are \code{Julia} structures that hold the parameters that describe the state of an individual at a given time step. 'State' typically means 'location' (in two or three dimensions), but individual states may include additional fields for those state dimensions that depend on the state time step. (For example, turning angles may be included in the \code{\link{State}} if the turning angle at one time step is dependent upon that at the previous time step.) From an \code{R}-user perspective, you can think of a \code{\link{State}} sub-type as an \code{S4}-\code{\link{class}}-like object, with slots for the state dimensions.
 
-In \code{\link{patter}} functions, the \code{.state} argument is a \code{character} string that defines the animal's state sub-type. This must match a \code{\link{State}} sub-type defined in \code{Julia}. The in-built options are:
+In \code{\link{patter}} functions, the \code{.state} argument is a \code{character} string that defines the animal's state sub-type. This must match a \code{\link{State}} sub-type defined in \code{Julia}. The built-in options are:
 \itemize{
 \item \code{"StateXY"}, which maps to \code{StateXY} in \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}};
 \item \code{"StateXYZD"}, which maps to \code{StateXYZD} in \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}};
@@ -48,8 +48,9 @@ To use custom \code{\link{ModelObs}} sub-types, see Examples.
 
 if (julia_run()) {
 
-  library(JuliaCall)
   library(data.table)
+  library(JuliaCall)
+  library(testthat)
 
   #### Julia set up
   # Connect to Julia

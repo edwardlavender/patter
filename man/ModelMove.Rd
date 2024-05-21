@@ -10,47 +10,145 @@
 \title{Movement models}
 \usage{
 move_xy(
-  length = "truncated(Gamma(1, 250.0), upper = 750.0)",
-  angle = "Uniform(-pi, pi)"
+  dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
+  dbn_angle = "Uniform(-pi, pi)"
 )
 
 move_xyzd(
-  length = "truncated(Gamma(1.0, 750.0), upper = 750.0)",
-  angle_delta = "Normal(0, 0.5)",
-  z_delta = "Normal(0, 3.5)"
+  dbn_length = "truncated(Gamma(1.0, 750.0), upper = 750.0)",
+  dbn_angle_delta = "Normal(0, 0.5)",
+  dbn_z_delta = "Normal(0, 3.5)"
 )
 }
 \arguments{
-\item{length, angle, angle_delta, z_delta}{Character strings that define movement model components:
+\item{dbn_length, dbn_angle, dbn_angle_delta, dbn_z_delta}{\code{Character} strings that define movement model components:
 \itemize{
-\item \code{length}---the distribution of step lengths;
-\item \code{angle}---the distribution of turning angles;
-\item \code{angle_delta}---the distribution of changes in turning angles;
-\item \code{z_depth}---the distribution of changes in depth
+\item \code{dbn_length}---the distribution of step lengths;
+\item \code{dbn_angle}---the distribution of turning angles;
+\item \code{dbn_angle_delta}---the distribution of changes in turning angles;
+\item \code{dbn_z_delta}---the distribution of changes in depth;
 }}
 }
+\value{
+\verb{move_*()} functions return a \code{character} string that defines a \code{\link{ModelMove}} instance for evaluation in \code{Julia}. If the map (\code{env}) does not exist in \code{Julia}, an error is thrown.
+}
 \description{
-These functions formulate movement model constructors for export to \code{Julia}. Function arguments should be specified as \code{character} strings of Julia code that specify the distributions for components of the movement model.
+\code{\link{ModelMove}} is Abstract Type in \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} that groups movement model sub-types, of which instances can be created via an \code{R} \verb{move_*()} function.
 }
 \details{
-\code{.move} is a \code{character} that defines a movement model structure implemented in Julia (that is, a \code{ModelMove} constructor). \verb{.move_*()} functions are convenience wrappers for the construction of movement models. Currently implemented options are:
+Movement model sub-types are \code{Julia} structures that hold the components of movement models. From an \code{R}-user perspective, you can think of a \code{\link{ModelMove}} sub-type as an \code{S4}-\code{\link{class}}-like object, with slots for the components of a movement model. With a movement model instance, we can simulate movements and evaluate the density of movements from one state (location) to another.
+
+The following movement models are built in to \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}}:
 \itemize{
-\item \code{\link[=move_xy]{move_xy()}}, which specifies a movement model in terms of the distribution of step lengths and turning angles;
-\item \code{\link[=move_xyzd]{move_xyzd()}}, which specifies a movement model in terms of the distribution of step lengths, changes in turning angles and changes in depth;
+\item \code{\link{ModelMoveXY}}
+\item \code{\link{ModelMoveXYZD}}
 }
 
-\verb{move_*()} functions are used to formulate the movement model for use in simulations and algorithms:
+See \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} or \code{JuliaCall::julia_help("ModelMove")} for the fields of the built-in sub-types. Briefly, all sub-types include:
 \itemize{
-\item \code{move_xy()} specifies a two-dimensional (x, y) movement model parametrised in terms of step lengths and turning angles;
-\item \code{move_xyzd()} specifies a four-dimensional movement model (x, y, z and d) parametrised in terms of step lengths, changes in depth and changes in turning angle;
+\item A \code{map} field, that defines the region(s) within which movements are permitted. In \code{R}, it is convenient to represent \code{map} as a \code{\link{SpatRaster}}, where \code{NAs} define inhospitable habitats (e.g., land). This should made available to \code{Julia} \code{\link{ModelMove}} constructors as \code{env} via \code{\link[=set_map]{set_map()}};
+\item Additional model-specific components (such as fields for the distribution of step lengths and turning angles in the case of two-dimensional random walks);
 }
 
-\verb{move_*()} functions map onto \code{MoveModel} structure in \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}.
+In \code{\link{patter}}, movement models are required:
+\itemize{
+\item To simulate movement paths, via \code{\link[=sim_path_walk]{sim_path_walk()}};
+\item To run the particle filter, via \code{\link[=pf_filter]{pf_filter()}};
+\item To run the particle smoother, via \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}};
+}
+
+In \code{R} functions, the movement-model instance is specified via the \code{.model_move} argument. This argument expects a \code{character} string defining a \code{\link{ModelMove}} instance that can be evaluated in \code{Julia} (that is, a \code{\link{ModelMove}} constructor). \verb{move_*()} functions are convenience functions for the specification of these constructors for the built-in sub-types. All \code{\link{ModelMove}} instances contain a \code{map} field that defines the region(s) within which movements are permitted. To use a \verb{move_*()} function, the map should be available in \code{Julia} as \code{env} (see \code{\link[=set_map]{set_map()}}). The additional components of the movement model are specified via \verb{.move_*()} function arguments as \code{character} strings of \code{Julia} code. Currently implemented \verb{move_*()} functions are:
+\itemize{
+\item \code{\link[=move_xy]{move_xy()}}, which specifies a movement model of subtype \code{\link{ModelMoveXY}} in terms of the distributions of step lengths and turning angles;
+\item \code{\link[=move_xyzd]{move_xyzd()}}, which specifies a movement model of subtype \code{\link{ModelMoveXYZD}} in terms of the distributions of step lengths, changes in turning angles and changes in depth;
+}
+
+See \href{https://discourse.julialang.org/t/a-comparison-of-common-distributions-in-julia-python-and-r/61604}{here} for the translations of distributions in \code{R} (e.g., \verb{*norm()}) into \code{Julia} (e.g., \code{Normal()}).
+
+In \code{Julia}, \code{\link{ModelMove}} instances are used to simulate states via \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.simulate_step()}}. In the particle smoother, the density of movement from one state to another is evaluated by \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.logpdf_step()}}. These are generic functions. Different methods are dispatched according to the input model. For the built-in \code{\link{ModelMove}} sub-types, corresponding methods for these routines are also built-in. For custom \code{\link{ModelMove}} sub-types, the methods need to be provided.
+
+To use custom \code{\link{ModelMove}} sub-types, see Examples.
 }
 \examples{
-# Patter contains multiple built-in `State` and `ModelMove` subtypes that you can use
-# ... (with custom parameters) simulate movements and for particle filtering.
-# See the help file for `?State` to use a new subtype.
+if (julia_run()) {
+
+  library(data.table)
+  library(JuliaCall)
+  library(truncdist)
+
+  #### Connect to Julia
+  julia_connect()
+  set_seed()
+
+  #### Define the `map`
+  # `map` is the region within which movements are permitted
+  # In `R`, we represent this as a `SpatRaster`
+  # Here, we have a bathymetry `SpatRaster` for the west coast of Scotland:
+  # * NaNs define regions into which movement is not permitted
+  # * (i.e., on land, in the case of aquatic animals)
+  map <- dat_gebco()
+  terra::plot(map)
+  # Using `set_map()` makes the map available as a object called 'env' in `Julia`
+  # > This is required as a component of all movement models
+  set_map(map)
+
+  #### Example (1): Use `move_xy()` with default options
+  # `move_*()` functions simply return a character string of Julia code
+  # (Downstream functions can evaluate this code, as shown below)
+  move_xy()
+
+  #### Example (2): Customise `move_xy()`
+  # Use a truncated normal distribution for step lengths:
+  hist(rtrunc(1e5L, "norm", a = 0, b = 750, mean = 250, sd = 50))
+  move_xy(dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)")
+  # Use an exponential distribution for step lengths
+  hist(rtrunc(1e5L, "exp", b = 750, rate = 0.001))
+  move_xy(dbn_length = "truncated(Exponential(0.01), upper = 750.0)")
+  # Use a biased random walk
+  move_xy(dbn_angle = "VonMises(0, 1)")
+  # Get help on a distribution in Julia:
+  julia_help("Exponential")
+
+  #### Example (3): Customise `move_xyzd()`
+  # Use default options
+  move_xyzd()
+  # Customise model components
+  move_xyzd(dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)",
+            dbn_angle_delta = "Normal(0, 0.25)",
+            dbn_z_delta = "Normal(0, 2.5)")
+
+  #### Example (4): Visualise different movement models
+  # Define a timeline for the simulation
+  timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
+                  length.out = 1000L, by = "2 mins")
+  # Define an initial location
+  x <- 708212.6
+  y <- 6251684
+  origin <- data.table(map_value = terra::extract(map, cbind(x, y))[1, 1],
+                       x = x, y = y)
+  # Collect essential arguments for `sim_path_walk()`
+  args <- list(.map = map,
+               .xinit = origin,
+               .timeline = timeline,
+               .state = "StateXY",
+               .n_path = 2L, .one_page = FALSE)
+  # Compare different movement models via `sim_path_walk()`
+  pp <- par(mfrow = c(2, 2))
+  args$.move <- move_xy()
+  do.call(sim_path_walk, args)
+  args$.move <- move_xy(dbn_angle = "VonMises(0.1, 0.1)")
+  do.call(sim_path_walk, args)
+  par(pp)
+
+  #### Example (5): Use movement models in the particle filter
+  # See `?pf_filter()`
+
+  #### Example (6): Use custom movement model types
+  # Patter contains multiple built-in `State` and `ModelMove` subtypes that you can use
+  # ... (with custom parameters) simulate movements and for particle filtering.
+  # See the help file for `?State` to use a new subtype.
+
+}
 }
 \seealso{
 The routines in \code{\link{patter}} for the simulation of individual movements, observations and statistical modelling are built upon three Abstract Types defined in \code{Julia}:

@@ -7,8 +7,9 @@
 
 if (julia_run()) {
 
-  library(JuliaCall)
   library(data.table)
+  library(JuliaCall)
+  library(testthat)
 
   #### Julia set up
   # Connect to Julia

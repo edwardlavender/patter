@@ -17,12 +17,13 @@ Imports:
     JuliaCall,
     lubridate,
     rlang,
-    terra, 
-    testthat (>= 3.0.0)
+    terra
 Suggests:
     knitr, 
     rmarkdown,
-    spelling
+    spelling, 
+    testthat (>= 3.0.0), 
+    truncdist
 Depends: R (>= 4.1)
 Config/testthat/edition: 3
 URL: https://github.com/edwardlavender/patter/

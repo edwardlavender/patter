@@ -13,7 +13,7 @@
 # Choose whether or not to run Julia examples
 julia_run <- function() {
   identical(Sys.getenv("AUTO_JULIA_INSTALL"), "true")
-  # TRUE
+  TRUE
 }
 
 #' @rdname julia_helper
