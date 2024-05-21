@@ -9,24 +9,27 @@
 \code{\link{State}} is an Abstract Type in \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} that groups state sub-types.
 }
 \details{
-\code{\link{State}} sub-types are \code{Julia} structures that hold the parameters that describe the state of an individual at a given time. State typically means 'location' (in two or three dimensions), but individual states may include other dimensions for those state dimensions that depend on the state time step. (For example, turning angles may be included in the \code{\link{State}} if the turning angle at one time step is dependent upon that in a previous time step.) From an \code{R}-user perspective, you can think of a \code{\link{State}} sub-type as an \code{S4}-\code{\link{class}}-like object, with slots for the state dimensions.
+\code{\link{State}} sub-types are \code{Julia} structures that hold the parameters that describe the state of an individual at a given time step. 'State' typically means 'location' (in two or three dimensions), but individual states may include additional fields for those state dimensions that depend on the state time step. (For example, turning angles may be included in the \code{\link{State}} if the turning angle at one time step is dependent upon that at the previous time step.) From an \code{R}-user perspective, you can think of a \code{\link{State}} sub-type as an \code{S4}-\code{\link{class}}-like object, with slots for the state dimensions.
 
-In \code{\link{patter}}, \code{.state} is a \code{character} string that defines the animal's state sub-type. This must match a \code{\link{State}} sub-type in \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}. Currently supported options are:
+In \code{\link{patter}} functions, the \code{.state} argument is a \code{character} string that defines the animal's state sub-type. This must match a \code{\link{State}} sub-type defined in \code{Julia}. The in-built options are:
 \itemize{
-\item \code{"StateXY"}, which maps to \code{StateXY} in \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}.
-\item \code{"StateXYZD"}, which maps to \code{StateXYZD} in \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}.
+\item \code{"StateXY"}, which maps to \code{StateXY} in \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}};
+\item \code{"StateXYZD"}, which maps to \code{StateXYZD} in \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}};
 }
 
-See \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} or \code{JuliaCall::julia_help("State")} for the fields of the built-in sub-types.
+See \href{https://edwardlavender.github.io/Patter.jl}{\code{State}} or \code{JuliaCall::julia_help("State")} for the fields of the built-in sub-types.
 
-\code{.state} is used by \code{\link[=sim_path_walk]{sim_path_walk()}} and \code{\link[=pf_filter]{pf_filter()}}, which all effectively simulate states, where it controls the simulation of initial locations and subsequent method dispatch in \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}. \code{[}sim_states_init()`] handles the simulation of initial states in these routines, such that:
+\code{.state} is used by \code{\link[=sim_path_walk]{sim_path_walk()}} and \code{\link[=pf_filter]{pf_filter()}}, both of which effectively simulate time series of states. \code{.state} controls the simulation of initial locations and subsequent method dispatch in \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}. \code{\link[=sim_states_init]{sim_states_init()}} handles the simulation of initial states in these routines. When \code{.state} is`
 \itemize{
-\item \code{"StateXY"} specifies the simulation of initial \code{x} and \code{y} coordinates.
-\item \code{"StateXYZD"} requires the simulation of \code{x}, \code{y} and \code{z} coordinates and an initial direction.
-This generates a \code{\link{data.table}} of initial state(s) which is coerced to a vector of \code{State}s in \code{Julia} for the simulation. In \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}, the simulation of subsequent states depends on the input state and the movement model.
+\item \code{"StateXY"}, the initial state comprises \code{x} and \code{y} coordinates;.
+\item \code{"StateXYZD"}, the initial states comprises \code{x}, \code{y} and \code{z} coordinates and an initial direction;
 }
 
-The state must match the movement model (see \code{.move}):
+All states additionally include a \code{map_value} field that defines the value on the movement map at (\code{x}, \code{y}).
+
+The outcome of \code{\link[=sim_states_init]{sim_states_init()}} is a \code{\link{data.table}} of initial state(s), which is coerced to a \code{Vector} of \code{State}s in \code{Julia} for the simulation. In \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}, the simulation of subsequent states depends on the input state and the movement model.
+
+The state must match the movement model (see \code{\link{ModelMove}}):
 \itemize{
 \item For \code{"StateXY"}, a movement model that simulates step lengths and turning angles and updates state components (that is, \code{x} and \code{y} coordinates) is required;
 \item For \code{"StateXYZD"}, a movement model that simulates step lengths, changes in turning angles and changes in depth and updates \code{x}, \code{y}, \code{z} and direction state components is required.

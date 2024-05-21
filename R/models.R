@@ -2,20 +2,23 @@
 #' @description [`State`] is an Abstract Type in [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) that groups state sub-types.
 #'
 #' @details
-#' [`State`] sub-types are `Julia` structures that hold the parameters that describe the state of an individual at a given time. State typically means 'location' (in two or three dimensions), but individual states may include other dimensions for those state dimensions that depend on the state time step. (For example, turning angles may be included in the [`State`] if the turning angle at one time step is dependent upon that in a previous time step.) From an `R`-user perspective, you can think of a [`State`] sub-type as an `S4`-[`class`]-like object, with slots for the state dimensions.
+#' [`State`] sub-types are `Julia` structures that hold the parameters that describe the state of an individual at a given time step. 'State' typically means 'location' (in two or three dimensions), but individual states may include additional fields for those state dimensions that depend on the state time step. (For example, turning angles may be included in the [`State`] if the turning angle at one time step is dependent upon that at the previous time step.) From an `R`-user perspective, you can think of a [`State`] sub-type as an `S4`-[`class`]-like object, with slots for the state dimensions.
 #'
-#' In [`patter`], `.state` is a `character` string that defines the animal's state sub-type. This must match a [`State`] sub-type in [`Patter.jl`](https://github.com/edwardlavender/Patter.jl). Currently supported options are:
-#' * `"StateXY"`, which maps to `StateXY` in [`Patter.jl`](https://github.com/edwardlavender/Patter.jl).
-#' * `"StateXYZD"`, which maps to `StateXYZD` in [`Patter.jl`](https://github.com/edwardlavender/Patter.jl).
+#' In [`patter`] functions, the `.state` argument is a `character` string that defines the animal's state sub-type. This must match a [`State`] sub-type defined in `Julia`. The in-built options are:
+#' * `"StateXY"`, which maps to `StateXY` in [`Patter.jl`](https://github.com/edwardlavender/Patter.jl);
+#' * `"StateXYZD"`, which maps to `StateXYZD` in [`Patter.jl`](https://github.com/edwardlavender/Patter.jl);
 #'
-#' See [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) or `JuliaCall::julia_help("State")` for the fields of the built-in sub-types.
+#' See [`State`](https://edwardlavender.github.io/Patter.jl) or `JuliaCall::julia_help("State")` for the fields of the built-in sub-types.
 #'
-#' `.state` is used by [`sim_path_walk()`] and [`pf_filter()`], which all effectively simulate states, where it controls the simulation of initial locations and subsequent method dispatch in [`Patter.jl`](https://github.com/edwardlavender/Patter.jl). `[`sim_states_init()`] handles the simulation of initial states in these routines, such that:
-#' * `"StateXY"` specifies the simulation of initial `x` and `y` coordinates.
-#' * `"StateXYZD"` requires the simulation of `x`, `y` and `z` coordinates and an initial direction.
-#' This generates a [`data.table`] of initial state(s) which is coerced to a vector of `State`s in `Julia` for the simulation. In [`Patter.jl`](https://github.com/edwardlavender/Patter.jl), the simulation of subsequent states depends on the input state and the movement model.
+#' `.state` is used by [`sim_path_walk()`] and [`pf_filter()`], both of which effectively simulate time series of states. `.state` controls the simulation of initial locations and subsequent method dispatch in [`Patter.jl`](https://github.com/edwardlavender/Patter.jl). [`sim_states_init()`] handles the simulation of initial states in these routines. When `.state` is`
+#' * `"StateXY"`, the initial state comprises `x` and `y` coordinates;.
+#' * `"StateXYZD"`, the initial states comprises `x`, `y` and `z` coordinates and an initial direction;
 #'
-#' The state must match the movement model (see `.move`):
+#' All states additionally include a `map_value` field that defines the value on the movement map at (`x`, `y`).
+#'
+#' The outcome of [`sim_states_init()`] is a [`data.table`] of initial state(s), which is coerced to a `Vector` of `State`s in `Julia` for the simulation. In [`Patter.jl`](https://github.com/edwardlavender/Patter.jl), the simulation of subsequent states depends on the input state and the movement model.
+#'
+#' The state must match the movement model (see [`ModelMove`]):
 #' * For `"StateXY"`, a movement model that simulates step lengths and turning angles and updates state components (that is, `x` and `y` coordinates) is required;
 #' * For `"StateXYZD"`, a movement model that simulates step lengths, changes in turning angles and changes in depth and updates `x`, `y`, `z` and direction state components is required.
 #'
