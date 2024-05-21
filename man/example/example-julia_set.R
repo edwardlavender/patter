@@ -8,7 +8,7 @@ if (julia_run()) {
 
   # Define a map of the study area & export
   # > This map defines the region(s) within which movements are allowed
-  # > set_map() makes it available to `Julia` routines
+  # > `set_map()` makes it available to `Julia` routines (see ?`ModelMove`)
   map <- dat_gebco()
   terra::plot(map)
   set_map(map)

@@ -2,9 +2,9 @@
 #' @description These are functions that assign objects to variable names in Julia.
 #' @details
 #' The following functions are exported:
-#' * [`set.seed()`] sets a seed in both `R` and `Julia`.
+#' * [`set_seed()`] sets a seed in both `R` and `Julia`.
 #'    - It is often a good idea to call [`set_seed()`] at the start of your workflow.
-#' * [`set_map()`] exports a [`SpatRaster`] map of the study area to a variable named `env` in `Julia`.
+#' * [`set_map()`] exports a [`SpatRaster`] map of the study area to a variable named `env` in `Julia` (see [`ModelMove`]).
 #'    - Export the map at the start of your workflow.
 #'
 #' Other functions are internal.

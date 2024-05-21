@@ -55,11 +55,11 @@ These are functions that assign objects to variable names in Julia.
 \details{
 The following functions are exported:
 \itemize{
-\item \code{\link[=set.seed]{set.seed()}} sets a seed in both \code{R} and \code{Julia}.
+\item \code{\link[=set_seed]{set_seed()}} sets a seed in both \code{R} and \code{Julia}.
 \itemize{
 \item It is often a good idea to call \code{\link[=set_seed]{set_seed()}} at the start of your workflow.
 }
-\item \code{\link[=set_map]{set_map()}} exports a \code{\link{SpatRaster}} map of the study area to a variable named \code{env} in \code{Julia}.
+\item \code{\link[=set_map]{set_map()}} exports a \code{\link{SpatRaster}} map of the study area to a variable named \code{env} in \code{Julia} (see \code{\link{ModelMove}}).
 \itemize{
 \item Export the map at the start of your workflow.
 }
@@ -78,7 +78,7 @@ if (julia_run()) {
 
   # Define a map of the study area & export
   # > This map defines the region(s) within which movements are allowed
-  # > set_map() makes it available to `Julia` routines
+  # > `set_map()` makes it available to `Julia` routines (see ?`ModelMove`)
   map <- dat_gebco()
   terra::plot(map)
   set_map(map)
