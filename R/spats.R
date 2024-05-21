@@ -30,6 +30,22 @@ spatContainsNA <- function(.x) {
 #' @rdname spat
 #' @keywords internal
 
+# Check if a SpatRaster contains any NAs (TRUE, FALSE)
+spatAllNA <- function(.x) {
+  # Check if .x only contains NAs
+  # * This may fail for large rasters b/c all values have to be loaded in memory
+  bool <- tryCatch(terra::global(.x, function(x) all(is.na(x)))[1, 1],
+                   error = function(e) e)
+  # If we receive an error, set bool = FALSE
+  if (inherits(bool, "error")) {
+    bool <- FALSE
+  }
+  bool
+}
+
+#' @rdname spat
+#' @keywords internal
+
 # Define a 'box' within which 2D movements are always valid
 # - This is NULL if the SpatRaster contains NAs
 # - Otherwise, it is the extent, shrunk by `.mobility`
