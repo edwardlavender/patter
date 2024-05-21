@@ -103,8 +103,8 @@ if (julia_run()) {
   #### Run the forward filter
   # (optional) Define initial states, by:
   # A) Starting the filter in the correct location by masking `.map`
-  # A) Specifying a `map_init()` method based on the observation model
-  # B) Specifying a complete data.table of initial state(s)
+  # B) Specifying a `map_init()` method based on the observation model
+  # C) Specifying a complete data.table of initial state(s)
   origin <- terra::setValues(map, NA)
   origin[paths$cell_id[1]] <- terra::extract(map, paths$cell_id[1])
   # Define a `Patter.logpdf_obs()` method
