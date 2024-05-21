@@ -15,7 +15,8 @@ if (julia_run()) {
 
   #### Define study area
   # `map` is a SpatRaster that defines the region within which movements are permitted
-  # Here, `map` represents the bathymetry of the west coast of Scotland
+  # Here, we consider the movements of an aquatic animal in Scotland
+  # ... `map` represents the bathymetry in the relevant region
   # Use `set_map()` to export the map to `Julia`
   map <- dat_gebco()
   terra::plot(map)
@@ -25,12 +26,21 @@ if (julia_run()) {
   #### --------------------------------------------------
   #### Simulation-based workflow
 
+  #### Scenario
+  # We have studied the movements of flapper skate off the west coast of Scotland.
+  # We have collected acoustic detections at receivers and depth time series.
+  # Here, we simulate movements and acoustic/archival observations arising from movements.
+  # We then apply particle filtering to the 'observations' to reconstruct
+  # ... simulated movements.
+
   #### Simulate an acoustic array
   moorings <- sim_array(.map = dat_gebco(),
                         .timeline = timeline,
                         .n_receiver = 100L)
 
-  # `moorings` includes the following default detection probability parameters:
+  # `moorings` includes the following default observation model parameters
+  # * These describe how detection probability declines with distance from a receiver
+  # * These are the parameters of the `ModelObsAcousticLogisTrunc` observation model
   a <- moorings$receiver_alpha[1]
   b <- moorings$receiver_beta[1]
   g <- moorings$receiver_gamma[1]
@@ -42,10 +52,12 @@ if (julia_run()) {
 
   #### Simulate a movement path
   # Define `State` sub-type
+  # > We will consider the animal's movement in two-dimensions (x, y)
   state    <- "StateXY"
-  # Define the maximum moveable distance between two time steps
+  # Define the maximum moveable distance (m) between two time steps
   mobility <- 750
   # Define the movement model
+  # > We consider a two-dimensional random walk
   move     <-
     move_xy(dbn_length = glue::glue("truncated(Gamma(1, 250.0), upper = {mobility})"),
             dbn_angle = "Uniform(-pi, pi)")
@@ -57,8 +69,12 @@ if (julia_run()) {
 
   #### Simulate observations
   # Define observation model(s)
+  # * We simulate acoustic observations and depth time series
+  # * Acoustic observations are simulated according to `ModelObsAcousticLogisTrunc`
+  # * Depth observations are simulated according to `ModelObsDepthUniform`
   models <- c("ModelObsAcousticLogisTrunc", "ModelObsDepthUniform")
-  # Define a `list` of parameters
+  # Define a `list` of parameters for the observation models
+  # (See `?ModelObs` for details)
   pars_1 <-
     moorings |>
     select(sensor_id = "receiver_id", "receiver_x", "receiver_y",
@@ -78,9 +94,10 @@ if (julia_run()) {
   # Identify detections
   detections <-
     obs$ModelObsAcousticLogisTrunc[[1]] |>
-    filter(obs == 1) |>
+    filter(obs == 1L) |>
     as.data.table()
   # Collate datasets for filter
+  # > This requires a list of datasets, one for each data type
   yobs <- list(obs$ModelObsAcousticLogisTrunc[[1]], obs$ModelObsDepthUniform[[1]])
 
   #### Example (1): Run the filter using the default options
@@ -111,7 +128,7 @@ if (julia_run()) {
 
   ## Analyse filter diagnostics
   # `maxlp` is the maximum log-posterior at each time step
-  # > exp(fwd$diagnostics$maxlp) = the highest likelihood score at each time step
+  # > exp(fwd$diagnostics$maxlp) = the highest likelihood score at each time step (0-1)
   # > This should not be too low!
   plot(fwd$diagnostics$timestamp, fwd$diagnostics$maxlp, type = "l")
   # `ess` is the effective sample size
@@ -121,7 +138,7 @@ if (julia_run()) {
   plot(fwd$diagnostics$timestamp, fwd$diagnostics$ess, type = "l")
   points(detections$timestamp, rep(0, nrow(detections)),
          pch = 21, col = "red", bg = "red", cex = 0.5)
-  abline(h = 500, col = "blue", lty = 3)
+  abline(h = 500, col = "royalblue", lty = 3)
 
   #### Example (2): Customise initial states for the filter
   # Mark the known starting location on `.map`
@@ -197,8 +214,8 @@ if (julia_run()) {
 
   #### Assemble datasets
 
-  # Define datasets for a selected individual
-  # > Here, we consider acoustic detections and depth time series
+  # Define datasets for a selected animal
+  # > Here, we consider detections and depth time series from an example flapper skate
   individual_id <- NULL
   acc <- dat_acoustics[individual_id == 25L, ][, individual_id := NULL]
   arc <- dat_archival[individual_id == 25L, ][, individual_id := NULL]
