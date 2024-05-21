@@ -3,6 +3,9 @@
 \name{ModelMove}
 \alias{ModelMove}
 \alias{move_xy}
+\alias{.model_move}
+\alias{ModelMoveXY}
+\alias{ModelMoveXYZD}
 \alias{move_xyzd}
 \title{Movement models}
 \usage{
@@ -43,6 +46,19 @@ These functions formulate movement model constructors for export to \code{Julia}
 }
 
 \verb{move_*()} functions map onto \code{MoveModel} structure in \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}.
+}
+\examples{
+# Patter contains multiple built-in `State` and `ModelMove` subtypes that you can use
+# ... (with custom parameters) simulate movements and for particle filtering.
+# See the help file for `?State` to use a new subtype.
+}
+\seealso{
+The routines in \code{\link{patter}} for the simulation of individual movements, observations and statistical modelling are built upon three Abstract Types defined in \code{Julia}:
+\itemize{
+\item See \code{\link{State}} for individual-state (location) structures;
+\item See \code{\link{ModelMove}} for movement model structures;
+\item See \code{\link{ModelObs}} for observation model structures;
+}
 }
 \author{
 Edward Lavender

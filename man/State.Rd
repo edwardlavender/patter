@@ -2,6 +2,7 @@
 % Please edit documentation in R/models.R
 \name{State}
 \alias{State}
+\alias{.state}
 \alias{StateXY}
 \alias{StateXYZD}
 \title{States}
@@ -200,6 +201,14 @@ if (julia_run()) {
   # TO DO
   # * Write a method to evaluate movement densities
 
+}
+}
+\seealso{
+The routines in \code{\link{patter}} for the simulation of individual movements, observations and statistical modelling are built upon three Abstract Types defined in \code{Julia}:
+\itemize{
+\item See \code{\link{State}} for individual-state (location) structures;
+\item See \code{\link{ModelMove}} for movement model structures;
+\item See \code{\link{ModelObs}} for observation model structures;
 }
 }
 \author{

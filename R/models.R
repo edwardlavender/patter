@@ -25,9 +25,14 @@
 #' To use custom [`ModelObs`] sub-types, see Examples.
 #'
 #' @example man/example/example-State.R
+#' @seealso
+#' The routines in [`patter`] for the simulation of individual movements, observations and statistical modelling are built upon three Abstract Types defined in `Julia`:
+#' * See [`State`] for individual-state (location) structures;
+#' * See [`ModelMove`] for movement model structures;
+#' * See [`ModelObs`] for observation model structures;
 #' @author Edward Lavender
 #' @name State
-#' @aliases StateXY StateXYZD
+#' @aliases .state StateXY StateXYZD
 NULL
 
 
@@ -53,9 +58,10 @@ NULL
 #' To use custom [`ModelObs`] sub-types, see Examples.
 #'
 #' @example man/example/example-ModelObs.R
+#' @inherit State seealso
 #' @author Edward Lavender
 #' @name ModelObs
-#' @aliases ModelObsAcousticLogisTrunc ModelObsDepthUniform ModelObsDepthNormalTrunc
+#' @aliases .model_obs ModelObsAcousticLogisTrunc ModelObsDepthUniform ModelObsDepthNormalTrunc
 NULL
 
 
@@ -69,7 +75,7 @@ NULL
 #'
 #' @details
 #'
-#' #' `.move` is a `character` that defines a movement model structure implemented in Julia (that is, a `ModelMove` constructor). `.move_*()` functions are convenience wrappers for the construction of movement models. Currently implemented options are:
+#' `.move` is a `character` that defines a movement model structure implemented in Julia (that is, a `ModelMove` constructor). `.move_*()` functions are convenience wrappers for the construction of movement models. Currently implemented options are:
 #' * [`move_xy()`], which specifies a movement model in terms of the distribution of step lengths and turning angles;
 #' * [`move_xyzd()`], which specifies a movement model in terms of the distribution of step lengths, changes in turning angles and changes in depth;
 #'
@@ -79,8 +85,11 @@ NULL
 #'
 #' `move_*()` functions map onto `MoveModel` structure in [`Patter.jl`](https://github.com/edwardlavender/Patter.jl).
 #'
+#' @example man/example/example-ModelMove.R
+#' @inherit State seealso
 #' @author Edward Lavender
 #' @name ModelMove
+#' @aliases .model_move ModelMoveXY ModelMoveXYZD move_xy move_xyzd
 
 #' @rdname ModelMove
 #' @export
@@ -89,10 +98,6 @@ move_xy <- function(length = "truncated(Gamma(1, 250.0), upper = 750.0)",
                     angle = "Uniform(-pi, pi)") {
   julia_check_exists("env")
   glue('ModelMoveXY(env, {length}, {angle});')
-}
-
-move_xyz <- function() {
-
 }
 
 #' @rdname ModelMove
