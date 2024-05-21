@@ -10,7 +10,7 @@ sim_path_walk(
   .state = "StateXY",
   .xinit = NULL,
   .n_path = 1L,
-  .move,
+  .model_move,
   .plot = TRUE,
   .one_page = FALSE
 )
@@ -40,7 +40,7 @@ sim_path_walk(
 \item \code{.n_path} is an \code{integer} that defines the number of paths to simulate.
 }}
 
-\item{.move}{A character string that defines the movement model (see \code{\link{ModelMove}} and \code{\link{glossary}}).}
+\item{.model_move}{A \code{character} string that defines the movement model (see \code{\link{ModelMove}} and \code{\link{glossary}}).}
 
 \item{.plot, .one_page}{Plot options.
 \itemize{

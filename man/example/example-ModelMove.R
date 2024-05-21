@@ -62,9 +62,9 @@ if (julia_run()) {
                .n_path = 2L, .one_page = FALSE)
   # Compare different movement models via `sim_path_walk()`
   pp <- par(mfrow = c(2, 2))
-  args$.move <- move_xy()
+  args$.model_move <- move_xy()
   do.call(sim_path_walk, args)
-  args$.move <- move_xy(dbn_angle = "VonMises(0.1, 0.1)")
+  args$.model_move <- move_xy(dbn_angle = "VonMises(0.1, 0.1)")
   do.call(sim_path_walk, args)
   par(pp)
 

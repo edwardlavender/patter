@@ -113,7 +113,7 @@ sim_array <- function(.map,
 #'    - If `.xinit` is `NULL`, initial states are sampled from `.map` (via [`sim_states_init()`]).
 #'    - Otherwise, `.xinit` must be a [`data.table`] with one column for each state dimension.
 #' * `.n_path` is an `integer` that defines the number of paths to simulate.
-#' @param .move A character string that defines the movement model (see [`ModelMove`] and [`glossary`]).
+#' @param .model_move A `character` string that defines the movement model (see [`ModelMove`] and [`glossary`]).
 #' @param .plot,.one_page Plot options.
 #' * `.plot` is a `logical` variable that defined whether or not to plot `.map` and simulated path(s). Each path is plotted on a separate plot.
 #' * `.one_page` is a logical variable that defines whether or not to produce all plots on a single page.
@@ -152,12 +152,12 @@ sim_path_walk <- function(.map,
                           .timeline,
                           .state = "StateXY",
                           .xinit = NULL, .n_path = 1L,
-                          .move,
+                          .model_move,
                           .plot = TRUE, .one_page = FALSE) {
 
   #### Check user inputs
   check_inherits(.state, "character")
-  check_inherits(.move, "character")
+  check_inherits(.model_move, "character")
 
   #### Set initial state
   .xinit <- sim_states_init(.map = .map,
@@ -173,7 +173,7 @@ sim_path_walk <- function(.map,
 
   #### Set movement model
   set_timeline(.timeline)
-  set_move(.move)
+  set_move(.model_move)
 
   #### Simulate random walk
   set_path()
@@ -204,7 +204,7 @@ sim_path_walk <- function(.map,
     as.data.table()
 
   #### Validate simulation (check for NAs)
-  # This is no longer required as Patter.simulate_move() is implemented with n_trial = Inf
+  # This is no longer required as `Patter.simulate_move()` is implemented with `n_trial = Inf`
   # This ensures consistency between Patter.jl & patter
 
   #### Visualise paths & return

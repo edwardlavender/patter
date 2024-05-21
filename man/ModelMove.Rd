@@ -57,7 +57,7 @@ In \code{\link{patter}}, movement models are required:
 \item To run the particle smoother, via \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}};
 }
 
-In \code{R} functions, the movement-model instance is specified via the \code{.model_move} argument. This argument expects a \code{character} string defining a \code{\link{ModelMove}} instance that can be evaluated in \code{Julia} (that is, a \code{\link{ModelMove}} constructor). \verb{move_*()} functions are convenience functions for the specification of these constructors for the built-in sub-types. All \code{\link{ModelMove}} instances contain a \code{map} field that defines the region(s) within which movements are permitted. To use a \verb{move_*()} function, the map should be available in \code{Julia} as \code{env} (see \code{\link[=set_map]{set_map()}}). The additional components of the movement model are specified via \verb{.move_*()} function arguments as \code{character} strings of \code{Julia} code. Currently implemented \verb{move_*()} functions are:
+In \code{R} functions, the movement-model instance is specified via the \code{.model_move} argument. This argument expects a \code{character} string defining a \code{\link{ModelMove}} instance that can be evaluated in \code{Julia} (that is, a \code{\link{ModelMove}} constructor). \verb{move_*()} functions are convenience functions for the specification of these constructors for the built-in sub-types. All \code{\link{ModelMove}} instances contain a \code{map} field that defines the region(s) within which movements are permitted. To use a \verb{move_*()} function, the map should be available in \code{Julia} as \code{env} (see \code{\link[=set_map]{set_map()}}). The additional components of the movement model are specified via \verb{move_*()} function arguments as \code{character} strings of \code{Julia} code. Currently implemented \verb{move_*()} functions are:
 \itemize{
 \item \code{\link[=move_xy]{move_xy()}}, which specifies a movement model of subtype \code{\link{ModelMoveXY}} in terms of the distributions of step lengths and turning angles;
 \item \code{\link[=move_xyzd]{move_xyzd()}}, which specifies a movement model of subtype \code{\link{ModelMoveXYZD}} in terms of the distributions of step lengths, changes in turning angles and changes in depth;
@@ -134,9 +134,9 @@ if (julia_run()) {
                .n_path = 2L, .one_page = FALSE)
   # Compare different movement models via `sim_path_walk()`
   pp <- par(mfrow = c(2, 2))
-  args$.move <- move_xy()
+  args$.model_move <- move_xy()
   do.call(sim_path_walk, args)
-  args$.move <- move_xy(dbn_angle = "VonMises(0.1, 0.1)")
+  args$.model_move <- move_xy(dbn_angle = "VonMises(0.1, 0.1)")
   do.call(sim_path_walk, args)
   par(pp)
 

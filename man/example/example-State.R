@@ -101,7 +101,7 @@ if (julia_run()) {
   paths <- sim_path_walk(.map = map,
                          .timeline = timeline,
                          .state = "StateXYZ",
-                         .move = move_xyz(),
+                         .model_move = move_xyz(),
                          .plot = TRUE)
 
   #### Simulate observations arising from the simulated path

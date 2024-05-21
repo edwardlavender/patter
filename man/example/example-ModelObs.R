@@ -26,7 +26,7 @@ if (julia_run()) {
                          .timeline = timeline,
                          .state = "StateXYZD",
                          .xinit = NULL, .n_path = 1L,
-                         .move = move_xyzd(),
+                         .model_move = move_xyzd(),
                          .plot = TRUE,
                          .one_page = TRUE)
 
