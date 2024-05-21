@@ -2,7 +2,7 @@
 % Please edit documentation in R/models.R
 \name{State}
 \alias{State}
-\alias{StateXY,}
+\alias{StateXY}
 \alias{StateXYZD}
 \title{States}
 \description{

@@ -24,7 +24,7 @@
 #' @example man/example/example-State.R
 #' @author Edward Lavender
 #' @name State
-#' @aliases StateXY, StateXYZD
+#' @aliases StateXY StateXYZD
 NULL
 
 
@@ -52,7 +52,7 @@ NULL
 #' @example man/example/example-ModelObs.R
 #' @author Edward Lavender
 #' @name ModelObs
-#' @aliases ModelObsAcousticLogisTrunc, ModelObsDepthUniform, ModelObsDepthNormalTrunc
+#' @aliases ModelObsAcousticLogisTrunc ModelObsDepthUniform ModelObsDepthNormalTrunc
 NULL
 
 

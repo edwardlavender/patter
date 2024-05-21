@@ -2,8 +2,8 @@
 % Please edit documentation in R/models.R
 \name{ModelObs}
 \alias{ModelObs}
-\alias{ModelObsAcousticLogisTrunc,}
-\alias{ModelObsDepthUniform,}
+\alias{ModelObsAcousticLogisTrunc}
+\alias{ModelObsDepthUniform}
 \alias{ModelObsDepthNormalTrunc}
 \title{Observation models}
 \description{
