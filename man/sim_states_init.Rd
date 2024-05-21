@@ -50,7 +50,7 @@ states_init(.state, .coords)
 \method{states_init}{StateXYZD}(.state, .coords)
 }
 \arguments{
-\item{.map}{A \code{\link{SpatRaster}} that defines the study area for the simulation. Here, \code{.map} is used to:
+\item{.map}{A \code{\link{SpatRaster}} that defines the study area for the simulation (see \code{\link{glossary}}). Here, \code{.map} is used to:
 \itemize{
 \item Sample initial coordinates, via \code{\link[=coords_init]{coords_init()}}, if \code{.xinit = NULL};
 }}
@@ -85,19 +85,22 @@ These internal functions support the simulation of initial states for the simula
 
 If \code{.xinit = NULL}, initial coordinates are sampled from \code{.map}.
 
-The region(s) within \code{.map} from which initial coordinates are sampled can be optionally restricted by the provision of the observation datasets and the associated model sub-types (via \code{\link[=map_init_iter]{map_init_iter()}}). This option does not apply to \code{\link[=sim_path_walk]{sim_path_walk()}} but is used in \code{\link[=pf_filter]{pf_filter()}} where \code{.models} is supplied. In this instance, \code{\link[=map_init_iter]{map_init_iter()}} iterates over each model and uses the \code{\link[=map_init]{map_init()}} generic to update \code{.map}. The following methods are implemented:
+The region(s) within \code{.map} from which initial coordinates are sampled can be optionally restricted by the provision of the observation datasets and the associated model sub-types (via \code{\link[=map_init_iter]{map_init_iter()}}). This option does not apply to \code{\link[=sim_path_walk]{sim_path_walk()}} but is used in \code{\link[=pf_filter]{pf_filter()}} where observation models (here, \code{.models}) are supplied. In this instance, \code{\link[=map_init_iter]{map_init_iter()}} iterates over each model and uses the \code{\link[=map_init]{map_init()}} generic to update \code{.map}. The following methods are implemented:
 \itemize{
 \item \code{\link[=map_init.default]{map_init.default()}}. The default methods returns \code{.map} unchanged.
-\item \code{\link[=map_init.ModelObsAcousticLogisTrunc]{map_init.ModelObsAcousticLogisTrunc()}}. This method uses acoustic observations to restrict \code{.map} via Lavender et al.'s (2023) acoustic--container algorithm. The function identifies the receiver(s) that recorded detection(s) immediately before, at and following the first time step (\code{.timeline[start]}, where \code{start} is \code{1} if \verb{.direction = "forward} and \code{length(.timeline)} otherwise). The 'container' within which the individual must be located from the perspective of each receiver is defined by the time difference and the individual's mobility (that is, the maximum moveable distance the individual could move between two time steps), which must be specified in \code{pars$mobility}. The intersection between all containers defines the possible locations of the individual at the first time step.
-\item \code{\link[=map_init.ModelObsDepthUniform]{map_init.ModelObsDepthUniform()}}. This method uses the depth observations to restrict \code{.map} (which should represent the bathymetry in a region). The individual must be within a region in which the observed depth at \code{.timeline[start]} is within a depth envelope around the bathymetric depth defined by the parameters \code{depth_shallow_eps} and \code{depth_deep_eps}. (If there is no observation at \code{.timeline[start]}, \code{.map} is returned unchanged.)
-\item \code{\link[=map_init.ModelObsDepthNormalTrunc]{map_init.ModelObsDepthNormalTrunc()}}. This method also uses depth observations to restrict \code{.map}. The individual must be in a location where the bathymetric depth plus the \code{depth_deep_eps} parameter at \code{.timeline[start]} is greater than or equal to the observed depth at \code{.timeline[start]}. (If there is no observation at \code{.timeline[start]}, \code{.map} is returned unchanged.)
+\item \code{\link[=map_init.ModelObsAcousticLogisTrunc]{map_init.ModelObsAcousticLogisTrunc()}}. This method uses acoustic observations to restrict \code{.map} via Lavender et al.'s (\href{https://doi.org/10.1111/2041-210X.14193}{2023}) acoustic--container algorithm. The function identifies the receiver(s) that recorded detection(s) immediately before, at and following the first time step (\code{.timeline[start]}, where \code{start} is \code{1} if \verb{.direction = "forward} and \code{length(.timeline)} otherwise). The 'container' within which the individual must be located from the perspective of each receiver is defined by the time difference and the individual's mobility (that is, the maximum moveable distance the individual could move between two time steps), which must be specified in \code{pars$mobility}. The intersection between all containers defines the possible locations of the individual at the first time step.
+\item \code{\link[=map_init.ModelObsDepthUniform]{map_init.ModelObsDepthUniform()}}. This method uses the depth observations to restrict \code{.map} (which should represent the bathymetry in a region). The individual must be within a region in which the observed depth at \code{.timeline[start]} is within a depth envelope around the bathymetric depth defined by the parameters \code{depth_shallow_eps} and \code{depth_deep_eps} (see \code{\link{ModelObs}}). (If there is no observation at \code{.timeline[start]}, \code{.map} is returned unchanged.)
+\item \code{\link[=map_init.ModelObsDepthNormalTrunc]{map_init.ModelObsDepthNormalTrunc()}}. This method also uses depth observations to restrict \code{.map}. The individual must be in a location where the bathymetric depth plus the \code{depth_deep_eps} parameter at \code{.timeline[start]} is greater than or equal to the observed depth at \code{.timeline[start]} (see \code{\link{ModelObs}}). (If there is no observation at \code{.timeline[start]}, \code{.map} is returned unchanged.)
 }
 
-To handle custom \code{ModelObs} sub-types, process \code{.map} beforehand or write an appropriate \code{\link[=map_init]{map_init()}} method.
+To handle custom \code{\link{ModelObs}} sub-types, process \code{.map} beforehand or write an appropriate \code{\link[=map_init]{map_init()}} method.
 
 Using \code{.map}, a \code{\link{data.table}} of \code{.n} initial coordinates (\code{map_value}, \code{x}, \code{y}) is sampled using \code{\link[=coords_init]{coords_init()}}. Additional state dimensions are added, as required depending on the \code{.state}, via the S3 generic \code{\link[=states_init]{states_init()}}. For custom \code{\link{State}} sub-types, a corresponding \code{\link[=states_init]{states_init()}} method is required (or supply \code{.xinit} yourself).
 
 If \code{.xinit()} is provided and \code{.n} initial states are provided, \code{.xinit} is returned unchanged. Otherwise, \code{.n} initial states are resampled from \code{.xinit}, with replacement, and returned.
+}
+\seealso{
+These functions are used to initialise simulated movement trajectories in \code{\link[=sim_path_walk]{sim_path_walk()}} and \code{\link[=pf_filter]{pf_filter()}}.
 }
 \author{
 Edward Lavender

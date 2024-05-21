@@ -28,6 +28,9 @@ julia_works <- function(.action = abort) {
   works
 }
 
+#' @rdname julia_helper
+#' @keywords internal
+
 # Find the path to a Julia Project
 # * If missing, search global options & environmental variables
 # * If specified, return as inputted

@@ -1,6 +1,6 @@
 #' @title Simulation: initial states
 #' @description Simulate initial states for animal movement walks.
-#' @param .map A [`SpatRaster`] that defines the study area for the simulation. Here, `.map` is used to:
+#' @param .map A [`SpatRaster`] that defines the study area for the simulation (see [`glossary`]). Here, `.map` is used to:
 #' * Sample initial coordinates, via [`coords_init()`], if `.xinit = NULL`;
 #'
 #' @param .timeline,.direction,.datasets,.models,.pars (optional) Additional arguments used to restrict `.map`, via [`map_init()`], before sampling initial states.
@@ -23,18 +23,19 @@
 #'
 #' If `.xinit = NULL`, initial coordinates are sampled from `.map`.
 #'
-#' The region(s) within `.map` from which initial coordinates are sampled can be optionally restricted by the provision of the observation datasets and the associated model sub-types (via [`map_init_iter()`]). This option does not apply to [`sim_path_walk()`] but is used in [`pf_filter()`] where `.models` is supplied. In this instance, [`map_init_iter()`] iterates over each model and uses the [`map_init()`] generic to update `.map`. The following methods are implemented:
+#' The region(s) within `.map` from which initial coordinates are sampled can be optionally restricted by the provision of the observation datasets and the associated model sub-types (via [`map_init_iter()`]). This option does not apply to [`sim_path_walk()`] but is used in [`pf_filter()`] where observation models (here, `.models`) are supplied. In this instance, [`map_init_iter()`] iterates over each model and uses the [`map_init()`] generic to update `.map`. The following methods are implemented:
 #' * [`map_init.default()`]. The default methods returns `.map` unchanged.
-#' * [`map_init.ModelObsAcousticLogisTrunc()`]. This method uses acoustic observations to restrict `.map` via Lavender et al.'s (2023) acoustic--container algorithm. The function identifies the receiver(s) that recorded detection(s) immediately before, at and following the first time step (`.timeline[start]`, where `start` is `1` if `.direction = "forward` and `length(.timeline)` otherwise). The 'container' within which the individual must be located from the perspective of each receiver is defined by the time difference and the individual's mobility (that is, the maximum moveable distance the individual could move between two time steps), which must be specified in `pars$mobility`. The intersection between all containers defines the possible locations of the individual at the first time step.
-#' * [`map_init.ModelObsDepthUniform()`]. This method uses the depth observations to restrict `.map` (which should represent the bathymetry in a region). The individual must be within a region in which the observed depth at `.timeline[start]` is within a depth envelope around the bathymetric depth defined by the parameters `depth_shallow_eps` and `depth_deep_eps`. (If there is no observation at `.timeline[start]`, `.map` is returned unchanged.)
-#' * [`map_init.ModelObsDepthNormalTrunc()`]. This method also uses depth observations to restrict `.map`. The individual must be in a location where the bathymetric depth plus the `depth_deep_eps` parameter at `.timeline[start]` is greater than or equal to the observed depth at `.timeline[start]`. (If there is no observation at `.timeline[start]`, `.map` is returned unchanged.)
+#' * [`map_init.ModelObsAcousticLogisTrunc()`]. This method uses acoustic observations to restrict `.map` via Lavender et al.'s ([2023](https://doi.org/10.1111/2041-210X.14193)) acoustic--container algorithm. The function identifies the receiver(s) that recorded detection(s) immediately before, at and following the first time step (`.timeline[start]`, where `start` is `1` if `.direction = "forward` and `length(.timeline)` otherwise). The 'container' within which the individual must be located from the perspective of each receiver is defined by the time difference and the individual's mobility (that is, the maximum moveable distance the individual could move between two time steps), which must be specified in `pars$mobility`. The intersection between all containers defines the possible locations of the individual at the first time step.
+#' * [`map_init.ModelObsDepthUniform()`]. This method uses the depth observations to restrict `.map` (which should represent the bathymetry in a region). The individual must be within a region in which the observed depth at `.timeline[start]` is within a depth envelope around the bathymetric depth defined by the parameters `depth_shallow_eps` and `depth_deep_eps` (see [`ModelObs`]). (If there is no observation at `.timeline[start]`, `.map` is returned unchanged.)
+#' * [`map_init.ModelObsDepthNormalTrunc()`]. This method also uses depth observations to restrict `.map`. The individual must be in a location where the bathymetric depth plus the `depth_deep_eps` parameter at `.timeline[start]` is greater than or equal to the observed depth at `.timeline[start]` (see [`ModelObs`]). (If there is no observation at `.timeline[start]`, `.map` is returned unchanged.)
 #'
-#' To handle custom `ModelObs` sub-types, process `.map` beforehand or write an appropriate [`map_init()`] method.
+#' To handle custom [`ModelObs`] sub-types, process `.map` beforehand or write an appropriate [`map_init()`] method.
 #'
 #' Using `.map`, a [`data.table`] of `.n` initial coordinates (`map_value`, `x`, `y`) is sampled using [`coords_init()`]. Additional state dimensions are added, as required depending on the `.state`, via the S3 generic [`states_init()`]. For custom [`State`] sub-types, a corresponding [`states_init()`] method is required (or supply `.xinit` yourself).
 #'
 #' If `.xinit()` is provided and `.n` initial states are provided, `.xinit` is returned unchanged. Otherwise, `.n` initial states are resampled from `.xinit`, with replacement, and returned.
 #'
+#' @seealso These functions are used to initialise simulated movement trajectories in [`sim_path_walk()`] and [`pf_filter()`].
 #' @author Edward Lavender
 #' @name sim_states_init
 

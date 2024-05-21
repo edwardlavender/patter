@@ -4,6 +4,7 @@
 \alias{julia_helper}
 \alias{julia_run}
 \alias{julia_works}
+\alias{julia_proj_path}
 \alias{julia_proj_generate}
 \alias{julia_proj_activate}
 \alias{julia_proj_temp}
@@ -23,6 +24,8 @@
 julia_run()
 
 julia_works(.action = abort)
+
+julia_proj_path(JULIA_PROJ)
 
 julia_proj_generate(JULIA_PROJ)
 
