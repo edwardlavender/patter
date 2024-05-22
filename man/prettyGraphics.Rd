@@ -5,7 +5,7 @@
 \alias{one_page}
 \alias{par_mf}
 \alias{add_sp_path}
-\title{\href{https://github.com/edwardlavender/prettyGraphics}{\code{prettyGraphics}} helpers in \code{\link{patter}}}
+\title{\href{https://github.com/edwardlavender/prettyGraphics}{\code{prettyGraphics}} in \code{\link{patter}}}
 \usage{
 one_page(.one_page, .n = 1L)
 
