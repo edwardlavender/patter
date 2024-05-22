@@ -24,12 +24,10 @@
 #'
 #' Data are arranged by `.split` and `timestamp`.
 #'
+#' @example man/example/example-coa.R
 #' @seealso
 #' * To derive location samples from a particle filtering algorithm, see [`pf_filter()`] and associates;
 #' * For mapping utilisation distributions from coordinates, see `map_*()` functions (i.e., [`map_pou()`] and [`map_dens()`]);
-#'
-#' @example man/examples/coa-examples.R
-#'
 #' @author Edward Lavender
 #' @export
 
