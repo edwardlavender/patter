@@ -111,8 +111,8 @@ sim_array <- function(.map,
 #' @param .timeline A `POSIXct` vector of regularly spaced time stamps that defines the timeline for the simulation. Here, `.timeline` is used to:
 #' * Define the number of time steps for the simulation;
 #' * Define the time resolution of the simulation;
-#' @param .state A `character` that defines the state type (see [`glossary`]).
-#' @param .xinit,.n_path Initial state arguments.
+#' @param .state A `character` that defines the [`State`] type (see [`glossary`]).
+#' @param .xinit,.n_path Initial [`State`] arguments.
 #' * `.xinit` specifies the initial states for the simulation (one for each movement path).
 #'    - If `.xinit` is `NULL`, initial states are sampled from `.map` (via [`sim_states_init()`]).
 #'    - Otherwise, `.xinit` must be a [`data.table`] with one column for each state dimension.
@@ -123,20 +123,21 @@ sim_array <- function(.map,
 #' * `.one_page` is a logical variable that defines whether or not to produce all plots on a single page.
 #'
 #' @details
-#' This function simulates movement paths via `Patter.simulate_path_walk()`:
-#' * The internal function [`sim_states_init()`] is used to set the initial state(s) for the simulation; that is, initial coordinates and other variables (one for each `.n_path`). If `.state` is one of the built-in options (see [`glossary`]), initial state(s) can be sampled from `.map`. Otherwise, additional methods or a [`data.table`] of initial states must be provided (see [`sim_states_init()`]). Initial states provided in `.xinit` are re-sampled, with replacement, if required, such that there is one initial state for each simulated path. Initial states are assigned to an `xinit` object in Julia, which is a vector of `State`s.
-#' * Using the initial states, the Julia function `Patter.simulate_path_walk()` simulates movement path(s) using the movement model.
+#' This function simulates movement paths via [`Patter.simulate_path_walk()`](https://edwardlavender.github.io/Patter.jl):
+#' * The internal function [`sim_states_init()`] is used to set the initial state(s) for the simulation; that is, initial coordinates and other variables (one for each `.n_path`). If `.state` is one of the built-in options (see [`State`]), initial state(s) can be sampled from `.map`. Otherwise, additional methods or a [`data.table`] of initial states must be provided (see [`sim_states_init()`]). Initial states provided in `.xinit` are re-sampled, with replacement, if required, such that there is one initial state for each simulated path. Initial states are assigned to an `xinit` object in `Julia`, which is a `Vector` of [`State`]s.
+#' * Using the initial states, the `Julia` function [`Patter.simulate_path_walk()`](https://edwardlavender.github.io/Patter.jl) simulates movement path(s) using the movement model (`.model_move`).
 #' * Movement paths are passed back to `R` for convenient visualisation and analysis.
 #'
-#' To use a new `.state` and/or movement model type in [`sim_path_walk()`]:
+#' To use a new `.state` and/or `.model_move` sub-type for [`sim_path_walk()`]:
 #' * Define a `State` sub-type in `Julia` and provide the name as a `character` string to this function;
 #' * To initialise the simulation, write a [`states_init()`] method to enable automated sampling of initial states via [`sim_states_init()`] or provide a [`data.table`] of initial states to `.xinit`;
-#' * Define a corresponding `ModelMove` sub-type in `Julia`;
-#' * Instantiate a `ModelMove` instance (that is, define a specific movement model) in `Julia`;
-#' * Write a `Patter.r_get_states()` method to translate the Vector of `State`s from `Patter.simulate_path_walk()` into a `DataFrame` that can be passed to `R`;
+#' * Define a corresponding [`ModelMove`] sub-type in `Julia`;
+#' * Instantiate a [`ModelMove`] instance (that is, define a specific movement model);
+#' * Provide a [`Patter.r_get_states()`](https://edwardlavender.github.io/Patter.jl) method to translate the Vector of `State`s from `Patter.simulate_path_walk()` into a `DataFrame` that can be passed to `R`;
 #'
 #' [`sim_path_walk()`] replaces [`flapper::sim_path_sa()`](https://edwardlavender.github.io/flapper/reference/sim_path_sa.html). Other [`flapper::sim_path_*()`](https://edwardlavender.github.io/flapper/reference/sim_path_-times.html) functions are not currently implemented in [`patter`].
 #'
+#' @example man/example/example-sim_path_walk.R
 #' @return [`sim_path_walk()`] returns a [`data.table`] with the following columns:
 #' * `path_id`---an `integer` vector that identifies each path;
 #' * `timestep`---an `integer` vector that defines the time step;
