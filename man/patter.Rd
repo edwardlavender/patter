@@ -4,22 +4,132 @@
 \name{patter}
 \alias{patter-package}
 \alias{patter}
-\title{\code{\link{patter}} for passive acoustic telemetry}
+\title{\code{\link{patter}}: particle algorithms for animal movement}
 \description{
-\code{\link{patter}} is a \code{R} implementation of particle filtering, smoothing and sampling algorithms for animal movement modelling in passive acoustic telemetry systems. This methodology enables the reconstruction of movement paths and patterns of space use \code{\link{patter}} unifies a suite of methods formerly known as the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} algorithms (Lavender et al., 2023) and supersedes the experimental \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package.
+\code{\link{patter}} provides particle filtering, smoothing and sampling algorithms for animal movement modelling, with a focus on passive acoustic telemetry systems. This wraps and enhances a fast \code{Julia} backend (\href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}}). The methodology enables the reconstruction of movement paths and patterns of space use. \code{\link{patter}} unifies a suite of methods formerly known as the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} algorithms  and supersedes the experimental \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package (Lavender et al., \href{https://doi.org/10.1111/2041-210X.14193}{2023}).
 }
+\section{Vignettes}{
+For an introduction to \code{\link{patter}}, use:
+\itemize{
+\item \code{vignette("a-methodology", package = "patter")} for a conceptual introduction to the methodology;
+\item \code{vignette("b-workflow-outline", package = "patter")} for an overview of the workflow;
+}
+
+For a full list of all functions, see \code{help(package = 'patter')}.
+}
+
+\section{Datasets}{
+For example datasets from the Movement Ecology of Flapper Skate project (\code{\link{datasets-mefs}}), which inspired \code{\link{patter}}, see:
+\itemize{
+\item \code{\link{dat_moorings}} for receiver locations and associated information;
+\item \code{\link{dat_acoustics}} for acoustic time series;
+\item \code{\link{dat_archival}} for archival (depth) time series;
+\item \code{\link[=dat_gebco]{dat_gebco()}} for a bathymetry grid;
+}
+
+To validate new datasets for use with \code{\link{patter}}, use TO DO.
+}
+
+\section{Set up \code{Julia}}{
+To link \code{\link{patter}} and the \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} \code{Julia} backend, use:
+\itemize{
+\item \code{\link[=julia_connect]{julia_connect()}} to connect to \code{R} to \code{Julia};
+\item \code{\link[=set_seed]{set_seed()}} to set the seed in \code{R} and \code{Julia};
+\item \code{\link[=set_map]{set_map()}} to make a \code{\link{SpatRaster}} of the study area available in \code{Julia};
+}
+
+These functions should be run at the start of every \code{R} session.
+}
+
+\section{Components}{
+\code{\link{patter}} is based on three Abstract Types, defined in \code{Julia}:
+\itemize{
+\item \code{\link{State}} structures hold the state (location) of an animal at a given time step;
+\item \code{\link{ModelMove}} structures hold movement model, used to simulate new states;
+\item \code{\link{ModelObs}} structures hold observation model parameters, used to evaluate the correspondence between simulated states and observations;
+}
+}
+
+\section{Simulation}{
+To simulate animal movement time series, see:
+\itemize{
+\item \code{\link[=sim_path_walk]{sim_path_walk()}} to simulate a movement path from a walk model (via \code{\link{ModelMove}});
+\item \code{\link[=sim_array]{sim_array()}} to simulate an acoustic array;
+\item \code{\link[=sim_observations]{sim_observations()}} to simulate observational time series (via \code{\link{ModelObs}});
+}
+
+To evaluate model skill in reconstructing simulated patterns, see \verb{skill_*()} functions:
+\itemize{
+\item \code{\link[=skill_mb]{skill_mb()}} to calculate mean bias;
+\item \code{\link[=skill_me]{skill_me()}} to calculate mean error;
+\item \code{\link[=skill_rmse]{skill_rmse()}} to calculate root mean squared error;
+\item \code{\link[=skill_R]{skill_R()}} to calculate Spearman's rank correlation coefficient;
+\item \code{\link[=skill_d]{skill_d()}} to calculate the index of agreement;
+}
+}
+
+\section{Data exploration}{
+For help with data acquisition, processing, checking and preliminary analyses, see the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package. This facilitates:
+\itemize{
+\item Data preparation;
+\item Spatial operations;
+\item Distance calculations;
+\item Movement analyses;
+}
+
+Please submit a \href{https://github.com/edwardlavender/patter/issues}{feature request} if you would like functions from \href{https://github.com/edwardlavender/flapper}{\code{flapper}} in \code{\link{patter}}.
+}
+
+\section{Algorithms}{
+The main thrust of \code{\link{patter}} is the provision of fast, integrated modelling workflow based on particle filtering for reconstructing animal movement paths and emergent patterns of space use from observational time series (with a focus on passive acoustic telemetry systems).
+
+\strong{To assemble datasets for particle filtering}, use \code{\link{assemble}}\verb{_*()} functions:
+\itemize{
+\item \code{\link[=assemble_acoustics]{assemble_acoustics()}} assembles an acoustic time series;
+\item \code{\link[=assemble_archival]{assemble_archival()}} assembles an archival time series;
+}
+
+Ancillary time series should be structured in the same way for inclusion in the particle filter.
+
+\strong{To implement particle filtering (PF) routines}, use:
+\itemize{
+\item \code{\link[=pf_filter]{pf_filter()}} to implement the particle filter;
+\item \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}} to implement the two-filter smoother;
+}
+
+\strong{For convenience plotting functions}, see:
+
+TO DO
+
+\strong{For common utility functions}, see:
+
+TO DO
+
+\strong{For mapping utilisation distributions}, use:
+
+TO DO
+}
+
+\section{Options}{
+For additional options in \code{\link{patter}}, see:
+\itemize{
+\item \code{\link{patter-progress}} to monitor function progress;
+}
+}
+
 \references{
 Lavender, E. et al. (2023). An integrative modelling framework for passive acoustic telemetry. Methods in Ecology and Evolution. \url{https://doi.org/10.1111/2041-210X.14193}.
 }
 \seealso{
-Useful links:
 \itemize{
-  \item \url{https://github.com/edwardlavender/patter/}
-  \item Report bugs at \url{https://github.com/edwardlavender/patter/issues/}
+\item For information on the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} algorithms, see Lavender et al. (\href{https://doi.org/10.1111/2041-210X.14193}{2023}).
+\item For information on \code{\link{patter}}'s predecessor, see \url{https://github.com/edwardlavender/flapper}.
+\item For further information on  \code{\link{patter}}, including useful resources, see \url{https://github.com/edwardlavender/patter}.
+\item For feature requests and bug reports, see \url{https://github.com/edwardlavender/patter/issues}.
+\item For the \code{Julia} backend, see \url{https://edwardlavender.github.io/Patter.jl}.
+\item For support, contact \href{mailto:edward.lavender@eawag.ch}{edward.lavender@eawag.ch}.
 }
-
 }
 \author{
-\strong{Maintainer}: Edward Lavender \email{edward.lavender@eawag.ch} (\href{https://orcid.org/0000-0002-8040-7489}{ORCID})
-
+Edward Lavender (\href{https://orcid.org/0000-0002-8040-7489}{ORCID})
 }

@@ -1,5 +1,112 @@
-#' @title [`patter`] for passive acoustic telemetry
-#' @description [`patter`] is a `R` implementation of particle filtering, smoothing and sampling algorithms for animal movement modelling in passive acoustic telemetry systems. This methodology enables the reconstruction of movement paths and patterns of space use [`patter`] unifies a suite of methods formerly known as the [`flapper`](https://github.com/edwardlavender/flapper) algorithms (Lavender et al., 2023) and supersedes the experimental [`flapper`](https://github.com/edwardlavender/flapper) package.
+#' @title [`patter`]: particle algorithms for animal movement
+#' @description [`patter`] provides particle filtering, smoothing and sampling algorithms for animal movement modelling, with a focus on passive acoustic telemetry systems. This wraps and enhances a fast `Julia` backend ([`Patter.jl`](https://edwardlavender.github.io/Patter.jl)). The methodology enables the reconstruction of movement paths and patterns of space use. [`patter`] unifies a suite of methods formerly known as the [`flapper`](https://github.com/edwardlavender/flapper) algorithms  and supersedes the experimental [`flapper`](https://github.com/edwardlavender/flapper) package (Lavender et al., [2023](https://doi.org/10.1111/2041-210X.14193)).
+#'
+#' # Vignettes
+#'
+#' For an introduction to [`patter`], use:
+#'
+#' * `vignette("a-methodology", package = "patter")` for a conceptual introduction to the methodology;
+#' * `vignette("b-workflow-outline", package = "patter")` for an overview of the workflow;
+#'
+#' For a full list of all functions, see `help(package = 'patter')`.
+#'
+#' # Datasets
+#'
+#' For example datasets from the Movement Ecology of Flapper Skate project ([`datasets-mefs`]), which inspired [`patter`], see:
+#'
+#' * [`dat_moorings`] for receiver locations and associated information;
+#' * [`dat_acoustics`] for acoustic time series;
+#' * [`dat_archival`] for archival (depth) time series;
+#' * [`dat_gebco()`] for a bathymetry grid;
+#'
+#' To validate new datasets for use with [`patter`], use TO DO.
+#'
+#' # Set up `Julia`
+#'
+#' To link [`patter`] and the [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) `Julia` backend, use:
+#' * [`julia_connect()`] to connect to `R` to `Julia`;
+#' * [`set_seed()`] to set the seed in `R` and `Julia`;
+#' * [`set_map()`] to make a [`SpatRaster`] of the study area available in `Julia`;
+#'
+#' These functions should be run at the start of every `R` session.
+#'
+#' # Components
+#'
+#' [`patter`] is based on three Abstract Types, defined in `Julia`:
+#'
+#' * [`State`] structures hold the state (location) of an animal at a given time step;
+#' * [`ModelMove`] structures hold movement model, used to simulate new states;
+#' * [`ModelObs`] structures hold observation model parameters, used to evaluate the correspondence between simulated states and observations;
+#'
+#' # Simulation
+#'
+#' To simulate animal movement time series, see:
+#'
+#' * [`sim_path_walk()`] to simulate a movement path from a walk model (via [`ModelMove`]);
+#' * [`sim_array()`] to simulate an acoustic array;
+#' * [`sim_observations()`] to simulate observational time series (via [`ModelObs`]);
+#'
+#'To evaluate model skill in reconstructing simulated patterns, see `skill_*()` functions:
+#'
+#' * [`skill_mb()`] to calculate mean bias;
+#' * [`skill_me()`] to calculate mean error;
+#' * [`skill_rmse()`] to calculate root mean squared error;
+#' * [`skill_R()`] to calculate Spearman's rank correlation coefficient;
+#' * [`skill_d()`] to calculate the index of agreement;
+#'
+#' # Data exploration
+#'
+#' For help with data acquisition, processing, checking and preliminary analyses, see the [`flapper`](https://github.com/edwardlavender/flapper) package. This facilitates:
+#'
+#'    * Data preparation;
+#'    * Spatial operations;
+#'    * Distance calculations;
+#'    * Movement analyses;
+#'
+#' Please submit a [feature request](https://github.com/edwardlavender/patter/issues) if you would like functions from [`flapper`](https://github.com/edwardlavender/flapper) in [`patter`].
+#'
+#' # Algorithms
+#'
+#' The main thrust of [`patter`] is the provision of fast, integrated modelling workflow based on particle filtering for reconstructing animal movement paths and emergent patterns of space use from observational time series (with a focus on passive acoustic telemetry systems).
+#'
+#' **To assemble datasets for particle filtering**, use [`assemble`]`_*()` functions:
+#'
+#' * [`assemble_acoustics()`] assembles an acoustic time series;
+#' * [`assemble_archival()`] assembles an archival time series;
+#'
+#' Ancillary time series should be structured in the same way for inclusion in the particle filter.
+#'
+#' **To implement particle filtering (PF) routines**, use:
+#'
+#' * [`pf_filter()`] to implement the particle filter;
+#' * [`pf_smoother_two_filter()`] to implement the two-filter smoother;
+#'
+#' **For convenience plotting functions**, see:
+#'
+#' TO DO
+#'
+#' **For common utility functions**, see:
+#'
+#' TO DO
+#'
+#' **For mapping utilisation distributions**, use:
+#'
+#' TO DO
+#'
+#' # Options
+#'
+#' For additional options in [`patter`], see:
+#'
+#' * [`patter-progress`] to monitor function progress;
+#'
+#' @author Edward Lavender ([ORCID](https://orcid.org/0000-0002-8040-7489))
+#' @seealso
+#' * For information on the [`flapper`](https://github.com/edwardlavender/flapper) algorithms, see Lavender et al. ([2023](https://doi.org/10.1111/2041-210X.14193)).
+#' * For information on [`patter`]'s predecessor, see \url{https://github.com/edwardlavender/flapper}.
+#' * For further information on  [`patter`], including useful resources, see \url{https://github.com/edwardlavender/patter}.
+#' * For feature requests and bug reports, see \url{https://github.com/edwardlavender/patter/issues}.
+#' * For the `Julia` backend, see \url{https://edwardlavender.github.io/Patter.jl}.
+#' * For support, contact [edward.lavender@eawag.ch](mailto:edward.lavender@eawag.ch).
 #'
 #' @references Lavender, E. et al. (2023). An integrative modelling framework for passive acoustic telemetry. Methods in Ecology and Evolution. \url{https://doi.org/10.1111/2041-210X.14193}.
 #'
