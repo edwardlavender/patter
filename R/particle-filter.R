@@ -86,8 +86,8 @@ pf_filter <- function(.map,
 
   #### Set filter arguments
   cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Setting observations..."))
-  set_yobs_via_datasets(.datasets = .yobs, .models = .model_obs)
-  set_move(.model_move)
+  set_yobs_via_datasets(.datasets = .yobs, .model_obs = .model_obs)
+  set_model_move(.model_move)
 
   #### Run filter
   cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Running filter..."))

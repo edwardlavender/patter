@@ -72,8 +72,8 @@ set_states_init <- function(.xinit, .state) {
 #' @keywords internal
 
 # Set a movement model (`move`) in Julia
-set_move <- function(.cmd) {
-  julia_command(glue('move = {.cmd};'))
+set_model_move <- function(.cmd) {
+  julia_command(glue('model_move = {.cmd};'))
   nothing()
 }
 
@@ -93,8 +93,8 @@ set_timeline <- function(.timeline) {
 
 # Set simulated path(s) in Julia
 set_path <- function() {
-  julia_check_exists("xinit", "move", "timeline")
-  julia_command(glue('paths = simulate_path_walk(xinit = xinit, move = move, timeline = timeline);'))
+  julia_check_exists("xinit", "model_move", "timeline")
+  julia_command(glue('paths = simulate_path_walk(xinit = xinit, move = model_move, timeline = timeline);'))
   nothing()
 }
 
@@ -102,10 +102,10 @@ set_path <- function() {
 #' @keywords internal
 
 # Set a Vector of model type strings in Julia
-# * Required for `set_yobs_*()` via `set_models()`
-set_model_types <- function(.models) {
-  julia_assign("model_type_strings", .models)
-  julia_command('model_types = Patter.julia_get_model_types(model_type_strings);')
+# * Required for `set_yobs_*()` via `set_model_obs()`
+set_model_obs_types <- function(.model_obs) {
+  julia_assign("model_obs_strings", .model_obs)
+  julia_command('model_obs_types = Patter.julia_get_model_types(model_obs_strings);')
 }
 
 #' @rdname julia_set
@@ -113,10 +113,10 @@ set_model_types <- function(.models) {
 
 # Set a Vector of ModelObs structures (`models`) in Julia
 # * Required for `set_yobs_*()`
-set_models <- function(.models) {
-  set_model_types(.models)
-  julia_check_exists("parameters", "model_types")
-  julia_command('models = Patter.julia_get_models(parameters, model_types);')
+set_model_obs <- function(.model_obs) {
+  set_model_obs_types(.model_obs)
+  julia_check_exists("model_obs_pars", "model_obs_types")
+  julia_command('models = Patter.julia_get_models(model_obs_pars, model_obs_types);')
   nothing()
 }
 
@@ -125,10 +125,10 @@ set_models <- function(.models) {
 
 # Set a Vector of sensor parameter DataFrame(s) in Julia
 # * Required for `set_yobs_via_sim()`
-set_parameters <- function(.parameters) {
-  check_inherits(.parameters, "list")
-  .parameters <- unname(.parameters)
-  julia_assign("parameters", .parameters)
+set_model_obs_pars <- function(.model_obs_pars) {
+  check_inherits(.model_obs_pars, "list")
+  .model_obs_pars <- unname(.model_obs_pars)
+  julia_assign("model_obs_pars", .model_obs_pars)
   nothing()
 }
 
@@ -172,10 +172,10 @@ set_datasets <- function(.datasets) {
 #' @keywords internal
 
 # Set a dictionary of observations (`yobs`) using real datasets in Julia
-set_yobs_via_datasets <- function(.datasets, .models) {
+set_yobs_via_datasets <- function(.datasets, .model_obs) {
   set_datasets(.datasets)
-  set_model_types(.models)
-  julia_command('yobs = assemble_yobs(datasets, model_types);')
+  set_model_obs_types(.model_obs)
+  julia_command('yobs = assemble_yobs(datasets, model_obs_types);')
   nothing()
 }
 
@@ -186,7 +186,7 @@ set_yobs_via_datasets <- function(.datasets, .models) {
 # * This defines a `pf_forward` or `pf_backward` object depending on `.direction`
 set_pf_filter <- function(.n_move, .n_resample, .n_record, .direction) {
   # Check inputs
-  julia_check_exists("timeline", "xinit", "yobs", "move")
+  julia_check_exists("timeline", "xinit", "yobs", "model_move")
   .n_move     <- as.integer(.n_move)
   .n_resample <- paste0(as.integer(.n_record), ".0")
   .n_record   <- as.integer(.n_record)
@@ -199,7 +199,7 @@ set_pf_filter <- function(.n_move, .n_resample, .n_record, .direction) {
       {output} = particle_filter(timeline = timeline,
                                  xinit = xinit,
                                  yobs = yobs,
-                                 move = move,
+                                 move = model_move,
                                  n_move = {.n_move},
                                  n_record = {.n_record},
                                  n_resample = {.n_resample},
@@ -228,8 +228,8 @@ set_smoother_two_filter <- function(.nMC) {
   fwd    <- name_particles(.fun = "pf_filter", .direction = "forward")
   bwd    <- name_particles(.fun = "pf_filter", .direction = "backward")
   .nMC   <- as.integer(.nMC)
-  julia_check_exists(fwd, bwd, "move", "box")
-  cmd    <- glue('{output} = two_filter_smoother(xfwd = {fwd}.state, xbwd = {bwd}.state, move = move, box = box, nMC = {.nMC});')
+  julia_check_exists(fwd, bwd, "model_move", "box")
+  cmd    <- glue('{output} = two_filter_smoother(xfwd = {fwd}.state, xbwd = {bwd}.state, move = model_move, box = box, nMC = {.nMC});')
   julia_command(cmd)
   nothing()
 }

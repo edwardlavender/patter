@@ -93,8 +93,8 @@ if (julia_run()) {
   )
   # Simulate observations
   obs <- sim_observations(.timeline = timeline,
-                          .models = "ModelObsDepthNormal",
-                          .parameters = list(data.table(sensor_id = 1L, depth_sigma = 5)))
+                          .model_obs = "ModelObsDepthNormal",
+                          .model_obs_pars = list(data.table(sensor_id = 1L, depth_sigma = 5)))
   obs <- obs$ModelObsDepthNormal[[1]]
   # Plot simulated depth trajectory
   # * Blue: simulated time series

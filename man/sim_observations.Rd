@@ -4,23 +4,23 @@
 \alias{sim_observations}
 \title{Simulation: observations}
 \usage{
-sim_observations(.timeline, .models, .parameters)
+sim_observations(.timeline, .model_obs, .model_obs_pars)
 }
 \arguments{
 \item{.timeline}{A \code{POSIXct} vector of regularly spaced time stamps that defines the timeline for the simulation. This should match the \code{.timeline} used to simulate movement paths (see \code{\link[=sim_path_walk]{sim_path_walk()}}).}
 
-\item{.models}{A \code{character} vector of \code{ModelObs} sub-type(s) defined in \code{Julia} (see \code{\link{glossary}}).}
+\item{.model_obs}{A \code{character} vector of \code{ModelObs} sub-type(s) defined in \code{Julia} (see \code{\link{glossary}}).}
 
-\item{.parameters}{A \code{list} of \code{\link{data.table}}s, one for each model in \code{.models}, that define, for each sensor of that type, the model parameters.}
+\item{.model_obs_pars}{A \code{list} of \code{\link{data.table}}s, one for each model in \code{.model_obs}, that define, for each sensor of that type, the model parameters.}
 }
 \value{
-The function returns a named \code{list}, with one element for each sensor type, that is \code{.models} element. Each element is a \code{list} of \code{data.table}s, one for each simulated path. Each row is a time step. The columns depend on the model type.
+The function returns a named \code{list}, with one element for each sensor type, that is \code{.model_obs} element. Each element is a \code{list} of \code{data.table}s, one for each simulated path. Each row is a time step. The columns depend on the model type.
 }
 \description{
 Simulate a time series of observations, such as acoustic detections and depths, arising from simulated animal movement path(s).
 }
 \details{
-This function wraps the \code{Patter.simulate_obs()} Julia function. The function iterates over simulated paths defined in the Julia workspace by \code{\link[=sim_path_walk]{sim_path_walk()}}. For each path and time step, the function simulates observation(s). Collectively, \code{.models} and \code{.parameters} define the observation models used for the simulation (that is, a \code{Vector} of \code{ModelObs} instances). In \code{Julia}, simulated observations are stored in a hash table (\code{Dict}) called \code{yobs}, which is translated into a named \code{list} that is returned by \code{R}.
+This function wraps the \code{Patter.simulate_obs()} Julia function. The function iterates over simulated paths defined in the Julia workspace by \code{\link[=sim_path_walk]{sim_path_walk()}}. For each path and time step, the function simulates observation(s). Collectively, \code{.model_obs} and \code{.model_obs_pars} define the observation models used for the simulation (that is, a \code{Vector} of \code{ModelObs} instances). In \code{Julia}, simulated observations are stored in a hash table (\code{Dict}) called \code{yobs}, which is translated into a named \code{list} that is returned by \code{R}.
 }
 \seealso{
 \itemize{

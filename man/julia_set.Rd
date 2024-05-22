@@ -6,12 +6,12 @@
 \alias{set_map}
 \alias{set_threads}
 \alias{set_states_init}
-\alias{set_move}
+\alias{set_model_move}
 \alias{set_timeline}
 \alias{set_path}
-\alias{set_model_types}
-\alias{set_models}
-\alias{set_parameters}
+\alias{set_model_obs_types}
+\alias{set_model_obs}
+\alias{set_model_obs_pars}
 \alias{set_yobs_via_sim}
 \alias{set_datasets}
 \alias{set_yobs_via_datasets}
@@ -26,23 +26,23 @@ set_threads(.threads)
 
 set_states_init(.xinit, .state)
 
-set_move(.cmd)
+set_model_move(.cmd)
 
 set_timeline(.timeline)
 
 set_path()
 
-set_model_types(.models)
+set_model_obs_types(.model_obs)
 
-set_models(.models)
+set_model_obs(.model_obs)
 
-set_parameters(.parameters)
+set_model_obs_pars(.model_obs_pars)
 
 set_yobs_via_sim()
 
 set_datasets(.datasets)
 
-set_yobs_via_datasets(.datasets, .models)
+set_yobs_via_datasets(.datasets, .model_obs)
 
 set_pf_filter(.n_move, .n_resample, .n_record, .direction)
 }

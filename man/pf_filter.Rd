@@ -179,8 +179,8 @@ if (julia_run()) {
   pars <- list(pars_1, pars_2)
   # Simulate observational datasets
   obs <- sim_observations(.timeline = timeline,
-                          .models = models,
-                          .parameters = pars)
+                          .model_obs = models,
+                          .model_obs_pars = pars)
   summary(obs)
   head(obs$ModelObsAcousticLogisTrunc[[1]])
   head(obs$ModelObsDepthUniform[[1]])

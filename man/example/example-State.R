@@ -108,10 +108,10 @@ if (julia_run()) {
   # We consider a pelagic animal & simulate depth observations
   # At each time step, the animal may be anywhere from the surface to the seabed
   obs <- sim_observations(.timeline = timeline,
-                          .models = "ModelObsDepthUniform",
-                          .parameters = list(data.table(sensor_id = 1L,
-                                                        depth_shallow_eps = 500,
-                                                        depth_deep_eps = 0)))
+                          .model_obs = "ModelObsDepthUniform",
+                          .model_obs_pars = list(data.table(sensor_id = 1L,
+                                                            depth_shallow_eps = 500,
+                                                            depth_deep_eps = 0)))
   obs <- obs$ModelObsDepthUniform[[1]]
   # Plot simulated depth trajectory
   # * Blue: simulated time series
