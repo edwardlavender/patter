@@ -1,4 +1,4 @@
-#' @title [`prettyGraphics`](https://github.com/edwardlavender/prettyGraphics) helpers in [`patter`]
+#' @title [`prettyGraphics`](https://github.com/edwardlavender/prettyGraphics) in [`patter`]
 #' @description These functions are internal plotting routines in [`patter`] taken or modified from the [`prettyGraphics`](https://github.com/edwardlavender/prettyGraphics) package.
 #' @details Unlike the predecessor [`flapper`](https://github.com/edwardlavender/flapper) package, [`patter`] does not import [`prettyGraphics`], so the default plotting routines are much less advanced. This may be improved in future, depending on user feedback.
 #' @author Edward Lavender
