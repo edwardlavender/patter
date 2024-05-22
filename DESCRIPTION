@@ -21,6 +21,9 @@ Imports:
 Suggests:
     knitr, 
     rmarkdown,
+    sf,
+    spatstat.explore, 
+    spatstat.geom,
     spelling, 
     testthat (>= 3.0.0), 
     truncdist
