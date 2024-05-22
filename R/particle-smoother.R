@@ -15,14 +15,12 @@ pf_smoother_two_filter <- function(.map = NULL,
                                    .nMC = 100L,
                                    .verbose = getOption("patter.verbose")) {
 
-  #### Set up messages
-  t_onset <- Sys.time()
-  cat_log <- cat_init(.verbose = .verbose)
-  cat_log(call_start(.fun = "pf_smoother_two_filter", .start = t_onset))
-  on.exit(cat_log(call_end(.fun = "pf_smoother_two_filter", .start = t_onset, .end = Sys.time())), add = TRUE)
+  #### Initiate
+  cats <- cat_setup(.fun = "pf_smoother_two_filter", .verbose = .verbose)
+  on.exit(eval(cats$exit, envir = cats$envir), add = TRUE)
 
   #### Define smoother arguments
-  cat_log(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Setting smoother arguments..."))
+  cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Setting smoother arguments..."))
   # two_filter_smoother(xfwd, xbwd, move, box, nMC)
   # * xfwd, xbwd and move exist in Julia
   # * box and nMC are defined below
@@ -40,13 +38,13 @@ pf_smoother_two_filter <- function(.map = NULL,
   }
 
   #### Run the smoother
-  cat_log(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Running smoother..."))
+  cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Running smoother..."))
   pf_obj <- set_smoother_two_filter(.nMC)
 
   #### Get particles in R
   # * TO DO: amend Julia code
   # * TO DO: generalise pf_filter() R-side code
-  # cat_log(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Collating outputs..."))
+  # cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Collating outputs..."))
   # out <- julia_eval(glue('Patter.r_get_particles({pf_obj});'))
   # out
 
