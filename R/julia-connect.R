@@ -38,7 +38,7 @@ julia_connect <- function(...,
                           .threads = "auto",
                           .verbose = getOption("patter.verbose")) {
 
-  #### Set up messages
+  #### Initiate
   cats <- cat_setup(.fun = "julia_connect", .verbose = .verbose)
   on.exit(eval(cats$exit, envir = cats$envir), add = TRUE)
 

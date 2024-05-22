@@ -60,7 +60,7 @@ pf_filter <- function(.map,
                       .direction = c("forward", "backward"),
                       .verbose = getOption("patter.verbose")) {
 
-  #### Set up messages
+  #### Initiate
   cats <- cat_setup(.fun = "pf_forward", .verbose = .verbose)
   on.exit(eval(cats$exit, envir = cats$envir), add = TRUE)
 
