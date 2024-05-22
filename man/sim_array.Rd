@@ -26,7 +26,7 @@ sim_array(
 
 \item{.timeline}{A \code{POSIXct} vector of regularly spaced time stamps that defines the timeline for the simulation. Here, \code{.timeline} is used to:
 \itemize{
-\item Define receiver deployment periods (that is, \code{receiver_start} and \code{receiver_end} columns in the output \code{\link{data.table}}). Receiver deployment periods are defined by \code{min(.timeline)} and \code{max(.timeline)} and constant for all receivers.
+\item Define receiver deployment periods (that is, \code{receiver_start} and \code{receiver_end} columns in the output \code{\link{data.table}}). Receiver deployment periods are defined by \code{min(.timeline)} and \code{max(.timeline)} and constant for all receivers.  (These columns are added solely for use in downstream functions.)
 }}
 
 \item{.arrangement, .n_receiver, ...}{Arguments passed to \code{\link[terra:sample]{terra::spatSample()}}, used to sample receiver locations.
@@ -36,7 +36,7 @@ sim_array(
 \item \code{...} Additional arguments, passed to \code{\link[terra:sample]{terra::spatSample()}}, excluding \code{x}, \code{size}, \code{method}, \code{replace}, \code{na.rm}, \code{xy}, \code{cells} and \code{values}.
 }}
 
-\item{.receiver_alpha, .receiver_beta, .receiver_gamma}{(optional) \code{numeric} constants for the default detection probability parameters for inclusion in the output \code{\link{data.table}};
+\item{.receiver_alpha, .receiver_beta, .receiver_gamma}{(optional) \code{Numeric} constants for the default detection probability parameters for inclusion in the output \code{\link{data.table}}. (These columns are added solely for use in downstream functions, such as \code{\link[=sim_observations]{sim_observations()}}.)
 
 Single inputs are expected to these arguments, which are constant across all receivers.}
 
@@ -51,7 +51,7 @@ The function returns a \code{data.table} with the following columns:
 \itemize{
 \item \code{array_id}---an \code{integer} vector of array IDs,
 \item \code{receiver_id}---an \code{integer} vector of receiver IDs;
-\item \code{receiver_start}, \code{receiver_end}---\code{POSIXct} vectors that defines receiver deployment periods;
+\item \code{receiver_start}, \code{receiver_end}---\code{POSIXct} vectors that define receiver deployment periods;
 \item \code{receiver_x} and \code{receiver_y}---\code{numeric} vectors that defines receiver coordinates;
 \item \code{receiver_alpha}, \code{receiver_beta}, \code{receiver_gamma}---\code{numeric} vectors of detection probability parameters, if defined;
 }
@@ -92,7 +92,14 @@ sim_array(.map = map, .timeline = timeline,
           .n_array = 5L, .plot = TRUE, .one_page = FALSE)
 }
 \seealso{
-TO DO
+\itemize{
+\item \verb{sim_*} functions implement \emph{de novo} simulation of movements and observations:
+\itemize{
+\item \code{\link[=sim_path_walk]{sim_path_walk()}} simulates movement path(s) (via \code{\link{ModelMove}});
+\item \code{\link[=sim_array]{sim_array()}} simulates acoustic array(s);
+\item \code{\link[=sim_observations]{sim_observations()}} simulates observations (via \code{\link{ModelObs}});
+}
+}
 }
 \author{
 Edward Lavender

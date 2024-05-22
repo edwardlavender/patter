@@ -4,12 +4,12 @@
 #' @param .map A [`SpatRaster`] that defines the region of interest (see [`glossary`]). Here, `map` is used to:
 #' * Sample receiver locations in appropriate (non `NA`) regions, via [`terra::spatSample()`];
 #' @param .timeline A `POSIXct` vector of regularly spaced time stamps that defines the timeline for the simulation. Here, `.timeline` is used to:
-#' * Define receiver deployment periods (that is, `receiver_start` and `receiver_end` columns in the output [`data.table`]). Receiver deployment periods are defined by `min(.timeline)` and `max(.timeline)` and constant for all receivers.
+#' * Define receiver deployment periods (that is, `receiver_start` and `receiver_end` columns in the output [`data.table`]). Receiver deployment periods are defined by `min(.timeline)` and `max(.timeline)` and constant for all receivers.  (These columns are added solely for use in downstream functions.)
 #' @param .arrangement,.n_receiver,... Arguments passed to [`terra::spatSample()`], used to sample receiver locations.
 #' * `.arrangement` is a `character` that defines the receiver arrangement (passed to the `method` argument).
 #' * `.n_receiver` is an `integer` that defines the number of receivers to simulate (passed to the `size` argument).
 #' * `...` Additional arguments, passed to [`terra::spatSample()`], excluding `x`, `size`, `method`, `replace`, `na.rm`, `xy`, `cells` and `values`.
-#' @param .receiver_alpha,.receiver_beta,.receiver_gamma (optional) `numeric` constants for the default detection probability parameters for inclusion in the output [`data.table`];
+#' @param .receiver_alpha,.receiver_beta,.receiver_gamma (optional) `Numeric` constants for the default detection probability parameters for inclusion in the output [`data.table`]. (These columns are added solely for use in downstream functions, such as [`sim_observations()`].)
 #'
 #'  Single inputs are expected to these arguments, which are constant across all receivers.
 #'
@@ -23,13 +23,17 @@
 #' @return The function returns a `data.table` with the following columns:
 #' * `array_id`---an `integer` vector of array IDs,
 #' * `receiver_id`---an `integer` vector of receiver IDs;
-#' * `receiver_start`, `receiver_end`---`POSIXct` vectors that defines receiver deployment periods;
+#' * `receiver_start`, `receiver_end`---`POSIXct` vectors that define receiver deployment periods;
 #' * `receiver_x` and `receiver_y`---`numeric` vectors that defines receiver coordinates;
 #' * `receiver_alpha`, `receiver_beta`, `receiver_gamma`---`numeric` vectors of detection probability parameters, if defined;
 #'
 #' @example man/example/example-sim_array.R
 #'
-#' @seealso TO DO
+#' @seealso
+#' * `sim_*` functions implement _de novo_ simulation of movements and observations:
+#'    * [`sim_path_walk()`] simulates movement path(s) (via [`ModelMove`]);
+#'    * [`sim_array()`] simulates acoustic array(s);
+#'    * [`sim_observations()`] simulates observations (via [`ModelObs`]);
 #' @author Edward Lavender
 #' @export
 
@@ -140,7 +144,7 @@ sim_array <- function(.map,
 #' * `cell_id`, `cell_x`, `cell_y`, `cell_z`---`integer`/`numeric` vectors that define the locations of the simulated positions on `.map`;
 #' * `x`,`y`,`...`---`numeric` vectors that define the components of the state;
 #'
-#' @seealso TO DO
+#' @inherit sim_array seealso
 #' @author Edward Lavender
 #' @name sim_path_walk
 NULL
@@ -233,6 +237,7 @@ sim_path_walk <- function(.map,
 #'
 #' @returns The function returns a named `list`, with one element for each sensor type, that is `.models` element. Each element is a `list` of `data.table`s, one for each simulated path. Each row is a time step. The columns depend on the model type.
 #'
+#' @inherit sim_array seealso
 #' @author Edward Lavender
 #' @export
 

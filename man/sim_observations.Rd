@@ -22,6 +22,16 @@ Simulate a time series of observations, such as acoustic detections and depths, 
 \details{
 This function wraps the \code{Patter.simulate_obs()} Julia function. The function iterates over simulated paths defined in the Julia workspace by \code{\link[=sim_path_walk]{sim_path_walk()}}. For each path and time step, the function simulates observation(s). Collectively, \code{.models} and \code{.parameters} define the observation models used for the simulation (that is, a \code{Vector} of \code{ModelObs} instances). In \code{Julia}, simulated observations are stored in a hash table (\code{Dict}) called \code{yobs}, which is translated into a named \code{list} that is returned by \code{R}.
 }
+\seealso{
+\itemize{
+\item \verb{sim_*} functions implement \emph{de novo} simulation of movements and observations:
+\itemize{
+\item \code{\link[=sim_path_walk]{sim_path_walk()}} simulates movement path(s) (via \code{\link{ModelMove}});
+\item \code{\link[=sim_array]{sim_array()}} simulates acoustic array(s);
+\item \code{\link[=sim_observations]{sim_observations()}} simulates observations (via \code{\link{ModelObs}});
+}
+}
+}
 \author{
 Edward Lavender
 }

@@ -81,7 +81,14 @@ To use a new \code{.state} and/or movement model type in \code{\link[=sim_path_w
 \code{\link[=sim_path_walk]{sim_path_walk()}} replaces \href{https://edwardlavender.github.io/flapper/reference/sim_path_sa.html}{\code{flapper::sim_path_sa()}}. Other \href{https://edwardlavender.github.io/flapper/reference/sim_path_-times.html}{\verb{flapper::sim_path_*()}} functions are not currently implemented in \code{\link{patter}}.
 }
 \seealso{
-TO DO
+\itemize{
+\item \verb{sim_*} functions implement \emph{de novo} simulation of movements and observations:
+\itemize{
+\item \code{\link[=sim_path_walk]{sim_path_walk()}} simulates movement path(s) (via \code{\link{ModelMove}});
+\item \code{\link[=sim_array]{sim_array()}} simulates acoustic array(s);
+\item \code{\link[=sim_observations]{sim_observations()}} simulates observations (via \code{\link{ModelObs}});
+}
+}
 }
 \author{
 Edward Lavender
