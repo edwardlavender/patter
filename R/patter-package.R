@@ -115,6 +115,7 @@
 
 #' @importFrom collapse join
 #' @importFrom collapse fndistinct
+#' @importFrom collapse fmatch
 #' @importFrom collapse fnrow
 #' @importFrom collapse seq_row
 #'
@@ -147,6 +148,7 @@
 #' @importFrom glue glue
 #'
 #' @importFrom graphics arrows
+#' @importFrom graphics hist
 #' @importFrom graphics par
 #' @importFrom graphics points
 #'
