@@ -39,7 +39,7 @@ The function returns a \code{\link{data.table}} with the following columns:
 \itemize{
 \item \code{.split}---a \code{character} vector that distinguishes groups, if applicable;
 \item \code{timestamp}---a \code{POSIXt} vector of time stamps;
-\item \code{coa_x}, \code{coa_y}---the coordinates of the COAs;
+\item \code{x}, \code{y}---the coordinates of the COAs;
 }
 
 Data are arranged by \code{.split} and \code{timestamp}.

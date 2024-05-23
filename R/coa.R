@@ -20,7 +20,7 @@
 #' @return The function returns a [`data.table`] with the following columns:
 #' * `.split`---a `character` vector that distinguishes groups, if applicable;
 #' * `timestamp`---a `POSIXt` vector of time stamps;
-#' * `coa_x`, `coa_y`---the coordinates of the COAs;
+#' * `x`, `y`---the coordinates of the COAs;
 #'
 #' Data are arranged by `.split` and `timestamp`.
 #'
@@ -93,8 +93,8 @@ coa <- function(.acoustics, .moorings = NULL, .delta_t, .split = NULL,
   out <-
     acoustics |>
     group_by(.data$split, .data$bin) |>
-    summarise(coa_x = stats::weighted.mean(.data$receiver_x, .data$n),
-              coa_y = stats::weighted.mean(.data$receiver_y, .data$n)) |>
+    summarise(x = stats::weighted.mean(.data$receiver_x, .data$n),
+              y = stats::weighted.mean(.data$receiver_y, .data$n)) |>
     ungroup() |>
     as.data.table()
 
@@ -102,10 +102,10 @@ coa <- function(.acoustics, .moorings = NULL, .delta_t, .split = NULL,
   # Select relevant columns
   out <-
     out |>
-    select("split", "bin", "coa_x", "coa_y") |>
+    select("split", "bin", "x", "y") |>
     arrange(.data$split, .data$bin) |>
     as.data.table()
-  colnames(out) <- c(.split, "timestamp", "coa_x", "coa_y")
+  colnames(out) <- c(.split, "timestamp", "x", "y")
   # Drop split column, if unspecified
   if (!keep_split) {
     out[[.split]] <- NULL
