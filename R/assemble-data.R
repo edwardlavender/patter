@@ -31,13 +31,14 @@
 #'
 #' @example man/example/example-assemble-data.R
 #' @seealso Particle filters and smoothers sample states (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
+#' * To simulate artificial datasets, see `sim_*()` functions (especially [`sim_path_walk()`], [`sim_array()`] and [`sim_observations()`]).
 #' * To assemble real-world datasets for the filter, see [`assemble`]`_*()` functions.
 #' * [`pf_filter()`] runs the filter:
 #'    * For state types, see [`State`];
 #'    * For observation models, see [`ModelObs`];
 #'    * For movement models, see [`ModelMove`];
 #' * To run particle smoothing, use [`pf_smoother_two_filter()`].
-#' * To map emergent patterns of space use, use a `map_*()` function.
+#' * To map emergent patterns of space use, use a `map_*()` function (such as [`map_pou()`], [`map_dens()`] and [`map_hr()`]).
 #' @author Edward Lavender
 #' @name assemble
 

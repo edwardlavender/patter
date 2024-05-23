@@ -17,7 +17,7 @@
 #'
 #' @return The functions return a dataset or a `character` string that defines the path to a dataset. See the corresponding function documentation for full details.
 #'
-#' @inherit pf_forward seealso
+#' @inherit assemble seealso
 #' @author Edward Lavender
 #' @name datasets-algorithms
 

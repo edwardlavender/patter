@@ -27,6 +27,7 @@ This function wraps \href{https://edwardlavender.github.io/Patter.jl/}{\code{Pat
 \seealso{
 Particle filters and smoothers sample states (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
 \itemize{
+\item To simulate artificial datasets, see \verb{sim_*()} functions (especially \code{\link[=sim_path_walk]{sim_path_walk()}}, \code{\link[=sim_array]{sim_array()}} and \code{\link[=sim_observations]{sim_observations()}}).
 \item To assemble real-world datasets for the filter, see \code{\link{assemble}}\verb{_*()} functions.
 \item \code{\link[=pf_filter]{pf_filter()}} runs the filter:
 \itemize{
@@ -35,7 +36,7 @@ Particle filters and smoothers sample states (particles) that represent the poss
 \item For movement models, see \code{\link{ModelMove}};
 }
 \item To run particle smoothing, use \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}}.
-\item To map emergent patterns of space use, use a \verb{map_*()} function.
+\item To map emergent patterns of space use, use a \verb{map_*()} function (such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and \code{\link[=map_hr]{map_hr()}}).
 }
 }
 \author{

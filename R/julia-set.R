@@ -183,7 +183,7 @@ set_yobs_via_datasets <- function(.datasets, .model_obs) {
 #' @keywords internal
 
 # Run the particle filter in Julia
-# * This defines a `pf_forward` or `pf_backward` object depending on `.direction`
+# * This defines a `pff` or `pfb` object depending on `.direction`
 set_pf_filter <- function(.n_move, .n_resample, .n_record, .direction) {
   # Check inputs
   julia_check_exists("timeline", "xinit", "yobs", "model_move")
