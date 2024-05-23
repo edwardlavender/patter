@@ -38,27 +38,9 @@ set_seed()
 map <- dat_gebco()
 set_map(map)
 
-#### Define real-world observations
-# Define example datasets
-acoustics <- dat_acoustics[individual_id == 25, ]
-archival  <- dat_archival[individual_id == 25, ]
-# Align datasets
-start     <- max(c(min(acoustics$timestamp), min(archival$timestamp)))
-end       <- min(c(max(acoustics$timestamp), max(archival$timestamp)))
-period    <- lubridate::interval(start, end)
-acoustics <- acoustics[timestamp %within% period, ]
-archival  <- archival[timestamp %within% period, ]
-# Align moorings
-moorings  <-
-  dat_moorings |>
-  mutate(int = lubridate::interval(receiver_start, receiver_end)) |>
-  filter(lubridate::int_overlaps(int, period)) |>
-  as.data.table()
-
 #### Define study period
-# This is short to minimise memory requirements
-timeline <- assemble_timeline(list(acoustics, archival), .step = "2 mins", .trim = TRUE)
-timeline <- timeline[1:720]
+timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
+                length.out = 720L, by = "2 mins")
 
 
 #########################
@@ -68,16 +50,18 @@ timeline <- timeline[1:720]
 #### Simulate path(s)
 paths <- sim_path_walk(.map = map,
                        .timeline = timeline,
+                       .state = "StateXY",
                        .model_move = move_xy())
 
 #### Simulate array(s)
 arrays <- sim_array(.map = map,
                     .timeline = timeline,
-                    .n_receiver = 75L)
+                    .n_receiver = 500L)
 
 #### Simulate observation(s)
+models <- c("ModelObsAcousticLogisTrunc", "ModelObsDepthUniform")
 obs <- sim_observations(.timeline = timeline,
-                        .model_obs = c("ModelObsAcousticLogisTrunc", "ModelObsDepthUniform"),
+                        .model_obs = models,
                         .model_obs_pars =
                           list(
                             arrays |>
@@ -93,24 +77,14 @@ obs <- sim_observations(.timeline = timeline,
 #### Run the COA algorithm
 # TO DO
 # Improve alignment between coa() & pf_*() function output
-out_coa <- coa(.acoustics = acoustics,
-               .moorings = moorings,
-               .delta_t = "6 hours",
-               breaks = 100)
+detections <-
+  obs$ModelObsAcousticLogisTrunc[[1]] |>
+  filter(obs == 1L) |>
+  as.data.table()
+out_coa <- coa(.acoustics = detections,
+               .delta_t = "2 hours")
 
 #### Run the particle filter
-# Assemble acoustics
-acc <- assemble_acoustics(.timeline = timeline,
-                          .acoustics = acoustics,
-                          .moorings = moorings)
-# Assemble archival data
-arc <- assemble_archival(.timeline = timeline,
-                         .archival =
-                           archival |>
-                           select("timestamp", obs = "depth") |>
-                           mutate(depth_shallow_eps = 20,
-                                  depth_deep_eps = 20) |>
-                           as.data.table())
 # Run the filter forwards
 out_pff <-
   pf_filter(.map = map,
@@ -118,9 +92,11 @@ out_pff <-
             .state = "StateXY",
             .xinit_pars = list(mobility = 750),
             .model_move = move_xy(),
-            .yobs = list(acc, arc),
+            .yobs = list(obs$ModelObsAcousticLogisTrunc[[1]], obs$ModelObsDepthUniform[[1]]),
             .model_obs = c("ModelObsAcousticLogisTrunc", "ModelObsDepthUniform"),
             .n_record = 250L)
+# Run the filter backwards
+# TO DO
 
 #### Run the smoother
 # TO DO
