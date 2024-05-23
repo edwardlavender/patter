@@ -61,7 +61,7 @@ pf_filter <- function(.map,
                       .verbose = getOption("patter.verbose")) {
 
   #### Initiate
-  cats <- cat_setup(.fun = "pf_forward", .verbose = .verbose)
+  cats <- cat_setup(.fun = "pf_filter", .verbose = .verbose)
   on.exit(eval(cats$exit, envir = cats$envir), add = TRUE)
 
   #### Check user inputs
