@@ -7,7 +7,7 @@
 #' Receiver coordinates **must be planar**.
 #'
 #' @param .split (optional) A `character` that defines the name of the grouping factor in `.acoustics` (e.g., `individual_id` for [`dat_acoustics`]).
-#' @param .delta_t The time interval over which to calculate COAs. This can be specified in any way understood by [`cut.POSIXt()`] (see the `breaks` argument).
+#' @param .delta_t The time interval over which to calculate COAs. This can be specified in any way understood by [`lubridate::floor_date()`] (see the `unit` argument).
 #' @param .plot_weights,...,.one_page Plot arguments.
 #' * `.plot_weights` is a `logical` variable that defines whether or not to plot the frequency distribution of weights for each `.split` value (i.e., the frequency distribution of the number of detections at each receiver in each time interval, excluding time intervals without detections).
 #' * `...` is a placeholder for arguments passed to [`graphics::hist()`], excluding `main`.
@@ -67,12 +67,12 @@ coa <- function(.acoustics, .moorings = NULL, .delta_t, .split = NULL,
   # * Define split column
   # * Group by split & define bins
   # * Calculate the frequency of detections in each bin
-  tz <- lubridate::tz(acoustics$timestamp)
   acoustics <-
     acoustics |>
+    lazy_dt(immutable = FALSE) |>
     mutate(split = acoustics[[.split]]) |>
     group_by(.data$split) |>
-    mutate(bin = as.POSIXct(cut(.data$timestamp, .delta_t), tz = tz)) |>
+    mutate(bin = lubridate::floor_date(.data$timestamp, .delta_t)) |>
     ungroup() |>
     group_by(.data$split, .data$bin, .data$receiver_id) |>
     mutate(n = n()) |>
