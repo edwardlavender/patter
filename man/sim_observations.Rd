@@ -47,9 +47,6 @@ if (julia_run()) {
                          .state = "StateXY",
                          .model_move = move_xy())
 
-  #### (optional) Simulate an acoustic array
-
-
   #### Example (1): Simulate observations via `ModelObsAcousticLogisTrunc`
 
   # Overview:
