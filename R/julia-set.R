@@ -71,9 +71,9 @@ set_states_init <- function(.xinit, .state) {
 #' @rdname julia_set
 #' @keywords internal
 
-# Set a movement model (`move`) in Julia
-set_model_move <- function(.cmd) {
-  julia_command(glue('model_move = {.cmd};'))
+# Set a movement model (`model_move`) in Julia
+set_model_move <- function(.model_move) {
+  julia_command(glue('model_move = {.model_move};'))
   nothing()
 }
 

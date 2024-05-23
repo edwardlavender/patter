@@ -26,7 +26,7 @@ set_threads(.threads)
 
 set_states_init(.xinit, .state)
 
-set_model_move(.cmd)
+set_model_move(.model_move)
 
 set_timeline(.timeline)
 
