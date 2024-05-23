@@ -28,73 +28,102 @@ overwrite <- TRUE
 
 #########################
 #########################
-#### Build datasets
+#### Set up
 
-#### Define input datasets
+#### Connect to Julia
+julia_connect()
+set_seed()
+
+#### Define map
+map <- dat_gebco()
+set_map(map)
+
+#### Define real-world observations
 # Define example datasets
-acc  <- dat_acoustics[individual_id == 25, ]
-arc  <- dat_archival[individual_id == 25, ]
-# Align datasets to minimise storage requirements
-start <- max(c(min(acc$timestamp), min(arc$timestamp)))
-end   <- min(c(max(acc$timestamp), max(arc$timestamp)))
-period <- lubridate::interval(start, end)
-acc   <- acc[timestamp %within% period, ]
-arc   <- arc[timestamp %within% period, ]
-# Crop moorings to minimise storage requirements
+acoustics <- dat_acoustics[individual_id == 25, ]
+archival  <- dat_archival[individual_id == 25, ]
+# Align datasets
+start     <- max(c(min(acoustics$timestamp), min(archival$timestamp)))
+end       <- min(c(max(acoustics$timestamp), max(archival$timestamp)))
+period    <- lubridate::interval(start, end)
+acoustics <- acoustics[timestamp %within% period, ]
+archival  <- archival[timestamp %within% period, ]
+# Align moorings
 moorings  <-
   dat_moorings |>
   mutate(int = lubridate::interval(receiver_start, receiver_end)) |>
   filter(lubridate::int_overlaps(int, period)) |>
   as.data.table()
-# Collate datasets
-dlist <- pat_setup_data(.acoustics = acc,
-                        .moorings = moorings,
-                        .archival = arc,
-                        .bathy = dat_gebco(),
-                        .lonlat = FALSE)
 
-# Include AC* algorithm layers
-dlist$algorithm$detection_overlaps <- acs_setup_detection_overlaps(dlist)
-dlist$algorithm$detection_kernels  <- acs_setup_detection_kernels(dlist)
-# Collate observations
-obs <- pf_setup_obs(.dlist = dlist,
-                    .step = "2 mins",
-                    .mobility = 500)
-obs <- obs[1:25, ]
+#### Define study period
+# This is short to minimise memory requirements
+timeline <- assemble_timeline(list(acoustics, archival), .step = "2 mins", .trim = TRUE)
+timeline <- timeline[1:720]
 
-#### Implement coa()
-out_coa <- coa(dlist, .delta_t = "4 hours")
 
-#### Implement pf_forward()
-# Define output columns
-cols <- c("timestep",
-          "cell_past", "cell_now",
-          "x_now", "y_now", "loglik", "logwt")
-# Set up directories
-sink      <- NULL
-if (overwrite) {
-  pff_folder <- file.path("inst", "extdata", "acpf", "forward")
-  unlink(pff_folder, recursive = TRUE)
-  dir.create(pff_folder, recursive = TRUE)
-  sink <- pff_folder
-}
-ssf()
-# Implement filter
-# * Force re-sampling at every time step (for convenience)
+#########################
+#########################
+#### Simulate datasets
+
+#### Simulate path(s)
+paths <- sim_path_walk(.map = map,
+                       .timeline = timeline,
+                       .model_move = move_xy())
+
+#### Simulate array(s)
+arrays <- sim_array(.map = map,
+                    .timeline = timeline,
+                    .n_receiver = 75L)
+
+#### Simulate observation(s)
+obs <- sim_observations(.timeline = timeline,
+                        .model_obs = c("ModelObsAcousticLogisTrunc", "ModelObsDepthUniform"),
+                        .model_obs_pars =
+                          list(
+                            arrays |>
+                              select(sensor_id = "receiver_id",
+                                     "receiver_x", "receiver_y",
+                                     "receiver_alpha", "receiver_beta", "receiver_gamma") |>
+                              as.data.table(),
+                            data.table(sensor_id = 1L,
+                                       depth_shallow_eps = 20,
+                                       depth_deep_eps = 20)
+                          ))
+
+#### Run the COA algorithm
+# TO DO
+# Improve alignment between coa() & pf_*() function output
+out_coa <- coa(.acoustics = acoustics,
+               .moorings = moorings,
+               .delta_t = "6 hours",
+               breaks = 100)
+
+#### Run the particle filter
+# Assemble acoustics
+acc <- assemble_acoustics(.timeline = timeline,
+                          .acoustics = acoustics,
+                          .moorings = moorings)
+# Assemble archival data
+arc <- assemble_archival(.timeline = timeline,
+                         .archival =
+                           archival |>
+                           select("timestamp", obs = "depth") |>
+                           mutate(depth_shallow_eps = 20,
+                                  depth_deep_eps = 20) |>
+                           as.data.table())
+# Run the filter forwards
 out_pff <-
-  pf_forward(.obs = obs,
-             .dlist = dlist,
-             .likelihood = list(acs_filter_land = acs_filter_land,
-                                acs_filter_container = acs_filter_container,
-                                pf_lik_ac = pf_lik_ac),
-             .trial = pf_opt_trial(.trial_resample_crit = Inf),
-             .record = pf_opt_record(.save = TRUE,
-                                     .sink = sink,
-                                     .cols = cols)
-  )
+  pf_filter(.map = map,
+            .timeline = timeline,
+            .state = "StateXY",
+            .xinit_pars = list(mobility = 750),
+            .model_move = move_xy(),
+            .yobs = list(acc, arc),
+            .model_obs = c("ModelObsAcousticLogisTrunc", "ModelObsDepthUniform"),
+            .n_record = 250L)
 
-#### Implement pf_backward() routines
-# (TO DO)
+#### Run the smoother
+# TO DO
 
 
 #########################
@@ -102,21 +131,10 @@ out_pff <-
 #### Update package
 
 #### Collate datasets
-# Update names
-dat_obs   <- obs
-dat_dlist <- dlist
-dat_coa   <- out_coa
-dat_pff   <- out_pff
-# Update contents
-summary(dat_dlist)
-dat_dlist$spatial$bathy <- terra::wrap(dat_dlist$spatial$bathy)
-dat_dlist$algorithm$detection_overlaps <- NULL
-dat_dlist$algorithm$detection_kernels  <- NULL
-# Collate datasets
+dat_coa <- out_coa
+dat_pff <- out_pff
 datasets <-
-  list(dat_obs = dat_obs,
-       dat_dlist = dat_dlist,
-       dat_coa = dat_coa,
+  list(dat_coa = dat_coa,
        dat_pff = dat_pff)
 
 #### Check dataset sizes (MB)
