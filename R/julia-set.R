@@ -1,5 +1,5 @@
-#' @title Julia: set objects in Julia
-#' @description These are functions that assign objects to variable names in Julia.
+#' @title `Julia`: set objects in `Julia`
+#' @description These are functions that assign objects to variable names in `Julia`.
 #' @details
 #' The following functions are exported:
 #' * [`set_seed()`] sets a seed in both `R` and `Julia`.

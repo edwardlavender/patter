@@ -16,7 +16,7 @@
 \alias{set_datasets}
 \alias{set_yobs_via_datasets}
 \alias{set_pf_filter}
-\title{Julia: set objects in Julia}
+\title{\code{Julia}: set objects in \code{Julia}}
 \usage{
 set_seed(.seed = 123L)
 
@@ -50,7 +50,7 @@ set_pf_filter(.n_move, .n_resample, .n_record, .direction)
 Exported functions return \code{invisible(NULL)}.
 }
 \description{
-These are functions that assign objects to variable names in Julia.
+These are functions that assign objects to variable names in \code{Julia}.
 }
 \details{
 The following functions are exported:

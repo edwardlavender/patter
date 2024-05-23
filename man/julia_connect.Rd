@@ -34,18 +34,18 @@ If \code{NULL}, a \code{Julia} Project is not used and the default environment i
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }
 \value{
-The function returns the Julia interface invisibly (see \code{\link[JuliaCall:julia_setup]{JuliaCall::julia_setup()}}).
+The function returns the \code{Julia} interface invisibly (see \code{\link[JuliaCall:julia_setup]{JuliaCall::julia_setup()}}).
 }
 \description{
 This function connects \code{R} to \code{Julia}.
 }
 \details{
-\code{\link{patter}} is an \code{R} front-end for the \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} package. This requires a local installation of Julia. This function connects \code{R} to the local \code{Julia} installation, sets up \code{\link{JuliaCall}}, which provides the integration between \code{R} and \code{Julia}, and \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}. Internally, the steps are as follows:
+\code{\link{patter}} is an \code{R} front-end for the \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} package. This requires a local installation of \code{Julia}. This function connects \code{R} to the local \code{Julia} installation, sets up \code{\link{JuliaCall}}, which provides the integration between \code{R} and \code{Julia}, and \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}. Internally, the steps are as follows:
 \itemize{
 \item \code{\link{JuliaCall}} is set up via \code{\link[JuliaCall:julia_setup]{JuliaCall::julia_setup()}}, using \code{.threads} threads.
-\item The Julia installation is validated.
-\item A local Julia Project is generated in \code{JULIA_PROJ} (if specified and required) and activated. We recommend using \code{\link{patter}} within an RStudio Project, with a \code{Julia} directory at the top-level that contains the \code{Julia} project.
-\item \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} and supporting dependencies are installed or updated (if required) and loaded (optionally in the local Julia Project).
+\item The \code{Julia} installation is validated.
+\item A local \code{Julia} Project is generated in \code{JULIA_PROJ} (if specified and required) and activated. We recommend using \code{\link{patter}} within an RStudio Project, with a \code{Julia} directory at the top-level that contains the \code{Julia} project.
+\item \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} and supporting dependencies are installed or updated (if required) and loaded (optionally in the local \code{Julia} Project).
 }
 
 You should run this function once per \code{R} session.

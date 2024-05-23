@@ -1,4 +1,4 @@
-#' @title Julia: naming functions
+#' @title `Julia`: naming functions
 #' @description A set of internal naming functions.
 #' @author Edward Lavender
 #' @keywords internal

@@ -2,7 +2,7 @@
 % Please edit documentation in R/julia-name.R
 \name{name_particles}
 \alias{name_particles}
-\title{Julia: naming functions}
+\title{\code{Julia}: naming functions}
 \usage{
 name_particles(
   .fun = c("pf_filter", "pf_smoother_two_filter"),

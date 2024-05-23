@@ -16,17 +16,17 @@
 #' @param .threads A `character` (`"auto"`) or an `integer` that defines the number of threads used by multi-threaded operations in `Julia`. This can only be set once per `R` session.
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
-#' @details [`patter`] is an `R` front-end for the [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) package. This requires a local installation of Julia. This function connects `R` to the local `Julia` installation, sets up [`JuliaCall`], which provides the integration between `R` and `Julia`, and [`Patter.jl`](https://github.com/edwardlavender/Patter.jl). Internally, the steps are as follows:
+#' @details [`patter`] is an `R` front-end for the [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) package. This requires a local installation of `Julia`. This function connects `R` to the local `Julia` installation, sets up [`JuliaCall`], which provides the integration between `R` and `Julia`, and [`Patter.jl`](https://github.com/edwardlavender/Patter.jl). Internally, the steps are as follows:
 #' * [`JuliaCall`] is set up via [`JuliaCall::julia_setup()`], using `.threads` threads.
-#' * The Julia installation is validated.
-#' * A local Julia Project is generated in `JULIA_PROJ` (if specified and required) and activated. We recommend using [`patter`] within an RStudio Project, with a `Julia` directory at the top-level that contains the `Julia` project.
-#' * [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) and supporting dependencies are installed or updated (if required) and loaded (optionally in the local Julia Project).
+#' * The `Julia` installation is validated.
+#' * A local `Julia` Project is generated in `JULIA_PROJ` (if specified and required) and activated. We recommend using [`patter`] within an RStudio Project, with a `Julia` directory at the top-level that contains the `Julia` project.
+#' * [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) and supporting dependencies are installed or updated (if required) and loaded (optionally in the local `Julia` Project).
 #'
 #' You should run this function once per `R` session.
 #'
 #' To update the number of threads, restart `R` and re-run the function with an updated `.threads` argument.
 #'
-#' @return The function returns the Julia interface invisibly (see [`JuliaCall::julia_setup()`]).
+#' @return The function returns the `Julia` interface invisibly (see [`JuliaCall::julia_setup()`]).
 #'
 #' @example man/example/example-julia_connect.R
 #' @author Edward Lavender
@@ -43,7 +43,7 @@ julia_connect <- function(...,
   on.exit(eval(cats$exit, envir = cats$envir), add = TRUE)
 
   #### Set up Julia
-  cats$cat("... Running Julia setup via `JuliaCall::julia_setup()`...")
+  cats$cat("... Running `Julia` setup via `JuliaCall::julia_setup()`...")
   set_threads(.threads = .threads)
   julia <- julia_setup(..., verbose = .verbose)
 
