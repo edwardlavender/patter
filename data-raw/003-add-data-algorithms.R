@@ -107,10 +107,12 @@ out_pff <-
 #### Update package
 
 #### Collate datasets
-dat_coa <- out_coa
-dat_pff <- out_pff
+dat_path <- paths
+dat_coa  <- out_coa
+dat_pff  <- out_pff
 datasets <-
-  list(dat_coa = dat_coa,
+  list(dat_path = dat_path,
+       dat_coa = dat_coa,
        dat_pff = dat_pff)
 
 #### Check dataset sizes (MB)
