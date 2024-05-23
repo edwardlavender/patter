@@ -10,7 +10,7 @@ sim_path_walk(
   .state = "StateXY",
   .xinit = NULL,
   .n_path = 1L,
-  .model_move,
+  .model_move = move_xy(),
   .plot = TRUE,
   .one_page = FALSE
 )

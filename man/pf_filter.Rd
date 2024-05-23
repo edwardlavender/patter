@@ -12,7 +12,7 @@ pf_filter(
   .xinit_pars = list(),
   .yobs = list(),
   .model_obs,
-  .model_move,
+  .model_move = move_xy(),
   .n_move = 100000L,
   .n_particle = 1000L,
   .n_resample = .n_record * 0.5,
