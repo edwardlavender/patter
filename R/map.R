@@ -12,7 +12,7 @@
 #' This function replaces [`flapper::pf_plot_map()`](https://edwardlavender.github.io/flapper/reference/pf_plot_map.html).
 #'
 #' @return The function returns a [`SpatRaster`].
-#' @example
+#' @example man/example/example-map_pou.R
 #'
 #' @seealso `map_*()` functions build maps of space use:
 #' * [`map_pou()`] maps probability-of-use;
@@ -94,8 +94,7 @@ map_pou <-
 #'
 #' @return The function returns a normalised [`SpatRaster`] (or `NULL` if [`spatstat.explore::density.ppp()`] fails and `.use_tryCatch = TRUE`).
 #'
-#' @example
-#'
+#' @example man/example/example-map_dens.R
 #' @inherit map_pou seealso
 #' @rdname map_dens
 #' @export
