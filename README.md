@@ -410,7 +410,7 @@ arc <-
   filter(individual_id == 25L) |>
   mutate(individual_id = NULL,
          depth_sigma = 50,
-         depth_deep_eps = 20) |>
+         depth_deep_eps = 30) |>
   rename(obs = depth) |>
   as.data.table()
 ```
@@ -460,12 +460,12 @@ fwd <- do.call(pf_filter, args)
 head(fwd$states)
 #>    path_id timestep           timestamp map_value        x       y
 #>      <int>    <int>              <POSc>     <num>    <num>   <num>
-#> 1:       1        1 2016-03-17 01:50:00 103.00890 709242.1 6253707
-#> 2:       1        2 2016-03-17 01:52:00  56.53801 709340.8 6253211
-#> 3:       1        3 2016-03-17 01:54:00  74.88351 709024.9 6253068
-#> 4:       1        4 2016-03-17 01:56:00 122.90161 709148.0 6253776
-#> 5:       1        5 2016-03-17 01:58:00  83.21526 709074.1 6253234
-#> 6:       1        6 2016-03-17 02:00:00  56.53801 709295.1 6253216
+#> 1:       1        1 2016-03-17 01:50:00  50.11201 709742.1 6253607
+#> 2:       1        2 2016-03-17 01:52:00  45.88295 709342.3 6252908
+#> 3:       1        3 2016-03-17 01:54:00  68.53316 709267.0 6253268
+#> 4:       1        4 2016-03-17 01:56:00  59.76520 709105.9 6253005
+#> 5:       1        5 2016-03-17 01:58:00  91.54701 709022.1 6253332
+#> 6:       1        6 2016-03-17 02:00:00  58.17422 709266.2 6253130
 
 # Backward run
 args$.direction <- "backward"
@@ -478,7 +478,7 @@ the individual at each time step (accounting for all of the data before
 and after each step).
 
 ``` r
-# smo <- pf_smoother_two_filter(.map = map, .nMC = 1)
+smo <- pf_smoother_two_filter(.n_particle = 100L, .n_sim = 100L)
 ```
 
 Particles can be used to reconstruct movement paths and patterns of
@@ -488,7 +488,7 @@ samples as follows:
 ``` r
 # Estimate UD
 ud <- map_dens(.map = map,
-               .coord = fwd$states,
+               .coord = smo$states,
                sigma = spatstat.explore::bw.diggle)
 #> Observation window is gridded.
 
@@ -536,10 +536,10 @@ To cite `patter` in publications, please use:
 - Lavender, E. et al. (2023). An integrative modelling framework for
   passive acoustic telemetry. Methods in Ecology and Evolution.
   <https://doi.org/10.1111/2041-210X.14193>
-- Lavender, E. et al. (in prep). Particle filters for passive acoustic
-  telemetry.
-- Lavender, E. et al. (in prep). `patter` for passive acoustic
-  telemetry.
+- Lavender, E. et al. (in prep). Particle filters for animal movement
+  modelling in autonomous receiver networks.
+- Lavender, E. et al. (in prep). Particle filters for animal tracking in
+  `R` and `Julia`.
 - Lavender, E. et al. (in prep). Particle filtering reveals patterns of
   space use in a Critically Endangered elasmobranch.
 
