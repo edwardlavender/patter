@@ -295,7 +295,7 @@ coords_init <- function(.map, .n) {
                na.rm = TRUE,
                xy = TRUE,
                values = TRUE,
-               replace = TRUE)
+               warn = FALSE)
   # Attempt SpatSample
   # * This may fail if almost all cells are NA
   .xinit <- tryCatch(do.call(terra::spatSample, args),
@@ -304,9 +304,14 @@ coords_init <- function(.map, .n) {
                        e
                      })
   # Try `exhaustive = TRUE` if SpatSample fails
+  # (`as.data.frame(.map, na.rm = TRUE)` is another possibility here)
   if (inherits(.xinit, "error") | fnrow(.xinit) == 0L) {
     args$exhaustive <- TRUE
     .xinit <- do.call(terra::spatSample, args)
+  }
+  # Guard against bugs in `spatSample()`
+  if (any(is.na(.xinit$bathy))) {
+    abort("`.xinit` samples from `terra::spatSample()` contain NAs. This is a bug!")
   }
   if (inherits(.xinit, "error") | fnrow(.xinit) == 0L) {
     if (isTRUE(spatAllNA(.map))) {
