@@ -69,6 +69,11 @@ pf_filter <- function(.map,
   check_inherits(.state, "character")
   check_inherits(.model_move, "character")
   .direction <- match.arg(.direction)
+  tzs <- c(tz(.timeline), sapply(.yobs, \(d) tz(d$timestamp)))
+  if (length(unique(tzs)) != 1L) {
+    abort("There is a mismatch between the time zones of `.timeline` and/or `.yobs` `timestamp`s ({str_items(tzs, quo = '\"')}).",
+          .envir = environment())
+  }
 
   #### Set initial state
   cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Setting initial states..."))
