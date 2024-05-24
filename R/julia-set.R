@@ -223,13 +223,25 @@ set_mobility_box <- function(.box) {
 }
 
 # Run the two-filter smoother in Julia
-set_smoother_two_filter <- function(.nMC) {
+set_smoother_two_filter <- function(.n_particle, .n_sim) {
   output <- name_particles(.fun = "pf_smoother_two_filter")
   fwd    <- name_particles(.fun = "pf_filter", .direction = "forward")
   bwd    <- name_particles(.fun = "pf_filter", .direction = "backward")
-  .nMC   <- as.integer(.nMC)
-  julia_check_exists(fwd, bwd, "model_move", "box")
-  cmd    <- glue('{output} = two_filter_smoother(xfwd = {fwd}.state, xbwd = {bwd}.state, move = model_move, box = box, nMC = {.nMC});')
+  # Define the number of particles for the smoother
+  # * If NULL, we use all particles from the forward simulation
+  if (is.null(.n_particle)) {
+    .n_particle <- julia_eval(glue('size({fwd}.state)[1]'))
+  }
+  .n_particle <- as.integer(.n_particle)
+  .n_sim      <- as.integer(.n_sim)
+  # Run smoother
+  julia_check_exists("timeline", fwd[], bwd, "model_move", "box")
+  cmd    <- glue('{output} = two_filter_smoother(timeline = timeline,
+                                                 xfwd = {fwd}.state[1:{.n_particle}, :],
+                                                 xbwd = {bwd}.state[1:{.n_particle}, :],
+                                                 move = model_move,
+                                                 box = box,
+                                                 nMC = {.n_sim});')
   julia_command(cmd)
-  nothing()
+  invisible(output)
 }

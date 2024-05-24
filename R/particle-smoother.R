@@ -12,7 +12,8 @@
 
 pf_smoother_two_filter <- function(.map = NULL,
                                    .mobility = .map,
-                                   .nMC = 100L,
+                                   .n_particle = NULL,
+                                   .n_sim = 100L,
                                    .verbose = getOption("patter.verbose")) {
 
   #### Initiate
@@ -26,26 +27,25 @@ pf_smoother_two_filter <- function(.map = NULL,
   # * box and nMC are defined below
 
   #### (optional) Define mobility box
+  box <- NULL
   if (!is.null(.mobility) & !is.null(.map)) {
     # `.mobility` can be provided to define a box within which movements are always valid for 2D states
     pf_obj <- name_particles(.fun = "pf_filter", .direction = "forward")
     .state <- as.character(julia_eval(glue('typeof({pf_obj}.state[1]);')))
     if (.state != "StateXY") {
-      warn(".mobility implemented but the State is not StateXY.")
+      warn("`.mobility` implemented but the `State` is not \"StateXY\".")
     }
-    # Define the box in Julia
-    set_mobility_box(spatMobilityBox(.map, .mobility = .mobility))
+    # Define the box in `Julia`
+    box <- spatMobilityBox(.map, .mobility = .mobility)
   }
+  set_mobility_box(box)
 
   #### Run the smoother
   cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Running smoother..."))
-  pf_obj <- set_smoother_two_filter(.nMC)
+  pf_obj <- set_smoother_two_filter(.n_particle = .n_particle, .n_sim = .n_sim)
 
   #### Get particles in R
-  # * TO DO: amend Julia code
-  # * TO DO: generalise pf_filter() R-side code
-  # cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Collating outputs..."))
-  # out <- julia_eval(glue('Patter.r_get_particles({pf_obj});'))
-  # out
+  cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Collating outputs..."))
+  pf_particles(.xinit = NULL, .pf_obj = pf_obj)
 
 }

@@ -7,16 +7,17 @@
 pf_smoother_two_filter(
   .map = NULL,
   .mobility = .map,
-  .nMC = 100L,
+  .n_particle = NULL,
+  .n_sim = 100L,
   .verbose = getOption("patter.verbose")
 )
 }
 \arguments{
 \item{.map, .mobility}{(optional) 'Mobility box' arguments.}
 
-\item{.nMC}{An \code{integer} that defines the number of Monte Carlo simulations.}
-
 \item{.verbose}{.verbose User output control (see \code{\link{patter-progress}} for supported options).}
+
+\item{.nMC}{An \code{integer} that defines the number of Monte Carlo simulations.}
 }
 \description{
 This function implements the two-filter smoother.
