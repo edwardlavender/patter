@@ -34,6 +34,8 @@
 #' 2. A weights step, in which we calculate particle weights from the log-likelihood of the data at each particle.
 #' 3. A re-sampling step, in which we optionally re-sample valid states using the weights.
 #'
+#' The time complexity of the algorithm is \eqn{O(TN)}.
+#'
 #' The filter is implemented by the `Julia` function [`Patter.particle_filter()`](https://github.com/edwardlavender/Patter.jl). To multi-thread movement and likelihood evaluations, set the number of threads via [`julia_connect()`]. See [`Patter.particle_filter()`](https://github.com/edwardlavender/Patter.jl) or `JuliaCall::julia_help("particle_filter")` for further information.
 #'
 #' # Algorithms

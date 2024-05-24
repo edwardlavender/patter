@@ -34,7 +34,7 @@ if (julia_run()) {
   # ... simulated movements.
 
   #### Simulate an acoustic array
-  moorings <- sim_array(.map = dat_gebco(),
+  moorings <- sim_array(.map = map,
                         .timeline = timeline,
                         .n_receiver = 100L)
 
@@ -62,7 +62,7 @@ if (julia_run()) {
     move_xy(dbn_length = glue::glue("truncated(Gamma(1, 250.0), upper = {mobility})"),
             dbn_angle = "Uniform(-pi, pi)")
   # Simulate a path
-  paths <- sim_path_walk(.map = dat_gebco(),
+  paths <- sim_path_walk(.map = map,
                          .timeline = timeline,
                          .state = state,
                          .model_move = move)
