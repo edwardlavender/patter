@@ -151,7 +151,7 @@ ensure that your code continues to work, even if we have to make
 breaking changes to `patter` as the package evolves in response to user
 feedback.
 
-4.  **Connect to `Julia`**. At the start of every `R` session, you need
+6.  **Connect to `Julia`**. At the start of every `R` session, you need
     to connect `R` to `Julia` (and `patter` to
     [`Patter.jl`](https://github.com/edwardlavender/Patter.jl)):
 
@@ -207,15 +207,18 @@ For example algorithm outputs (`datasets-algorithms`), see:
 
 ## Set up `Julia`
 
-To link \[`patter`\] and the
+To link `patter` and the
 [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) `Julia`
-backend, use: \* `julia_connect()` to connect to `R` to `Julia`; \*
-`set_seed()` to set the seed in `R` and `Julia`; \* `set_map()` to make
-a `SpatRaster` of the study area available in `Julia`;
+backend, use:
+
+- `julia_connect()` to connect to `R` to `Julia`;
+- `set_seed()` to set the seed in `R` and `Julia`;
+- `set_map()` to make a `SpatRaster` of the study area available in
+  `Julia`;
 
 These functions should be run at the start of every `R` session.
 
-## Components
+## Abstract Types
 
 `patter` is based on three Abstract Types, defined in `Julia`:
 
@@ -231,10 +234,10 @@ These functions should be run at the start of every `R` session.
 To simulate animal movement time series, see:
 
 - `sim_path_walk()` to simulate a movement path from a walk model (via
-  \[`ModelMove`\]);
+  `ModelMove`);
 - `sim_array()` to simulate an acoustic array;
 - `sim_observations()` to simulate observational time series (via
-  \[`ModelObs`\]);
+  `ModelObs`);
 
 To evaluate model skill in reconstructing simulated patterns, see
 `skill_*()` functions:
@@ -268,8 +271,8 @@ modelling workflow based on particle filtering for reconstructing animal
 movement paths and emergent patterns of space use from observational
 time series (with a focus on passive acoustic telemetry systems).
 
-**To assemble datasets for particle filtering**, use
-``` assemble``_*() ``` functions:
+**To assemble datasets for particle filtering**, use `assemble_*()`
+functions:
 
 - `assemble_timeline()` assembles a timeline;
 - `assemble_acoustics()` assembles an acoustic time series;
@@ -333,6 +336,11 @@ options(patter.verbose = FALSE)
 
 Second, we connect `R` to `Julia` and set the seed in `R` and `Julia` to
 ensure reproducibility of our simulations:
+
+``` r
+julia_connect()
+set_seed()
+```
 
 Third, we define the properties of our study area; namely, a
 `SpatRaster` of our study area that defines the area within which
@@ -423,7 +431,10 @@ archival <- assemble_archival(.timeline = timeline,
                               .archival = arc)
 ```
 
-To simulate observations instead, see `sim_observations()`.
+Of course, you do not need acoustic and archival data to implement the
+algorithms (these are just the data we have collected from flapper
+skate)—other datasets can be used just as easily. To simulate
+observations instead, see `sim_observations()`.
 
 We are now in a position to run the particle filter. This runs a
 simulation forwards (or backwards) in time, sampling states (locations,
