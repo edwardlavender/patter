@@ -39,3 +39,38 @@
 #' @inherit assemble seealso
 #' @name pf_particles-class
 NULL
+
+
+# Build a `pf_particles` class object from Patter.jl outputs
+pf_particles <- function(.xinit = NULL, .pf_obj) {
+
+  # Initialise output list
+  out <- list(xinit = .xinit)
+
+  # Add Julia outputs
+  # * states, diagnostics, convergence
+  out <- append(out, julia_eval(glue('Patter.r_get_particles({.pf_obj});')))
+
+  # Process diagnostics data.table
+  out$diagnostics <-
+    out$diagnostics |>
+    as.data.table()
+
+  # Process states data.table
+  # * TO DO
+  # * Consider the inclusion of bathymetry data for consistency
+  # * Or remove inclusion of bathymetry data from sim_path_walk()
+  timestep <- timestamp <- NULL
+  out$states <-
+    out$states |>
+    collapse::join(out$diagnostics[, list(timestep, timestamp)],
+                   on = "timestep", verbose = FALSE) |>
+    select("path_id", "timestep", "timestamp", everything()) |>
+    as.data.table()
+
+  # Update object class
+  out <- unclass(out)
+  class(out) <- c(class(out), "pf_particles")
+  out
+
+}
