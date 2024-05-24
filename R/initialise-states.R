@@ -140,6 +140,10 @@ map_init.ModelObsAcousticLogisTrunc <- function(.map,
     arrange(.data$timestamp) |>
     mutate(gap = as.numeric(difftime(.data$timestamp, t1, units = step_units))) |>
     as.data.table()
+  # Return `.map` if no detections were recorded
+  if (fnrow(.dataset) == 0L) {
+    return(.map)
+  }
   # Define the first detection(s) before t1
   before <- .dataset[gap < 0, ]
   if (fnrow(before) > 0L) {
