@@ -295,7 +295,7 @@ coords_init <- function(.map, .n) {
                na.rm = TRUE,
                xy = TRUE,
                values = TRUE,
-               warn = FALSE)
+               replace = TRUE)
   # Attempt SpatSample
   # * This may fail if almost all cells are NA
   .xinit <- tryCatch(do.call(terra::spatSample, args),
