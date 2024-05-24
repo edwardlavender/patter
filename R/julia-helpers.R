@@ -13,7 +13,16 @@
 # Choose whether or not to run Julia examples
 julia_run <- function() {
   identical(Sys.getenv("AUTO_JULIA_INSTALL"), "true")
-  # TRUE
+}
+
+#' @rdname julia_helper
+#' @export
+
+# Choose whether or not to skip patter tests
+# * If TRUE, skip
+# * This is a temporary solution to skipping tests with covr, CI etc.
+julia_skip <- function() {
+  !identical(Sys.getenv("PATTER_TEST"), "true")
 }
 
 #' @rdname julia_helper
