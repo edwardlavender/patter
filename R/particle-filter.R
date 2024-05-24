@@ -102,24 +102,7 @@ pf_filter <- function(.map,
                           .direction = .direction)
 
   #### Get particles in R
-  # TO DO
-  # * Consider the inclusion of bathymetry data for consistency
-  # * Or remove inclusion of bathymetry data from sim_path_walk()
   cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Collating outputs..."))
-  out <- julia_eval(glue('Patter.r_get_particles({pf_obj});'))
-  timestep <- timestamp <- NULL
-  out$diagnostics <-
-    out$diagnostics |>
-    as.data.table()
-  out$states <-
-    out$states |>
-    collapse::join(out$diagnostics[, list(timestep, timestamp)],
-                   on = "timestep", verbose = FALSE) |>
-    select("path_id", "timestep", "timestamp", everything()) |>
-    as.data.table()
-  out$xinit <- .xinit
-  out <- unclass(out)
-  class(out) <- c(class(out), "pf_particles")
-  out
+  pf_particles(.xinit = .xinit, .pf_obj = pf_obj)
 
 }
