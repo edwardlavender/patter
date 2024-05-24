@@ -23,9 +23,9 @@
 #'
 #' For example algorithm outputs (`datasets-algorithms`), see:
 #'
-#' * `dat_path()` for an example output from `sim_path_walk()`;
-#' * `dat_coa()` for an example output from `coa()`;
-#' * `dat_pff()` for an example output from `pf_filter()`;
+#' * [`dat_path()`] for an example output from [`sim_path_walk()`];
+#' * [`dat_coa()`] for an example output from [`coa()`];
+#' * [`dat_pff()`] for an example output from [`pf_filter()`];
 #'
 #' # Set up `Julia`
 #'
@@ -36,7 +36,7 @@
 #'
 #' These functions should be run at the start of every `R` session.
 #'
-#' # Components
+#' # Abstract Types
 #'
 #' [`patter`] is based on three Abstract Types, defined in `Julia`:
 #'

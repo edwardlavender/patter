@@ -31,9 +31,9 @@ To validate new datasets for use with \code{\link{patter}}, use TO DO.
 
 For example algorithm outputs (\code{datasets-algorithms}), see:
 \itemize{
-\item \code{dat_path()} for an example output from \code{sim_path_walk()};
-\item \code{dat_coa()} for an example output from \code{coa()};
-\item \code{dat_pff()} for an example output from \code{pf_filter()};
+\item \code{\link[=dat_path]{dat_path()}} for an example output from \code{\link[=sim_path_walk]{sim_path_walk()}};
+\item \code{\link[=dat_coa]{dat_coa()}} for an example output from \code{\link[=coa]{coa()}};
+\item \code{\link[=dat_pff]{dat_pff()}} for an example output from \code{\link[=pf_filter]{pf_filter()}};
 }
 }
 
@@ -48,7 +48,7 @@ To link \code{\link{patter}} and the \href{https://edwardlavender.github.io/Patt
 These functions should be run at the start of every \code{R} session.
 }
 
-\section{Components}{
+\section{Abstract Types}{
 \code{\link{patter}} is based on three Abstract Types, defined in \code{Julia}:
 \itemize{
 \item \code{\link{State}} structures hold the state (location) of an animal at a given time step;
