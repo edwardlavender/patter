@@ -1,5 +1,5 @@
 #' @title [`patter`]: particle algorithms for animal movement
-#' @description [`patter`] provides particle filtering, smoothing and sampling algorithms for animal movement modelling, with a focus on passive acoustic telemetry systems. This wraps and enhances a fast `Julia` backend ([`Patter.jl`](https://edwardlavender.github.io/Patter.jl)). The methodology enables the reconstruction of movement paths and patterns of space use. [`patter`] unifies a suite of methods formerly known as the [`flapper`](https://github.com/edwardlavender/flapper) algorithms  and supersedes the experimental [`flapper`](https://github.com/edwardlavender/flapper) package (Lavender et al., [2023](https://doi.org/10.1111/2041-210X.14193)).
+#' @description [`patter`] provides particle filtering, smoothing and sampling algorithms for animal movement modelling, with a focus on passive acoustic telemetry systems. This wraps and enhances a fast [`Julia`](https://julialang.org) backend ([`Patter.jl`](https://edwardlavender.github.io/Patter.jl)). The methodology enables the reconstruction of movement paths and patterns of space use. [`patter`] unifies a suite of methods formerly known as the [`flapper`](https://github.com/edwardlavender/flapper) algorithms  and supersedes the experimental [`flapper`](https://github.com/edwardlavender/flapper) package (Lavender et al., [2023](https://doi.org/10.1111/2041-210X.14193)).
 #'
 #' # Vignettes
 #'
@@ -14,12 +14,18 @@
 #'
 #' For example datasets from the Movement Ecology of Flapper Skate project ([`datasets-mefs`]), which inspired [`patter`], see:
 #'
-#' * [`dat_moorings`] for receiver locations and associated information;
+#' * [`dat_moorings`] for acoustic receiver deployments;
 #' * [`dat_acoustics`] for acoustic time series;
 #' * [`dat_archival`] for archival (depth) time series;
 #' * [`dat_gebco()`] for a bathymetry grid;
 #'
 #' To validate new datasets for use with [`patter`], use TO DO.
+#'
+#' For example algorithm outputs (`datasets-algorithms`), see:
+#'
+#' * `dat_path()` for an example output from `sim_path_walk()`;
+#' * `dat_coa()` for an example output from `coa()`;
+#' * `dat_pff()` for an example output from `pf_filter()`;
 #'
 #' # Set up `Julia`
 #'
@@ -71,6 +77,7 @@
 #'
 #' **To assemble datasets for particle filtering**, use [`assemble`]`_*()` functions:
 #'
+#' * [`assemble_timeline()`] assembles a timeline;
 #' * [`assemble_acoustics()`] assembles an acoustic time series;
 #' * [`assemble_archival()`] assembles an archival time series;
 #'
@@ -80,6 +87,8 @@
 #'
 #' * [`pf_filter()`] to implement the particle filter;
 #' * [`pf_smoother_two_filter()`] to implement the two-filter smoother;
+#'
+#' These functions return [`pf_particles-class`] objects.
 #'
 #' **For convenience plotting functions**, see:
 #'
@@ -91,7 +100,16 @@
 #'
 #' **For mapping utilisation distributions**, use:
 #'
-#' TO DO
+#' * [`map_pou()`] to map probability-of-use;
+#' * [`map_dens()`] to create smooth maps using `spatstat`, plus the supporting functions:
+#'    * [`as.im.SpatRaster()`], to convert `SpatRaster`s to pixel images;
+#'    * [`as.owin.SpatRaster()`], to convert  `SpatRaster`s to observation windows;
+#'    * [`as.owin.sf()`], to convert `sf` objects to observation windows;
+#' * `map_hr_*()` to map home ranges, specifically:
+#'    * [`map_hr_prop()`] for a custom range;
+#'    * [`map_hr_core()`] for the 'core' range;
+#'    * [`map_hr_home()`] for the 'home' range;
+#'    * [`map_hr_full()`] for the full range;
 #'
 #' # Options
 #'
@@ -169,6 +187,7 @@
 #' @importFrom lubridate int_overlaps
 #' @importFrom lubridate int_start int_end
 #' @importFrom lubridate round_date
+#' @importFrom lubridate tz
 #' @importFrom lubridate %within%
 #'
 #' @importFrom rlang .data

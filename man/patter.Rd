@@ -6,7 +6,7 @@
 \alias{patter}
 \title{\code{\link{patter}}: particle algorithms for animal movement}
 \description{
-\code{\link{patter}} provides particle filtering, smoothing and sampling algorithms for animal movement modelling, with a focus on passive acoustic telemetry systems. This wraps and enhances a fast \code{Julia} backend (\href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}}). The methodology enables the reconstruction of movement paths and patterns of space use. \code{\link{patter}} unifies a suite of methods formerly known as the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} algorithms  and supersedes the experimental \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package (Lavender et al., \href{https://doi.org/10.1111/2041-210X.14193}{2023}).
+\code{\link{patter}} provides particle filtering, smoothing and sampling algorithms for animal movement modelling, with a focus on passive acoustic telemetry systems. This wraps and enhances a fast \href{https://julialang.org}{\code{Julia}} backend (\href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}}). The methodology enables the reconstruction of movement paths and patterns of space use. \code{\link{patter}} unifies a suite of methods formerly known as the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} algorithms  and supersedes the experimental \href{https://github.com/edwardlavender/flapper}{\code{flapper}} package (Lavender et al., \href{https://doi.org/10.1111/2041-210X.14193}{2023}).
 }
 \section{Vignettes}{
 For an introduction to \code{\link{patter}}, use:
@@ -21,13 +21,20 @@ For a full list of all functions, see \code{help(package = 'patter')}.
 \section{Datasets}{
 For example datasets from the Movement Ecology of Flapper Skate project (\code{\link{datasets-mefs}}), which inspired \code{\link{patter}}, see:
 \itemize{
-\item \code{\link{dat_moorings}} for receiver locations and associated information;
+\item \code{\link{dat_moorings}} for acoustic receiver deployments;
 \item \code{\link{dat_acoustics}} for acoustic time series;
 \item \code{\link{dat_archival}} for archival (depth) time series;
 \item \code{\link[=dat_gebco]{dat_gebco()}} for a bathymetry grid;
 }
 
 To validate new datasets for use with \code{\link{patter}}, use TO DO.
+
+For example algorithm outputs (\code{datasets-algorithms}), see:
+\itemize{
+\item \code{dat_path()} for an example output from \code{sim_path_walk()};
+\item \code{dat_coa()} for an example output from \code{coa()};
+\item \code{dat_pff()} for an example output from \code{pf_filter()};
+}
 }
 
 \section{Set up \code{Julia}}{
@@ -85,6 +92,7 @@ The main thrust of \code{\link{patter}} is the provision of fast, integrated mod
 
 \strong{To assemble datasets for particle filtering}, use \code{\link{assemble}}\verb{_*()} functions:
 \itemize{
+\item \code{\link[=assemble_timeline]{assemble_timeline()}} assembles a timeline;
 \item \code{\link[=assemble_acoustics]{assemble_acoustics()}} assembles an acoustic time series;
 \item \code{\link[=assemble_archival]{assemble_archival()}} assembles an archival time series;
 }
@@ -97,6 +105,8 @@ Ancillary time series should be structured in the same way for inclusion in the 
 \item \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}} to implement the two-filter smoother;
 }
 
+These functions return \code{\linkS4class{pf_particles}} objects.
+
 \strong{For convenience plotting functions}, see:
 
 TO DO
@@ -106,8 +116,22 @@ TO DO
 TO DO
 
 \strong{For mapping utilisation distributions}, use:
-
-TO DO
+\itemize{
+\item \code{\link[=map_pou]{map_pou()}} to map probability-of-use;
+\item \code{\link[=map_dens]{map_dens()}} to create smooth maps using \code{spatstat}, plus the supporting functions:
+\itemize{
+\item \code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}}, to convert \code{SpatRaster}s to pixel images;
+\item \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}}, to convert  \code{SpatRaster}s to observation windows;
+\item \code{\link[=as.owin.sf]{as.owin.sf()}}, to convert \code{sf} objects to observation windows;
+}
+\item \verb{map_hr_*()} to map home ranges, specifically:
+\itemize{
+\item \code{\link[=map_hr_prop]{map_hr_prop()}} for a custom range;
+\item \code{\link[=map_hr_core]{map_hr_core()}} for the 'core' range;
+\item \code{\link[=map_hr_home]{map_hr_home()}} for the 'home' range;
+\item \code{\link[=map_hr_full]{map_hr_full()}} for the full range;
+}
+}
 }
 
 \section{Options}{
