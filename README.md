@@ -1,8 +1,8 @@
 
-# [`patter`](https://github.com/edwardlavender/patter) for passive acoustic telemetry
+# `patter`: particle algorithms for animal movement
 
-**Particle filters to reconstruct movement paths and patterns of space
-use in passive acoustic telemetry**
+**Particle filter, smoothers and sampling algorithms for animal movement
+modelling**
 
 <!-- badges: start -->
 
@@ -18,78 +18,119 @@ coverage](https://codecov.io/gh/edwardlavender/patter/branch/main/graph/badge.sv
 [![R-CMD-check](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-[`patter`](https://github.com/edwardlavender/patter) is
-[R](https://www.r-project.org) package implementation of a forward
-filtering–backward sampling algorithm for passive acoustic telemetry.
-This methodology enables the reconstruction of movement paths and
-patterns of space use in passive acoustic telemetry systems.
-[`patter`](https://github.com/edwardlavender/patter) unifies a suite of
-methods formerly known as the
-[`flapper`](https://github.com/edwardlavender/flapper) algorithms
-(Lavender et al., 2023) and supersedes the experimental
-[`flapper`](https://github.com/edwardlavender/flapper) package.
+`patter` provides particle filtering, smoothing and sampling algorithms
+for animal movement modelling, with a focus on passive acoustic
+telemetry systems. This wraps and enhances a fast `Julia` backend
+([`Patter.jl`](https://edwardlavender.github.io/Patter.jl)). The
+methodology enables the reconstruction of movement paths and patterns of
+space use. `patter` unifies a suite of methods formerly known as the
+[`flapper`](https://github.com/edwardlavender/flapper) algorithms and
+supersedes the experimental
+[`flapper`](https://github.com/edwardlavender/flapper) package (Lavender
+et al., [2023](https://doi.org/10.1111/2041-210X.14193)).
 
-# Features
+# Highlights
 
-[`patter`](https://github.com/edwardlavender/patter) is designed to
-reconstruct fine-scale movement paths and emergent patterns of space use
-in passive acoustic telemetry systems. A powerful, flexible
-process-orientated framework known as a forward filtering–backward
-sampling algorithm is used for this purpose. This framework unifies the
+`patter` is designed to reconstruct movement paths and emergent patterns
+of space use from animal tracking data. A powerful, flexible,
+process-orientated, particle-based framework is used for this purpose.
+This framework unifies the
 [`flapper`](https://github.com/edwardlavender/flapper) algorithms and
 provides important opportunities for development, which we exploit here.
 
-The essential functions are `pf_forward()` and
-`pf_backward_sampler_*()`. `pf_forward()` is the forward filter. This
-simulates the possible locations of an individual moving forwards in
-time, accounting for all of the data (including acoustic observations,
-depth observations and any other observations) *up to* each time point
-and the animal’s movement. `pf_backward_sampler_*()` refines outputs
-from the forward filter. This function runs a simulation backwards in
-time and samples likely locations in line with all of the data *up to
-and after* each time point. The outcome is a set of location samples
-that represent possible trajectories and embody emergent patterns of
-space use.
+The essential functions are `pf_filter()` and `pf_smoother_*()`:
+
+- **`pf_filter()`** is the particle filter. This simulates the possible
+  locations of an individual moving forwards in time, accounting for all
+  of the data (for example, acoustic observations, depth observations
+  and any other observations) *up to* each time point and the animal’s
+  movement (a partial marginal distribution).
+- **`pf_smoother_*()`** is a particle smoothing algorithm. At each time
+  step, the smoother accounts for all of the data from both the past
+  *and* the future (the full marginal distribution), and substantially
+  refines maps of space use.
+
+We hope to add backward sampling algorithms to the package in due
+course.
 
 # Evolution
 
-[`patter`](https://github.com/edwardlavender/patter) evolved from the
-experimental [flapper](https://github.com/edwardlavender/flapper)
-package, but is:
+`patter` evolved from the experimental
+[flapper](https://github.com/edwardlavender/flapper) package, but is:
 
 - **More powerful**, with a substantially revised methodology;
 - **Faster**, with overhauled internal routines;
 - **Simpler** to use and maintain;
 - **Stable**, with fewer dependencies and an upgraded spatial ecosystem;
-- **Better tested**, with comprehensive unit tests;
+- **Better tested**, with comprehensive unit tests (in progress!);
 
-See `NEWS` for a summary of the evolution of
-[`flapper`](https://github.com/edwardlavender/flapper) to
-[`patter`](https://github.com/edwardlavender/patter).
+See [`NEWS`](https://github.com/edwardlavender/patter/blob/main/NEWS.md)
+for a summary of the evolution of
+[`flapper`](https://github.com/edwardlavender/flapper) to `patter`.
 
-At the time of writing (December 2023),
-[`patter`](https://github.com/edwardlavender/patter) focuses on the
-reconstruction movement paths and patterns of space use, which represent
-a subset of the capacity provided by
-[`flapper`](https://github.com/edwardlavender/flapper). Further
-developments will be driven by user requirements. Please get in touch if
-you would like to see additional functionality brought into
-[`patter`](https://github.com/edwardlavender/patter).
+At the time of writing (May 2024), `patter` is more streamlined than
+[`flapper`](https://github.com/edwardlavender/flapper) and focuses on
+the implementation of fast particle-based algorithms for the
+reconstruction of movements and patterns of space use. Please get in
+touch if you would like to see additional functionality brought into
+`patter`.
 
 # Installation
 
-This package requires [R](https://www.r-project.org) version ≥ 4.1 (but
-the most recent version is strongly recommended). You can check your
-version with `R.version.string`. Subsequent installation steps (may)
-require the `devtools` and `pkgbuild` packages, which can be installed
-with `install.packages(c("devtools", "pkgbuild"))`. On Windows, package
-building requires `Rtools`. You can check whether `Rtools` is installed
-with `pkgbuild::has_rtools()`. If `Rtools` is not installed, it is
-necessary to download and install the appropriate version of `Rtools`
-before proceeding by following the instructions
-[here](https://cran.r-project.org/bin/windows/Rtools/). Once you are set
-up, you can install [`patter`](https://github.com/edwardlavender/patter)
-via:
+1.  **Install [`R`](https://www.r-project.org)**. This package requires
+    `R` version ≥ 4.1 (but the most recent version is recommended). You
+    can check your version with `R.version.string`.
+
+2.  **Install build packages.** Package installation and configuration
+    (may) require the [`devtools`](https://github.com/r-lib/devtools),
+    [`pkgbuild`](https://github.com/r-lib/pkgbuild) and
+    [`here`](https://github.com/r-lib/here) packages, which can be
+    installed with
+    `install.packages(c("devtools", "pkgbuild", "here"))`.
+
+3.  **Install
+    [`Rtools`](https://cran.r-project.org/bin/windows/Rtools/)**. On
+    Windows, package building requires `Rtools`. You can check whether
+    `Rtools` is installed with `pkgbuild::has_rtools()`. If `Rtools` is
+    not installed, it is necessary to download and install the
+    appropriate version of `Rtools` before proceeding by following the
+    instructions [here](https://cran.r-project.org/bin/windows/Rtools/).
+
+4.  **Install [`Julia`](https://julialang.org)**. `Julia` is
+    high-performance programming language that `patter` uses as a
+    backend. Install `Julia` via `R`:
+
+<!-- -->
+
+    # Install the {JuliaCall} package:
+    install.packages("JuliaCall")
+
+    # Install `Julia` via {JuliaCall}:
+    library(JuliaCall)
+    julia <- julia_setup(installJulia = TRUE)
+
+    # Validate the Julia installation:
+    # * TRUE: `Julia` is working! 
+    # * FALSE: `Julia` is not working (see below)! 
+    isTRUE(try(julia_eval('true'), silent = TRUE))
+
+If this doesn’t work, download and install `Julia` from
+[JuliaLang](https://julialang.org/downloads/). Then retry
+`julia_setup()`:
+
+    julia <- julia_setup()
+    isTRUE(try(julia_eval('true'), silent = TRUE))
+
+If you run into issues at this stage, it is likely that `Julia` has not
+been installed properly or `R` can’t find it. You may need to tell `R`
+the location of the `Julia` binary via `JULIA_HOME` (see
+`?JuliaCall::julia_setup()` and the
+[`JuliaCall`](https://cran.r-project.org/web/packages/JuliaCall)
+[README](https://cran.r-project.org/web/packages/JuliaCall/readme/README.html)
+for troubleshooting and ways to get help.
+
+5.  **Install [`patter`](https://github.com/edwardlavender/patter).**
+    Install `patter` via:
 
 ``` r
 devtools::install_github("edwardlavender/patter", 
@@ -105,73 +146,98 @@ vignettes. This process may take several minutes. Set
 We strongly recommend using
 [`renv`](https://rstudio.github.io/renv/articles/renv.html) (or similar)
 and [RStudio Projects](https://r4ds.had.co.nz/workflow-projects.html) to
-track the version of
-[`patter`](https://github.com/edwardlavender/patter) that you use in
-your projects. This will ensure that your code continues to work, even
-if we have to make breaking changes to
-[`patter`](https://github.com/edwardlavender/patter) as the package
-evolves in response to user feedback.
+track the version of `patter` that you use in your projects. This will
+ensure that your code continues to work, even if we have to make
+breaking changes to `patter` as the package evolves in response to user
+feedback.
 
-# Vignettes
+4.  **Connect to `Julia`**. At the start of every `R` session, you need
+    to connect `R` to `Julia` (and `patter` to
+    [`Patter.jl`](https://github.com/edwardlavender/Patter.jl)):
 
-For an introduction to
-[`patter`](https://github.com/edwardlavender/patter), use:
+<!-- -->
+
+    # Load & attach {patter}:
+    library(patter)
+
+    # Option (A): Connect to `Julia` using default options: 
+    julia <- julia_connect()
+
+    #  Option (B): Connect to `Julia` within an RStudio Project (recommended):
+    julia <- julia_connect(JULIA_PROJ = here::here("Julia"))
+
+The first time you run `julia_connect()`, it will connect to `Julia` and
+install (and pre-compile)
+[`Patter.jl`](https://github.com/edwardlavender/Patter.jl) and the
+additional `Julia` dependencies. This may take a few minutes. Subsequent
+`julia_connect()` calls will be faster. Please report any
+[issues](https://github.com/edwardlavender/patter/issues) you experience
+during this process.
+
+# Functionality
+
+## Vignettes
+
+For an introduction to `patter`, use:
 
 - `vignette("a-methodology", package = "patter")` for a conceptual
   introduction to the methodology;
 - `vignette("b-workflow-outline", package = "patter")` for an overview
   of the workflow;
-- `vignette("c-workflow-example", package = "patter")` for an example
-  workflow;
-- `vignette("d-demos", package = "patter")` for more involved
-  demonstrations;
-- `vignette("e-faqs", package = "patter")` for FAQs;
 
 For a full list of all functions, see `help(package = 'patter')`.
 
-# Datasets
+## Datasets
 
 For example datasets from the Movement Ecology of Flapper Skate project
-(`datasets-mefs`), which inspired
-[`patter`](https://github.com/edwardlavender/patter), see:
+(`datasets-mefs`), which inspired `patter`, see:
 
-- `dat_moorings` for receiver locations and associated information;
+- `dat_moorings` for acoustic receiver deployments;
 - `dat_acoustics` for acoustic time series;
 - `dat_archival` for archival (depth) time series;
 - `dat_gebco()` for a bathymetry grid;
 
+To validate new datasets for use with `patter`, use TO DO.
+
 For example algorithm outputs (`datasets-algorithms`), see:
 
-- `dat_obs()` for an example output dataset from `pf_setup_obs()`;
-- `dat_pff()` and `dat_pff_src()` for example outputs from
-  `pf_forward()`;
-- `dat_pfbk()` and `dat_pfbk_src()` for example outputs from
-  `pf_backward_killer()`;
-- `dat_pfp()` for an example output from `pf_path()`;
+- `dat_path()` for an example output from `sim_path_walk()`;
 - `dat_coa()` for an example output from `coa()`;
+- `dat_pff()` for an example output from `pf_filter()`;
 
-# Simulation
+## Set up `Julia`
 
-To simulate passive acoustic telemetry data, see:
+To link \[`patter`\] and the
+[`Patter.jl`](https://edwardlavender.github.io/Patter.jl) `Julia`
+backend, use: \* `julia_connect()` to connect to `R` to `Julia`; \*
+`set_seed()` to set the seed in `R` and `Julia`; \* `set_map()` to make
+a `SpatRaster` of the study area available in `Julia`;
 
+These functions should be run at the start of every `R` session.
+
+## Components
+
+`patter` is based on three Abstract Types, defined in `Julia`:
+
+- `State` structures hold the state (location) of an animal at a given
+  time step;
+- `ModelMove` structures hold movement model, used to simulate new
+  states;
+- `ModelObs` structures hold observation model parameters, used to
+  evaluate the correspondence between simulated states and observations;
+
+## Simulation
+
+To simulate animal movement time series, see:
+
+- `sim_path_walk()` to simulate a movement path from a walk model (via
+  \[`ModelMove`\]);
 - `sim_array()` to simulate an acoustic array;
-- `sim_path_walk()` to simulate a movement path from a walk model;
-- `sim_detections()` to simulate detections at receivers;
-
-These functions are supported by a set of simulation helpers, including:
-
-- `rbern()`, `rdet()`, `dbern()`, `pdetlogistic()` and `pdet()` for the
-  simulation of detections;
-- `dtruncgamma()`, `rtruncgamma()`, `rlen()` and `clen()` for the
-  simulation of step lengths;
-- `rwn()`, `rangrw()`, `rangcrw()` and `cang()` for the simulation of
-  turning angles;
-- `rstep()`, `dstep()` and `cstep()` for the simulation of steps into
-  new locations;
-- `dkick()` and `rkick()` for `*step()` wrappers;
+- `sim_observations()` to simulate observational time series (via
+  \[`ModelObs`\]);
 
 To evaluate model skill in reconstructing simulated patterns, see
-`skill_()` functions, specifically:
+`skill_*()` functions:
 
 - `skill_mb()` to calculate mean bias;
 - `skill_me()` to calculate mean error;
@@ -179,7 +245,7 @@ To evaluate model skill in reconstructing simulated patterns, see
 - `skill_R()` to calculate Spearman’s rank correlation coefficient;
 - `skill_d()` to calculate the index of agreement;
 
-# Data exploration
+## Data exploration
 
 For help with data acquisition, processing, checking and preliminary
 analyses, see the [`flapper`](https://github.com/edwardlavender/flapper)
@@ -193,87 +259,42 @@ package. This facilitates:
 Please submit a [feature
 request](https://github.com/edwardlavender/patter/issues) if you would
 like functions from
-[`flapper`](https://github.com/edwardlavender/flapper) in
-[`patter`](https://github.com/edwardlavender/patter).
+[`flapper`](https://github.com/edwardlavender/flapper) in `patter`.
 
-# Modelling workflow
+## Algorithms
 
-The main thrust of [`patter`](https://github.com/edwardlavender/patter)
-is the provision of an integrated modelling workflow for reconstructing
-animal movement paths and emergent patterns of space use in passive
-acoustic telemetry systems.
+The main thrust of `patter` is the provision of fast, integrated
+modelling workflow based on particle filtering for reconstructing animal
+movement paths and emergent patterns of space use from observational
+time series (with a focus on passive acoustic telemetry systems).
 
-**To set up data for
-[`patter`](https://github.com/edwardlavender/patter)**, use
+**To assemble datasets for particle filtering**, use
+``` assemble``_*() ``` functions:
 
-- `pat_setup_data()` to set up data;
+- `assemble_timeline()` assembles a timeline;
+- `assemble_acoustics()` assembles an acoustic time series;
+- `assemble_archival()` assembles an archival time series;
 
-**To implement the centre-of-activity algorithm**, use:
+Ancillary time series should be structured in the same way for inclusion
+in the particle filter.
 
-- `coa()` to calculate centres of activity;
+**To implement particle filtering (PF) routines**, use:
 
-**To implement the particle filter (PF)**, use:
+- `pf_filter()` to implement the particle filter;
+- `pf_smoother_two_filter()` to implement the two-filter smoother;
 
-- `pf_setup_obs()` to set up a timeline of observations;
-- `pf_forward()` to implement the forward simulation;
-
-**PF is supported by**:
-
-- Proposal functions (see `pf_propose`) for the generation of new
-  (candidate) locations, including:
-  - `pf_rpropose_kick()`, which uses stochastic kicks;
-  - `pf_rpropose_reachable()`, which supports directed sampling;
-- Likelihood functions (see `pf_lik`) for evaluating the likelihood of
-  the data, given proposal locations, including:
-  - `acs_filter_land`, which filters proposals on land;
-  - `acs_filter_container`, which filters proposals incompatible with
-    acoustic container dynamics;
-  - `pf_lik_ac`, which calculates the likelihood of acoustic data;
-  - `pf_lik_dc`, which calculates the likelihood of depth observations;
-- Likelihood helpers, including:
-  - `acs_setup_detection_overlaps()`, which pre-calculates detection
-    overlaps;
-  - `acs_setup_detection_kernel()`, which prepares a detection kernel;
-  - `acs_setup_detection_kernels()`, which pre-calculates detection
-    kernels;
-- (Re)sampling functions (see `pf_sample`) for the (re)sampling of valid
-  proposal locations, including:
-  - `pf_sample_multinomial()`, which implements multinomial resampling;
-  - `pf_sample_systematic()`, which implements systematic resampling;
-- Option functions (`pf_opt`) for tuning the forward simulation,
-  including:
-  - `pf_opt_trial()`, which sets convergence parameters;
-  - `pf_opt_rerun_from()`, which sets re-run parameters;
-  - `pf_opt_control()`, which sets control parameters;
-  - `pf_opt_record()`, which sets output properties;
-
-**To implement the backward pass (`pf_backward_*()`)**, use:
-
-- `pf_backward_killer()` to prune dead-ends;
-- `pf_backward_sampler_p()` or \[`pf_backward_sampler_v()`\] to run the
-  backward sampler;
-
-**For particle diagnostics**, see:
-
-- `pf_diag_convergence()` to collate convergence diagnostics;
-- `pf_diag_summary()` to collate summary diagnostics;
+These functions return `pf_particles-class` objects.
 
 **For convenience plotting functions**, see:
 
-- `pf_plot_history()` to plot particle histories;
+TO DO
 
 **For common utility functions**, see:
 
-- `pf_files()` to list particle-sample files;
-- `pf_files_size()` to measure file size;
-
-**For movement-path reconstruction**, use:
-
-- `pf_path()` (and `pf_path_pivot()`) to reconstruct movement paths;
+TO DO
 
 **For mapping utilisation distributions**, use:
 
-- `pf_coord()` to collate particle coordinates for mapping;
 - `map_pou()` to map probability-of-use;
 - `map_dens()` to create smooth maps using `spatstat`, plus the
   supporting functions:
@@ -287,32 +308,201 @@ acoustic telemetry systems.
   - `map_hr_home()` for the ‘home’ range;
   - `map_hr_full()` for the full range;
 
-# Miscellaneous helpers
+## Options
 
-The following convenience functions are also exported. Use:
-
-- `ssf()` and `ssv()` to `set.seed()`;
-- `dist_along_path()` to calculate distances along a movement path;
-- `degrees()` to create circular angles;
-- `spatTemplate()` to create a template `SpatRaster`;
-
-# Options
-
-For additional options in
-[`patter`](https://github.com/edwardlavender/patter), see:
+For additional options in `patter`, see:
 
 - `patter-progress` to monitor function progress;
+
+# Usage
+
+## Set up
+
+This is the basic `patter` workflow to reconstruct movement paths and
+patterns of space use from animal tracking data. First, we load some
+essential packages:
+
+``` r
+library(patter)
+#> This is {patter} v.0.0.0.9000. For an overview, see `?patter`. For support, contact edward.lavender@eawag.ch.
+library(data.table)
+library(dtplyr)
+library(dplyr, warn.conflicts = FALSE)
+options(patter.verbose = FALSE)
+```
+
+Second, we connect `R` to `Julia` and set the seed in `R` and `Julia` to
+ensure reproducibility of our simulations:
+
+Third, we define the properties of our study area; namely, a
+`SpatRaster` of our study area that defines the area within which
+movements are possible and the timeline over which we will model
+movements:
+
+``` r
+# Define map 
+map <- dat_gebco()
+set_map(map)
+
+# Define timeline 
+timeline <- seq(as.POSIXct("2016-03-17 01:50:00", tz = "UTC"),
+                as.POSIXct("2016-03-18 01:48:00", tz = "UTC"), 
+                by = "2 mins")
+```
+
+## Movement
+
+We will reconstruct the movements of a tagged flapper skate (*Dipturus
+intermedius*) within a study area off the west coast of Scotland, based
+on electronic tagging and tracking data. To do so, we need a model for
+the individual’s movements and a series of observation models that
+connect movements to observations. In this example, we are interested in
+the two-dimensional (x, y) location of our animal through time (that is,
+the animal’s ‘state’ is an object of type `StateXY`). The animal can
+move up to 750 m in two minutes, which is the resolution at which we
+will model movement, and we formulate a random walk model accordingly
+based on step lengths and turning angles:
+
+``` r
+# Define the animal's state:
+state      <- "StateXY"
+
+# Formulate a corresponding movement model:
+mobility   <- 750.0
+model_move <- move_xy(dbn_length = glue::glue("truncated(Gamma(1, 250.0), upper = {mobility})"),
+                      dbn_angle = "Uniform(-pi, pi)")
+
+# Visualise realisations of the movement model:
+map |> 
+  sim_path_walk(.timeline = timeline,
+                .state = state,
+                .model_move = model_move, 
+                .n_path = 4L, .one_page = TRUE) |> 
+  invisible()
+```
+
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+
+## Observations
+
+We have collected acoustic and archival (depth) observations from tagged
+flapper skate. Let’s pull out the time series for a selected individual:
+
+``` r
+# Define acoustic detections
+acc <-
+  dat_acoustics |>
+  filter(individual_id == 25L) |>
+  mutate(individual_id = NULL) |>
+  as.data.table()
+
+# Define archival (depth) observations
+arc <-
+  dat_archival |>
+  filter(individual_id == 25L) |>
+  mutate(individual_id = NULL,
+         depth_sigma = 50,
+         depth_deep_eps = 20) |>
+  rename(obs = depth) |>
+  as.data.table()
+```
+
+Individual movements are connected to the observations by models of the
+observation process for each dataset. Without going into details, here
+we bundle together the observations with the parameters of the
+observation models:
+
+``` r
+model_1   <- "ModelObsAcousticLogisTrunc"
+acoustics <- assemble_acoustics(.timeline = timeline,
+                                .acoustics = acc,
+                                .moorings = dat_moorings)
+
+model_2  <- "ModelObsDepthNormalTrunc"
+archival <- assemble_archival(.timeline = timeline,
+                              .archival = arc)
+```
+
+To simulate observations instead, see `sim_observations()`.
+
+We are now in a position to run the particle filter. This runs a
+simulation forwards (or backwards) in time, sampling states (locations,
+termed ‘particles’) that are consistent with the movement model and the
+observations up to and including each time point. We end up with a time
+series (`data.table`) of particles that approximate the partial marginal
+distribution for the location of the animal, at each time step:
+
+``` r
+# List filter arguments
+args <- list(.map = map,
+             .timeline = timeline,
+             .state = state,
+             .xinit_pars = list(mobility = mobility),
+             .yobs = list(acoustics, archival),
+             .model_obs = c(model_1, model_2),
+             .model_move = model_move,
+             .n_record = 500L,
+             .n_particle = 1e4L)
+
+# Forward run
+fwd <- do.call(pf_filter, args)
+head(fwd$states)
+#>    path_id timestep           timestamp map_value        x       y
+#>      <int>    <int>              <POSc>     <num>    <num>   <num>
+#> 1:       1        1 2016-03-17 01:50:00 103.00890 709242.1 6253707
+#> 2:       1        2 2016-03-17 01:52:00  56.53801 709340.8 6253211
+#> 3:       1        3 2016-03-17 01:54:00  74.88351 709024.9 6253068
+#> 4:       1        4 2016-03-17 01:56:00 122.90161 709148.0 6253776
+#> 5:       1        5 2016-03-17 01:58:00  83.21526 709074.1 6253234
+#> 6:       1        6 2016-03-17 02:00:00  56.53801 709295.1 6253216
+
+# Backward run
+args$.direction <- "backward"
+bwd <- do.call(pf_filter, args)
+```
+
+Particle smoothers refine the outputs from the particle filter. Smoothed
+particles approximate the full marginal distribution for the location of
+the individual at each time step (accounting for all of the data before
+and after each step).
+
+``` r
+# smo <- pf_smoother_two_filter(.map = map, .nMC = 1)
+```
+
+Particles can be used to reconstruct movement paths and patterns of
+space use. We can estimate a utilisation distribution from our particle
+samples as follows:
+
+``` r
+# Estimate UD
+ud <- map_dens(.map = map,
+               .coord = fwd$states,
+               sigma = spatstat.explore::bw.diggle)
+#> Observation window is gridded.
+
+# Add home range
+map_hr_home(ud, .add = TRUE)
+mtext(side = 4, "Probability density", line = -3)
+```
+
+<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
+
+This basic workflow is highly customisable. You have the flexibility to
+define species-specific movement models, include any type of
+observational dataset and implement system-specific observation models.
+See the vignettes and function examples for further details and reach
+out with queries.
 
 # Resources
 
 **For full details on the methods**, see the references below.
 
-**For further information of the
-[`patter`](https://github.com/edwardlavender/patter) package**, see:
+**For further information of the `patter` package**, see:
 
 - `?patter::patter` for an overview of package functions;
-- `?patter::pf_forward`for information on specific functions (such as
-  `pf_forward()`);
+- `?patter::pf_filter`for information on specific functions (such as
+  `pf_filter()`);
 
 **For further code examples**, see:
 
@@ -323,16 +513,14 @@ For additional options in
 
 # Disclaimer and troubleshooting
 
-[`patter`](https://github.com/edwardlavender/patter) is a new
-[R](https://www.r-project.org/) package. All routines are experimental.
+`patter` is a new `R` package. All routines are experimental.
 Researchers interested in using the package are encouraged to get in
 touch while the methods and package remain at an early stage of
 evolution (<edward.lavender@eawag.ch>).
 
 # Citation
 
-To cite [`patter`](https://github.com/edwardlavender/patter) in
-publications, please use:
+To cite `patter` in publications, please use:
 
 - Lavender, E. et al. (2023). An integrative modelling framework for
   passive acoustic telemetry. Methods in Ecology and Evolution.
@@ -346,7 +534,6 @@ publications, please use:
 
 ------------------------------------------------------------------------
 
-Please note that [`patter`](https://github.com/edwardlavender/patter) is
-released with a [Contributor Code of
+Please note that `patter` is released with a [Contributor Code of
 Conduct](https://contributor-covenant.org/version/2/1/CODE_OF_CONDUCT.html).
 By contributing to this project, you agree to abide by its terms.
