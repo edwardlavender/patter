@@ -53,11 +53,12 @@ spatAllNA <- function(.x) {
 # * TO DO: generalise to spatPoly() in future
 spatMobilityBox <- function(.x, .mobility) {
   if (spatContainsNA(.x)) {
-    NULL
+    warn("`Patter.two_filter_smoother()`'s `box` argument set to `nothing`: `.map` contains NAs.")
+    return(NULL)
   } else {
     # Shrink the boundary box by .mobility
     bb <- terra::ext(.x) - .mobility
     # Update the extent, as in Patter.ext()
-    c(min_x = bb[1], max_x = bb[2], min_y = bb[3], max_y = bb[4])
+    return(c(min_x = bb[1], max_x = bb[2], min_y = bb[3], max_y = bb[4]))
   }
 }
