@@ -217,7 +217,7 @@ set_mobility_box <- function(.box) {
     julia_command("box = nothing;")
   } else {
     julia_assign("box", .box)
-    julia_command("box = Patter.ext(box);")
+    julia_command("box = Patter.bbox(box);")
   }
   nothing()
 }

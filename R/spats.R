@@ -58,7 +58,7 @@ spatMobilityBox <- function(.x, .mobility) {
   } else {
     # Shrink the boundary box by .mobility
     bb <- terra::ext(.x) - .mobility
-    # Update the extent, as in Patter.ext()
+    # Update the extent, as in Patter.bbox()
     return(c(min_x = bb[1], max_x = bb[2], min_y = bb[3], max_y = bb[4]))
   }
 }
