@@ -129,11 +129,10 @@ sim_array <- function(.map,
 #' * Movement paths are passed back to `R` for convenient visualisation and analysis.
 #'
 #' To use a new `.state` and/or `.model_move` sub-type for [`sim_path_walk()`]:
-#' * Define a `State` sub-type in `Julia` and provide the name as a `character` string to this function;
+#' * Define a [`State`] sub-type in `Julia` and provide the name as a `character` string to this function;
 #' * To initialise the simulation, write a [`states_init()`] method to enable automated sampling of initial states via [`sim_states_init()`] or provide a [`data.table`] of initial states to `.xinit`;
 #' * Define a corresponding [`ModelMove`] sub-type in `Julia`;
 #' * Instantiate a [`ModelMove`] instance (that is, define a specific movement model);
-#' * Provide a [`Patter.r_get_states()`](https://edwardlavender.github.io/Patter.jl) method to translate the Vector of `State`s from `Patter.simulate_path_walk()` into a `DataFrame` that can be passed to `R`;
 #'
 #' [`sim_path_walk()`] replaces [`flapper::sim_path_sa()`](https://edwardlavender.github.io/flapper/reference/sim_path_sa.html). Other [`flapper::sim_path_*()`](https://edwardlavender.github.io/flapper/reference/sim_path_-times.html) functions are not currently implemented in [`patter`].
 #'

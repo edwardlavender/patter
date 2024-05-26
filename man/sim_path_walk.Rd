@@ -71,11 +71,10 @@ This function simulates movement paths via \href{https://edwardlavender.github.i
 
 To use a new \code{.state} and/or \code{.model_move} sub-type for \code{\link[=sim_path_walk]{sim_path_walk()}}:
 \itemize{
-\item Define a \code{State} sub-type in \code{Julia} and provide the name as a \code{character} string to this function;
+\item Define a \code{\link{State}} sub-type in \code{Julia} and provide the name as a \code{character} string to this function;
 \item To initialise the simulation, write a \code{\link[=states_init]{states_init()}} method to enable automated sampling of initial states via \code{\link[=sim_states_init]{sim_states_init()}} or provide a \code{\link{data.table}} of initial states to \code{.xinit};
 \item Define a corresponding \code{\link{ModelMove}} sub-type in \code{Julia};
 \item Instantiate a \code{\link{ModelMove}} instance (that is, define a specific movement model);
-\item Provide a \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.r_get_states()}} method to translate the Vector of \code{State}s from \code{Patter.simulate_path_walk()} into a \code{DataFrame} that can be passed to \code{R};
 }
 
 \code{\link[=sim_path_walk]{sim_path_walk()}} replaces \href{https://edwardlavender.github.io/flapper/reference/sim_path_sa.html}{\code{flapper::sim_path_sa()}}. Other \href{https://edwardlavender.github.io/flapper/reference/sim_path_-times.html}{\verb{flapper::sim_path_*()}} functions are not currently implemented in \code{\link{patter}}.
