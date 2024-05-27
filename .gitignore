@@ -7,4 +7,5 @@
 inst/doc
 Julia/README.md
 *.pdf
+*.html
 .Renviron
