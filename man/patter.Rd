@@ -143,8 +143,8 @@ For additional options in \code{\link{patter}}, see:
 \section{Miscellaneous}{
 \itemize{
 \item See \code{\link[=cl_lapply]{cl_lapply()}} for \code{R} parallelisation;
-\item See \verb{file_*()} functions (e.g., \code{\link[=file_list]{file_list()}}) for system file helpers;
 \item See \code{\link[=example_setup]{example_setup()}} for functions used to streamline examples;
+\item See \verb{file_*()} functions (e.g., \code{\link[=file_list]{file_list()}}) for system file helpers;
 }
 }
 

@@ -118,8 +118,8 @@
 #' # Miscellaneous
 #'
 #' * See [`cl_lapply()`] for `R` parallelisation;
-#' * See `file_*()` functions (e.g., [`file_list()`]) for system file helpers;
 #' * See [`example_setup()`] for functions used to streamline examples;
+#' * See `file_*()` functions (e.g., [`file_list()`]) for system file helpers;
 #'
 #' @author Edward Lavender ([ORCID](https://orcid.org/0000-0002-8040-7489))
 #' @seealso
