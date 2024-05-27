@@ -4,7 +4,7 @@
 #'
 #' # `.map`
 #'
-#' `.map` is [`SpatRaster`] that defines the area of interest. `NAs` define inhospitable regions (such as land).
+#' `.map` is [`SpatRaster`] that defines the area of interest. `NAs` define inhospitable regions (such as land). A planar (Universal Transverse Mercator) projection with coordinates in metres is currently required.
 #'
 #' # `.model_obs`
 #'

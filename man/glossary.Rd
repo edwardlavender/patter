@@ -7,7 +7,7 @@
 This is a glossary of key arguments in \code{\link{patter}}.
 }
 \section{\code{.map}}{
-\code{.map} is \code{\link{SpatRaster}} that defines the area of interest. \code{NAs} define inhospitable regions (such as land).
+\code{.map} is \code{\link{SpatRaster}} that defines the area of interest. \code{NAs} define inhospitable regions (such as land). A planar (Universal Transverse Mercator) projection with coordinates in metres is currently required.
 }
 
 \section{\code{.model_obs}}{
