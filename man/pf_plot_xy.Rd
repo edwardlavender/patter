@@ -79,7 +79,7 @@ pf_plot_xy(.map = map,
            .particles = tff,
            .steps = 1L)
 
-#### Example (4): Plot multiple time steps
+#### Example (2): Plot multiple time steps
 # Specify selected steps
 pf_plot_xy(.map = map,
            .particles = tff,
@@ -93,13 +93,13 @@ pf_plot_xy(.map = map,
            .steps = 1:5L,
            .prompt = TRUE)
 
-#### Example (5): Customise the background map via `.add_surface`
+#### Example (3): Customise the background map via `.add_surface`
 pf_plot_xy(.map = map,
            .particles = tff,
            .steps = 1L,
            .add_surface = list(col = rev(terrain.colors(256L))))
 
-#### Example (6): Customise the points
+#### Example (4): Customise the points
 # Use `.add_points`
 pf_plot_xy(.map = map,
            .particles = tff,
@@ -117,13 +117,14 @@ pf_plot_xy(.map = map,
            .steps = 1L,
            .add_points = list(pch = "."))
 
-#### Example (7): Add additional map layers
+#### Example (5): Add additional map layers
 pf_plot_xy(.map = map,
            .particles = tff,
            .steps = 1L,
            .add_layer = function(t) mtext(side = 4, "Depth (m)", line = -4))
 
-#### Example (8): Write images to file
+#### Example (6): Write images to file
+# Write images in serial
 pf_plot_xy(.map = map,
            .particles = tff,
            .steps = 1:50L,
@@ -166,8 +167,7 @@ if (rlang::is_installed("av")) {
 
 }
 
-# Clean up
-unlink(con, recursive = TRUE)
+cleanup(con)
 }
 \seealso{
 Particle filters and smoothers sample states (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
