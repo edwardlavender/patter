@@ -85,7 +85,7 @@
 <div class="page-header"><h1 id="patter-particle-algorithms-for-animal-movement">
 <code>patter</code>: particle algorithms for animal movement<a class="anchor" aria-label="anchor" href="#patter-particle-algorithms-for-animal-movement"></a>
 </h1></div>
-<p><strong>Particle filter, smoothers and sampling algorithms for animal movement modelling</strong></p>
+<p><strong>Particle filters, smoothers and sampling algorithms for animal movement modelling in <a href="https://www.r-project.org" class="external-link"><code>R</code></a></strong></p>
 <!-- badges: start -->
 
 <p><code>patter</code> provides particle filtering, smoothing and sampling algorithms for animal movement modelling, with a focus on passive acoustic telemetry systems. This wraps and enhances a fast <code>Julia</code> backend (<a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.jl</code></a>). The methodology enables the reconstruction of movement paths and patterns of space use. <code>patter</code> unifies a suite of methods formerly known as the <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a> algorithms and supersedes the experimental <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a> package (Lavender et al., <a href="https://doi.org/10.1111/2041-210X.14193" class="external-link">2023</a>).</p>
@@ -99,7 +99,7 @@
 <li>
 <strong><code><a href="reference/pf_filter.html">pf_filter()</a></code></strong> is the particle filter. This simulates the possible locations of an individual moving forwards in time, accounting for all of the data (for example, acoustic observations, depth observations and any other observations) <em>up to</em> each time point and the animal’s movement (a partial marginal distribution).</li>
 <li>
-<strong><code>pf_smoother_*()</code></strong> is a particle smoothing algorithm. At each time step, the smoother accounts for all of the data from both the past <em>and</em> the future (the full marginal distribution), and substantially refines maps of space use.</li>
+<strong><code>pf_smoother_*()</code></strong> is a particle smoothing algorithm. At each time step, the smoother accounts for all of the data from both the past <em>and</em> the future (the full marginal distribution) and substantially refines maps of space use.</li>
 </ul>
 <p>We hope to add backward sampling algorithms to the package in due course.</p>
 </div>
@@ -425,6 +425,10 @@
 <span><span class="va">archival</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/assemble.html">assemble_archival</a></span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span>
 <span>                              .archival <span class="op">=</span> <span class="va">arc</span><span class="op">)</span></span></code></pre></div>
 <p>Of course, you do not need acoustic and archival data to implement the algorithms (these are just the data we have collected from flapper skate)—other datasets can be used just as easily. To simulate observations instead, see <code><a href="reference/sim_observations.html">sim_observations()</a></code>.</p>
+</div>
+<div class="section level2">
+<h2 id="particle-filter">Particle filter<a class="anchor" aria-label="anchor" href="#particle-filter"></a>
+</h2>
 <p>We are now in a position to run the particle filter. This runs a simulation forwards (or backwards) in time, sampling states (locations, termed ‘particles’) that are consistent with the movement model and the observations up to and including each time point. We end up with a time series (<code>data.table</code>) of particles that approximate the partial marginal distribution for the location of the animal, at each time step:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># List filter arguments</span></span>
@@ -453,9 +457,17 @@
 <span><span class="co"># Backward run</span></span>
 <span><span class="va">args</span><span class="op">$</span><span class="va">.direction</span> <span class="op">&lt;-</span> <span class="st">"backward"</span></span>
 <span><span class="va">bwd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">pf_filter</span>, <span class="va">args</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="particle-smoother">Particle smoother<a class="anchor" aria-label="anchor" href="#particle-smoother"></a>
+</h2>
 <p>Particle smoothers refine the outputs from the particle filter. Smoothed particles approximate the full marginal distribution for the location of the individual at each time step (accounting for all of the data before and after each step).</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">smo</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pf_smoother_two_filter.html">pf_smoother_two_filter</a></span><span class="op">(</span>.n_particle <span class="op">=</span> <span class="fl">100L</span>, .n_sim <span class="op">=</span> <span class="fl">100L</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="mapping">Mapping<a class="anchor" aria-label="anchor" href="#mapping"></a>
+</h2>
 <p>Particles can be used to reconstruct movement paths and patterns of space use. We can estimate a utilisation distribution from our particle samples as follows:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Estimate UD</span></span>
@@ -467,7 +479,7 @@
 <span><span class="co"># Add home range</span></span>
 <span><span class="fu"><a href="reference/map_hr.html">map_hr_home</a></span><span class="op">(</span><span class="va">ud</span>, .add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span>side <span class="op">=</span> <span class="fl">4</span>, <span class="st">"Probability density"</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-10-1.png" width="100%"></p>
+<p><img src="reference/figures/README-unnamed-chunk-11-1.png" width="100%"></p>
 <p>This basic workflow is highly customisable. You have the flexibility to define species-specific movement models, include any type of observational dataset and implement system-specific observation models. See the vignettes and function examples for further details and reach out with queries.</p>
 </div>
 </div>
