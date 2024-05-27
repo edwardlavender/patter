@@ -19,8 +19,10 @@ Imports:
     rlang,
     terra
 Suggests:
+    av, 
     knitr, 
     rmarkdown,
+    pbapply,
     sf,
     spatstat.explore, 
     spatstat.geom,
