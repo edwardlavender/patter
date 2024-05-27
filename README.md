@@ -1,8 +1,8 @@
 
 # `patter`: particle algorithms for animal movement
 
-**Particle filter, smoothers and sampling algorithms for animal movement
-modelling**
+**Particle filters, smoothers and sampling algorithms for animal
+movement modelling in [`R`](https://www.r-project.org)**
 
 <!-- badges: start -->
 
@@ -47,7 +47,7 @@ The essential functions are `pf_filter()` and `pf_smoother_*()`:
   movement (a partial marginal distribution).
 - **`pf_smoother_*()`** is a particle smoothing algorithm. At each time
   step, the smoother accounts for all of the data from both the past
-  *and* the future (the full marginal distribution), and substantially
+  *and* the future (the full marginal distribution) and substantially
   refines maps of space use.
 
 We hope to add backward sampling algorithms to the package in due
@@ -436,6 +436,8 @@ algorithms (these are just the data we have collected from flapper
 skate)—other datasets can be used just as easily. To simulate
 observations instead, see `sim_observations()`.
 
+## Particle filter
+
 We are now in a position to run the particle filter. This runs a
 simulation forwards (or backwards) in time, sampling states (locations,
 termed ‘particles’) that are consistent with the movement model and the
@@ -472,6 +474,8 @@ args$.direction <- "backward"
 bwd <- do.call(pf_filter, args)
 ```
 
+## Particle smoother
+
 Particle smoothers refine the outputs from the particle filter. Smoothed
 particles approximate the full marginal distribution for the location of
 the individual at each time step (accounting for all of the data before
@@ -480,6 +484,8 @@ and after each step).
 ``` r
 smo <- pf_smoother_two_filter(.n_particle = 100L, .n_sim = 100L)
 ```
+
+## Mapping
 
 Particles can be used to reconstruct movement paths and patterns of
 space use. We can estimate a utilisation distribution from our particle
@@ -497,7 +503,7 @@ map_hr_home(ud, .add = TRUE)
 mtext(side = 4, "Probability density", line = -3)
 ```
 
-<img src="man/figures/README-unnamed-chunk-10-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
 
 This basic workflow is highly customisable. You have the flexibility to
 define species-specific movement models, include any type of
