@@ -7,7 +7,9 @@ library(tictoc)
 
 # Render README.Rmd (~40 s)
 tic()
-rmarkdown::render(file.path("julia", "README.Rmd"))
+rmarkdown::render(file.path("julia", "README.Rmd"),
+                  output_file = "README.md",
+                  output_format = "github_document")
 toc()
 
 # Define output connection
