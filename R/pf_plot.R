@@ -17,7 +17,7 @@
 #' This function replaces [`flapper::pf_plot_history()`](https://edwardlavender.github.io/flapper/reference/pf_plot_history.html).
 #'
 #' @return The function is called for its side effects. It returns `invisible(TRUE)`.
-#' @example man/example/example-pf_plot_xy.R
+#' @example man/examples/example-pf_plot_xy.R
 #' @inherit assemble seealso
 #' @author Edward Lavender
 #' @export

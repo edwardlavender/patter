@@ -28,7 +28,7 @@
 #'
 #' @return The function returns the `Julia` interface invisibly (see [`JuliaCall::julia_setup()`]).
 #'
-#' @example man/example/example-julia_connect.R
+#' @example man/examples/example-julia_connect.R
 #' @author Edward Lavender
 #' @export
 

@@ -18,7 +18,7 @@
 #' * [`file_size()`] returns a number.
 #' * [`file_cleanup()`] returns `invisible(NULL)`.
 #'
-#' @example man/example/example-file_path.R
+#' @example man/examples/example-file_path.R
 #' @author Edward Lavender
 #' @name file_path
 

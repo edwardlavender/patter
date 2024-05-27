@@ -27,7 +27,7 @@
 #' * `receiver_x` and `receiver_y`---`numeric` vectors that defines receiver coordinates;
 #' * `receiver_alpha`, `receiver_beta`, `receiver_gamma`---`numeric` vectors of detection probability parameters, if defined;
 #'
-#' @example man/example/example-sim_array.R
+#' @example man/examples/example-sim_array.R
 #'
 #' @seealso
 #' * `sim_*` functions implement _de novo_ simulation of movements and observations:
@@ -143,7 +143,7 @@ sim_array <- function(.map,
 #' * `cell_id`, `cell_x`, `cell_y`, `cell_z`---`integer`/`numeric` vectors that define the locations of the simulated positions on `.map`;
 #' * `x`,`y`,`...`---`numeric` vectors that define the components of the state;
 #'
-#' @example man/example/example-sim_path_walk.R
+#' @example man/examples/example-sim_path_walk.R
 #' @inherit sim_array seealso
 #' @author Edward Lavender
 #' @name sim_path_walk
@@ -237,7 +237,7 @@ sim_path_walk <- function(.map,
 #'
 #' @returns The function returns a named `list`, with one element for each sensor type, that is `.model_obs` element. Each element is a `list` of `data.table`s, one for each simulated path. Each row is a time step. The columns depend on the model type.
 #'
-#' @example man/example/example-sim_observations.R
+#' @example man/examples/example-sim_observations.R
 #' @inherit sim_array seealso
 #' @author Edward Lavender
 #' @export

@@ -44,7 +44,7 @@
 #'
 #' @returns The function returns a [`pf_particles-class`] object.
 #'
-#' @example man/example/example-pf_filter.R
+#' @example man/examples/example-pf_filter.R
 #' @inherit assemble seealso
 #' @author Edward Lavender
 #' @export

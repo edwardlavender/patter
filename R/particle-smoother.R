@@ -19,7 +19,7 @@
 #' @references Fearnhead, P. et al. (2010). A sequential smoothing algorithm with linear computational cost. Biometrika 97, 447–464. \url{https://doi.org/10.1093/biomet/asq013}.
 #' @returns The function returns a [`pf_particles-class`] object.
 #'
-#' @example man/example/example-pf_smoother_two_filter.R
+#' @example man/examples/example-pf_smoother_two_filter.R
 #' @inherit assemble seealso
 #' @author Edward Lavender
 #' @export

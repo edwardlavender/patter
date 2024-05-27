@@ -24,7 +24,7 @@
 #'
 #' To use custom [`ModelObs`] sub-types, see Examples.
 #'
-#' @example man/example/example-State.R
+#' @example man/examples/example-State.R
 #' @seealso
 #' The routines in [`patter`] for the simulation of individual movements, observations and statistical modelling are built upon three Abstract Types defined in `Julia`:
 #' * See [`State`] for individual-state (location) structures;
@@ -57,7 +57,7 @@ NULL
 #'
 #' To use custom [`ModelObs`] sub-types, see Examples.
 #'
-#' @example man/example/example-ModelObs.R
+#' @example man/examples/example-ModelObs.R
 #' @inherit State seealso
 #' @author Edward Lavender
 #' @name ModelObs
@@ -101,7 +101,7 @@ NULL
 #'
 #' @returns `move_*()` functions return a `character` string that defines a [`ModelMove`] instance for evaluation in `Julia`. If the map (`env`) does not exist in `Julia`, an error is thrown.
 #'
-#' @example man/example/example-ModelMove.R
+#' @example man/examples/example-ModelMove.R
 #' @inherit State seealso
 #' @author Edward Lavender
 #' @name ModelMove

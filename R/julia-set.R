@@ -10,7 +10,7 @@
 #' Other functions are internal.
 #'
 #' @return Exported functions return `invisible(NULL)`.
-#' @example man/example/example-julia_set.R
+#' @example man/examples/example-julia_set.R
 #' @author Edward Lavender
 #' @name julia_set
 

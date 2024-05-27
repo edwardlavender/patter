@@ -29,7 +29,7 @@
 #'
 #' `assemble_*()` routines are only required for real-world analyses.
 #'
-#' @example man/example/example-assemble-data.R
+#' @example man/examples/example-assemble-data.R
 #' @seealso Particle filters and smoothers sample states (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
 #' * To simulate artificial datasets, see `sim_*()` functions (especially [`sim_path_walk()`], [`sim_array()`] and [`sim_observations()`]).
 #' * To assemble real-world datasets for the filter, see [`assemble`]`_*()` functions.

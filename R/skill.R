@@ -17,7 +17,7 @@
 #'
 #' @return The functions return a number.
 #'
-#' @example man/example/example-skill.R
+#' @example man/examples/example-skill.R
 #' @references Lavender, E. et al. (2022). Benthic animal-borne sensors and citizen science combine to validate ocean modelling. Sci. Rep. 12: 16613. \url{https://www.doi.org/1038/s41598-022-20254-z}
 #'
 #' @seealso
