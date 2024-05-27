@@ -116,4 +116,4 @@ if (rlang::is_installed("av")) {
 
 }
 
-cleanup(con)
+file_cleanup(con)

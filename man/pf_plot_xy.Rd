@@ -2,7 +2,7 @@
 % Please edit documentation in R/pf_plot.R
 \name{pf_plot_xy}
 \alias{pf_plot_xy}
-\title{PF: plot particle histories}
+\title{PF: plot particle (\code{x}, \code{y}) locations}
 \usage{
 pf_plot_xy(
   .map,
@@ -41,7 +41,7 @@ pf_plot_xy(
 The function is called for its side effects. It returns \code{invisible(TRUE)}.
 }
 \description{
-This function maps particle histories for selected time steps or entire time series and can be used to create animations.
+This function maps particle (\code{x}, \code{y}) locations for selected time steps or entire time series and can be used to create animations.
 }
 \details{
 For each \code{.step}, \code{\link[terra:plot]{terra::plot()}} is used to plot \code{.map}. Particle samples in \code{.particles} are added onto the grid via \code{\link[graphics:points]{graphics::points()}}. Particle weights are uniform thanks to resampling.
@@ -167,7 +167,7 @@ if (rlang::is_installed("av")) {
 
 }
 
-cleanup(con)
+file_cleanup(con)
 }
 \seealso{
 Particle filters and smoothers sample states (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.

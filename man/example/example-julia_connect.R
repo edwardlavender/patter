@@ -23,7 +23,7 @@ if (julia_run()) {
   #### Example (6): Customise user output
   julia_connect(JULIA_PROJ = proj, .verbose = FALSE)
 
-  cleanup(proj)
+  file_cleanup(proj)
 }
 
 

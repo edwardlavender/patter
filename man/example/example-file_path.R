@@ -16,4 +16,4 @@ file_size(temp, "patter")
 file_size(temp, "patter", .unit = "GB")
 file_size(temp, "patter", .unit = "TB")
 
-cleanup(sink)
+file_cleanup(sink)

@@ -10,16 +10,19 @@
 #' * [`file_path()`] is a simple wrapper for [`file.path()`] constructs a file path and verifies that it exists.
 #' *  [`file_list()`] creates an ordered `list` of numbered files. This function expects files to be named `1.{.ext}`, `2.{.ext}`, ..., `N.{.ext}`. All listed files must share the same file extension.
 #' * [`file_size()`] calculates the total size of files in a directory.
+#' * [`file_cleanup()`] deletes temporary files and or directories recursively;
 #'
 #' @return
 #' * [`file_path()`] returns a `character` string that defines the file path.
 #' * [`file_list()`] returns an ordered vector of file paths.
 #' * [`file_size()`] returns a number.
-#' @example man/example/example-utils-file.R
+#' * [`file_cleanup()`] returns `invisible(NULL)`.
+#'
+#' @example man/example/example-file_path.R
 #' @author Edward Lavender
-#' @name utils-file
+#' @name file_path
 
-#' @rdname utils-file
+#' @rdname file_path
 #' @export
 
 file_path <- function(...) {
@@ -30,7 +33,7 @@ file_path <- function(...) {
   .sink
 }
 
-#' @rdname utils-file
+#' @rdname file_path
 #' @export
 
 file_list <- function(.sink, .folder = NULL, ...) {
@@ -78,7 +81,7 @@ file_list <- function(.sink, .folder = NULL, ...) {
   out$file
 }
 
-#' @rdname utils-file
+#' @rdname file_path
 #' @export
 
 file_size <- function(.sink,
@@ -106,4 +109,12 @@ file_size <- function(.sink,
     size <- size / 1e6L
   }
   size
+}
+
+#' @rdname file_path
+#' @export
+
+file_cleanup <- function(.sink) {
+  unlink(.sink, recursive = TRUE)
+  nothing()
 }

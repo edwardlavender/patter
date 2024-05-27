@@ -124,6 +124,8 @@ For an introduction to `patter`, use:
 
 For a full list of all functions, see `help(package = 'patter')`.
 
+For a glossary of key arguments, see `glossary`.
+
 ## Datasets
 
 For example datasets from the Movement Ecology of Flapper Skate project (`datasets-mefs`), which inspired `patter`, see:
@@ -207,11 +209,7 @@ These functions return `pf_particles-class` objects.
 
 **For convenience plotting functions**, see:
 
-TO DO
-
-**For common utility functions**, see:
-
-TO DO
+* `pf_plot_xy()` to plot particle locations;
 
 **For mapping utilisation distributions**, use:
 

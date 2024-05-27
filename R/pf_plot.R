@@ -1,5 +1,5 @@
-#' @title PF: plot particle histories
-#' @description This function maps particle histories for selected time steps or entire time series and can be used to create animations.
+#' @title PF: plot particle (`x`, `y`) locations
+#' @description This function maps particle (`x`, `y`) locations for selected time steps or entire time series and can be used to create animations.
 #'
 #' @param .map A [`SpatRaster`] that defines the study area (see [`glossary`]).
 #' @param .particles A [`data.table`] of particle coordinates, including `x` and `y` columns. Point graphical parameters (`pch`, `col`, `bg`, `cex`, `lwd`, `lty`, `lwd`) can be included as columns to customise particle appearance. (Graphical parameters provided here silently overwrite any elements of the same name in `.add_points`.)

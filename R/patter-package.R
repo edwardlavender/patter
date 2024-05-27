@@ -10,6 +10,8 @@
 #'
 #' For a full list of all functions, see `help(package = 'patter')`.
 #'
+#' For a glossary of key arguments, see [`glossary`].
+#'
 #' # Datasets
 #'
 #' For example datasets from the Movement Ecology of Flapper Skate project ([`datasets-mefs`]), which inspired [`patter`], see:
@@ -92,11 +94,7 @@
 #'
 #' **For convenience plotting functions**, see:
 #'
-#' TO DO
-#'
-#' **For common utility functions**, see:
-#'
-#' TO DO
+#' * [`pf_plot_xy()`] to plot particle locations;
 #'
 #' **For mapping utilisation distributions**, use:
 #'
@@ -116,6 +114,12 @@
 #' For additional options in [`patter`], see:
 #'
 #' * [`patter-progress`] to monitor function progress;
+#'
+#' # Miscellaneous
+#'
+#' * See [`cl_lapply()`] for `R` parallelisation;
+#' * See `file_*()` functions (e.g., [`file_list()`]) for system file helpers;
+#' * See [`example_setup()`] for functions used to streamline examples;
 #'
 #' @author Edward Lavender ([ORCID](https://orcid.org/0000-0002-8040-7489))
 #' @seealso

@@ -16,6 +16,8 @@ For an introduction to \code{\link{patter}}, use:
 }
 
 For a full list of all functions, see \code{help(package = 'patter')}.
+
+For a glossary of key arguments, see \code{\link{glossary}}.
 }
 
 \section{Datasets}{
@@ -108,12 +110,9 @@ Ancillary time series should be structured in the same way for inclusion in the 
 These functions return \code{\linkS4class{pf_particles}} objects.
 
 \strong{For convenience plotting functions}, see:
-
-TO DO
-
-\strong{For common utility functions}, see:
-
-TO DO
+\itemize{
+\item \code{\link[=pf_plot_xy]{pf_plot_xy()}} to plot particle locations;
+}
 
 \strong{For mapping utilisation distributions}, use:
 \itemize{
@@ -138,6 +137,14 @@ TO DO
 For additional options in \code{\link{patter}}, see:
 \itemize{
 \item \code{\link{patter-progress}} to monitor function progress;
+}
+}
+
+\section{Miscellaneous}{
+\itemize{
+\item See \code{\link[=cl_lapply]{cl_lapply()}} for \code{R} parallelisation;
+\item See \verb{file_*()} functions (e.g., \code{\link[=file_list]{file_list()}}) for system file helpers;
+\item See \code{\link[=example_setup]{example_setup()}} for functions used to streamline examples;
 }
 }
 

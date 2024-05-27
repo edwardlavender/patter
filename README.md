@@ -290,11 +290,7 @@ These functions return `pf_particles-class` objects.
 
 **For convenience plotting functions**, see:
 
-TO DO
-
-**For common utility functions**, see:
-
-TO DO
+- `pf_plot_xy()` to plot particle locations;
 
 **For mapping utilisation distributions**, use:
 
