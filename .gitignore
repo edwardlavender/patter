@@ -6,5 +6,4 @@
 .quarto
 inst/doc
 *.pdf
-Julia
 .Renviron
