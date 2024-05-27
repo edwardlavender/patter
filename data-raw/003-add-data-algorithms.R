@@ -70,8 +70,8 @@ obs <- sim_observations(.timeline = timeline,
                                      "receiver_alpha", "receiver_beta", "receiver_gamma") |>
                               as.data.table(),
                             data.table(sensor_id = 1L,
-                                       depth_shallow_eps = 20,
-                                       depth_deep_eps = 20)
+                                       depth_shallow_eps = 30,
+                                       depth_deep_eps = 30)
                           ))
 
 #### Run the COA algorithm
@@ -85,21 +85,25 @@ out_coa <- coa(.acoustics = detections,
                .delta_t = "2 hours")
 
 #### Run the particle filter
+# Define filter args
+args <- list(.map = map,
+             .timeline = timeline,
+             .state = "StateXY",
+             .xinit_pars = list(mobility = 750),
+             .model_move = move_xy(),
+             .yobs = list(obs$ModelObsAcousticLogisTrunc[[1]], obs$ModelObsDepthUniform[[1]]),
+             .model_obs = c("ModelObsAcousticLogisTrunc", "ModelObsDepthUniform"),
+             .n_particle = 1e4L,
+             .n_record = 100L)
 # Run the filter forwards
-out_pff <-
-  pf_filter(.map = map,
-            .timeline = timeline,
-            .state = "StateXY",
-            .xinit_pars = list(mobility = 750),
-            .model_move = move_xy(),
-            .yobs = list(obs$ModelObsAcousticLogisTrunc[[1]], obs$ModelObsDepthUniform[[1]]),
-            .model_obs = c("ModelObsAcousticLogisTrunc", "ModelObsDepthUniform"),
-            .n_record = 250L)
+args$.direction = "forward"
+out_pff <- do.call(pf_filter, args)
 # Run the filter backwards
-# TO DO
+args$.direction = "backward"
+out_pfb <- do.call(pf_filter, args)
 
 #### Run the smoother
-# TO DO
+out_tff <- pf_smoother_two_filter()
 
 
 #########################
@@ -110,10 +114,14 @@ out_pff <-
 dat_path <- paths
 dat_coa  <- out_coa
 dat_pff  <- out_pff
+dat_pfb  <- out_pfb
+dat_tff  <- out_tff
 datasets <-
   list(dat_path = dat_path,
        dat_coa = dat_coa,
-       dat_pff = dat_pff)
+       dat_pff = dat_pff,
+       dat_pfb = dat_pfb,
+       dat_tff = dat_tff)
 
 #### Check dataset sizes (MB)
 # ./data/
