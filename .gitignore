@@ -5,5 +5,6 @@
 .DS_Store
 .quarto
 inst/doc
+Julia/README.md
 *.pdf
 .Renviron
