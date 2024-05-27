@@ -36,9 +36,9 @@ pf_smoother_two_filter <- function(.map = NULL,
 
   #### Define smoother arguments
   cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Setting smoother arguments..."))
-  # two_filter_smoother(xfwd, xbwd, move, box, nMC)
+  # two_filter_smoother(xfwd, xbwd, move, box, n_sim)
   # * xfwd, xbwd and move exist in Julia
-  # * box and nMC are defined below
+  # * box and n_sim are defined below
 
   #### (optional) Define mobility box
   box <- NULL

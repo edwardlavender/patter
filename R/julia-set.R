@@ -94,7 +94,7 @@ set_timeline <- function(.timeline) {
 # Set simulated path(s) in Julia
 set_path <- function() {
   julia_check_exists("xinit", "model_move", "timeline")
-  julia_command(glue('paths = simulate_path_walk(xinit = xinit, move = model_move, timeline = timeline);'))
+  julia_command(glue('paths = simulate_path_walk(xinit = xinit, model_move = model_move, timeline = timeline);'))
   nothing()
 }
 
@@ -105,18 +105,18 @@ set_path <- function() {
 # * Required for `set_yobs_*()` via `set_model_obs()`
 set_model_obs_types <- function(.model_obs) {
   julia_assign("model_obs_strings", .model_obs)
-  julia_command('model_obs_types = Patter.julia_get_model_types(model_obs_strings);')
+  julia_command('model_obs_types = Patter.julia_get_model_obs_types(model_obs_strings);')
 }
 
 #' @rdname julia_set
 #' @keywords internal
 
-# Set a Vector of ModelObs structures (`models`) in Julia
+# Set a Vector of ModelObs structures (`model_obs`) in Julia
 # * Required for `set_yobs_*()`
 set_model_obs <- function(.model_obs) {
   set_model_obs_types(.model_obs)
   julia_check_exists("model_obs_pars", "model_obs_types")
-  julia_command('models = Patter.julia_get_models(model_obs_pars, model_obs_types);')
+  julia_command('model_obs = Patter.julia_get_model_obs(model_obs_pars, model_obs_types);')
   nothing()
 }
 
@@ -137,8 +137,8 @@ set_model_obs_pars <- function(.model_obs_pars) {
 
 # Set a dictionary of observations (`yobs`) via `simulate_obs()` in Julia
 set_yobs_via_sim <- function() {
-  julia_check_exists("paths", "models", "timeline")
-  julia_command('yobs = simulate_yobs(paths = paths, models = models, timeline = timeline);')
+  julia_check_exists("paths", "model_obs", "timeline")
+  julia_command('yobs = simulate_yobs(paths = paths, model_obs = model_obs, timeline = timeline);')
   nothing()
 }
 
@@ -175,7 +175,7 @@ set_datasets <- function(.datasets) {
 set_yobs_via_datasets <- function(.datasets, .model_obs) {
   set_datasets(.datasets)
   set_model_obs_types(.model_obs)
-  julia_command('yobs = assemble_yobs(datasets, model_obs_types);')
+  julia_command('yobs = assemble_yobs(datasets = datasets, model_obs_types = model_obs_types);')
   nothing()
 }
 
@@ -199,7 +199,7 @@ set_pf_filter <- function(.n_move, .n_resample, .n_record, .direction) {
       {output} = particle_filter(timeline = timeline,
                                  xinit = xinit,
                                  yobs = yobs,
-                                 move = model_move,
+                                 model_move = model_move,
                                  n_move = {.n_move},
                                  n_record = {.n_record},
                                  n_resample = {.n_resample},
@@ -239,9 +239,9 @@ set_smoother_two_filter <- function(.n_particle, .n_sim) {
   cmd    <- glue('{output} = two_filter_smoother(timeline = timeline,
                                                  xfwd = {fwd}.state[1:{.n_particle}, :],
                                                  xbwd = {bwd}.state[1:{.n_particle}, :],
-                                                 move = model_move,
+                                                 model_move = model_move,
                                                  box = box,
-                                                 nMC = {.n_sim});')
+                                                 n_sim = {.n_sim});')
   julia_command(cmd)
   invisible(output)
 }
