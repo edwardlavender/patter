@@ -4,7 +4,7 @@
 \alias{example_setup}
 \alias{example_setup.default}
 \alias{example_setup.pf_smoother_two_filter}
-\title{Example set up}
+\title{Examples: streamline set up}
 \usage{
 example_setup(.fun)
 

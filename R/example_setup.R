@@ -1,4 +1,4 @@
-#' @title Example set up
+#' @title Examples: streamline set up
 #' @description These functions are used to streamline package examples.
 #' @param .fun A `character` that defines the name of a [`patter`] function with a corresponding [`example_setup()`] method.
 #' @author Edward Lavender
