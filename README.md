@@ -187,6 +187,8 @@ For an introduction to `patter`, use:
 
 For a full list of all functions, see `help(package = 'patter')`.
 
+For a glossary of key arguments, see `glossary`.
+
 ## Datasets
 
 For example datasets from the Movement Ecology of Flapper Skate project
@@ -197,13 +199,15 @@ For example datasets from the Movement Ecology of Flapper Skate project
 - `dat_archival` for archival (depth) time series;
 - `dat_gebco()` for a bathymetry grid;
 
-To validate new datasets for use with `patter`, use TO DO.
+To validate new datasets for use with `patter`, see `pat_setup_data()`
+and/or the `assemble_*()` function documentation.
 
 For example algorithm outputs (`datasets-algorithms`), see:
 
 - `dat_path()` for an example output from `sim_path_walk()`;
 - `dat_coa()` for an example output from `coa()`;
-- `dat_pff()` for an example output from `pf_filter()`;
+- `dat_pff()` and `dat_pfb()` for an example output from `pf_filter()`;
+- `dat_tff()` for an example output from `pf_smoother_two_filter()`;
 
 ## Set up `Julia`
 

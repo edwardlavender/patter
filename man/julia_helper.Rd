@@ -9,6 +9,7 @@
 \alias{julia_proj_generate}
 \alias{julia_proj_activate}
 \alias{julia_proj_temp}
+\alias{julia_packages_dev_Patter.jl}
 \alias{julia_packages_install}
 \alias{julia_packages_library}
 \alias{julia_packages}
@@ -35,6 +36,8 @@ julia_proj_generate(JULIA_PROJ)
 julia_proj_activate(JULIA_PROJ)
 
 julia_proj_temp()
+
+julia_packages_dev_Patter.jl()
 
 julia_packages_install(.packages, .update)
 

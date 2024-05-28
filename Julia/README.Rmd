@@ -302,7 +302,7 @@ smo = two_filter_smoother(timeline = timeline,
 
 Particles can be used to reconstruct movement paths and patterns of space use. At the time of writing, `Patter.jl` focuses entirely on the provision of fast particle algorithms and lacks supporting routines for mapping and visualisation. However, we can easily estimate a utilisation distribution from `Julia` using the wrapper `patter` `R` package via `RCall`. This is the `R` code:
 
-```{R, echo = FALSE}
+```{R, message = FALSE}
 # Load & attach packages
 library(patter, quietly = TRUE)
 library(spatstat.explore, quietly = TRUE, warn.conflicts = FALSE)
@@ -333,7 +333,7 @@ This basic workflow is highly customisable. You have the flexibility to define s
 **For further information of the `Patter.jl` package**, see:
 
 * The [online](https://edwardlavender.github.io/Patter.jl/) package documentation;
-* `?patter::particle_filgter()` for information on specific functions;
+* `?patter::particle_filter()` for information on specific functions;
 
 **For additional resources**, see the documentation for the [`patter`](https://github.com/edwardlavender/patter) `R` package. 
 

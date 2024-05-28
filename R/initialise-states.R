@@ -58,7 +58,6 @@ sim_states_init <- function(.map,
 
     #### Define an initial map from which to sample
     # We use the observation datasets to restrict (if possible) the input `.map` for sampling
-    # TO DO: confirm method validity (AS)
     if (!is.null(.models)) {
       .map <- map_init_iter(.map = .map,
                             .timeline = .timeline,

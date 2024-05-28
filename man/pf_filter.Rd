@@ -76,9 +76,9 @@ The particle filter iterates over time steps, simulating states (termed 'particl
 
 The initial states for the algorithm are defined by \code{.xinit} or simulated via \code{\link[=sim_states_init]{sim_states_init()}}. The word 'state' typically means location but may include additional parameters. If the initial state of the animal is known, it should be supplied via \code{.xinit}. Otherwise, \code{\link[=sim_states_init]{sim_states_init()}} samples \code{.n_particle} initial coordinates from \code{.map} (via \code{\link[=coords_init]{coords_init()}}), which are then translated into a \code{\link{data.table}} of states (that is, \code{.xinit}, via \code{\link[=states_init]{states_init()}}). The regions on \code{.map} from which initial coordinates are sampled can be restricted by the observations (\code{.yobs}) and other parameters. For automated handling of custom states and observation models at this stage, see the Details for \code{\link[=sim_states_init]{sim_states_init()}}.
 
-At subsequent time steps, the filter comprises three stages:
+The filter comprises three stages:
 \enumerate{
-\item A movement step, in which we simulate possible states (particles) for the individual.
+\item A movement step, in which we simulate possible states (particles) for the individual (for time steps 2, ..., T).
 \item A weights step, in which we calculate particle weights from the log-likelihood of the data at each particle.
 \item A re-sampling step, in which we optionally re-sample valid states using the weights.
 }

@@ -91,6 +91,25 @@ check_named_list <- function(input, ignore_empty = TRUE, arg = deparse(substitut
 #' @rdname check_utils
 #' @keywords internal
 
+check_timeline <- function(input, arg = deparse(substitute(input))) {
+  check_inherits(input, "POSIXct")
+  input <- check_tz(input = input, arg = arg)
+  stopifnot(!is.unsorted(input))
+  stopifnot(!any(is.na(input)))
+  invisible(input)
+}
+
+#' @rdname check_utils
+#' @keywords internal
+
+check_POSIXct <- function(.x) {
+  check_inherits(.x, "POSIXct")
+  check_tz(.x)
+}
+
+#' @rdname check_utils
+#' @keywords internal
+
 check_tz <-
   function(input, arg = deparse(substitute(input))) {
     if (inherits(input, "Date") | inherits(input, "POSIXct")) {
@@ -102,17 +121,6 @@ check_tz <-
     }
     invisible(input)
   }
-
-#' @rdname check_utils
-#' @keywords internal
-
-check_timeline <- function(input, arg = deparse(substitute(input))) {
-  check_inherits(input, "POSIXct")
-  input <- check_tz(input = input, arg = arg)
-  stopifnot(!is.unsorted(input))
-  stopifnot(!any(is.na(input)))
-  invisible(input)
-}
 
 #' @rdname check_utils
 #' @keywords internal

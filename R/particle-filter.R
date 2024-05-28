@@ -29,8 +29,8 @@
 #'
 #' The initial states for the algorithm are defined by `.xinit` or simulated via [`sim_states_init()`]. The word 'state' typically means location but may include additional parameters. If the initial state of the animal is known, it should be supplied via `.xinit`. Otherwise, [`sim_states_init()`] samples `.n_particle` initial coordinates from `.map` (via [`coords_init()`]), which are then translated into a [`data.table`] of states (that is, `.xinit`, via [`states_init()`]). The regions on `.map` from which initial coordinates are sampled can be restricted by the observations (`.yobs`) and other parameters. For automated handling of custom states and observation models at this stage, see the Details for [`sim_states_init()`].
 #'
-#' At subsequent time steps, the filter comprises three stages:
-#' 1. A movement step, in which we simulate possible states (particles) for the individual.
+#' The filter comprises three stages:
+#' 1. A movement step, in which we simulate possible states (particles) for the individual (for time steps 2, ..., T).
 #' 2. A weights step, in which we calculate particle weights from the log-likelihood of the data at each particle.
 #' 3. A re-sampling step, in which we optionally re-sample valid states using the weights.
 #'

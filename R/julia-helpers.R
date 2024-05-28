@@ -99,10 +99,30 @@ julia_proj_temp <- function() {
 #' @rdname julia_helper
 #' @keywords internal
 
+# Install Patter.jl as a development package if PATTER.JL_DEV is set
+julia_packages_dev_Patter.jl <- function() {
+  Patter.jl_path <- Sys.getenv("PATTER.JL_DEV")
+  if (Patter.jl_path != "") {
+    check_dir_exists(Patter.jl_path)
+    julia_command(glue('Pkg.develop(path = "{Patter.jl_path}")'))
+    TRUE
+  }
+  FALSE
+}
+
+#' @rdname julia_helper
+#' @keywords internal
+
 # Install/update Julia packages
 julia_packages_install <- function(.packages, .update) {
+  # (optional) Install Patter.jl as a development package
+  use_dev_Patter.jl <- julia_packages_dev_Patter.jl()
+  # Handle remaining package(s)
   lapply(.packages, function(.package) {
     # Check whether or not we need to install or update the package
+    if (.package == "Patter.jl" && use_dev_Patter.jl) {
+      return(NULL)
+    }
     install  <- ifelse(julia_installed_package(.package) == "nothing", TRUE, FALSE)
     update   <- ifelse(isFALSE(install) & .update, TRUE, FALSE)
     .package <- ifelse(.package == "Patter",

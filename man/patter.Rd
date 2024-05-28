@@ -29,13 +29,14 @@ For example datasets from the Movement Ecology of Flapper Skate project (\code{\
 \item \code{\link[=dat_gebco]{dat_gebco()}} for a bathymetry grid;
 }
 
-To validate new datasets for use with \code{\link{patter}}, use TO DO.
+To validate new datasets for use with \code{\link{patter}}, see \code{\link[=pat_setup_data]{pat_setup_data()}} and/or the \code{\link{assemble}}\verb{_*()} function documentation.
 
 For example algorithm outputs (\code{datasets-algorithms}), see:
 \itemize{
 \item \code{\link[=dat_path]{dat_path()}} for an example output from \code{\link[=sim_path_walk]{sim_path_walk()}};
 \item \code{\link[=dat_coa]{dat_coa()}} for an example output from \code{\link[=coa]{coa()}};
-\item \code{\link[=dat_pff]{dat_pff()}} for an example output from \code{\link[=pf_filter]{pf_filter()}};
+\item \code{\link[=dat_pff]{dat_pff()}} and \code{\link[=dat_pfb]{dat_pfb()}} for an example output from \code{\link[=pf_filter]{pf_filter()}};
+\item \code{\link[=dat_tff]{dat_tff()}} for an example output from \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}};
 }
 }
 

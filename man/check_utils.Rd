@@ -8,8 +8,9 @@
 \alias{check_inherits}
 \alias{check_names}
 \alias{check_named_list}
-\alias{check_tz}
 \alias{check_timeline}
+\alias{check_POSIXct}
+\alias{check_tz}
 \alias{check_new_colnames}
 \alias{check_not_null}
 \alias{check_dots_allowed}
@@ -35,9 +36,11 @@ check_names(
 
 check_named_list(input, ignore_empty = TRUE, arg = deparse(substitute(input)))
 
-check_tz(input, arg = deparse(substitute(input)))
-
 check_timeline(input, arg = deparse(substitute(input)))
+
+check_POSIXct(.x)
+
+check_tz(input, arg = deparse(substitute(input)))
 
 check_new_colnames(.data, .new)
 

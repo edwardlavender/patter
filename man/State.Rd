@@ -199,8 +199,29 @@ if (julia_run()) {
                    .direction = "backward")
 
   #### Run the smoother
-  # TO DO
-  # * Write a method to evaluate movement densities
+  # Write a `Patter.logpdf_step()` method
+  # ... to evaluate the unnormalised log probability (density)
+  # ... of an unrestricted step from one state to another
+  # See: julia_help("Patter.logpdf_step")
+  julia_command(
+    '
+    function Patter.logpdf_step(state_from::StateXYZ, state_to::StateXYZ,
+                                model_move::ModelMoveXYZ,
+                                length::Float64, angle::Float64)
+        # Calculate change in depth
+        z_delta = state_to.z - state_from.z
+        # Evaluate unnormalised log probability
+        logpdf(model_move.dbn_length, length) +
+          logpdf(model_move.dbn_angle, angle) +
+          logpdf(model_move.dbn_z_delta, z_delta)
+    end
+    '
+  )
+  # Run the smoother
+  smo <- pf_smoother_two_filter()
+
+  #### (optional) Map UD
+  # map_dens(map, .coord = smo$states)
 
 }
 }

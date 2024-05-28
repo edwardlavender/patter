@@ -45,7 +45,7 @@ This function connects \code{R} to \code{Julia}.
 \item \code{\link{JuliaCall}} is set up via \code{\link[JuliaCall:julia_setup]{JuliaCall::julia_setup()}}, using \code{.threads} threads.
 \item The \code{Julia} installation is validated.
 \item A local \code{Julia} Project is generated in \code{JULIA_PROJ} (if specified and required) and activated. We recommend using \code{\link{patter}} within an RStudio Project, with a \code{Julia} directory at the top-level that contains the \code{Julia} project.
-\item \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} and supporting dependencies are installed or updated (if required) and loaded (optionally in the local \code{Julia} Project).
+\item \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} and supporting dependencies are installed or updated (if required) and loaded (optionally in the local \code{Julia} Project). If the environment variable \code{PATTER.JL_DEV = "path/to/local/clone/of/Patter.jl"} is set, \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} is installed from a local source as a development dependency (via \code{Pkg.develop()}); otherwise, \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} is installed from the remote.
 }
 
 You should run this function once per \code{R} session.

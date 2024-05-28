@@ -20,7 +20,7 @@
 #' * [`JuliaCall`] is set up via [`JuliaCall::julia_setup()`], using `.threads` threads.
 #' * The `Julia` installation is validated.
 #' * A local `Julia` Project is generated in `JULIA_PROJ` (if specified and required) and activated. We recommend using [`patter`] within an RStudio Project, with a `Julia` directory at the top-level that contains the `Julia` project.
-#' * [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) and supporting dependencies are installed or updated (if required) and loaded (optionally in the local `Julia` Project).
+#' * [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) and supporting dependencies are installed or updated (if required) and loaded (optionally in the local `Julia` Project). If the environment variable `PATTER.JL_DEV = "path/to/local/clone/of/Patter.jl"` is set, [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) is installed from a local source as a development dependency (via `Pkg.develop()`); otherwise, [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) is installed from the remote.
 #'
 #' You should run this function once per `R` session.
 #'
@@ -62,11 +62,6 @@ julia_connect <- function(...,
   #### Install & load packages (optionally within the Julia Project)
   cats$cat("... Handling dependencies...")
   pkgs <- c("Patter", "DataFrames", "Distributions", "GeoArrays", "JLD2", "Random")
-  # Install Patter
-  # * TO DO
-  # * Update Patter installation
-  # * Using the development version here for convenience
-  julia_command('Pkg.develop(path = "/Users/lavended/Documents/work/projects/particle-filters/patter/packages/Patter.jl")')
   julia_packages(.packages = pkgs, .update = .update)
 
   #### Validate Julia settings

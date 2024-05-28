@@ -132,7 +132,7 @@ if (julia_run()) {
   origins <-
     map |>
     terra::spatSample(size = 4, xy = TRUE, na.rm = TRUE) |>
-    select(map_value = "bathy", "x", "y") |>
+    select("map_value", "x", "y") |>
     as.data.table()
   # Run simulation
   sim_path_walk(.map = map,

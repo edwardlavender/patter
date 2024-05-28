@@ -32,7 +32,7 @@ dat_gebco <- flapper::dat_gebco
 dat_gebco <- terra::rast(dat_gebco)
 blank <- terra::rast(terra::ext(dat_gebco), res = 100)
 dat_gebco <- terra::resample(dat_gebco, blank, method = "bilinear")
-names(dat_gebco) <- "bathy"
+names(dat_gebco) <- "map_value"
 # terra::plot(dat_gebco)
 
 
@@ -92,7 +92,7 @@ lubridate::tz(dat_archival$timestamp) <- "UTC"
 #### Update package
 
 overwrite <- TRUE
-# terra::writeRaster(dat_gebco, here::here("inst", "extdata", "dat_gebco.tif"), overwrite = TRUE)
+terra::writeRaster(dat_gebco, here::here("inst", "extdata", "dat_gebco.tif"), overwrite = TRUE)
 usethis::use_data(dat_moorings, overwrite = overwrite)
 usethis::use_data(dat_acoustics, overwrite = overwrite)
 usethis::use_data(dat_archival, overwrite = overwrite)
