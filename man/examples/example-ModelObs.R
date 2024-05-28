@@ -1,7 +1,7 @@
-# Patter contains multiple built-in `ModelObs` subtypes that you can use
+# Patter contains multiple built-in `ModelObs` sub-types that you can use
 # ... (with custom parameters) simulate observations and for particle filtering.
-# To use a new subtype, follow the workflow below. Some extra work is required
-# ... because we have to register the subtype in `Julia` and write the
+# To use a new sub-type, follow the workflow below. Some extra work is required
+# ... because we have to register the sub-type in `Julia` and write the
 # ... required methods to simulate observations and/or calculate log probabilities.
 
 if (julia_run()) {
@@ -31,10 +31,10 @@ if (julia_run()) {
                          .one_page = TRUE)
 
   #### Simulate observations arising from the simulated path
-  # Register a custom `ModelObs` subtype in Julia
+  # Register a custom `ModelObs` sub-type in Julia
   # * We imagine a pelagic animal in which the depth at each time step
   # * ... is normally distributed around the previous depth.
-  # * We write a `ModelObs` subtype in `Julia` that contains the parameters
+  # * We write a `ModelObs` sub-type in `Julia` that contains the parameters
   # * ... for this model (i.e., the sigma parameter of the normal distribution).
   julia_command(
     '

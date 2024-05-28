@@ -72,8 +72,8 @@ if (julia_run()) {
   # See `?pf_filter()`
 
   #### Example (6): Use custom movement model types
-  # Patter contains multiple built-in `State` and `ModelMove` subtypes that you can use
+  # Patter contains multiple built-in `State` and `ModelMove` sub-types that you can use
   # ... (with custom parameters) simulate movements and for particle filtering.
-  # See the help file for `?State` to use a new subtype.
+  # See the help file for `?State` to use a new sub-type.
 
 }

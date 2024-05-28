@@ -111,7 +111,7 @@ head(archival)
 #### Example (4): Implement particle filter
 # Use `pf_filter()` to implement the particle filter
 # A list of assembled datasets is passed to the `yobs` argument
-# The corresponding `ModelObs` subtypes must also be specified
+# The corresponding `ModelObs` sub-types must also be specified
 }
 \seealso{
 Particle filters and smoothers sample states (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.

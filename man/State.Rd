@@ -39,10 +39,10 @@ The state must match the movement model (see \code{\link{ModelMove}}):
 To use custom \code{\link{ModelObs}} sub-types, see Examples.
 }
 \examples{
-# Patter contains multiple built-in `State` and `ModelMove` subtypes that you can use
+# Patter contains multiple built-in `State` and `ModelMove` sub-types that you can use
 # ... (with custom parameters) simulate movements and for particle filtering.
-# To use a new subtype, follow the workflow below. Some extra work is required
-# ... because we have to register the subtype in `Julia` and write the
+# To use a new sub-type, follow the workflow below. Some extra work is required
+# ... because we have to register the sub-type in `Julia` and write the
 # ... required methods to simulate initial states, movement and/or
 # ... evaluate movement densities.
 

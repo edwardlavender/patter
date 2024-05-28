@@ -90,8 +90,8 @@ NULL
 #' * To run the particle smoother, via [`pf_smoother_two_filter()`];
 #'
 #' In `R` functions, the movement-model instance is specified via the `.model_move` argument. This argument expects a `character` string defining a [`ModelMove`] instance that can be evaluated in `Julia` (that is, a [`ModelMove`] constructor). `move_*()` functions are convenience functions for the specification of these constructors for the built-in sub-types. All [`ModelMove`] instances contain a `map` field that defines the region(s) within which movements are permitted. To use a `move_*()` function, the map should be available in `Julia` as `env` (see [`set_map()`]). The additional components of the movement model are specified via `move_*()` function arguments as `character` strings of `Julia` code. Currently implemented `move_*()` functions are:
-#' * [`move_xy()`], which specifies a movement model of subtype [`ModelMoveXY`] in terms of the distributions of step lengths and turning angles;
-#' * [`move_xyzd()`], which specifies a movement model of subtype [`ModelMoveXYZD`] in terms of the distributions of step lengths, changes in turning angles and changes in depth;
+#' * [`move_xy()`], which specifies a movement model of sub-type [`ModelMoveXY`] in terms of the distributions of step lengths and turning angles;
+#' * [`move_xyzd()`], which specifies a movement model of sub-type [`ModelMoveXYZD`] in terms of the distributions of step lengths, changes in turning angles and changes in depth;
 #'
 #' See [here](https://discourse.julialang.org/t/a-comparison-of-common-distributions-in-julia-python-and-r/61604) for the translations of distributions in `R` (e.g., `*norm()`) into `Julia` (e.g., `Normal()`).
 #'
