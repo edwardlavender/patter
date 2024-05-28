@@ -219,7 +219,12 @@ if (julia_run()) {
   fwd$convergence
 
   ## Map output states:
-  # TO DO
+  # Map particle coordinates
+  pf_plot_xy(.map = map, .particles = fwd$states, .steps = 1L)
+  # Map a utilisation distribution
+  map_dens(.map = map,
+           .coord = fwd$states,
+           sigma = spatstat.explore::bw.diggle)
 
   ## Analyse filter diagnostics
   # `maxlp` is the maximum log-posterior at each time step
