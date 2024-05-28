@@ -107,7 +107,6 @@ sim_array <- function(.map,
 #'
 #' @param .map A [`SpatRaster`] that defines the study area for the simulation (see [`glossary`]). Here, `.map` is used to:
 #' * Simulate initial states if `.xinit = NULL` (via [`sim_states_init()`]);
-#' * Extract `.map` coordinates for the simulated path(s);
 #' @param .timeline A `POSIXct` vector of regularly spaced time stamps that defines the timeline for the simulation. Here, `.timeline` is used to:
 #' * Define the number of time steps for the simulation;
 #' * Define the time resolution of the simulation;
@@ -140,7 +139,6 @@ sim_array <- function(.map,
 #' * `path_id`---an `integer` vector that identifies each path;
 #' * `timestep`---an `integer` vector that defines the time step;
 #' * `timestamp`---a `POSIXct` vector of time stamps;
-#' * `cell_id`, `cell_x`, `cell_y`, `cell_z`---`integer`/`numeric` vectors that define the locations of the simulated positions on `.map`;
 #' * `x`,`y`,`...`---`numeric` vectors that define the components of the state;
 #'
 #' @example man/examples/example-sim_path_walk.R
@@ -194,17 +192,9 @@ sim_path_walk <- function(.map,
       # Define path_id, time step and time stamp
       path_id = as.integer(.data$path_id),
       timestep = as.integer(.data$timestep),
-      timestamp = .timeline[.data$timestep],
-      # Add map coordinates
-      cell_id = terra::cellFromXY(.map, cbind(.data$x, .data$y)),
-      cell_x = as.numeric(terra::xFromCell(.map, .data$cell_id)),
-      cell_y = as.numeric(terra::yFromCell(.map, .data$cell_id)),
-      cell_z = terra::extract(.map, .data$cell_id)[, 1]) |>
-    # Tidy columns
-    select("path_id", "timestep", "timestamp",
-           "cell_x", "cell_y", "cell_z", "cell_id",
-           state_dims
+      timestamp = .timeline[.data$timestep]
     ) |>
+    select("path_id", "timestep", "timestamp", state_dims) |>
     as.data.table()
 
   #### Validate simulation (check for NAs)

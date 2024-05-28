@@ -120,15 +120,15 @@ if (julia_run()) {
   plot(obs$timestamp, obs$obs * -1, ylim = ylim, col = "royalblue", type = "l")
   lines(paths$timestamp, paths$map_value * -1, col = "grey")
   # > The individual ranges from the seabed to the surface
-  expect_true(max(obs$obs - paths$cell_z) < 0)
+  expect_true(max(obs$obs - paths$map_value) < 0)
 
   #### Run the forward filter
   # (optional) Define initial states, by:
   # A) Starting the filter in the correct location by masking `.map`
   # B) Specifying a complete data.table of initial state(s)
-  origin <- terra::setValues(map, NA)
-  origin[paths$cell_id[1]] <- terra::extract(map, paths$cell_id[1])
-  terra::plot(origin)
+  origin       <- terra::setValues(map, NA)
+  cell         <- terra::cellFromXY(map, cbind(paths$x[1], paths$y[1]))
+  origin[cell] <- paths$map_value[1]
   # Run the filter
   fwd <- pf_filter(.map = origin,
                    .timeline = timeline,
@@ -146,8 +146,9 @@ if (julia_run()) {
   #### Run the backward filter
   # Define origin
   origin <- terra::setValues(map, NA)
-  n <- nrow(paths)
-  origin[paths$cell_id[n]] <- terra::extract(map, paths$cell_id[n])
+  n            <- nrow(paths)
+  cell         <- terra::cellFromXY(map, cbind(paths$x[n], paths$y[n]))
+  origin[cell] <- paths$map_value[n]
   # Run the filter
   bwd <- pf_filter(.map = origin,
                    .timeline = timeline,

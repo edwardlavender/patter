@@ -5,6 +5,7 @@
 \title{COA: centres of activity}
 \usage{
 coa(
+  .map,
   .acoustics,
   .moorings = NULL,
   .delta_t,
@@ -15,6 +16,11 @@ coa(
 )
 }
 \arguments{
+\item{.map}{A \code{\link{SpatRaster}} that defines the study area (see \code{\link{glossary}}). Here, \code{.map} is used to:
+\itemize{
+\item Extract \code{map_value} at centres of activity, for consistency with other routines (such as \code{\link[=pf_filter]{pf_filter()}});
+}}
+
 \item{.acoustics, .moorings}{Acoustic detection \href{s}{\code{data.table}}.
 \itemize{
 \item \code{.acoustics} is a \code{\link{data.table}} of acoustic detections, with the following columns: \code{receiver_id} (or \code{sensor_id}), \code{timestamp} and (optionally) \code{receiver_x} and \code{receiver_y} columns;
@@ -37,9 +43,10 @@ Receiver coordinates \strong{must be planar}.}
 \value{
 The function returns a \code{\link{data.table}} with the following columns:
 \itemize{
-\item \code{.split}---a \code{character} vector that distinguishes groups, if applicable;
+\item \code{{.split}}---a \code{character} vector that distinguishes groups, if applicable;
+\item \code{timestep}---an \code{integer} vector of time steps;
 \item \code{timestamp}---a \code{POSIXt} vector of time stamps;
-\item \code{x}, \code{y}---the coordinates of the COAs;
+\item \code{map_value}, \code{x}, \code{y}---the value of \code{.map} at COAs and their coordinates;
 }
 
 Data are arranged by \code{.split} and \code{timestamp}.
@@ -56,32 +63,40 @@ This function replaces \href{https://edwardlavender.github.io/flapper/reference/
 library(data.table)
 
 #### Set up example
+map       <- dat_gebco()
 acoustics <- dat_acoustics
 moorings  <- dat_moorings
 
 #### Example (1): Calculate COAs for an example individual
 id     <- dat_acoustics$individual_id[1]
 acc    <- dat_acoustics[individual_id == id, ]
-coa(acc, moorings, .delta_t = "2 hours")
+coa(.map = map, .acoustics = acc, .moorings = moorings,
+    .delta_t = "2 hours")
 
 #### Example (2): Customise the time interval via `.delta_t`
-coa(acc, moorings, .delta_t = "4 hours")
+coa(.map = map, .acoustics = acc, .moorings = moorings,
+    .delta_t = "4 hours")
 
 #### Example (3): Calculate COAs for multiple individuals via `.split`
 # Calculate COAs
-coa(acoustics, dat_moorings, .delta_t = "6 hours", .split = "individual_id")
+coa(.map = map, .acoustics = acc, .moorings = moorings,
+    .delta_t = "6 hours", .split = "individual_id")
 # Use one page for plots via `.one_page = TRUE`
-coa(acoustics, dat_moorings, .delta_t = "6 hours", .split = "individual_id",
+coa(.map = map, .acoustics = acc, .moorings = moorings,
+    .delta_t = "6 hours", .split = "individual_id",
     .one_page = FALSE)
 # Suppress plots via `.plot = FALSE`
-coa(acoustics, dat_moorings, .delta_t = "6 hours", .split = "individual_id",
+coa(.map = map, .acoustics = acc, .moorings = moorings,
+    .delta_t = "6 hours", .split = "individual_id",
     .one_page = TRUE)
 
 #### Example (4): Specify `.acoustics` only
 # `.moorings` is not required if `.acoustics` contains receiver coordinates
-acoustics |>
-  merge(moorings, by = "receiver_id") |>
-  coa(.delta_t = "6 hours", .split = "individual_id")
+coa(.map = map,
+    .acoustics =
+      acoustics |>
+      merge(moorings, by = "receiver_id"),
+    .delta_t = "6 hours", .split = "individual_id")
 }
 \seealso{
 \itemize{

@@ -148,8 +148,9 @@ if (julia_run()) {
   #### Example (2): Customise initial states for the filter
   # Mark the known starting location on `.map`
   # > Initial states are automatically sampled from `.map`
-  origin <- terra::setValues(map, NA)
-  origin[paths$cell_id] <- paths$map_value[1]
+  origin       <- terra::setValues(map, NA)
+  cell         <- terra::cellFromXY(map, cbind(paths$x[1], paths$y[1]))
+  origin[cell] <- paths$map_value[1]
   fwd <- pf_filter(.map = origin,
                    .timeline = timeline,
                    .state = state,

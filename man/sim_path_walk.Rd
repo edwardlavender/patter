@@ -19,7 +19,6 @@ sim_path_walk(
 \item{.map}{A \code{\link{SpatRaster}} that defines the study area for the simulation (see \code{\link{glossary}}). Here, \code{.map} is used to:
 \itemize{
 \item Simulate initial states if \code{.xinit = NULL} (via \code{\link[=sim_states_init]{sim_states_init()}});
-\item Extract \code{.map} coordinates for the simulated path(s);
 }}
 
 \item{.timeline}{A \code{POSIXct} vector of regularly spaced time stamps that defines the timeline for the simulation. Here, \code{.timeline} is used to:
@@ -54,7 +53,6 @@ sim_path_walk(
 \item \code{path_id}---an \code{integer} vector that identifies each path;
 \item \code{timestep}---an \code{integer} vector that defines the time step;
 \item \code{timestamp}---a \code{POSIXct} vector of time stamps;
-\item \code{cell_id}, \code{cell_x}, \code{cell_y}, \code{cell_z}---\code{integer}/\code{numeric} vectors that define the locations of the simulated positions on \code{.map};
 \item \code{x},\code{y},\code{...}---\code{numeric} vectors that define the components of the state;
 }
 }

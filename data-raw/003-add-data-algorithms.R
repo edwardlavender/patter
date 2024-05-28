@@ -40,7 +40,7 @@ set_map(map)
 
 #### Define study period
 timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
-                length.out = 720L, by = "2 mins")
+                length.out = 360, by = "2 mins")
 
 
 #########################
@@ -75,13 +75,12 @@ obs <- sim_observations(.timeline = timeline,
                           ))
 
 #### Run the COA algorithm
-# TO DO
-# Improve alignment between coa() & pf_*() function output
 detections <-
   obs$ModelObsAcousticLogisTrunc[[1]] |>
   filter(obs == 1L) |>
   as.data.table()
-out_coa <- coa(.acoustics = detections,
+out_coa <- coa(.map = map,
+               .acoustics = detections,
                .delta_t = "2 hours")
 
 #### Run the particle filter
@@ -93,7 +92,7 @@ args <- list(.map = map,
              .model_move = move_xy(),
              .yobs = list(obs$ModelObsAcousticLogisTrunc[[1]], obs$ModelObsDepthUniform[[1]]),
              .model_obs = c("ModelObsAcousticLogisTrunc", "ModelObsDepthUniform"),
-             .n_particle = 1e4L,
+             .n_particle = 1e5L,
              .n_record = 100L)
 # Run the filter forwards
 args$.direction = "forward"
@@ -146,6 +145,8 @@ if (overwrite) {
   lapply(seq_len(length(datasets)), function(i) {
     saveRDS(datasets[[i]], here::here("inst", "extdata", paste0(names(datasets)[i], ".rds")))
   }) |> invisible()
+} else {
+  warn("Datasets not written to file as `overwrite = FALSE`!")
 }
 
 

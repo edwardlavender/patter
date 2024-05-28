@@ -108,8 +108,9 @@ if (julia_run()) {
   # A) Starting the filter in the correct location by masking `.map`
   # B) Specifying a `map_init()` method based on the observation model
   # C) Specifying a complete data.table of initial state(s)
-  origin <- terra::setValues(map, NA)
-  origin[paths$cell_id[1]] <- terra::extract(map, paths$cell_id[1])
+  origin       <- terra::setValues(map, NA)
+  cell         <- terra::cellFromXY(map, cbind(paths$x[1], paths$y[1]))
+  origin[cell] <- paths$map_value[1]
   # Define a `Patter.logpdf_obs()` method
   # * This is used to evaluate the log probability of a depth observation
   julia_command(

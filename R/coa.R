@@ -1,5 +1,7 @@
 #' @title COA: centres of activity
 #' @description This function calculates centres of activity (COAs) from detections at acoustic receivers.
+#' @param .map A [`SpatRaster`] that defines the study area (see [`glossary`]). Here, `.map` is used to:
+#' * Extract `map_value` at centres of activity, for consistency with other routines (such as [`pf_filter()`]);
 #' @param .acoustics,.moorings Acoustic detection [`data.table`](s).
 #' * `.acoustics` is a [`data.table`] of acoustic detections, with the following columns: `receiver_id` (or `sensor_id`), `timestamp` and (optionally) `receiver_x` and `receiver_y` columns;
 #' * (optional) `.moorings` is a [`data.table`] of receiver coordinates, which should be provided if unavailable in `.acoustics`, with `receiver_id`, `receiver_x` and `receiver_y` columns;
@@ -18,9 +20,10 @@
 #' This function replaces [`flapper::coa()`](https://edwardlavender.github.io/flapper/reference/coa.html). See  [`flapper::coa_setup_delta_t()`](https://edwardlavender.github.io/flapper/reference/coa_setup_delta_t.html) to evaluate alternative time internals.
 #'
 #' @return The function returns a [`data.table`] with the following columns:
-#' * `.split`---a `character` vector that distinguishes groups, if applicable;
+#' * `{.split}`---a `character` vector that distinguishes groups, if applicable;
+#' * `timestep`---an `integer` vector of time steps;
 #' * `timestamp`---a `POSIXt` vector of time stamps;
-#' * `x`, `y`---the coordinates of the COAs;
+#' * `map_value`, `x`, `y`---the value of `.map` at COAs and their coordinates;
 #'
 #' Data are arranged by `.split` and `timestamp`.
 #'
@@ -31,7 +34,8 @@
 #' @author Edward Lavender
 #' @export
 
-coa <- function(.acoustics, .moorings = NULL, .delta_t, .split = NULL,
+coa <- function(.map,
+                .acoustics, .moorings = NULL, .delta_t, .split = NULL,
                 .plot_weights = TRUE, ..., .one_page = TRUE) {
 
   #### Check user inputs
@@ -89,7 +93,7 @@ coa <- function(.acoustics, .moorings = NULL, .delta_t, .split = NULL,
   }
 
   #### Calculate COAs
-  # Calculate COAs using weighted.mean() (assumed planar coordinates)
+  # Calculate COAs using weighted.mean() (assumes planar coordinates)
   out <-
     acoustics |>
     group_by(.data$split, .data$bin) |>
@@ -102,10 +106,14 @@ coa <- function(.acoustics, .moorings = NULL, .delta_t, .split = NULL,
   # Select relevant columns
   out <-
     out |>
-    select("split", "bin", "x", "y") |>
+    mutate(map_value = terra::extract(.map, cbind(.data$x, .data$y))) |>
+    group_by(.data$split) |>
+    arrange(.data$bin, .by_group = TRUE) |>
+    mutate(timestep = row_number()) |>
+    ungroup() |>
     arrange(.data$split, .data$bin) |>
+    select("{.split}" := "split", "timestep", timestamp = "bin", "map_value", "x", "y") |>
     as.data.table()
-  colnames(out) <- c(.split, "timestamp", "x", "y")
   # Drop split column, if unspecified
   if (!keep_split) {
     out[[.split]] <- NULL

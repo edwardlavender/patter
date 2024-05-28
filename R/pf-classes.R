@@ -57,9 +57,6 @@ pf_particles <- function(.xinit = NULL, .pf_obj) {
     as.data.table()
 
   # Process states data.table
-  # * TO DO
-  # * Consider the inclusion of bathymetry data for consistency
-  # * Or remove inclusion of bathymetry data from sim_path_walk()
   timestep <- timestamp <- NULL
   out$states <-
     out$states |>
