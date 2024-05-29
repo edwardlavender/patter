@@ -110,11 +110,10 @@ if (julia_run()) {
                           .model_obs = "ModelObsDepthNormalTrunc",
                           .model_obs_pars = list(pars))
 
-
   #### Example (4): Simulate observations via custom `ModelObs` sub-types
   # See `?ModelObs`
 
-  #### Example (4): Use multiple observation models
+  #### Example (5): Use multiple observation models
   obs <- sim_observations(.timeline = timeline,
                           .model_obs = c("ModelObsAcousticLogisTrunc",
                                          "ModelObsDepthNormalTrunc"),
