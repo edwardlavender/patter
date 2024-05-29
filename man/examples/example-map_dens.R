@@ -24,18 +24,18 @@ map_dens(map, .coord = coord[, .(cell_x = x, cell_y = y)])
 pou <- map_pou(map, .coord = coord, .plot = FALSE)
 map_dens(pou)
 
-#### Example (3): Use coordinates from `sim_path_walk()`
+#### Example (2): Use coordinates from `sim_path_walk()`
 coord <- dat_path()
 map_dens(map, .coord = coord)
 points(coord$x, coord$y, cex = 0.5)
 
-#### Example (2): Use coordinates from `coa()`
+#### Example (3): Use coordinates from `coa()`
 # Use example dataset
 coord <- dat_coa()
 map_dens(map, .coord = coord)
 points(coord$x, coord$y, cex = 0.5)
 
-#### Example (3): Use a time series of coordinates from `pf_*()`
+#### Example (4): Use a time series of coordinates from `pf_*()`
 # Use example dataset
 # * We use particles from the forward filter (`?pf_filter()`);
 # * Particles are equally weighted b/c re-sampling is implemented every time step;
@@ -44,7 +44,7 @@ coord <- dat_pff()$states
 map_dens(map, .coord = coord)
 # points(coord$x, coord$y, cex = 0.5)
 
-#### Example (4): Control smoothing via `spatstat.explore::density.ppp()`
+#### Example (5): Control smoothing via `spatstat.explore::density.ppp()`
 # E.g. use fixed bandwidth:
 map_dens(map, .coord = coord, sigma = 5)
 map_dens(map, .coord = coord, sigma = 100)
