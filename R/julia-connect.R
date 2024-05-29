@@ -66,7 +66,7 @@ julia_connect <- function(...,
 
   #### Validate Julia settings
   nthreads <- julia_threads(.threads)
-  cats$cat(paste0("... `Julia` set up with ", nthreads, " threads."))
+  cats$cat(paste0("... `Julia` set up with ", nthreads, " thread(s)."))
 
   #### Return outputs
   invisible(julia)
