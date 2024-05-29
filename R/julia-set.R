@@ -188,7 +188,7 @@ set_pf_filter <- function(.n_move, .n_resample, .n_record, .direction) {
   # Check inputs
   julia_check_exists("timeline", "xinit", "yobs", "model_move")
   .n_move     <- as.integer(.n_move)
-  .n_resample <- paste0(as.integer(.n_record), ".0")
+  .n_resample <- paste0(as.integer(.n_resample), ".0")
   .n_record   <- as.integer(.n_record)
   # Define output name
   output <- name_particles(.fun = "pf_filter", .direction = .direction)
