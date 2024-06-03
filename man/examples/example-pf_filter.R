@@ -125,7 +125,7 @@ if (julia_run()) {
 
   ## Map output states:
   # Map particle coordinates
-  pf_plot_xy(.map = map, .particles = fwd$states, .steps = 1L)
+  pf_plot_xy(.map = map, .coord = fwd$states, .steps = 1L)
   # Map a utilisation distribution
   map_dens(.map = map,
            .coord = fwd$states,

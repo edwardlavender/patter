@@ -6,7 +6,7 @@
 \usage{
 pf_plot_xy(
   .map,
-  .particles,
+  .coord,
   .steps = NULL,
   .png = NULL,
   .add_surface = list(),
@@ -19,7 +19,7 @@ pf_plot_xy(
 \arguments{
 \item{.map}{A \code{\link{SpatRaster}} that defines the study area (see \code{\link{glossary}}).}
 
-\item{.particles}{A \code{\link{data.table}} of particle coordinates, including \code{x} and \code{y} columns. Point graphical parameters (\code{pch}, \code{col}, \code{bg}, \code{cex}, \code{lwd}, \code{lty}, \code{lwd}) can be included as columns to customise particle appearance. (Graphical parameters provided here silently overwrite any elements of the same name in \code{.add_points}.)}
+\item{.coord}{A \code{\link{data.table}} of particle coordinates, including \code{x} and \code{y} columns. Point graphical parameters (\code{pch}, \code{col}, \code{bg}, \code{cex}, \code{lwd}, \code{lty}, \code{lwd}) can be included as columns to customise particle appearance. (Graphical parameters provided here silently overwrite any elements of the same name in \code{.add_points}.)}
 
 \item{.steps}{\code{NULL} or an \code{integer} vector of the time steps for which to map particle samples. \code{NULL} specifies all time steps.}
 
@@ -44,7 +44,7 @@ The function is called for its side effects. It returns \code{invisible(TRUE)}.
 This function maps particle (\code{x}, \code{y}) locations for selected time steps or entire time series and can be used to create animations.
 }
 \details{
-For each \code{.step}, \code{\link[terra:plot]{terra::plot()}} is used to plot \code{.map}. Particle samples in \code{.particles} are added onto the grid via \code{\link[graphics:points]{graphics::points()}}. Particle weights are uniform thanks to resampling.
+For each \code{.step}, \code{\link[terra:plot]{terra::plot()}} is used to plot \code{.map}. Particle samples in \code{.coord} are added onto the grid via \code{\link[graphics:points]{graphics::points()}}. Particle weights are uniform thanks to resampling.
 
 This function replaces \href{https://edwardlavender.github.io/flapper/reference/pf_plot_history.html}{\code{flapper::pf_plot_history()}}.
 }
@@ -68,44 +68,44 @@ pbo <- pbapply::pboptions(nout = 4L)
 #### Example (1): Plot selected samples
 # Plot particles from the forward filter
 pf_plot_xy(.map = map,
-           .particles = pff,
+           .coord = pff,
            .steps = 1L)
 # Plot particles from the backward filter
 pf_plot_xy(.map = map,
-           .particles = pfb,
+           .coord = pfb,
            .steps = 1L)
 # Plot smoothed particles
 pf_plot_xy(.map = map,
-           .particles = tff,
+           .coord = tff,
            .steps = 1L)
 
 #### Example (2): Plot multiple time steps
 # Specify selected steps
 pf_plot_xy(.map = map,
-           .particles = tff,
+           .coord = tff,
            .steps = 1:5L)
 # Plot all steps (default: .step = NULL)
 pf_plot_xy(.map = map,
-           .particles = pff)
+           .coord = pff)
 # Use `.prompt = TRUE`
 pf_plot_xy(.map = map,
-           .particles = tff,
+           .coord = tff,
            .steps = 1:5L,
            .prompt = TRUE)
 
 #### Example (3): Customise the background map via `.add_surface`
 pf_plot_xy(.map = map,
-           .particles = tff,
+           .coord = tff,
            .steps = 1L,
            .add_surface = list(col = rev(terrain.colors(256L))))
 
 #### Example (4): Customise the points
 # Use `.add_points`
 pf_plot_xy(.map = map,
-           .particles = tff,
+           .coord = tff,
            .steps = 1L,
            .add_points = list(pch = ".", col = "red"))
-# Include `points()` arguments as columns in `.particles`
+# Include `points()` arguments as columns in `.coord`
 # * Here, we colour branches from the filter pruned by the smoother in red
 pff[, cell_id := terra::extract(map, cbind(x, y))]
 pfb[, cell_id := terra::extract(map, cbind(x, y))]
@@ -113,26 +113,26 @@ tff[, cell_id := terra::extract(map, cbind(x, y))]
 pff[, col := ifelse(cell_id \%in\% tff$cell_id, "black", "red")]
 pfb[, col := ifelse(cell_id \%in\% tff$cell_id, "black", "red")]
 pf_plot_xy(.map = map,
-           .particles = rbind(pff, pfb),
+           .coord = rbind(pff, pfb),
            .steps = 1L,
            .add_points = list(pch = "."))
 
 #### Example (5): Add additional map layers
 pf_plot_xy(.map = map,
-           .particles = tff,
+           .coord = tff,
            .steps = 1L,
            .add_layer = function(t) mtext(side = 4, "Depth (m)", line = -4))
 
 #### Example (6): Write images to file
 # Write images in serial
 pf_plot_xy(.map = map,
-           .particles = tff,
+           .coord = tff,
            .steps = 1:50L,
            .png = list(filename = frames))
 # Use a fork cluster
 if (.Platform$OS.type == "unix") {
   pf_plot_xy(.map = map,
-             .particles = tff,
+             .coord = tff,
              .steps = 1:50L,
              .png = list(filename = frames),
              .cl = 2L,

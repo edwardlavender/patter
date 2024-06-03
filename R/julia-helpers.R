@@ -212,6 +212,15 @@ julia_save <- function(.x, .file = .x) {
 #' @rdname julia_helper
 #' @keywords internal
 
+# Load an object into Julia
+julia_load <- function(.file, .x = basename(tools::file_path_sans_ext(.file))) {
+  julia_command(glue('@load "{.file}" {.x};'))
+  nothing()
+}
+
+#' @rdname julia_helper
+#' @keywords internal
+
 # Format time stamps for Julia
 julia_timeline <- function(.x) {
   check_inherits(.x, "POSIXct")

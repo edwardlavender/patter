@@ -2,7 +2,7 @@
 #' @description This function maps particle (`x`, `y`) locations for selected time steps or entire time series and can be used to create animations.
 #'
 #' @param .map A [`SpatRaster`] that defines the study area (see [`glossary`]).
-#' @param .particles A [`data.table`] of particle coordinates, including `x` and `y` columns. Point graphical parameters (`pch`, `col`, `bg`, `cex`, `lwd`, `lty`, `lwd`) can be included as columns to customise particle appearance. (Graphical parameters provided here silently overwrite any elements of the same name in `.add_points`.)
+#' @param .coord A [`data.table`] of particle coordinates, including `x` and `y` columns. Point graphical parameters (`pch`, `col`, `bg`, `cex`, `lwd`, `lty`, `lwd`) can be included as columns to customise particle appearance. (Graphical parameters provided here silently overwrite any elements of the same name in `.add_points`.)
 #' @param .steps `NULL` or an `integer` vector of the time steps for which to map particle samples. `NULL` specifies all time steps.
 #' @param .png (optional) A named `list`, passed to [`grDevices::png()`], to save plots to file. `filename` should be the directory in which to write files. Files are named `{.steps[1]}.png, {.steps[2]}.png, ..., {.steps[N]}.png`. `.png` should be supplied if `.cl` is supplied via `...`.
 #' @param .add_surface,.add_points Named `list`s for plot customisation.
@@ -12,7 +12,7 @@
 #' @param .prompt A `logical` variable that defines whether or not to prompt the user for input between plots. This is only used in interactive mode if `.png = NULL` (and there are multiple time steps).
 #' @param ... Additional argument(s) passed to [`cl_lapply()`], such as `.cl`.
 #'
-#' @details For each `.step`, [`terra::plot()`] is used to plot `.map`. Particle samples in `.particles` are added onto the grid via [`graphics::points()`]. Particle weights are uniform thanks to resampling.
+#' @details For each `.step`, [`terra::plot()`] is used to plot `.map`. Particle samples in `.coord` are added onto the grid via [`graphics::points()`]. Particle weights are uniform thanks to resampling.
 #'
 #' This function replaces [`flapper::pf_plot_history()`](https://edwardlavender.github.io/flapper/reference/pf_plot_history.html).
 #'
@@ -23,7 +23,7 @@
 #' @export
 
 pf_plot_xy <- function(.map,
-                       .particles,
+                       .coord,
                        .steps = NULL,
                        .png = NULL,
                        .add_surface = list(),
@@ -33,12 +33,12 @@ pf_plot_xy <- function(.map,
 
   # Define time steps
   if (is.null(.steps)) {
-    .steps <- length(unique(.particles$timestep))
+    .steps <- length(unique(.coord$timestep))
   }
 
   # Define plot layers
   point_pars     <- c("pch", "col", "bg", "cex", "lwd", "lty", "lwd")
-  point_pars     <- point_pars[which(rlang::has_name(.particles, point_pars))]
+  point_pars     <- point_pars[which(rlang::has_name(.coord, point_pars))]
   do_point_pars  <- ifelse(length(point_pars) > 0L, TRUE, FALSE)
   do_add_layer   <- !is.null(.add_layer)
 
@@ -68,12 +68,12 @@ pf_plot_xy <- function(.map,
     # Define layer(s)
     .add_surface$x <- .chunkargs
     .add_surface$main <- paste0("Time ", t)
-    pos <- which(.particles$timestep == t)
+    pos <- which(.coord$timestep == t)
 
-    .add_points$x <- .particles$x[pos]
-    .add_points$y <- .particles$y[pos]
+    .add_points$x <- .coord$x[pos]
+    .add_points$y <- .coord$y[pos]
     if (do_point_pars) {
-      .add_points[point_pars] <- lapply(point_pars, \(p) .particles[[p]][pos])
+      .add_points[point_pars] <- lapply(point_pars, \(p) .coord[[p]][pos])
     }
 
     # Make plot

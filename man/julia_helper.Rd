@@ -18,6 +18,7 @@
 \alias{julia_print}
 \alias{julia_summary}
 \alias{julia_save}
+\alias{julia_load}
 \alias{julia_timeline}
 \alias{julia_check_exists}
 \alias{julia_code}
@@ -54,6 +55,8 @@ julia_print(.x)
 julia_summary(.x)
 
 julia_save(.x, .file = .x)
+
+julia_load(.file, .x = basename(tools::file_path_sans_ext(.file)))
 
 julia_timeline(.x)
 
