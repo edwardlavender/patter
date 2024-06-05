@@ -4,73 +4,59 @@
 \alias{pf_particles-class}
 \title{PF: \code{\linkS4class{pf_particles}} objects}
 \description{
-An S3 class that defines the named \code{list} returned by \code{\link[=pf_forward]{pf_forward()}} and \code{\link[=pf_backward_*]{pf_backward_*()}}.
+An \code{S3}-\code{\link{class}} that defines the named \code{list} returned by \code{\link[=pf_filter]{pf_filter()}} and \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}}.
 }
 \section{Structure}{
 \code{\linkS4class{pf_particles}} is a label used to denote outputs from selected functions in \code{\link{patter}}. The structure of this class is not strictly defined and primarily exists to streamline documentation. At the time of writing, \code{\linkS4class{pf_particles}} objects may comprise the following elements:
 \itemize{
-\item \code{history}---a \code{list} of particle samples;
-\item \code{convergence}---a \code{logical} value that defines convergence success;
-\item \code{time}---a \code{data.table} of timings;
+\item \code{xinit}---A \code{\link{data.table}} of initial particle samples;
+\item \code{states}---A \code{\link{data.table}} of simulated states;
+\item \code{diagnostics}---A \code{\link{data.table}} of diagnostic statistics;
+\item \code{convergence}---A \code{logical} variable that defines whether or not the algorithm converged;
 }
 }
 
-\section{\code{history}}{
-\code{history} is a \code{list} with one element for each time step. Each element is a \code{\link{data.table}} that contains location (particle) samples. Each row is a specific sample.
+\section{\code{xinit}}{
+\code{xinit} is a \code{\link{data.table}} that defines initial particles (from \code{\link[=sim_states_init]{sim_states_init()}}). This includes one row for each particle and one column for each state dimension (e.g., \code{map_value}, \code{x}, \code{y}).
+}
 
-In \code{\link[=pf_forward]{pf_forward()}}, the columns in this table depend on \code{\link[=pf_forward]{pf_forward()}}'s \code{.likelihood} function(s) and the \code{.record$cols} argument (see \code{\link[=pf_opt_record]{pf_opt_record()}}). By default, the following columns are computed:
+\section{\code{states}}{
+\code{states} is a \code{\link{data.table}} that defines simulated particle states, with the following columns:
 \itemize{
-\item \code{timestep}---an \code{integer} vector that defines the time step;
-\item \code{cell_past}---an \code{integer} vector that identifies the grid cells of previous particle samples;
-\item \code{x_past}, \code{y_past}---\code{numeric} vectors that define the coordinates of previous particle samples;
-\item \code{cell_now}---an \code{integer} vector that identifies the grid cells of current particle samples;
-\item \code{x_now}, \code{y_now}---\code{numeric} vectors that define the coordinates of current particle samples;
-\item \code{loglik}---a \code{numeric} vector of log-likelihoods;
-\item \code{logwt}---a \code{numeric} vectors of log-weights;
+\item \code{path_id}---An \code{integer} vector that defines the particle index;
+\item \code{timestep}---An \code{integer} vector that defines the time step;
+\item \code{timestamp}---A \code{POSIXct} vector of time stamps;
+\item Additional columns with the values of each state dimension;
 }
 
-Coordinates are defined in continuous space by \code{\link[=pf_rpropose_kick]{pf_rpropose_kick()}} and on the grid by \code{\link[=pf_rpropose_reachable]{pf_rpropose_reachable()}}.
+Particles are equally weighted, as the \code{.n_record} particles recorded at each time step are selected by resampling (see \code{\link[=pf_filter]{pf_filter()}}).
+}
 
-The log-likelihood column (\code{loglik}) is the sum of the log-likelihoods from each likelihood function. (Successive likelihood functions should \emph{update} this column.)
-
-The log-weight column (\code{logwt}) contains particle log-weights. Weights are proportional to the product of weights from the previous time step, the likelihood at the current time step (and the movement density, in the case of directed sampling). After re-sampling, we obtain \code{.n} equally weighted particles. Weights are normalised at each time step.
-
-Additional columns (e.g., \code{.bathy}) may be included in \code{history} if computed by inputted likelihood functions.
-If directed sampling is used, \code{bathy} and \code{logdens} columns are included where required (after the first time step). \code{logdens} is \code{numeric} vector that defines the log-probability density of moving from \verb{(x_past, y_past}) to \verb{(x_now, y_now)}.
-
-Since columns are recorded only when required, not all columns are recorded at each time step. To combine \code{\link{data.table}}s, use \code{\link[=.pf_history_dt]{.pf_history_dt()}} (or \verb{data.table::rbindlist(... fill = TRUE)}).
-
-If \code{.record$save = FALSE}, \code{.history} is an empty \code{list} and the individual \code{\link{data.table}}s are written to file in \code{{.record$sink}} (see \code{\link[=pf_opt_record]{pf_opt_record()}}).
+\section{\code{diagnostics}}{
+\code{diagnostics} is a \code{\link{data.table}} that stores diagnostic statistics for each time step. This includes \code{timestep}, \code{timestamp} and the following columns:
+\itemize{
+\item \code{ess}---A \code{numeric} vector that defines the effective sample size;
+\item \code{maxlp}---A \code{numeric} vector that defines the maximum log posterior;
+}
 }
 
 \section{\code{convergence}}{
-For \code{\link[=pf_forward]{pf_forward()}}, \code{convergence} is a \code{logical} variable that defines whether or not the algorithm successfully converged (i.e., reached the end of the time series).
-}
-
-\section{\code{time}}{
-A \code{data.table} that records the \code{start}, \code{end} and \code{duration} of algorithm runs (as \code{POSIXct} and \code{\link{difftime}} objects).
+\code{convergence} is a \code{logical} variable that defines whether or not the algorithm converged (that is, reached the end of the time series).
 }
 
 \seealso{
-The particle filter samples locations (particles) that represent the possible locations of an individual through time, accounting for the data and the individual's movement.
+Particle filters and smoothers sample states (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.
 \itemize{
-\item To set up data, use \code{\link[=pat_setup_data]{pat_setup_data()}}.
-\item To implement the particle filter, use \code{\link[=pf_forward]{pf_forward()}}:
+\item To simulate artificial datasets, see \verb{sim_*()} functions (especially \code{\link[=sim_path_walk]{sim_path_walk()}}, \code{\link[=sim_array]{sim_array()}} and \code{\link[=sim_observations]{sim_observations()}}).
+\item To assemble real-world datasets for the filter, see \code{\link{assemble}}\verb{_*()} functions.
+\item \code{\link[=pf_filter]{pf_filter()}} runs the filter:
 \itemize{
-\item To set up an observations timeline, use \code{\link[=pf_setup_obs]{pf_setup_obs()}};
-\item For proposal (movement) models, see \code{\link{pf_propose}};
-\item For likelihood functions, to evaluate the likelihood of the data at proposal locations, see \code{\link{pf_lik}};
-\item For sampling functions, to (re)sample plausible proposal locations, see \code{\link{pf_sample}};
-\item For tuning parameters, see \code{\link{pf_opt}};
+\item For state types, see \code{\link{State}};
+\item For observation models, see \code{\link{ModelObs}};
+\item For movement models, see \code{\link{ModelMove}};
 }
-\item To map patterns of space use, use:
-\itemize{
-\item The backward smoother (TO DO);
-\item \code{\link[=pf_coord]{pf_coord()}} to extract coordinates;
-\item A \verb{map_*()} function, such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and/or \code{\link{map_hr}}\verb{_()};
-}
-\item To reconstruct movement paths, use the backward sampler (TO DO).
-\item For additional utilities, see supporting \verb{pf_*()} functions, such as \code{\link[=pf_files]{pf_files()}}, \code{\link[=pf_files_size]{pf_files_size()}}, \code{\link[=pf_plot_history]{pf_plot_history()}} and \code{\link[=pf_diag_summary]{pf_diag_summary()}}.
+\item To run particle smoothing, use \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}}.
+\item To map emergent patterns of space use, use a \verb{map_*()} function (such as \code{\link[=map_pou]{map_pou()}}, \code{\link[=map_dens]{map_dens()}} and \code{\link[=map_hr]{map_hr()}}).
 }
 }
 \author{

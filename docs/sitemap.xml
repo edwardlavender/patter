@@ -19,15 +19,6 @@
     <loc>/articles/b-workflow-outline.html</loc>
   </url>
   <url>
-    <loc>/articles/c-workflow-example.html</loc>
-  </url>
-  <url>
-    <loc>/articles/d-demos.html</loc>
-  </url>
-  <url>
-    <loc>/articles/e-faqs.html</loc>
-  </url>
-  <url>
     <loc>/articles/index.html</loc>
   </url>
   <url>
@@ -40,19 +31,16 @@
     <loc>/news/index.html</loc>
   </url>
   <url>
-    <loc>/reference/acs_container.html</loc>
+    <loc>/reference/ModelMove.html</loc>
   </url>
   <url>
-    <loc>/reference/acs_setup_detection_kernel.html</loc>
+    <loc>/reference/ModelObs.html</loc>
   </url>
   <url>
-    <loc>/reference/acs_setup_detection_kernels-internal.html</loc>
+    <loc>/reference/State.html</loc>
   </url>
   <url>
-    <loc>/reference/acs_setup_detection_kernels.html</loc>
-  </url>
-  <url>
-    <loc>/reference/acs_setup_detection_overlaps.html</loc>
+    <loc>/reference/assemble.html</loc>
   </url>
   <url>
     <loc>/reference/call_.html</loc>
@@ -73,6 +61,9 @@
     <loc>/reference/cl_lapply.html</loc>
   </url>
   <url>
+    <loc>/reference/cleanup.html</loc>
+  </url>
+  <url>
     <loc>/reference/coa.html</loc>
   </url>
   <url>
@@ -82,25 +73,28 @@
     <loc>/reference/datasets-mefs.html</loc>
   </url>
   <url>
-    <loc>/reference/degrees.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dist_2d.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dist_along_path.html</loc>
-  </url>
-  <url>
     <loc>/reference/dot-map_mark.html</loc>
   </url>
   <url>
-    <loc>/reference/dot-pf_path_pivot_checks.html</loc>
+    <loc>/reference/example_setup.html</loc>
+  </url>
+  <url>
+    <loc>/reference/file_path.html</loc>
+  </url>
+  <url>
+    <loc>/reference/glossary.html</loc>
   </url>
   <url>
     <loc>/reference/index.html</loc>
   </url>
   <url>
-    <loc>/reference/make_matrix_receivers.html</loc>
+    <loc>/reference/julia_connect.html</loc>
+  </url>
+  <url>
+    <loc>/reference/julia_helper.html</loc>
+  </url>
+  <url>
+    <loc>/reference/julia_set.html</loc>
   </url>
   <url>
     <loc>/reference/map_coord.html</loc>
@@ -115,6 +109,9 @@
     <loc>/reference/map_pou.html</loc>
   </url>
   <url>
+    <loc>/reference/name_particles.html</loc>
+  </url>
+  <url>
     <loc>/reference/pat_setup_data.html</loc>
   </url>
   <url>
@@ -127,58 +124,16 @@
     <loc>/reference/pb_.html</loc>
   </url>
   <url>
-    <loc>/reference/pf_check.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_coord.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_diag-internal.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_diag.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_files.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_forward-utils.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_forward.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_history.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_lik.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_opt.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_particle.html</loc>
+    <loc>/reference/pf_filter.html</loc>
   </url>
   <url>
     <loc>/reference/pf_particles-class.html</loc>
   </url>
   <url>
-    <loc>/reference/pf_plot_history.html</loc>
+    <loc>/reference/pf_plot_xy.html</loc>
   </url>
   <url>
-    <loc>/reference/pf_propose.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_sample.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_setup-internal.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_setup_obs.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pf_utils-internal.html</loc>
+    <loc>/reference/pf_smoother_two_filter.html</loc>
   </url>
   <url>
     <loc>/reference/prettyGraphics.html</loc>
@@ -187,22 +142,19 @@
     <loc>/reference/raster.vol.html</loc>
   </url>
   <url>
+    <loc>/reference/sf-helper.html</loc>
+  </url>
+  <url>
     <loc>/reference/sim_array.html</loc>
   </url>
   <url>
-    <loc>/reference/sim_detections.html</loc>
-  </url>
-  <url>
-    <loc>/reference/sim_detections_internals.html</loc>
-  </url>
-  <url>
-    <loc>/reference/sim_helpers.html</loc>
-  </url>
-  <url>
-    <loc>/reference/sim_path_flux.html</loc>
+    <loc>/reference/sim_observations.html</loc>
   </url>
   <url>
     <loc>/reference/sim_path_walk.html</loc>
+  </url>
+  <url>
+    <loc>/reference/sim_states_init.html</loc>
   </url>
   <url>
     <loc>/reference/skill.html</loc>
@@ -211,22 +163,10 @@
     <loc>/reference/spat.html</loc>
   </url>
   <url>
-    <loc>/reference/spatTemplate.html</loc>
-  </url>
-  <url>
-    <loc>/reference/spatial_helpers.html</loc>
-  </url>
-  <url>
-    <loc>/reference/utils-dt.html</loc>
-  </url>
-  <url>
     <loc>/reference/utils-lists.html</loc>
   </url>
   <url>
     <loc>/reference/utils-signal.html</loc>
-  </url>
-  <url>
-    <loc>/reference/utils-stats.html</loc>
   </url>
   <url>
     <loc>/reference/utils-str.html</loc>

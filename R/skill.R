@@ -5,7 +5,7 @@
 #' @param .summarise A function, passed to [`terra::global()`], used to summarise [`SpatRaster`] values.
 #'
 #' @details
-#' We follow the mathematical definitions in Lavender et al. (2022) Supplementary Information Sect. 3.2.1 (see [here](https://static-content.springer.com/esm/art%3A10.1038%2Fs41598-022-20254-z/MediaObjects/41598_2022_20254_MOESM2_ESM.pdf)).
+#' We follow the mathematical definitions in Lavender et al. ([2022](https://www.doi.org/1038/s41598-022-20254-z)) Supplementary Information Sect. [3.2.1](https://static-content.springer.com/esm/art%3A10.1038%2Fs41598-022-20254-z/MediaObjects/41598_2022_20254_MOESM2_ESM.pdf).
 #'
 #' * [`skill_mb()`] computes mean bias (if `.summarise = "mean"`).
 #' * [`skill_me()`] computes mean error (if `.summarise = "mean"`).
@@ -17,28 +17,14 @@
 #'
 #' @return The functions return a number.
 #'
-#' @examples
-#' # Define template SpatRasters
-#' mod <- obs <- spatTemplate(.res = 1)
-#' n <- terra::ncell(mod)
-#' mod[] <- runif(n)
-#' obs[] <- mod[] + rnorm(n)
-#'
-#' # Calculate skill metrics
-#' skill_mb(mod, obs)
-#' skill_me(mod, obs)
-#' skill_rmse(mod, obs)
-#' skill_R(mod, obs)
-#' skill_d(mod, obs)
-#'
+#' @example man/examples/example-skill.R
 #' @references Lavender, E. et al. (2022). Benthic animal-borne sensors and citizen science combine to validate ocean modelling. Sci. Rep. 12: 16613. \url{https://www.doi.org/1038/s41598-022-20254-z}
 #'
 #' @seealso
-#' * To simulate observations in passive acoustic telemetry systems, see `sim_*()` functions (especially [`sim_array()`], [`sim_path_walk()`] and [`sim_detections()`]);
+#' * To simulate observations, see `sim_*()` functions (especially [`sim_path_walk()`], [`sim_array()`] and [`sim_observations()`]);
 #' * To translate observations into coordinates for mapping patterns of space use, see:
 #'     * [`coa()`] to calculate centres of activity;
-#'     * [`pf_forward()`] and associates to implement particle filtering algorithms;
-#'     * [`pf_coord()`] to extracts coordinates from particle samples;
+#'     * [`pf_filter()`] and associates to implement particle filtering algorithms;
 #' * To estimate utilisation distributions from simulated data and algorithm outputs, use `map_*()` functions (see [`map_pou()`], [`map_dens()`] and [`map_hr()`]);
 #' @author Edward Lavender
 #' @name skill

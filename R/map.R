@@ -12,7 +12,7 @@
 #' This function replaces [`flapper::pf_plot_map()`](https://edwardlavender.github.io/flapper/reference/pf_plot_map.html).
 #'
 #' @return The function returns a [`SpatRaster`].
-#' @example man/examples/map_pou-examples.R
+#' @example man/examples/example-map_pou.R
 #'
 #' @seealso `map_*()` functions build maps of space use:
 #' * [`map_pou()`] maps probability-of-use;
@@ -21,9 +21,9 @@
 #'
 #' All maps are represented as [`SpatRaster`]s.
 #'
-#' To derive coordinates for mapping patterns of space use for tagged animals in passive acoustic telemetry systems, see:
+#' To derive coordinates for mapping patterns of space use for tagged animals, see:
 #' * [`coa()`] to calculate centre-of-activity;
-#' * [`pf_forward()`] and associates to sample locations using particle filtering;
+#' * [`pf_filter()`] and associates to sample locations using particle filtering;
 #'
 #' @author Edward Lavender
 #' @export
@@ -34,10 +34,8 @@ map_pou <-
            .verbose = getOption("patter.verbose")) {
 
     #### Initiate
-    t_onset <- Sys.time()
-    cat_log <- cat_init(.verbose = .verbose)
-    cat_log(call_start(.fun = "map_pou", .start = t_onset))
-    on.exit(cat_log(call_end(.fun = "map_pou", .start = t_onset, .end = Sys.time())), add = TRUE)
+    cats <- cat_setup(.fun = "map_pou", .verbose = .verbose)
+    on.exit(eval(cats$exit, envir = cats$envir), add = TRUE)
 
     #### Check user inputs
     # check_dots_used: terra::plot() warnings used
@@ -45,11 +43,11 @@ map_pou <-
     check_inherits(.map, "SpatRaster")
 
     #### Get XYM (cell IDs and marks)
-    cat_log("... Building XYM...")
+    cats$cat("... Building XYM...")
     xym <- .map_coord(.map = .map, .coord = .coord, .discretise = TRUE)
 
     #### Build SpatRaster
-    cat_log("... Building SpatRaster...")
+    cats$cat("... Building SpatRaster...")
     map <- terra::setValues(.map, 0)
     map <- terra::mask(map, .map)
     map[xym$id] <- xym$mark
@@ -96,8 +94,7 @@ map_pou <-
 #'
 #' @return The function returns a normalised [`SpatRaster`] (or `NULL` if [`spatstat.explore::density.ppp()`] fails and `.use_tryCatch = TRUE`).
 #'
-#' @example man/examples/map_dens-examples.R
-#'
+#' @example man/examples/example-map_dens.R
 #' @inherit map_pou seealso
 #' @rdname map_dens
 #' @export
@@ -148,8 +145,9 @@ as.owin.SpatRaster <- function(.map, .im = NULL) {
 #' @export
 
 as.owin.sf <- function(.poly, .bbox = sf::st_bbox(.poly), .invert = TRUE) {
+  rlang::check_installed("sf")
   if (.invert) {
-    .poly <- .st_invert(.x = .poly, .bbox = .bbox)
+    .poly <- st_invert(.x = .poly, .bbox = .bbox)
   }
   spatstat.geom::as.owin(.poly)
 }
@@ -165,9 +163,12 @@ map_dens <- function(.map,
                      .verbose = getOption("patter.verbose")
                      ) {
 
+  #### Initiate
+  cats <- cat_setup(.fun = "map_dens", .verbose = .verbose)
+  on.exit(eval(cats$exit, envir = cats$envir), add = TRUE)
+
   #### Check user inputs
   # Check packages
-  t_onset <- Sys.time()
   rlang::check_installed("spatstat.explore")
   rlang::check_installed("spatstat.geom")
   # Check `.map`
@@ -177,14 +178,9 @@ map_dens <- function(.map,
   check_dots_allowed(c("at", "se"), ...)
   check_dots_for_missing_period(formals(), list(...))
 
-  #### Set up messages
-  cat_log <- cat_init(.verbose = .verbose)
-  cat_log(call_start(.fun = "map_dens", .start = t_onset))
-  on.exit(cat_log(call_end(.fun = "map_dens", .start = t_onset, .end = Sys.time())), add = TRUE)
-
   #### Process SpatRaster
   # spatstat assumes planar coordinates
-  cat_log("... Processing `.map`...")
+  cats$cat("... Processing `.map`...")
   crs <- terra::crs(.map)
   if (is.na(crs)) {
     abort("`terra::crs(.map)` must be specified (and should be planar).")
@@ -203,7 +199,7 @@ map_dens <- function(.map,
   }
 
   #### Get XYM
-  cat_log("... Building XYM...")
+  cats$cat("... Building XYM...")
   # Define coordinates and weights for density estimation
   use_coord <- !is.null(.coord)
   .coord <- .map_coord(.map = .map, .coord = .coord, .discretise = .discretise)
@@ -216,7 +212,7 @@ map_dens <- function(.map,
   }
 
   ## Build ppp object
-  cat_log("... Defining `ppp` object...")
+  cats$cat("... Defining `ppp` object...")
   rppp <- spatstat.geom::ppp(x = .coord$x, y = .coord$y,
                              window = .owin, marks = .coord$mark)
   if (rppp$n == 0L) {
@@ -225,7 +221,7 @@ map_dens <- function(.map,
 
   #### Estimate density surface
   # Get intensity (expected number of points PER UNIT AREA)
-  cat_log("... Estimating density surface...")
+  cats$cat("... Estimating density surface...")
   dens <- tryCatch(spatstat.explore::density.ppp(rppp, weights = .im,
                                                  at = "pixels", se = FALSE, ...),
                    error = function(e) e)
@@ -238,7 +234,7 @@ map_dens <- function(.map,
     }
   }
   # Translate intensity into expected number of points PER PIXEL
-  cat_log("... Scaling density surface...")
+  cats$cat("... Scaling density surface...")
   terra::crs(.map) <- crs
   dens <- terra::rast(dens)
   terra::crs(dens) <- crs
@@ -246,7 +242,7 @@ map_dens <- function(.map,
   # Translate expect counts into proportion of points per pixel
   dens <- dens / terra::global(dens, "sum", na.rm = TRUE)[1, 1]
   if (!terra::compareGeom(dens, .map, stopOnError = FALSE, messages = FALSE)) {
-    cat_log("... ... Resampling density surface onto `.map`...")
+    cats$cat("... ... Resampling density surface onto `.map`...")
     dens <- terra::resample(dens, .map, method = "near")
     # dens <- terra::mask(dens, .map)
     dens <- dens / terra::global(dens, "sum", na.rm = TRUE)[1, 1]
@@ -276,24 +272,7 @@ map_dens <- function(.map,
 #'
 #' @return The functions return a [`SpatRaster`]. Cells with a value of one are inside the specified range boundaries; cells with a value of zero are beyond range boundaries. If `.add` is `TRUE`, the boundaries are added to an existing plot.
 #'
-#' @examples
-#' #### Set up example
-#' # Define hypothetical input SpatRaster
-#' require(terra)
-#' r <- rast()
-#' n <- ncell(r)
-#' i <- 2e4
-#' r[i] <- 1
-#' r <- distance(r)
-#' r <- r / global(r, "sum")[1, 1]
-#' plot(r)
-#'
-#' #### Examples
-#' map <- map_hr_full(r, .add = TRUE, lwd = 5)
-#' map <- map_hr_home(r, .add = TRUE, border = "blue")
-#' map <- map_hr_core(r, .add = TRUE, border = "orange")
-#' map <- map_hr_prop(r, .prop = 0.2, .add = TRUE, border = "red")
-#'
+#' @example man/examples/example-map_hr.R
 #' @inherit map_pou seealso
 #' @author Edward Lavender
 #' @name map_hr

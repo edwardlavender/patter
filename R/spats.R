@@ -1,32 +1,64 @@
-#' @title Spatial helper: template [`SpatRaster`]s
-#' @description This function creates a template [`SpatRaster`].
-#' @param .xmin,.xmax,.ymin,.ymax Numbers that define the [`SpatRaster`]'s extent.
-#' @param .res A `numeric` vector that defines the [`SpatRaster`]'s resolution.
-#' @param .crs A `character` that defines the Coordinate Reference System.
-#' @param .value The value of the [`SpatRaster`] cells.
-#' @param .units A `character` that defines the units.
-#' @param ... Additional arguments passed to [`SpatRaster`].
-#' @return The function returns a [`SpatRaster`].
-#' @examples
-#' r <- spatTemplate()
-#' terra::plot(r)
-#' r <- spatTemplate(.value = 1)
-#' terra::plot(r)
+#' @title Spatial helper: `spat*` functions
+#' @description Internal helpers for `terra` [`SpatRaster`] and [`SpatVector`] objects.
 #' @author Edward Lavender
-#' @export
+#' @name spat
 
-spatTemplate <- function(.xmin = 0, .xmax = 1000,
-                         .ymin = 0, .ymax = 1000,
-                         .res = c(10, 10),
-                         .crs = "+proj=utm +zone=1 +datum=WGS84",
-                         .value = 0,
-                         .units = "m", ...) {
-  # check_dots_used(): terra::rast() used
-  r <- terra::rast(xmin = .xmin, xmax = .xmax,
-                   ymin = .ymin, ymax = .ymax,
-                   res = .res,
-                   crs = .crs, ...)
-  r <- terra::setValues(r, .value)
-  terra::units(r) <- .units
-  r
+#' @rdname spat
+#' @keywords internal
+
+# Intersect SpatVectors in a `list`
+spatIntersect <- function(.x) {
+  check_inherits(.x, "list")
+  if (length(.x) == 1L) {
+    return(.x[[1]])
+  }
+  int <- .x[[1]]
+  for (i in 2:length(.x)) {
+    int <- terra::intersect(int, .x[[i]])
+  }
+  int
+}
+
+#' @rdname spat
+#' @keywords internal
+
+# Check if a SpatRaster contains any NAs (TRUE, FALSE)
+spatContainsNA <- function(.x) {
+  terra::global(.x, "isNA")[1, 1] > 0
+}
+
+#' @rdname spat
+#' @keywords internal
+
+# Check if a SpatRaster contains any NAs (TRUE, FALSE)
+spatAllNA <- function(.x) {
+  # Check if .x only contains NAs
+  # * This may fail for large rasters b/c all values have to be loaded in memory
+  bool <- tryCatch(terra::global(.x, function(x) all(is.na(x)))[1, 1],
+                   error = function(e) e)
+  # If we receive an error, set bool = FALSE
+  if (inherits(bool, "error")) {
+    bool <- FALSE
+  }
+  bool
+}
+
+#' @rdname spat
+#' @keywords internal
+
+# Define a 'box' within which 2D movements are always valid
+# - This is NULL if the SpatRaster contains NAs
+# - Otherwise, it is the extent, shrunk by `.mobility`
+# - (2D Movements in this region are always valid)
+# * TO DO: generalise to spatPoly() in future
+spatMobilityBox <- function(.x, .mobility) {
+  if (spatContainsNA(.x)) {
+    warn("`Patter.two_filter_smoother()`'s `box` argument set to `nothing`: `.map` contains NAs.")
+    return(NULL)
+  } else {
+    # Shrink the boundary box by .mobility
+    bb <- terra::ext(.x) - .mobility
+    # Update the extent, as in Patter.bbox()
+    return(c(min_x = bb[1], max_x = bb[2], min_y = bb[3], max_y = bb[4]))
+  }
 }

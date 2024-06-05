@@ -12,9 +12,8 @@ test_that("Example datasets follow documented structure", {
   check_dt(dat_moorings, "data.table", 40, 8,
            c("receiver_id",
              "receiver_start", "receiver_end",
-             "receiver_lon", "receiver_lat",
-             "receiver_easting", "receiver_northing",
-             "receiver_range"))
+             "receiver_x", "receiver_y",
+             "receiver_alpha", "receiver_beta", "receiver_gamma"))
 
   #### dat_acoustics
   check_dt(dat_acoustics, "data.table", 39242, 3,

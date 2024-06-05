@@ -77,55 +77,61 @@ Coordinates and associated weights are smoothed via \code{\link[spatstat.explore
 This function replaces \verb{flapper::kud*()} and \verb{flapper::pf_kud*()} routines based on \code{adehabitatHR} (see \href{https://edwardlavender.github.io/flapper/reference/}{here}).
 }
 \examples{
-#### Set up examples
-# Packages
-require(data.table)
-require(dplyr, warn.conflicts = FALSE)
-require(spatstat.explore)
-# Define grid
-gebco <- dat_gebco()
+library(data.table)
+library(dtplyr)
+library(dplyr, warn.conflicts = FALSE)
+library(spatstat.explore)
+
+#### Define map
+map <- dat_gebco()
 
 #### Example (1): Use sample coordinates
 # Sample example coordinates
-cxy <-
-  gebco |>
+coord <-
+  map |>
   terra::spatSample(size = 5000L, xy = TRUE, cell = TRUE, na.rm = TRUE) |>
   select("x", "y") |>
   as.data.table()
 # Use x, y coordinates
-map_dens(gebco, .coord = cxy)
+map_dens(map, .coord = coord)
 # Other formats are acceptable
-map_dens(gebco, .coord = as.matrix(cxy))
-map_dens(gebco, .coord = as.data.frame(cxy))
-# cell_x and cell_y coordinates are acceptable
-map_dens(gebco, .coord = cxy[, .(cell_x = x, cell_y = y)])
+map_dens(map, .coord = as.matrix(coord))
+map_dens(map, .coord = as.data.frame(coord))
+# `cell_x` and `cell_y` coordinates are acceptable
+map_dens(map, .coord = coord[, .(cell_x = x, cell_y = y)])
 # A SpatRaster is also acceptable
-pou <- map_pou(gebco, .coord = cxy, .plot = FALSE)
+pou <- map_pou(map, .coord = coord, .plot = FALSE)
 map_dens(pou)
 
-#### Example (2): Use coordinates from coa()
-# Use example dataset
-out_coa <- dat_coa()
-map_dens(gebco, .coord = out_coa[, .(x = coa_x, y = coa_y)])
+#### Example (2): Use coordinates from `sim_path_walk()`
+coord <- dat_path()
+map_dens(map, .coord = coord)
+points(coord$x, coord$y, cex = 0.5)
 
-#### Example (3): Use a time series of coordinates from pf_*()
+#### Example (3): Use coordinates from `coa()`
 # Use example dataset
-# * We use particles from the forward filter (`?pf_forward()`);
-# * Particles are equally weighted b/c re-sampling was implemented every time step;
-# * It is better to use outputs from the forward-filter backward-smoother;
-# * Make sure you account for particle weights via re-sampling or 'marks';
-coord <- pf_coord(dat_pff(), .bathy = gebco)
-map_dens(gebco, .coord = coord)
+coord <- dat_coa()
+map_dens(map, .coord = coord)
+points(coord$x, coord$y, cex = 0.5)
 
-#### Example (4): Control smoothing via `spatstat.explore::density.ppp()`
+#### Example (4): Use a time series of coordinates from `pf_*()`
+# Use example dataset
+# * We use particles from the forward filter (`?pf_filter()`);
+# * Particles are equally weighted b/c re-sampling is implemented every time step;
+# * It is better to use outputs from the particle smoother;
+coord <- dat_pff()$states
+map_dens(map, .coord = coord)
+# points(coord$x, coord$y, cex = 0.5)
+
+#### Example (5): Control smoothing via `spatstat.explore::density.ppp()`
 # E.g. use fixed bandwidth:
-map_dens(gebco, .coord = coord, sigma = 5)
-map_dens(gebco, .coord = coord, sigma = 100)
+map_dens(map, .coord = coord, sigma = 5)
+map_dens(map, .coord = coord, sigma = 100)
 # E.g., perform automatic bandwidth selection using cross validation:
-map_dens(gebco, .coord = coord, sigma = bw.diggle)
-map_dens(gebco, .coord = coord, sigma = bw.scott)
-map_dens(gebco, .coord = coord, sigma = bw.ppl)
-map_dens(gebco, .coord = coord, sigma = bw.CvL)
+map_dens(map, .coord = coord, sigma = bw.diggle)
+map_dens(map, .coord = coord, sigma = bw.scott)
+map_dens(map, .coord = coord, sigma = bw.ppl)
+map_dens(map, .coord = coord, sigma = bw.CvL)
 }
 \seealso{
 \verb{map_*()} functions build maps of space use:
@@ -137,9 +143,9 @@ map_dens(gebco, .coord = coord, sigma = bw.CvL)
 
 All maps are represented as \code{\link{SpatRaster}}s.
 
-To derive coordinates for mapping patterns of space use for tagged animals in passive acoustic telemetry systems, see:
+To derive coordinates for mapping patterns of space use for tagged animals, see:
 \itemize{
 \item \code{\link[=coa]{coa()}} to calculate centre-of-activity;
-\item \code{\link[=pf_forward]{pf_forward()}} and associates to sample locations using particle filtering;
+\item \code{\link[=pf_filter]{pf_filter()}} and associates to sample locations using particle filtering;
 }
 }

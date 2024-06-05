@@ -5,7 +5,9 @@
 \title{COA: centres of activity}
 \usage{
 coa(
-  .dlist,
+  .map,
+  .acoustics,
+  .moorings = NULL,
   .delta_t,
   .split = NULL,
   .plot_weights = TRUE,
@@ -14,16 +16,22 @@ coa(
 )
 }
 \arguments{
-\item{.dlist}{A named \code{list} of data and parameters from \code{\link[=pat_setup_data]{pat_setup_data()}}. This function requires:
+\item{.map}{A \code{\link{SpatRaster}} that defines the study area (see \code{\link{glossary}}). Here, \code{.map} is used to:
 \itemize{
-\item \code{.dlist$data$acoustics}, with the following columns: \code{receiver_id} and \code{timestamp};
-\item \code{.dlist$data$moorings}, with the following columns: \code{receiver_id}, \code{receiver_x} and  \code{receiver_y};
-\item \code{.dlist$pars$lonlat}, which specifies the coordinate format (longitude/latitude or planar);
+\item Extract \code{map_value} at centres of activity, for consistency with other routines (such as \code{\link[=pf_filter]{pf_filter()}});
 }}
 
-\item{.delta_t}{The time interval over which to calculate COAs. This can be specified in any way understood by \code{\link[=cut.POSIXt]{cut.POSIXt()}} (see the \code{breaks} argument).}
+\item{.acoustics, .moorings}{Acoustic detection \href{s}{\code{data.table}}.
+\itemize{
+\item \code{.acoustics} is a \code{\link{data.table}} of acoustic detections, with the following columns: \code{receiver_id} (or \code{sensor_id}), \code{timestamp} and (optionally) \code{receiver_x} and \code{receiver_y} columns;
+\item (optional) \code{.moorings} is a \code{\link{data.table}} of receiver coordinates, which should be provided if unavailable in \code{.acoustics}, with \code{receiver_id}, \code{receiver_x} and \code{receiver_y} columns;
+}
 
-\item{.split}{(optional) A \code{character} that defines the name of the grouping factor in \code{.dlist$data$acoustics} (e.g., \code{individual_id} for \code{\link{dat_acoustics}}).}
+Receiver coordinates \strong{must be planar}.}
+
+\item{.delta_t}{The time interval over which to calculate COAs. This can be specified in any way understood by \code{\link[lubridate:round_date]{lubridate::floor_date()}} (see the \code{unit} argument).}
+
+\item{.split}{(optional) A \code{character} that defines the name of the grouping factor in \code{.acoustics} (e.g., \code{individual_id} for \code{\link{dat_acoustics}}).}
 
 \item{.plot_weights, ..., .one_page}{Plot arguments.
 \itemize{
@@ -35,9 +43,10 @@ coa(
 \value{
 The function returns a \code{\link{data.table}} with the following columns:
 \itemize{
-\item \code{.split}---a \code{character} vector that distinguishes groups, if applicable;
+\item \code{{.split}}---a \code{character} vector that distinguishes groups, if applicable;
+\item \code{timestep}---an \code{integer} vector of time steps;
 \item \code{timestamp}---a \code{POSIXt} vector of time stamps;
-\item \code{coa_x},\code{coa_y}---the coordinates of the COAs;
+\item \code{map_value}, \code{x}, \code{y}---the value of \code{.map} at COAs and their coordinates;
 }
 
 Data are arranged by \code{.split} and \code{timestamp}.
@@ -46,41 +55,52 @@ Data are arranged by \code{.split} and \code{timestamp}.
 This function calculates centres of activity (COAs) from detections at acoustic receivers.
 }
 \details{
-COAs are calculated as a weighted mean of the locations of receivers at which individuals are detected over consecutive time intervals, weighted by the frequency of detections at each of those receivers. COAs are calculated via \code{\link[stats:weighted.mean]{stats::weighted.mean()}} (for planar coordinates) or \code{\link[geosphere:geomean]{geosphere::geomean()}} (for longitude/latitude coordinates).
+COAs are calculated as a weighted mean of the locations of receivers at which individuals are detected over consecutive time intervals, weighted by the frequency of detections at each of those receivers. COAs are calculated via \code{\link[stats:weighted.mean]{stats::weighted.mean()}}, which assumes planar coordinates, for consistency with other \code{\link{patter}} routines. To handle longitude/latitude coordinates, use \code{geosphere::geomean()}.
 
 This function replaces \href{https://edwardlavender.github.io/flapper/reference/coa.html}{\code{flapper::coa()}}. See  \href{https://edwardlavender.github.io/flapper/reference/coa_setup_delta_t.html}{\code{flapper::coa_setup_delta_t()}} to evaluate alternative time internals.
 }
 \examples{
-require(data.table)
+library(data.table)
+
+#### Set up example
+map       <- dat_gebco()
+acoustics <- dat_acoustics
+moorings  <- dat_moorings
 
 #### Example (1): Calculate COAs for an example individual
-acc    <- dat_acoustics[individual_id == dat_acoustics$individual_id[1], ]
-gebco  <- dat_gebco()
-dlist  <- pat_setup_data(.acoustics = acc,
-                         .moorings = dat_moorings,
-                         .bathy = gebco,
-                         .lonlat = FALSE)
-coa(dlist, .delta_t = "2 hours")
-coa(dlist, .delta_t = "4 hours")
+id     <- dat_acoustics$individual_id[1]
+acc    <- dat_acoustics[individual_id == id, ]
+coa(.map = map, .acoustics = acc, .moorings = moorings,
+    .delta_t = "2 hours")
 
-#### Example (2): Calculate COAs for multiple individuals via .split
-dlist <- pat_setup_data(.acoustics = dat_acoustics,
-                        .moorings = dat_moorings,
-                        .bathy = gebco,
-                        .lonlat = FALSE)
-coa(dlist, .delta_t = "6 hours", .split = "individual_id")
+#### Example (2): Customise the time interval via `.delta_t`
+coa(.map = map, .acoustics = acc, .moorings = moorings,
+    .delta_t = "4 hours")
 
-#### Example (3): Use lon/lat coordinates
-gebco_ll <- terra::project(dat_gebco(), "EPSG:4326")
-dlist <- pat_setup_data(.acoustics = dat_acoustics,
-                        .moorings = dat_moorings,
-                        .bathy = gebco_ll,
-                        .lonlat = TRUE)
-coa(dlist, .delta_t = "6 hours", .split = "individual_id")
+#### Example (3): Calculate COAs for multiple individuals via `.split`
+# Calculate COAs
+coa(.map = map, .acoustics = acc, .moorings = moorings,
+    .delta_t = "6 hours", .split = "individual_id")
+# Use one page for plots via `.one_page = TRUE`
+coa(.map = map, .acoustics = acc, .moorings = moorings,
+    .delta_t = "6 hours", .split = "individual_id",
+    .one_page = FALSE)
+# Suppress plots via `.plot = FALSE`
+coa(.map = map, .acoustics = acc, .moorings = moorings,
+    .delta_t = "6 hours", .split = "individual_id",
+    .one_page = TRUE)
+
+#### Example (4): Specify `.acoustics` only
+# `.moorings` is not required if `.acoustics` contains receiver coordinates
+coa(.map = map,
+    .acoustics =
+      acoustics |>
+      merge(moorings, by = "receiver_id"),
+    .delta_t = "6 hours", .split = "individual_id")
 }
 \seealso{
 \itemize{
-\item To derive location samples from a particle filtering algorithm, see \code{\link[=pf_forward]{pf_forward()}} and associates;
+\item To derive location samples from a particle filtering algorithm, see \code{\link[=pf_filter]{pf_filter()}} and associates;
 \item For mapping utilisation distributions from coordinates, see \verb{map_*()} functions (i.e., \code{\link[=map_pou]{map_pou()}} and \code{\link[=map_dens]{map_dens()}});
 }
 }

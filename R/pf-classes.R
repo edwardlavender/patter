@@ -1,53 +1,73 @@
 #' @title PF: [`pf_particles-class`] objects
-#' @description An S3 class that defines the named `list` returned by [`pf_forward()`] and [`pf_backward_*()`].
+#' @description An `S3`-[`class`] that defines the named `list` returned by [`pf_filter()`] and [`pf_smoother_two_filter()`].
 #'
 #' @details
-#'
 #' # Structure
 #'
 #' [`pf_particles-class`] is a label used to denote outputs from selected functions in [`patter`]. The structure of this class is not strictly defined and primarily exists to streamline documentation. At the time of writing, [`pf_particles-class`] objects may comprise the following elements:
 #'
-#' * `history`---a `list` of particle samples;
-#' * `convergence`---a `logical` value that defines convergence success;
-#' * `time`---a `data.table` of timings;
+#' * `xinit`---A [`data.table`] of initial particle samples;
+#' * `states`---A [`data.table`] of simulated states;
+#' * `diagnostics`---A [`data.table`] of diagnostic statistics;
+#' * `convergence`---A `logical` variable that defines whether or not the algorithm converged;
 #'
-#' # `history`
+#' # `xinit`
 #'
-#' `history` is a `list` with one element for each time step. Each element is a [`data.table`] that contains location (particle) samples. Each row is a specific sample.
+#' `xinit` is a [`data.table`] that defines initial particles (from [`sim_states_init()`]). This includes one row for each particle and one column for each state dimension (e.g., `map_value`, `x`, `y`).
 #'
-#' In [`pf_forward()`], the columns in this table depend on [`pf_forward()`]'s `.likelihood` function(s) and the `.record$cols` argument (see [`pf_opt_record()`]). By default, the following columns are computed:
+#' # `states`
 #'
-#' * `timestep`---an `integer` vector that defines the time step;
-#' * `cell_past`---an `integer` vector that identifies the grid cells of previous particle samples;
-#' * `x_past`, `y_past`---`numeric` vectors that define the coordinates of previous particle samples;
-#' * `cell_now`---an `integer` vector that identifies the grid cells of current particle samples;
-#' * `x_now`, `y_now`---`numeric` vectors that define the coordinates of current particle samples;
-#' * `loglik`---a `numeric` vector of log-likelihoods;
-#' * `logwt`---a `numeric` vectors of log-weights;
+#' `states` is a [`data.table`] that defines simulated particle states, with the following columns:
+#' * `path_id`---An `integer` vector that defines the particle index;
+#' * `timestep`---An `integer` vector that defines the time step;
+#' * `timestamp`---A `POSIXct` vector of time stamps;
+#' * Additional columns with the values of each state dimension;
 #'
-#' Coordinates are defined in continuous space by [`pf_rpropose_kick()`] and on the grid by [`pf_rpropose_reachable()`].
+#' Particles are equally weighted, as the `.n_record` particles recorded at each time step are selected by resampling (see [`pf_filter()`]).
 #'
-#' The log-likelihood column (`loglik`) is the sum of the log-likelihoods from each likelihood function. (Successive likelihood functions should _update_ this column.)
+#' # `diagnostics`
 #'
-#' The log-weight column (`logwt`) contains particle log-weights. Weights are proportional to the product of weights from the previous time step, the likelihood at the current time step (and the movement density, in the case of directed sampling). After re-sampling, we obtain `.n` equally weighted particles. Weights are normalised at each time step.
+#' `diagnostics` is a [`data.table`] that stores diagnostic statistics for each time step. This includes `timestep`, `timestamp` and the following columns:
+#' * `ess`---A `numeric` vector that defines the effective sample size;
+#' * `maxlp`---A `numeric` vector that defines the maximum log posterior;
 #'
-#' Additional columns (e.g., `.bathy`) may be included in `history` if computed by inputted likelihood functions.
-
-#' If directed sampling is used, `bathy` and `logdens` columns are included where required (after the first time step). `logdens` is `numeric` vector that defines the log-probability density of moving from `(x_past, y_past`) to `(x_now, y_now)`.
-#'
-#' Since columns are recorded only when required, not all columns are recorded at each time step. To combine [`data.table`]s, use [`.pf_history_dt()`] (or `data.table::rbindlist(... fill = TRUE)`).
-#'
-#' If `.record$save = FALSE`, `.history` is an empty `list` and the individual [`data.table`]s are written to file in `{.record$sink}` (see [`pf_opt_record()`]).
-
 #' # `convergence`
 #'
-#' For [`pf_forward()`], `convergence` is a `logical` variable that defines whether or not the algorithm successfully converged (i.e., reached the end of the time series).
-#'
-#' # `time`
-#'
-#' A `data.table` that records the `start`, `end` and `duration` of algorithm runs (as `POSIXct` and [`difftime`] objects).
+#' `convergence` is a `logical` variable that defines whether or not the algorithm converged (that is, reached the end of the time series).
 #'
 #' @author Edward Lavender
-#' @inherit pf_forward seealso
+#' @inherit assemble seealso
 #' @name pf_particles-class
 NULL
+
+
+# Build a `pf_particles` class object from Patter.jl outputs
+pf_particles <- function(.xinit = NULL, .pf_obj) {
+
+  # Initialise output list
+  out <- list(xinit = .xinit)
+
+  # Add Julia outputs
+  # * states, diagnostics, convergence
+  out <- append(out, julia_eval(glue('Patter.r_get_particles({.pf_obj});')))
+
+  # Process diagnostics data.table
+  out$diagnostics <-
+    out$diagnostics |>
+    as.data.table()
+
+  # Process states data.table
+  timestep <- timestamp <- NULL
+  out$states <-
+    out$states |>
+    collapse::join(out$diagnostics[, list(timestep, timestamp)],
+                   on = "timestep", verbose = FALSE) |>
+    select("path_id", "timestep", "timestamp", everything()) |>
+    as.data.table()
+
+  # Update object class
+  out <- unclass(out)
+  class(out) <- c(class(out), "pf_particles")
+  out
+
+}

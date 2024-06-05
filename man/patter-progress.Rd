@@ -8,7 +8,7 @@
 \itemize{
 \item User output messages (via the \code{patter.verbose} option and the \code{.verbose} argument);
 \item Progress bars (via \code{\link[pbapply:pboptions]{pbapply::pboptions()}});
-\item Parallelisation (via \code{.cl_} arguments);
+\item Parallelisation (via \code{.threads} and \code{.cl_} arguments);
 }
 
 Only selected \code{\link{patter}} functions support these options but this may expand in the future, depending on user feedback.
@@ -18,11 +18,15 @@ User output messages are controlled via the \code{.verbose} argument. There is a
 }
 
 \section{Progress bars}{
-Progress bars are implemented via the \code{pbapply} package and controlled globally via \code{\link[pbapply:pboptions]{pbapply::pboptions()}}. See the internal \code{\link{pb_}} function documentation for examples.
+For \code{R} functions with a \code{Julia} backend, progress bars are implemented via \code{Julia} and cannot be modified by the user.
+
+For pure \code{R} functions, progress bars are implemented via the \code{pbapply} package and controlled globally via \code{\link[pbapply:pboptions]{pbapply::pboptions()}}. See the internal \code{\link{pb_}} function documentation for examples.
 }
 
 \section{Parallelisation}{
-Parallelisation is implemented via \code{.cl_} arguments passed to \code{\link[=cl_lapply]{cl_lapply()}}, which wraps \code{\link[pbapply:pbapply]{pbapply::pblapply()}}. See the internal \code{\link[=cl_lapply]{cl_lapply()}} function documentation for full details.
+For \code{R} functions with a \code{Julia} backend, parallelisation is implemented via the \code{.threads} argument to \code{\link[=julia_connect]{julia_connect()}}. This can only be set once per \code{R} session.
+
+For pure \code{R} functions, parallelisation is implemented via \code{.cl_} arguments passed to \code{\link[=cl_lapply]{cl_lapply()}}, which wraps \code{\link[pbapply:pbapply]{pbapply::pblapply()}}. See the \code{\link[=cl_lapply]{cl_lapply()}} function documentation for full details.
 }
 
 \author{

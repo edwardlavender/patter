@@ -33,41 +33,42 @@ Probability-of-use is calculated via \code{\link[=.map_coord]{.map_coord()}} (an
 This function replaces \href{https://edwardlavender.github.io/flapper/reference/pf_plot_map.html}{\code{flapper::pf_plot_map()}}.
 }
 \examples{
-#### Set up examples
-# Packages
-require(data.table)
-require(dplyr, warn.conflicts = FALSE)
-# Define grid
-gebco <- dat_gebco()
+library(data.table)
+library(dtplyr)
+library(dplyr, warn.conflicts = FALSE)
+
+#### Define map
+map <- dat_gebco()
 
 #### Example (1): Use sample coordinates
 # Sample example coordinates
-cxy <-
-  gebco |>
+coord <-
+  map |>
   terra::spatSample(size = 5000L, xy = TRUE, cell = TRUE, na.rm = TRUE) |>
   select("x", "y") |>
   as.data.table()
 # Use x, y coordinates
-map_pou(gebco, .coord = cxy)
+map_pou(map, .coord = coord)
 # Other formats are acceptable
-map_pou(gebco, .coord = as.matrix(cxy))
-map_pou(gebco, .coord = as.data.frame(cxy))
-# cell_x and cell_y coordinates are acceptable
-map_pou(gebco, .coord = cxy[, .(cell_x = x, cell_y = y)])
+map_pou(map, .coord = as.matrix(coord))
+map_pou(map, .coord = as.data.frame(coord))
+# `cell_x` and `cell_y` coordinates are acceptable
+map_pou(map, .coord = coord[, .(cell_x = x, cell_y = y)])
 
-#### Example (2): Use coordinates from coa()
+#### Example (2): Use coordinates from `coa()`
 # Use example dataset
-out_coa <- dat_coa()
-map_pou(gebco, .coord = out_coa[, .(x = coa_x, y = coa_y)])
+coord <- dat_coa()
+map_pou(map, .coord = coord)
+points(coord$x, coord$y, cex = 0.5)
 
-#### Example (3): Use a time series of coordinates from pf_*()
+#### Example (3): Use a time series of coordinates from `pf_*()`
 # Use example dataset
-# * We use particles from the forward filter (`?pf_forward()`);
-# * Particles are equally weighted b/c re-sampling was implemented every time step;
-# * It is better to use outputs from the forward-filter backward-smoother;
-# * Make sure you account for particle weights via re-sampling or 'marks';
-coord <- pf_coord(dat_pff(), .bathy = gebco)
-map_pou(gebco, .coord = coord)
+# * We use particles from the forward filter (`?pf_filter()`);
+# * Particles are equally weighted b/c re-sampling is implemented every time step;
+# * It is better to use outputs from the particle smoother;
+coord <- dat_pff()$states
+map_pou(map, .coord = coord)
+# points(coord$x, coord$y, cex = 0.5)
 }
 \seealso{
 \verb{map_*()} functions build maps of space use:
@@ -79,10 +80,10 @@ map_pou(gebco, .coord = coord)
 
 All maps are represented as \code{\link{SpatRaster}}s.
 
-To derive coordinates for mapping patterns of space use for tagged animals in passive acoustic telemetry systems, see:
+To derive coordinates for mapping patterns of space use for tagged animals, see:
 \itemize{
 \item \code{\link[=coa]{coa()}} to calculate centre-of-activity;
-\item \code{\link[=pf_forward]{pf_forward()}} and associates to sample locations using particle filtering;
+\item \code{\link[=pf_filter]{pf_filter()}} and associates to sample locations using particle filtering;
 }
 }
 \author{

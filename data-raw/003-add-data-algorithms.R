@@ -28,73 +28,81 @@ overwrite <- TRUE
 
 #########################
 #########################
-#### Build datasets
+#### Set up
 
-#### Define input datasets
-# Define example datasets
-acc  <- dat_acoustics[individual_id == 25, ]
-arc  <- dat_archival[individual_id == 25, ]
-# Align datasets to minimise storage requirements
-start <- max(c(min(acc$timestamp), min(arc$timestamp)))
-end   <- min(c(max(acc$timestamp), max(arc$timestamp)))
-period <- lubridate::interval(start, end)
-acc   <- acc[timestamp %within% period, ]
-arc   <- arc[timestamp %within% period, ]
-# Crop moorings to minimise storage requirements
-moorings  <-
-  dat_moorings |>
-  mutate(int = lubridate::interval(receiver_start, receiver_end)) |>
-  filter(lubridate::int_overlaps(int, period)) |>
+#### Connect to Julia
+julia_connect()
+set_seed()
+
+#### Define map
+map <- dat_gebco()
+set_map(map)
+
+#### Define study period
+timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
+                length.out = 360, by = "2 mins")
+
+
+#########################
+#########################
+#### Simulate datasets
+
+#### Simulate path(s)
+paths <- sim_path_walk(.map = map,
+                       .timeline = timeline,
+                       .state = "StateXY",
+                       .model_move = move_xy())
+
+#### Simulate array(s)
+arrays <- sim_array(.map = map,
+                    .timeline = timeline,
+                    .n_receiver = 500L)
+
+#### Simulate observation(s)
+models <- c("ModelObsAcousticLogisTrunc", "ModelObsDepthUniform")
+obs <- sim_observations(.timeline = timeline,
+                        .model_obs = models,
+                        .model_obs_pars =
+                          list(
+                            arrays |>
+                              select(sensor_id = "receiver_id",
+                                     "receiver_x", "receiver_y",
+                                     "receiver_alpha", "receiver_beta", "receiver_gamma") |>
+                              as.data.table(),
+                            data.table(sensor_id = 1L,
+                                       depth_shallow_eps = 30,
+                                       depth_deep_eps = 30)
+                          ))
+
+#### Run the COA algorithm
+detections <-
+  obs$ModelObsAcousticLogisTrunc[[1]] |>
+  filter(obs == 1L) |>
   as.data.table()
-# Collate datasets
-dlist <- pat_setup_data(.acoustics = acc,
-                        .moorings = moorings,
-                        .archival = arc,
-                        .bathy = dat_gebco(),
-                        .lonlat = FALSE)
+out_coa <- coa(.map = map,
+               .acoustics = detections,
+               .delta_t = "2 hours")
 
-# Include AC* algorithm layers
-dlist$algorithm$detection_overlaps <- acs_setup_detection_overlaps(dlist)
-dlist$algorithm$detection_kernels  <- acs_setup_detection_kernels(dlist)
-# Collate observations
-obs <- pf_setup_obs(.dlist = dlist,
-                    .step = "2 mins",
-                    .mobility = 500)
-obs <- obs[1:25, ]
+#### Run the particle filter
+# Define filter args
+args <- list(.map = map,
+             .timeline = timeline,
+             .state = "StateXY",
+             .xinit_pars = list(mobility = 750),
+             .model_move = move_xy(),
+             .yobs = list(obs$ModelObsAcousticLogisTrunc[[1]], obs$ModelObsDepthUniform[[1]]),
+             .model_obs = c("ModelObsAcousticLogisTrunc", "ModelObsDepthUniform"),
+             .n_particle = 1e5L,
+             .n_record = 100L)
+# Run the filter forwards
+args$.direction = "forward"
+out_pff <- do.call(pf_filter, args)
+# Run the filter backwards
+args$.direction = "backward"
+out_pfb <- do.call(pf_filter, args)
 
-#### Implement coa()
-out_coa <- coa(dlist, .delta_t = "4 hours")
-
-#### Implement pf_forward()
-# Define output columns
-cols <- c("timestep",
-          "cell_past", "cell_now",
-          "x_now", "y_now", "loglik", "logwt")
-# Set up directories
-sink      <- NULL
-if (overwrite) {
-  pff_folder <- file.path("inst", "extdata", "acpf", "forward")
-  unlink(pff_folder, recursive = TRUE)
-  dir.create(pff_folder, recursive = TRUE)
-  sink <- pff_folder
-}
-ssf()
-# Implement filter
-# * Force re-sampling at every time step (for convenience)
-out_pff <-
-  pf_forward(.obs = obs,
-             .dlist = dlist,
-             .likelihood = list(acs_filter_land = acs_filter_land,
-                                acs_filter_container = acs_filter_container,
-                                pf_lik_ac = pf_lik_ac),
-             .trial = pf_opt_trial(.trial_resample_crit = Inf),
-             .record = pf_opt_record(.save = TRUE,
-                                     .sink = sink,
-                                     .cols = cols)
-  )
-
-#### Implement pf_backward() routines
-# (TO DO)
+#### Run the smoother
+out_tff <- pf_smoother_two_filter()
 
 
 #########################
@@ -102,22 +110,17 @@ out_pff <-
 #### Update package
 
 #### Collate datasets
-# Update names
-dat_obs   <- obs
-dat_dlist <- dlist
-dat_coa   <- out_coa
-dat_pff   <- out_pff
-# Update contents
-summary(dat_dlist)
-dat_dlist$spatial$bathy <- terra::wrap(dat_dlist$spatial$bathy)
-dat_dlist$algorithm$detection_overlaps <- NULL
-dat_dlist$algorithm$detection_kernels  <- NULL
-# Collate datasets
+dat_path <- paths
+dat_coa  <- out_coa
+dat_pff  <- out_pff
+dat_pfb  <- out_pfb
+dat_tff  <- out_tff
 datasets <-
-  list(dat_obs = dat_obs,
-       dat_dlist = dat_dlist,
+  list(dat_path = dat_path,
        dat_coa = dat_coa,
-       dat_pff = dat_pff)
+       dat_pff = dat_pff,
+       dat_pfb = dat_pfb,
+       dat_tff = dat_tff)
 
 #### Check dataset sizes (MB)
 # ./data/
@@ -142,6 +145,8 @@ if (overwrite) {
   lapply(seq_len(length(datasets)), function(i) {
     saveRDS(datasets[[i]], here::here("inst", "extdata", paste0(names(datasets)[i], ".rds")))
   }) |> invisible()
+} else {
+  warn("Datasets not written to file as `overwrite = FALSE`!")
 }
 
 

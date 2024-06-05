@@ -35,9 +35,10 @@ These functions extract 'home range' estimates from a \code{\link{SpatRaster}} t
 These functions are modelled on \href{https://edwardlavender.github.io/flapper/reference/get_hr.html}{\verb{flapper::map_hr_*()}} functions, where full details are provided.
 }
 \examples{
+library(terra)
+
 #### Set up example
 # Define hypothetical input SpatRaster
-require(terra)
 r <- rast()
 n <- ncell(r)
 i <- 2e4
@@ -51,7 +52,6 @@ map <- map_hr_full(r, .add = TRUE, lwd = 5)
 map <- map_hr_home(r, .add = TRUE, border = "blue")
 map <- map_hr_core(r, .add = TRUE, border = "orange")
 map <- map_hr_prop(r, .prop = 0.2, .add = TRUE, border = "red")
-
 }
 \seealso{
 \verb{map_*()} functions build maps of space use:
@@ -63,10 +63,10 @@ map <- map_hr_prop(r, .prop = 0.2, .add = TRUE, border = "red")
 
 All maps are represented as \code{\link{SpatRaster}}s.
 
-To derive coordinates for mapping patterns of space use for tagged animals in passive acoustic telemetry systems, see:
+To derive coordinates for mapping patterns of space use for tagged animals, see:
 \itemize{
 \item \code{\link[=coa]{coa()}} to calculate centre-of-activity;
-\item \code{\link[=pf_forward]{pf_forward()}} and associates to sample locations using particle filtering;
+\item \code{\link[=pf_filter]{pf_filter()}} and associates to sample locations using particle filtering;
 }
 }
 \author{

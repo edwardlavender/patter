@@ -59,6 +59,7 @@ cl_lapply <- function(.x, .fun, ...,
                       .combine = NULL) {
 
   # Check user inputs
+  rlang::check_installed("pbapply")
   cl_check(.cl, .varlist)
   cl_check_chunk(.fun = .fun,
                  .cl = .cl,
