@@ -16,9 +16,9 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-`patter` implements particle algorithms for animal movement modelling, with a focus on passive acoustic telemetry systems. The statistical methodology integrates observations and movement in a process-based framework that accounts for all available information to reconstruct movement paths and emergent patterns of space use from animal tracking data (such as detections at receivers and archival (depth) time series). This vignette qualitatively outlines the methodology, providing an entry point to the literature (Lavender et al., in prep) and the package (Lavender et al., in prep). See the subsequent vignettes to learn how to implement the methodology using `patter` (type `vignette(package = "patter")`). 
+`patter` implements particle algorithms for animal movement modelling, with a focus on passive acoustic telemetry systems. The statistical methodology integrates observations and movement in a process-based framework that accounts for all available information to reconstruct movement paths and emergent patterns of space use from animal tracking data (such as detections at receivers and archival (depth) time series). This vignette qualitatively outlines the methodology, providing an entry point to the literature (Lavender et al., in prep) and the package (Lavender et al., in prep). See the subsequent vignettes to learn how to implement the methodology using `patter` (type `vignette(package = "patter")` to list vignettes). 
 
-# The flapper algorithms
+# Evolution
 
 The statistical methodology in `patter` unifies (and refines) a suite of methods known as the flapper algorithms (Lavender et al., 2023). In their original presentation, the flapper algorithms were presented in two parts: an acoustic-container (AC) branch and a particle-filtering (PF) branch. AC-branch algorithms define the set of possible locations of an individual _given the data at each time step_. The AC algorithm handles the information from acoustic observations and the DC algorithm handles the information from depth observations (which are often collected alongside acoustic data). PF-branch algorithms refine AC-branch outputs _given a movement model_. In the predecessor [`flapper`](https://github.com/edwardlavender/flapper) package, AC-branch algorithms were implemented via `ac()`, `dc()` and `acdc()` and their outputs were refined through PF via `pf()` and `pf_simplify()`. 
 
@@ -30,14 +30,14 @@ See `NEWS` for a summary of the differences between `flapper` and `patter`.
 
 # Forward simulation 
 
-## Overview 
+## Algorithm 
 
-Consider a regular sequence of time steps, along which we have collected observations (at regular or irregular intervals). In the particle filter, we run along the time series, collecting particle samples (states or locations that are compatible with the data and properties of movement) as we go. This works as follows:
+Consider a regular sequence of time steps, along which we have collected observations (at regular or irregular intervals). In the particle filter, we run along the time series, sampling particle (states or locations that are compatible with the data and properties of movement) as we go. This works as follows:
 
-* **Proposals.** At each time step, propose a series of candidate locations in which the individual could be located. For example, given a previous location, we simulate travel distances and turning angles from a movement model and use these to 'kick' an individual into new locations. 
-* **Likelihood.** Calculate the likelihood of the data, given each proposal. The likelihoods of acoustic and archival data given each proposal are resolved by the equations of the AC and DC algorithms. For example, the AC algorithm calculates the likelihood of acoustic observations (the presence or absence of detections at each receiver) according a model of detection probability, given proposal locations.
+* **Proposals.** At each time step, propose a series of candidate locations in which the individual could be located. For example, given a previous location, we simulate step lengths and turning angles from a movement model and use these to 'kick' an individual into new locations. 
+* **Likelihood.** Calculate the likelihood of the data, given each proposal. The likelihoods of acoustic and archival data given each proposal can be resolved by the equations of the AC and DC algorithms (or modifications thereof). For example, the AC algorithm calculates the likelihood of acoustic observations (the presence or absence of detections at each receiver) according a model of detection probability, given proposal locations.
 * **Weights.** Translate likelihoods into sampling weights that encapsulate the information in the data and the movement model. 
-* **Sampling**. Sample $N$ proposals, with replacement, in line with the weights. This process effectively kills off locations that are incompatible with the data and increases the frequency of more likely proposals. 
+* **Sampling**. Periodically, sample $N$ proposals, with replacement, in line with the weights. This process effectively kills off particles that are incompatible with the data and increases the frequency of more likely proposals. 
 
 This process continues until the end of the time series. The outcome is a set of particle samples (partial marginal distributions), one for each time step. 
 
@@ -47,13 +47,14 @@ The implementation of the particle filter in `patter` is a four step process:
 
 * (optional) `pat_setup_data()` is used to validate input datasets;
 * `assemble_*()` functions are used to prepare datasets;
-* `assemble_*()` is used to set up a data list;
-* `pf_filter()` implements the particle filter;
+* `pf_filter()` implements the particle filter, given:
+    * The `State` type;
+    * The movement model (`ModelMove`);
+    * The observation models (`ModelObs`);
 
-# Two-filter smoother 
+# Smoothing
 
-The two-filter smoother  is used to reconstruct the full marginal distribution of particle samples through time 
-Backward sampling is implemented via `pf_smoother_two_filter()`. 
+Particle smoothing algorithms re-weight particles from the filter, incorporating information not only from the past but from the future as well. In other words, smoothing generates an approximation of the full marginal distribution for an individual's latent state at each time step. At the time of writing, we have implemented the two-filter smoother via via `pf_smoother_two_filter()`. 
 
 # Mapping
 
