@@ -10,80 +10,91 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-This vignette lists the steps required to use `patter` to reconstruct movement paths and utilisation distributions. This includes important data preparation and validation steps that are straightforward in `R` but for which `patter` convenience functions are currently lacking. Use it as a reference. See `vignette("c-workflow-example", package = "patter")` for a streamlined example workflow. See the [`patter-flapper`](https://github.com/edwardlavender/patter-flapper) project for a complete, real-world analysis.
+This vignette lists the steps required to use `patter` to reconstruct movements and patterns of space use. Use it as a reference. See package documentation, such as the [README](https://github.com/edwardlavender/patter), for streamlined example workflow(s). See the [`patter-flapper`](https://github.com/edwardlavender/patter-flapper) project for a complete, real-world analysis.
+
+# Set up 
+
+1. Load the `patter` package via `library(patter)`. 
+
+2. Connect to `Julia` via `julia_connect()`. 
+
+3. Set the seed in `R` and `Julia` via `set_seed()`. 
 
 # Preparation
 
 ## Prepare study area
 
-1. Define `terra` `SpatRaster` (e.g. `?dat_gebco`)
-2. Mask inhospitable habitats (e.g., land)
+1. Define a `terra::SpatRaster` map of the study area:
 
-## Prepare movement datasets
+    * In our applications, the map is a bathymetry `SpatRaster` (see `?dat_gebco` and `?glossary`);
+    * Mask inhospitable habitats (e.g., land) using `NA`s;
+    * Export the map to `Julia` via `set_map()`;
 
-1. Define movement `data.table`(s) (e.g., `?datasets-mefs`)
+## Prepare movement model
 
-    - (optional) Passive acoustic telemetry 
-        - Acoustic detections (e.g. `?dat_acoustics`)
-        - Receiver moorings (`?dat_moorings`)
-    - (optional) Ancillary observations (e.g. `?dat_archival`)
+1. Define the `State` type: 
+
+    * `State` defines the components of the animal's movement that you want to track;
+    * For example, if you want to track `x` and `y` locations, use `StateXY`;
+
+2. Define a corresponding movement model (`ModelMove`) instance:
+
+    * The movement model defines the animal's movement capacity;
+    * See `?ModelMove` for built-in options and instructions for custom sub-types;
+
+## Prepare observations
+
+1. Define observational datasets:
+
+    * `patter` should be able to work with any kind of observational dataset;
+    * See `datasets-mefs` for example datasets included in the package;
     
-2. Validate data, e.g.:
+2. Validate datasets:
 
-    - Remove false detections (e.g. `?glatos::false_detections()`)
-    - Validate detection timing
-    - Validate receiver locations
+    * Datasets used in `patter` require manual preparation for analysis;
+    * Example considerations for passive acoustic telemetry data include: 
+        * False detections (e.g. `?glatos::false_detections()`);
+        * Detection timing;
+        * Receiver locations;
+    * For passive acoustic telemetry and/or archival data, `patter` provides a `pat_setup_data()` function which validates data format of these data types for use in `patter`;
     
-3. Collate datasets via `pat_setup_data()`
+3. Define observation models (`ModelObs`) sub-types:
+    * Observation models link individual movements to the observations; 
+    * See `?ModelObs` for built-in observation models and instructions for custom sub-types;
+    
+4. Collate observations and observation model parameters: 
 
-## Prepare algorithms inputs
+    * Define a timeline of interest;
+    * Extract the observations _for a particular individual_;
+    * Observations should be arranged as `data.table`s in long-format;
+    * For passive acoustic telemetry and archival datasets, use `pat_setup_data()` and `assemble_*()` functions to assemble datasets as required;
+    * Otherwise, see the `assemble_*()` function documentation for straightforward dataset assembly instructions;
+    
+5. To simulate datasets instead, see `sim_*()` functions;
 
-1. Define parameters
+# Particle algorithms 
 
-   - Time step size (e.g., `"2 mins"`)
-   - Mobility (see `?flapper::get_mvt_mobility()`)
-   - (optional) Detection range
+## Forward filter
 
-2. Validate parameter choices
+1. Implement the particle filter via `pf_filter()`:
+    * This returns a `list`, which includes a `states` `data.table` that defines the possible states (locations) of the individual at each time step (according to the movement model and the observations);
 
-   - Validate mobility (using transition speeds between receivers)
-   - Validate detection range (using simultaneous detections at multiple receivers)
-   - Validate concurrent observations (e.g., confirm detection containers contain valid locations)
+## Two-filter smoother
 
-3. (optional) Precompute any necessary algorithm layers
+1. Implement the particle filter forwards and backwards;
 
-   - AC* algorithm layers:
-      - Define detection overlaps via `acs_setup_detection_overlaps()`
-      - Define detection kernels via `acs_setup_detection_kernels()`
+2. Implement the two-filter smoother via `pf_smoother_two_filter()`:
+    * This refines outputs from the filter;
 
-## Prepare observations timeline
+# Mapping 
 
-1. Select the data for a single individual
-2. Collate observations via `pf_setup_obs()`
+1. Plot particle positions via `pf_plot_*()`;
 
-# Forward filter
+2. Map utilisation distributions:
 
-1. Define function arguments (`?pf_forward`)
+    * Map probability-of-use via `map_pou()`;
+    * Map smoothed probability density via `map_dens()`;
 
-   - Define proposal functions (`?pf_propose`)
-   - Define likelihood functions (observation models) (`?pf_lik`)
-   - Define (re)sampling function (`?pf_sample`)
-   - Define tuning parameters (`?pf_opt`)
+4. Map home ranges via `map_hr_*()`;
 
-2. Implement forward filter via `pf_forward()`
-
-# Backward pass 
-
-1. Use `pf_backward_killer()` or `pf_backward_sampler_*()` 
-
-# Analysis 
-
-## 1. Analyse movement paths
-
-1. Build movement paths via `pf_paths()`
-
-## 2. Map space use
-
-1. Map probability-of-use via `map_pou()`
-2. Map smoothed probability density via `map_dens()`
-3. Map home ranges via `map_hr_*()`
+---
