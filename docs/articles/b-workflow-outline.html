@@ -92,13 +92,22 @@
     
     
 <p>This vignette lists the steps required to use <code>patter</code> to
-reconstruct movement paths and utilisation distributions. This includes
-important data preparation and validation steps that are straightforward
-in <code>R</code> but for which <code>patter</code> convenience
-functions are currently lacking. Use it as a reference. See
-<code>vignette("c-workflow-example", package = "patter")</code> for a
-streamlined example workflow. See the <a href="https://github.com/edwardlavender/patter-flapper" class="external-link"><code>patter-flapper</code></a>
+reconstruct movements and patterns of space use. Use it as a reference.
+See package documentation, such as the <a href="https://github.com/edwardlavender/patter" class="external-link">README</a>, for
+streamlined example workflow(s). See the <a href="https://github.com/edwardlavender/patter-flapper" class="external-link"><code>patter-flapper</code></a>
 project for a complete, real-world analysis.</p>
+<div class="section level2">
+<h2 id="set-up">Set up<a class="anchor" aria-label="anchor" href="#set-up"></a>
+</h2>
+<ol style="list-style-type: decimal">
+<li><p>Load the <code>patter</code> package via
+<code><a href="https://github.com/edwardlavender/patter/" class="external-link">library(patter)</a></code>.</p></li>
+<li><p>Connect to <code>Julia</code> via
+<code><a href="../reference/julia_connect.html">julia_connect()</a></code>.</p></li>
+<li><p>Set the seed in <code>R</code> and <code>Julia</code> via
+<code><a href="../reference/julia_set.html">set_seed()</a></code>.</p></li>
+</ol>
+</div>
 <div class="section level2">
 <h2 id="preparation">Preparation<a class="anchor" aria-label="anchor" href="#preparation"></a>
 </h2>
@@ -106,139 +115,152 @@ project for a complete, real-world analysis.</p>
 <h3 id="prepare-study-area">Prepare study area<a class="anchor" aria-label="anchor" href="#prepare-study-area"></a>
 </h3>
 <ol style="list-style-type: decimal">
-<li>Define <code>terra</code> <code>SpatRaster</code>
-(e.g. <code><a href="../reference/datasets-mefs.html">?dat_gebco</a></code>)</li>
-<li>Mask inhospitable habitats (e.g., land)</li>
-</ol>
-</div>
-<div class="section level3">
-<h3 id="prepare-movement-datasets">Prepare movement datasets<a class="anchor" aria-label="anchor" href="#prepare-movement-datasets"></a>
-</h3>
-<ol style="list-style-type: decimal">
 <li>
-<p>Define movement <code>data.table</code>(s) (e.g.,
-<code>?datasets-mefs</code>)</p>
+<p>Define a <code><a href="https://rspatial.github.io/terra/reference/SpatRaster-class.html" class="external-link">terra::SpatRaster</a></code> map of the study
+area:</p>
 <ul>
-<li>(optional) Passive acoustic telemetry
-<ul>
-<li>Acoustic detections (e.g. <code><a href="../reference/datasets-mefs.html">?dat_acoustics</a></code>)</li>
-<li>Receiver moorings (<code><a href="../reference/datasets-mefs.html">?dat_moorings</a></code>)</li>
-</ul>
-</li>
-<li>(optional) Ancillary observations
-(e.g. <code><a href="../reference/datasets-mefs.html">?dat_archival</a></code>)</li>
-</ul>
-</li>
-<li>
-<p>Validate data, e.g.:</p>
-<ul>
-<li>Remove false detections
-(e.g. <code>?glatos::false_detections()</code>)</li>
-<li>Validate detection timing</li>
-<li>Validate receiver locations</li>
-</ul>
-</li>
-<li><p>Collate datasets via <code>pat_setup_data()</code></p></li>
-</ol>
-</div>
-<div class="section level3">
-<h3 id="prepare-algorithms-inputs">Prepare algorithms inputs<a class="anchor" aria-label="anchor" href="#prepare-algorithms-inputs"></a>
-</h3>
-<ol style="list-style-type: decimal">
-<li>
-<p>Define parameters</p>
-<ul>
-<li>Time step size (e.g., <code>"2 mins"</code>)</li>
-<li>Mobility (see <code>?flapper::get_mvt_mobility()</code>)</li>
-<li>(optional) Detection range</li>
-</ul>
-</li>
-<li>
-<p>Validate parameter choices</p>
-<ul>
-<li>Validate mobility (using transition speeds between receivers)</li>
-<li>Validate detection range (using simultaneous detections at multiple
-receivers)</li>
-<li>Validate concurrent observations (e.g., confirm detection containers
-contain valid locations)</li>
-</ul>
-</li>
-<li>
-<p>(optional) Precompute any necessary algorithm layers</p>
-<ul>
-<li>AC* algorithm layers:
-<ul>
-<li>Define detection overlaps via
-<code>acs_setup_detection_overlaps()</code>
-</li>
-<li>Define detection kernels via
-<code>acs_setup_detection_kernels()</code>
-</li>
-</ul>
-</li>
+<li>In our applications, the map is a bathymetry <code>SpatRaster</code>
+(see <code><a href="../reference/datasets-mefs.html">?dat_gebco</a></code> and <code><a href="../reference/glossary.html">?glossary</a></code>);</li>
+<li>Mask inhospitable habitats (e.g., land) using <code>NA</code>s;</li>
+<li>Export the map to <code>Julia</code> via
+<code><a href="../reference/julia_set.html">set_map()</a></code>;</li>
 </ul>
 </li>
 </ol>
 </div>
 <div class="section level3">
-<h3 id="prepare-observations-timeline">Prepare observations timeline<a class="anchor" aria-label="anchor" href="#prepare-observations-timeline"></a>
+<h3 id="prepare-movement-model">Prepare movement model<a class="anchor" aria-label="anchor" href="#prepare-movement-model"></a>
 </h3>
 <ol style="list-style-type: decimal">
-<li>Select the data for a single individual</li>
-<li>Collate observations via <code>pf_setup_obs()</code>
+<li>
+<p>Define the <code>State</code> type:</p>
+<ul>
+<li>
+<code>State</code> defines the components of the animal’s movement
+that you want to track;</li>
+<li>For example, if you want to track <code>x</code> and <code>y</code>
+locations, use <code>StateXY</code>;</li>
+</ul>
+</li>
+<li>
+<p>Define a corresponding movement model (<code>ModelMove</code>)
+instance:</p>
+<ul>
+<li>The movement model defines the animal’s movement capacity;</li>
+<li>See <code><a href="../reference/ModelMove.html">?ModelMove</a></code> for built-in options and instructions
+for custom sub-types;</li>
+</ul>
+</li>
+</ol>
+</div>
+<div class="section level3">
+<h3 id="prepare-observations">Prepare observations<a class="anchor" aria-label="anchor" href="#prepare-observations"></a>
+</h3>
+<ol style="list-style-type: decimal">
+<li>
+<p>Define observational datasets:</p>
+<ul>
+<li>
+<code>patter</code> should be able to work with any kind of
+observational dataset;</li>
+<li>See <code>datasets-mefs</code> for example datasets included in the
+package;</li>
+</ul>
+</li>
+<li>
+<p>Validate datasets:</p>
+<ul>
+<li>Datasets used in <code>patter</code> require manual preparation for
+analysis;</li>
+<li>Example considerations for passive acoustic telemetry data include:
+<ul>
+<li>False detections
+(e.g. <code>?glatos::false_detections()</code>);</li>
+<li>Detection timing;</li>
+<li>Receiver locations;</li>
+</ul>
+</li>
+<li>For passive acoustic telemetry and/or archival data,
+<code>patter</code> provides a <code><a href="../reference/pat_setup_data.html">pat_setup_data()</a></code> function
+which validates data format of these data types for use in
+<code>patter</code>;</li>
+</ul>
+</li>
+<li>
+<p>Define observation models (<code>ModelObs</code>) sub-types:</p>
+<ul>
+<li>Observation models link individual movements to the
+observations;</li>
+<li>See <code><a href="../reference/ModelObs.html">?ModelObs</a></code> for built-in observation models and
+instructions for custom sub-types;</li>
+</ul>
+</li>
+<li>
+<p>Collate observations and observation model parameters:</p>
+<ul>
+<li>Define a timeline of interest;</li>
+<li>Extract the observations <em>for a particular individual</em>;</li>
+<li>Observations should be arranged as <code>data.table</code>s in
+long-format;</li>
+<li>For passive acoustic telemetry and archival datasets, use
+<code><a href="../reference/pat_setup_data.html">pat_setup_data()</a></code> and <code>assemble_*()</code> functions to
+assemble datasets as required;</li>
+<li>Otherwise, see the <code>assemble_*()</code> function documentation
+for straightforward dataset assembly instructions;</li>
+</ul>
+</li>
+<li><p>To simulate datasets instead, see <code>sim_*()</code>
+functions;</p></li>
+</ol>
+</div>
+</div>
+<div class="section level2">
+<h2 id="particle-algorithms">Particle algorithms<a class="anchor" aria-label="anchor" href="#particle-algorithms"></a>
+</h2>
+<div class="section level3">
+<h3 id="forward-filter">Forward filter<a class="anchor" aria-label="anchor" href="#forward-filter"></a>
+</h3>
+<ol style="list-style-type: decimal">
+<li>Implement the particle filter via <code><a href="../reference/pf_filter.html">pf_filter()</a></code>:
+<ul>
+<li>This returns a <code>list</code>, which includes a
+<code>states</code> <code>data.table</code> that defines the possible
+states (locations) of the individual at each time step (according to the
+movement model and the observations);</li>
+</ul>
+</li>
+</ol>
+</div>
+<div class="section level3">
+<h3 id="two-filter-smoother">Two-filter smoother<a class="anchor" aria-label="anchor" href="#two-filter-smoother"></a>
+</h3>
+<ol style="list-style-type: decimal">
+<li><p>Implement the particle filter forwards and backwards;</p></li>
+<li>
+<p>Implement the two-filter smoother via
+<code><a href="../reference/pf_smoother_two_filter.html">pf_smoother_two_filter()</a></code>:</p>
+<ul>
+<li>This refines outputs from the filter;</li>
+</ul>
 </li>
 </ol>
 </div>
 </div>
 <div class="section level2">
-<h2 id="forward-filter">Forward filter<a class="anchor" aria-label="anchor" href="#forward-filter"></a>
+<h2 id="mapping">Mapping<a class="anchor" aria-label="anchor" href="#mapping"></a>
 </h2>
 <ol style="list-style-type: decimal">
+<li><p>Plot particle positions via <code>pf_plot_*()</code>;</p></li>
 <li>
-<p>Define function arguments (<code>?pf_forward</code>)</p>
+<p>Map utilisation distributions:</p>
 <ul>
-<li>Define proposal functions (<code>?pf_propose</code>)</li>
-<li>Define likelihood functions (observation models)
-(<code>?pf_lik</code>)</li>
-<li>Define (re)sampling function (<code>?pf_sample</code>)</li>
-<li>Define tuning parameters (<code>?pf_opt</code>)</li>
+<li>Map probability-of-use via <code><a href="../reference/map_pou.html">map_pou()</a></code>;</li>
+<li>Map smoothed probability density via <code><a href="../reference/map_dens.html">map_dens()</a></code>;</li>
 </ul>
 </li>
-<li><p>Implement forward filter via <code>pf_forward()</code></p></li>
+<li><p>Map home ranges via <code>map_hr_*()</code>;</p></li>
 </ol>
-</div>
-<div class="section level2">
-<h2 id="backward-pass">Backward pass<a class="anchor" aria-label="anchor" href="#backward-pass"></a>
-</h2>
-<ol style="list-style-type: decimal">
-<li>Use <code>pf_backward_killer()</code> or
-<code>pf_backward_sampler_*()</code>
-</li>
-</ol>
-</div>
-<div class="section level2">
-<h2 id="analysis">Analysis<a class="anchor" aria-label="anchor" href="#analysis"></a>
-</h2>
-<div class="section level3">
-<h3 id="analyse-movement-paths">1. Analyse movement paths<a class="anchor" aria-label="anchor" href="#analyse-movement-paths"></a>
-</h3>
-<ol style="list-style-type: decimal">
-<li>Build movement paths via <code>pf_paths()</code>
-</li>
-</ol>
-</div>
-<div class="section level3">
-<h3 id="map-space-use">2. Map space use<a class="anchor" aria-label="anchor" href="#map-space-use"></a>
-</h3>
-<ol style="list-style-type: decimal">
-<li>Map probability-of-use via <code><a href="../reference/map_pou.html">map_pou()</a></code>
-</li>
-<li>Map smoothed probability density via <code><a href="../reference/map_dens.html">map_dens()</a></code>
-</li>
-<li>Map home ranges via <code>map_hr_*()</code>
-</li>
-</ol>
-</div>
+<hr>
 </div>
   </div>
 

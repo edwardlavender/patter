@@ -184,6 +184,7 @@
 <code><a href="articles/b-workflow-outline.html">vignette("b-workflow-outline", package = "patter")</a></code> for an overview of the workflow;</li>
 </ul>
 <p>For a full list of all functions, see <code><a href="https://rdrr.io/pkg/patter/man" class="external-link">help(package = 'patter')</a></code>.</p>
+<p>For a glossary of key arguments, see <code>glossary</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="datasets">Datasets<a class="anchor" aria-label="anchor" href="#datasets"></a>
@@ -199,7 +200,7 @@
 <li>
 <code><a href="reference/datasets-mefs.html">dat_gebco()</a></code> for a bathymetry grid;</li>
 </ul>
-<p>To validate new datasets for use with <code>patter</code>, use TO DO.</p>
+<p>To validate new datasets for use with <code>patter</code>, see <code><a href="reference/pat_setup_data.html">pat_setup_data()</a></code> and/or the <code>assemble_*()</code> function documentation.</p>
 <p>For example algorithm outputs (<code>datasets-algorithms</code>), see:</p>
 <ul>
 <li>
@@ -207,7 +208,9 @@
 <li>
 <code><a href="reference/datasets-algorithms.html">dat_coa()</a></code> for an example output from <code><a href="reference/coa.html">coa()</a></code>;</li>
 <li>
-<code><a href="reference/datasets-algorithms.html">dat_pff()</a></code> for an example output from <code><a href="reference/pf_filter.html">pf_filter()</a></code>;</li>
+<code><a href="reference/datasets-algorithms.html">dat_pff()</a></code> and <code><a href="reference/datasets-algorithms.html">dat_pfb()</a></code> for an example output from <code><a href="reference/pf_filter.html">pf_filter()</a></code>;</li>
+<li>
+<code><a href="reference/datasets-algorithms.html">dat_tff()</a></code> for an example output from <code><a href="reference/pf_smoother_two_filter.html">pf_smoother_two_filter()</a></code>;</li>
 </ul>
 </div>
 <div class="section level2">
@@ -299,9 +302,10 @@
 </ul>
 <p>These functions return <code>pf_particles-class</code> objects.</p>
 <p><strong>For convenience plotting functions</strong>, see:</p>
-<p>TO DO</p>
-<p><strong>For common utility functions</strong>, see:</p>
-<p>TO DO</p>
+<ul>
+<li>
+<code><a href="reference/pf_plot_xy.html">pf_plot_xy()</a></code> to plot particle locations;</li>
+</ul>
 <p><strong>For mapping utilisation distributions</strong>, use:</p>
 <ul>
 <li>

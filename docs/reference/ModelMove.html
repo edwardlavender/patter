@@ -104,8 +104,8 @@
 </ul><p>In <code><a href="patter.html">patter</a></code>, movement models are required:</p><ul><li><p>To simulate movement paths, via <code><a href="sim_path_walk.html">sim_path_walk()</a></code>;</p></li>
 <li><p>To run the particle filter, via <code><a href="pf_filter.html">pf_filter()</a></code>;</p></li>
 <li><p>To run the particle smoother, via <code><a href="pf_smoother_two_filter.html">pf_smoother_two_filter()</a></code>;</p></li>
-</ul><p>In <code>R</code> functions, the movement-model instance is specified via the <code>.model_move</code> argument. This argument expects a <code>character</code> string defining a <code>ModelMove</code> instance that can be evaluated in <code>Julia</code> (that is, a <code>ModelMove</code> constructor). <code>move_*()</code> functions are convenience functions for the specification of these constructors for the built-in sub-types. All <code>ModelMove</code> instances contain a <code>map</code> field that defines the region(s) within which movements are permitted. To use a <code>move_*()</code> function, the map should be available in <code>Julia</code> as <code>env</code> (see <code><a href="julia_set.html">set_map()</a></code>). The additional components of the movement model are specified via <code>move_*()</code> function arguments as <code>character</code> strings of <code>Julia</code> code. Currently implemented <code>move_*()</code> functions are:</p><ul><li><p><code>move_xy()</code>, which specifies a movement model of subtype <code>ModelMoveXY</code> in terms of the distributions of step lengths and turning angles;</p></li>
-<li><p><code>move_xyzd()</code>, which specifies a movement model of subtype <code>ModelMoveXYZD</code> in terms of the distributions of step lengths, changes in turning angles and changes in depth;</p></li>
+</ul><p>In <code>R</code> functions, the movement-model instance is specified via the <code>.model_move</code> argument. This argument expects a <code>character</code> string defining a <code>ModelMove</code> instance that can be evaluated in <code>Julia</code> (that is, a <code>ModelMove</code> constructor). <code>move_*()</code> functions are convenience functions for the specification of these constructors for the built-in sub-types. All <code>ModelMove</code> instances contain a <code>map</code> field that defines the region(s) within which movements are permitted. To use a <code>move_*()</code> function, the map should be available in <code>Julia</code> as <code>env</code> (see <code><a href="julia_set.html">set_map()</a></code>). The additional components of the movement model are specified via <code>move_*()</code> function arguments as <code>character</code> strings of <code>Julia</code> code. Currently implemented <code>move_*()</code> functions are:</p><ul><li><p><code>move_xy()</code>, which specifies a movement model of sub-type <code>ModelMoveXY</code> in terms of the distributions of step lengths and turning angles;</p></li>
+<li><p><code>move_xyzd()</code>, which specifies a movement model of sub-type <code>ModelMoveXYZD</code> in terms of the distributions of step lengths, changes in turning angles and changes in depth;</p></li>
 </ul><p>See <a href="https://discourse.julialang.org/t/a-comparison-of-common-distributions-in-julia-python-and-r/61604" class="external-link">here</a> for the translations of distributions in <code>R</code> (e.g., <code>*norm()</code>) into <code>Julia</code> (e.g., <code>Normal()</code>).</p>
 <p>In <code>Julia</code>, <code>ModelMove</code> instances are used to simulate states via <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.simulate_step()</code></a>. In the particle smoother, the density of movement from one state to another is evaluated by <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.logpdf_step()</code></a>. These are generic functions. Different methods are dispatched according to the input model. For the built-in <code>ModelMove</code> sub-types, corresponding methods for these routines are also built-in. For custom <code>ModelMove</code> sub-types, the methods need to be provided.</p>
 <p>To use custom <code>ModelMove</code> sub-types, see Examples.</p>
@@ -198,14 +198,14 @@
 <span class="r-in"><span>  <span class="co"># See `?pf_filter()`</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co">#### Example (6): Use custom movement model types</span></span></span>
-<span class="r-in"><span>  <span class="co"># Patter contains multiple built-in `State` and `ModelMove` subtypes that you can use</span></span></span>
+<span class="r-in"><span>  <span class="co"># Patter contains multiple built-in `State` and `ModelMove` sub-types that you can use</span></span></span>
 <span class="r-in"><span>  <span class="co"># ... (with custom parameters) simulate movements and for particle filtering.</span></span></span>
-<span class="r-in"><span>  <span class="co"># See the help file for `?State` to use a new subtype.</span></span></span>
+<span class="r-in"><span>  <span class="co"># See the help file for `?State` to use a new sub-type.</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: stats4</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: evd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-05-27 14:05:25... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-06-05 13:04:23... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_setup()`... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Julia version 1.10.3 at location /Users/lavended/.julia/juliaup/julia-1.10.3+0.aarch64.apple.darwin14/bin will be used.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading setup script for JuliaCall...</span>
@@ -213,8 +213,8 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... Julia set up with 8 threads. </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-05-27 14:05:44 (duration: ~19 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 8 thread(s). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-06-05 13:04:53 (duration: ~30 sec(s)). </span>
 <span class="r-plt img"><img src="ModelMove-1.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="ModelMove-2.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="ModelMove-3.png" alt="" width="700" height="433"></span>

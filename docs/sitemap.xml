@@ -49,7 +49,16 @@
     <loc>/reference/cat_.html</loc>
   </url>
   <url>
+    <loc>/reference/check_dlist.html</loc>
+  </url>
+  <url>
     <loc>/reference/check_utils.html</loc>
+  </url>
+  <url>
+    <loc>/reference/cl.html</loc>
+  </url>
+  <url>
+    <loc>/reference/cl_lapply.html</loc>
   </url>
   <url>
     <loc>/reference/cleanup.html</loc>
@@ -68,6 +77,9 @@
   </url>
   <url>
     <loc>/reference/example_setup.html</loc>
+  </url>
+  <url>
+    <loc>/reference/file_path.html</loc>
   </url>
   <url>
     <loc>/reference/glossary.html</loc>
@@ -100,16 +112,25 @@
     <loc>/reference/name_particles.html</loc>
   </url>
   <url>
+    <loc>/reference/pat_setup_data.html</loc>
+  </url>
+  <url>
     <loc>/reference/patter-progress.html</loc>
   </url>
   <url>
     <loc>/reference/patter.html</loc>
   </url>
   <url>
+    <loc>/reference/pb_.html</loc>
+  </url>
+  <url>
     <loc>/reference/pf_filter.html</loc>
   </url>
   <url>
     <loc>/reference/pf_particles-class.html</loc>
+  </url>
+  <url>
+    <loc>/reference/pf_plot_xy.html</loc>
   </url>
   <url>
     <loc>/reference/pf_smoother_two_filter.html</loc>
@@ -140,6 +161,9 @@
   </url>
   <url>
     <loc>/reference/spat.html</loc>
+  </url>
+  <url>
+    <loc>/reference/utils-lists.html</loc>
   </url>
   <url>
     <loc>/reference/utils-signal.html</loc>

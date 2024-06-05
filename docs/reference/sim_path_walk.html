@@ -82,7 +82,6 @@
     <h2>Arguments</h2>
     <dl><dt>.map</dt>
 <dd><p>A <code><a href="https://rspatial.github.io/terra/reference/SpatRaster-class.html" class="external-link">SpatRaster</a></code> that defines the study area for the simulation (see <code><a href="glossary.html">glossary</a></code>). Here, <code>.map</code> is used to:</p><ul><li><p>Simulate initial states if <code>.xinit = NULL</code> (via <code><a href="sim_states_init.html">sim_states_init()</a></code>);</p></li>
-<li><p>Extract <code>.map</code> coordinates for the simulated path(s);</p></li>
 </ul></dd>
 
 
@@ -121,7 +120,6 @@
 <p><code>sim_path_walk()</code> returns a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> with the following columns:</p><ul><li><p><code>path_id</code>---an <code>integer</code> vector that identifies each path;</p></li>
 <li><p><code>timestep</code>---an <code>integer</code> vector that defines the time step;</p></li>
 <li><p><code>timestamp</code>---a <code>POSIXct</code> vector of time stamps;</p></li>
-<li><p><code>cell_id</code>, <code>cell_x</code>, <code>cell_y</code>, <code>cell_z</code>---<code>integer</code>/<code>numeric</code> vectors that define the locations of the simulated positions on <code>.map</code>;</p></li>
 <li><p><code>x</code>,<code>y</code>,<code>...</code>---<code>numeric</code> vectors that define the components of the state;</p></li>
 </ul></div>
     <div id="details">
@@ -203,7 +201,7 @@
 <span class="r-in"><span>  <span class="va">origins</span> <span class="op">&lt;-</span></span></span>
 <span class="r-in"><span>    <span class="va">map</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>    <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/sample.html" class="external-link">spatSample</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">4</span>, xy <span class="op">=</span> <span class="cn">TRUE</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span>map_value <span class="op">=</span> <span class="st">"bathy"</span>, <span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="st">"map_value"</span>, <span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="co"># Run simulation</span></span></span>
 <span class="r-in"><span>  <span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
@@ -267,13 +265,13 @@
 <span class="r-in"><span>                .plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-05-27 14:07:51... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-06-05 13:07:13... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_setup()`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... Julia set up with 8 threads. </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-05-27 14:07:56 (duration: ~5 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 8 thread(s). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-06-05 13:07:19 (duration: ~6 sec(s)). </span>
 <span class="r-plt img"><img src="sim_path_walk-1.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="sim_path_walk-2.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="sim_path_walk-3.png" alt="" width="700" height="433"></span>
@@ -293,32 +291,19 @@
 <span class="r-plt img"><img src="sim_path_walk-17.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="sim_path_walk-18.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="sim_path_walk-19.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       path_id timestep           timestamp   cell_x  cell_y    cell_z cell_id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;int&gt;    &lt;int&gt;              &lt;POSc&gt;    &lt;num&gt;   &lt;num&gt;     &lt;num&gt;   &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:       1        1 2016-01-01 00:00:00 702242.1 6254207 27.389563   35788</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:       1        2 2016-01-01 00:02:00 702242.1 6254107 26.590059   35978</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:       1        3 2016-01-01 00:04:00 702242.1 6254107 26.590059   35978</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:       1        4 2016-01-01 00:06:00 702242.1 6253907 24.991056   36358</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:       1        5 2016-01-01 00:08:00 702142.1 6254207 29.677847   35787</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                                        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  996:       1      996 2016-01-02 09:10:00 699642.1 6252107 14.078653   39752</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  997:       1      997 2016-01-02 09:12:00 699542.1 6252007 12.087568   39941</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  998:       1      998 2016-01-02 09:14:00 699442.1 6251807  9.131541   40320</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  999:       1      999 2016-01-02 09:16:00 699642.1 6251907 14.796794   40132</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1000:       1     1000 2016-01-02 09:18:00 699542.1 6252207 11.904321   39561</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       map_value        x       y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;num&gt;    &lt;num&gt;   &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1: 27.389563 702242.1 6254207</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2: 26.590059 702273.8 6254122</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3: 26.590059 702271.9 6254105</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4: 24.991056 702238.3 6253924</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5: 29.677847 702178.5 6254186</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  996: 14.078653 699601.8 6252064</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  997: 12.087568 699583.2 6252049</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  998:  9.131541 699450.8 6251831</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  999: 14.796794 699653.6 6251902</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1000: 11.904321 699524.2 6252218</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       path_id timestep           timestamp map_value        x       y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;int&gt;    &lt;int&gt;              &lt;POSc&gt;     &lt;num&gt;    &lt;num&gt;   &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1:       1        1 2016-01-01 00:00:00 27.389563 702242.1 6254207</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2:       1        2 2016-01-01 00:02:00 26.590059 702273.8 6254122</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3:       1        3 2016-01-01 00:04:00 26.590059 702271.9 6254105</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4:       1        4 2016-01-01 00:06:00 24.991056 702238.3 6253924</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5:       1        5 2016-01-01 00:08:00 29.677847 702178.5 6254186</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  996:       1      996 2016-01-02 09:10:00 14.078653 699601.8 6252064</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  997:       1      997 2016-01-02 09:12:00 12.087568 699583.2 6252049</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  998:       1      998 2016-01-02 09:14:00  9.131541 699450.8 6251831</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  999:       1      999 2016-01-02 09:16:00 14.796794 699653.6 6251902</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1000:       1     1000 2016-01-02 09:18:00 11.904321 699524.2 6252218</span>
 </code></pre></div>
     </div>
   </div>

@@ -57,7 +57,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Datasets: example algorithm outputs</h1>
-    <small class="dont-index">Source: <a href="https://github.com/edwardlavender/patter/blob/HEAD/R/dats-patter.R" class="external-link"><code>R/dats-patter.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/edwardlavender/patter/blob/HEAD/R/dats-algorithms.R" class="external-link"><code>R/dats-algorithms.R</code></a></small>
     <div class="hidden name"><code>datasets-algorithms.Rd</code></div>
     </div>
 
@@ -70,7 +70,11 @@
 <span></span>
 <span><span class="fu">dat_coa</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">dat_pff</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">dat_pff</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">dat_pfb</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">dat_tff</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="source">
@@ -88,7 +92,9 @@
     
 <ul><li><p><code>dat_path()</code> reads an example output from <code><a href="sim_path_walk.html">sim_path_walk()</a></code>;</p></li>
 <li><p><code>dat_coa()</code> reads an example output from <code><a href="coa.html">coa()</a></code>;</p></li>
-<li><p><code>dat_pff()</code> reads an example output from <code><a href="pf_filter.html">pf_filter()</a></code>;</p></li>
+<li><p><code>dat_pff()</code> reads an example output from a forward run of <code><a href="pf_filter.html">pf_filter()</a></code>;</p></li>
+<li><p><code>dat_pfb()</code> reads an example output from a backward run of <code><a href="pf_filter.html">pf_filter()</a></code>;</p></li>
+<li><p><code>dat_tff()</code> reads an example output from <code><a href="pf_smoother_two_filter.html">pf_smoother_two_filter()</a></code>;</p></li>
 </ul></div>
     <div id="see-also">
     <h2>See also</h2>
@@ -111,41 +117,53 @@
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Load inbuilt datasets</span></span></span>
 <span class="r-in"><span><span class="fu">dat_path</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     path_id     timestep       timestamp                       cell_x      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   :1   Min.   :  1.0   Min.   :2016-01-01 00:00:00   Min.   :705342  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1st Qu.:1   1st Qu.:180.8   1st Qu.:2016-01-01 05:59:30   1st Qu.:707142  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Median :1   Median :360.5   Median :2016-01-01 11:59:00   Median :708742  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Mean   :1   Mean   :360.5   Mean   :2016-01-01 11:59:00   Mean   :708605  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3rd Qu.:1   3rd Qu.:540.2   3rd Qu.:2016-01-01 17:58:30   3rd Qu.:710042  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Max.   :1   Max.   :720.0   Max.   :2016-01-01 23:58:00   Max.   :711342  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      cell_y            cell_z          cell_id        map_value     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   :6262807   Min.   : 13.81   Min.   : 4513   Min.   : 13.81  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1st Qu.:6267007   1st Qu.: 85.67   1st Qu.: 7159   1st Qu.: 85.67  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Median :6268257   Median :118.56   Median : 9160   Median :118.56  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Mean   :6267815   Mean   :117.43   Mean   : 9996   Mean   :117.43  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3rd Qu.:6269307   3rd Qu.:153.30   3rd Qu.:11522   3rd Qu.:153.30  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Max.   :6270707   Max.   :194.92   Max.   :19483   Max.   :194.92  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     path_id     timestep        timestamp                     map_value     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   :1   Min.   :  1.00   Min.   :2016-01-01 00:00:00   Min.   : 13.81  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1st Qu.:1   1st Qu.: 90.75   1st Qu.:2016-01-01 02:59:30   1st Qu.: 70.94  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Median :1   Median :180.50   Median :2016-01-01 05:59:00   Median :103.07  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Mean   :1   Mean   :180.50   Mean   :2016-01-01 05:59:00   Mean   :105.72  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3rd Qu.:1   3rd Qu.:270.25   3rd Qu.:2016-01-01 08:58:30   3rd Qu.:138.64  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Max.   :1   Max.   :360.00   Max.   :2016-01-01 11:58:00   Max.   :183.60  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        x                y          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   :705325   Min.   :6262791  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1st Qu.:707184   1st Qu.:6267005  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Median :708761   Median :6268261  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Mean   :708606   Mean   :6267814  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3rd Qu.:710051   3rd Qu.:6269331  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   :708205   Min.   :6265168  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1st Qu.:709215   1st Qu.:6268402  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Median :710053   Median :6269311  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Mean   :709972   Mean   :6268913  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3rd Qu.:710777   3rd Qu.:6270004  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Max.   :711345   Max.   :6270754  </span>
 <span class="r-in"><span><span class="fu">dat_coa</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    timestamp                         x                y          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   :2016-01-01 00:00:00   Min.   :706141   Min.   :6263690  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1st Qu.:2016-01-01 05:30:00   1st Qu.:707236   1st Qu.:6267013  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Median :2016-01-01 11:00:00   Median :708719   Median :6268312  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Mean   :2016-01-01 11:00:00   Mean   :708539   Mean   :6267682  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3rd Qu.:2016-01-01 16:30:00   3rd Qu.:709989   3rd Qu.:6268954  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Max.   :2016-01-01 22:00:00   Max.   :710618   Max.   :6270115  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     timestep      timestamp                     map_value            x         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   :1.00   Min.   :2016-01-01 00:00:00   Min.   : 74.88   Min.   :708742  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1st Qu.:2.25   1st Qu.:2016-01-01 02:30:00   1st Qu.: 85.59   1st Qu.:709202  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Median :3.50   Median :2016-01-01 05:00:00   Median : 98.15   Median :710019  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Mean   :3.50   Mean   :2016-01-01 05:00:00   Mean   :103.15   Mean   :709772  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3rd Qu.:4.75   3rd Qu.:2016-01-01 07:30:00   3rd Qu.:111.01   3rd Qu.:710240  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Max.   :6.00   Max.   :2016-01-01 10:00:00   Max.   :151.03   Max.   :710609  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        y          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Min.   :6266140  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1st Qu.:6268791  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Median :6269140  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Mean   :6268864  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3rd Qu.:6269756  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Max.   :6270129  </span>
 <span class="r-in"><span><span class="fu">dat_pff</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             Length Class      Mode   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> xinit       3      data.table list   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> states      6      data.table list   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> diagnostics 4      data.table list   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> convergence 1      -none-     logical</span>
+<span class="r-in"><span><span class="fu">dat_pfb</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             Length Class      Mode   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> xinit       3      data.table list   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> states      6      data.table list   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> diagnostics 4      data.table list   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> convergence 1      -none-     logical</span>
+<span class="r-in"><span><span class="fu">dat_tff</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             Length Class      Mode   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> xinit       0      -none-     NULL   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> states      6      data.table list   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> diagnostics 4      data.table list   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> convergence 1      -none-     logical</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

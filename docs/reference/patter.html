@@ -71,6 +71,7 @@
     <p>For an introduction to <code>patter</code>, use:</p><ul><li><p><code><a href="../articles/a-methodology.html">vignette("a-methodology", package = "patter")</a></code> for a conceptual introduction to the methodology;</p></li>
 <li><p><code><a href="../articles/b-workflow-outline.html">vignette("b-workflow-outline", package = "patter")</a></code> for an overview of the workflow;</p></li>
 </ul><p>For a full list of all functions, see <code><a href="https://rdrr.io/pkg/patter/man" class="external-link">help(package = 'patter')</a></code>.</p>
+<p>For a glossary of key arguments, see <code><a href="glossary.html">glossary</a></code>.</p>
     </div>
     <div id="datasets">
     <h2>Datasets</h2>
@@ -78,10 +79,11 @@
 <li><p><code><a href="datasets-mefs.html">dat_acoustics</a></code> for acoustic time series;</p></li>
 <li><p><code><a href="datasets-mefs.html">dat_archival</a></code> for archival (depth) time series;</p></li>
 <li><p><code><a href="datasets-mefs.html">dat_gebco()</a></code> for a bathymetry grid;</p></li>
-</ul><p>To validate new datasets for use with <code>patter</code>, use TO DO.</p>
+</ul><p>To validate new datasets for use with <code>patter</code>, see <code><a href="pat_setup_data.html">pat_setup_data()</a></code> and/or the <code><a href="assemble.html">assemble</a></code><code>_*()</code> function documentation.</p>
 <p>For example algorithm outputs (<code>datasets-algorithms</code>), see:</p><ul><li><p><code><a href="datasets-algorithms.html">dat_path()</a></code> for an example output from <code><a href="sim_path_walk.html">sim_path_walk()</a></code>;</p></li>
 <li><p><code><a href="datasets-algorithms.html">dat_coa()</a></code> for an example output from <code><a href="coa.html">coa()</a></code>;</p></li>
-<li><p><code><a href="datasets-algorithms.html">dat_pff()</a></code> for an example output from <code><a href="pf_filter.html">pf_filter()</a></code>;</p></li>
+<li><p><code><a href="datasets-algorithms.html">dat_pff()</a></code> and <code><a href="datasets-algorithms.html">dat_pfb()</a></code> for an example output from <code><a href="pf_filter.html">pf_filter()</a></code>;</p></li>
+<li><p><code><a href="datasets-algorithms.html">dat_tff()</a></code> for an example output from <code><a href="pf_smoother_two_filter.html">pf_smoother_two_filter()</a></code>;</p></li>
 </ul></div>
     <div id="set-up-julia">
     <h2>Set up <code>Julia</code></h2>
@@ -125,11 +127,8 @@
 <p><strong>To implement particle filtering (PF) routines</strong>, use:</p><ul><li><p><code><a href="pf_filter.html">pf_filter()</a></code> to implement the particle filter;</p></li>
 <li><p><code><a href="pf_smoother_two_filter.html">pf_smoother_two_filter()</a></code> to implement the two-filter smoother;</p></li>
 </ul><p>These functions return <code><a href="pf_particles-class.html">pf_particles</a></code> objects.</p>
-<p><strong>For convenience plotting functions</strong>, see:</p>
-<p>TO DO</p>
-<p><strong>For common utility functions</strong>, see:</p>
-<p>TO DO</p>
-<p><strong>For mapping utilisation distributions</strong>, use:</p><ul><li><p><code><a href="map_pou.html">map_pou()</a></code> to map probability-of-use;</p></li>
+<p><strong>For convenience plotting functions</strong>, see:</p><ul><li><p><code><a href="pf_plot_xy.html">pf_plot_xy()</a></code> to plot particle locations;</p></li>
+</ul><p><strong>For mapping utilisation distributions</strong>, use:</p><ul><li><p><code><a href="map_pou.html">map_pou()</a></code> to map probability-of-use;</p></li>
 <li><p><code><a href="map_dens.html">map_dens()</a></code> to create smooth maps using <code>spatstat</code>, plus the supporting functions:</p><ul><li><p><code><a href="map_dens.html">as.im.SpatRaster()</a></code>, to convert <code>SpatRaster</code>s to pixel images;</p></li>
 <li><p><code><a href="map_dens.html">as.owin.SpatRaster()</a></code>, to convert  <code>SpatRaster</code>s to observation windows;</p></li>
 <li><p><code><a href="map_dens.html">as.owin.sf()</a></code>, to convert <code>sf</code> objects to observation windows;</p></li>
@@ -143,6 +142,13 @@
     <div id="options">
     <h2>Options</h2>
     <p>For additional options in <code>patter</code>, see:</p><ul><li><p><code><a href="patter-progress.html">patter-progress</a></code> to monitor function progress;</p></li>
+</ul></div>
+    <div id="miscellaneous">
+    <h2>Miscellaneous</h2>
+    
+<ul><li><p>See <code><a href="cl_lapply.html">cl_lapply()</a></code> for <code>R</code> parallelisation;</p></li>
+<li><p>See <code><a href="example_setup.html">example_setup()</a></code> for functions used to streamline examples;</p></li>
+<li><p>See <code>file_*()</code> functions (e.g., <code><a href="file_path.html">file_list()</a></code>) for system file helpers;</p></li>
 </ul></div>
     <div id="references">
     <h2>References</h2>

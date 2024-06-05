@@ -67,6 +67,7 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">coa</span><span class="op">(</span></span>
+<span>  <span class="va">.map</span>,</span>
 <span>  <span class="va">.acoustics</span>,</span>
 <span>  .moorings <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">.delta_t</span>,</span>
@@ -79,7 +80,12 @@
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>.acoustics, .moorings</dt>
+    <dl><dt>.map</dt>
+<dd><p>A <code>SpatRaster</code> that defines the study area (see <code><a href="glossary.html">glossary</a></code>). Here, <code>.map</code> is used to:</p><ul><li><p>Extract <code>map_value</code> at centres of activity, for consistency with other routines (such as <code><a href="pf_filter.html">pf_filter()</a></code>);</p></li>
+</ul></dd>
+
+
+<dt>.acoustics, .moorings</dt>
 <dd><p>Acoustic detection <a href="s"><code>data.table</code></a>.</p><ul><li><p><code>.acoustics</code> is a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of acoustic detections, with the following columns: <code>receiver_id</code> (or <code>sensor_id</code>), <code>timestamp</code> and (optionally) <code>receiver_x</code> and <code>receiver_y</code> columns;</p></li>
 <li><p>(optional) <code>.moorings</code> is a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of receiver coordinates, which should be provided if unavailable in <code>.acoustics</code>, with <code>receiver_id</code>, <code>receiver_x</code> and <code>receiver_y</code> columns;</p></li>
 </ul><p>Receiver coordinates <strong>must be planar</strong>.</p></dd>
@@ -104,9 +110,10 @@
     <h2>Value</h2>
     
 
-<p>The function returns a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> with the following columns:</p><ul><li><p><code>.split</code>---a <code>character</code> vector that distinguishes groups, if applicable;</p></li>
+<p>The function returns a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> with the following columns:</p><ul><li><p><code>{.split}</code>---a <code>character</code> vector that distinguishes groups, if applicable;</p></li>
+<li><p><code>timestep</code>---an <code>integer</code> vector of time steps;</p></li>
 <li><p><code>timestamp</code>---a <code>POSIXt</code> vector of time stamps;</p></li>
-<li><p><code>x</code>, <code>y</code>---the coordinates of the COAs;</p></li>
+<li><p><code>map_value</code>, <code>x</code>, <code>y</code>---the value of <code>.map</code> at COAs and their coordinates;</p></li>
 </ul><p>Data are arranged by <code>.split</code> and <code>timestamp</code>.</p>
     </div>
     <div id="details">
@@ -131,117 +138,122 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Set up example</span></span></span>
+<span class="r-in"><span><span class="va">map</span>       <span class="op">&lt;-</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">acoustics</span> <span class="op">&lt;-</span> <span class="va">dat_acoustics</span></span></span>
 <span class="r-in"><span><span class="va">moorings</span>  <span class="op">&lt;-</span> <span class="va">dat_moorings</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (1): Calculate COAs for an example individual</span></span></span>
 <span class="r-in"><span><span class="va">id</span>     <span class="op">&lt;-</span> <span class="va">dat_acoustics</span><span class="op">$</span><span class="va">individual_id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">acc</span>    <span class="op">&lt;-</span> <span class="va">dat_acoustics</span><span class="op">[</span><span class="va">individual_id</span> <span class="op">==</span> <span class="va">id</span>, <span class="op">]</span></span></span>
-<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span><span class="va">acc</span>, <span class="va">moorings</span>, .delta_t <span class="op">=</span> <span class="st">"2 hours"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .acoustics <span class="op">=</span> <span class="va">acc</span>, .moorings <span class="op">=</span> <span class="va">moorings</span>,</span></span>
+<span class="r-in"><span>    .delta_t <span class="op">=</span> <span class="st">"2 hours"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="coa-1.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                timestamp        x       y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   &lt;POSc&gt;    &lt;num&gt;   &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   1: 2016-03-17 00:00:00 709242.1 6253107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   2: 2016-03-17 02:00:00 708992.1 6252957</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   3: 2016-03-17 04:00:00 709255.3 6253107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   4: 2016-03-17 08:00:00 709398.4 6253169</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   5: 2016-03-21 20:00:00 709242.1 6253107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 763: 2017-05-31 20:00:00 702980.1 6266245</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 764: 2017-05-31 22:00:00 702975.5 6266240</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 765: 2017-06-01 00:00:00 703042.1 6266307</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 766: 2017-06-01 02:00:00 703042.1 6266307</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 767: 2017-06-01 04:00:00 703042.1 6266307</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      timestep           timestamp map_value        x       y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;int&gt;              &lt;POSc&gt;     &lt;num&gt;    &lt;num&gt;   &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:        1 2016-03-17 00:00:00  58.17422 709242.1 6253107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2:        2 2016-03-17 02:00:00  58.24497 708992.1 6252957</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:        3 2016-03-17 04:00:00  58.17422 709255.3 6253107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:        4 2016-03-17 08:00:00  49.72233 709398.4 6253169</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:        5 2016-03-21 20:00:00  58.17422 709242.1 6253107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 763:      763 2017-05-31 20:00:00  56.08996 702980.1 6266245</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 764:      764 2017-05-31 22:00:00  56.08996 702975.5 6266240</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 765:      765 2017-06-01 00:00:00  68.36060 703042.1 6266307</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 766:      766 2017-06-01 02:00:00  68.36060 703042.1 6266307</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 767:      767 2017-06-01 04:00:00  68.36060 703042.1 6266307</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (2): Customise the time interval via `.delta_t`</span></span></span>
-<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span><span class="va">acc</span>, <span class="va">moorings</span>, .delta_t <span class="op">=</span> <span class="st">"4 hours"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .acoustics <span class="op">=</span> <span class="va">acc</span>, .moorings <span class="op">=</span> <span class="va">moorings</span>,</span></span>
+<span class="r-in"><span>    .delta_t <span class="op">=</span> <span class="st">"4 hours"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="coa-2.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                timestamp        x       y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   &lt;POSc&gt;    &lt;num&gt;   &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   1: 2016-03-17 00:00:00 709013.0 6252969</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   2: 2016-03-17 04:00:00 709255.3 6253107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   3: 2016-03-17 08:00:00 709398.4 6253169</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   4: 2016-03-21 20:00:00 709242.1 6253107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   5: 2016-03-22 04:00:00 709242.1 6253107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 549: 2017-05-30 20:00:00 702839.2 6266053</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 550: 2017-05-31 16:00:00 702974.0 6266239</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 551: 2017-05-31 20:00:00 702977.1 6266242</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 552: 2017-06-01 00:00:00 703042.1 6266307</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 553: 2017-06-01 04:00:00 703042.1 6266307</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      timestep           timestamp map_value        x       y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;int&gt;              &lt;POSc&gt;     &lt;num&gt;    &lt;num&gt;   &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:        1 2016-03-17 00:00:00  66.55176 709013.0 6252969</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2:        2 2016-03-17 04:00:00  58.17422 709255.3 6253107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:        3 2016-03-17 08:00:00  49.72233 709398.4 6253169</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:        4 2016-03-21 20:00:00  58.17422 709242.1 6253107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:        5 2016-03-22 04:00:00  58.17422 709242.1 6253107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 549:      549 2017-05-30 20:00:00  34.53219 702839.2 6266053</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 550:      550 2017-05-31 16:00:00  56.08996 702974.0 6266239</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 551:      551 2017-05-31 20:00:00  56.08996 702977.1 6266242</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 552:      552 2017-06-01 00:00:00  68.36060 703042.1 6266307</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 553:      553 2017-06-01 04:00:00  68.36060 703042.1 6266307</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (3): Calculate COAs for multiple individuals via `.split`</span></span></span>
 <span class="r-in"><span><span class="co"># Calculate COAs</span></span></span>
-<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span><span class="va">acoustics</span>, <span class="va">dat_moorings</span>, .delta_t <span class="op">=</span> <span class="st">"6 hours"</span>, .split <span class="op">=</span> <span class="st">"individual_id"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .acoustics <span class="op">=</span> <span class="va">acc</span>, .moorings <span class="op">=</span> <span class="va">moorings</span>,</span></span>
+<span class="r-in"><span>    .delta_t <span class="op">=</span> <span class="st">"6 hours"</span>, .split <span class="op">=</span> <span class="st">"individual_id"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="coa-3.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       individual_id           timestamp        x       y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;int&gt;              &lt;POSc&gt;    &lt;num&gt;   &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:            25 2016-03-17 00:00:00 709120.1 6253030</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:            25 2016-03-17 06:00:00 709398.4 6253169</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:            25 2016-03-21 18:00:00 709242.1 6253107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:            25 2016-03-22 00:00:00 709242.1 6253107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:            25 2016-03-22 06:00:00 709242.1 6253107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1204:            35 2017-04-10 18:00:00 709048.8 6253427</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1205:            35 2017-04-11 18:00:00 706342.1 6254307</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1206:            35 2017-04-12 00:00:00 707042.1 6253840</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1207:            35 2017-04-12 18:00:00 708771.2 6253210</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1208:            35 2017-04-19 18:00:00 707242.1 6253707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      individual_id timestep           timestamp map_value        x       y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              &lt;int&gt;    &lt;int&gt;              &lt;POSc&gt;     &lt;num&gt;    &lt;num&gt;   &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:            25        1 2016-03-17 00:00:00  59.76520 709120.1 6253030</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2:            25        2 2016-03-17 06:00:00  49.72233 709398.4 6253169</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:            25        3 2016-03-21 18:00:00  58.17422 709242.1 6253107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:            25        4 2016-03-22 00:00:00  58.17422 709242.1 6253107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:            25        5 2016-03-22 06:00:00  58.17422 709242.1 6253107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 469:            25      469 2017-05-30 00:00:00  56.08996 702939.6 6266204</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 470:            25      470 2017-05-30 06:00:00  68.36060 703042.1 6266307</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 471:            25      471 2017-05-30 18:00:00  34.53219 702839.2 6266053</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 472:            25      472 2017-05-31 18:00:00  56.08996 702976.4 6266241</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 473:            25      473 2017-06-01 00:00:00  68.36060 703042.1 6266307</span>
 <span class="r-in"><span><span class="co"># Use one page for plots via `.one_page = TRUE`</span></span></span>
-<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span><span class="va">acoustics</span>, <span class="va">dat_moorings</span>, .delta_t <span class="op">=</span> <span class="st">"6 hours"</span>, .split <span class="op">=</span> <span class="st">"individual_id"</span>,</span></span>
+<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .acoustics <span class="op">=</span> <span class="va">acc</span>, .moorings <span class="op">=</span> <span class="va">moorings</span>,</span></span>
+<span class="r-in"><span>    .delta_t <span class="op">=</span> <span class="st">"6 hours"</span>, .split <span class="op">=</span> <span class="st">"individual_id"</span>,</span></span>
 <span class="r-in"><span>    .one_page <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="coa-4.png" alt="" width="700" height="433"></span>
-<span class="r-plt img"><img src="coa-5.png" alt="" width="700" height="433"></span>
-<span class="r-plt img"><img src="coa-6.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       individual_id           timestamp        x       y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;int&gt;              &lt;POSc&gt;    &lt;num&gt;   &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:            25 2016-03-17 00:00:00 709120.1 6253030</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:            25 2016-03-17 06:00:00 709398.4 6253169</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:            25 2016-03-21 18:00:00 709242.1 6253107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:            25 2016-03-22 00:00:00 709242.1 6253107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:            25 2016-03-22 06:00:00 709242.1 6253107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1204:            35 2017-04-10 18:00:00 709048.8 6253427</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1205:            35 2017-04-11 18:00:00 706342.1 6254307</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1206:            35 2017-04-12 00:00:00 707042.1 6253840</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1207:            35 2017-04-12 18:00:00 708771.2 6253210</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1208:            35 2017-04-19 18:00:00 707242.1 6253707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      individual_id timestep           timestamp map_value        x       y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              &lt;int&gt;    &lt;int&gt;              &lt;POSc&gt;     &lt;num&gt;    &lt;num&gt;   &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:            25        1 2016-03-17 00:00:00  59.76520 709120.1 6253030</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2:            25        2 2016-03-17 06:00:00  49.72233 709398.4 6253169</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:            25        3 2016-03-21 18:00:00  58.17422 709242.1 6253107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:            25        4 2016-03-22 00:00:00  58.17422 709242.1 6253107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:            25        5 2016-03-22 06:00:00  58.17422 709242.1 6253107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 469:            25      469 2017-05-30 00:00:00  56.08996 702939.6 6266204</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 470:            25      470 2017-05-30 06:00:00  68.36060 703042.1 6266307</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 471:            25      471 2017-05-30 18:00:00  34.53219 702839.2 6266053</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 472:            25      472 2017-05-31 18:00:00  56.08996 702976.4 6266241</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 473:            25      473 2017-06-01 00:00:00  68.36060 703042.1 6266307</span>
 <span class="r-in"><span><span class="co"># Suppress plots via `.plot = FALSE`</span></span></span>
-<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span><span class="va">acoustics</span>, <span class="va">dat_moorings</span>, .delta_t <span class="op">=</span> <span class="st">"6 hours"</span>, .split <span class="op">=</span> <span class="st">"individual_id"</span>,</span></span>
+<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .acoustics <span class="op">=</span> <span class="va">acc</span>, .moorings <span class="op">=</span> <span class="va">moorings</span>,</span></span>
+<span class="r-in"><span>    .delta_t <span class="op">=</span> <span class="st">"6 hours"</span>, .split <span class="op">=</span> <span class="st">"individual_id"</span>,</span></span>
 <span class="r-in"><span>    .one_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       individual_id           timestamp        x       y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;int&gt;              &lt;POSc&gt;    &lt;num&gt;   &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:            25 2016-03-17 00:00:00 709120.1 6253030</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:            25 2016-03-17 06:00:00 709398.4 6253169</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:            25 2016-03-21 18:00:00 709242.1 6253107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:            25 2016-03-22 00:00:00 709242.1 6253107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:            25 2016-03-22 06:00:00 709242.1 6253107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1204:            35 2017-04-10 18:00:00 709048.8 6253427</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1205:            35 2017-04-11 18:00:00 706342.1 6254307</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1206:            35 2017-04-12 00:00:00 707042.1 6253840</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1207:            35 2017-04-12 18:00:00 708771.2 6253210</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1208:            35 2017-04-19 18:00:00 707242.1 6253707</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      individual_id timestep           timestamp map_value        x       y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              &lt;int&gt;    &lt;int&gt;              &lt;POSc&gt;     &lt;num&gt;    &lt;num&gt;   &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:            25        1 2016-03-17 00:00:00  59.76520 709120.1 6253030</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2:            25        2 2016-03-17 06:00:00  49.72233 709398.4 6253169</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:            25        3 2016-03-21 18:00:00  58.17422 709242.1 6253107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:            25        4 2016-03-22 00:00:00  58.17422 709242.1 6253107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:            25        5 2016-03-22 06:00:00  58.17422 709242.1 6253107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 469:            25      469 2017-05-30 00:00:00  56.08996 702939.6 6266204</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 470:            25      470 2017-05-30 06:00:00  68.36060 703042.1 6266307</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 471:            25      471 2017-05-30 18:00:00  34.53219 702839.2 6266053</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 472:            25      472 2017-05-31 18:00:00  56.08996 702976.4 6266241</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 473:            25      473 2017-06-01 00:00:00  68.36060 703042.1 6266307</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (4): Specify `.acoustics` only</span></span></span>
 <span class="r-in"><span><span class="co"># `.moorings` is not required if `.acoustics` contains receiver coordinates</span></span></span>
-<span class="r-in"><span><span class="va">acoustics</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">moorings</span>, by <span class="op">=</span> <span class="st">"receiver_id"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu">coa</span><span class="op">(</span>.delta_t <span class="op">=</span> <span class="st">"6 hours"</span>, .split <span class="op">=</span> <span class="st">"individual_id"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="coa-7.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       individual_id           timestamp        x       y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;int&gt;              &lt;POSc&gt;    &lt;num&gt;   &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:            25 2016-03-17 00:00:00 709120.1 6253030</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:            25 2016-03-17 06:00:00 709398.4 6253169</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:            25 2016-03-21 18:00:00 709242.1 6253107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:            25 2016-03-22 00:00:00 709242.1 6253107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:            25 2016-03-22 06:00:00 709242.1 6253107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1204:            35 2017-04-10 18:00:00 709048.8 6253427</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1205:            35 2017-04-11 18:00:00 706342.1 6254307</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1206:            35 2017-04-12 00:00:00 707042.1 6253840</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1207:            35 2017-04-12 18:00:00 708771.2 6253210</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1208:            35 2017-04-19 18:00:00 707242.1 6253707</span>
+<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
+<span class="r-in"><span>    .acoustics <span class="op">=</span></span></span>
+<span class="r-in"><span>      <span class="va">acoustics</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>      <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">moorings</span>, by <span class="op">=</span> <span class="st">"receiver_id"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    .delta_t <span class="op">=</span> <span class="st">"6 hours"</span>, .split <span class="op">=</span> <span class="st">"individual_id"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="coa-4.png" alt="" width="700" height="433"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       individual_id timestep           timestamp map_value        x       y</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;int&gt;    &lt;int&gt;              &lt;POSc&gt;     &lt;num&gt;    &lt;num&gt;   &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1:            25        1 2016-03-17 00:00:00  59.76520 709120.1 6253030</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2:            25        2 2016-03-17 06:00:00  49.72233 709398.4 6253169</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3:            25        3 2016-03-21 18:00:00  58.17422 709242.1 6253107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4:            25        4 2016-03-22 00:00:00  58.17422 709242.1 6253107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5:            25        5 2016-03-22 06:00:00  58.17422 709242.1 6253107</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1204:            35      402 2017-04-10 18:00:00  99.90396 709048.8 6253427</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1205:            35      403 2017-04-11 18:00:00  49.51562 706342.1 6254307</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1206:            35      404 2017-04-12 00:00:00 117.36553 707042.1 6253840</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1207:            35      405 2017-04-12 18:00:00 113.60658 708771.2 6253210</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1208:            35      406 2017-04-19 18:00:00 129.77667 707242.1 6253707</span>
 </code></pre></div>
     </div>
   </div>

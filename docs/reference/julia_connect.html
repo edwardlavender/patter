@@ -112,7 +112,7 @@
     <p><code><a href="patter.html">patter</a></code> is an <code>R</code> front-end for the <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a> package. This requires a local installation of <code>Julia</code>. This function connects <code>R</code> to the local <code>Julia</code> installation, sets up <code><a href="https://rdrr.io/pkg/JuliaCall/man/JuliaCall.html" class="external-link">JuliaCall</a></code>, which provides the integration between <code>R</code> and <code>Julia</code>, and <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a>. Internally, the steps are as follows:</p><ul><li><p><code><a href="https://rdrr.io/pkg/JuliaCall/man/JuliaCall.html" class="external-link">JuliaCall</a></code> is set up via <code><a href="https://rdrr.io/pkg/JuliaCall/man/julia_setup.html" class="external-link">JuliaCall::julia_setup()</a></code>, using <code>.threads</code> threads.</p></li>
 <li><p>The <code>Julia</code> installation is validated.</p></li>
 <li><p>A local <code>Julia</code> Project is generated in <code>JULIA_PROJ</code> (if specified and required) and activated. We recommend using <code><a href="patter.html">patter</a></code> within an RStudio Project, with a <code>Julia</code> directory at the top-level that contains the <code>Julia</code> project.</p></li>
-<li><p><a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a> and supporting dependencies are installed or updated (if required) and loaded (optionally in the local <code>Julia</code> Project).</p></li>
+<li><p><a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a> and supporting dependencies are installed or updated (if required) and loaded (optionally in the local <code>Julia</code> Project). If the environment variable <code>PATTER.JL_DEV = "path/to/local/clone/of/Patter.jl"</code> is set, <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a> is installed from a local source as a development dependency (via <code>Pkg.develop()</code>); otherwise, <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a> is installed from the remote.</p></li>
 </ul><p>You should run this function once per <code>R</code> session.</p>
 <p>To update the number of threads, restart <code>R</code> and re-run the function with an updated <code>.threads</code> argument.</p>
     </div>
@@ -148,38 +148,38 @@
 <span class="r-in"><span>  <span class="co">#### Example (6): Customise user output</span></span></span>
 <span class="r-in"><span>  <span class="fu">julia_connect</span><span class="op">(</span>JULIA_PROJ <span class="op">=</span> <span class="va">proj</span>, .verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="cleanup.html">cleanup</a></span><span class="op">(</span><span class="va">proj</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="file_path.html">file_cleanup</a></span><span class="op">(</span><span class="va">proj</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-05-27 14:06:14... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-06-05 13:05:24... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_setup()`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... Julia set up with 8 threads. </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-05-27 14:06:19 (duration: ~5 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-05-27 14:06:19... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 8 thread(s). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-06-05 13:05:29 (duration: ~5 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-06-05 13:05:29... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_setup()`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... Julia set up with 8 threads. </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-05-27 14:06:24 (duration: ~5 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-05-27 14:06:24... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 8 thread(s). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-06-05 13:05:34 (duration: ~5 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-06-05 13:05:34... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_setup()`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... Julia set up with 8 threads. </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-05-27 14:06:42 (duration: ~18 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-05-27 14:06:42... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 8 thread(s). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-06-05 13:05:52 (duration: ~18 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-06-05 13:05:52... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_setup()`... </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Restart R to update the number of threads in Julia.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`JULIA_NUM_THREADS` could not be set via `.threads`.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... Julia set up with 8 threads. </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-05-27 14:06:47 (duration: ~5 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 8 thread(s). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-06-05 13:05:57 (duration: ~5 sec(s)). </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

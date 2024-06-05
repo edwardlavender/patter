@@ -92,10 +92,10 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Patter contains multiple built-in `ModelObs` subtypes that you can use</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Patter contains multiple built-in `ModelObs` sub-types that you can use</span></span></span>
 <span class="r-in"><span><span class="co"># ... (with custom parameters) simulate observations and for particle filtering.</span></span></span>
-<span class="r-in"><span><span class="co"># To use a new subtype, follow the workflow below. Some extra work is required</span></span></span>
-<span class="r-in"><span><span class="co"># ... because we have to register the subtype in `Julia` and write the</span></span></span>
+<span class="r-in"><span><span class="co"># To use a new sub-type, follow the workflow below. Some extra work is required</span></span></span>
+<span class="r-in"><span><span class="co"># ... because we have to register the sub-type in `Julia` and write the</span></span></span>
 <span class="r-in"><span><span class="co"># ... required methods to simulate observations and/or calculate log probabilities.</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="julia_helper.html">julia_run</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
@@ -125,10 +125,10 @@
 <span class="r-in"><span>                         .one_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co">#### Simulate observations arising from the simulated path</span></span></span>
-<span class="r-in"><span>  <span class="co"># Register a custom `ModelObs` subtype in Julia</span></span></span>
+<span class="r-in"><span>  <span class="co"># Register a custom `ModelObs` sub-type in Julia</span></span></span>
 <span class="r-in"><span>  <span class="co"># * We imagine a pelagic animal in which the depth at each time step</span></span></span>
 <span class="r-in"><span>  <span class="co"># * ... is normally distributed around the previous depth.</span></span></span>
-<span class="r-in"><span>  <span class="co"># * We write a `ModelObs` subtype in `Julia` that contains the parameters</span></span></span>
+<span class="r-in"><span>  <span class="co"># * We write a `ModelObs` sub-type in `Julia` that contains the parameters</span></span></span>
 <span class="r-in"><span>  <span class="co"># * ... for this model (i.e., the sigma parameter of the normal distribution).</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/pkg/JuliaCall/man/julia_command.html" class="external-link">julia_command</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="st">'</span></span></span>
@@ -167,8 +167,9 @@
 <span class="r-in"><span>  <span class="co"># A) Starting the filter in the correct location by masking `.map`</span></span></span>
 <span class="r-in"><span>  <span class="co"># B) Specifying a `map_init()` method based on the observation model</span></span></span>
 <span class="r-in"><span>  <span class="co"># C) Specifying a complete data.table of initial state(s)</span></span></span>
-<span class="r-in"><span>  <span class="va">origin</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/setValues.html" class="external-link">setValues</a></span><span class="op">(</span><span class="va">map</span>, <span class="cn">NA</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">origin</span><span class="op">[</span><span class="va">paths</span><span class="op">$</span><span class="va">cell_id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/extract.html" class="external-link">extract</a></span><span class="op">(</span><span class="va">map</span>, <span class="va">paths</span><span class="op">$</span><span class="va">cell_id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">origin</span>       <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/setValues.html" class="external-link">setValues</a></span><span class="op">(</span><span class="va">map</span>, <span class="cn">NA</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">cell</span>         <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/xyCellFrom.html" class="external-link">cellFromXY</a></span><span class="op">(</span><span class="va">map</span>, <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">paths</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">paths</span><span class="op">$</span><span class="va">y</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">origin</span><span class="op">[</span><span class="va">cell</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">paths</span><span class="op">$</span><span class="va">map_value</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span></span>
 <span class="r-in"><span>  <span class="co"># Define a `Patter.logpdf_obs()` method</span></span></span>
 <span class="r-in"><span>  <span class="co"># * This is used to evaluate the log probability of a depth observation</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/pkg/JuliaCall/man/julia_command.html" class="external-link">julia_command</a></span><span class="op">(</span></span></span>
@@ -198,24 +199,24 @@
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/graphics/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">paths</span><span class="op">$</span><span class="va">timestamp</span>, <span class="va">paths</span><span class="op">$</span><span class="va">map_value</span> <span class="op">*</span> <span class="op">-</span><span class="fl">1</span>, col <span class="op">=</span> <span class="st">"grey"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-05-27 14:05:49... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-06-05 13:05:00... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_setup()`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... Julia set up with 8 threads. </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-05-27 14:05:57 (duration: ~8 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 8 thread(s). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-06-05 13:05:07 (duration: ~7 sec(s)). </span>
 <span class="r-plt img"><img src="ModelObs-1.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-05-27 14:05:59... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 14:05:59: Checking user inputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 14:05:59: Setting initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-06-05 13:05:09... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 13:05:09: Checking user inputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 13:05:09: Setting initial states... </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`terra::spatSample()` failed: implementing exhaustive sampling...</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>[spatSample] fewer samples than requested are available</span>
 <span class="r-plt img"><img src="ModelObs-2.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 14:05:59: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 14:05:59: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 14:06:01: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-05-27 14:06:02 (duration: ~3 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 13:05:09: Setting observations... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 13:05:09: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 13:05:11: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-06-05 13:05:11 (duration: ~2 sec(s)). </span>
 <span class="r-plt img"><img src="ModelObs-3.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
