@@ -15,8 +15,7 @@ as.owin.sf(.poly, .bbox = sf::st_bbox(.poly), .invert = TRUE)
 
 map_dens(
   .map,
-  .im = NULL,
-  .owin = NULL,
+  .owin = as.owin.SpatRaster(.map),
   .coord = NULL,
   .discretise = FALSE,
   .shortcut = list(),
@@ -29,7 +28,7 @@ map_dens(
 \arguments{
 \item{.map}{A \code{\link{SpatRaster}} that defines the grid on which the UD is represented. If \code{.coord = NULL}, \code{.map} also defines the points (and associated weights) that are smoothed (see \code{\link[=.map_coord]{.map_coord()}}). \strong{The coordinate reference system of \code{.map} must be planar} and specified.}
 
-\item{.im, .owin}{(optional) A pixel image representation of \code{.map} (see \code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}} and \code{\link[spatstat.geom:im]{spatstat.geom::im()}}) and an observation window (see \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}}, \code{\link[=as.owin.sf]{as.owin.sf()}} and \code{\link[spatstat.geom:owin]{spatstat.geom::owin()}}). These objects may be computed automatically from \code{.map} (with rectangular or gridded observation windows used by default, depending on whether or not \code{.map} contains \code{NA}s), but this option can be over-ridden. For faster results, use a rectangular or polygon observation window (see \code{\link[=as.owin.sf]{as.owin.sf()}}). If \code{.coord} is supplied, \code{.im} is necessarily (re)-defined internally (see Details).}
+\item{.im, .owin}{A pixel image representation of \code{.map} (see \code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}} and \code{\link[spatstat.geom:im]{spatstat.geom::im()}}) and an observation window (see \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}}, \code{\link[=as.owin.sf]{as.owin.sf()}} and \code{\link[spatstat.geom:owin]{spatstat.geom::owin()}}). If un-supplied, \code{.owin} is defined automatically from \code{.map} via \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}}, which uses \code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}} internally (see Details). For faster results, use a rectangular or polygon observation window (see \code{\link[=as.owin.sf]{as.owin.sf()}}).}
 
 \item{.poly, .bbox, .invert}{For \code{\link[=as.owin.sf]{as.owin.sf()}} to construct observation windows from \code{sf} objects.
 \itemize{
@@ -42,7 +41,7 @@ map_dens(
 
 \item{.discretise}{If \code{.coord} is provided, \code{.discretise} is a \code{logical} variable that defines whether or not to discretise coordinates on \code{.map} (see \code{\link[=.map_coord]{.map_coord()}}).}
 
-\item{.shortcut}{(optional) A named \code{list} from a previous call to \code{\link[=map_dens]{map_dens()}}. If supplied, the function short-cuts straight to smoothing (\code{.im}, \code{.owin}, \code{.coord} and \code{.discretise} are silently unused).}
+\item{.shortcut}{(optional) A named \code{list} from a previous call to \code{\link[=map_dens]{map_dens()}}. If supplied, the function short-cuts straight to smoothing (\code{.owin}, \code{.coord} and \code{.discretise} are silently unused).}
 
 \item{...}{Arguments for density estimation, passed to \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}}, such as \code{sigma} (i.e., the bandwidth). \code{at} and \code{se} are not permitted.}
 
@@ -60,9 +59,11 @@ map_dens(
 The function returns a named \code{list}, with the following elements:
 \itemize{
 \item \code{x}: a \code{\link[spatstat.geom:ppp]{spatstat.geom::ppp}} object that defines points for density estimation;
-\item \code{weights}: a \code{\link[spatstat.geom:im]{spatstat.geom::im}} object that defines weights for density estimation;
-\item \code{ud}: a normalised \code{\link{SpatRaster}} (or \code{NULL} if \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} fails and \code{.use_tryCatch = TRUE});
+\item \code{D}: a \code{\link[spatstat.geom:im]{spatstat.geom::im}} object of estimated intensities, from \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}};
+\item \code{ud}: a normalised \code{\link{SpatRaster}};
 }
+
+\code{D} and \code{ud} are \code{NULL} if \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} fails and \code{.use_tryCatch = TRUE}.
 }
 \description{
 \code{\link[=map_dens]{map_dens()}} creates a smoothed utilisation distribution (UD).
@@ -76,11 +77,11 @@ The function returns a named \code{list}, with the following elements:
 \item If coordinates are supplied, coordinates are optionally re-expressed on \code{.map} and then used for density estimation. This option is generally faster. Coordinate weights are defined by \code{\link[=.map_mark]{.map_mark()}}.
 }
 
-Cell coordinates are converted to a \code{\link[spatstat.geom:ppp]{spatstat.geom::ppp()}} object, which is passed, alongside the observation window (\code{.owin}) and a pixel-image representation of the weights to \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} for the estimation. Weights must sum to one.
+Cell coordinates and associated weights are converted to a \code{\link[spatstat.geom:ppp]{spatstat.geom::ppp()}} object, which is passed, alongside the observation window (\code{.owin}), to \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} for the estimation. Weights must sum to one.
 
-\code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}}, \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}} and \code{\link[=as.owin.sf]{as.owin.sf()}} are helper functions that convert a \code{\link{SpatRaster}} to a pixel image and an observation window (see \code{\link[spatstat.geom:owin]{spatstat.geom::owin()}}). \code{\link{as.im.SpatRaster}} is based on \code{maptools::as.im.RasterLayer()}. \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}} either defines a rectangular window, if there are no NAs on \code{.map}, or converts \code{.map} directly to an \code{owin} object. Gridded observation windows, especially if high resolution, considerably slow down density estimation and may exhaust vector memory. Use rectangular windows, or convert \code{sf} objects to polygon windows (via \code{\link[=as.owin.sf]{as.owin.sf()}}) if possible.
+\code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}}, \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}} and \code{\link[=as.owin.sf]{as.owin.sf()}} are helper functions that convert a \code{\link{SpatRaster}} to a pixel image and an observation window (see \code{\link[spatstat.geom:owin]{spatstat.geom::owin()}}). \code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}} is based on \code{maptools::as.im.RasterLayer()}. \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}} either defines a rectangular window, if there are no NAs on \code{.map}, or converts \code{.map} directly to an \code{owin} object. Gridded observation windows, especially if high resolution, considerably slow down density estimation and may exhaust vector memory. Use rectangular windows, or convert \code{sf} objects to polygon windows (via \code{\link[=as.owin.sf]{as.owin.sf()}}) if possible.
 
-If \code{.shortcut} is supplied, the preceeding steps can be skipped and the function short-cuts straight to smoothing. Use this option if the preceeding steps are slow and you want to trial different smoothing options (such as \code{sigma} functions).
+If \code{.shortcut} is supplied, the preceding steps can be skipped and the function short-cuts straight to smoothing. Use this option if the preceding steps are slow and you want to trial different smoothing options (such as \code{sigma} functions).
 
 Coordinates and associated weights are smoothed via \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} into an image. Pixel resolution and smoothing parameters such as bandwidth can be controlled via \code{...} arguments which are passed directly to this function. The output is translated into a gridded probability density surface (on the geometry defined by \code{.map}).
 

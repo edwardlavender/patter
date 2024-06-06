@@ -44,6 +44,8 @@ map_pou <-
     check_inherits(.map, "SpatRaster")
 
     #### Get XYM (cell IDs and marks)
+    # TO DO
+    # * Add `.shortcut` argument, as in `map_dens()`, to circumvent this step
     cats$cat("... Building XYM...")
     xym <- .map_coord(.map = .map, .coord = .coord, .discretise = TRUE)
 
@@ -64,14 +66,14 @@ map_pou <-
 #' @title Map: point density
 #' @description [`map_dens()`] creates a smoothed utilisation distribution (UD).
 #' @param .map A [`SpatRaster`] that defines the grid on which the UD is represented. If `.coord = NULL`, `.map` also defines the points (and associated weights) that are smoothed (see [`.map_coord()`]). **The coordinate reference system of `.map` must be planar** and specified.
-#' @param .im,.owin (optional) A pixel image representation of `.map` (see [`as.im.SpatRaster()`] and [`spatstat.geom::im()`]) and an observation window (see [`as.owin.SpatRaster()`], [`as.owin.sf()`] and [`spatstat.geom::owin()`]). These objects may be computed automatically from `.map` (with rectangular or gridded observation windows used by default, depending on whether or not `.map` contains `NA`s), but this option can be over-ridden. For faster results, use a rectangular or polygon observation window (see [`as.owin.sf()`]). If `.coord` is supplied, `.im` is necessarily (re)-defined internally (see Details).
+#' @param .im,.owin A pixel image representation of `.map` (see [`as.im.SpatRaster()`] and [`spatstat.geom::im()`]) and an observation window (see [`as.owin.SpatRaster()`], [`as.owin.sf()`] and [`spatstat.geom::owin()`]). If un-supplied, `.owin` is defined automatically from `.map` via [`as.owin.SpatRaster()`], which uses [`as.im.SpatRaster()`] internally (see Details). For faster results, use a rectangular or polygon observation window (see [`as.owin.sf()`]).
 #' @param .poly,.bbox,.invert For [`as.owin.sf()`] to construct observation windows from `sf` objects.
 #' * `.poly` is an `sf` polygon object;
 #' * `.bbox` is the bounding of a simple feature (see [`sf::st_bbox()`]);
 #' * `.invert` is a logical variable that defines whether or not to invert `.poly` (e.g., to turn a terrestrial polygon into an aquatic polygon);
 #' @param .coord (optional) Coordinates for density estimation, provided in any format accepted by [`.map_coord()`]. **Coordinates must be planar**.
 #' @param .discretise If `.coord` is provided, `.discretise` is a `logical` variable that defines whether or not to discretise coordinates on `.map` (see [`.map_coord()`]).
-#' @param .shortcut (optional) A named `list` from a previous call to [`map_dens()`]. If supplied, the function short-cuts straight to smoothing (`.im`, `.owin`, `.coord` and `.discretise` are silently unused).
+#' @param .shortcut (optional) A named `list` from a previous call to [`map_dens()`]. If supplied, the function short-cuts straight to smoothing (`.owin`, `.coord` and `.discretise` are silently unused).
 #' @param ... Arguments for density estimation, passed to [`spatstat.explore::density.ppp()`], such as `sigma` (i.e., the bandwidth). `at` and `se` are not permitted.
 #' @param .plot A `logical` variable that defines whether or not to plot the output.
 #' @param .use_tryCatch A `logical` variable that controls error handling:
@@ -86,11 +88,11 @@ map_pou <-
 #' * If `.coords` is `NULL`, `.map` cell coordinates are used for density estimation and cell values are used as weights.
 #' * If coordinates are supplied, coordinates are optionally re-expressed on `.map` and then used for density estimation. This option is generally faster. Coordinate weights are defined by [`.map_mark()`].
 #'
-#' Cell coordinates are converted to a [`spatstat.geom::ppp()`] object, which is passed, alongside the observation window (`.owin`) and a pixel-image representation of the weights to [`spatstat.explore::density.ppp()`] for the estimation. Weights must sum to one.
+#' Cell coordinates and associated weights are converted to a [`spatstat.geom::ppp()`] object, which is passed, alongside the observation window (`.owin`), to [`spatstat.explore::density.ppp()`] for the estimation. Weights must sum to one.
 #'
-#' [`as.im.SpatRaster()`], [`as.owin.SpatRaster()`] and [`as.owin.sf()`] are helper functions that convert a [`SpatRaster`] to a pixel image and an observation window (see [`spatstat.geom::owin()`]). [`as.im.SpatRaster`] is based on `maptools::as.im.RasterLayer()`. [`as.owin.SpatRaster()`] either defines a rectangular window, if there are no NAs on `.map`, or converts `.map` directly to an `owin` object. Gridded observation windows, especially if high resolution, considerably slow down density estimation and may exhaust vector memory. Use rectangular windows, or convert `sf` objects to polygon windows (via [`as.owin.sf()`]) if possible.
+#' [`as.im.SpatRaster()`], [`as.owin.SpatRaster()`] and [`as.owin.sf()`] are helper functions that convert a [`SpatRaster`] to a pixel image and an observation window (see [`spatstat.geom::owin()`]). [`as.im.SpatRaster()`] is based on `maptools::as.im.RasterLayer()`. [`as.owin.SpatRaster()`] either defines a rectangular window, if there are no NAs on `.map`, or converts `.map` directly to an `owin` object. Gridded observation windows, especially if high resolution, considerably slow down density estimation and may exhaust vector memory. Use rectangular windows, or convert `sf` objects to polygon windows (via [`as.owin.sf()`]) if possible.
 #'
-#' If `.shortcut` is supplied, the preceeding steps can be skipped and the function short-cuts straight to smoothing. Use this option if the preceeding steps are slow and you want to trial different smoothing options (such as `sigma` functions).
+#' If `.shortcut` is supplied, the preceding steps can be skipped and the function short-cuts straight to smoothing. Use this option if the preceding steps are slow and you want to trial different smoothing options (such as `sigma` functions).
 #'
 #' Coordinates and associated weights are smoothed via [`spatstat.explore::density.ppp()`] into an image. Pixel resolution and smoothing parameters such as bandwidth can be controlled via `...` arguments which are passed directly to this function. The output is translated into a gridded probability density surface (on the geometry defined by `.map`).
 #'
@@ -98,8 +100,10 @@ map_pou <-
 #'
 #' @return The function returns a named `list`, with the following elements:
 #' * `x`: a [`spatstat.geom::ppp`] object that defines points for density estimation;
-#' * `weights`: a [`spatstat.geom::im`] object that defines weights for density estimation;
-#' * `ud`: a normalised [`SpatRaster`] (or `NULL` if [`spatstat.explore::density.ppp()`] fails and `.use_tryCatch = TRUE`);
+#' * `D`: a [`spatstat.geom::im`] object of estimated intensities, from [`spatstat.explore::density.ppp()`];
+#' * `ud`: a normalised [`SpatRaster`];
+#'
+#' `D` and `ud` are `NULL` if [`spatstat.explore::density.ppp()`] fails and `.use_tryCatch = TRUE`.
 #'
 #' @example man/examples/example-map_dens.R
 #' @inherit map_pou seealso
@@ -163,7 +167,7 @@ as.owin.sf <- function(.poly, .bbox = sf::st_bbox(.poly), .invert = TRUE) {
 #' @export
 
 map_dens <- function(.map,
-                     .im = NULL, .owin = NULL,
+                     .owin = as.owin.SpatRaster(.map),
                      .coord = NULL, .discretise = FALSE,
                      .shortcut = list(), ...,
                      .plot = TRUE,
@@ -199,40 +203,16 @@ map_dens <- function(.map,
   if (length(.shortcut) > 0L) {
 
     check_named_list(.shortcut)
-    check_names(.shortcut, c("x", "weights"))
+    check_names(.shortcut, "x")
     rppp <- .shortcut$x
-    .im  <- .shortcut$weights
 
   } else {
 
-    #### Define pixel image & window
-    # * The pixel image represents the study area
-    # * We need this to define the observation window, which must be based on .map
-    # * If `.coord` is NULL, we will also use the pixel image for the estimation
-    # * But if `.coord` is supplied, we need to redefine the image used for estimation
-    if (is.null(.im)) {
-      .im <- as.im.SpatRaster(.map)
-    }
-    if (is.null(.owin)) {
-      .owin <- as.owin.SpatRaster(.map, .im = .im)
-    }
-
-    #### Get XYM
+    # Get XYM
     cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Building XYM..."))
-    # Define coordinates and weights for density estimation
-    use_coord <- !is.null(.coord)
     .coord <- .map_coord(.map = .map, .coord = .coord, .discretise = .discretise)
-    # Represent weights on SpatRaster, if required
-    if (use_coord) {
-      cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": * Rasterising weights..."))
-      .im <- terra::rasterize(x = as.matrix(.coord[, c("x", "y"), drop = FALSE]),
-                              y = .map,
-                              values = .coord$mark)
-      cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": * Defining `.im`..."))
-      .im <- as.im.SpatRaster(.im)
-    }
 
-    #### Build ppp object
+    # Build ppp object
     cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Defining `ppp` object..."))
     rppp <- spatstat.geom::ppp(x = .coord$x, y = .coord$y,
                                window = .owin, marks = .coord$mark)
@@ -245,21 +225,23 @@ map_dens <- function(.map,
   #### Estimate density surface
   # Get intensity (expected number of points PER UNIT AREA)
   cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Estimating density surface..."))
-  dens <- tryCatch(spatstat.explore::density.ppp(rppp, weights = .im,
-                                                 at = "pixels", se = FALSE, ...),
-                   error = function(e) e)
-  if (inherits(dens, "error")) {
+  D <- tryCatch(spatstat.explore::density.ppp(rppp, weights = expression(marks),
+                                              at = "pixels", se = FALSE, ...),
+                error = function(e) e)
+  if (inherits(D, "error")) {
     if (!.use_tryCatch) {
-      abort(dens)
+      abort(D)
     } else {
-      warn(paste("\n", paste(dens, collapse = "\n ")))
-      return(list(x = rppp, weights = .im, ud = NULL))
+      warn(paste("\n", paste(D, collapse = "\n ")))
+      return(list(x = rppp, D = NULL, ud = NULL))
     }
   }
+
+  #### Rasterise intensity surface
   # Translate intensity into expected number of points PER PIXEL
   cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Scaling density surface..."))
   terra::crs(.map) <- crs
-  dens <- terra::rast(dens)
+  dens <- terra::rast(D)
   terra::crs(dens) <- crs
   dens <- dens * terra::cellSize(dens, unit = "m")
   # Translate expect counts into proportion of points per pixel
@@ -279,7 +261,7 @@ map_dens <- function(.map,
   }
 
   # Return map
-  list(x = rppp, weights = .im, ud = dens)
+  list(x = rppp, D = D, ud = dens)
 
 }
 
