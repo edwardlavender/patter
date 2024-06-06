@@ -142,12 +142,12 @@
 #' @importFrom collapse fnrow
 #' @importFrom collapse seq_row
 #'
+#' @importFrom data.table as.data.table
 #' @importFrom data.table copy
 #' @importFrom data.table data.table
-#' @importFrom data.table as.data.table
+#' @importFrom data.table .GRP
 #' @importFrom data.table .N
 #' @importFrom data.table rbindlist
-#' @importFrom data.table rleid
 #' @importFrom data.table :=
 #'
 #' @importFrom dplyr any_of
