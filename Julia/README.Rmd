@@ -317,7 +317,7 @@ smo <- patter:::pf_particles(.xinit = NULL, .pf_obj = "smo")
 ud <- map_dens(.map = map,
                .coord = smo$states,
                sigma = spatstat.explore::bw.diggle, 
-               .verbose = FALSE)
+               .verbose = FALSE)$ud
 
 # Add home range
 map_hr_home(ud, .add = TRUE)

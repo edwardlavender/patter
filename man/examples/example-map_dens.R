@@ -21,7 +21,7 @@ map_dens(map, .coord = as.data.frame(coord))
 # `cell_x` and `cell_y` coordinates are acceptable
 map_dens(map, .coord = coord[, .(cell_x = x, cell_y = y)])
 # A SpatRaster is also acceptable
-pou <- map_pou(map, .coord = coord, .plot = FALSE)
+pou <- map_pou(map, .coord = coord, .plot = FALSE)$ud
 map_dens(pou)
 
 #### Example (2): Use coordinates from `sim_path_walk()`

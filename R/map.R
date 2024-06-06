@@ -11,7 +11,8 @@
 #'
 #' This function replaces [`flapper::pf_plot_map()`](https://edwardlavender.github.io/flapper/reference/pf_plot_map.html).
 #'
-#' @return The function returns a [`SpatRaster`].
+#' @return The function returns a named `list` with the following elements:
+#' * `ud`: a normalised [`SpatRaster`];
 #' @example man/examples/example-map_pou.R
 #'
 #' @seealso `map_*()` functions build maps of space use:
@@ -56,7 +57,7 @@ map_pou <-
     }
 
     #### Return outputs
-    map
+    list(ud = map)
 
   }
 
@@ -70,6 +71,7 @@ map_pou <-
 #' * `.invert` is a logical variable that defines whether or not to invert `.poly` (e.g., to turn a terrestrial polygon into an aquatic polygon);
 #' @param .coord (optional) Coordinates for density estimation, provided in any format accepted by [`.map_coord()`]. **Coordinates must be planar**.
 #' @param .discretise If `.coord` is provided, `.discretise` is a `logical` variable that defines whether or not to discretise coordinates on `.map` (see [`.map_coord()`]).
+#' @param .shortcut (optional) A named `list` from a previous call to [`map_dens()`]. If supplied, the function short-cuts straight to smoothing (`.im`, `.owin`, `.coord` and `.discretise` are silently unused).
 #' @param ... Arguments for density estimation, passed to [`spatstat.explore::density.ppp()`], such as `sigma` (i.e., the bandwidth). `at` and `se` are not permitted.
 #' @param .plot A `logical` variable that defines whether or not to plot the output.
 #' @param .use_tryCatch A `logical` variable that controls error handling:
@@ -88,11 +90,16 @@ map_pou <-
 #'
 #' [`as.im.SpatRaster()`], [`as.owin.SpatRaster()`] and [`as.owin.sf()`] are helper functions that convert a [`SpatRaster`] to a pixel image and an observation window (see [`spatstat.geom::owin()`]). [`as.im.SpatRaster`] is based on `maptools::as.im.RasterLayer()`. [`as.owin.SpatRaster()`] either defines a rectangular window, if there are no NAs on `.map`, or converts `.map` directly to an `owin` object. Gridded observation windows, especially if high resolution, considerably slow down density estimation and may exhaust vector memory. Use rectangular windows, or convert `sf` objects to polygon windows (via [`as.owin.sf()`]) if possible.
 #'
+#' If `.shortcut` is supplied, the preceeding steps can be skipped and the function short-cuts straight to smoothing. Use this option if the preceeding steps are slow and you want to trial different smoothing options (such as `sigma` functions).
+#'
 #' Coordinates and associated weights are smoothed via [`spatstat.explore::density.ppp()`] into an image. Pixel resolution and smoothing parameters such as bandwidth can be controlled via `...` arguments which are passed directly to this function. The output is translated into a gridded probability density surface (on the geometry defined by `.map`).
 #'
 #' This function replaces `flapper::kud*()` and `flapper::pf_kud*()` routines based on `adehabitatHR` (see [here](https://edwardlavender.github.io/flapper/reference/)).
 #'
-#' @return The function returns a normalised [`SpatRaster`] (or `NULL` if [`spatstat.explore::density.ppp()`] fails and `.use_tryCatch = TRUE`).
+#' @return The function returns a named `list`, with the following elements:
+#' * `x`: a [`spatstat.geom::ppp`] object that defines points for density estimation;
+#' * `weights`: a [`spatstat.geom::im`] object that defines weights for density estimation;
+#' * `ud`: a normalised [`SpatRaster`] (or `NULL` if [`spatstat.explore::density.ppp()`] fails and `.use_tryCatch = TRUE`);
 #'
 #' @example man/examples/example-map_dens.R
 #' @inherit map_pou seealso
@@ -157,7 +164,8 @@ as.owin.sf <- function(.poly, .bbox = sf::st_bbox(.poly), .invert = TRUE) {
 
 map_dens <- function(.map,
                      .im = NULL, .owin = NULL,
-                     .coord = NULL, .discretise = FALSE, ...,
+                     .coord = NULL, .discretise = FALSE,
+                     .shortcut = list(), ...,
                      .plot = TRUE,
                      .use_tryCatch = TRUE,
                      .verbose = getOption("patter.verbose")
@@ -180,48 +188,63 @@ map_dens <- function(.map,
 
   #### Process SpatRaster
   # spatstat assumes planar coordinates
-  cats$cat("... Processing `.map`...")
+  cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Processing `.map`..."))
   crs <- terra::crs(.map)
   if (is.na(crs)) {
     abort("`terra::crs(.map)` must be specified (and should be planar).")
   }
   terra::crs(.map) <- NA
-  # Define pixel image & window
-  # * The pixel image represents the study area
-  # * We need this to define the observation window, which must be based on .map
-  # * If `.coord` is NULL, we will also use the pixel image for the estimation
-  # * But if `.coord` is supplied, we need to redefine the image used for estimation
-  if (is.null(.im)) {
-    .im <- as.im.SpatRaster(.map)
-  }
-  if (is.null(.owin)) {
-    .owin <- as.owin.SpatRaster(.map, .im = .im)
-  }
 
-  #### Get XYM
-  cats$cat("... Building XYM...")
-  # Define coordinates and weights for density estimation
-  use_coord <- !is.null(.coord)
-  .coord <- .map_coord(.map = .map, .coord = .coord, .discretise = .discretise)
-  # Represent weights on SpatRaster, if required
-  if (use_coord) {
-    .im <- terra::rasterize(x = as.matrix(.coord[, c("x", "y"), drop = FALSE]),
-                            y = .map,
-                            values = .coord$mark)
-    .im <- as.im.SpatRaster(.im)
-  }
+  #### Build objects for density surface estimation
+  if (length(.shortcut) > 0L) {
 
-  ## Build ppp object
-  cats$cat("... Defining `ppp` object...")
-  rppp <- spatstat.geom::ppp(x = .coord$x, y = .coord$y,
-                             window = .owin, marks = .coord$mark)
-  if (rppp$n == 0L) {
-    abort("There are no valid points within the observation window (perhaps you need to invert this?)")
+    check_named_list(.shortcut)
+    check_names(.shortcut, c("x", "weights"))
+    rppp <- .shortcut$x
+    .im  <- .shortcut$weights
+
+  } else {
+
+    #### Define pixel image & window
+    # * The pixel image represents the study area
+    # * We need this to define the observation window, which must be based on .map
+    # * If `.coord` is NULL, we will also use the pixel image for the estimation
+    # * But if `.coord` is supplied, we need to redefine the image used for estimation
+    if (is.null(.im)) {
+      .im <- as.im.SpatRaster(.map)
+    }
+    if (is.null(.owin)) {
+      .owin <- as.owin.SpatRaster(.map, .im = .im)
+    }
+
+    #### Get XYM
+    cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Building XYM..."))
+    # Define coordinates and weights for density estimation
+    use_coord <- !is.null(.coord)
+    .coord <- .map_coord(.map = .map, .coord = .coord, .discretise = .discretise)
+    # Represent weights on SpatRaster, if required
+    if (use_coord) {
+      cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Rasterising weights..."))
+      .im <- terra::rasterize(x = as.matrix(.coord[, c("x", "y"), drop = FALSE]),
+                              y = .map,
+                              values = .coord$mark)
+      cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Defining `.im`..."))
+      .im <- as.im.SpatRaster(.im)
+    }
+
+    #### Build ppp object
+    cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Defining `ppp` object..."))
+    rppp <- spatstat.geom::ppp(x = .coord$x, y = .coord$y,
+                               window = .owin, marks = .coord$mark)
+    if (rppp$n == 0L) {
+      abort("There are no valid points within the observation window (perhaps you need to invert this?)")
+    }
+
   }
 
   #### Estimate density surface
   # Get intensity (expected number of points PER UNIT AREA)
-  cats$cat("... Estimating density surface...")
+  cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Estimating density surface..."))
   dens <- tryCatch(spatstat.explore::density.ppp(rppp, weights = .im,
                                                  at = "pixels", se = FALSE, ...),
                    error = function(e) e)
@@ -230,11 +253,11 @@ map_dens <- function(.map,
       abort(dens)
     } else {
       warn(paste("\n", paste(dens, collapse = "\n ")))
-      return(NULL)
+      return(list(x = rppp, weights = .im, ud = NULL))
     }
   }
   # Translate intensity into expected number of points PER PIXEL
-  cats$cat("... Scaling density surface...")
+  cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Scaling density surface..."))
   terra::crs(.map) <- crs
   dens <- terra::rast(dens)
   terra::crs(dens) <- crs
@@ -256,7 +279,7 @@ map_dens <- function(.map,
   }
 
   # Return map
-  dens
+  list(x = rppp, weights = .im, ud = dens)
 
 }
 

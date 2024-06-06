@@ -19,6 +19,7 @@ map_dens(
   .owin = NULL,
   .coord = NULL,
   .discretise = FALSE,
+  .shortcut = list(),
   ...,
   .plot = TRUE,
   .use_tryCatch = TRUE,
@@ -41,6 +42,8 @@ map_dens(
 
 \item{.discretise}{If \code{.coord} is provided, \code{.discretise} is a \code{logical} variable that defines whether or not to discretise coordinates on \code{.map} (see \code{\link[=.map_coord]{.map_coord()}}).}
 
+\item{.shortcut}{(optional) A named \code{list} from a previous call to \code{\link[=map_dens]{map_dens()}}. If supplied, the function short-cuts straight to smoothing (\code{.im}, \code{.owin}, \code{.coord} and \code{.discretise} are silently unused).}
+
 \item{...}{Arguments for density estimation, passed to \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}}, such as \code{sigma} (i.e., the bandwidth). \code{at} and \code{se} are not permitted.}
 
 \item{.plot}{A \code{logical} variable that defines whether or not to plot the output.}
@@ -54,7 +57,12 @@ map_dens(
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }
 \value{
-The function returns a normalised \code{\link{SpatRaster}} (or \code{NULL} if \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} fails and \code{.use_tryCatch = TRUE}).
+The function returns a named \code{list}, with the following elements:
+\itemize{
+\item \code{x}: a \code{\link[spatstat.geom:ppp]{spatstat.geom::ppp}} object that defines points for density estimation;
+\item \code{weights}: a \code{\link[spatstat.geom:im]{spatstat.geom::im}} object that defines weights for density estimation;
+\item \code{ud}: a normalised \code{\link{SpatRaster}} (or \code{NULL} if \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} fails and \code{.use_tryCatch = TRUE});
+}
 }
 \description{
 \code{\link[=map_dens]{map_dens()}} creates a smoothed utilisation distribution (UD).
@@ -71,6 +79,8 @@ The function returns a normalised \code{\link{SpatRaster}} (or \code{NULL} if \c
 Cell coordinates are converted to a \code{\link[spatstat.geom:ppp]{spatstat.geom::ppp()}} object, which is passed, alongside the observation window (\code{.owin}) and a pixel-image representation of the weights to \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} for the estimation. Weights must sum to one.
 
 \code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}}, \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}} and \code{\link[=as.owin.sf]{as.owin.sf()}} are helper functions that convert a \code{\link{SpatRaster}} to a pixel image and an observation window (see \code{\link[spatstat.geom:owin]{spatstat.geom::owin()}}). \code{\link{as.im.SpatRaster}} is based on \code{maptools::as.im.RasterLayer()}. \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}} either defines a rectangular window, if there are no NAs on \code{.map}, or converts \code{.map} directly to an \code{owin} object. Gridded observation windows, especially if high resolution, considerably slow down density estimation and may exhaust vector memory. Use rectangular windows, or convert \code{sf} objects to polygon windows (via \code{\link[=as.owin.sf]{as.owin.sf()}}) if possible.
+
+If \code{.shortcut} is supplied, the preceeding steps can be skipped and the function short-cuts straight to smoothing. Use this option if the preceeding steps are slow and you want to trial different smoothing options (such as \code{sigma} functions).
 
 Coordinates and associated weights are smoothed via \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} into an image. Pixel resolution and smoothing parameters such as bandwidth can be controlled via \code{...} arguments which are passed directly to this function. The output is translated into a gridded probability density surface (on the geometry defined by \code{.map}).
 
@@ -100,7 +110,7 @@ map_dens(map, .coord = as.data.frame(coord))
 # `cell_x` and `cell_y` coordinates are acceptable
 map_dens(map, .coord = coord[, .(cell_x = x, cell_y = y)])
 # A SpatRaster is also acceptable
-pou <- map_pou(map, .coord = coord, .plot = FALSE)
+pou <- map_pou(map, .coord = coord, .plot = FALSE)$ud
 map_dens(pou)
 
 #### Example (2): Use coordinates from `sim_path_walk()`

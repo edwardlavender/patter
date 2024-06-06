@@ -22,7 +22,10 @@ map_pou(
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }
 \value{
-The function returns a \code{\link{SpatRaster}}.
+The function returns a named \code{list} with the following elements:
+\itemize{
+\item \code{ud}: a normalised \code{\link{SpatRaster}};
+}
 }
 \description{
 This function builds a 'probability-of-use' utilisation distribution.

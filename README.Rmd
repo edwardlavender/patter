@@ -377,7 +377,7 @@ Particles can be used to reconstruct movement paths and patterns of space use. W
 # Estimate UD
 ud <- map_dens(.map = map,
                .coord = smo$states,
-               sigma = spatstat.explore::bw.diggle)
+               sigma = spatstat.explore::bw.diggle)$ud
 
 # Add home range
 map_hr_home(ud, .add = TRUE)
