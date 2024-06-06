@@ -224,11 +224,11 @@ map_dens <- function(.map,
     .coord <- .map_coord(.map = .map, .coord = .coord, .discretise = .discretise)
     # Represent weights on SpatRaster, if required
     if (use_coord) {
-      cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Rasterising weights..."))
+      cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": * Rasterising weights..."))
       .im <- terra::rasterize(x = as.matrix(.coord[, c("x", "y"), drop = FALSE]),
                               y = .map,
                               values = .coord$mark)
-      cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Defining `.im`..."))
+      cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": * Defining `.im`..."))
       .im <- as.im.SpatRaster(.im)
     }
 
@@ -265,7 +265,7 @@ map_dens <- function(.map,
   # Translate expect counts into proportion of points per pixel
   dens <- dens / terra::global(dens, "sum", na.rm = TRUE)[1, 1]
   if (!terra::compareGeom(dens, .map, stopOnError = FALSE, messages = FALSE)) {
-    cats$cat("... ... Resampling density surface onto `.map`...")
+    cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": * Resampling density surface onto `.map`..."))
     dens <- terra::resample(dens, .map, method = "near")
     # dens <- terra::mask(dens, .map)
     dens <- dens / terra::global(dens, "sum", na.rm = TRUE)[1, 1]
