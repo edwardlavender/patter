@@ -249,8 +249,8 @@ We are now in a position to run the particle filter. This runs a simulation forw
 ```{julia}
 # Simulate initial states for the forward filter
 xinit = simulate_states_init(state_type = StateXY,
-                             model = model_move, 
-                             n = 100_000, 
+                             model_move = model_move, 
+                             n = 200_000, 
                              xlim = (705842.1, 710642.1), 
                              ylim = (6249007, 6269707));
 
@@ -264,8 +264,8 @@ fwd = particle_filter(timeline = timeline,
 
 # Simulate initial states for the backward filter
 xinit = simulate_states_init(state_type = StateXY, 
-                             model = model_move,
-                             n = 100_000, 
+                             model_move = model_move,
+                             n = 200_000, 
                              xlim = (705842.1, 710642.1), 
                              ylim = (6249007, 6269707));
 

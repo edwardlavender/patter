@@ -341,7 +341,7 @@ args <- list(.map = map,
              .model_obs = c(model_1, model_2),
              .model_move = model_move,
              .n_record = 500L,
-             .n_particle = 1e4L)
+             .n_particle = 5e4L)
 
 # Forward run
 fwd <- do.call(pf_filter, args)

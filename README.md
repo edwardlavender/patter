@@ -328,6 +328,9 @@ essential packages:
 ``` r
 library(patter)
 #> This is {patter} v.0.0.0.9000. For an overview, see `?patter`. For support, contact edward.lavender@eawag.ch.
+```
+
+``` r
 library(data.table)
 library(dtplyr)
 library(dplyr, warn.conflicts = FALSE)
@@ -455,19 +458,22 @@ args <- list(.map = map,
              .model_obs = c(model_1, model_2),
              .model_move = model_move,
              .n_record = 500L,
-             .n_particle = 1e4L)
+             .n_particle = 5e4L)
 
 # Forward run
 fwd <- do.call(pf_filter, args)
 head(fwd$states)
 #>    path_id timestep           timestamp map_value        x       y
 #>      <int>    <int>              <POSc>     <num>    <num>   <num>
-#> 1:       1        1 2016-03-17 01:50:00  50.11201 709742.1 6253607
-#> 2:       1        2 2016-03-17 01:52:00  45.88295 709342.3 6252908
-#> 3:       1        3 2016-03-17 01:54:00  68.53316 709267.0 6253268
-#> 4:       1        4 2016-03-17 01:56:00  59.76520 709105.9 6253005
-#> 5:       1        5 2016-03-17 01:58:00  91.54701 709022.1 6253332
-#> 6:       1        6 2016-03-17 02:00:00  58.17422 709266.2 6253130
+#> 1:       1        1 2016-03-17 01:50:00  65.31673 709342.1 6253407
+#> 2:       1        2 2016-03-17 01:52:00  93.91332 708783.0 6253032
+#> 3:       1        3 2016-03-17 01:54:00  60.09327 709381.6 6253308
+#> 4:       1        4 2016-03-17 01:56:00  93.25472 708925.5 6253170
+#> 5:       1        5 2016-03-17 01:58:00  66.52094 709172.1 6253079
+#> 6:       1        6 2016-03-17 02:00:00  96.38661 709187.9 6253488
+```
+
+``` r
 
 # Backward run
 args$.direction <- "backward"
@@ -495,8 +501,11 @@ samples as follows:
 # Estimate UD
 ud <- map_dens(.map = map,
                .coord = smo$states,
-               sigma = spatstat.explore::bw.diggle)
+               sigma = spatstat.explore::bw.diggle)$ud
 #> Observation window is gridded.
+```
+
+``` r
 
 # Add home range
 map_hr_home(ud, .add = TRUE)
