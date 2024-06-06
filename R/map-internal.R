@@ -58,12 +58,8 @@
 # Define x, y, mark data.table from coordinates data.table
 .map_coord.dt <- function(.map, .coord, .discretise) {
 
-  #### Coerce .coord to a data.table
-  if (inherits(.coord, "matrix") |
-      inherits(.coord, "data.frame") & !inherits(.coord, "data.table")) {
-    .coord <- as.data.table(.coord)
-  }
-  check_inherits(.coord, "data.table")
+  #### Copy .coord (and coerce to a data.table)
+  .coord <- as.data.table(.coord)
 
   #### Define x and y columns
   # Identify whether or not the .coord contains x, y and/or cell_x and cell_y columns
@@ -95,8 +91,10 @@
     if (!contains_xy) {
       .coord[, x := cell_x]
       .coord[, y := cell_y]
+      .coord[, id := terra::cellFromXY(.map, cbind(x, y))]
+    } else {
+      .coord[, id := .GRP, by = list(x, y)]
     }
-    .coord[, id := terra::cellFromXY(.map, cbind(x, y))]
   }
 
   #### Define coord marks, as required
