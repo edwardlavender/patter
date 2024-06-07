@@ -1,6 +1,6 @@
 ## Test environments
 
-* Local macOS Ventura install (version 13.6.3), R 4.3.1 
+* Local macOS Sonoma install (version 14.5), `R` 4.3.1 
 
 ## R CMD check results
 
