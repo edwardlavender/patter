@@ -21,6 +21,9 @@ knitr::opts_chunk$set(
 
 `Patter.jl` provides particle filtering, smoothing and sampling algorithms for animal movement modelling, with a focus on passive acoustic telemetry systems. The package is heavily based on the [`ParticleFish`](https://github.com/scheidan/ParticleFish.jl) package developed by [Andreas Scheidegger](https://www.eawag.ch/de/ueber-uns/portraet/organisation/mitarbeitende/profile/andreas-scheidegger/show/). `Patter.jl` forms the backend for the [`patter`](https://github.com/edwardlavender/patter) [`R`](https://www.r-project.org) package.
 
+> **Note:**
+> `Patter.jl` is a new `Julia` package. Like all new packages, you should use it with a degree of caution. Please share feedback and issues.
+
 # Highlights
 
 `Patter.jl` is designed to reconstruct movement paths and emergent patterns of space use from animal tracking data. A powerful, flexible, process-orientated, particle-based framework is used for this purpose. The essential functions are `particle_filter()` and `two_filter_smoother()`: 

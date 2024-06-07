@@ -29,6 +29,10 @@ supersedes the experimental
 [`flapper`](https://github.com/edwardlavender/flapper) package (Lavender
 et al., [2023](https://doi.org/10.1111/2041-210X.14193)).
 
+> **Note:** `patter` is a new `R` package. Like all new packages, you
+> should use it with a degree of caution. Please share feedback and
+> issues.
+
 # Highlights
 
 `patter` is designed to reconstruct movement paths and emergent patterns
