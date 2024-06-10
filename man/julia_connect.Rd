@@ -7,7 +7,8 @@
 julia_connect(
   ...,
   JULIA_PROJ,
-  .update = FALSE,
+  .pkg_config = NULL,
+  .pkg_update = FALSE,
   .threads = NULL,
   .verbose = getOption("patter.verbose")
 )
@@ -27,7 +28,9 @@ If \code{missing} and unfound, \code{JULIA_PROJ = NULL} is used with a \code{\li
 
 If \code{NULL}, a \code{Julia} Project is not used and the default environment is used (e.g., \verb{~/.julia/environments/v1.10/Project.toml}).}
 
-\item{.update}{A \code{logical} variable that defines whether or not to update installed \code{Julia} packages.}
+\item{.pkg_config}{(optional) A \code{character} string of \code{Julia} code, evaluated by \code{\link[=julia_code]{julia_code()}}, that configures \code{Julia} prior to dependency management.}
+
+\item{.pkg_update}{A \code{logical} variable that defines whether or not to update installed \code{Julia} packages.}
 
 \item{.threads}{A \code{character} (\code{"auto"}) or an \code{integer} that defines the number of threads used by multi-threaded operations in \code{Julia}. This can only be set once per \code{R} session.}
 
@@ -43,7 +46,7 @@ This function connects \code{R} to \code{Julia}.
 \code{\link{patter}} is an \code{R} front-end for the \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} package. This requires a local installation of \code{Julia}. This function connects \code{R} to the local \code{Julia} installation, sets up \code{\link{JuliaCall}}, which provides the integration between \code{R} and \code{Julia}, and \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}. Internally, the steps are as follows:
 \itemize{
 \item \code{\link{JuliaCall}} is set up via \code{\link[JuliaCall:julia_setup]{JuliaCall::julia_setup()}}.
-\item The number of threads is set via \code{JULIA_NUM_THREADS} environment variable:
+\item The number of threads is set via the \code{JULIA_NUM_THREADS} environment variable:
 \itemize{
 \item If \code{.threads = NULL}, \code{JULIA_NUM_THREADS} is set to \code{"auto"} if unset or left unchanged otherwise;
 \item Otherwise, \code{JULIA_NUM_THREADS} is set to \code{.threads};
@@ -51,6 +54,7 @@ This function connects \code{R} to \code{Julia}.
 }
 \item The \code{Julia} installation is validated.
 \item A local \code{Julia} Project is generated in \code{JULIA_PROJ} (if specified and required) and activated. We recommend using \code{\link{patter}} within an RStudio Project, with a \code{Julia} directory at the top-level that contains the \code{Julia} project.
+\item If specified, \code{.pkg_config} is run via \code{\link[=julia_code]{julia_code()}} (see Examples).
 \item \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} and supporting dependencies are installed or updated (if required) and loaded (optionally in the local \code{Julia} Project). If the environment variable \code{PATTER.JL_DEV = "path/to/local/clone/of/Patter.jl"} is set, \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} is installed from a local source as a development dependency (via \code{Pkg.develop()}); otherwise, \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} is installed from the remote.
 }
 
@@ -66,19 +70,49 @@ if (julia_run()) {
   # Try `installJulia` if you require a Julia installation
   julia_connect(installJulia = TRUE)
 
-  #### Example (2): Connect to Julia using default settings
-  # You may need to tell R where Julia is via `JULIA_HOME`
+  #### Example (2): Connect to `Julia` using default settings
+  # You may need to tell `R` where Julia is via `JULIA_HOME`
   julia_connect()
 
-  #### Example (3): Use a local Julia Project (recommended)
+  #### Example (3): Use a local `Julia` Project (recommended)
   proj <- file.path(tempdir(), "Julia")
   julia_connect(JULIA_PROJ = proj)
 
+  #### Example (4): Configure `Julia` for package installation
+  if (FALSE) {
+
+    # Use `.pkg_config` to configure `Julia` for package installation.
+    # For example, on some systems, you may receive the following error:
+    # 'You may be using an old system libcurl library that doesn't understand options that Julia uses.'
+    # This is because `Julia` called from R may use a different LD_LIBRARY_PATH.
+
+    # To fix this, use the following configuration code:
+    pkg_config <-
+      '
+      # Check & remove path set by R
+      println(ENV["LD_LIBRARY_PATH"])
+      delete!(ENV, "LD_LIBRARY_PATH")
+      # Set default `Julia` path
+      # * This is obtained by running `Julia` directly (from the terminal)
+      # * using Libdl
+      # * filter!(contains("curl"), dllist())
+      ENV["LD_LIBRARY_PATH"] = "/opt/julias/julia-1.10/bin/../lib/julia/libcurl.so.4"
+      # Validate settings
+      println(ENV["LD_LIBRARY_PATH"])
+      '
+
+    # Now connect to `Julia`
+    julia_connect(JULIA_PROJ = proj, .pkg_config = pkg_config)
+
+  }
+
   #### Example (4): Force an update of installed packages
-  # julia_connect(JULIA_PROJ = proj, .update = TRUE)
+  if (FALSE) {
+    julia_connect(JULIA_PROJ = proj, .pkg_update = TRUE)
+  }
 
   #### Example (5): Specify the number of threads
-  # You can only set threads once per R session!
+  # You can only set threads once per `R` session!
   julia_connect(JULIA_PROJ = proj, .threads = 2L)
 
   #### Example (6): Customise user output

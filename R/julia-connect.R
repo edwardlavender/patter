@@ -12,7 +12,8 @@
 #'
 #' If `NULL`, a `Julia` Project is not used and the default environment is used (e.g., `~/.julia/environments/v1.10/Project.toml`).
 #'
-#' @param .update A `logical` variable that defines whether or not to update installed `Julia` packages.
+#' @param .pkg_config (optional) A `character` string of `Julia` code, evaluated by [`julia_code()`], that configures `Julia` prior to dependency management.
+#' @param .pkg_update A `logical` variable that defines whether or not to update installed `Julia` packages.
 #' @param .threads A `character` (`"auto"`) or an `integer` that defines the number of threads used by multi-threaded operations in `Julia`. This can only be set once per `R` session.
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
@@ -24,6 +25,7 @@
 #'    - The number of threads can only be set once per `R` session;
 #' * The `Julia` installation is validated.
 #' * A local `Julia` Project is generated in `JULIA_PROJ` (if specified and required) and activated. We recommend using [`patter`] within an RStudio Project, with a `Julia` directory at the top-level that contains the `Julia` project.
+#' * If specified, `.pkg_config` is run via [`julia_code()`] (see Examples).
 #' * [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) and supporting dependencies are installed or updated (if required) and loaded (optionally in the local `Julia` Project). If the environment variable `PATTER.JL_DEV = "path/to/local/clone/of/Patter.jl"` is set, [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) is installed from a local source as a development dependency (via `Pkg.develop()`); otherwise, [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) is installed from the remote.
 #'
 #' You should run this function once per `R` session.
@@ -38,7 +40,8 @@
 
 julia_connect <- function(...,
                           JULIA_PROJ,
-                          .update = FALSE,
+                          .pkg_config = NULL,
+                          .pkg_update = FALSE,
                           .threads = NULL,
                           .verbose = getOption("patter.verbose")) {
 
@@ -65,8 +68,11 @@ julia_connect <- function(...,
 
   #### Install & load packages (optionally within the Julia Project)
   cats$cat("... Handling dependencies...")
+  if (!is.null(.pkg_config)) {
+    julia_code(.pkg_config)
+  }
   pkgs <- c("Patter", "DataFrames", "Distributions", "GeoArrays", "JLD2", "Random")
-  julia_packages(.packages = pkgs, .update = .update)
+  julia_packages(.packages = pkgs, .update = .pkg_update)
 
   #### Validate Julia settings
   nthreads <- julia_threads(.threads)
