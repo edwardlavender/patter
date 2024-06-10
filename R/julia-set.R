@@ -235,7 +235,7 @@ set_smoother_two_filter <- function(.n_particle, .n_sim) {
   .n_particle <- as.integer(.n_particle)
   .n_sim      <- as.integer(.n_sim)
   # Run smoother
-  julia_check_exists("timeline", fwd[], bwd, "model_move", "box")
+  julia_check_exists("timeline", fwd, bwd, "model_move", "box")
   cmd    <- glue('{output} = two_filter_smoother(timeline = timeline,
                                                  xfwd = {fwd}.state[1:{.n_particle}, :],
                                                  xbwd = {bwd}.state[1:{.n_particle}, :],
