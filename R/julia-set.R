@@ -64,7 +64,7 @@ set_threads <- function(.threads) {
 
   # Set `JULIA_NUM_THREADS`
   Sys.setenv(JULIA_NUM_THREADS = .threads)
-  nothing()
+  invisible(.threads)
 }
 
 #' @rdname julia_set

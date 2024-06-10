@@ -48,8 +48,8 @@ julia_connect <- function(...,
 
   #### Set up Julia
   cats$cat("... Running `Julia` setup via `JuliaCall::julia_setup()`...")
-  set_threads(.threads = .threads)
-  julia <- julia_setup(..., verbose = .verbose)
+  .threads <- set_threads(.threads = .threads)
+  julia    <- julia_setup(..., verbose = .verbose)
 
   #### Test Julia
   cats$cat("... Validating Julia installation...")
