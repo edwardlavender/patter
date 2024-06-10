@@ -99,8 +99,8 @@
 
   #### Define coord marks, as required
   .coord |>
+    select("id", "x", "y", any_of("mark")) |>
     .map_mark() |>
-    select("id", "x", "y", "mark") |>
     as.data.table()
 
 }
@@ -127,43 +127,44 @@
   check_inherits(.coord, "data.table")
   check_names(.coord, "id")
 
+  # Set lazy dt (once)
+  add_marks <- is.null(.coord$mark)
+  .coord    <- lazy_dt(.coord, immutable = FALSE)
+
   # Define required columns
   if (is.null(.coord$timestep)) {
-    timestep <- NULL
-    .coord[, timestep := 1L]
+    .coord <-
+      .coord |>
+      mutate(timestep = 1L)
   }
 
   # Define position weights
   # * If un-supplied, equal weights are assumed, summing to 1 at each time step
   # * Otherwise, existing weights are used, and forced to sum to 1 at each time step
-  if (is.null(.coord$mark)) {
+  if (add_marks) {
     .coord <-
       .coord |>
       group_by(.data$timestep) |>
-      mutate(mark = rep(1/n(), n())) |>
-      ungroup() |>
-      as.data.table()
+      mutate(mark = 1 / n()) |>
+      ungroup()
   } else {
     .coord <-
       .coord |>
       group_by(.data$timestep)  |>
       mutate(mark = .data$mark / sum(.data$mark)) |>
-      ungroup() |>
-      as.data.table()
+      ungroup()
   }
 
   # Calculate the total weight of each location within time steps
   .coord <-
     .coord |>
     # Drop NA or zero weights (required for `map_dens()`)
-    filter(!is.na(.data$mark)) |>
-    filter(.data$mark != 0) |>
+    filter(!is.na(.data$mark) | .data$mark > 0) |>
     # Implement aggregation
     group_by(.data$timestep, .data$id) |>
     mutate(mark = sum(.data$mark)) |>
     slice(1L) |>
-    ungroup() |>
-    as.data.table()
+    ungroup()
 
   # Calculate the total weight of each location across the whole time series
   .coord |>
