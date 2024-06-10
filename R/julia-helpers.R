@@ -83,7 +83,7 @@ julia_proj_generate <- function(JULIA_PROJ) {
 
 # Activate a Julia Project
 julia_proj_activate <- function(JULIA_PROJ) {
-  julia_command("using Revise")
+  # julia_command("using Revise")
   julia_command(glue('Pkg.activate("{JULIA_PROJ}");'))
   nothing()
 }
