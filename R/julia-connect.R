@@ -17,7 +17,11 @@
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
 #' @details [`patter`] is an `R` front-end for the [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) package. This requires a local installation of `Julia`. This function connects `R` to the local `Julia` installation, sets up [`JuliaCall`], which provides the integration between `R` and `Julia`, and [`Patter.jl`](https://github.com/edwardlavender/Patter.jl). Internally, the steps are as follows:
-#' * [`JuliaCall`] is set up via [`JuliaCall::julia_setup()`], using `.threads` threads.
+#' * [`JuliaCall`] is set up via [`JuliaCall::julia_setup()`].
+#' * The number of threads is set via the `JULIA_NUM_THREADS` environment variable:
+#'    - If `.threads = NULL`, `JULIA_NUM_THREADS` is set to `"auto"` if unset or left unchanged otherwise;
+#'    - Otherwise, `JULIA_NUM_THREADS` is set to `.threads`;
+#'    - The number of threads can only be set once per `R` session;
 #' * The `Julia` installation is validated.
 #' * A local `Julia` Project is generated in `JULIA_PROJ` (if specified and required) and activated. We recommend using [`patter`] within an RStudio Project, with a `Julia` directory at the top-level that contains the `Julia` project.
 #' * [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) and supporting dependencies are installed or updated (if required) and loaded (optionally in the local `Julia` Project). If the environment variable `PATTER.JL_DEV = "path/to/local/clone/of/Patter.jl"` is set, [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) is installed from a local source as a development dependency (via `Pkg.develop()`); otherwise, [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) is installed from the remote.
@@ -35,7 +39,7 @@
 julia_connect <- function(...,
                           JULIA_PROJ,
                           .update = FALSE,
-                          .threads = "auto",
+                          .threads = NULL,
                           .verbose = getOption("patter.verbose")) {
 
   #### Initiate

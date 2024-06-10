@@ -8,7 +8,7 @@ julia_connect(
   ...,
   JULIA_PROJ,
   .update = FALSE,
-  .threads = "auto",
+  .threads = NULL,
   .verbose = getOption("patter.verbose")
 )
 }
@@ -42,7 +42,13 @@ This function connects \code{R} to \code{Julia}.
 \details{
 \code{\link{patter}} is an \code{R} front-end for the \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} package. This requires a local installation of \code{Julia}. This function connects \code{R} to the local \code{Julia} installation, sets up \code{\link{JuliaCall}}, which provides the integration between \code{R} and \code{Julia}, and \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}. Internally, the steps are as follows:
 \itemize{
-\item \code{\link{JuliaCall}} is set up via \code{\link[JuliaCall:julia_setup]{JuliaCall::julia_setup()}}, using \code{.threads} threads.
+\item \code{\link{JuliaCall}} is set up via \code{\link[JuliaCall:julia_setup]{JuliaCall::julia_setup()}}.
+\item The number of threads is set via \code{JULIA_NUM_THREADS} environment variable:
+\itemize{
+\item If \code{.threads = NULL}, \code{JULIA_NUM_THREADS} is set to \code{"auto"} if unset or left unchanged otherwise;
+\item Otherwise, \code{JULIA_NUM_THREADS} is set to \code{.threads};
+\item The number of threads can only be set once per \code{R} session;
+}
 \item The \code{Julia} installation is validated.
 \item A local \code{Julia} Project is generated in \code{JULIA_PROJ} (if specified and required) and activated. We recommend using \code{\link{patter}} within an RStudio Project, with a \code{Julia} directory at the top-level that contains the \code{Julia} project.
 \item \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} and supporting dependencies are installed or updated (if required) and loaded (optionally in the local \code{Julia} Project). If the environment variable \code{PATTER.JL_DEV = "path/to/local/clone/of/Patter.jl"} is set, \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} is installed from a local source as a development dependency (via \code{Pkg.develop()}); otherwise, \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} is installed from the remote.

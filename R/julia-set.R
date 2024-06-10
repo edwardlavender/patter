@@ -47,11 +47,22 @@ set_map <- function(.x) {
 
 # Set Julia threads
 set_threads <- function(.threads) {
-  if (.threads != "auto" &&
-      Sys.getenv("JULIA_NUM_THREADS") != "" &&
-      Sys.getenv("JULIA_NUM_THREADS") != .threads) {
-    warn("Restart R to update the number of threads in Julia.")
+
+  # If NULL, use `JULIA_NUM_THREADS` (if set) or set to "auto"
+  if (is.null(.threads)) {
+    .threads <- Sys.getenv("JULIA_NUM_THREADS")
+    .threads <- ifelse(.threads == "", "auto", .threads)
+
+  # If provided, validate `.threads` input
+  } else {
+    if (.threads != "auto" &&
+        Sys.getenv("JULIA_NUM_THREADS") != "" &&
+        Sys.getenv("JULIA_NUM_THREADS") != .threads) {
+      warn("Restart `R` to update the number of threads in `Julia`.")
+    }
   }
+
+  # Set `JULIA_NUM_THREADS`
   Sys.setenv(JULIA_NUM_THREADS = .threads)
   nothing()
 }
