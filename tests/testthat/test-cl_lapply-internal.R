@@ -29,11 +29,11 @@ test_that("cl_*() helpers work", {
 
   # Check cl_chunks()
   # * .nout is essentially the number of chunks on each core
-  cl_chunks(NULL, 10L) |>
+  cl_chunks(NULL, 10L, .nout = 10L) |>
     expect_equal(as.list(1:10L))
-  cl_chunks(2L, 10L, 1) |>
+  cl_chunks(2L, 10L, .nout = 1L) |>
     expect_equal(list(1:5L, 6:10L))
-  cl_chunks(2L, 10L, 3L) |>
+  cl_chunks(2L, 10L, .nout = 3L) |>
     expect_equal(c(list(1:2L), list(3),
                    list(4:5L), list(6:7L),
                    list(8L), list(9:10L)))
