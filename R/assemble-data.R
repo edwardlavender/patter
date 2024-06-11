@@ -117,17 +117,18 @@ assemble_acoustics <- function(.timeline, .acoustics, .moorings, .services = NUL
   if (!is.null(.services)) {
     .services <-
       .services |>
-      lazy_dt(immutable = TRUE) |>
+      # (Use data.frame() for reframe(), below)
+      as.data.frame() |>
       # Define servicing events
-      select(sensor_id = "receiver_id", "receiver_start", "receiver_end") |>
-      mutate(receiver_start = lubridate::round_date(.data$receiver_start, step),
-             receiver_end = lubridate::round_date(.data$receiver_end, step),
-             service = 1L) |>
+      select(sensor_id = "receiver_id", "service_start", "service_end") |>
+      mutate(service_start = lubridate::round_date(.data$service_start, step),
+             service_end = lubridate::round_date(.data$service_end, step)) |>
       # Define a sequence of time steps along each servicing event
       group_by(.data$sensor_id) |>
-      reframe(timestamp = seq(.data$receiver_start, .data$receiver_end, step)) |>
+      reframe(timestamp = seq(.data$service_start, .data$service_end, step)) |>
       ungroup() |>
-      select("sensor_id", "timestamp", "service") |>
+      select("sensor_id", "timestamp") |>
+      mutate(service = 1L) |>
       as.data.table()
   }
 
@@ -178,7 +179,8 @@ assemble_acoustics <- function(.timeline, .acoustics, .moorings, .services = NUL
                      on = c("sensor_id", "timestamp"),
                      verbose = 0L) |>
       lazy_dt(immutable = FALSE) |>
-      filter(!is.na(.data$service)) |>
+      filter(is.na(.data$service)) |>
+      select(!"service") |>
       as.data.table()
   }
 
@@ -187,8 +189,8 @@ assemble_acoustics <- function(.timeline, .acoustics, .moorings, .services = NUL
     dataset |>
     join(.moorings |>
            select("sensor_id",
-                  "receiver_x", "receiver_y",
-                  any_of(c("receiver_alpha", "receiver_beta", "receiver_gamma"))),
+                  any_of(c("receiver_x", "receiver_y",
+                           "receiver_alpha", "receiver_beta", "receiver_gamma"))),
          on = "sensor_id",
          verbose = 0L) |>
     select("timestamp", everything()) |>
