@@ -31,7 +31,7 @@ For example datasets from the Movement Ecology of Flapper Skate project (\code{\
 
 To validate new datasets for use with \code{\link{patter}}, see \code{\link[=pat_setup_data]{pat_setup_data()}} and/or the \code{\link{assemble}}\verb{_*()} function documentation.
 
-For example algorithm outputs (\code{datasets-algorithms}), see:
+For example algorithm outputs (\code{\link{datasets-algorithms}}), see:
 \itemize{
 \item \code{\link[=dat_path]{dat_path()}} for an example output from \code{\link[=sim_path_walk]{sim_path_walk()}};
 \item \code{\link[=dat_coa]{dat_coa()}} for an example output from \code{\link[=coa]{coa()}};

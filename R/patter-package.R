@@ -23,7 +23,7 @@
 #'
 #' To validate new datasets for use with [`patter`], see [`pat_setup_data()`] and/or the [`assemble`]`_*()` function documentation.
 #'
-#' For example algorithm outputs (`datasets-algorithms`), see:
+#' For example algorithm outputs ([`datasets-algorithms`]), see:
 #'
 #' * [`dat_path()`] for an example output from [`sim_path_walk()`];
 #' * [`dat_coa()`] for an example output from [`coa()`];
@@ -156,6 +156,7 @@
 #' @importFrom dplyr filter
 #' @importFrom dplyr group_by
 #' @importFrom dplyr if_else
+#' @importFrom dplyr left_join
 #' @importFrom dplyr mutate
 #' @importFrom dplyr n
 #' @importFrom dplyr reframe
@@ -192,6 +193,7 @@
 #' @importFrom lubridate int_overlaps
 #' @importFrom lubridate int_start int_end
 #' @importFrom lubridate round_date
+#' @importFrom lubridate floor_date
 #' @importFrom lubridate tz
 #' @importFrom lubridate %within%
 #'
