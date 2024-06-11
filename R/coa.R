@@ -76,7 +76,7 @@ coa <- function(.map,
     lazy_dt(immutable = FALSE) |>
     mutate(split = acoustics[[.split]]) |>
     group_by(.data$split) |>
-    mutate(bin = lubridate::floor_date(.data$timestamp, .delta_t)) |>
+    mutate(bin = floor_date(.data$timestamp, .delta_t)) |>
     ungroup() |>
     group_by(.data$split, .data$bin, .data$receiver_id) |>
     mutate(n = n()) |>
@@ -104,12 +104,13 @@ coa <- function(.map,
 
   #### Return outputs
   # Select relevant columns
+  # timeline <- seq(min(.data$bin), max(.data$bin), by = .delta_t)
   out <-
     out |>
     mutate(map_value = terra::extract(.map, cbind(.data$x, .data$y))) |>
     group_by(.data$split) |>
     arrange(.data$bin, .by_group = TRUE) |>
-    mutate(timestep = row_number()) |>
+    mutate(timestep = row_number()) |> # match(.data$bin, timeline)) |>
     ungroup() |>
     arrange(.data$split, .data$bin) |>
     select("{.split}" := "split", "timestep", timestamp = "bin", "map_value", "x", "y") |>
