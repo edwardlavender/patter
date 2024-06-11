@@ -18,7 +18,8 @@ if (julia_run()) {
 
     # Use `.pkg_config` to configure `Julia` for package installation.
     # For example, on some systems, you may receive the following error:
-    # 'You may be using an old system libcurl library that doesn't understand options that Julia uses.'
+    # 'You may be using an old system libcurl library
+    # ... that doesn't understand options that Julia uses.'
     # This is because `Julia` called from R may use a different LD_LIBRARY_PATH.
 
     # To fix this, use the following configuration code:
