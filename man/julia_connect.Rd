@@ -54,7 +54,7 @@ This function connects \code{R} to \code{Julia}.
 }
 \item The \code{Julia} installation is validated.
 \item A local \code{Julia} Project is generated in \code{JULIA_PROJ} (if specified and required) and activated. We recommend using \code{\link{patter}} within an RStudio Project, with a \code{Julia} directory at the top-level that contains the \code{Julia} project.
-\item If specified, \code{.pkg_config} is run via \code{\link[=julia_code]{julia_code()}} (see Examples).
+\item If specified, \code{.pkg_config} is run via \code{\link[=julia_code]{julia_code()}}.
 \item \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} and supporting dependencies are installed or updated (if required) and loaded (optionally in the local \code{Julia} Project). If the environment variable \code{PATTER.JL_DEV = "path/to/local/clone/of/Patter.jl"} is set, \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} is installed from a local source as a development dependency (via \code{Pkg.develop()}); otherwise, \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} is installed from the remote.
 }
 
@@ -77,35 +77,6 @@ if (julia_run()) {
   #### Example (3): Use a local `Julia` Project (recommended)
   proj <- file.path(tempdir(), "Julia")
   julia_connect(JULIA_PROJ = proj)
-
-  #### Example (4): Configure `Julia` for package installation
-  if (FALSE) {
-
-    # Use `.pkg_config` to configure `Julia` for package installation.
-    # For example, on some systems, you may receive the following error:
-    # 'You may be using an old system libcurl library
-    # ... that doesn't understand options that Julia uses.'
-    # This is because `Julia` called from R may use a different LD_LIBRARY_PATH.
-
-    # To fix this, use the following configuration code:
-    pkg_config <-
-      '
-      # Check & remove path set by R
-      println(ENV["LD_LIBRARY_PATH"])
-      delete!(ENV, "LD_LIBRARY_PATH")
-      # Set default `Julia` path
-      # * This is obtained by running `Julia` directly (from the terminal)
-      # * using Libdl
-      # * filter!(contains("curl"), dllist())
-      ENV["LD_LIBRARY_PATH"] = "/opt/julias/julia-1.10/bin/../lib/julia/libcurl.so.4"
-      # Validate settings
-      println(ENV["LD_LIBRARY_PATH"])
-      '
-
-    # Now connect to `Julia`
-    julia_connect(JULIA_PROJ = proj, .pkg_config = pkg_config)
-
-  }
 
   #### Example (4): Force an update of installed packages
   if (FALSE) {

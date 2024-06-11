@@ -25,7 +25,7 @@
 #'    - The number of threads can only be set once per `R` session;
 #' * The `Julia` installation is validated.
 #' * A local `Julia` Project is generated in `JULIA_PROJ` (if specified and required) and activated. We recommend using [`patter`] within an RStudio Project, with a `Julia` directory at the top-level that contains the `Julia` project.
-#' * If specified, `.pkg_config` is run via [`julia_code()`] (see Examples).
+#' * If specified, `.pkg_config` is run via [`julia_code()`].
 #' * [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) and supporting dependencies are installed or updated (if required) and loaded (optionally in the local `Julia` Project). If the environment variable `PATTER.JL_DEV = "path/to/local/clone/of/Patter.jl"` is set, [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) is installed from a local source as a development dependency (via `Pkg.develop()`); otherwise, [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) is installed from the remote.
 #'
 #' You should run this function once per `R` session.
