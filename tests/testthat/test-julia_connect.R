@@ -30,14 +30,14 @@ test_that("julia_connect() works", {
 
     Sys.setenv("JULIA_NUM_THREADS" = 2L)
     julia_connect(JULIA_PROJ = jproj) |>
-      expect_warning("Restart `R` to update the number of threads in `Julia`.",
-                     fixed = TRUE) |>
       expect_warning("`JULIA_NUM_THREADS` could not be set via `.threads`.",
                      fixed = TRUE)
-    Sys.setenv("JULIA_NUM_THREADS" = JULIA_NUM_THREADS)
 
     # Use .threads argument
+    Sys.setenv("JULIA_NUM_THREADS" = JULIA_NUM_THREADS)
     julia_connect(JULIA_PROJ = jproj, .threads = 2L) |>
+      expect_warning("Restart `R` to update the number of threads in `Julia`.",
+                     fixed = TRUE) |>
       expect_warning("`JULIA_NUM_THREADS` could not be set via `.threads`.",
                      fixed = TRUE)
 
