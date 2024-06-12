@@ -4,10 +4,16 @@ test_that("Patter.jl::extract() works", {
 
   skip_if(julia_skip())
 
+  map <- dat_gebco()
+  set_map(map)
+
   lapply(c(FALSE, TRUE), function(na_rm) {
 
     # Sample coordinates/values in R
-    test_xy <- terra::spatSample(map, size = 1e6L, replace = TRUE, xy = TRUE, na.rm = na_rm)
+    test_xy <- terra::spatSample(map,
+                                 size = 1e6L,
+                                 replace = TRUE,
+                                 xy = TRUE, na.rm = na_rm)
     colnames(test_xy) <- c("x", "y", "r")
     test_xy$r[is.na(test_xy$r)] <- NaN
 
