@@ -31,9 +31,9 @@ test_that("Julia helpers work", {
   julia_summary("x")
 
   file <- tempfile(fileext = ".jld2")
-  julia_save("x", .file = file)
+  julia_save(.x = "x", .file = file)
   expect_true(file.exists(file))
-  julia_load(file)
+  julia_load(.file = file, .x = "x")
   expect_true(julia_exists("x"))
 
   input <- dat_acoustics$timestamp
