@@ -42,7 +42,7 @@ test_that("Julia helpers work", {
 
   julia_check_exists("x")
   julia_check_exists("blah") |>
-    expect_error("'bla' does not exist in Julia", fixed = TRUE)
+    expect_error("'blah' does not exist in Julia", fixed = TRUE)
 
   julia_code(
     '
