@@ -82,7 +82,6 @@ sim_states_init <- function(.map,
 
   #### Re-sample `.xinit` .`n` times (if required)
   # This is required if:
-  # * spatSample does not return `.n` samples
   # * The user supplies `.xinit` with fewer than specified rows
   if (nrow(.xinit) != .n) {
     .xinit <- .xinit[sample.int(.N, size = .n, replace = TRUE), ]
@@ -100,7 +99,7 @@ map_init <- function(.map, .timeline, .direction, .dataset, .model, .pars) {
 }
 
 #' @rdname sim_states_init
-#' @keywords internal
+#' @export
 
 # The default method (for unknown models) returns `.map`
 map_init.default <- function(.map, .timeline, .direction, .dataset, .model, .pars) {
@@ -108,7 +107,7 @@ map_init.default <- function(.map, .timeline, .direction, .dataset, .model, .par
 }
 
 #' @rdname sim_states_init
-#' @keywords internal
+#' @export
 
 # For ModelObsAcousticLogisTrunc, we use the AC algorithm
 map_init.ModelObsAcousticLogisTrunc <- function(.map,
@@ -130,7 +129,7 @@ map_init.ModelObsAcousticLogisTrunc <- function(.map,
 
   #### Define a list of container info
   # Define a timeline of detections
-  t1 <- ifelse(.direction == "forward", .timeline[1], .timeline[length(.timeline)])
+  t1    <- ifelse(.direction == "forward", .timeline[1], .timeline[length(.timeline)])
   step_units <- diffunit(.timeline)
   .dataset <-
     .dataset |>
@@ -171,6 +170,9 @@ map_init.ModelObsAcousticLogisTrunc <- function(.map,
         terra::buffer(width = d$buffer, quadsegs = 1000L)
     })
 
+  #### TO DO
+  # Exclude regions overlapping with receivers that did not record detections
+
   #### Define initial map
   # Define container as SpatVector
   vcontainer <- spatIntersect(vcontainers)
@@ -204,7 +206,7 @@ map_init.ModelObsAcousticLogisTrunc <- function(.map,
 }
 
 #' @rdname sim_states_init
-#' @keywords internal
+#' @export
 
 # For ModelObsDepthUniform, we restrict .map use the depth observation
 map_init.ModelObsDepthUniform <- function(.map,
@@ -214,7 +216,7 @@ map_init.ModelObsDepthUniform <- function(.map,
                                           .model,
                                           .pars) {
   # Identify the first depth observation
-  t1    <- ifelse(.direction == "forward", .timeline[1], .timeline[length(.timeline)])
+  t1 <- ifelse(.direction == "forward", .timeline[1], .timeline[length(.timeline)])
   pos   <- which(.dataset$timestamp == t1)
   if (length(pos) == 0L) {
     return(.map)
@@ -230,7 +232,7 @@ map_init.ModelObsDepthUniform <- function(.map,
 }
 
 #' @rdname sim_states_init
-#' @keywords internal
+#' @export
 
 # For ModelObsDepthNormalTrunc, we restrict .map use the depth observation
 map_init.ModelObsDepthNormalTrunc <- function(.map,
@@ -320,6 +322,12 @@ coords_init <- function(.map, .n) {
   }
   .xinit <- .xinit |> as.data.table()
   colnames(.xinit) <- c("x", "y", "map_value")
+  # Implement resampling, if spatSample() returns <= .n samples
+  # * This ensures that even if spatSample returns <= .n samples, we get .n initial positions
+  # * From which we get .n unique states
+  if (nrow(.xinit) != .n) {
+    .xinit <- .xinit[sample.int(.N, size = .n, replace = TRUE), ]
+  }
   .xinit[, list(map_value, x, y)]
 }
 
@@ -332,21 +340,21 @@ states_init <- function(.state, .coords) {
 }
 
 #' @rdname sim_states_init
-#' @keywords internal
+#' @export
 
 states_init.default <- function(.state, .coords) {
   abort("For custom states, you need to define a `states_init()` S3 method or provide `.xinit`.")
 }
 
 #' @rdname sim_states_init
-#' @keywords internal
+#' @export
 
 states_init.StateXY <- function(.state, .coords) {
   .coords
 }
 
 #' @rdname sim_states_init
-#' @keywords internal
+#' @export
 
 states_init.StateXYZD <- function(.state, .coords) {
   z <- map_value <- angle <- NULL
