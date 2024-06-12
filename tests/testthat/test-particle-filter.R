@@ -59,7 +59,9 @@ test_that("pf_filter() reconstructs the true path", {
                                 obs$ModelObsDepthUniform[[1]]),
                    .model_obs = model_obs,
                    .model_move = model_move,
-                   .n_particle = 1e5L)
+                   .n_particle = 1e5L) |>
+    # Suppress convergence warnings
+    suppressWarnings()
 
   # Validate forward filter
   states <-
@@ -77,7 +79,9 @@ test_that("pf_filter() reconstructs the true path", {
                    .model_obs = model_obs,
                    .model_move = model_move,
                    .n_particle = 1e5L,
-                   .direction = "backward")
+                   .direction = "backward") |>
+    # Suppress convergence warnings
+    suppressWarnings()
 
   # Validate backward filter
   states <-
