@@ -1,6 +1,7 @@
 #' @title Examples: streamline set up
 #' @description These functions are used to streamline package examples.
 #' @param .fun A `character` that defines the name of a [`patter`] function with a corresponding [`example_setup()`] method.
+#' @param .connect A `logical` variable that defines whether or not to run [`julia_connect()`]. Set to `FALSE` for testing.
 #' @author Edward Lavender
 #' @name example_setup
 NULL
@@ -8,14 +9,14 @@ NULL
 #' @rdname example_setup
 #' @export
 
-example_setup <- function(.fun) {
+example_setup <- function(.fun, .connect) {
   UseMethod("example_setup", char_to_class(.fun))
 }
 
 #' @rdname example_setup
 #' @export
 
-example_setup.default <- function(.fun) {
+example_setup.default <- function(.fun, .connect) {
   abort("An `example_setup()` method is required for {.fun}.",
         .envir = environment())
 }
@@ -23,10 +24,12 @@ example_setup.default <- function(.fun) {
 #' @rdname example_setup
 #' @export
 
-example_setup.pf_smoother_two_filter <- function(.fun) {
+example_setup.pf_smoother_two_filter <- function(.fun, .connect = TRUE) {
 
   #### Julia set up
-  julia_connect()
+  if (.connect) {
+    julia_connect()
+  }
   set_seed()
 
   #### Define study system

@@ -6,14 +6,16 @@
 \alias{example_setup.pf_smoother_two_filter}
 \title{Examples: streamline set up}
 \usage{
-example_setup(.fun)
+example_setup(.fun, .connect)
 
-\method{example_setup}{default}(.fun)
+\method{example_setup}{default}(.fun, .connect)
 
-\method{example_setup}{pf_smoother_two_filter}(.fun)
+\method{example_setup}{pf_smoother_two_filter}(.fun, .connect = TRUE)
 }
 \arguments{
 \item{.fun}{A \code{character} that defines the name of a \code{\link{patter}} function with a corresponding \code{\link[=example_setup]{example_setup()}} method.}
+
+\item{.connect}{A \code{logical} variable that defines whether or not to run \code{\link[=julia_connect]{julia_connect()}}. Set to \code{FALSE} for testing.}
 }
 \description{
 These functions are used to streamline package examples.
