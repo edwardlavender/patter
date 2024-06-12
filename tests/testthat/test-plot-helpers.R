@@ -42,12 +42,6 @@ test_that("add_sp_path() works", {
       add_sp_path(xy)
     }
   )
-  save_png <- function(code, width = 400, height = 400) {
-    path <- tempfile(fileext = ".png")
-    png(path, width = width, height = height)
-    on.exit(dev.off(), add = TRUE)
-    eval(code)
-    path
-  }
-  expect_snapshot_file(save_png(code), "add_sp_path.png")
+  expect_snapshot_file(snapshot_png(code),
+                       "add_sp_path.png")
 })
