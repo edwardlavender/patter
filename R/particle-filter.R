@@ -57,7 +57,7 @@ pf_filter <- function(.map,
                       .model_move = move_xy(),
                       .n_move = 1e5L,
                       .n_particle = 1000L,
-                      .n_resample = .n_record * 0.5,
+                      .n_resample = as.numeric(.n_particle),
                       .n_record = 1e3L,
                       .direction = c("forward", "backward"),
                       .verbose = getOption("patter.verbose")) {
