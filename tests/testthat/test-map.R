@@ -1,10 +1,45 @@
 test_that("as.im.SpatRaster() works", {
+
   a <- readRDS(system.file("testdata", "as.im.SpatRaster.rds",
                            package = "patter", mustWork = TRUE))
   b <- as.im.SpatRaster(dat_gebco())
   expect_equal(a, b)
+
 })
 
+test_that("as.owin.SpatRaster() works", {
+
+  as.owin.SpatRaster(dat_gebco()) |>
+    expect_message("Observation window is gridded.", fixed = TRUE)
+
+  as.owin.SpatRaster(terra::rast(vals = 1)) |>
+    expect_message("Observation window is rectangular.", fixed = TRUE)
+
+})
+
+test_that("map_pou() and map_dens() work", {
+
+  # Define map & coordinates
+  map   <- dat_gebco()
+  map   <- map / terra::global(map, "sum", na.rm = TRUE)[1, 1]
+  coord <- data.table(x = c(708332.6, 707614.2),
+                      y = c(6262766, 6253068))
+
+  # Test map_pou()
+  output <- map_pou(.map = map,
+                    .coord = coord)$ud
+  expected <- terra::setValues(map, 0)
+  expected <- terra::mask(expected, map)
+  expected[terra::cellFromXY(map, cbind(coord$x, coord$y))] <- 0.5
+  expect_true(terra::all.equal(output, expected))
+
+  # Test map_dens()
+  output <- map_dens(.map = map, .coord = coord)
+  ud     <- output$ud
+  output <- map_dens(.map = map, .shortcut = output)
+  expect_true(terra::all.equal(ud, output$ud))
+
+})
 
 test_that("map_hr_*() functions work", {
 
