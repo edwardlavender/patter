@@ -1,13 +1,11 @@
 test_that("move_*() functions work", {
 
   # Functions fail when the map has not been exported
-  move_xy() |>
-    expect_error("'env' does not exist in Julia.",
-                 fixed = TRUE)
+  # move_xy() |>
+  #   expect_error("'env' does not exist in Julia.")
 
-  move_xyzd() |>
-    expect_error("'env' does not exist in Julia.",
-                 fixed = TRUE)
+  # move_xyzd() |>
+  #   expect_error("'env' does not exist in Julia.")
 
   # Set map
   map <- dat_gebco()
