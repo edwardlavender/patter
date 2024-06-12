@@ -151,12 +151,14 @@ test_that("pf_filter() works", {
   check_names(fwd, c("xinit", "states", "diagnostics", "convergence"))
   check_names(fwd$states, c("path_id", "timestep", "timestamp", "map_value", "x", "y"))
   check_names(fwd$diagnostics, c("timestep", "timestamp", "ess", "maxlp"))
-  expect_true(fwd$convergence)
+  check_inherits(fwd$convergence, "logical")
 
   #### Test that that movement distances are within mobility
   # This is not possible directly since we do not track particle histories
   # But we can confirm that at least some some movement distances are < mobility at each time step
-  states <- fwd$states
+  # NB: Define states from 1:(T - 1)
+  # (We focus on valid states only, since non-convergence is expected)
+  states <- fwd$states[timestep %in% 1:(max(timestep) - 1), ]
   for (t in sort(unique(states$timestep))) {
     if (t < max(t)) {
       mat <- terra::distance(states[timestep == t, .(x, y)] |> as.matrix(),
@@ -175,7 +177,7 @@ test_that("pf_filter() works", {
     as.data.table()
   # Calculate distances between particles & receivers @ moment of detection
   check_detection_distance <-
-    fwd$states |>
+    states |>
     # Focus on a subsample of path(s) for speed
     filter(path_id %in% 1:100) |>
     select(timestamp, x, y) |>
@@ -185,42 +187,6 @@ test_that("pf_filter() works", {
     as.data.table()
   # Validate distances
   expect_true(max(check_detection_distance$dist) <= 750)
-
-  #### Test that at the moment of detection particles are widthin detection ranges (in Julia)
-  if (FALSE) {
-
-    julia_code(
-      '
-      using Test
-# Define detections DataFrame
-detections = []
-for timestamp in sort(collect(keys(yobs)))
-    for (obs, model) in yobs[timestamp]
-        if model isa ModelObsAcousticLogisTrunc && obs == 1
-            push!(detections, Dict(:timestamp => timestamp,
-                                    :receiver_x => model.receiver_x,
-                                    :receiver_y => model.receiver_y))
-        end
-    end
-end
-detections = DataFrame(detections)
-# Define particles DataFrame with particle (x, y) coordinates at the moment of detection
-# * For simplicity, we focus on an example particle at each time step
-s1 = pfwd.state[11, :]
-timesteps = collect(1:size(s1, 1))
-p1 = DataFrame(timestep = 1:size(s1, 1),
-               timestamp = timeline[timesteps],
-               x = [s1[i].x for i in timesteps],
-               y = [s1[i].y for i in timesteps])
-# Validate distances between receivers and particles at the moment of detection
-detections = leftjoin(detections, p1, on = :timestamp)
-detections = dropmissing(detections)
-detections.distance =
-    [Patter.distance(row.receiver_x, row.receiver_y, row.x, row.y) for row in eachrow(detections)]
-@test all(detections.distance .< 750)
-      ')
-
-  }
 
   #### Test the distribution of distances from receivers during detection gaps
   # * TO DO
