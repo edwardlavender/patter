@@ -150,6 +150,7 @@
 #' @importFrom data.table rbindlist
 #' @importFrom data.table :=
 #'
+#' @importFrom dplyr all_of
 #' @importFrom dplyr any_of
 #' @importFrom dplyr arrange
 #' @importFrom dplyr everything

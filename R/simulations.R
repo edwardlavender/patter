@@ -194,7 +194,7 @@ sim_path_walk <- function(.map,
       timestep = as.integer(.data$timestep),
       timestamp = .timeline[.data$timestep]
     ) |>
-    select("path_id", "timestep", "timestamp", state_dims) |>
+    select("path_id", "timestep", "timestamp", all_of(state_dims)) |>
     as.data.table()
 
   #### Validate simulation (check for NAs)
