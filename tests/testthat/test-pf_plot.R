@@ -3,8 +3,8 @@ test_that("pf_plot_xy() works", {
   # Test correct png output
   wd <- getwd()
   con <- file.path(tempdir(), "png")
-  setwd(con)
   dir.create(con)
+  setwd(con)
   map <- dat_gebco()
   origin <- terra::spatSample(map,
                               size = 1,
