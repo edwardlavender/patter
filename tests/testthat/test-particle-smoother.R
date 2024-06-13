@@ -10,7 +10,7 @@ test_that("pf_smoother_two_filter() works", {
   bwd <- do.call(pf_filter, args)
 
   # Run the smoother
-  smo <- pf_smoother_two_filter()
+  smo <- pf_smoother_two_filter(.map = args$.map, .mobility = 750.0)
 
   # Check object structure
   check_inherits(smo, "pf_particles")

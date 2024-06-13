@@ -87,37 +87,24 @@ skill_R <- function(.obs, .mod) {
 skill_d <- function(.obs, .mod) {
   check_inherits(.obs, "SpatRaster")
   check_inherits(.mod, "SpatRaster")
-  # Define helper function from ie2misc::dr()
+  # Define helper function, simplified from ie2misc::dr()
   dr <- function(predicted, observed, na.rm = FALSE) {
     c <- 2
-    if (na.rm == TRUE) {
+    if (anyNA(predicted) | anyNA(observed)) {
+      NA
+    }
+    else {
       if (sum(abs(predicted - observed), na.rm = na.rm) <=
-          (c * sum(abs(observed - mean(observed, na.rm = na.rm)), na.rm = na.rm))) {
-        1 - (sum(abs(predicted - observed), na.rm = na.rm)/(c * sum(abs(observed - mean(observed, na.rm = na.rm)), na.rm = na.rm)))
+          (c * sum(abs(observed - mean(observed, na.rm = na.rm)),
+                   na.rm = na.rm))) {
+        1 - (sum(abs(predicted - observed), na.rm = na.rm)/(c *
+                                                              sum(abs(observed - mean(observed, na.rm = na.rm)),
+                                                                  na.rm = na.rm)))
       }
       else {
         ((c * sum(abs(observed - mean(observed, na.rm = na.rm)),
                   na.rm = na.rm))/sum(abs(predicted - observed),
                                       na.rm = na.rm)) - 1
-      }
-    }
-    else {
-      if (anyNA(predicted) | anyNA(observed)) {
-        NA
-      }
-      else {
-        if (sum(abs(predicted - observed), na.rm = na.rm) <=
-            (c * sum(abs(observed - mean(observed, na.rm = na.rm)),
-                     na.rm = na.rm))) {
-          1 - (sum(abs(predicted - observed), na.rm = na.rm)/(c *
-                                                                sum(abs(observed - mean(observed, na.rm = na.rm)),
-                                                                    na.rm = na.rm)))
-        }
-        else {
-          ((c * sum(abs(observed - mean(observed, na.rm = na.rm)),
-                    na.rm = na.rm))/sum(abs(predicted - observed),
-                                        na.rm = na.rm)) - 1
-        }
       }
     }
   }

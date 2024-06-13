@@ -4,16 +4,10 @@
 \alias{raster.vol}
 \title{Spatial helper: raster volume}
 \source{
-This function is copied, almost exactly, from the \href{https://github.com/jeffreyevans/spatialEco}{\code{spatialEco}} package (v.2.0-2). It is defined separately in \code{\link{patter}} to reduce dependencies.
+This function is copied, with modifications, from the \href{https://github.com/jeffreyevans/spatialEco}{\code{spatialEco}} package (v.2.0-2). It is defined separately in \code{\link{patter}} to reduce dependencies.
 }
 \usage{
-raster.vol(
-  x,
-  p = 0.75,
-  sample = FALSE,
-  spct = 0.05,
-  type = c("random", "regular")
-)
+raster.vol(x, p = 0.75, sample = FALSE)
 }
 \description{
 The \code{spatialEco::raster.vol()} function.

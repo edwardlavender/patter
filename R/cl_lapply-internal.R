@@ -110,12 +110,12 @@ cl_check_chunk <- function(.fun,
   if (.chunk) {
     if (!is.null(.chunk_fun)) {
       if (!(".chunkargs" %in% names(formals(.fun)))) {
-        abort("`.fun` should include a `.chunkargs` argument when `.chunk = TRUE` and `.chunk_eval` is supplied.")
+        abort("`.fun` should include a `.chunkargs` argument when `.chunk = TRUE` and `.chunk_fun` is supplied.")
       }
     }
   } else {
     if (!is.null(.chunk_fun)) {
-      warn(".chunk = FALSE`: `.chunk_eval` ignored.")
+      warn(".chunk = FALSE`: `.chunk_fun` ignored.")
     }
   }
   invisible(NULL)

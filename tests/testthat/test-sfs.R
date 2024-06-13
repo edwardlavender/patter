@@ -9,7 +9,13 @@ test_that("st_invert() works", {
   # terra::plot(p, col = "blue")
   p <- sf::st_as_sf(p) |> sf::st_geometry()
 
-  expect_snapshot_file(snapshot_png(plot(p, col = "blue")),
-                       "add_st_invert.png")
+  land <- st_invert(p)
+  sea  <- st_invert(land)
+  land_check <- st_invert(sea)
+
+  expect_true(all.equal(land, land_check))
+
+  expect_snapshot_file(snapshot_png(terra::plot(sea, col = "blue")),
+                       "st_invert.png")
 
 })

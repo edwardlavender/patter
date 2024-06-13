@@ -13,10 +13,29 @@ test_that("cl_*() helpers work", {
                      fixed = TRUE)
   }
 
+  # Check cl_check_chunk()
+  cl_check_chunk(function() 1,
+                 .cl = 1L,
+                 .chunk = TRUE,
+                 .chunk_fun = function() 1) |>
+    expect_warning("cores = 1L: `.chunk = TRUE` is inefficient on one core.",
+                   fixed = TRUE) |>
+    expect_error("`.fun` should include a `.chunkargs` argument when `.chunk = TRUE` and `.chunk_fun` is supplied.",
+                 fixed = TRUE)
+  cl_check_chunk(function(.chunkargs) 1,
+                 .cl = 1L,
+                 .chunk = FALSE,
+                 .chunk_fun = function() 1) |>
+    expect_warning(".chunk = FALSE`: `.chunk_fun` ignored.",
+                   fixed = TRUE)
+
   # Check cl_cores()
   cl_cores(NULL) |> expect_equal(1L)
   cl_cores(1L) |> expect_equal(1L)
   cl_cores(2L) |> expect_equal(2L)
+  cl_cores(Inf) |>
+    expect_warning("The number of CPU cores exceeds the number of detected cores.",
+                   fixed = TRUE)
   cl <- parallel::makeCluster(2L)
   cl_cores(parallel::makeCluster(2L)) |> expect_equal(2L)
   cl_stop(cl)

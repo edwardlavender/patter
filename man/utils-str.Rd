@@ -5,7 +5,7 @@
 \alias{str_items}
 \title{Utilities: strings}
 \usage{
-str_items(.items, quo = "`")
+str_items(.items, .quo = "`")
 }
 \description{
 Utilities: strings

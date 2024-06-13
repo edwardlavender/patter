@@ -5,6 +5,9 @@ test_that("as.im.SpatRaster() works", {
   b <- as.im.SpatRaster(dat_gebco())
   expect_equal(a, b)
 
+  as.im.SpatRaster(terra::rast()) |>
+    expect_error("The SpatRaster is empty.")
+
 })
 
 test_that("as.owin.SpatRaster() works", {
@@ -16,6 +19,23 @@ test_that("as.owin.SpatRaster() works", {
     expect_message("Observation window is rectangular.", fixed = TRUE)
 
 })
+
+test_that("as.owin.sf() works", {
+
+  skip_on_ci()
+  skip_on_os(c("windows", "linux", "solaris"))
+
+  b <- terra::boundaries(dat_gebco())
+  # terra::plot(b)
+  p <- terra::as.polygons(b)
+  # terra::plot(p, col = "blue")
+  p <- sf::st_as_sf(p) |> sf::st_geometry()
+  sea <- as.owin.sf(p)
+  expect_snapshot_file(snapshot_png(plot(sea, col = "blue")),
+                       "as.owin.sf.png")
+
+})
+
 
 test_that("map_pou() and map_dens() work", {
 

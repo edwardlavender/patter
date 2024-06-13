@@ -180,48 +180,20 @@
 
 #' @title Spatial helper: raster volume
 #' @description The `spatialEco::raster.vol()` function.
-#' @source This function is copied, almost exactly, from the [`spatialEco`](https://github.com/jeffreyevans/spatialEco) package (v.2.0-2). It is defined separately in [`patter`] to reduce dependencies.
+#' @source This function is copied, with modifications, from the [`spatialEco`](https://github.com/jeffreyevans/spatialEco) package (v.2.0-2). It is defined separately in [`patter`] to reduce dependencies.
 #' @keywords internal
 
 raster.vol <- function(x,
                        p = 0.75,
-                       sample = FALSE,
-                       spct = 0.05,
-                       type = c("random", "regular")) {
-  rlang::check_installed("sf")
-  if (!inherits(x, "SpatRaster"))
-    stop(deparse(substitute(x)), " must be a terra SpatRaster object")
-  if (sample == FALSE) {
-    den <- x[][, 1]
-    z <- sort(den[!is.na(den)], decreasing = TRUE)
-    y <- cumsum(as.numeric(z))
-    i <- sum(y <= p * y[length(y)])
-    vol <- x
-    vol[] <- as.integer(den >= z[i])
-    return(vol)
+                       sample = FALSE) {
+  if (!inherits(x, "SpatRaster")) {
+    stop(deparse(substitute(x)), " must be a terra SpatRaster.")
   }
-  else {
-    ss = round(terra::ncell(x) * spct, digits = 0)
-    den <- sf::st_as_sf(terra::spatSample(x, size = ss, method = type[1],
-                                          na.rm = TRUE, as.points = TRUE, values = TRUE))
-    names(den)[1] <- "den"
-    den$idx <- 1:nrow(den)
-    den$cls = 0
-    sum.p <- sum(den$den, na.rm = TRUE) * p
-    den <- den[order(-den$den), ]
-    i = 0
-    j = 0
-    while (i <= sum.p) {
-      j = j + 1
-      if (!is.na(den$den[j])) {
-        i = i + den$den[j]
-        den$cls[j] <- 1
-      }
-      else {
-        den$cls[j] <- NA
-      }
-    }
-    den <- den[order(den$idx), ]
-    return(den[den$cls == 1, ])
-  }
+  den <- x[][, 1]
+  z <- sort(den[!is.na(den)], decreasing = TRUE)
+  y <- cumsum(as.numeric(z))
+  i <- sum(y <= p * y[length(y)])
+  vol <- x
+  vol[] <- as.integer(den >= z[i])
+  vol
 }

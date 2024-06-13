@@ -13,6 +13,8 @@ test_that("Julia helpers work", {
   # julia_proj_activate()
 
   # julia_proj_temp()
+  expect_equal(julia_proj_temp(),
+               file.path(tempdir(), "Julia"))
 
   # julia_packages_dev_Patter.jl()
 
@@ -23,6 +25,8 @@ test_that("Julia helpers work", {
   # julia_packages()
 
   # julia_threads()
+  julia_threads(.threads = 999) |>
+    expect_warning("`JULIA_NUM_THREADS` could not be set via `.threads`.", fixed = TRUE)
 
   julia_glimpse(data.frame(x = 1))
 

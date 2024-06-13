@@ -14,12 +14,24 @@ test_that("file_*() functions work", {
     expect_error("Path doesn't exist.", fixed = TRUE)
 
   # file_list() lists files
+  file_list(con) |>
+    expect_error("No files identified in `.sink`.")
   file.create(file.path(con, "1.txt"))
   file.create(file.path(con, "2.txt"))
   expect_equal(basename(file_list(con)),
                c("1.txt", "2.txt"))
   expect_equal(file_list(con),
                file_list(tempdir(), .folder = "tmp"))
+  csv <- file.path(con, "1.csv")
+  file.create(csv)
+  file_list(con) |>
+    expect_error("Multiple file types (extensions) identified in `.sink`. Do you need to pass `pattern` to `list.files()`?", fixed = TRUE)
+  file.remove(csv)
+  blah <- file.path(con, "blah.txt")
+  file.create(blah)
+  file_list(con) |>
+    suppressWarnings() |>
+    expect_error("File names should be '1.{extension}', '2.{extension}', ..., 'N.{extension}'.", fixed = TRUE)
 
   # file_cleanup() removes files
   file_cleanup(con)

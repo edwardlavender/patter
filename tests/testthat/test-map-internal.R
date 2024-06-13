@@ -68,6 +68,16 @@ test_that(".map_*() functions work", {
                          mark = c(2/3, 1/3))
   expect_equal(output, expected)
 
+  # Test `.map_coord.dt()` with (cell_x, cell_y)
+  id <- terra::cellFromXY(r, cbind(xy$x, xy$y))
+  xy <- data.table(timestep = 1L,
+                   cell_x = terra::xFromCell(r, id),
+                   cell_y = terra::yFromCell(r, id))
+  output <- .map_coord(.map = r, .coord = xy, .discretise = FALSE)
+  expect_equal(output, expected)
+  output <- .map_coord(.map = r, .coord = xy, .discretise = TRUE)
+  expect_equal(output, expected)
+
   # Test `.map_mark()` with a simple `data.table`
   xy       <- data.table(timestep = 1L, id = c(1, 2, 1), x = c(1, 2, 1), y = c(3, 4, 3))
   output   <- .map_mark(copy(xy))
@@ -95,3 +105,13 @@ test_that(".map_*() functions work", {
 
 })
 
+test_that("raster.vol() works", {
+
+  map <- terra::setValues(dat_gebco(), 1)
+  map <- terra::setValues(dat_gebco(), 1)
+  map <- map / terra::global(map, "sum", na.rm = TRUE)[1, 1]
+  vol <- raster.vol(map)
+  expect_true(all(vol[] == 1))
+  raster.vol("blah") |> expect_error()
+
+})
