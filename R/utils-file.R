@@ -100,13 +100,13 @@ file_size <- function(.sink,
     list.files(..., full.names = TRUE) |>
     unlist() |>
     file.size() |>
-    sum() / 1e6L
+    sum() / 1e6
   # Convert size as requested
   if (.unit == "GB") {
-    size <- size / 1e3L
+    size <- size / 1e3
   }
   if (.unit == "TB") {
-    size <- size / 1e6L
+    size <- size / 1e6
   }
   size
 }
