@@ -3,7 +3,7 @@
 #'
 #' @param .map A [`SpatRaster`] that defines the study area (see [`glossary`]).
 #' @param .coord A [`data.table`] of particle coordinates, including `x` and `y` columns. Point graphical parameters (`pch`, `col`, `bg`, `cex`, `lwd`, `lty`, `lwd`) can be included as columns to customise particle appearance. (Graphical parameters provided here silently overwrite any elements of the same name in `.add_points`.)
-#' @param .steps `NULL` or an `integer` vector of the time steps for which to map particle samples. `NULL` specifies all time steps.
+#' @param .steps `NULL` or an `integer` vector of the time steps for which to map particle samples (e.g., `.steps = 1:5L`). `NULL` specifies all time steps.
 #' @param .png (optional) A named `list`, passed to [`grDevices::png()`], to save plots to file. `filename` should be the directory in which to write files. Files are named `{.steps[1]}.png, {.steps[2]}.png, ..., {.steps[N]}.png`. `.png` should be supplied if `.cl` is supplied via `...`.
 #' @param .add_surface,.add_points Named `list`s for plot customisation.
 #' * `.add_surface` is passed to [`terra::plot()`], excluding `x` and `main`.
@@ -33,7 +33,7 @@ pf_plot_xy <- function(.map,
 
   # Define time steps
   if (is.null(.steps)) {
-    .steps <- length(unique(.coord$timestep))
+    .steps <- sort(unique(.coord$timestep))
   }
 
   # Define plot layers

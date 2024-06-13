@@ -21,7 +21,7 @@ pf_plot_xy(
 
 \item{.coord}{A \code{\link{data.table}} of particle coordinates, including \code{x} and \code{y} columns. Point graphical parameters (\code{pch}, \code{col}, \code{bg}, \code{cex}, \code{lwd}, \code{lty}, \code{lwd}) can be included as columns to customise particle appearance. (Graphical parameters provided here silently overwrite any elements of the same name in \code{.add_points}.)}
 
-\item{.steps}{\code{NULL} or an \code{integer} vector of the time steps for which to map particle samples. \code{NULL} specifies all time steps.}
+\item{.steps}{\code{NULL} or an \code{integer} vector of the time steps for which to map particle samples (e.g., \code{.steps = 1:5L}). \code{NULL} specifies all time steps.}
 
 \item{.png}{(optional) A named \code{list}, passed to \code{\link[grDevices:png]{grDevices::png()}}, to save plots to file. \code{filename} should be the directory in which to write files. Files are named \verb{\{.steps[1]\}.png, \{.steps[2]\}.png, ..., \{.steps[N]\}.png}. \code{.png} should be supplied if \code{.cl} is supplied via \code{...}.}
 
