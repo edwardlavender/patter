@@ -16,4 +16,23 @@ test_that("set_map() works", {
 
 })
 
+test_that("Additional Julia set_*() functions work", {
+
+  # set_threads()
+  JULIA_NUM_THREADS <- Sys.getenv("JULIA_NUM_THREADS")
+  set_threads(Inf) |>
+    expect_warning("Restart `R` to update the number of threads in `Julia`.")
+  Sys.setenv("JULIA_NUM_THREADS" = JULIA_NUM_THREADS)
+
+  # set_datasets()
+  dt1 <- data.table(timestamp = integer(),
+                    sensor_id = integer(),
+                    obs = numeric())
+
+  set_datasets(list(dt1)) |>
+    expect_error("There are no rows in the dataset.")
+
+})
+
+
 

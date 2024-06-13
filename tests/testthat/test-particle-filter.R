@@ -131,6 +131,18 @@ test_that("pf_filter() works", {
   # Examine movement prior
   # sim_path_walk(.map = map, .timeline = timeline)
 
+  # Run the filter (with errors)
+  timeline_cet <- timeline
+  lubridate::tz(timeline_cet) <- "CET"
+  fwd <- pf_filter(.map = map,
+                   .timeline = timeline_cet,
+                   .state = "StateXY",
+                   .xinit = NULL, .xinit_pars = list(mobility = 750, plot = TRUE),
+                   .yobs = list(acoustics, archival),
+                   .model_obs = c("ModelObsAcousticLogisTrunc", "ModelObsDepthNormalTrunc"),
+                   .model_move = move_xy()) |>
+    expect_error('There is a mismatch between the time zones of `.timeline` and/or `.yobs` `timestamp`s ("CET", "UTC", "UTC").', fixed = TRUE)
+
   # Run the filter
   # * Note that we do not expect convergence given the small & coarse bathymetric data
   fwd <- pf_filter(.map = map,

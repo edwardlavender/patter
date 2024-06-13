@@ -51,10 +51,6 @@ file_list <- function(.sink, .folder = NULL, ...) {
   if (fndistinct(exts) != 1L) {
     abort("Multiple file types (extensions) identified in `.sink`. Do you need to pass `pattern` to `list.files()`?")
   }
-  .ext <- exts[1]
-  if (!all(exts == .ext)) {
-    abort("The extensions of listed files vary.")
-  }
 
   #### Define ordered vector of files
   # Define file names

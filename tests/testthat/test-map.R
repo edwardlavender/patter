@@ -59,6 +59,32 @@ test_that("map_pou() and map_dens() work", {
   output <- map_dens(.map = map, .shortcut = output)
   expect_true(terra::all.equal(ud, output$ud))
 
+  # Test map_dens() check on the crs
+  map_no_crs <- terra::deepcopy(map)
+  terra::crs(map_no_crs) <- NA
+  map_dens(.map = map_no_crs, .coord = coord) |>
+    expect_error("`terra::crs(.map)` must be specified (and should be planar).", fixed = TRUE)
+
+  # Test map_dens() check on point validity
+  map_dens(.map = map,
+           .coord = data.table(x = 698990.7, 700014.6,
+                               y = 6262456, 6260566)) |>
+    suppressWarnings() |>
+    expect_error("There are no valid points within the observation window (perhaps you need to invert this?)", fixed = TRUE)
+
+  # Test map_dens() tryCatch() handling
+  map_dens(.map = map,
+           .coord = coord,
+           .use_tryCatch = TRUE,
+           sigma = "a")$ud |>
+    suppressWarnings() |>
+    expect_null()
+  map_dens(.map = map,
+           .coord = coord,
+           .use_tryCatch = FALSE,
+           sigma = "a") |>
+    expect_error()
+
 })
 
 test_that("map_hr_*() functions work", {
@@ -74,7 +100,7 @@ test_that("map_hr_*() functions work", {
   r <- r / global(r, "sum")[1, 1]
   # Convert zero 'probability densities' to NA
   r <- classify(r, cbind(0, NA))
-  terra::plot(r)
+  # terra::plot(r)
 
   # Check error handling
   map_hr_prop(r, .prop = c(0.2, 0.3)) |>

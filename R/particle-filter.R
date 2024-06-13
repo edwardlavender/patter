@@ -73,7 +73,7 @@ pf_filter <- function(.map,
   .direction <- match.arg(.direction)
   tzs <- c(tz(.timeline), sapply(.yobs, \(d) tz(d$timestamp)))
   if (length(unique(tzs)) != 1L) {
-    abort("There is a mismatch between the time zones of `.timeline` and/or `.yobs` `timestamp`s ({str_items(tzs, quo = '\"')}).",
+    abort("There is a mismatch between the time zones of `.timeline` and/or `.yobs` `timestamp`s ({str_items(tzs, .quo = '\"')}).",
           .envir = environment())
   }
 

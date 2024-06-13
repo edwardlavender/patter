@@ -194,7 +194,7 @@ map_dens <- function(.map,
   # spatstat assumes planar coordinates
   cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Processing `.map`..."))
   crs <- terra::crs(.map)
-  if (is.na(crs)) {
+  if (is.na(crs) | crs == "") {
     abort("`terra::crs(.map)` must be specified (and should be planar).")
   }
   terra::crs(.map) <- NA

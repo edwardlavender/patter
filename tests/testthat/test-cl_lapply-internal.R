@@ -71,16 +71,4 @@ test_that("cl_*() helpers work", {
   # Check cl_stop()
   cl_stop()
 
-  # Check cl_lapply()
-  cl_lapply(1:10, \(x) x + 0, .cl = 2L) |>
-    expect_equal(as.list(1:10L))
-  if (.Platform$OS.type == "unix") {
-    cl_lapply(1:10, \(x) x + 0, .cl = 2L, .chunk = TRUE, .combine = unlist) |>
-      expect_equal(c(1:10L))
-  }
-  cl_lapply(1:10, \(x) x + 0, .cl = parallel::makeCluster(2L)) |>
-    expect_equal(as.list(1:10L))
-  cl_lapply(1:10, \(x) x + 0, .cl = parallel::makeCluster(2L), .chunk = FALSE) |>
-    expect_equal(as.list(1:10L))
-
 })

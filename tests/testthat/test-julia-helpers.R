@@ -21,8 +21,15 @@ test_that("Julia helpers work", {
   # Use function argument
   jproj <- file.path(tempdir(), "three")
   expect_equal(julia_proj_path(JULIA_PROJ = jproj), jproj)
+  Sys.unsetenv("JULIA_PROJ")
+  julia_proj_path() |>
+    expect_warning("`JULIA_PROJ` not found in global options or environmental variables: using `JULIA_PROJ = NULL`.", fixed = TRUE)
+  Sys.setenv("JULIA_PROJ" = JULIA_PROJ)
 
   # julia_proj_generate()
+  jproj <- file.path(tempdir(), "JuliaTmp")
+  julia_proj_generate(jproj)
+  file_cleanup(jproj)
 
   # julia_proj_activate()
 
