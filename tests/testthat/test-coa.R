@@ -39,6 +39,25 @@ test_that("coa() works", {
   )
   expect_equal(output, expected)
 
+  # Test 3: sim_observations() outputs permitted
+  acc <-
+    acc |>
+    # sensor_id should be permitted
+    rename(sensor_id = receiver_id) |>
+    # obs = 0L should raise a warning
+    mutate(obs = 0L) |>
+    as.data.table()
+  output <- coa(.map = map,
+                .acoustics = acc, .moorings = moorings,
+                .delta_t = "1 minute") |>
+    expect_warning("`.acoustics` contains an `obs` column with '0(s)'.",
+                   fixed = TRUE)
+  output <- coa(.map = map,
+                .acoustics = acc, .moorings = moorings,
+                .delta_t = "1 minute") |>
+    suppressWarnings()
+  expect_equal(output, expected)
+
   #### Tests with real data
 
   # Define acoustic detections
