@@ -38,7 +38,8 @@ test_that("cl_lapply() works", {
                         list(map = terra::unwrap(mapw))
                       },
                       .chunk = TRUE,
-                      .cl = 1L)
+                      .cl = 1L) |>
+    suppressWarnings()
   expect_equal(unname(unlist(output)), 1:10)
 
   # As above (parallel)

@@ -90,7 +90,7 @@ test_that("map_pou() and map_dens() work", {
 test_that("map_hr_*() functions work", {
 
   # Define hypothetical input SpatRaster
-  library(terra)
+  suppressWarnings(library(terra))
   r <- rast()
   n <- ncell(r)
   # Define 'probability densities' around a point
