@@ -48,6 +48,7 @@ file_list <- function(.sink, .folder = NULL, ...) {
     abort("No files identified in `.sink`.")
   }
   exts  <- tools::file_ext(files)
+  ext   <- exts[1]
   if (fndistinct(exts) != 1L) {
     abort("Multiple file types (extensions) identified in `.sink`. Do you need to pass `pattern` to `list.files()`?")
   }
@@ -69,9 +70,9 @@ file_list <- function(.sink, .folder = NULL, ...) {
     arrange(.data$name) |>
     as.data.table()
   # Validate ordered list (e.g., to check there are no gaps)
-  if (!isTRUE(all.equal(paste0(seq_row(out), ".", .ext),
+  if (!isTRUE(all.equal(paste0(seq_row(out), ".", ext),
                         basename(out$file)))) {
-    abort("File names should be '1.{.ext}', '2.{.ext}', etc.",
+    abort("File names should be '1.{ext}', '2.{ext}', etc.",
           .envir = environment())
   }
   out$file
