@@ -48,7 +48,12 @@ test_that(".map_*() functions work", {
     expect_error("Weights on `.map` should sum to one.",
                  fixed = TRUE)
 
-  # Test` .map_coord.dt()` with `discretise = FALSE`
+  # Test .map_coord.dt()` checks
+  .map_coord.dt(.map = map, .coord = data.table(x_now = 1, y_now = 1)) |>
+    expect_error("`.coord` should contain `x` and `y` (or `cell_x` and `cell_y`) coordinates.",
+                 fixed = TRUE)
+
+  # Test `.map_coord.dt()` with `discretise = FALSE`
   xy <- data.table(timestep = 1L, x = c(1, 2, 1), y = c(3, 4, 3))
   output   <- .map_coord(.map = map, .coord = xy, .discretise = FALSE)
   expected <- data.table(id = 1:2,

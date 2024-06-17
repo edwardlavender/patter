@@ -32,6 +32,16 @@ test_that("Additional Julia set_*() functions work", {
   set_datasets(list(dt1)) |>
     expect_error("There are no rows in the dataset.")
 
+  # set_mobility_box()
+  set_mobility_box(NULL)
+  expect_null(julia_eval("box"))
+  bb <- dat_gebco() |> terra::ext() |> as.vector() |> unname()
+  bb <- c(min_x = bb[1], max_x = bb[2], min_y = bb[3], max_y = bb[4])
+  set_mobility_box(bb)
+  output   <- julia_eval("box") |> unclass()
+  expected <- as.list(bb)
+  expect_equal(output, expected)
+
 })
 
 

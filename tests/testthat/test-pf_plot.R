@@ -14,6 +14,7 @@ test_that("pf_plot_xy() works", {
     dat_pff()$states |>
     filter(timestep %in% 1:2L) |>
     arrange(path_id, timestep) |>
+    mutate(cex = 1.5) |>
     as.data.table()
   pf_plot_xy(.map = map,
              .coord = pff,

@@ -90,6 +90,23 @@ test_that("sim_states_init() and associates work", {
   expect_equal(output, rbind(xinit, xinit))
 
   #### Test checks
+  # All NAs
+  # Missing .pars
+  output <- sim_states_init(.map = terra::setValues(map, NA),
+                            .timeline = timeline,
+                            .direction = "forward",
+                            .datasets = list(acc, arc),
+                            .models = c("ModelObsAcousticLogisTrunc",
+                                        "ModelObsDepthUniform"),
+                            .pars = list(mobility  = 750),
+                            .state = "StateXY",
+                            .xinit = NULL,
+                            .n = 2L) |>
+    expect_warning("[spatSample] fewer samples than requested are available", fixed = TRUE) |>
+    expect_warning("`.map` from `map_init()` only contains NAs.",
+                   fixed = TRUE) |>
+    expect_error("Failed to sample initial coordinates from `.map`.",
+                 fixed = TRUE)
   output <- sim_states_init(.map = map,
                             .timeline = timeline,
                             .direction = "forward",

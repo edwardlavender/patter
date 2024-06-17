@@ -32,6 +32,11 @@ test_that("file_*() functions work", {
   file_list(con) |>
     suppressWarnings() |>
     expect_error("File names should be '1.{extension}', '2.{extension}', ..., 'N.{extension}'.", fixed = TRUE)
+  unlink(blah)
+  unlink(file.path(con, "2.txt"))
+  file.create(file.path(con, "3.txt"))
+  file_list(con) |>
+    expect_error("File names should be '1.txt', '2.txt', etc.", fixed = TRUE)
 
   # file_cleanup() removes files
   file_cleanup(con)
@@ -50,7 +55,6 @@ test_that("file_*() functions work", {
   expect_equal(mb, mb_true)
   expect_equal(gb, mb_true / 1e3)
   expect_equal(tb, mb_true / 1e6)
-
 
 })
 

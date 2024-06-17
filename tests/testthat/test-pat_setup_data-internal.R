@@ -23,8 +23,7 @@ test_that("check_{dataset}() functions work", {
     expect_message("`.acoustics`: time stamps should be ordered chronologically.")
 
   acc <- copy(dat_acoustics[individual_id == individual_id[1], ])
-  acc$receiver_id <- as.numeric(100)
-  acc$na <- NA
+  acc[, receiver_id := NULL][, receiver_id := 1.1][, na := NA]
   check_acoustics(acc, dat_moorings) |>
     expect_warning("`.acoustics`: not all receivers in `.acoustics` are found in `.moorings`." , fixed = TRUE) |>
     expect_message("`.acoustics`: contains NAs.", fixed = TRUE)
@@ -33,15 +32,26 @@ test_that("check_{dataset}() functions work", {
   expect_null(check_moorings(NULL))
   check_moorings(dat_moorings)
 
-  check_moorings(rbind(dat_moorings, dat_moorings)) |>
-    expect_error("`.moorings$receiver_id` contains duplicate elements.",
-                 fixed = TRUE)
+  moorings <- copy(dat_moorings)[1:2, ]
+  moorings[, receiver_id := NULL][, receiver_id := c(1.1, 2.2)]
+  moorings <- check_moorings(moorings)
+  expect_equal(moorings$receiver_id, c(1L, 2L))
 
   moorings <- copy(dat_moorings)
   moorings[1, receiver_id := -1]
   check_moorings(moorings) |>
     expect_error("`.moorings$receiver_id` cannot contain receiver IDs <= 0.",
                  fixed = TRUE)
+
+  check_moorings(rbind(dat_moorings, dat_moorings)) |>
+    expect_error("`.moorings$receiver_id` contains duplicate elements.",
+                 fixed = TRUE)
+
+  moorings <- moorings[1, ]
+  moorings[, receiver_start := as.POSIXct("2022-01-01", tz = "UTC")]
+  check_moorings(moorings) |>
+    expect_warning("`.moorings`: some `.moorings$receiver_start` entries are >= `.moorings$receiver_end` entries.",
+                   fixed = TRUE)
 
   check_moorings(dat_moorings[35:36, ], dat_acoustics[1:3, ]) |>
     expect_warning("`.moorings`: the deployment period(s) of some receiver(s) (`52`, `53`) in `.moorings` are entirely outside the range of acoustic observations.",

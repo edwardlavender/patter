@@ -27,6 +27,11 @@ test_that("cl_lapply() works", {
   cl_lapply(1:10, \(x) x + 0, .cl = parallel::makeCluster(2L), .chunk = FALSE) |>
     expect_equal(as.list(1:10L))
 
+  # cl_lapply() preserves names
+  output    <- cl_lapply(list(a = 1, b = 2), .fun = function(i) i + 1)
+  expected <- list(a = 2, b = 3)
+  expect_equal(output, expected)
+
   # cl_lapply() with .chunk = TRUE and .chunk_fun (serial)
   mapw <- terra::wrap(terra::setValues(dat_gebco(), 0))
   output <- cl_lapply(1:10,
