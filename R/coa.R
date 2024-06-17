@@ -50,6 +50,9 @@ coa <- function(.map,
     receiver_id <- sensor_id <- NULL
     acoustics[, receiver_id := sensor_id]
   }
+  if (rlang::has_name(acoustics, "obs") && any(acoustics$obs == 0L)) {
+    warn("`.acoustics` contains an `obs` column with '0(s)'.")
+  }
   if (!is.null(.moorings)) {
     ind        <- fmatch(acoustics$receiver_id, .moorings$receiver_id)
     receiver_x <- receiver_y <- NULL
