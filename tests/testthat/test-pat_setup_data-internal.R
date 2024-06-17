@@ -47,7 +47,7 @@ test_that("check_{dataset}() functions work", {
     expect_error("`.moorings$receiver_id` contains duplicate elements.",
                  fixed = TRUE)
 
-  moorings <- moorings[1, ]
+  moorings <- dat_moorings[1, ]
   moorings[, receiver_start := as.POSIXct("2022-01-01", tz = "UTC")]
   check_moorings(moorings) |>
     expect_warning("`.moorings`: some `.moorings$receiver_start` entries are >= `.moorings$receiver_end` entries.",
@@ -65,7 +65,6 @@ test_that("check_{dataset}() functions work", {
   moorings$na <- NA
   check_moorings(moorings) |>
     expect_message("`.moorings`: contains NAs.", fixed = TRUE)
-
 
   #### check_services()
   start <- as.POSIXct(c("2016-01-01", "2016-01-01"), tz = "UTC")
