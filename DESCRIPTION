@@ -1,6 +1,6 @@
 Package: patter
 Title: Particle Filters, Smoothers and Samplers for Animal Movement Modelling
-Version: 0.0.0.9000
+Version: 1.0.0
 Authors@R: 
     person("Edward", "Lavender", 
            email = "edward.lavender@eawag.ch", 

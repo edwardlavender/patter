@@ -1,10 +1,10 @@
 # News
 
-# `patter` 0.0.0.9000
+# `patter` 1.0.0
 
 ## Overview 
 
-This is the development version of `patter`. The main thrust of the package is the provision of particle algorithms for the reconstruction of animal movement paths and emergent patterns of space, with a focus on passive acoustic telemetry systems. The package evolved from the predecessor `flapper` package, but is simpler, faster, more powerful, better tested and easier to maintain. 
+This is the first version of `patter`. The main thrust of the package is the provision of particle algorithms for the reconstruction of animal movement paths and emergent patterns of space, with a focus on passive acoustic telemetry systems. The package evolved from the predecessor `flapper` package, but is simpler, faster, more powerful, better tested and easier to maintain. 
 While current functionality remains more streamlined than `flapper`, internal routines---which now used a specialised, fast `Julia` backend (`Patter.jl`)---alongside the API and supporting documentation are substantially improved. The package also benefits from fewer dependencies and has been fully upgraded in line with the evolution of `R`'s spatial packages (with `terra` and `sf` superseding `raster`, `sp`, `rgeos` and associates). Please provide feedback on the new package. Much work remains!
 
 ## _De-novo_ simulation
