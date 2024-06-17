@@ -9,6 +9,7 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
+op <- options(terra.pal = rev(terrain.colors(256)))
 ```
 
 # `patter`: particle algorithms for animal movement
@@ -58,7 +59,7 @@ At the time of writing (May 2024), `patter` is more streamlined than [`flapper`]
 
 2. **Install build packages.** Package installation and configuration (may) require the [`devtools`](https://github.com/r-lib/devtools), [`pkgbuild`](https://github.com/r-lib/pkgbuild) and [`here`](https://github.com/r-lib/here) packages, which can be installed with `install.packages(c("devtools", "pkgbuild", "here"))`.
 
-3. **Install [`Rtools`](https://cran.r-project.org/bin/windows/Rtools/)**. On Windows, package building requires `Rtools`. You can check whether `Rtools` is installed with `pkgbuild::has_rtools()`. If `Rtools` is not installed, it is necessary to download and install the appropriate version of `Rtools` before proceeding by following the instructions [here](https://cran.r-project.org/bin/windows/Rtools/). 
+3. **Install [`RTools`](https://cran.r-project.org/bin/windows/RTools/)**. On Windows, package building requires `RTools`. You can check whether `RTools` is installed with `pkgbuild::has_rtools()`. If `RTools` is not installed, it is necessary to download and install the appropriate version of `RTools` before proceeding by following the instructions [here](https://cran.r-project.org/bin/windows/RTools/). 
 
 4. **Install [`Julia`](https://julialang.org)**. `Julia` is high-performance programming language that `patter` uses as a backend. Install `Julia` via `R`:
 
@@ -87,7 +88,7 @@ julia <- julia_setup()
 isTRUE(try(julia_eval('true'), silent = TRUE))
 ```
 
-If you run into issues at this stage, it is likely that `Julia` has not been installed properly or `R` can't find it. You may need to tell `R` the location of the `Julia` binary via `JULIA_HOME` (see `?JuliaCall::julia_setup()` and the [`JuliaCall`](https://cran.r-project.org/web/packages/JuliaCall) [README](https://cran.r-project.org/web/packages/JuliaCall/readme/README.html) for troubleshooting and ways to get help.
+If you run into issues at this stage, it is likely that `Julia` has not been installed properly or `R` can't find it. You may need to tell `R` the location of the `Julia` binary via `JULIA_HOME` (see `?JuliaCall::julia_setup()` and the [`JuliaCall`](https://cran.r-project.org/web/packages/JuliaCall) [README](https://cran.r-project.org/web/packages/JuliaCall/readme/README.html) for troubleshooting and ways to get help).
 
 5. **Install [`patter`](https://github.com/edwardlavender/patter).** Install `patter` via: 
 
@@ -344,15 +345,15 @@ args <- list(.map = map,
              .model_obs = c(model_1, model_2),
              .model_move = model_move,
              .n_record = 500L,
-             .n_particle = 5e4L)
+             .n_particle = 1e5L)
 
 # Forward run
-fwd <- do.call(pf_filter, args)
+fwd <- do.call(pf_filter, args, quote = TRUE)
 head(fwd$states)
 
 # Backward run
 args$.direction <- "backward"
-bwd <- do.call(pf_filter, args)
+bwd <- do.call(pf_filter, args, quote = TRUE)
 ```
 
 ```{r, include = FALSE}
@@ -388,7 +389,12 @@ mtext(side = 4, "Probability density", line = -3)
 ```
 
 This basic workflow is highly customisable. You have the flexibility to define species-specific movement models, include any type of observational dataset and implement system-specific observation models. See the vignettes and function examples for further details and reach out with queries. 
+
+```{r, include = FALSE}
+options(op)
+```
  
+
 # Resources
  
 **For full details on the methods**, see the references below. 

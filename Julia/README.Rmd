@@ -309,7 +309,8 @@ Particles can be used to reconstruct movement paths and patterns of space use. A
 # Load & attach packages
 library(patter, quietly = TRUE)
 library(spatstat.explore, quietly = TRUE, warn.conflicts = FALSE)
-
+op <- options(terra.pal = rev(terrain.colors(256)))
+              
 # Read map 
 map <- terra::rast(file.path("data", "bathymetry.tif"))
 
@@ -325,6 +326,8 @@ ud <- map_dens(.map = map,
 # Add home range
 map_hr_home(ud, .add = TRUE)
 mtext(side = 4, "Probability density", line = -3)
+
+options(op)
 ```
 
 This basic workflow is highly customisable. You have the flexibility to define species-specific movement models, include any type of observational dataset and implement system-specific observation models. See the function examples for further details and reach out with queries. 

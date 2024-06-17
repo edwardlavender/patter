@@ -93,12 +93,12 @@ touch if you would like to see additional functionality brought into
     `install.packages(c("devtools", "pkgbuild", "here"))`.
 
 3.  **Install
-    [`Rtools`](https://cran.r-project.org/bin/windows/Rtools/)**. On
-    Windows, package building requires `Rtools`. You can check whether
-    `Rtools` is installed with `pkgbuild::has_rtools()`. If `Rtools` is
+    [`RTools`](https://cran.r-project.org/bin/windows/RTools/)**. On
+    Windows, package building requires `RTools`. You can check whether
+    `RTools` is installed with `pkgbuild::has_rtools()`. If `RTools` is
     not installed, it is necessary to download and install the
-    appropriate version of `Rtools` before proceeding by following the
-    instructions [here](https://cran.r-project.org/bin/windows/Rtools/).
+    appropriate version of `RTools` before proceeding by following the
+    instructions [here](https://cran.r-project.org/bin/windows/RTools/).
 
 4.  **Install [`Julia`](https://julialang.org)**. `Julia` is
     high-performance programming language that `patter` uses as a
@@ -131,7 +131,7 @@ the location of the `Julia` binary via `JULIA_HOME` (see
 `?JuliaCall::julia_setup()` and the
 [`JuliaCall`](https://cran.r-project.org/web/packages/JuliaCall)
 [README](https://cran.r-project.org/web/packages/JuliaCall/readme/README.html)
-for troubleshooting and ways to get help.
+for troubleshooting and ways to get help).
 
 5.  **Install [`patter`](https://github.com/edwardlavender/patter).**
     Install `patter` via:
@@ -331,7 +331,7 @@ essential packages:
 
 ``` r
 library(patter)
-#> This is {patter} v.0.0.0.9000. For an overview, see `?patter`. For support, contact edward.lavender@eawag.ch.
+#> This is {patter} v.1.0.0.9000. For an overview, see `?patter`. For support, contact edward.lavender@eawag.ch.
 ```
 
 ``` r
@@ -462,26 +462,26 @@ args <- list(.map = map,
              .model_obs = c(model_1, model_2),
              .model_move = model_move,
              .n_record = 500L,
-             .n_particle = 5e4L)
+             .n_particle = 1e5L)
 
 # Forward run
-fwd <- do.call(pf_filter, args)
+fwd <- do.call(pf_filter, args, quote = TRUE)
 head(fwd$states)
 #>    path_id timestep           timestamp map_value        x       y
 #>      <int>    <int>              <POSc>     <num>    <num>   <num>
-#> 1:       1        1 2016-03-17 01:50:00  65.31673 709342.1 6253407
-#> 2:       1        2 2016-03-17 01:52:00  93.91332 708783.0 6253032
-#> 3:       1        3 2016-03-17 01:54:00  60.09327 709381.6 6253308
-#> 4:       1        4 2016-03-17 01:56:00  93.25472 708925.5 6253170
-#> 5:       1        5 2016-03-17 01:58:00  66.52094 709172.1 6253079
-#> 6:       1        6 2016-03-17 02:00:00  96.38661 709187.9 6253488
+#> 1:       1        1 2016-03-17 01:50:00  59.76520 709142.1 6253007
+#> 2:       1        2 2016-03-17 01:52:00  68.53316 709276.5 6253291
+#> 3:       1        3 2016-03-17 01:54:00  45.86026 709476.1 6252964
+#> 4:       1        4 2016-03-17 01:56:00  44.46762 709390.0 6252794
+#> 5:       1        5 2016-03-17 01:58:00  60.64737 708976.4 6252849
+#> 6:       1        6 2016-03-17 02:00:00  55.42853 709437.9 6253395
 ```
 
 ``` r
 
 # Backward run
 args$.direction <- "backward"
-bwd <- do.call(pf_filter, args)
+bwd <- do.call(pf_filter, args, quote = TRUE)
 ```
 
 ## Particle smoother
