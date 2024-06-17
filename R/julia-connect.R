@@ -35,6 +35,7 @@
 #' @return The function returns the `Julia` interface invisibly (see [`JuliaCall::julia_setup()`]).
 #'
 #' @example man/examples/example-julia_connect.R
+#' @seealso See [`julia_validate()`] to validate the `R`---`Julia` interface.
 #' @author Edward Lavender
 #' @export
 
@@ -83,3 +84,28 @@ julia_connect <- function(...,
 
 }
 
+#' @title Julia: validate the `R`---`Julia` interface
+#' @description Load and attach [`patter`], connect to `Julia` via [`julia_connect()`] and then run [`julia_validate()`] to validate the `R`---`Julia` interface works.
+#' @details
+#' This function validates the `R`---`Julia` interface with an example [`SpatRaster`] that is exported to `Julia` and then modified in `R`. If the function returns nothing, you should be good to go. On some systems, we have observed segmentation faults that crash `R` when the map is exported to `Julia` and/or modified in `R`. Please report issues.
+#'
+#' @return The function returns `invisible(NULL)`, unless an error is experienced.
+#' @example man/examples/julia_validate.R
+#' @seealso See [`julia_connect()`] to connect `R` to `Julia`.
+#' @author Edward Lavender
+#' @export
+
+julia_validate <- function() {
+  # Test that Julia works
+  julia_works()
+  # Define a map
+  map <- dat_gebco()
+  # Export the map to Julia
+  set_map(map)
+  if (!julia_exists("env")) {
+    abort("Failed to export an example SpatRaster to `Julia`.")
+  }
+  # Test use of terra to modify map
+  map <- terra::classify(map, cbind(0, NA))
+  nothing()
+}

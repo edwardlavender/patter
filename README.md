@@ -147,7 +147,7 @@ also installed, which are required for some functions and to build
 vignettes. This process may take several minutes. Set
 `build_vignettes = FALSE` for a faster installation.
 
-We strongly recommend using
+We recommend using
 [`renv`](https://rstudio.github.io/renv/articles/renv.html) (or similar)
 and [RStudio Projects](https://r4ds.had.co.nz/workflow-projects.html) to
 track the version of `patter` that you use in your projects. This will
@@ -174,9 +174,19 @@ The first time you run `julia_connect()`, it will connect to `Julia` and
 install (and pre-compile)
 [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) and the
 additional `Julia` dependencies. This may take a few minutes. Subsequent
-`julia_connect()` calls will be faster. Please report any
-[issues](https://github.com/edwardlavender/patter/issues) you experience
-during this process.
+`julia_connect()` calls will be faster.
+
+7.  **Validate the `R`—`Julia` connection**. To validate that `patter`
+    works on your system, run:
+
+<!-- -->
+
+    julia_validate()
+
+This should return `NULL`, invisibly, in which case you are good to go.
+Otherwise, the function will return an error (or `R` may crash). Please
+report any [issues](https://github.com/edwardlavender/patter/issues) you
+experience during this process.
 
 # Functionality
 
@@ -220,6 +230,7 @@ To link `patter` and the
 backend, use:
 
 - `julia_connect()` to connect to `R` to `Julia`;
+- `julia_validate()` to validate the `R`—`Julia` connection;
 - `set_seed()` to set the seed in `R` and `Julia`;
 - `set_map()` to make a `SpatRaster` of the study area available in
   `Julia`;
@@ -346,6 +357,7 @@ ensure reproducibility of our simulations:
 
 ``` r
 julia_connect()
+julia_validate()
 set_seed()
 ```
 
