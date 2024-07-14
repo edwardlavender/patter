@@ -55,11 +55,14 @@ At the time of writing (May 2024), `patter` is more streamlined than [`flapper`]
 
 # Installation 
 
+> **Note:**
+> `patter` currently works on Windows and MacOS. On Windows, everything _should_ work if you follow the instructions below. On MacOS, you may need to configure compilers if you haven't already. In our (limited) experience, `patter` installs but crashes on Debian/Ubuntu. This is due to a conflict between the GDAL/GEOS/PROJ libraries used by `R` and `Julia` (which we hope to solve in due course). Please let us know your experiences if you are using other Linux distributions. In case of issues, you should be able to use `patter.jl` directly, which may be simpler than getting `R` and `Julia` to play together!
+
 1. **Install [`R`](https://www.r-project.org)**. This package requires `R` version ≥ 4.1 (but the most recent version is recommended). You can check your version with `R.version.string`. 
 
 2. **Install build packages.** Package installation and configuration (may) require the [`devtools`](https://github.com/r-lib/devtools), [`pkgbuild`](https://github.com/r-lib/pkgbuild) and [`here`](https://github.com/r-lib/here) packages, which can be installed with `install.packages(c("devtools", "pkgbuild", "here"))`.
 
-3. **Install [`RTools`](https://cran.r-project.org/bin/windows/RTools/)**. On Windows, package building requires `RTools`. You can check whether `RTools` is installed with `pkgbuild::has_rtools()`. If `RTools` is not installed, it is necessary to download and install the appropriate version of `RTools` before proceeding by following the instructions [here](https://cran.r-project.org/bin/windows/RTools/). 
+3. **Install system libraries**. On Windows, package building requires `RTools`. You can check whether `RTools` is installed with `pkgbuild::has_rtools()`. If `RTools` is not installed, it is necessary to download and install the appropriate version of `RTools` before proceeding by following the instructions [here](https://cran.r-project.org/bin/windows/RTools/). On `MacOS`, you may need to configure compilers for your system step up if you haven't already. On `Linux`, our experience is currently limited. Please share your experiences.
 
 4. **Install [`Julia`](https://julialang.org)**. `Julia` is high-performance programming language that `patter` uses as a backend. If you do not have `Julia` installed on your system, you can install `Julia` via `R` using `JuliaCall`:
 
@@ -99,6 +102,16 @@ devtools::install_github("edwardlavender/patter",
 ```
 
 The `dependencies = TRUE` argument ensures that suggested packages are also installed, which are required for some functions and to build vignettes. This process may take several minutes. Set `build_vignettes = FALSE` for a faster installation.
+
+To install `patter` from the development branch, use:
+
+```
+remotes::install_github("edwardlavender/patter@dev",
+                        dependencies = TRUE,
+                        build_vignettes = TRUE)
+```
+
+This branch may include bug fixes and new features but should be used with caution. 
 
 We recommend using [`renv`](https://rstudio.github.io/renv/articles/renv.html) (or similar) and [RStudio Projects](https://r4ds.had.co.nz/workflow-projects.html) to track the version of `patter` that you use in your projects. This will ensure that your code continues to work, even if we have to make breaking changes to `patter` as the package evolves in response to user feedback. 
 
