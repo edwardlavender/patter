@@ -1,6 +1,6 @@
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.10.3"
+julia_version = "1.10.4"
 manifest_format = "2.0"
 project_hash = "ac9bc60cc92845598c8741b77f6c959c5d59c578"
 
@@ -220,9 +220,9 @@ uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 
 [[deps.Distributions]]
 deps = ["AliasTables", "FillArrays", "LinearAlgebra", "PDMats", "Printf", "QuadGK", "Random", "SpecialFunctions", "Statistics", "StatsAPI", "StatsBase", "StatsFuns"]
-git-tree-sha1 = "22c595ca4146c07b16bcf9c8bea86f731f7109d2"
+git-tree-sha1 = "9c405847cc7ecda2dc921ccf18b47ca150d7317e"
 uuid = "31c24e10-a181-5473-b8eb-7969acd0382f"
-version = "0.25.108"
+version = "0.25.109"
 
     [deps.Distributions.extensions]
     DistributionsChainRulesCoreExt = "ChainRulesCore"
@@ -395,9 +395,9 @@ version = "0.73.5+0"
 
 [[deps.GeoArrays]]
 deps = ["ArchGDAL", "CoordinateTransformations", "DataAPI", "Extents", "GeoFormatTypes", "GeoInterface", "IterTools", "PrecompileTools", "RecipesBase", "StaticArrays"]
-git-tree-sha1 = "a48279f4e22779893056739f50f706cddd9dad64"
+git-tree-sha1 = "38d94b4facd590e2ad009e8cc1ce2b39af669b2a"
 uuid = "2fb1d81b-e6a0-5fc5-82e6-8e06903437ab"
-version = "0.8.5"
+version = "0.9.0"
 
     [deps.GeoArrays.extensions]
     GeoArraysStatsExt = "GeoStatsBase"
@@ -536,10 +536,10 @@ uuid = "82899510-4779-5014-852e-03e436cf321d"
 version = "1.0.0"
 
 [[deps.JLD2]]
-deps = ["FileIO", "MacroTools", "Mmap", "OrderedCollections", "Pkg", "PrecompileTools", "Printf", "Reexport", "Requires", "TranscodingStreams", "UUIDs"]
-git-tree-sha1 = "5ea6acdd53a51d897672edb694e3cc2912f3f8a7"
+deps = ["FileIO", "MacroTools", "Mmap", "OrderedCollections", "Pkg", "PrecompileTools", "Reexport", "Requires", "TranscodingStreams", "UUIDs", "Unicode"]
+git-tree-sha1 = "5fe858cb863e211c6dedc8cce2dc0752d4ab6e2b"
 uuid = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
-version = "0.4.46"
+version = "0.4.50"
 
 [[deps.JLFzf]]
 deps = ["Pipe", "REPL", "Random", "fzf_jll"]
