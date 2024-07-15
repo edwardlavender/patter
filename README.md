@@ -81,6 +81,17 @@ touch if you would like to see additional functionality brought into
 
 # Installation
 
+> **Note:** `patter` currently works on Windows and MacOS. On Windows,
+> everything *should* work if you follow the instructions below. On
+> MacOS, you may need to configure compilers if you haven’t already. In
+> our (limited) experience, `patter` installs but crashes on
+> Debian/Ubuntu. This is due to a conflict between the GDAL/GEOS/PROJ
+> libraries used by `R` and `Julia` (which we hope to solve in due
+> course). Please let us know your experiences if you are using other
+> Linux distributions. In case of issues, you should be able to use
+> `patter.jl` directly, which may be simpler than getting `R` and
+> `Julia` to play together!
+
 1.  **Install [`R`](https://www.r-project.org)**. This package requires
     `R` version ≥ 4.1 (but the most recent version is recommended). You
     can check your version with `R.version.string`.
@@ -92,17 +103,20 @@ touch if you would like to see additional functionality brought into
     installed with
     `install.packages(c("devtools", "pkgbuild", "here"))`.
 
-3.  **Install
-    [`Rtools`](https://cran.r-project.org/bin/windows/Rtools/)**. On
-    Windows, package building requires `Rtools`. You can check whether
-    `Rtools` is installed with `pkgbuild::has_rtools()`. If `Rtools` is
-    not installed, it is necessary to download and install the
-    appropriate version of `Rtools` before proceeding by following the
-    instructions [here](https://cran.r-project.org/bin/windows/Rtools/).
+3.  **Install system libraries**. On Windows, package building requires
+    `RTools`. You can check whether `RTools` is installed with
+    `pkgbuild::has_rtools()`. If `RTools` is not installed, it is
+    necessary to download and install the appropriate version of
+    `RTools` before proceeding by following the instructions
+    [here](https://cran.r-project.org/bin/windows/RTools/). On `MacOS`,
+    you may need to configure compilers for your system step up if you
+    haven’t already. On `Linux`, our experience is currently limited.
+    Please share your experiences.
 
 4.  **Install [`Julia`](https://julialang.org)**. `Julia` is
     high-performance programming language that `patter` uses as a
-    backend. Install `Julia` via `R`:
+    backend. If you do not have `Julia` installed on your system, you
+    can install `Julia` via `R` using `JuliaCall`:
 
 <!-- -->
 
@@ -131,7 +145,7 @@ the location of the `Julia` binary via `JULIA_HOME` (see
 `?JuliaCall::julia_setup()` and the
 [`JuliaCall`](https://cran.r-project.org/web/packages/JuliaCall)
 [README](https://cran.r-project.org/web/packages/JuliaCall/readme/README.html)
-for troubleshooting and ways to get help.
+for troubleshooting and ways to get help).
 
 5.  **Install [`patter`](https://github.com/edwardlavender/patter).**
     Install `patter` via:
@@ -147,7 +161,16 @@ also installed, which are required for some functions and to build
 vignettes. This process may take several minutes. Set
 `build_vignettes = FALSE` for a faster installation.
 
-We strongly recommend using
+To install `patter` from the development branch, use:
+
+    remotes::install_github("edwardlavender/patter@dev",
+                            dependencies = TRUE,
+                            build_vignettes = TRUE)
+
+This branch may include bug fixes and new features but should be used
+with caution.
+
+We recommend using
 [`renv`](https://rstudio.github.io/renv/articles/renv.html) (or similar)
 and [RStudio Projects](https://r4ds.had.co.nz/workflow-projects.html) to
 track the version of `patter` that you use in your projects. This will
@@ -174,9 +197,19 @@ The first time you run `julia_connect()`, it will connect to `Julia` and
 install (and pre-compile)
 [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) and the
 additional `Julia` dependencies. This may take a few minutes. Subsequent
-`julia_connect()` calls will be faster. Please report any
-[issues](https://github.com/edwardlavender/patter/issues) you experience
-during this process.
+`julia_connect()` calls will be faster.
+
+7.  **Validate the `R`—`Julia` connection**. To validate that `patter`
+    works on your system, run:
+
+<!-- -->
+
+    julia_validate()
+
+This should return `NULL`, invisibly, in which case you are good to go.
+Otherwise, the function will return an error (or `R` may crash). Please
+report any [issues](https://github.com/edwardlavender/patter/issues) you
+experience during this process.
 
 # Functionality
 
@@ -220,6 +253,7 @@ To link `patter` and the
 backend, use:
 
 - `julia_connect()` to connect to `R` to `Julia`;
+- `julia_validate()` to validate the `R`—`Julia` connection;
 - `set_seed()` to set the seed in `R` and `Julia`;
 - `set_map()` to make a `SpatRaster` of the study area available in
   `Julia`;
@@ -331,7 +365,7 @@ essential packages:
 
 ``` r
 library(patter)
-#> This is {patter} v.0.0.0.9000. For an overview, see `?patter`. For support, contact edward.lavender@eawag.ch.
+#> This is {patter} v.1.0.0.9000. For an overview, see `?patter`. For support, contact edward.lavender@eawag.ch.
 ```
 
 ``` r
@@ -346,6 +380,7 @@ ensure reproducibility of our simulations:
 
 ``` r
 julia_connect()
+julia_validate()
 set_seed()
 ```
 
@@ -462,26 +497,26 @@ args <- list(.map = map,
              .model_obs = c(model_1, model_2),
              .model_move = model_move,
              .n_record = 500L,
-             .n_particle = 5e4L)
+             .n_particle = 1e5L)
 
 # Forward run
-fwd <- do.call(pf_filter, args)
+fwd <- do.call(pf_filter, args, quote = TRUE)
 head(fwd$states)
 #>    path_id timestep           timestamp map_value        x       y
 #>      <int>    <int>              <POSc>     <num>    <num>   <num>
-#> 1:       1        1 2016-03-17 01:50:00  65.31673 709342.1 6253407
-#> 2:       1        2 2016-03-17 01:52:00  93.91332 708783.0 6253032
-#> 3:       1        3 2016-03-17 01:54:00  60.09327 709381.6 6253308
-#> 4:       1        4 2016-03-17 01:56:00  93.25472 708925.5 6253170
-#> 5:       1        5 2016-03-17 01:58:00  66.52094 709172.1 6253079
-#> 6:       1        6 2016-03-17 02:00:00  96.38661 709187.9 6253488
+#> 1:       1        1 2016-03-17 01:50:00  59.76520 709142.1 6253007
+#> 2:       1        2 2016-03-17 01:52:00  68.53316 709276.5 6253291
+#> 3:       1        3 2016-03-17 01:54:00  45.86026 709476.1 6252964
+#> 4:       1        4 2016-03-17 01:56:00  44.46762 709390.0 6252794
+#> 5:       1        5 2016-03-17 01:58:00  60.64737 708976.4 6252849
+#> 6:       1        6 2016-03-17 02:00:00  55.42853 709437.9 6253395
 ```
 
 ``` r
 
 # Backward run
 args$.direction <- "backward"
-bwd <- do.call(pf_filter, args)
+bwd <- do.call(pf_filter, args, quote = TRUE)
 ```
 
 ## Particle smoother

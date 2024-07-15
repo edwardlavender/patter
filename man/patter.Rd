@@ -44,6 +44,7 @@ For example algorithm outputs (\code{\link{datasets-algorithms}}), see:
 To link \code{\link{patter}} and the \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} \code{Julia} backend, use:
 \itemize{
 \item \code{\link[=julia_connect]{julia_connect()}} to connect to \code{R} to \code{Julia};
+\item \code{\link[=julia_validate]{julia_validate()}} to validate the \code{R}---\code{Julia} connection;
 \item \code{\link[=set_seed]{set_seed()}} to set the seed in \code{R} and \code{Julia};
 \item \code{\link[=set_map]{set_map()}} to make a \code{\link{SpatRaster}} of the study area available in \code{Julia};
 }

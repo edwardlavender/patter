@@ -9,6 +9,7 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
+op <- options(terra.pal = rev(terrain.colors(256)))
 ```
 
 # `patter`: particle algorithms for animal movement
@@ -54,13 +55,16 @@ At the time of writing (May 2024), `patter` is more streamlined than [`flapper`]
 
 # Installation 
 
+> **Note:**
+> `patter` currently works on Windows and MacOS. On Windows, everything _should_ work if you follow the instructions below. On MacOS, you may need to configure compilers if you haven't already. In our (limited) experience, `patter` installs but crashes on Debian/Ubuntu. This is due to a conflict between the GDAL/GEOS/PROJ libraries used by `R` and `Julia` (which we hope to solve in due course). Please let us know your experiences if you are using other Linux distributions. In case of issues, you should be able to use `patter.jl` directly, which may be simpler than getting `R` and `Julia` to play together!
+
 1. **Install [`R`](https://www.r-project.org)**. This package requires `R` version ≥ 4.1 (but the most recent version is recommended). You can check your version with `R.version.string`. 
 
 2. **Install build packages.** Package installation and configuration (may) require the [`devtools`](https://github.com/r-lib/devtools), [`pkgbuild`](https://github.com/r-lib/pkgbuild) and [`here`](https://github.com/r-lib/here) packages, which can be installed with `install.packages(c("devtools", "pkgbuild", "here"))`.
 
-3. **Install [`Rtools`](https://cran.r-project.org/bin/windows/Rtools/)**. On Windows, package building requires `Rtools`. You can check whether `Rtools` is installed with `pkgbuild::has_rtools()`. If `Rtools` is not installed, it is necessary to download and install the appropriate version of `Rtools` before proceeding by following the instructions [here](https://cran.r-project.org/bin/windows/Rtools/). 
+3. **Install system libraries**. On Windows, package building requires `RTools`. You can check whether `RTools` is installed with `pkgbuild::has_rtools()`. If `RTools` is not installed, it is necessary to download and install the appropriate version of `RTools` before proceeding by following the instructions [here](https://cran.r-project.org/bin/windows/RTools/). On `MacOS`, you may need to configure compilers for your system step up if you haven't already. On `Linux`, our experience is currently limited. Please share your experiences.
 
-4. **Install [`Julia`](https://julialang.org)**. `Julia` is high-performance programming language that `patter` uses as a backend. Install `Julia` via `R`:
+4. **Install [`Julia`](https://julialang.org)**. `Julia` is high-performance programming language that `patter` uses as a backend. If you do not have `Julia` installed on your system, you can install `Julia` via `R` using `JuliaCall`:
 
 ```
 # Install the {JuliaCall} package:
@@ -87,7 +91,7 @@ julia <- julia_setup()
 isTRUE(try(julia_eval('true'), silent = TRUE))
 ```
 
-If you run into issues at this stage, it is likely that `Julia` has not been installed properly or `R` can't find it. You may need to tell `R` the location of the `Julia` binary via `JULIA_HOME` (see `?JuliaCall::julia_setup()` and the [`JuliaCall`](https://cran.r-project.org/web/packages/JuliaCall) [README](https://cran.r-project.org/web/packages/JuliaCall/readme/README.html) for troubleshooting and ways to get help.
+If you run into issues at this stage, it is likely that `Julia` has not been installed properly or `R` can't find it. You may need to tell `R` the location of the `Julia` binary via `JULIA_HOME` (see `?JuliaCall::julia_setup()` and the [`JuliaCall`](https://cran.r-project.org/web/packages/JuliaCall) [README](https://cran.r-project.org/web/packages/JuliaCall/readme/README.html) for troubleshooting and ways to get help).
 
 5. **Install [`patter`](https://github.com/edwardlavender/patter).** Install `patter` via: 
 
@@ -99,7 +103,17 @@ devtools::install_github("edwardlavender/patter",
 
 The `dependencies = TRUE` argument ensures that suggested packages are also installed, which are required for some functions and to build vignettes. This process may take several minutes. Set `build_vignettes = FALSE` for a faster installation.
 
-We strongly recommend using [`renv`](https://rstudio.github.io/renv/articles/renv.html) (or similar) and [RStudio Projects](https://r4ds.had.co.nz/workflow-projects.html) to track the version of `patter` that you use in your projects. This will ensure that your code continues to work, even if we have to make breaking changes to `patter` as the package evolves in response to user feedback. 
+To install `patter` from the development branch, use:
+
+```
+remotes::install_github("edwardlavender/patter@dev",
+                        dependencies = TRUE,
+                        build_vignettes = TRUE)
+```
+
+This branch may include bug fixes and new features but should be used with caution. 
+
+We recommend using [`renv`](https://rstudio.github.io/renv/articles/renv.html) (or similar) and [RStudio Projects](https://r4ds.had.co.nz/workflow-projects.html) to track the version of `patter` that you use in your projects. This will ensure that your code continues to work, even if we have to make breaking changes to `patter` as the package evolves in response to user feedback. 
 
 6. **Connect to `Julia`**. At the start of every `R` session, you need to connect `R` to `Julia` (and `patter` to [`Patter.jl`](https://github.com/edwardlavender/Patter.jl)): 
 
@@ -114,7 +128,15 @@ julia <- julia_connect()
 julia <- julia_connect(JULIA_PROJ = here::here("Julia"))
 ```
 
-The first time you run `julia_connect()`, it will connect to `Julia` and install (and pre-compile) [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) and the additional `Julia` dependencies. This may take a few minutes. Subsequent `julia_connect()` calls will be faster. Please report any [issues](https://github.com/edwardlavender/patter/issues) you experience during this process.
+The first time you run `julia_connect()`, it will connect to `Julia` and install (and pre-compile) [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) and the additional `Julia` dependencies. This may take a few minutes. Subsequent `julia_connect()` calls will be faster. 
+
+7. **Validate the `R`---`Julia` connection**. To validate that `patter` works on your system, run:
+
+```
+julia_validate()
+```
+
+This should return `NULL`, invisibly, in which case you are good to go. Otherwise, the function will return an error (or `R` may crash). Please report any [issues](https://github.com/edwardlavender/patter/issues) you experience during this process.
 
 # Functionality 
 
@@ -152,6 +174,7 @@ For example algorithm outputs (`datasets-algorithms`), see:
 To link `patter` and the [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) `Julia` backend, use:
 
 * `julia_connect()` to connect to `R` to `Julia`;
+* `julia_validate()` to validate the `R`---`Julia` connection;
 * `set_seed()` to set the seed in `R` and `Julia`;
 * `set_map()` to make a `SpatRaster` of the study area available in `Julia`;
 
@@ -252,6 +275,7 @@ Second, we connect `R` to `Julia` and set the seed in `R` and `Julia` to ensure 
 
 ```{r, results = "hide"}
 julia_connect()
+julia_validate()
 set_seed()
 ```
 
@@ -344,15 +368,15 @@ args <- list(.map = map,
              .model_obs = c(model_1, model_2),
              .model_move = model_move,
              .n_record = 500L,
-             .n_particle = 5e4L)
+             .n_particle = 1e5L)
 
 # Forward run
-fwd <- do.call(pf_filter, args)
+fwd <- do.call(pf_filter, args, quote = TRUE)
 head(fwd$states)
 
 # Backward run
 args$.direction <- "backward"
-bwd <- do.call(pf_filter, args)
+bwd <- do.call(pf_filter, args, quote = TRUE)
 ```
 
 ```{r, include = FALSE}
@@ -388,7 +412,12 @@ mtext(side = 4, "Probability density", line = -3)
 ```
 
 This basic workflow is highly customisable. You have the flexibility to define species-specific movement models, include any type of observational dataset and implement system-specific observation models. See the vignettes and function examples for further details and reach out with queries. 
+
+```{r, include = FALSE}
+options(op)
+```
  
+
 # Resources
  
 **For full details on the methods**, see the references below. 

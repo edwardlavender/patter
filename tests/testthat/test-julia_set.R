@@ -6,13 +6,14 @@ test_that("set_map() works", {
 
   # Use SpatRaster on file
   map <- dat_gebco()
+  expect_true(terra::sources(map) != "")
   set_map(map)
+  expect_true(julia_exists("env"))
 
   # Use SpatRaster in memory
   terra:::readAll(map)
   set_map(map)
-
-  julia_exists("env")
+  expect_true(julia_exists("env"))
 
 })
 

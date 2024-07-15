@@ -95,6 +95,9 @@ if (julia_run()) {
 
 
 }
+\seealso{
+See \code{\link[=julia_validate]{julia_validate()}} to validate the \code{R}---\code{Julia} interface.
+}
 \author{
 Edward Lavender
 }

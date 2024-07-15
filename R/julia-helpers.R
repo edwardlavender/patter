@@ -105,7 +105,7 @@ julia_packages_dev_Patter.jl <- function() {
   if (Patter.jl_path != "") {
     check_dir_exists(Patter.jl_path)
     julia_command(glue('Pkg.develop(path = "{Patter.jl_path}")'))
-    TRUE
+    return(TRUE)
   }
   FALSE
 }
@@ -120,7 +120,7 @@ julia_packages_install <- function(.packages, .update) {
   # Handle remaining package(s)
   lapply(.packages, function(.package) {
     # Check whether or not we need to install or update the package
-    if (.package == "Patter.jl" && use_dev_Patter.jl) {
+    if (.package == "Patter" && use_dev_Patter.jl) {
       return(NULL)
     }
     install  <- ifelse(julia_installed_package(.package) == "nothing", TRUE, FALSE)

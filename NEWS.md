@@ -1,5 +1,9 @@
 # News
 
+# patter (development version)
+
+This is the current development version.
+
 # `patter` 1.0.0
 
 ## Overview 

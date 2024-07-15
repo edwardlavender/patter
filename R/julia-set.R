@@ -32,12 +32,18 @@ set_seed <- function(.seed = 123L) {
 # Set the map (`env`) in Julia
 # * `env` is the name used by move_*() functions
 set_map <- function(.x) {
+  # Check SpatRaster
   stopifnot(inherits(.x, "SpatRaster"))
+  # Define file
   file <- terra::sources(.x)
   if (file == "") {
     file <- tempfile(fileext = ".tif")
     terra::writeRaster(.x, file)
   }
+  # Normalise file path
+  # * This is required for correct parsing of \\ on Windows
+  file <- normalizePath(file, winslash = "/", mustWork = TRUE)
+  # Set env
   julia_command(glue('env = GeoArrays.read("{file}");'))
   nothing()
 }
