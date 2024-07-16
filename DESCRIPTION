@@ -17,7 +17,7 @@ Imports:
     JuliaCall,
     lubridate,
     rlang,
-    terra
+    terra (>= 1.7.71)
 Suggests:
     av, 
     knitr, 
