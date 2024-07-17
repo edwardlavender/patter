@@ -102,9 +102,9 @@ touch if you would like to see additional functionality brought into
     [`pkgbuild`](https://github.com/r-lib/pkgbuild) and
     [`here`](https://github.com/r-lib/here) packages. Install them with:
 
-<!-- -->
-
-    install.packages(c("devtools", "pkgbuild", "here"))
+``` r
+install.packages(c("devtools", "pkgbuild", "here"))
+```
 
 3.  **Install system libraries**.
 
@@ -123,26 +123,32 @@ touch if you would like to see additional functionality brought into
     backend. If you do not have `Julia` installed on your system, you
     can install `Julia` via `R` using `JuliaCall`:
 
-<!-- -->
+``` r
+# Install the {JuliaCall} package:
+install.packages("JuliaCall")
+```
 
-    # Install the {JuliaCall} package:
-    install.packages("JuliaCall")
+``` r
+# Install `Julia` via {JuliaCall}:
+library(JuliaCall)
+julia <- julia_setup(installJulia = TRUE)
+```
 
-    # Install `Julia` via {JuliaCall}:
-    library(JuliaCall)
-    julia <- julia_setup(installJulia = TRUE)
-
-    # Validate the Julia installation:
-    # * TRUE: `Julia` is working! 
-    # * FALSE: `Julia` is not working (see below)! 
-    isTRUE(try(julia_eval('true'), silent = TRUE))
+``` r
+# Validate the Julia installation:
+# * TRUE: `Julia` is working! 
+# * FALSE: `Julia` is not working (see below)! 
+isTRUE(try(julia_eval('true'), silent = TRUE))
+```
 
 If this doesn’t work, download and install `Julia` from
 [JuliaLang](https://julialang.org/downloads/). Then retry
 `julia_setup()`:
 
-    julia <- julia_setup()
-    isTRUE(try(julia_eval('true'), silent = TRUE))
+``` r
+julia <- julia_setup()
+isTRUE(try(julia_eval('true'), silent = TRUE))
+```
 
 If you run into issues at this stage, it is likely that `Julia` has not
 been installed properly or `R` can’t find it. You may need to tell `R`
@@ -168,9 +174,11 @@ vignettes. This process may take several minutes. Set
 
 To install `patter` from the development (`dev`) branch, use:
 
-    remotes::install_github("edwardlavender/patter@dev",
-                            dependencies = TRUE,
-                            build_vignettes = TRUE)
+``` r
+devtools::install_github("edwardlavender/patter@dev", 
+                         dependencies = TRUE, 
+                         build_vignettes = TRUE)
+```
 
 This branch may include bug fixes and new features but should be used
 with caution.
@@ -187,16 +195,16 @@ feedback.
     to connect `R` to `Julia` (and `patter` to
     [`Patter.jl`](https://github.com/edwardlavender/Patter.jl)):
 
-<!-- -->
+``` r
+# Load & attach {patter}:
+library(patter)
 
-    # Load & attach {patter}:
-    library(patter)
+# Option (A): Connect to `Julia` using default options: 
+julia <- julia_connect()
 
-    # Option (A): Connect to `Julia` using default options: 
-    julia <- julia_connect()
-
-    #  Option (B): Connect to `Julia` within an RStudio Project (recommended):
-    julia <- julia_connect(JULIA_PROJ = here::here("Julia"))
+#  Option (B): Connect to `Julia` within an RStudio Project (recommended):
+julia <- julia_connect(JULIA_PROJ = here::here("Julia"))
+```
 
 The first time you run `julia_connect()`, it will connect to `Julia` and
 install (and pre-compile)
@@ -207,9 +215,9 @@ additional `Julia` dependencies. This may take a few minutes. Subsequent
 7.  **Validate the `R`—`Julia` connection**. To validate that `patter`
     works on your system, run:
 
-<!-- -->
-
-    julia_validate()
+``` r
+julia_validate()
+```
 
 This should return `NULL`, invisibly, in which case you are good to go.
 Otherwise, the function will return an error (or `R` may crash). Please

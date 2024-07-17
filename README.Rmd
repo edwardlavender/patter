@@ -62,7 +62,7 @@ At the time of writing (May 2024), `patter` is more streamlined than [`flapper`]
 
 2. **Install build packages.** Package installation and configuration (may) require the [`devtools`](https://github.com/r-lib/devtools), [`pkgbuild`](https://github.com/r-lib/pkgbuild) and [`here`](https://github.com/r-lib/here) packages. Install them with:
 
-```
+``` r
 install.packages(c("devtools", "pkgbuild", "here"))
 ```
 
@@ -74,18 +74,18 @@ install.packages(c("devtools", "pkgbuild", "here"))
 
 4. **Install [`Julia`](https://julialang.org)**. `Julia` is high-performance programming language that `patter` uses as a backend. If you do not have `Julia` installed on your system, you can install `Julia` via `R` using `JuliaCall`:
 
-```
+``` r
 # Install the {JuliaCall} package:
 install.packages("JuliaCall")
 ```
 
-```
+``` r
 # Install `Julia` via {JuliaCall}:
 library(JuliaCall)
 julia <- julia_setup(installJulia = TRUE)
 ```
 
-```
+``` r
 # Validate the Julia installation:
 # * TRUE: `Julia` is working! 
 # * FALSE: `Julia` is not working (see below)! 
@@ -94,7 +94,7 @@ isTRUE(try(julia_eval('true'), silent = TRUE))
 
 If this doesn't work, download and install `Julia` from [JuliaLang](https://julialang.org/downloads/). Then retry `julia_setup()`:
 
-```
+``` r
 julia <- julia_setup()
 isTRUE(try(julia_eval('true'), silent = TRUE))
 ```
@@ -113,10 +113,10 @@ The `dependencies = TRUE` argument ensures that suggested packages are also inst
 
 To install `patter` from the development (`dev`) branch, use:
 
-```
-remotes::install_github("edwardlavender/patter@dev",
-                        dependencies = TRUE,
-                        build_vignettes = TRUE)
+``` r
+devtools::install_github("edwardlavender/patter@dev", 
+                         dependencies = TRUE, 
+                         build_vignettes = TRUE)
 ```
 
 This branch may include bug fixes and new features but should be used with caution. 
@@ -125,7 +125,7 @@ We recommend using [`renv`](https://rstudio.github.io/renv/articles/renv.html) (
 
 6. **Connect to `Julia`**. At the start of every `R` session, you need to connect `R` to `Julia` (and `patter` to [`Patter.jl`](https://github.com/edwardlavender/Patter.jl)): 
 
-```
+``` r
 # Load & attach {patter}:
 library(patter)
 
@@ -140,7 +140,7 @@ The first time you run `julia_connect()`, it will connect to `Julia` and install
 
 7. **Validate the `R`---`Julia` connection**. To validate that `patter` works on your system, run:
 
-```
+``` r
 julia_validate()
 ```
 
