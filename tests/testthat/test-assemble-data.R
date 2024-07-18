@@ -2,24 +2,28 @@ test_that("assemble_timeline() works", {
 
   # Define data.tables
   dt1 <- data.table(timestamp = as.POSIXct(c("2016-01-01",
-                                             "2016-02-01")))
+                                             "2016-02-01"), tz = "UTC"))
   dt2 <- data.table(timestamp = as.POSIXct(c("2016-01-01 00:02:00",
                                              "2016-02-01 00:00:00",
-                                             "2016-04-01 00:00:00")))
+                                             "2016-04-01 00:00:00"), tz = "UTC"))
 
   # Test with 2 minutes
   output   <- assemble_timeline(list(dt1, dt2), .step = "2 mins")
-  expected <- seq(as.POSIXct("2016-01-01"), as.POSIXct("2016-04-01 00:00:00"), "2 mins")
+  expected <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
+                  as.POSIXct("2016-04-01 00:00:00", tz = "UTC"),
+                  "2 mins")
   expect_equal(output, expected)
 
   # Test with 1 hour
   output   <- assemble_timeline(list(dt1, dt2), .step = "1 hour")
-  expected <- seq(as.POSIXct("2016-01-01"), as.POSIXct("2016-04-01 00:00:00"), "1 hour")
+  expected <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
+                  as.POSIXct("2016-04-01 00:00:00", tz = "UTC"), "1 hour")
   expect_equal(output, expected)
 
   # Test with 1 hour and .trim = TRUE
   output <- assemble_timeline(list(dt1, dt2), .step = "1 hour", .trim = TRUE)
-  expected <- seq(as.POSIXct("2016-01-01 00:00:00"), as.POSIXct("2016-02-01 00:00:00"), "1 hour")
+  expected <- seq(as.POSIXct("2016-01-01 00:00:00", tz = "UTC"),
+                  as.POSIXct("2016-02-01 00:00:00", tz = "UTC"), "1 hour")
   expect_equal(output, expected)
 
   # Test check on NAs
@@ -31,9 +35,9 @@ test_that("assemble_timeline() works", {
 
   # Test check on time overlap with .trim = TRUE
   dt1 <- data.table(timestamp = as.POSIXct(c("2016-01-01",
-                                             "2016-02-01")))
+                                             "2016-02-01"), tz = "UTC"))
   dt2 <- data.table(timestamp = as.POSIXct(c("2016-04-01",
-                                             "2016-05-01")))
+                                             "2016-05-01"), tz = "UTC"))
   assemble_timeline(list(dt1, dt2), .step = "1 hour", .trim = TRUE) |>
     expect_error("Dataset timelines do not overlap.")
 
@@ -195,8 +199,3 @@ test_that("assemble_archival() works", {
   expect_equal(output, expected)
 
 })
-
-
-
-
-
