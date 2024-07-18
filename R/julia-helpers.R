@@ -59,9 +59,16 @@ julia_proj_path <- function(JULIA_PROJ) {
     }
     # If still missing, use `NULL` with a warning
     if (missing(JULIA_PROJ)) {
-      warn("`JULIA_PROJ` not found in global options or environmental variables: using `JULIA_PROJ = NULL`.")
+      msg("`JULIA_PROJ` not found in global options or environmental variables: using `JULIA_PROJ = NULL`.")
       JULIA_PROJ <- NULL
     }
+  }
+  # Normalise path
+  # * This is required for correct parsing on windows in downstream functions:
+  # * julia_proj_generate()
+  # * julia_proj_activate()
+  if (!is.null(JULIA_PROJ)) {
+    JULIA_PROJ <- normalizePath(JULIA_PROJ, winslash = "/", mustWork = FALSE)
   }
   JULIA_PROJ
 }
@@ -104,6 +111,7 @@ julia_packages_dev_Patter.jl <- function() {
   Patter.jl_path <- Sys.getenv("PATTER.JL_DEV")
   if (Patter.jl_path != "") {
     check_dir_exists(Patter.jl_path)
+    Patter.jl_path <- normalizePath(Patter.jl_path, winslash = "/", mustWork = TRUE)
     julia_command(glue('Pkg.develop(path = "{Patter.jl_path}")'))
     return(TRUE)
   }
@@ -204,6 +212,7 @@ julia_summary <- function(.x) {
 
 # Save an object from Julia
 julia_save <- function(.x, .file = .x) {
+  .file <- normalizePath(.file, winslash = "/", mustWork = FALSE)
   .file <- glue("{tools::file_path_sans_ext(.file)}.jld2")
   julia_command(glue('@save "{.file}" {.x};'))
   tools::file_path_as_absolute(.file)
@@ -214,6 +223,7 @@ julia_save <- function(.x, .file = .x) {
 
 # Load an object into Julia
 julia_load <- function(.file, .x = basename(tools::file_path_sans_ext(.file))) {
+  .file <- normalizePath(.file, winslash = "/", mustWork = TRUE)
   julia_command(glue('@load "{.file}" {.x};'))
   nothing()
 }

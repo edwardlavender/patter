@@ -1,5 +1,8 @@
 test_that("cl_lapply() works", {
 
+  is_unix <- .Platform$OS.type == "unix"
+  is_win  <- .Platform$OS.type == "windows"
+
   # cl_chunk()
   expect_false(cl_chunk(1))
   expect_true(cl_chunk(2))
@@ -18,7 +21,7 @@ test_that("cl_lapply() works", {
   # cl_lapply() basic parallel implementation
   cl_lapply(1:10, \(x) x + 0, .cl = 2L) |>
     expect_equal(as.list(1:10L))
-  if (.Platform$OS.type == "unix") {
+  if (is_unix) {
     cl_lapply(1:10, \(x) x + 0, .cl = 2L, .chunk = TRUE, .combine = unlist) |>
       expect_equal(c(1:10L))
   }
@@ -48,17 +51,19 @@ test_that("cl_lapply() works", {
   expect_equal(unname(unlist(output)), 1:10)
 
   # As above (parallel)
-  output <- cl_lapply(1:10,
-                      .fun = function(.i, .chunkargs) {
-                        out <- .chunkargs$map + .i
-                        out[1]
-                      },
-                      .chunk_fun = function(.chunkargs) {
-                        list(map = terra::unwrap(mapw))
-                      },
-                      .chunk = TRUE,
-                      .cl = 2L)
-  expect_equal(unname(unlist(output)), 1:10)
+  if (is_unix) {
+    output <- cl_lapply(1:10,
+                        .fun = function(.i, .chunkargs) {
+                          out <- .chunkargs$map + .i
+                          out[1]
+                        },
+                        .chunk_fun = function(.chunkargs) {
+                          list(map = terra::unwrap(mapw))
+                        },
+                        .chunk = TRUE,
+                        .cl = 2L)
+    expect_equal(unname(unlist(output)), 1:10)
+  }
 
 })
 
