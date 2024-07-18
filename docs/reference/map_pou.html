@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">patter</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.9000</span>
       </span>
     </div>
 
@@ -97,8 +97,8 @@
     <h2>Value</h2>
     
 
-<p>The function returns a <code><a href="https://rspatial.github.io/terra/reference/SpatRaster-class.html" class="external-link">SpatRaster</a></code>.</p>
-    </div>
+<p>The function returns a named <code>list</code> with the following elements:</p><ul><li><p><code>ud</code>: a normalised <code><a href="https://rspatial.github.io/terra/reference/SpatRaster-class.html" class="external-link">SpatRaster</a></code>;</p></li>
+</ul></div>
     <div id="details">
     <h2>Details</h2>
     <p>Probability-of-use is calculated via <code><a href="map_coord.html">.map_coord()</a></code> (and <code><a href="dot-map_mark.html">.map_mark()</a></code>). If a single dataset of unweighted coordinates is provided, probability-of-use is simply the proportion of records in each grid cell. If a time series of unweighted coordinates is provided, probability-of-use is effectively the average proportion of records in each grid cell. This becomes a weighted average if coordinates are weighted. Weights are normalised to sum to one and the result can be interpreted as a utilisation distribution in which cell values define probability-of-use. Maps are sensitive to grid resolution.</p>
@@ -137,10 +137,11 @@
 <span class="r-in"><span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Use x, y coordinates</span></span></span>
 <span class="r-in"><span><span class="fu">map_pou</span><span class="op">(</span><span class="va">map</span>, .coord <span class="op">=</span> <span class="va">coord</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` called @ 2024-06-05 13:06:18... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` called @ 2024-07-18 11:12:22... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building XYM... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building SpatRaster... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` call ended @ 2024-06-05 13:06:19 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` call ended @ 2024-07-18 11:12:22 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ud</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
@@ -151,13 +152,15 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> name        : map_value </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> min value   :     0e+00 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> max value   :     2e-04 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="co"># Other formats are acceptable</span></span></span>
 <span class="r-in"><span><span class="fu">map_pou</span><span class="op">(</span><span class="va">map</span>, .coord <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/coerce.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">coord</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` called @ 2024-06-05 13:06:19... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` called @ 2024-07-18 11:12:22... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building XYM... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building SpatRaster... </span>
 <span class="r-plt img"><img src="map_pou-1.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` call ended @ 2024-06-05 13:06:19 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` call ended @ 2024-07-18 11:12:22 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ud</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
@@ -168,11 +171,13 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> name        : map_value </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> min value   :     0e+00 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> max value   :     2e-04 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu">map_pou</span><span class="op">(</span><span class="va">map</span>, .coord <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">coord</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` called @ 2024-06-05 13:06:19... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` called @ 2024-07-18 11:12:22... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building XYM... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building SpatRaster... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` call ended @ 2024-06-05 13:06:19 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` call ended @ 2024-07-18 11:12:22 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ud</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
@@ -183,12 +188,14 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> name        : map_value </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> min value   :     0e+00 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> max value   :     2e-04 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="co"># `cell_x` and `cell_y` coordinates are acceptable</span></span></span>
 <span class="r-in"><span><span class="fu">map_pou</span><span class="op">(</span><span class="va">map</span>, .coord <span class="op">=</span> <span class="va">coord</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span>cell_x <span class="op">=</span> <span class="va">x</span>, cell_y <span class="op">=</span> <span class="va">y</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` called @ 2024-06-05 13:06:19... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` called @ 2024-07-18 11:12:22... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building XYM... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building SpatRaster... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` call ended @ 2024-06-05 13:06:20 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` call ended @ 2024-07-18 11:12:22 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ud</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
@@ -199,15 +206,17 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> name        : map_value </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> min value   :     0e+00 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> max value   :     2e-04 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (2): Use coordinates from `coa()`</span></span></span>
 <span class="r-in"><span><span class="co"># Use example dataset</span></span></span>
 <span class="r-in"><span><span class="va">coord</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_coa</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">map_pou</span><span class="op">(</span><span class="va">map</span>, .coord <span class="op">=</span> <span class="va">coord</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` called @ 2024-06-05 13:06:20... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` called @ 2024-07-18 11:12:22... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building XYM... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building SpatRaster... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` call ended @ 2024-06-05 13:06:20 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` call ended @ 2024-07-18 11:12:22 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ud</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
@@ -218,6 +227,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> name        : map_value </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> min value   : 0.0000000 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> max value   : 0.1666667 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">points</a></span><span class="op">(</span><span class="va">coord</span><span class="op">$</span><span class="va">x</span>, <span class="va">coord</span><span class="op">$</span><span class="va">y</span>, cex <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="map_pou-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -228,11 +238,12 @@
 <span class="r-in"><span><span class="co"># * It is better to use outputs from the particle smoother;</span></span></span>
 <span class="r-in"><span><span class="va">coord</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-algorithms.html">dat_pff</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">states</span></span></span>
 <span class="r-in"><span><span class="fu">map_pou</span><span class="op">(</span><span class="va">map</span>, .coord <span class="op">=</span> <span class="va">coord</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` called @ 2024-06-05 13:06:20... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` called @ 2024-07-18 11:12:22... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building XYM... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Building SpatRaster... </span>
 <span class="r-plt img"><img src="map_pou-3.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` call ended @ 2024-06-05 13:06:20 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_pou()` call ended @ 2024-07-18 11:12:22 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ud</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
@@ -243,6 +254,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> name        :   map_value </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> min value   : 0.000000000 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> max value   : 0.004972222 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="co"># points(coord$x, coord$y, cex = 0.5)</span></span></span>
 </code></pre></div>
     </div>

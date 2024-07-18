@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">patter</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.9000</span>
       </span>
     </div>
 
@@ -89,6 +89,9 @@
 <!-- badges: start -->
 
 <p><code>patter</code> provides particle filtering, smoothing and sampling algorithms for animal movement modelling, with a focus on passive acoustic telemetry systems. This wraps and enhances a fast <code>Julia</code> backend (<a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.jl</code></a>). The methodology enables the reconstruction of movement paths and patterns of space use. <code>patter</code> unifies a suite of methods formerly known as the <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a> algorithms and supersedes the experimental <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a> package (Lavender et al., <a href="https://doi.org/10.1111/2041-210X.14193" class="external-link">2023</a>).</p>
+<blockquote>
+<p><strong>Note:</strong> <code>patter</code> is a new <code>R</code> package. Like all new packages, you should use it with a degree of caution. Please share feedback and issues.</p>
+</blockquote>
 </div>
 <div class="section level1">
 <h1 id="highlights">Highlights<a class="anchor" aria-label="anchor" href="#highlights"></a>
@@ -125,50 +128,85 @@
 <div class="section level1">
 <h1 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h1>
+<blockquote>
+<p><strong>Note:</strong> <code>patter</code> currently works on Windows and MacOS. On Windows, everything <em>should</em> work if you follow the instructions below. On MacOS, some additional set up (such as compiler configuration) may be required, depending on your set up. In our (limited) experience, <code>patter</code> installs but crashes on Debian/Ubuntu. This is due to a conflict between the GDAL/GEOS/PROJ libraries used by <code>R</code> and <code>Julia</code> (which we hope to solve in due course). Please let us know your experiences if you are using other Linux distributions. In case of issues, you should be able to use <code>Patter.jl</code> directly, which on some systems may be simpler than getting <code>R</code> and <code>Julia</code> to play together!</p>
+</blockquote>
 <ol style="list-style-type: decimal">
-<li><p><strong>Install <a href="https://www.r-project.org" class="external-link"><code>R</code></a></strong>. This package requires <code>R</code> version ≥ 4.1 (but the most recent version is recommended). You can check your version with <code>R.version.string</code>.</p></li>
-<li><p><strong>Install build packages.</strong> Package installation and configuration (may) require the <a href="https://github.com/r-lib/devtools" class="external-link"><code>devtools</code></a>, <a href="https://github.com/r-lib/pkgbuild" class="external-link"><code>pkgbuild</code></a> and <a href="https://github.com/r-lib/here" class="external-link"><code>here</code></a> packages, which can be installed with <code>install.packages(c("devtools", "pkgbuild", "here"))</code>.</p></li>
-<li><p><strong>Install <a href="https://cran.r-project.org/bin/windows/Rtools/" class="external-link"><code>Rtools</code></a></strong>. On Windows, package building requires <code>Rtools</code>. You can check whether <code>Rtools</code> is installed with <code><a href="https://pkgbuild.r-lib.org/reference/has_rtools.html" class="external-link">pkgbuild::has_rtools()</a></code>. If <code>Rtools</code> is not installed, it is necessary to download and install the appropriate version of <code>Rtools</code> before proceeding by following the instructions <a href="https://cran.r-project.org/bin/windows/Rtools/" class="external-link">here</a>.</p></li>
-<li><p><strong>Install <a href="https://julialang.org" class="external-link"><code>Julia</code></a></strong>. <code>Julia</code> is high-performance programming language that <code>patter</code> uses as a backend. Install <code>Julia</code> via <code>R</code>:</p></li>
+<li><p><strong>Install <a href="https://www.r-project.org" class="external-link"><code>R</code></a></strong>. This package requires <code>R</code> version ≥ 4.1 (but the most recent version is recommended). You can check your version from the <code>R</code> console using <code>R.version.string</code>.</p></li>
+<li><p><strong>Install build packages.</strong> Package installation and configuration (may) require the <a href="https://github.com/r-lib/devtools" class="external-link"><code>devtools</code></a>, <a href="https://github.com/r-lib/pkgbuild" class="external-link"><code>pkgbuild</code></a> and <a href="https://github.com/r-lib/here" class="external-link"><code>here</code></a> packages. Install them with:</p></li>
 </ol>
-<!-- --><div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Install the {JuliaCall} package:</span></span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"JuliaCall"</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co"># Install `Julia` via {JuliaCall}:</span></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">library</span>(JuliaCall)</span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>julia <span class="ot">&lt;-</span> <span class="fu">julia_setup</span>(<span class="at">installJulia =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co"># Validate the Julia installation:</span></span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co"># * TRUE: `Julia` is working! </span></span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co"># * FALSE: `Julia` is not working (see below)! </span></span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="fu">isTRUE</span>(<span class="fu">try</span>(<span class="fu">julia_eval</span>(<span class="st">'true'</span>), <span class="at">silent =</span> <span class="cn">TRUE</span>))</span></code></pre></div>
-<p>If this doesn’t work, download and install <code>Julia</code> from <a href="https://julialang.org/downloads/" class="external-link">JuliaLang</a>. Then retry <code>julia_setup()</code>:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>julia <span class="ot">&lt;-</span> <span class="fu">julia_setup</span>()</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">isTRUE</span>(<span class="fu">try</span>(<span class="fu">julia_eval</span>(<span class="st">'true'</span>), <span class="at">silent =</span> <span class="cn">TRUE</span>))</span></code></pre></div>
-<p>If you run into issues at this stage, it is likely that <code>Julia</code> has not been installed properly or <code>R</code> can’t find it. You may need to tell <code>R</code> the location of the <code>Julia</code> binary via <code>JULIA_HOME</code> (see <code>?JuliaCall::julia_setup()</code> and the <a href="https://cran.r-project.org/web/packages/JuliaCall" class="external-link"><code>JuliaCall</code></a> <a href="https://cran.r-project.org/web/packages/JuliaCall/readme/README.html" class="external-link">README</a> for troubleshooting and ways to get help.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"devtools"</span>, <span class="st">"pkgbuild"</span>, <span class="st">"here"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<ol start="3" style="list-style-type: decimal">
+<li>
+<strong>Install system libraries</strong>.</li>
+</ol>
+<ul>
+<li>
+<strong>On Windows</strong>, package building requires <code>RTools</code>. You can check whether <code>RTools</code> is installed with <code><a href="https://pkgbuild.r-lib.org/reference/has_rtools.html" class="external-link">pkgbuild::has_rtools()</a></code>. If <code>RTools</code> is not installed, it is necessary to download and install the appropriate version of <code>RTools</code> before proceeding by following the instructions <a href="https://cran.r-project.org/bin/windows/RTools/" class="external-link">here</a>.</li>
+<li>
+<strong>On MacOS</strong>, some system-specific step up (e.g., compiler configuration) may be required. Follow the steps below and address any issues as required for your system.</li>
+<li>
+<strong>On Linux</strong>, our experience is currently limited—please share yours.</li>
+</ul>
+<ol start="4" style="list-style-type: decimal">
+<li>
+<strong>Install <a href="https://julialang.org" class="external-link"><code>Julia</code></a></strong>. <code>Julia</code> is high-performance programming language that <code>patter</code> uses as a backend. If you do not have <code>Julia</code> installed on your system, you can install <code>Julia</code> via <code>R</code> using <code>JuliaCall</code>:</li>
+</ol>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Install the {JuliaCall} package:</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"JuliaCall"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Install `Julia` via {JuliaCall}:</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Non-Contradiction/JuliaCall" class="external-link">JuliaCall</a></span><span class="op">)</span></span>
+<span><span class="va">julia</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/JuliaCall/man/julia_setup.html" class="external-link">julia_setup</a></span><span class="op">(</span>installJulia <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Validate the Julia installation:</span></span>
+<span><span class="co"># * TRUE: `Julia` is working! </span></span>
+<span><span class="co"># * FALSE: `Julia` is not working (see below)! </span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isTRUE</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/try.html" class="external-link">try</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/JuliaCall/man/julia_eval.html" class="external-link">julia_eval</a></span><span class="op">(</span><span class="st">'true'</span><span class="op">)</span>, silent <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>If this doesn’t work, download and install <code>Julia</code> from <a href="https://julialang.org/downloads/" class="external-link">JuliaLang</a>. Then retry <code><a href="https://rdrr.io/pkg/JuliaCall/man/julia_setup.html" class="external-link">julia_setup()</a></code>:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">julia</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/JuliaCall/man/julia_setup.html" class="external-link">julia_setup</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Logic.html" class="external-link">isTRUE</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/try.html" class="external-link">try</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/JuliaCall/man/julia_eval.html" class="external-link">julia_eval</a></span><span class="op">(</span><span class="st">'true'</span><span class="op">)</span>, silent <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>If you run into issues at this stage, it is likely that <code>Julia</code> has not been installed properly or <code>R</code> can’t find it. You may need to tell <code>R</code> the location of the <code>Julia</code> binary via <code>JULIA_HOME</code> (see <code>?JuliaCall::julia_setup()</code> and the <a href="https://cran.r-project.org/web/packages/JuliaCall" class="external-link"><code>JuliaCall</code></a> <a href="https://cran.r-project.org/web/packages/JuliaCall/readme/README.html" class="external-link">README</a> for troubleshooting and ways to get help).</p>
 <ol start="5" style="list-style-type: decimal">
 <li>
-<strong>Install <a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a>.</strong> Install <code>patter</code> via:</li>
+<strong>Install <a href="https://github.com/edwardlavender/patter" class="external-link"><code>patter</code></a>.</strong> To install <code>patter</code> from the <code>main</code> branch, use:</li>
 </ol>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"edwardlavender/patter"</span>, </span>
 <span>                         dependencies <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>The <code>dependencies = TRUE</code> argument ensures that suggested packages are also installed, which are required for some functions and to build vignettes. This process may take several minutes. Set <code>build_vignettes = FALSE</code> for a faster installation.</p>
-<p>We strongly recommend using <a href="https://rstudio.github.io/renv/articles/renv.html" class="external-link"><code>renv</code></a> (or similar) and <a href="https://r4ds.had.co.nz/workflow-projects.html" class="external-link">RStudio Projects</a> to track the version of <code>patter</code> that you use in your projects. This will ensure that your code continues to work, even if we have to make breaking changes to <code>patter</code> as the package evolves in response to user feedback.</p>
+<p>To install <code>patter</code> from the development (<code>dev</code>) branch, use:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"edwardlavender/patter@dev"</span>, </span>
+<span>                         dependencies <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>This branch may include bug fixes and new features but should be used with caution.</p>
+<p>We recommend using <a href="https://rstudio.github.io/renv/articles/renv.html" class="external-link"><code>renv</code></a> (or similar) and <a href="https://r4ds.had.co.nz/workflow-projects.html" class="external-link">RStudio Projects</a> to track the version of <code>patter</code> that you use in your projects. This will ensure that your code continues to work, even if we have to make breaking changes to <code>patter</code> as the package evolves in response to user feedback.</p>
 <ol start="6" style="list-style-type: decimal">
 <li>
 <strong>Connect to <code>Julia</code></strong>. At the start of every <code>R</code> session, you need to connect <code>R</code> to <code>Julia</code> (and <code>patter</code> to <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a>):</li>
 </ol>
-<!-- --><div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Load &amp; attach {patter}:</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">library</span>(patter)</span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co"># Option (A): Connect to `Julia` using default options: </span></span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>julia <span class="ot">&lt;-</span> <span class="fu">julia_connect</span>()</span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#  Option (B): Connect to `Julia` within an RStudio Project (recommended):</span></span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>julia <span class="ot">&lt;-</span> <span class="fu">julia_connect</span>(<span class="at">JULIA_PROJ =</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"Julia"</span>))</span></code></pre></div>
-<p>The first time you run <code><a href="reference/julia_connect.html">julia_connect()</a></code>, it will connect to <code>Julia</code> and install (and pre-compile) <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a> and the additional <code>Julia</code> dependencies. This may take a few minutes. Subsequent <code><a href="reference/julia_connect.html">julia_connect()</a></code> calls will be faster. Please report any <a href="https://github.com/edwardlavender/patter/issues" class="external-link">issues</a> you experience during this process.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Load &amp; attach {patter}:</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/edwardlavender/patter/" class="external-link">patter</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Option (A): Connect to `Julia` using default options: </span></span>
+<span><span class="va">julia</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/julia_connect.html">julia_connect</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#  Option (B): Connect to `Julia` within an RStudio Project (recommended):</span></span>
+<span><span class="va">julia</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/julia_connect.html">julia_connect</a></span><span class="op">(</span>JULIA_PROJ <span class="op">=</span> <span class="fu">here</span><span class="fu">::</span><span class="fu"><a href="https://here.r-lib.org//reference/here.html" class="external-link">here</a></span><span class="op">(</span><span class="st">"Julia"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>The first time you run <code><a href="reference/julia_connect.html">julia_connect()</a></code>, it will connect to <code>Julia</code> and install (and pre-compile) <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a> and the additional <code>Julia</code> dependencies. This may take a few minutes. Subsequent <code><a href="reference/julia_connect.html">julia_connect()</a></code> calls will be faster.</p>
+<ol start="7" style="list-style-type: decimal">
+<li>
+<strong>Validate the <code>R</code>—<code>Julia</code> connection</strong>. To validate that <code>patter</code> works on your system, run:</li>
+</ol>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/julia_validate.html">julia_validate</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>This should return <code>NULL</code>, invisibly, in which case you are good to go. Otherwise, the function will return an error (or <code>R</code> may crash). Please report any <a href="https://github.com/edwardlavender/patter/issues" class="external-link">issues</a> you experience during this process.</p>
 </div>
 <div class="section level1">
 <h1 id="functionality">Functionality<a class="anchor" aria-label="anchor" href="#functionality"></a>
@@ -221,6 +259,8 @@
 <ul>
 <li>
 <code><a href="reference/julia_connect.html">julia_connect()</a></code> to connect to <code>R</code> to <code>Julia</code>;</li>
+<li>
+<code><a href="reference/julia_validate.html">julia_validate()</a></code> to validate the <code>R</code>—<code>Julia</code> connection;</li>
 <li>
 <code><a href="reference/julia_set.html">set_seed()</a></code> to set the seed in <code>R</code> and <code>Julia</code>;</li>
 <li>
@@ -353,19 +393,21 @@
 <h2 id="set-up">Set up<a class="anchor" aria-label="anchor" href="#set-up"></a>
 </h2>
 <p>This is the basic <code>patter</code> workflow to reconstruct movement paths and patterns of space use from animal tracking data. First, we load some essential packages:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/edwardlavender/patter/" class="external-link">patter</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; This is {patter} v.0.0.0.9000. For an overview, see `?patter`. For support, contact edward.lavender@eawag.ch.</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; This is {patter} v.1.0.0.9000. For an overview, see `?patter`. For support, contact edward.lavender@eawag.ch.</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dtplyr.tidyverse.org" class="external-link">dtplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>patter.verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p>Second, we connect <code>R</code> to <code>Julia</code> and set the seed in <code>R</code> and <code>Julia</code> to ensure reproducibility of our simulations:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/julia_connect.html">julia_connect</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/julia_validate.html">julia_validate</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/julia_set.html">set_seed</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Third, we define the properties of our study area; namely, a <code>SpatRaster</code> of our study area that defines the area within which movements are possible and the timeline over which we will model movements:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define map </span></span>
 <span><span class="va">map</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/julia_set.html">set_map</a></span><span class="op">(</span><span class="va">map</span><span class="op">)</span></span>
@@ -379,7 +421,7 @@
 <h2 id="movement">Movement<a class="anchor" aria-label="anchor" href="#movement"></a>
 </h2>
 <p>We will reconstruct the movements of a tagged flapper skate (<em>Dipturus intermedius</em>) within a study area off the west coast of Scotland, based on electronic tagging and tracking data. To do so, we need a model for the individual’s movements and a series of observation models that connect movements to observations. In this example, we are interested in the two-dimensional (x, y) location of our animal through time (that is, the animal’s ‘state’ is an object of type <code>StateXY</code>). The animal can move up to 750 m in two minutes, which is the resolution at which we will model movement, and we formulate a random walk model accordingly based on step lengths and turning angles:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define the animal's state:</span></span>
 <span><span class="va">state</span>      <span class="op">&lt;-</span> <span class="st">"StateXY"</span></span>
 <span></span>
@@ -401,7 +443,7 @@
 <h2 id="observations">Observations<a class="anchor" aria-label="anchor" href="#observations"></a>
 </h2>
 <p>We have collected acoustic and archival (depth) observations from tagged flapper skate. Let’s pull out the time series for a selected individual:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define acoustic detections</span></span>
 <span><span class="va">acc</span> <span class="op">&lt;-</span></span>
 <span>  <span class="va">dat_acoustics</span> <span class="op">|&gt;</span></span>
@@ -419,7 +461,7 @@
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>obs <span class="op">=</span> <span class="va">depth</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Individual movements are connected to the observations by models of the observation process for each dataset. Without going into details, here we bundle together the observations with the parameters of the observation models:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">model_1</span>   <span class="op">&lt;-</span> <span class="st">"ModelObsAcousticLogisTrunc"</span></span>
 <span><span class="va">acoustics</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/assemble.html">assemble_acoustics</a></span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span>
 <span>                                .acoustics <span class="op">=</span> <span class="va">acc</span>,</span>
@@ -434,7 +476,7 @@
 <h2 id="particle-filter">Particle filter<a class="anchor" aria-label="anchor" href="#particle-filter"></a>
 </h2>
 <p>We are now in a position to run the particle filter. This runs a simulation forwards (or backwards) in time, sampling states (locations, termed ‘particles’) that are consistent with the movement model and the observations up to and including each time point. We end up with a time series (<code>data.table</code>) of particles that approximate the partial marginal distribution for the location of the animal, at each time step:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># List filter arguments</span></span>
 <span><span class="va">args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span>
 <span>             .timeline <span class="op">=</span> <span class="va">timeline</span>,</span>
@@ -444,42 +486,44 @@
 <span>             .model_obs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">model_1</span>, <span class="va">model_2</span><span class="op">)</span>,</span>
 <span>             .model_move <span class="op">=</span> <span class="va">model_move</span>,</span>
 <span>             .n_record <span class="op">=</span> <span class="fl">500L</span>,</span>
-<span>             .n_particle <span class="op">=</span> <span class="fl">1e4L</span><span class="op">)</span></span>
+<span>             .n_particle <span class="op">=</span> <span class="fl">1e5L</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Forward run</span></span>
-<span><span class="va">fwd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">pf_filter</span>, <span class="va">args</span><span class="op">)</span></span>
+<span><span class="va">fwd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">pf_filter</span>, <span class="va">args</span>, quote <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">fwd</span><span class="op">$</span><span class="va">states</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    path_id timestep           timestamp map_value        x       y</span></span>
 <span><span class="co">#&gt;      &lt;int&gt;    &lt;int&gt;              &lt;POSc&gt;     &lt;num&gt;    &lt;num&gt;   &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:       1        1 2016-03-17 01:50:00  50.11201 709742.1 6253607</span></span>
-<span><span class="co">#&gt; 2:       1        2 2016-03-17 01:52:00  45.88295 709342.3 6252908</span></span>
-<span><span class="co">#&gt; 3:       1        3 2016-03-17 01:54:00  68.53316 709267.0 6253268</span></span>
-<span><span class="co">#&gt; 4:       1        4 2016-03-17 01:56:00  59.76520 709105.9 6253005</span></span>
-<span><span class="co">#&gt; 5:       1        5 2016-03-17 01:58:00  91.54701 709022.1 6253332</span></span>
-<span><span class="co">#&gt; 6:       1        6 2016-03-17 02:00:00  58.17422 709266.2 6253130</span></span>
-<span></span>
+<span><span class="co">#&gt; 1:       1        1 2016-03-17 01:50:00  59.76520 709142.1 6253007</span></span>
+<span><span class="co">#&gt; 2:       1        2 2016-03-17 01:52:00  68.53316 709276.5 6253291</span></span>
+<span><span class="co">#&gt; 3:       1        3 2016-03-17 01:54:00  45.86026 709476.1 6252964</span></span>
+<span><span class="co">#&gt; 4:       1        4 2016-03-17 01:56:00  44.46762 709390.0 6252794</span></span>
+<span><span class="co">#&gt; 5:       1        5 2016-03-17 01:58:00  60.64737 708976.4 6252849</span></span>
+<span><span class="co">#&gt; 6:       1        6 2016-03-17 02:00:00  55.42853 709437.9 6253395</span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
 <span><span class="co"># Backward run</span></span>
 <span><span class="va">args</span><span class="op">$</span><span class="va">.direction</span> <span class="op">&lt;-</span> <span class="st">"backward"</span></span>
-<span><span class="va">bwd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">pf_filter</span>, <span class="va">args</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">bwd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">pf_filter</span>, <span class="va">args</span>, quote <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="particle-smoother">Particle smoother<a class="anchor" aria-label="anchor" href="#particle-smoother"></a>
 </h2>
 <p>Particle smoothers refine the outputs from the particle filter. Smoothed particles approximate the full marginal distribution for the location of the individual at each time step (accounting for all of the data before and after each step).</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">smo</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pf_smoother_two_filter.html">pf_smoother_two_filter</a></span><span class="op">(</span>.n_particle <span class="op">=</span> <span class="fl">100L</span>, .n_sim <span class="op">=</span> <span class="fl">100L</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="mapping">Mapping<a class="anchor" aria-label="anchor" href="#mapping"></a>
 </h2>
 <p>Particles can be used to reconstruct movement paths and patterns of space use. We can estimate a utilisation distribution from our particle samples as follows:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Estimate UD</span></span>
 <span><span class="va">ud</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/map_dens.html">map_dens</a></span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span>
 <span>               .coord <span class="op">=</span> <span class="va">smo</span><span class="op">$</span><span class="va">states</span>,</span>
-<span>               sigma <span class="op">=</span> <span class="fu">spatstat.explore</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/spatstat.explore/man/bw.diggle.html" class="external-link">bw.diggle</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Observation window is gridded.</span></span>
-<span></span>
+<span>               sigma <span class="op">=</span> <span class="fu">spatstat.explore</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/spatstat.explore/man/bw.diggle.html" class="external-link">bw.diggle</a></span><span class="op">)</span><span class="op">$</span><span class="va">ud</span></span>
+<span><span class="co">#&gt; Observation window is gridded.</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
 <span><span class="co"># Add home range</span></span>
 <span><span class="fu"><a href="reference/map_hr.html">map_hr_home</a></span><span class="op">(</span><span class="va">ud</span>, .add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span>side <span class="op">=</span> <span class="fl">4</span>, <span class="st">"Probability density"</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">3</span><span class="op">)</span></span></code></pre></div>
