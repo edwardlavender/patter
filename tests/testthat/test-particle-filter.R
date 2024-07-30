@@ -4,7 +4,7 @@ test_that("pf_filter() reconstructs the true path", {
 
   # Define map
   map      <- dat_gebco()
-  map[]    <- 1:terra::ncell(map)
+  map[]    <- as.numeric(1:terra::ncell(map))
   set_map(map)
 
   # Define timeline

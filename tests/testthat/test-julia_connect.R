@@ -1,8 +1,16 @@
 test_that("julia_connect() works", {
 
+  # Skip on CI
   skip_on_ci()
+
+  # Skip if offline
+  # (skip_if_offline() requires the curl package)
+  if (!requireNamespace("curl", quietly = TRUE)) {
+    skip()
+  }
   skip_if_offline()
 
+  # Define environment variables
   JULIA_PROJ        <- Sys.getenv("JULIA_PROJ")
   JULIA_NUM_THREADS <- Sys.getenv("JULIA_NUM_THREADS")
 
