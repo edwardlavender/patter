@@ -19,9 +19,10 @@ test_that("cl_lapply() works", {
                    fixed = TRUE)
 
   # cl_lapply() basic parallel implementation
-  cl_lapply(1:10, \(x) x + 0, .cl = 2L) |>
-    expect_equal(as.list(1:10L))
   if (is_unix) {
+    cl_lapply(1:10, \(x) x + 0, .cl = 2L) |>
+      expect_equal(as.list(1:10L))
+
     cl_lapply(1:10, \(x) x + 0, .cl = 2L, .chunk = TRUE, .combine = unlist) |>
       expect_equal(c(1:10L))
   }

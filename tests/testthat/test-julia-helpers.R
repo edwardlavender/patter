@@ -1,5 +1,13 @@
 test_that("Julia helpers work", {
 
+  # Define (local) helpers
+  file.path.norm <- function(...) {
+    x <- file.path(...)
+    normalizePath(x, winslash = "/", mustWork = FALSE)
+  }
+  expect_true(dir.exists(file.path.norm(tempdir())))
+
+
   check_inherits(julia_run(), "logical")
 
   check_inherits(julia_skip(), "logical")
@@ -8,18 +16,18 @@ test_that("Julia helpers work", {
 
   # julia_proj_path()
   # Use global option
-  jproj <- file.path(tempdir(), "one")
-  op <- options(JULIA_PROJ = jproj)
+  jproj <- file.path.norm(tempdir(), "one")
+  op    <- options(JULIA_PROJ = jproj)
   expect_equal(julia_proj_path(), jproj)
   options(op)
   # Use environmental variable
   JULIA_PROJ <- Sys.getenv("JULIA_PROJ")
-  jproj <- file.path(tempdir(), "two")
+  jproj      <- file.path.norm(tempdir(), "two")
   Sys.setenv(JULIA_PROJ = jproj)
   expect_equal(julia_proj_path(), jproj)
   Sys.setenv("JULIA_PROJ" = JULIA_PROJ)
   # Use function argument
-  jproj <- file.path(tempdir(), "three")
+  jproj <- file.path.norm(tempdir(), "three")
   expect_equal(julia_proj_path(JULIA_PROJ = jproj), jproj)
   Sys.unsetenv("JULIA_PROJ")
   julia_proj_path() |>
@@ -27,7 +35,7 @@ test_that("Julia helpers work", {
   Sys.setenv("JULIA_PROJ" = JULIA_PROJ)
 
   # julia_proj_generate()
-  jproj <- file.path(tempdir(), "JuliaTmp")
+  jproj <- file.path.norm(tempdir(), "JuliaTmp")
   julia_proj_generate(jproj)
   file_cleanup(jproj)
 
@@ -35,7 +43,7 @@ test_that("Julia helpers work", {
 
   # julia_proj_temp()
   expect_equal(julia_proj_temp(),
-               file.path(tempdir(), "Julia"))
+               file.path.norm(tempdir(), "Julia"))
 
   # julia_packages_dev_Patter.jl()
 

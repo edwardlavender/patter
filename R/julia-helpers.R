@@ -100,7 +100,8 @@ julia_proj_activate <- function(JULIA_PROJ) {
 
 # Generate a temporary Julia project path
 julia_proj_temp <- function() {
-  file.path(tempdir(), "Julia")
+  x <- file.path(tempdir(), "Julia")
+  normalizePath(x, winslash = "/", mustWork = FALSE)
 }
 
 #' @rdname julia_helper
