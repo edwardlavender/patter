@@ -32,7 +32,7 @@ If \code{NULL}, a \code{Julia} Project is not used and the default environment i
 
 \item{.pkg_update}{A \code{logical} variable that defines whether or not to update installed \code{Julia} packages.}
 
-\item{.threads}{A \code{character} (\code{"auto"}) or an \code{integer} that defines the number of threads used by multi-threaded operations in \code{Julia}. This can only be set once per \code{R} session.}
+\item{.threads}{A \code{character} (\code{"auto"}) or an \code{integer} that defines the number of threads used by multi-threaded operations in \code{Julia}. This can only be set once per \code{R} session. \strong{It is currently ignored on Windows} (see below).}
 
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }
@@ -51,6 +51,7 @@ This function connects \code{R} to \code{Julia}.
 \item If \code{.threads = NULL}, \code{JULIA_NUM_THREADS} is set to \code{"auto"} if unset or left unchanged otherwise;
 \item Otherwise, \code{JULIA_NUM_THREADS} is set to \code{.threads};
 \item The number of threads can only be set once per \code{R} session;
+\item On Windows, setting \code{JULIA_NUM_THREADS} as an environment variable in \code{.Renviron} or using \code{.threads} does not work. See this \href{https://github.com/edwardlavender/patter/issues/11}{issue} for a workaround.
 }
 \item The \code{Julia} installation is validated.
 \item A local \code{Julia} Project is generated in \code{JULIA_PROJ} (if specified and required) and activated. We recommend using \code{\link{patter}} within an RStudio Project, with a \code{Julia} directory at the top-level that contains the \code{Julia} project.

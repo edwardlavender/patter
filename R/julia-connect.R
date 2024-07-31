@@ -14,7 +14,7 @@
 #'
 #' @param .pkg_config (optional) A `character` string of `Julia` code, evaluated by [`julia_code()`], that configures `Julia` prior to dependency management.
 #' @param .pkg_update A `logical` variable that defines whether or not to update installed `Julia` packages.
-#' @param .threads A `character` (`"auto"`) or an `integer` that defines the number of threads used by multi-threaded operations in `Julia`. This can only be set once per `R` session.
+#' @param .threads A `character` (`"auto"`) or an `integer` that defines the number of threads used by multi-threaded operations in `Julia`. This can only be set once per `R` session. **It is currently ignored on Windows** (see below).
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
 #' @details [`patter`] is an `R` front-end for the [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) package. This requires a local installation of `Julia`. This function connects `R` to the local `Julia` installation, sets up [`JuliaCall`], which provides the integration between `R` and `Julia`, and [`Patter.jl`](https://github.com/edwardlavender/Patter.jl). Internally, the steps are as follows:
@@ -23,6 +23,7 @@
 #'    - If `.threads = NULL`, `JULIA_NUM_THREADS` is set to `"auto"` if unset or left unchanged otherwise;
 #'    - Otherwise, `JULIA_NUM_THREADS` is set to `.threads`;
 #'    - The number of threads can only be set once per `R` session;
+#'    - On Windows, setting `JULIA_NUM_THREADS` as an environment variable in `.Renviron` or using `.threads` does not work. See this [issue](https://github.com/edwardlavender/patter/issues/11) for a workaround.
 #' * The `Julia` installation is validated.
 #' * A local `Julia` Project is generated in `JULIA_PROJ` (if specified and required) and activated. We recommend using [`patter`] within an RStudio Project, with a `Julia` directory at the top-level that contains the `Julia` project.
 #' * If specified, `.pkg_config` is run via [`julia_code()`].
