@@ -379,9 +379,6 @@ essential packages:
 ``` r
 library(patter)
 #> This is {patter} v.1.0.0.9000. For an overview, see `?patter`. For support, contact edward.lavender@eawag.ch.
-```
-
-``` r
 library(data.table)
 library(dtplyr)
 library(dplyr, warn.conflicts = FALSE)
@@ -523,9 +520,6 @@ head(fwd$states)
 #> 4:       1        4 2016-03-17 01:56:00  44.46762 709390.0 6252794
 #> 5:       1        5 2016-03-17 01:58:00  60.64737 708976.4 6252849
 #> 6:       1        6 2016-03-17 02:00:00  55.42853 709437.9 6253395
-```
-
-``` r
 
 # Backward run
 args$.direction <- "backward"
@@ -555,9 +549,6 @@ ud <- map_dens(.map = map,
                .coord = smo$states,
                sigma = spatstat.explore::bw.diggle)$ud
 #> Observation window is gridded.
-```
-
-``` r
 
 # Add home range
 map_hr_home(ud, .add = TRUE)
@@ -603,11 +594,11 @@ To cite `patter` in publications, please use:
 - Lavender, E. et al. (2023). An integrative modelling framework for
   passive acoustic telemetry. Methods in Ecology and Evolution.
   <https://doi.org/10.1111/2041-210X.14193>
-- Lavender, E. et al. (in prep). Particle filters for animal movement
+- Lavender, E. et al. (in prep). Particle algorithms for animal movement
   modelling in autonomous receiver networks.
-- Lavender, E. et al. (in prep). Particle filters for animal tracking in
-  `R` and `Julia`.
-- Lavender, E. et al. (in prep). Particle filtering reveals patterns of
+- Lavender, E. et al. (in prep). Particle algorithms for animal tracking
+  in `R` and `Julia`. <https://doi.org/10.1101/2024.07.30.605733>
+- Lavender, E. et al. (in prep). Particle algorithms reveal patterns of
   space use in a Critically Endangered elasmobranch.
 
 ------------------------------------------------------------------------

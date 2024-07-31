@@ -449,9 +449,9 @@ options(op)
 To cite `patter` in publications, please use:
 
 * Lavender, E. et al. (2023). An integrative modelling framework for passive acoustic telemetry. Methods in Ecology and Evolution. https://doi.org/10.1111/2041-210X.14193 
-* Lavender, E. et al. (in prep). Particle filters for animal movement modelling in autonomous receiver networks.
-* Lavender, E. et al. (in prep). Particle filters for animal tracking in `R` and `Julia`.
-* Lavender, E. et al. (in prep). Particle filtering reveals patterns of space use in a Critically Endangered elasmobranch.
+* Lavender, E. et al. (in prep). Particle algorithms for animal movement modelling in autonomous receiver networks.
+* Lavender, E. et al. (in prep). Particle algorithms for animal tracking in `R` and `Julia`. https://doi.org/10.1101/2024.07.30.605733
+* Lavender, E. et al. (in prep). Particle algorithms reveal patterns of space use in a Critically Endangered elasmobranch.
 
 ---
 
