@@ -1,10 +1,14 @@
 # News
 
-# patter (development version)
+# v 1.0.1.9000
 
 This is the current development version.
 
-# `patter` 1.0.0
+# v1.0.1
+
+* Minor bug fixes
+
+# v1.0.0
 
 ## Overview 
 
