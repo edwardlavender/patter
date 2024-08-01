@@ -378,7 +378,7 @@ essential packages:
 
 ``` r
 library(patter)
-#> This is {patter} v.1.0.0.9000. For an overview, see `?patter`. For support, contact edward.lavender@eawag.ch.
+#> This is {patter} v.1.0.1. For an overview, see `?patter`. For support, contact edward.lavender@eawag.ch.
 library(data.table)
 library(dtplyr)
 library(dplyr, warn.conflicts = FALSE)

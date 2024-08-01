@@ -33,7 +33,7 @@ op <- options(terra.pal = rev(terrain.colors(256)))
 # * By default, TRUE
 # * If previously computed < 24 hours ago, FALSE
 cov_compute     <- TRUE
-cov_cache_file  <- here::here("data-raw", "README", "coverage.rds")
+cov_cache_file  <- file.path("data-raw", "README", "coverage.rds")
 if (file.exists(cov_cache_file)) {
   cov_cache     <- readRDS(cov_cache_file)
   cov_pc        <- cov_cache$pc
