@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">patter</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.1</span>
       </span>
     </div>
 
@@ -99,7 +99,7 @@
 
 
 <dt>.threads</dt>
-<dd><p>A <code>character</code> (<code>"auto"</code>) or an <code>integer</code> that defines the number of threads used by multi-threaded operations in <code>Julia</code>. This can only be set once per <code>R</code> session.</p></dd>
+<dd><p>A <code>character</code> (<code>"auto"</code>) or an <code>integer</code> that defines the number of threads used by multi-threaded operations in <code>Julia</code>. This can only be set once per <code>R</code> session. <strong>It is currently ignored on Windows</strong> (see below).</p></dd>
 
 
 <dt>.verbose</dt>
@@ -118,6 +118,7 @@
 <li><p>The number of threads is set via the <code>JULIA_NUM_THREADS</code> environment variable:</p><ul><li><p>If <code>.threads = NULL</code>, <code>JULIA_NUM_THREADS</code> is set to <code>"auto"</code> if unset or left unchanged otherwise;</p></li>
 <li><p>Otherwise, <code>JULIA_NUM_THREADS</code> is set to <code>.threads</code>;</p></li>
 <li><p>The number of threads can only be set once per <code>R</code> session;</p></li>
+<li><p>On Windows, setting <code>JULIA_NUM_THREADS</code> as an environment variable in <code>.Renviron</code> or using <code>.threads</code> does not work. See this <a href="https://github.com/edwardlavender/patter/issues/11" class="external-link">issue</a> for a workaround.</p></li>
 </ul></li>
 <li><p>The <code>Julia</code> installation is validated.</p></li>
 <li><p>A local <code>Julia</code> Project is generated in <code>JULIA_PROJ</code> (if specified and required) and activated. We recommend using <code><a href="patter.html">patter</a></code> within an RStudio Project, with a <code>Julia</code> directory at the top-level that contains the <code>Julia</code> project.</p></li>
@@ -166,28 +167,28 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="file_path.html">file_cleanup</a></span><span class="op">(</span><span class="va">proj</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-07-18 11:10:09... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-08-01 11:40:31... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_setup()`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 8 thread(s). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-07-18 11:10:14 (duration: ~5 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-07-18 11:10:14... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-08-01 11:40:36 (duration: ~5 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-08-01 11:40:36... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_setup()`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 8 thread(s). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-07-18 11:10:19 (duration: ~5 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-07-18 11:10:19... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-08-01 11:40:41 (duration: ~5 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-08-01 11:40:41... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_setup()`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 8 thread(s). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-07-18 11:11:02 (duration: ~43 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-07-18 11:11:02... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-08-01 11:41:02 (duration: ~21 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-08-01 11:41:02... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_setup()`... </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Restart `R` to update the number of threads in `Julia`.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
@@ -195,7 +196,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`JULIA_NUM_THREADS` could not be set via `.threads`.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 8 thread(s). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-07-18 11:11:06 (duration: ~4 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-08-01 11:41:08 (duration: ~6 sec(s)). </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`JULIA_NUM_THREADS` could not be set via `.threads`.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
