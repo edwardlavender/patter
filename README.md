@@ -171,7 +171,8 @@ also installed, which are required for some functions and to build
 vignettes. This process may take several minutes. Set
 `build_vignettes = FALSE` for a faster installation.
 
-To install `patter` from the development (`dev`) branch, use:
+To install `patter` from the development (`dev`) branch, if available,
+use:
 
 ``` r
 devtools::install_github("edwardlavender/patter@dev", 
