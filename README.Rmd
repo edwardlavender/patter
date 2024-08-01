@@ -15,11 +15,59 @@ op <- options(terra.pal = rev(terrain.colors(256)))
 # `patter`: particle algorithms for animal movement
 **Particle filters, smoothers and sampling algorithms for animal movement modelling in [`R`](https://www.r-project.org)**
 
+```{r, include = FALSE}
+# Compute statistics for package badges
+
+# R CMD CHECK
+# * This is currently handled by a CI 
+
+# Test coverage
+# * We compute test coverage locally, when:
+#   - This readme is rendered
+#   - If the time since the last check was >= 24 hours
+# * The local computation of test coverage:
+#   - Saves GitHub Action minutes
+#   - Is simpler than using bespoke GitHub Actions for covr configured for Windows
+
+# Determine whether or not to compute coverage
+# * By default, TRUE
+# * If previously computed < 24 hours ago, FALSE
+cov_compute     <- TRUE
+cov_cache_file  <- here::here("data-raw", "README", "coverage.rds")
+if (file.exists(cov_cache_file)) {
+  cov_cache     <- readRDS(cov_cache_file)
+  cov_pc        <- cov_cache$pc
+  cov_timestamp <- cov_cache$timestamp
+  cov_difftime  <- difftime(Sys.time(), cov_timestamp, units = "secs")
+  if (cov_difftime < 24 * 60 * 60) {
+    cov_compute <- FALSE
+  }
+}
+
+# Compute coverage (~100 s)
+if (cov_compute) {
+  # Get coverage %
+  cov_pc <-
+    covr::package_coverage() |>
+    covr::percent_coverage()
+  # Update cov_cache
+  cov_cache <- list(pc = cov_pc, timestamp = Sys.time())
+  try(saveRDS(cov_cache, cov_cache_file), silent = TRUE)
+}
+
+# Build badge
+cov_pc    <- round(as.numeric(cov_pc))
+cov_col   <- ifelse(cov_pc >= 90, "brightgreen",
+                    ifelse(cov_pc >= 75, "orange", "red"))
+cov_badge <- paste0("https://img.shields.io/badge/coverage-",
+                    cov_pc, "%25-", cov_col)
+```
+
 <!-- badges: start -->
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN status](https://www.r-pkg.org/badges/version/patter)](https://CRAN.R-project.org/package=patter)
-[![Codecov test coverage](https://codecov.io/gh/edwardlavender/patter/branch/main/graph/badge.svg)](https://app.codecov.io/gh/edwardlavender/patter?branch=main)
+![Coverage](`r cov_badge`)
 [![R-CMD-check](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 

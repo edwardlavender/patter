@@ -13,8 +13,7 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/patter)](https://CRAN.R-project.org/package=patter)
-[![Codecov test
-coverage](https://codecov.io/gh/edwardlavender/patter/branch/main/graph/badge.svg)](https://app.codecov.io/gh/edwardlavender/patter?branch=main)
+![Coverage](https://img.shields.io/badge/coverage-98%25-brightgreen)
 [![R-CMD-check](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
@@ -441,7 +440,7 @@ map |>
   invisible()
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
 
 ## Observations
 
@@ -555,7 +554,7 @@ map_hr_home(ud, .add = TRUE)
 mtext(side = 4, "Probability density", line = -3)
 ```
 
-<img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
 
 This basic workflow is highly customisable. You have the flexibility to
 define species-specific movement models, include any type of
