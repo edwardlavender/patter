@@ -24,7 +24,7 @@ If \code{missing}, the function scans:
 \item The environmental variable, \code{JULIA_PROJ};
 }
 
-If \code{missing} and unfound, \code{JULIA_PROJ = NULL} is used with a \code{\link{warning}}.
+If \code{missing} and unfound, \code{JULIA_PROJ = NULL} is used with a \code{\link{message}}.
 
 If \code{NULL}, a \code{Julia} Project is not used and the default environment is used (e.g., \verb{~/.julia/environments/v1.10/Project.toml}).}
 

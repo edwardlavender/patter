@@ -8,7 +8,7 @@
 #' * The global option, `JULIA_PROJ`;
 #' * The environmental variable, `JULIA_PROJ`;
 #'
-#' If `missing` and unfound, `JULIA_PROJ = NULL` is used with a [`warning`].
+#' If `missing` and unfound, `JULIA_PROJ = NULL` is used with a [`message`].
 #'
 #' If `NULL`, a `Julia` Project is not used and the default environment is used (e.g., `~/.julia/environments/v1.10/Project.toml`).
 #'
