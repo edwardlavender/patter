@@ -208,6 +208,7 @@ if (julia_run()) {
     '
     function Patter.logpdf_step(state_from::StateXYZ, state_to::StateXYZ,
                                 model_move::ModelMoveXYZ,
+                                t::Int64,
                                 length::Float64, angle::Float64)
         # Calculate change in depth
         z_delta = state_to.z - state_from.z
