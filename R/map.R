@@ -75,6 +75,7 @@ map_pou <-
 #' @param .discretise If `.coord` is provided, `.discretise` is a `logical` variable that defines whether or not to discretise coordinates on `.map` (see [`.map_coord()`]).
 #' @param .shortcut (optional) A named `list` from a previous call to [`map_dens()`]. If supplied, the function short-cuts straight to smoothing (`.owin`, `.coord` and `.discretise` are silently unused).
 #' @param ... Arguments for density estimation, passed to [`spatstat.explore::density.ppp()`], such as `sigma` (i.e., the bandwidth). `at` and `se` are not permitted.
+#' @param .fterra A `logical` variable that defines whether or not to parallelise [`terra::resample()`].
 #' @param .plot A `logical` variable that defines whether or not to plot the output.
 #' @param .use_tryCatch A `logical` variable that controls error handling:
 #' * If `.use_tryCatch = FALSE`, if density estimation fails with an error, the function fails with the same error.
@@ -94,7 +95,7 @@ map_pou <-
 #'
 #' If `.shortcut` is supplied, the preceding steps can be skipped and the function short-cuts straight to smoothing. Use this option if the preceding steps are slow and you want to trial different smoothing options (such as `sigma` functions).
 #'
-#' Coordinates and associated weights are smoothed via [`spatstat.explore::density.ppp()`] into an image. Pixel resolution and smoothing parameters such as bandwidth can be controlled via `...` arguments which are passed directly to this function. The output is translated into a gridded probability density surface (on the geometry defined by `.map`).
+#' Coordinates and associated weights are smoothed via [`spatstat.explore::density.ppp()`] into an image. Pixel resolution and smoothing parameters such as bandwidth can be controlled via `...` arguments which are passed directly to this function. The output is translated into a gridded probability density surface (on the geometry defined by `.map`). This process may use [`terra::resample()`], which can be parallelised via `.fterra` (which controls the `threads` argument of that function).
 #'
 #' This function replaces `flapper::kud*()` and `flapper::pf_kud*()` routines based on `adehabitatHR` (see [here](https://edwardlavender.github.io/flapper/reference/)).
 #'
@@ -170,6 +171,7 @@ map_dens <- function(.map,
                      .owin = as.owin.SpatRaster(.map),
                      .coord = NULL, .discretise = FALSE,
                      .shortcut = list(), ...,
+                     .fterra = FALSE,
                      .plot = TRUE,
                      .use_tryCatch = TRUE,
                      .verbose = getOption("patter.verbose")
@@ -248,7 +250,7 @@ map_dens <- function(.map,
   dens <- dens / terra::global(dens, "sum", na.rm = TRUE)[1, 1]
   if (!terra::compareGeom(dens, .map, stopOnError = FALSE, messages = FALSE)) {
     cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": * Resampling density surface onto `.map`..."))
-    dens <- terra::resample(dens, .map, method = "near")
+    dens <- terra::resample(dens, .map, method = "near", threads = .fterra)
     # dens <- terra::mask(dens, .map)
     dens <- dens / terra::global(dens, "sum", na.rm = TRUE)[1, 1]
   }

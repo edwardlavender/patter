@@ -20,6 +20,7 @@ map_dens(
   .discretise = FALSE,
   .shortcut = list(),
   ...,
+  .fterra = FALSE,
   .plot = TRUE,
   .use_tryCatch = TRUE,
   .verbose = getOption("patter.verbose")
@@ -44,6 +45,8 @@ map_dens(
 \item{.shortcut}{(optional) A named \code{list} from a previous call to \code{\link[=map_dens]{map_dens()}}. If supplied, the function short-cuts straight to smoothing (\code{.owin}, \code{.coord} and \code{.discretise} are silently unused).}
 
 \item{...}{Arguments for density estimation, passed to \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}}, such as \code{sigma} (i.e., the bandwidth). \code{at} and \code{se} are not permitted.}
+
+\item{.fterra}{A \code{logical} variable that defines whether or not to parallelise \code{\link[terra:resample]{terra::resample()}}.}
 
 \item{.plot}{A \code{logical} variable that defines whether or not to plot the output.}
 
@@ -83,7 +86,7 @@ Cell coordinates and associated weights are converted to a \code{\link[spatstat.
 
 If \code{.shortcut} is supplied, the preceding steps can be skipped and the function short-cuts straight to smoothing. Use this option if the preceding steps are slow and you want to trial different smoothing options (such as \code{sigma} functions).
 
-Coordinates and associated weights are smoothed via \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} into an image. Pixel resolution and smoothing parameters such as bandwidth can be controlled via \code{...} arguments which are passed directly to this function. The output is translated into a gridded probability density surface (on the geometry defined by \code{.map}).
+Coordinates and associated weights are smoothed via \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} into an image. Pixel resolution and smoothing parameters such as bandwidth can be controlled via \code{...} arguments which are passed directly to this function. The output is translated into a gridded probability density surface (on the geometry defined by \code{.map}). This process may use \code{\link[terra:resample]{terra::resample()}}, which can be parallelised via \code{.fterra} (which controls the \code{threads} argument of that function).
 
 This function replaces \verb{flapper::kud*()} and \verb{flapper::pf_kud*()} routines based on \code{adehabitatHR} (see \href{https://edwardlavender.github.io/flapper/reference/}{here}).
 }
