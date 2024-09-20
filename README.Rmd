@@ -125,6 +125,10 @@ install.packages(c("devtools", "pkgbuild", "here"))
 ``` r
 # Install the {JuliaCall} package:
 install.packages("JuliaCall")
+
+# Use the development version if the CRAN version is unavailable:
+devtools::install_github("Non-Contradiction/JuliaCall",
+                         dependencies = TRUE)
 ```
 
 ``` r

@@ -125,6 +125,10 @@ install.packages(c("devtools", "pkgbuild", "here"))
 ``` r
 # Install the {JuliaCall} package:
 install.packages("JuliaCall")
+
+# Use the development version if the CRAN version is unavailable:
+devtools::install_github("Non-Contradiction/JuliaCall",
+                         dependencies = TRUE)
 ```
 
 ``` r
@@ -380,6 +384,7 @@ essential packages:
 library(patter)
 #> This is {patter} v.1.0.1. For an overview, see `?patter`. For support, contact edward.lavender@eawag.ch.
 library(data.table)
+#> Warning: package 'data.table' was built under R version 4.3.3
 library(dtplyr)
 library(dplyr, warn.conflicts = FALSE)
 options(patter.verbose = FALSE)
