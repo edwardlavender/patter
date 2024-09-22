@@ -12,16 +12,18 @@ test_that("move_*() functions work", {
   set_map(map)
 
   # Test move_xy()
-  output <- move_xy(dbn_length = "truncated(Gamma(2, 300.0), upper = 500.0)",
-                    dbn_angle = "Uniform(0, 2 * pi)")
-  expected <- "ModelMoveXY(env, truncated(Gamma(2, 300.0), upper = 500.0), Uniform(0, 2 * pi));"
+  output <- move_xy(mobility = "500.0",
+                    dbn_length = "truncated(Gamma(2.0, 300.0), upper = 500.0)",
+                    dbn_angle = "Uniform(0.0, 2 * pi)")
+  expected <- "ModelMoveXY(env, 500.0, truncated(Gamma(2.0, 300.0), upper = 500.0), Uniform(0.0, 2 * pi));"
   expect_equal(output, expected)
 
   # Test move_xyzd()
-  output   <- move_xyzd(dbn_length = "truncated(Gamma(2, 300.0), upper = 500.0)",
-                        dbn_angle_delta = "Normal(3, 1.1)",
-                        dbn_z_delta = "Normal(3, 3)")
-  expected <- "ModelMoveXYZD(env, truncated(Gamma(2, 300.0), upper = 500.0), Normal(3, 1.1), Normal(3, 3));"
+  output   <- move_xyzd(mobility = "500.0",
+                        dbn_length = "truncated(Gamma(2.0, 300.0), upper = 500.0)",
+                        dbn_angle_delta = "Normal(3.0, 1.1)",
+                        dbn_z_delta = "Normal(3.0, 3.0)")
+  expected <- "ModelMoveXYZD(env, 500.0, truncated(Gamma(2.0, 300.0), upper = 500.0), Normal(3.0, 1.1), Normal(3.0, 3.0));"
 
   expect_equal(output, expected)
 

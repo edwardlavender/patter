@@ -434,8 +434,9 @@ state      <- "StateXY"
 
 # Formulate a corresponding movement model:
 mobility   <- 750.0
-model_move <- move_xy(dbn_length = glue::glue("truncated(Gamma(1, 250.0), upper = {mobility})"),
-                      dbn_angle = "Uniform(-pi, pi)")
+model_move <- move_xy(mobility   = "750.0", 
+                      dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
+                      dbn_angle  = "Uniform(-pi, pi)")
 
 # Visualise realisations of the movement model:
 map |> 
@@ -507,7 +508,7 @@ distribution for the location of the animal, at each time step:
 args <- list(.map = map,
              .timeline = timeline,
              .state = state,
-             .xinit_pars = list(mobility = mobility),
+             .xinit_pars = list(mobility = as.numeric(mobility)),
              .yobs = list(acoustics, archival),
              .model_obs = c(model_1, model_2),
              .model_move = model_move,

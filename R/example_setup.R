@@ -60,7 +60,8 @@ example_setup.pf_smoother_two_filter <- function(.fun, .connect = TRUE) {
   state    <- "StateXY"
   mobility <- 750
   move     <-
-    move_xy(dbn_length = glue::glue("truncated(Gamma(1, 250.0), upper = {mobility})"),
+    move_xy(mobility = "750.0",
+            dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
             dbn_angle = "Uniform(-pi, pi)")
   sim_path_walk(.map = map,
                 .timeline = timeline,

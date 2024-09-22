@@ -68,7 +68,8 @@ NULL
 #' @title Movement models
 #' @description [`ModelMove`] is Abstract Type in [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) that groups movement model sub-types, of which instances can be created via an `R` `move_*()` function.
 #'
-#' @param dbn_length,dbn_angle,dbn_angle_delta,dbn_z_delta `Character` strings that define movement model components:
+#' @param mobility,dbn_length,dbn_angle,dbn_angle_delta,dbn_z_delta `Character` strings that define movement model components:
+#' * `mobility`---the maximum movement distance between two time steps;
 #' * `dbn_length`---the distribution of step lengths;
 #' * `dbn_angle`---the distribution of turning angles;
 #' * `dbn_angle_delta`---the distribution of changes in turning angles;
@@ -82,6 +83,7 @@ NULL
 #'
 #' See [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) or `JuliaCall::julia_help("ModelMove")` for the fields of the built-in sub-types. Briefly, all sub-types include:
 #' * A `map` field, that defines the region(s) within which movements are permitted. In `R`, it is convenient to represent `map` as a [`SpatRaster`], where `NAs` define inhospitable habitats (e.g., land). This should made available to `Julia` [`ModelMove`] constructors as `env` via [`set_map()`];
+#' * The `mobility` parameter;
 #' * Additional model-specific components (such as fields for the distribution of step lengths and turning angles in the case of two-dimensional random walks);
 #'
 #' In [`patter`], movement models are required:
@@ -110,18 +112,20 @@ NULL
 #' @rdname ModelMove
 #' @export
 
-move_xy <- function(dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
+move_xy <- function(mobility = "750.0",
+                    dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
                     dbn_angle = "Uniform(-pi, pi)") {
   julia_check_exists("env")
-  glue('ModelMoveXY(env, {dbn_length}, {dbn_angle});')
+  glue('ModelMoveXY(env, {mobility}, {dbn_length}, {dbn_angle});')
 }
 
 #' @rdname ModelMove
 #' @export
 
-move_xyzd <- function(dbn_length = "truncated(Gamma(1.0, 750.0), upper = 750.0)",
+move_xyzd <- function(mobility= "750.0",
+                      dbn_length = "truncated(Gamma(1.0, 750.0), upper = 750.0)",
                       dbn_angle_delta = "Normal(0, 0.5)",
                       dbn_z_delta = "Normal(0, 3.5)") {
   julia_check_exists("env")
-  glue('ModelMoveXYZD(env, {dbn_length}, {dbn_angle_delta}, {dbn_z_delta});')
+  glue('ModelMoveXYZD(env, {mobility}, {dbn_length}, {dbn_angle_delta}, {dbn_z_delta});')
 }

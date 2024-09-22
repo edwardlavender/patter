@@ -63,14 +63,16 @@ if (julia_run()) {
 
   #### Example (5): Customise two-dimensional random walks via `move_xy()`
   # Adjust distributions for step lengths and turning angles
-  move <- move_xy(dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)",
+  move <- move_xy(mobility = "750.0",
+                  dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)",
                   dbn_angle = "VonMises(0.1, 0.1)")
   sim_path_walk(.map = map,
                 .timeline = timeline,
                 .state = "StateXY",
                 .model_move = move)
   # Experiment with other options
-  move <- move_xy(dbn_length = "truncated(Normal(10, 50), lower = 0.0, upper = 300)")
+  move <- move_xy(mobility   = "300.0",
+                  dbn_length = "truncated(Normal(10.0, 50.0), lower = 0.0, upper = 300.0)")
   sim_path_walk(.map = map,
                 .timeline = timeline,
                 .state = "StateXY",

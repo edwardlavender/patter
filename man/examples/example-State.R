@@ -40,28 +40,30 @@ if (julia_run()) {
   # > We will consider a random walk in 3D
   julia_command(
     '
-  struct ModelMoveXYZ{T, U, V, W} <: Patter.ModelMove
+  struct ModelMoveXYZ{T, U, V, W, X} <: Patter.ModelMove
     # The environment (i.e., map)
     # > This defines the regions within which movements are permitted (i.e., in water)
     map::T
     # Distribution for step lengths
-    dbn_length::U
+    mobility::U
+    dbn_length::V
     # Distribution for turning angles
-    dbn_angle::V
+    dbn_angle::W
     # Distribution for changes in depth
-    dbn_z_delta::W
+    dbn_z_delta::X
   end
   '
   )
   # Instantiate the movement model
   # > We will write an R function to instantiate the movement model
-  move_xyz <- function(length = "truncated(Gamma(1.0, 750.0), upper = 750.0)",
+  move_xyz <- function(mobility = "750.0",
+                       length = "truncated(Gamma(1.0, 750.0), upper = 750.0)",
                        angle = "Uniform(-pi, pi)",
                        z_delta = "Normal(0, 3.5)") {
     # (optional) Verify the map (`env` in Julia) exists:
     # patter:::julia_check_exists("env")
     # Define the movement model `Julia` code as a String
-    glue::glue('ModelMoveXYZ(env, {length}, {angle}, {z_delta});')
+    glue::glue('ModelMoveXYZ(env, {mobility}, {length}, {angle}, {z_delta});')
   }
   # (optional) Define an `R` `states_init()` method to simulate initial states
   # * This function should accept:

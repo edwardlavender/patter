@@ -10,19 +10,22 @@
 \title{Movement models}
 \usage{
 move_xy(
+  mobility = "750.0",
   dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
   dbn_angle = "Uniform(-pi, pi)"
 )
 
 move_xyzd(
+  mobility = "750.0",
   dbn_length = "truncated(Gamma(1.0, 750.0), upper = 750.0)",
   dbn_angle_delta = "Normal(0, 0.5)",
   dbn_z_delta = "Normal(0, 3.5)"
 )
 }
 \arguments{
-\item{dbn_length, dbn_angle, dbn_angle_delta, dbn_z_delta}{\code{Character} strings that define movement model components:
+\item{mobility, dbn_length, dbn_angle, dbn_angle_delta, dbn_z_delta}{\code{Character} strings that define movement model components:
 \itemize{
+\item \code{mobility}---the maximum movement distance between two time steps;
 \item \code{dbn_length}---the distribution of step lengths;
 \item \code{dbn_angle}---the distribution of turning angles;
 \item \code{dbn_angle_delta}---the distribution of changes in turning angles;
@@ -47,6 +50,7 @@ The following movement models are built in to \href{https://edwardlavender.githu
 See \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} or \code{JuliaCall::julia_help("ModelMove")} for the fields of the built-in sub-types. Briefly, all sub-types include:
 \itemize{
 \item A \code{map} field, that defines the region(s) within which movements are permitted. In \code{R}, it is convenient to represent \code{map} as a \code{\link{SpatRaster}}, where \code{NAs} define inhospitable habitats (e.g., land). This should made available to \code{Julia} \code{\link{ModelMove}} constructors as \code{env} via \code{\link[=set_map]{set_map()}};
+\item The \code{mobility} parameter;
 \item Additional model-specific components (such as fields for the distribution of step lengths and turning angles in the case of two-dimensional random walks);
 }
 
@@ -100,10 +104,12 @@ if (julia_run()) {
   #### Example (2): Customise `move_xy()`
   # Use a truncated normal distribution for step lengths:
   hist(rtrunc(1e5L, "norm", a = 0, b = 750, mean = 250, sd = 50))
-  move_xy(dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)")
+  move_xy(mobility = "750.0",
+          dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)")
   # Use an exponential distribution for step lengths
   hist(rtrunc(1e5L, "exp", b = 750, rate = 0.001))
-  move_xy(dbn_length = "truncated(Exponential(0.01), upper = 750.0)")
+  move_xy(mobility = "750.0",
+          dbn_length = "truncated(Exponential(0.01), upper = 750.0)")
   # Use a biased random walk
   move_xy(dbn_angle = "VonMises(0, 1)")
   # Get help on a distribution in Julia:
@@ -113,7 +119,8 @@ if (julia_run()) {
   # Use default options
   move_xyzd()
   # Customise model components
-  move_xyzd(dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)",
+  move_xyzd(mobility = "750.0",
+            dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)",
             dbn_angle_delta = "Normal(0, 0.25)",
             dbn_z_delta = "Normal(0, 2.5)")
 
