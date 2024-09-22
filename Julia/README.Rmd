@@ -11,7 +11,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# `patter.jl`: particle algorithms for animal movement
+# `Patter.jl`: particle algorithms for animal movement
 **Particle filters, smoothers and sampling algorithms for animal movement modelling in [`Julia`](https://julialang.org)**
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
@@ -194,6 +194,7 @@ We will reconstruct the movements of a tagged flapper skate (_Dipturus intermedi
 ```{julia}
 # Formulate a movement model
 model_move = ModelMoveXY(env, 
+                         750.0,
                          truncated(Gamma(1, 250.0), upper = 750.0), 
                          Uniform(-pi, pi));
 ```
