@@ -19,7 +19,7 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -45,7 +45,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
@@ -65,7 +65,7 @@
 <li>
   <a href="https://github.com/edwardlavender/patter/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul>
@@ -76,7 +76,7 @@
 </div>
 <!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="contents col-md-9">
@@ -155,7 +155,11 @@
 </ol>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install the {JuliaCall} package:</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"JuliaCall"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"JuliaCall"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Use the development version if the CRAN version is unavailable:</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"Non-Contradiction/JuliaCall"</span>,</span>
+<span>                         dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install `Julia` via {JuliaCall}:</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Non-Contradiction/JuliaCall" class="external-link">JuliaCall</a></span><span class="op">)</span></span>
@@ -395,8 +399,9 @@
 <p>This is the basic <code>patter</code> workflow to reconstruct movement paths and patterns of space use from animal tracking data. First, we load some essential packages:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/edwardlavender/patter/" class="external-link">patter</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; This is {patter} v.1.0.0.9000. For an overview, see `?patter`. For support, contact edward.lavender@eawag.ch.</span></span>
+<span><span class="co">#&gt; This is {patter} v.1.0.1. For an overview, see `?patter`. For support, contact edward.lavender@eawag.ch.</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: package 'data.table' was built under R version 4.3.3</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dtplyr.tidyverse.org" class="external-link">dtplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>patter.verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
@@ -426,8 +431,9 @@
 <span></span>
 <span><span class="co"># Formulate a corresponding movement model:</span></span>
 <span><span class="va">mobility</span>   <span class="op">&lt;-</span> <span class="fl">750.0</span></span>
-<span><span class="va">model_move</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ModelMove.html">move_xy</a></span><span class="op">(</span>dbn_length <span class="op">=</span> <span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html" class="external-link">glue</a></span><span class="op">(</span><span class="st">"truncated(Gamma(1, 250.0), upper = {mobility})"</span><span class="op">)</span>,</span>
-<span>                      dbn_angle <span class="op">=</span> <span class="st">"Uniform(-pi, pi)"</span><span class="op">)</span></span>
+<span><span class="va">model_move</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ModelMove.html">move_xy</a></span><span class="op">(</span>mobility   <span class="op">=</span> <span class="st">"750.0"</span>, </span>
+<span>                      dbn_length <span class="op">=</span> <span class="st">"truncated(Gamma(1, 250.0), upper = 750.0)"</span>,</span>
+<span>                      dbn_angle  <span class="op">=</span> <span class="st">"Uniform(-pi, pi)"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Visualise realisations of the movement model:</span></span>
 <span><span class="va">map</span> <span class="op">|&gt;</span> </span>
@@ -480,7 +486,7 @@
 <span><span class="va">args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span>
 <span>             .timeline <span class="op">=</span> <span class="va">timeline</span>,</span>
 <span>             .state <span class="op">=</span> <span class="va">state</span>,</span>
-<span>             .xinit_pars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mobility <span class="op">=</span> <span class="va">mobility</span><span class="op">)</span>,</span>
+<span>             .xinit_pars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mobility <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">mobility</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>             .yobs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">acoustics</span>, <span class="va">archival</span><span class="op">)</span>,</span>
 <span>             .model_obs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">model_1</span>, <span class="va">model_2</span><span class="op">)</span>,</span>
 <span>             .model_move <span class="op">=</span> <span class="va">model_move</span>,</span>
@@ -629,16 +635,16 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer>
 </div>
 
-  
 
 
-  
+
+
 
   </body>
 </html>
