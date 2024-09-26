@@ -247,6 +247,9 @@ map_init.ModelObsDepthNormalTrunc <- function(.map,
   if (length(pos) == 0L) {
     return(.map)
   }
+  # Error check
+  # > Only a single initial observation should be identified
+  stopifnot(length(pos) %in% 0:1L)
   depth <- .dataset$obs[pos]
   # Define the corresponding structure parameters
   depth_deep_eps <- .dataset$depth_deep_eps[pos]
@@ -297,6 +300,10 @@ coords_init <- function(.map, .n) {
                xy = TRUE,
                values = TRUE,
                warn = FALSE)
+  # Check inputs
+  if (terra::nlyr(.map) != 1L) {
+    abort("`.map` should have a single layer.")
+  }
   # Attempt SpatSample
   # * This may fail if almost all cells are NA
   .xinit <- tryCatch(do.call(terra::spatSample, args),
@@ -320,6 +327,8 @@ coords_init <- function(.map, .n) {
     }
     abort("Failed to sample initial coordinates from `.map`.")
   }
+  # Define data.table
+  # * This assumes that .map contains a single layer (-> 3 column data.table)
   .xinit <- .xinit |> as.data.table()
   colnames(.xinit) <- c("x", "y", "map_value")
   # Implement resampling, if spatSample() returns <= .n samples
