@@ -269,7 +269,7 @@ fwd = particle_filter(timeline = timeline,
 # Simulate initial states for the backward filter
 xinit = simulate_states_init(state_type = StateXY, 
                              model_move = model_move,
-                             n = 200_000, 
+                             n = 300_000, 
                              xlim = (705842.1, 710642.1), 
                              ylim = (6249007, 6269707));
 

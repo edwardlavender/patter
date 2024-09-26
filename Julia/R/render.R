@@ -18,8 +18,8 @@ outcon <- "/Users/lavended/Documents/work/projects/particle-filters/patter/packa
 
 # Copy MD file
 success <- file.copy(file.path("julia", "README.md"),
-          file.path(outcon, "README.md"),
-          overwrite = TRUE)
+                     file.path(outcon, "README.md"),
+                     overwrite = TRUE)
 expect_true(success)
 
 # Copy figures
