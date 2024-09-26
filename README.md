@@ -513,19 +513,19 @@ args <- list(.map = map,
              .model_obs = c(model_1, model_2),
              .model_move = model_move,
              .n_record = 500L,
-             .n_particle = 1e5L)
+             .n_particle = 2e5L)
 
 # Forward run
 fwd <- do.call(pf_filter, args, quote = TRUE)
 head(fwd$states)
 #>    path_id timestep           timestamp map_value        x       y
 #>      <int>    <int>              <POSc>     <num>    <num>   <num>
-#> 1:       1        1 2016-03-17 01:50:00  59.76520 709142.1 6253007
-#> 2:       1        2 2016-03-17 01:52:00  68.53316 709276.5 6253291
-#> 3:       1        3 2016-03-17 01:54:00  45.86026 709476.1 6252964
-#> 4:       1        4 2016-03-17 01:56:00  44.46762 709390.0 6252794
-#> 5:       1        5 2016-03-17 01:58:00  60.64737 708976.4 6252849
-#> 6:       1        6 2016-03-17 02:00:00  55.42853 709437.9 6253395
+#> 1:       1        1 2016-03-17 01:50:00  44.46762 709342.1 6252807
+#> 2:       1        2 2016-03-17 01:52:00  65.31673 709317.6 6253363
+#> 3:       1        3 2016-03-17 01:54:00  46.53543 709205.3 6252852
+#> 4:       1        4 2016-03-17 01:56:00 142.80333 708752.2 6253701
+#> 5:       1        5 2016-03-17 01:58:00  56.53801 709303.2 6253160
+#> 6:       1        6 2016-03-17 02:00:00  52.98276 709358.7 6253100
 
 # Backward run
 args$.direction <- "backward"
@@ -540,6 +540,7 @@ the individual at each time step (accounting for all of the data before
 and after each step).
 
 ``` r
+set_vmap(.map = map, .mobility = mobility)
 smo <- pf_smoother_two_filter(.n_particle = 100L, .n_sim = 100L)
 ```
 

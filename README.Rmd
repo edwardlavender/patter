@@ -429,7 +429,7 @@ args <- list(.map = map,
              .model_obs = c(model_1, model_2),
              .model_move = model_move,
              .n_record = 500L,
-             .n_particle = 1e5L)
+             .n_particle = 2e5L)
 
 # Forward run
 fwd <- do.call(pf_filter, args, quote = TRUE)
@@ -454,6 +454,7 @@ range(bwd$xinit$y)
 Particle smoothers refine the outputs from the particle filter. Smoothed particles approximate the full marginal distribution for the location of the individual at each time step (accounting for all of the data before and after each step). 
 
 ```{r}
+set_vmap(.map = map, .mobility = mobility)
 smo <- pf_smoother_two_filter(.n_particle = 100L, .n_sim = 100L)
 ```
 

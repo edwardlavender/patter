@@ -294,12 +294,13 @@ summary(fwd)
 Particle smoothers refine the outputs from the particle filter. Smoothed particles approximate the full marginal distribution for the location of the individual at each time step (accounting for all of the data before and after each step):
 
 ```{julia}
+# (optional) Set vmap to improve speed here
 n_particle = 100;
 smo = two_filter_smoother(timeline = timeline,
-                                 xfwd = fwd.state[1:n_particle, :],
-                                 xbwd = bwd.state[1:n_particle, :],
-                                 model_move = model_move,
-                                 n_sim = 100);
+                          xfwd = fwd.state[1:n_particle, :],
+                          xbwd = bwd.state[1:n_particle, :],
+                          model_move = model_move,
+                          n_sim = 100);
 ```
 
 # Mapping
