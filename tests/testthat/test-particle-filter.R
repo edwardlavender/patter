@@ -91,7 +91,6 @@ test_that("pf_filter() reconstructs the true path", {
 
 })
 
-
 test_that("pf_filter() works", {
 
   #########################

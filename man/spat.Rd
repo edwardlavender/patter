@@ -5,7 +5,7 @@
 \alias{spatIntersect}
 \alias{spatContainsNA}
 \alias{spatAllNA}
-\alias{spatMobilityBox}
+\alias{spatVmap}
 \title{Spatial helper: \verb{spat*} functions}
 \usage{
 spatIntersect(.x)
@@ -14,7 +14,7 @@ spatContainsNA(.x)
 
 spatAllNA(.x)
 
-spatMobilityBox(.x, .mobility)
+spatVmap(.map, .mobility, .plot = FALSE, ...)
 }
 \description{
 Internal helpers for \code{terra} \code{\link{SpatRaster}} and \code{\link{SpatVector}} objects.

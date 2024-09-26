@@ -16,11 +16,12 @@
 \alias{set_datasets}
 \alias{set_yobs_via_datasets}
 \alias{set_pf_filter}
+\alias{set_smoother_two_filter}
 \title{\code{Julia}: set objects in \code{Julia}}
 \usage{
 set_seed(.seed = 123L)
 
-set_map(.x)
+set_map(.x, .name = "env")
 
 set_threads(.threads)
 
@@ -45,6 +46,8 @@ set_datasets(.datasets)
 set_yobs_via_datasets(.datasets, .model_obs)
 
 set_pf_filter(.n_move, .n_resample, .n_record, .direction)
+
+set_smoother_two_filter(.n_particle, .n_sim)
 }
 \value{
 Exported functions return \code{invisible(NULL)}.

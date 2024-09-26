@@ -31,7 +31,7 @@ set_seed <- function(.seed = 123L) {
 
 # Set the map (`env`) in Julia
 # * `env` is the name used by move_*() functions
-set_map <- function(.x) {
+set_map <- function(.x, .name = "env") {
   # Check SpatRaster
   stopifnot(inherits(.x, "SpatRaster"))
   # Define file
@@ -44,7 +44,7 @@ set_map <- function(.x) {
   # * This is required for correct parsing of \\ on Windows
   file <- normalizePath(file, winslash = "/", mustWork = TRUE)
   # Set env
-  julia_command(glue('env = GeoArrays.read("{file}");'))
+  julia_command(glue('{.name} = GeoArrays.read("{file}");'))
   nothing()
 }
 
@@ -227,17 +227,8 @@ set_pf_filter <- function(.n_move, .n_resample, .n_record, .direction) {
   invisible(output)
 }
 
-# Set the box within which movements are always valid
-# * Required for pf_smoother_*()
-set_mobility_box <- function(.box) {
-  if (is.null(.box)) {
-    julia_command("box = nothing;")
-  } else {
-    julia_assign("box", .box)
-    julia_command("box = Patter.bbox(box);")
-  }
-  nothing()
-}
+#' @rdname julia_set
+#' @keywords internal
 
 # Run the two-filter smoother in Julia
 set_smoother_two_filter <- function(.n_particle, .n_sim) {
@@ -252,12 +243,12 @@ set_smoother_two_filter <- function(.n_particle, .n_sim) {
   .n_particle <- as.integer(.n_particle)
   .n_sim      <- as.integer(.n_sim)
   # Run smoother
-  julia_check_exists("timeline", fwd, bwd, "model_move", "box")
+  julia_check_exists("timeline", fwd, bwd, "model_move", "vmap")
   cmd    <- glue('{output} = two_filter_smoother(timeline = timeline,
                                                  xfwd = {fwd}.state[1:{.n_particle}, :],
                                                  xbwd = {bwd}.state[1:{.n_particle}, :],
                                                  model_move = model_move,
-                                                 box = box,
+                                                 vmap = vmap,
                                                  n_sim = {.n_sim});')
   julia_command(cmd)
   invisible(output)

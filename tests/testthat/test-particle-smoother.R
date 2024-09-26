@@ -9,8 +9,16 @@ test_that("pf_smoother_two_filter() works", {
   args$.direction <- "backward"
   bwd <- do.call(pf_filter, args)
 
+  # Set vmap
+  args$.model_move
+  vmap <- set_vmap(args$.map, .mobility = 750.0)
+  expect_true(julia_exists("vmap"))
+
   # Run the smoother
-  smo <- pf_smoother_two_filter(.map = args$.map, .mobility = 750.0)
+  smo <- pf_smoother_two_filter()
+
+  # (Reset vmap)
+  set_vmap()
 
   # Check object structure
   check_inherits(smo, "pf_particles")

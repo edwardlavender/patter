@@ -2,24 +2,24 @@
 % Please edit documentation in R/particle-smoother.R
 \name{pf_smoother_two_filter}
 \alias{pf_smoother_two_filter}
+\alias{set_vmap}
 \title{PF: two-filter smoother}
 \usage{
+set_vmap(.map = NULL, .mobility = NULL, .plot = FALSE)
+
 pf_smoother_two_filter(
-  .map = NULL,
-  .mobility = NULL,
   .n_particle = NULL,
   .n_sim = 100L,
   .verbose = getOption("patter.verbose")
 )
 }
 \arguments{
-\item{.map, .mobility}{(optional) 'Mobility box' arguments for two-dimensional states and 'fully hospitable' maps.
+\item{.map, .mobility, .plot}{(optional) 'Validity map' arguments for \code{\link[=set_map]{set_map()}}, used for two-dimensional states.
 \itemize{
 \item \code{.map} is a \code{\link{SpatRaster}} that defines the study area of the simulation (see \code{\link[=pf_filter]{pf_filter()}}).
 \item \code{.mobility} is a \code{numeric} value that defines the maximum moveable distance between two time steps (e.g., \code{.timeline[1]} and \code{.timeline[2]} in \code{\link[=pf_filter]{pf_filter()}}).
-}
-
-\code{.map} and \code{.mobility} should be supplied if \code{\link[=pf_filter]{pf_filter()}} was implemented with \code{.state = "StateXY"} and there are no \code{NA}s on the \code{.map}.}
+\item \code{.plot} is a \code{logical} variable that defines whether or not to plot the map.
+}}
 
 \item{.n_particle}{(optional) An \code{integer} that defines the number of particles to smooth.
 \itemize{
@@ -35,10 +35,10 @@ pf_smoother_two_filter(
 The function returns a \code{\linkS4class{pf_particles}} object.
 }
 \description{
-This function implements the two-filter particle smoother (Fearnhead et al., \href{https://doi.org/10.1093/biomet/asq013}{2010}).
+\code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}} function implements the two-filter particle smoother (Fearnhead et al., \href{https://doi.org/10.1093/biomet/asq013}{2010}).
 }
 \details{
-The two-filter smoother smooths particle samples from the particle filter (\code{\link[=pf_filter]{pf_filter()}}). Particles from a forward and backward filter run are required in the \code{Julia} workspace (as defined by \code{\link[=pf_filter]{pf_filter()}}). The backend function \href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.two_filter_smoother()}} does the work. Essentially, the function runs a simulation backwards in time and re-samples particles in line with the probability density of movements between each combination of states from the backward filter at time \code{t} and states from the forward filter at time \code{t - 1}. The time complexity of the algorithm is thus \eqn{O(TN^2)}. The probability density of movements is evaluated by \href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.logpdf_step()}} and \href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.logpdf_move()}}. If individual states are two-dimensional (see \code{\link{StateXY}}) and there are no \code{NAs} on the \code{.map}, a 'mobility \code{box}' can be defined to simplify probability calculations. The \code{box} is defined by the extent of the \code{.map}, shrunk by \code{.mobility}. Within this region, the probability density of movement between two states can be calculated directly. Otherwise, a Monte Carlo simulation, of \code{.n_sim} iterations, is required to compute the normalisation constant (accounting for movements into inhospitable areas, or beyond the boundaries of the study area).
+The two-filter smoother smooths particle samples from the particle filter (\code{\link[=pf_filter]{pf_filter()}}). Particles from a forward and backward filter run are required in the \code{Julia} workspace (as defined by \code{\link[=pf_filter]{pf_filter()}}). The backend function \href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.two_filter_smoother()}} does the work. Essentially, the function runs a simulation backwards in time and re-samples particles in line with the probability density of movements between each combination of states from the backward filter at time \code{t} and states from the forward filter at time \code{t - 1}. The time complexity of the algorithm is thus \eqn{O(TN^2)}. The probability density of movements is evaluated by \href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.logpdf_step()}} and \href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.logpdf_move()}}. If individual states are two-dimensional (see \code{\link{StateXY}}), a validity map can be pre-defined in \code{Julia} via \code{\link[=set_vmap]{set_vmap()}} to speed up probability calculations. The validity map is defined as the set of valid (non-\code{NA} or bordering) locations on the \code{.map}, shrunk by \code{.mobility}. Within this region, the probability density of movement between two states can be calculated directly. Otherwise, a Monte Carlo simulation, of \code{.n_sim} iterations, is required to compute the normalisation constant (accounting for movements into inhospitable areas, or beyond the boundaries of the study area).
 }
 \examples{
 #### Set up example
@@ -55,35 +55,41 @@ bwd <- do.call(pf_filter, args)
 #### Example (1): Implement the smoother with default options
 # Run the smoother
 # * This uses objects defined by `pf_filter()` in `Julia`
+# (set_vmap() is explained below)
 smo <- pf_smoother_two_filter()
 # The filter returns a `pf_particles`-class object
 # (See `?pf_filter()` for examples)
 class(smo)
 summary(smo)
 
-#### Example (2): Implement the smoother using 'mobility box' arguments
-# We can take advantage of the 'mobility box' arguments b/c:
-# * `.state` = "StateXY"
-# * `.map` does not contain NAs
+#### Example (2): Implement the smoother using a validity map
+# We can use a validity map b/c `.state` = "StateXY"
 args$.state
-args$.map
-# To implement the mobility `box`, we define `.map` and `.mobility`,
-# ... which we can see here is 750 m:
+# To define the validity map, define:
+# * `.map`
+# * `.mobility`, which we can see here is 750 m:
 args$.model_move
 # Run the smoother
-# * In all of these examples, we should implement the smoother like this,
-# * but for illustration purposes we only do so here.
-smo <- pf_smoother_two_filter(.map = args$.map, .mobility = 750.0)
+set_vmap(.map = args$.map, .mobility = 750.0, .plot = TRUE)
+smo <- pf_smoother_two_filter()
+# Reset `vmap` in `Julia` to run the smoother for other state types
+# ... in the same R session:
+set_vmap()
 
 #### Example (3): Implement the smoother with a sub-sample of particles
 # This is useful for quick tests
+set_vmap(.map = args$.map, .mobility = 750.0)
 smo <- pf_smoother_two_filter(.n_particle = 50L)
 
 #### Example (4): Adjust the number of MC simulations
+# set_vmap(.map = args$.map, .mobility = 750.0)
 smo <- pf_smoother_two_filter(.n_sim = 1000L)
 
 #### Example (5): Analyse smoothed particles
 # * See `map_*()` functions (e.g., `?map_dens()`) to map utilisation distributions
+
+# Cleanup (reset vmap)
+set_vmap()
 }
 \references{
 Fearnhead, P. et al. (2010). A sequential smoothing algorithm with linear computational cost. Biometrika 97, 447–464. \url{https://doi.org/10.1093/biomet/asq013}.
