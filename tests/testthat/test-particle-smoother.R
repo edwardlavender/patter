@@ -9,10 +9,34 @@ test_that("pf_smoother_two_filter() works", {
   args$.direction <- "backward"
   bwd <- do.call(pf_filter, args)
 
-  # Set vmap
+  #### Validity map
+  # Test set_vmap() with NULL inputs
+  vmap <- set_vmap()
+  expect_null(vmap)
+  # Test set_vamp() with correct inputs
   args$.model_move
   vmap <- set_vmap(args$.map, .mobility = 750.0)
   expect_true(julia_exists("vmap"))
+  check_inherits(vmap, "SpatRaster")
+  # Check error handling
+  set_vmap(.map = args$.map, .mobility = NULL) |>
+    expect_error("`.map` and `.mobility` should either both be supplied or both be `NULL`.", fixed = TRUE)
+  set_vmap(.map = NULL, .mobility = 750.0) |>
+    expect_error("`.map` and `.mobility` should either both be supplied or both be `NULL`.", fixed = TRUE)
+  set_vmap(.map = args$.map, .mobility = NULL, .vmap = vmap) |>
+    expect_warning("`.map` and `.mobility` arguments are ignored when `.vmap` is supplied.", fixed = TRUE)
+  set_vmap(.map = NULL, .mobility = 750.0, .vmap = vmap) |>
+    expect_warning("`.map` and `.mobility` arguments are ignored when `.vmap` is supplied.", fixed = TRUE)
+  set_vmap(.map = args$.map, .mobility = 750.0, .vmap = vmap) |>
+    expect_warning("`.map` and `.mobility` arguments are ignored when `.vmap` is supplied.", fixed = TRUE)
+  # Check .plot & check dots
+  set_vmap(.vmap = vmap, .plot = TRUE, col = c("red", "black"))
+  set_vmap(.vmap = vmap, .plot = TRUE, col = c("red", "black"), blah = "1") |>
+    expect_warning('"blah" is not a graphical parameter') |>
+    expect_warning('"blah" is not a graphical parameter') |>
+    expect_warning('"blah" is not a graphical parameter')
+
+  #### Smoother
 
   # Run the smoother
   smo <- pf_smoother_two_filter()

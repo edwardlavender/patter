@@ -1,11 +1,12 @@
 #' @title PF: two-filter smoother
 #' @description [`pf_smoother_two_filter()`] function implements the two-filter particle smoother (Fearnhead et al., [2010](https://doi.org/10.1093/biomet/asq013)).
-#' @param .map,.mobility,.plot (optional) 'Validity map' arguments for [`set_map()`], used for two-dimensional states.
+#' @param .map,.mobility,.vmap,.plot,... (optional) 'Validity map' arguments for [`set_map()`], used for two-dimensional states.
 #'
 #' * `.map` is a [`SpatRaster`] that defines the study area of the simulation (see [`pf_filter()`]).
 #' * `.mobility` is a `numeric` value that defines the maximum moveable distance between two time steps (e.g., `.timeline[1]` and `.timeline[2]` in [`pf_filter()`]).
-#'
+#' * `.vmap` is a [`SpatRaster`] that defines the validity map. This can be supplied, from a previous implementation of [`set_vmap()`] or the internal function [`spatVmap()`], instead of `.map` and `.mobility` to avoid re-computation.
 #' * `.plot` is a `logical` variable that defines whether or not to plot the map.
+#' * `...` is a placeholder for additional arguments, passed to [`terra::plot()`], if `.plot = TRUE`.
 #'
 #' @param .n_particle (optional) An `integer` that defines the number of particles to smooth.
 #' * If specified, a sub-sample of `.n_particle`s is used.
@@ -17,7 +18,9 @@
 #' The two-filter smoother smooths particle samples from the particle filter ([`pf_filter()`]). Particles from a forward and backward filter run are required in the `Julia` workspace (as defined by [`pf_filter()`]). The backend function [`Patter.two_filter_smoother()`](https://edwardlavender.github.io/Patter.jl/) does the work. Essentially, the function runs a simulation backwards in time and re-samples particles in line with the probability density of movements between each combination of states from the backward filter at time `t` and states from the forward filter at time `t - 1`. The time complexity of the algorithm is thus \eqn{O(TN^2)}. The probability density of movements is evaluated by [`Patter.logpdf_step()`](https://edwardlavender.github.io/Patter.jl/) and [`Patter.logpdf_move()`](https://edwardlavender.github.io/Patter.jl/). If individual states are two-dimensional (see [`StateXY`]), a validity map can be pre-defined in `Julia` via [`set_vmap()`] to speed up probability calculations. The validity map is defined as the set of valid (non-`NA` or bordering) locations on the `.map`, shrunk by `.mobility`. Within this region, the probability density of movement between two states can be calculated directly. Otherwise, a Monte Carlo simulation, of `.n_sim` iterations, is required to compute the normalisation constant (accounting for movements into inhospitable areas, or beyond the boundaries of the study area).
 #'
 #' @references Fearnhead, P. et al. (2010). A sequential smoothing algorithm with linear computational cost. Biometrika 97, 447–464. \url{https://doi.org/10.1093/biomet/asq013}.
-#' @returns The function returns a [`pf_particles-class`] object.
+#' @returns
+#' * [`set_vmap()`] returns the validity map (a [`SpatRaster`]), invisibly;
+#' * [`pf_smoother_two_filter()`] returns a [`pf_particles-class`] object;
 #'
 #' @example man/examples/example-pf_smoother_two_filter.R
 #' @inherit assemble seealso
@@ -29,15 +32,32 @@ NULL
 #' @export
 
 # Set the map within which 2D movements are always valid
-set_vmap  <- function(.map = NULL, .mobility = NULL, .plot = FALSE) {
-  if (is.null(.map)) {
-    vmap <- NULL
+set_vmap  <- function(.map = NULL, .mobility = NULL, .vmap = NULL, .plot = FALSE, ...) {
+  # Compute vmap, if un-supplied
+  if (is.null(.vmap)) {
+    if (!is.null(.map) & !is.null(.mobility)) {
+      .vmap <- spatVmap(.map = .map, .mobility = .mobility, .plot = FALSE)
+    } else {
+      if ((is.null(.map) & !is.null(.mobility)) | (!is.null(.map) & is.null(.mobility))) {
+        stop("`.map` and `.mobility` should either both be supplied or both be `NULL`.")
+      }
+    }
+  } else {
+    if (!is.null(.map) | !is.null(.mobility)) {
+      warn("`.map` and `.mobility` arguments are ignored when `.vmap` is supplied.")
+    }
+  }
+  # Set vmap in Julia
+  if (is.null(.vmap)) {
+    .vmap <- NULL
     julia_command("vmap = nothing;")
   } else {
-    vmap <- spatVmap(.map = .map, .mobility = .mobility, .plot = .plot)
-    set_map(vmap, .name = "vmap")
+    if (.plot) {
+      terra::plot(.vmap, ...)
+    }
+    set_map(.vmap, .name = "vmap")
   }
-  invisible(vmap)
+  invisible(.vmap)
 }
 
 #' @rdname pf_smoother_two_filter

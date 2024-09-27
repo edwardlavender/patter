@@ -5,7 +5,7 @@
 \alias{set_vmap}
 \title{PF: two-filter smoother}
 \usage{
-set_vmap(.map = NULL, .mobility = NULL, .plot = FALSE)
+set_vmap(.map = NULL, .mobility = NULL, .vmap = NULL, .plot = FALSE, ...)
 
 pf_smoother_two_filter(
   .n_particle = NULL,
@@ -14,11 +14,13 @@ pf_smoother_two_filter(
 )
 }
 \arguments{
-\item{.map, .mobility, .plot}{(optional) 'Validity map' arguments for \code{\link[=set_map]{set_map()}}, used for two-dimensional states.
+\item{.map, .mobility, .vmap, .plot, ...}{(optional) 'Validity map' arguments for \code{\link[=set_map]{set_map()}}, used for two-dimensional states.
 \itemize{
 \item \code{.map} is a \code{\link{SpatRaster}} that defines the study area of the simulation (see \code{\link[=pf_filter]{pf_filter()}}).
 \item \code{.mobility} is a \code{numeric} value that defines the maximum moveable distance between two time steps (e.g., \code{.timeline[1]} and \code{.timeline[2]} in \code{\link[=pf_filter]{pf_filter()}}).
+\item \code{.vmap} is a \code{\link{SpatRaster}} that defines the validity map. This can be supplied, from a previous implementation of \code{\link[=set_vmap]{set_vmap()}} or the internal function \code{\link[=spatVmap]{spatVmap()}}, instead of \code{.map} and \code{.mobility} to avoid re-computation.
 \item \code{.plot} is a \code{logical} variable that defines whether or not to plot the map.
+\item \code{...} is a placeholder for additional arguments, passed to \code{\link[terra:plot]{terra::plot()}}, if \code{.plot = TRUE}.
 }}
 
 \item{.n_particle}{(optional) An \code{integer} that defines the number of particles to smooth.
@@ -32,7 +34,10 @@ pf_smoother_two_filter(
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }
 \value{
-The function returns a \code{\linkS4class{pf_particles}} object.
+\itemize{
+\item \code{\link[=set_vmap]{set_vmap()}} returns the validity map (a \code{\link{SpatRaster}}), invisibly;
+\item \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}} returns a \code{\linkS4class{pf_particles}} object;
+}
 }
 \description{
 \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}} function implements the two-filter particle smoother (Fearnhead et al., \href{https://doi.org/10.1093/biomet/asq013}{2010}).
