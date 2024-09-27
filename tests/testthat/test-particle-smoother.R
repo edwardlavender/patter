@@ -35,6 +35,11 @@ test_that("pf_smoother_two_filter() works", {
     expect_warning('"blah" is not a graphical parameter') |>
     expect_warning('"blah" is not a graphical parameter') |>
     expect_warning('"blah" is not a graphical parameter')
+  # Check Julia handling
+  # > For a valid point, extract should return 1.0
+  expect_true(julia_eval('!isnothing(vmap) && isone(extract(vmap, 4382.979, 4611.702))'))
+  # > For points near the edge, extract should _not_ return 1.0
+  expect_false(julia_eval('!isnothing(vmap) && isone(extract(vmap, 367.0213, 5914.894))'))
 
   #### Smoother
 
