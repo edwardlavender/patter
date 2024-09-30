@@ -4,7 +4,7 @@
 #'
 #' * `.map` is a [`SpatRaster`] that defines the study area of the simulation (see [`pf_filter()`]).
 #' * `.mobility` is a `numeric` value that defines the maximum moveable distance between two time steps (e.g., `.timeline[1]` and `.timeline[2]` in [`pf_filter()`]).
-#' * `.vmap` is a [`SpatRaster`] that defines the validity map. This can be supplied, from a previous implementation of [`set_vmap()`] or the internal function [`spatVmap()`], instead of `.map` and `.mobility` to avoid re-computation.
+#' * `.vmap` is a [`SpatRaster`] (supported on Windows or MacOS), or a file path to a raster (supported on MacOS, Windows and Linux), that defines the validity map (see [`set_map()`]). This can be supplied, from a previous implementation of [`set_vmap()`] or the internal function [`spatVmap()`], instead of `.map` and `.mobility` to avoid re-computation.
 #' * `.plot` is a `logical` variable that defines whether or not to plot the map.
 #' * `...` is a placeholder for additional arguments, passed to [`terra::plot()`], if `.plot = TRUE`.
 #'
