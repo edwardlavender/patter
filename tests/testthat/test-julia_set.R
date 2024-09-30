@@ -4,6 +4,14 @@ test_that("set_map() works", {
 
   expect_true(1 == 1)
 
+  # Specify file path
+  f <- system.file("extdata", "dat_gebco.tif", package = "patter", mustWork = TRUE)
+  set_map(f)
+
+  # Check file path error handling
+  set_map("broken/file/path.tif") |>
+    expect_error("File broken/file/path.tif does not exist.")
+
   # Use SpatRaster on file
   map <- dat_gebco()
   expect_true(terra::sources(map) != "")

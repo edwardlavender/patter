@@ -4,7 +4,7 @@
 #' The following functions are exported:
 #' * [`set_seed()`] sets a seed in both `R` and `Julia`.
 #'    - It is often a good idea to call [`set_seed()`] at the start of your workflow.
-#' * [`set_map()`] exports a [`SpatRaster`] map of the study area to a variable named `env` in `Julia` (see [`ModelMove`]).
+#' * [`set_map()`] exports a [`SpatRaster`] map of the study area to a variable named `env` in `Julia` (see [`ModelMove`]). The map (`.x`) must be specified as (a) a [`SpatRaster`] (supported on Windows and MacOS) or a file path to a raster (supported on Windows, MacOS and Linux).
 #'    - Export the map at the start of your workflow.
 #'
 #' Other functions are internal.
@@ -32,13 +32,24 @@ set_seed <- function(.seed = 123L) {
 # Set the map (`env`) in Julia
 # * `env` is the name used by move_*() functions
 set_map <- function(.x, .name = "env") {
-  # Check SpatRaster
-  stopifnot(inherits(.x, "SpatRaster"))
-  # Define file
-  file <- terra::sources(.x)
-  if (file == "") {
-    file <- tempfile(fileext = ".tif")
-    terra::writeRaster(.x, file)
+  # Define path to SpatRaster to read file into Julia
+  if (inherits(.x, "character")) {
+    if (!file.exists(.x)) {
+      abort("File {.x} does not exist.", .envir = environment())
+    }
+    file <- .x
+  } else if (inherits(.x, "SpatRaster")) {
+    # TO DO
+    # * Warn if on linux
+    # Define file
+    file <- terra::sources(.x)
+    if (file == "") {
+      file <- tempfile(fileext = ".tif")
+      on.exit(unlink(file), add = TRUE)
+      terra::writeRaster(.x, file)
+    }
+  } else {
+    abort("`.x` should be a SpatRaster (Windows, MacOS) or a file path to a raster (Windows, MacOS, Linux).")
   }
   # Normalise file path
   # * This is required for correct parsing of \\ on Windows
@@ -61,6 +72,8 @@ set_threads <- function(.threads) {
 
   # If provided, validate `.threads` input
   } else {
+    # TO DO
+    # * Add check on Windows
     if (.threads != "auto" &&
         Sys.getenv("JULIA_NUM_THREADS") != "" &&
         Sys.getenv("JULIA_NUM_THREADS") != .threads) {

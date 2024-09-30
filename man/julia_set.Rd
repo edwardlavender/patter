@@ -62,7 +62,7 @@ The following functions are exported:
 \itemize{
 \item It is often a good idea to call \code{\link[=set_seed]{set_seed()}} at the start of your workflow.
 }
-\item \code{\link[=set_map]{set_map()}} exports a \code{\link{SpatRaster}} map of the study area to a variable named \code{env} in \code{Julia} (see \code{\link{ModelMove}}).
+\item \code{\link[=set_map]{set_map()}} exports a \code{\link{SpatRaster}} map of the study area to a variable named \code{env} in \code{Julia} (see \code{\link{ModelMove}}). The map (\code{.x}) must be specified as (a) a \code{\link{SpatRaster}} (supported on Windows and MacOS) or a file path to a raster (supported on Windows, MacOS and Linux).
 \itemize{
 \item Export the map at the start of your workflow.
 }
