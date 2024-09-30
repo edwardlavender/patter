@@ -129,14 +129,15 @@ map_init.ModelObsAcousticLogisTrunc <- function(.map,
 
   #### Define a list of container info
   # Define a timeline of detections
-  t1    <- ifelse(.direction == "forward", .timeline[1], .timeline[length(.timeline)])
-  step_units <- diffunit(.timeline)
-  .dataset <-
+  t1        <- ifelse(.direction == "forward", .timeline[1], .timeline[length(.timeline)])
+  step_secs <- as.numeric(difftime(.timeline[2], .timeline[1], units = "secs"))
+  .dataset  <-
     .dataset |>
     lazy_dt(immutable = TRUE) |>
     filter(.data$obs == 1L) |>
     arrange(.data$timestamp) |>
-    mutate(gap = as.numeric(difftime(.data$timestamp, t1, units = step_units))) |>
+    # Compute gap in units of time steps
+    mutate(gap = as.numeric(difftime(.data$timestamp, t1, units = "secs")) / step_secs) |>
     as.data.table()
   # Return `.map` if no detections were recorded
   if (fnrow(.dataset) == 0L) {
