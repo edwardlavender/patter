@@ -10,13 +10,13 @@
 #'
 #' See [`State`](https://edwardlavender.github.io/Patter.jl) or `JuliaCall::julia_help("State")` for the fields of the built-in sub-types.
 #'
-#' `.state` is used by [`sim_path_walk()`] and [`pf_filter()`], both of which effectively simulate time series of states. `.state` controls the simulation of initial locations and subsequent method dispatch in [`Patter.jl`](https://github.com/edwardlavender/Patter.jl). [`sim_states_init()`] handles the simulation of initial states in these routines. When `.state` is`
+#' `.state` is used by [`sim_path_walk()`] and [`pf_filter()`], both of which effectively simulate time series of states. `.state` controls the simulation of initial locations and subsequent method dispatch in [`Patter.jl`](https://github.com/edwardlavender/Patter.jl). [`Patter.sim_states_init()`](https://github.com/edwardlavender/Patter.jl) handles the simulation of initial states in these routines. When `.state` is`
 #' * `"StateXY"`, the initial state comprises `x` and `y` coordinates;.
 #' * `"StateXYZD"`, the initial states comprises `x`, `y` and `z` coordinates and an initial direction;
 #'
 #' All states additionally include a `map_value` field that defines the value on the movement map at (`x`, `y`).
 #'
-#' The outcome of [`sim_states_init()`] is a [`data.table`] of initial state(s), which is coerced to a `Vector` of `State`s in `Julia` for the simulation. In [`Patter.jl`](https://github.com/edwardlavender/Patter.jl), the simulation of subsequent states depends on the input state and the movement model.
+#' The outcome of [`Patter.sim_states_init()`](https://github.com/edwardlavender/Patter.jl) is a `DataFrame` of initial state(s), which is coerced to a `Vector` of `State`s in `Julia` for the simulation. In [`Patter.jl`](https://github.com/edwardlavender/Patter.jl), the simulation of subsequent states depends on the input state and the movement model.
 #'
 #' The state must match the movement model (see [`ModelMove`]):
 #' * For `"StateXY"`, a movement model that simulates step lengths and turning angles and updates state components (that is, `x` and `y` coordinates) is required;
@@ -53,7 +53,7 @@ NULL
 #' * To simulate new observational datasets, via [`sim_observations()`];
 #' * To run the particle filter, via [`pf_filter()`];
 #'
-#' Observation model sub-types should be specified as a `character` vector alongside a `list` of [`data.table`](s) that contain the parameter values for each model. Internally, observation model sub-types and parameters are instantiated and used to simulate observations or in the particle filter. The simulation of observations is implemented via [`Patter.simulate_obs()`](https://edwardlavender.github.io/Patter.jl). In the particle filter, log-probabilities are evaluated by [`Patter.logpdf_obs()`](https://edwardlavender.github.io/Patter.jl). These are generic functions. Different methods are dispatched according to the input model. For the built-in [`ModelObs`] sub-types, corresponding methods for these routines are also built-in. For custom [`ModelObs`] sub-types, the methods need to be provided.
+#' Observation model sub-types and parameters should be specified as a named `list` of [`data.table`](s). Internally, observation model sub-types and parameters are instantiated and used to simulate observations or in the particle filter. The simulation of observations is implemented via [`Patter.simulate_obs()`](https://edwardlavender.github.io/Patter.jl). In the particle filter, log-probabilities are evaluated by [`Patter.logpdf_obs()`](https://edwardlavender.github.io/Patter.jl). These are generic functions. Different methods are dispatched according to the input model. For the built-in [`ModelObs`] sub-types, corresponding methods for these routines are also built-in. For custom [`ModelObs`] sub-types, the methods need to be provided.
 #'
 #' To use custom [`ModelObs`] sub-types, see Examples.
 #'

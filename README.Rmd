@@ -403,14 +403,18 @@ arc <-
 Individual movements are connected to the observations by models of the observation process for each dataset. Without going into details, here we bundle together the observations with the parameters of the observation models:
 
 ```{r}
-model_1   <- "ModelObsAcousticLogisTrunc"
+# ModelObsAcousticLogisTrunc
 acoustics <- assemble_acoustics(.timeline = timeline,
                                 .acoustics = acc,
                                 .moorings = dat_moorings)
 
-model_2  <- "ModelObsDepthNormalTrunc"
+# ModelObsDepthNormalTrunc
 archival <- assemble_archival(.timeline = timeline,
                               .archival = arc)
+
+# Named list of ModelObs sub-types and associated observations
+yobs     <- list(ModelObsAcousticLogisTrunc = acoustics, 
+                 ModelObsDepthNormalTrunc = archival)
 ```
 
 Of course, you do not need acoustic and archival data to implement the algorithms (these are just the data we have collected from flapper skate)---other datasets can be used just as easily. To simulate observations instead, see `sim_observations()`. 
@@ -421,12 +425,9 @@ We are now in a position to run the particle filter. This runs a simulation forw
 
 ```{r}
 # List filter arguments
-args <- list(.map = map,
-             .timeline = timeline,
+args <- list(.timeline = timeline,
              .state = state,
-             .xinit_pars = list(mobility = as.numeric(mobility)),
-             .yobs = list(acoustics, archival),
-             .model_obs = c(model_1, model_2),
+             .yobs = yobs,
              .model_move = model_move,
              .n_record = 500L,
              .n_particle = 2e5L)
@@ -438,15 +439,6 @@ head(fwd$states)
 # Backward run
 args$.direction <- "backward"
 bwd <- do.call(pf_filter, args, quote = TRUE)
-```
-
-```{r, include = FALSE}
-# Check the ranges of initial locations from the forward & backward runs
-# (for the Patter.jl README)
-range(bwd$xinit$x)
-range(bwd$xinit$y)
-range(bwd$xinit$x)
-range(bwd$xinit$y)
 ```
 
 ## Particle smoother

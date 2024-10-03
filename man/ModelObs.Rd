@@ -28,7 +28,7 @@ In \code{\link{patter}}, observation models are required:
 \item To run the particle filter, via \code{\link[=pf_filter]{pf_filter()}};
 }
 
-Observation model sub-types should be specified as a \code{character} vector alongside a \code{list} of \href{s}{\code{data.table}} that contain the parameter values for each model. Internally, observation model sub-types and parameters are instantiated and used to simulate observations or in the particle filter. The simulation of observations is implemented via \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.simulate_obs()}}. In the particle filter, log-probabilities are evaluated by \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.logpdf_obs()}}. These are generic functions. Different methods are dispatched according to the input model. For the built-in \code{\link{ModelObs}} sub-types, corresponding methods for these routines are also built-in. For custom \code{\link{ModelObs}} sub-types, the methods need to be provided.
+Observation model sub-types and parameters should be specified as a named \code{list} of \href{s}{\code{data.table}}. Internally, observation model sub-types and parameters are instantiated and used to simulate observations or in the particle filter. The simulation of observations is implemented via \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.simulate_obs()}}. In the particle filter, log-probabilities are evaluated by \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.logpdf_obs()}}. These are generic functions. Different methods are dispatched according to the input model. For the built-in \code{\link{ModelObs}} sub-types, corresponding methods for these routines are also built-in. For custom \code{\link{ModelObs}} sub-types, the methods need to be provided.
 
 To use custom \code{\link{ModelObs}} sub-types, see Examples.
 }
@@ -92,10 +92,11 @@ if (julia_run()) {
   '
   )
   # Simulate observations
-  obs <- sim_observations(.timeline = timeline,
-                          .model_obs = "ModelObsDepthNormal",
-                          .model_obs_pars = list(data.table(sensor_id = 1L, depth_sigma = 5)))
-  obs <- obs$ModelObsDepthNormal[[1]]
+  model_obs <-
+    list("ModelObsDepthNormal" = data.table(sensor_id = 1L, depth_sigma = 5))
+  obs  <- sim_observations(.timeline = timeline, .model_obs = model_obs)
+  obs  <- obs$ModelObsDepthNormal[[1]]
+  yobs <- list(ModelObsDepthNormal = obs)
   # Plot simulated depth trajectory
   # * Blue: simulated time series
   # * Grey: seabed depth for simulated time series
@@ -111,6 +112,7 @@ if (julia_run()) {
   origin       <- terra::setValues(map, NA)
   cell         <- terra::cellFromXY(map, cbind(paths$x[1], paths$y[1]))
   origin[cell] <- paths$map_value[1]
+  set_map(origin, .as_Raster = TRUE, .as_GeoArray = FALSE)
   # Define a `Patter.logpdf_obs()` method
   # * This is used to evaluate the log probability of a depth observation
   julia_command(
@@ -123,11 +125,9 @@ if (julia_run()) {
   '
   )
   # Run the filter
-  fwd <- pf_filter(.map = origin,
-                   .timeline = timeline,
+  fwd <- pf_filter(.timeline = timeline,
                    .state = "StateXYZD",
-                   .yobs = list(obs),
-                   .model_obs = "ModelObsDepthNormal",
+                   .yobs = yobs,
                    .model_move = move_xyzd(),
                    .n_particle = 1000L)
   # Visualise reconstructed time series

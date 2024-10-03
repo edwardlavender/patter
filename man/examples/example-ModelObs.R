@@ -57,10 +57,11 @@ if (julia_run()) {
   '
   )
   # Simulate observations
-  obs <- sim_observations(.timeline = timeline,
-                          .model_obs = "ModelObsDepthNormal",
-                          .model_obs_pars = list(data.table(sensor_id = 1L, depth_sigma = 5)))
-  obs <- obs$ModelObsDepthNormal[[1]]
+  model_obs <-
+    list("ModelObsDepthNormal" = data.table(sensor_id = 1L, depth_sigma = 5))
+  obs  <- sim_observations(.timeline = timeline, .model_obs = model_obs)
+  obs  <- obs$ModelObsDepthNormal[[1]]
+  yobs <- list(ModelObsDepthNormal = obs)
   # Plot simulated depth trajectory
   # * Blue: simulated time series
   # * Grey: seabed depth for simulated time series
@@ -76,6 +77,7 @@ if (julia_run()) {
   origin       <- terra::setValues(map, NA)
   cell         <- terra::cellFromXY(map, cbind(paths$x[1], paths$y[1]))
   origin[cell] <- paths$map_value[1]
+  set_map(origin, .as_Raster = TRUE, .as_GeoArray = FALSE)
   # Define a `Patter.logpdf_obs()` method
   # * This is used to evaluate the log probability of a depth observation
   julia_command(
@@ -88,11 +90,9 @@ if (julia_run()) {
   '
   )
   # Run the filter
-  fwd <- pf_filter(.map = origin,
-                   .timeline = timeline,
+  fwd <- pf_filter(.timeline = timeline,
                    .state = "StateXYZD",
-                   .yobs = list(obs),
-                   .model_obs = "ModelObsDepthNormal",
+                   .yobs = yobs,
                    .model_move = move_xyzd(),
                    .n_particle = 1000L)
   # Visualise reconstructed time series

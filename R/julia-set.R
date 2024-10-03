@@ -29,10 +29,31 @@ set_seed <- function(.seed = 123L) {
 #' @rdname julia_set
 #' @export
 
-# Set the map (`env`) in Julia
-# * `env` is the name used by move_*() functions
-set_map <- function(.x, .name = "env") {
-  # Define path to SpatRaster to read file into Julia
+# Set the map(s) in Julia
+
+# * The user should supply logical TRUE/FALSE, in which case default names are used
+# * Otherwise,
+set_map <- function(.x, .as_Raster = TRUE, .as_GeoArray = TRUE) {
+
+  #### Define map names
+  # * .as_Raster and .as_GeoArray can be logical or characters
+  # * The user should supply logical inputs (simpler)
+  # * Internally, we can supply characters, which specifies the name
+  if (inherits(.as_Raster, "logical")) {
+    .Raster <- "env_init"
+  } else {
+    .Raster    <- .as_Raster
+    .as_Raster <- TRUE
+  }
+  if (inherits(.as_GeoArray, "logical")) {
+    .GeoArray <- "env"
+  } else {
+    .GeoArray    <- .as_GeoArray
+    .as_GeoArray <- TRUE
+  }
+  stopifnot(any(.as_Raster, .as_GeoArray))
+
+  #### Define path to SpatRaster to read file into Julia
   if (inherits(.x, "character")) {
     if (!file.exists(.x)) {
       abort("File {.x} does not exist.", .envir = environment())
@@ -54,8 +75,18 @@ set_map <- function(.x, .name = "env") {
   # Normalise file path
   # * This is required for correct parsing of \\ on Windows
   file <- normalizePath(file, winslash = "/", mustWork = TRUE)
-  # Set env
-  julia_command(glue('{.name} = GeoArrays.read("{file}");'))
+
+  #### Read raster into Julia using Rasters or GeoArrays
+  if (.as_Raster) {
+    # Read Raster
+    julia_command(glue('{.Raster} = Rasters.Raster("{file}");'))
+  }
+  if (.as_GeoArray) {
+    # Read GeoArray directly as `env` or `vmap`
+    # (GeoArray(env_init) does not correctly format the raster)
+    julia_command(glue('{.GeoArray} = GeoArrays.read("{file}");'))
+  }
+
   nothing()
 }
 
@@ -89,12 +120,33 @@ set_threads <- function(.threads) {
 #' @rdname julia_set
 #' @keywords internal
 
-# Set the vector of initial states (`xinit`) in Julia
-# * This is required for `sim_path_walk()` and `pf_filter()`
-set_states_init <- function(.xinit, .state) {
-  # Export initial states to Julia as `xinit`
-  julia_assign("xinit_df", .xinit)
-  julia_command(glue('xinit = Patter.julia_get_xinit({.state}, xinit_df);'))
+# Set a timeline in Julia
+set_timeline <- function(.timeline) {
+  .timeline <- julia_timeline(.timeline)
+  julia_assign("timeline", .timeline)
+  nothing()
+}
+
+#' @rdname julia_set
+#' @keywords internal
+
+# Set the state type e.g., StateXY
+set_state_type <- function(.state) {
+  check_inherits(.state, "character")
+  julia_command(glue('state_type = {.state};'))
+  nothing()
+}
+
+#' @rdname julia_set
+#' @keywords internal
+
+# Set xinit (NULL or a DataFrame)
+set_xinit <- function(.xinit) {
+  if (is.null(.xinit)) {
+    julia_command('xinit = nothing;')
+  } else {
+    julia_assign("xinit", .xinit)
+  }
   nothing()
 }
 
@@ -103,20 +155,10 @@ set_states_init <- function(.xinit, .state) {
 
 # Set a movement model (`model_move`) in Julia
 set_model_move <- function(.model_move) {
+  check_inherits(.model_move, "character")
   julia_command(glue('model_move = {.model_move};'))
   nothing()
 }
-
-#' @rdname julia_set
-#' @keywords internal
-
-# Set a timeline in Julia
-set_timeline <- function(.timeline) {
-  .timeline <- julia_timeline(.timeline)
-  julia_assign("timeline", .timeline)
-  nothing()
-}
-
 
 #' @rdname julia_set
 #' @keywords internal
@@ -132,20 +174,34 @@ set_path <- function() {
 #' @keywords internal
 
 # Set a Vector of model type strings in Julia
-# * Required for `set_yobs_*()` via `set_model_obs()`
-set_model_obs_types <- function(.model_obs) {
-  julia_assign("model_obs_strings", .model_obs)
-  julia_command('model_obs_types = Patter.julia_get_model_obs_types(model_obs_strings);')
+# * Required for set_states_init()
+set_model_obs_types <- function(.datasets) {
+  check_named_list(.datasets)
+  if (length(.datasets) == 0L) {
+    julia_command('model_obs_types = nothing;')
+  } else {
+    model_obs_types <- names(.datasets)
+    julia_assign("model_obs_strings", model_obs_types)
+    julia_command('model_obs_types = Patter.julia_get_model_obs_types(model_obs_strings);')
+  }
 }
 
 #' @rdname julia_set
 #' @keywords internal
 
 # Set a Vector of ModelObs structures (`model_obs`) in Julia
-# * Required for `set_yobs_*()`
+# * Required for sim_observations()
 set_model_obs <- function(.model_obs) {
+  # Check .model_obs is a named list
+  # * names: ModelObs types
+  # * elements: ModelObs parameters
+  check_named_list(.model_obs)
+  # Set ModelObs types
   set_model_obs_types(.model_obs)
-  julia_check_exists("model_obs_pars", "model_obs_types")
+  # Set ModelObs parameters
+  model_obs_pars <- unname(.model_obs)
+  julia_assign("model_obs_pars", model_obs_pars)
+  # Define model_obs structures for data simulation
   julia_command('model_obs = Patter.julia_get_model_obs(model_obs_pars, model_obs_types);')
   nothing()
 }
@@ -153,36 +209,17 @@ set_model_obs <- function(.model_obs) {
 #' @rdname julia_set
 #' @keywords internal
 
-# Set a Vector of sensor parameter DataFrame(s) in Julia
-# * Required for `set_yobs_via_sim()`
-set_model_obs_pars <- function(.model_obs_pars) {
-  check_inherits(.model_obs_pars, "list")
-  .model_obs_pars <- unname(.model_obs_pars)
-  julia_assign("model_obs_pars", .model_obs_pars)
-  nothing()
-}
-
-#' @rdname julia_set
-#' @keywords internal
-
-# Set a dictionary of observations (`yobs`) via `simulate_obs()` in Julia
-set_yobs_via_sim <- function() {
-  julia_check_exists("paths", "model_obs", "timeline")
-  julia_command('yobs = simulate_yobs(paths = paths, model_obs = model_obs, timeline = timeline);')
-  nothing()
-}
-
-#' @rdname julia_set
-#' @keywords internal
-
 # Set a Vector of datasets DataFrames in Julia
-# * Required for `set_yobs_via_datasets()`
-set_datasets <- function(.datasets) {
-  # Check .datasets is a list
-  check_inherits(.datasets, "list")
+set_yobs_vect <- function(.timeline, .yobs) {
+  # Check .datasets is a named list
+  check_named_list(.yobs)
+  if (length(.yobs) == 0L) {
+    julia_command('yobs_vect = nothing;')
+    return(nothing())
+  }
   # Check dataset names & fix time stamps
   timestamp <- NULL
-  lapply(.datasets, function(.dataset) {
+  lapply(.yobs, function(.dataset) {
     # Check required names
     check_names(.dataset, c("timestamp", "sensor_id", "obs"))
     # Check rows
@@ -192,9 +229,15 @@ set_datasets <- function(.datasets) {
     # Format time stamps (by reference) for correct export to Julia
     .dataset[, timestamp := julia_timeline(timestamp)]
   })
+  # Check time zone
+  tzs <- c(tz(.timeline), sapply(.yobs, \(d) tz(d$timestamp)))
+  if (length(unique(tzs)) != 1L) {
+    abort("There is a mismatch between the time zones of `.timeline` and/or `.yobs` `timestamp`s ({str_items(tzs, .quo = '\"')}).",
+          .envir = environment())
+  }
   # Export datasets
-  .datasets <- unname(.datasets)
-  julia_assign("datasets", .datasets)
+  .yobs <- unname(.yobs)
+  julia_assign("yobs_vect", .yobs)
   nothing()
 }
 
@@ -202,38 +245,119 @@ set_datasets <- function(.datasets) {
 #' @keywords internal
 
 # Set a dictionary of observations (`yobs`) using real datasets in Julia
-set_yobs_via_datasets <- function(.datasets, .model_obs) {
-  set_datasets(.datasets)
-  set_model_obs_types(.model_obs)
-  julia_command('yobs = assemble_yobs(datasets = datasets, model_obs_types = model_obs_types);')
+# * yobs: missing  -> re-use .yobs already set in Julia
+# * yobs: NULL     -> set .yobs to nothing
+# * yobs: supplied -> set yobs
+set_yobs_dict <- function(.yobs) {
+  if (missing(.yobs)) {
+    return(nothing())
+  }
+  if (length(.yobs) == 0L) {
+    julia_command('yobs = Dict();')
+  } else {
+    julia_check_exists("model_obs_types", "yobs_vect")
+    julia_command('yobs = assemble_yobs(datasets = yobs_vect, model_obs_types = model_obs_types);')
+  }
   nothing()
 }
 
 #' @rdname julia_set
 #' @keywords internal
 
+# Set a dictionary of observations (`yobs`) via `simulate_obs()` in Julia
+set_yobs_dict_via_sim <- function() {
+  julia_check_exists("paths", "model_obs", "timeline")
+  julia_command('yobs = simulate_yobs(paths = paths, model_obs = model_obs, timeline = timeline);')
+  nothing()
+}
+
+#' @rdname julia_set
+#' @keywords internal
+
+set_n_particle <- function(.n_particle) {
+  .n_particle <- as.integer(.n_particle)
+  julia_assign("n_particle", .n_particle)
+  nothing()
+}
+
+#' @rdname julia_set
+#' @keywords internal
+
+set_direction <- function(.direction = c("forward", "backward")) {
+  .direction <- match.arg(.direction)
+  julia_command(glue('direction = "{.direction}";'))
+  nothing()
+}
+
+#' @rdname julia_set
+#' @keywords internal
+
+# Simulate states and update xinit in Julia
+set_states_init <- function(.timeline, .state, .xinit, .model_move, .yobs, .n_particle, .direction) {
+
+  # Set Julia objects
+  # set_map()
+  set_timeline(.timeline)
+  set_state_type(.state)
+  set_xinit(.xinit)
+  set_model_move(.model_move)
+  set_yobs_vect(.timeline = .timeline, .yobs = .yobs)
+  set_model_obs_types(.yobs)
+  set_n_particle(.n_particle)
+  set_direction(.direction)
+
+  # Simulate initial states (DataFrame)
+  julia_command(
+    '
+      xinit_df = simulate_states_init(map = env_init,
+                                      timeline = timeline,
+                                      state_type = state_type,
+                                      xinit = xinit,
+                                      model_move = model_move,
+                                      datasets = yobs_vect,
+                                      model_obs_types = model_obs_types,
+                                      n_particle = n_particle,
+                                      direction = direction,
+                                      output = "DataFrame");
+      '
+  )
+
+  # Translate initial states (State Vector)
+  julia_command('xinit = Patter.julia_get_xinit(state_type, xinit_df);')
+
+  # Return states to R as data.table
+  as.data.table(julia_eval("xinit_df"))
+
+}
+
+
+#' @rdname julia_set
+#' @keywords internal
+
 # Run the particle filter in Julia
 # * This defines a `pff` or `pfb` object depending on `.direction`
-set_pf_filter <- function(.n_move, .n_resample, .n_record, .direction) {
+set_pf_filter <- function(.n_move, .n_resample, .n_record, .n_iter, .direction) {
   # Check inputs
   julia_check_exists("timeline", "xinit", "yobs", "model_move")
   .n_move     <- as.integer(.n_move)
   .n_resample <- paste0(as.integer(.n_resample), ".0")
   .n_record   <- as.integer(.n_record)
+  .n_iter     <- as.integer(.n_iter)
   # Define output name
   output <- name_particles(.fun = "pf_filter", .direction = .direction)
   # Run the filter
   julia_command(
     glue(
       '
-      {output} = particle_filter(timeline = timeline,
-                                 xinit = xinit,
-                                 yobs = yobs,
-                                 model_move = model_move,
-                                 n_move = {.n_move},
-                                 n_record = {.n_record},
-                                 n_resample = {.n_resample},
-                                 direction = "{.direction}");
+      {output} = particle_filter_iter(timeline = timeline,
+                                      xinit = xinit,
+                                      yobs = yobs,
+                                      model_move = model_move,
+                                      n_move = {.n_move},
+                                      n_record = {.n_record},
+                                      n_resample = {.n_resample},
+                                      n_iter = {.n_iter},
+                                      direction = "{.direction}");
     '
     )
   )

@@ -33,12 +33,15 @@ test_that("Additional Julia set_*() functions work", {
     expect_warning("Restart `R` to update the number of threads in `Julia`.")
   Sys.setenv("JULIA_NUM_THREADS" = JULIA_NUM_THREADS)
 
-  # set_datasets()
+  # set_yobs_vect()
   dt1 <- data.table(timestamp = integer(),
                     sensor_id = integer(),
                     obs = numeric())
 
-  set_datasets(list(dt1)) |>
+  set_yobs_vect(.timeline = NULL, .yobs = list(dt1)) |>
+    expect_error("Argument '.yobs' must be a named list.")
+
+  set_yobs_vect(.timeline = NULL, .yobs = list(a = dt1)) |>
     expect_error("There are no rows in the dataset.")
 
 })

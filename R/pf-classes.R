@@ -6,14 +6,10 @@
 #'
 #' [`pf_particles-class`] is a label used to denote outputs from selected functions in [`patter`]. The structure of this class is not strictly defined and primarily exists to streamline documentation. At the time of writing, [`pf_particles-class`] objects may comprise the following elements:
 #'
-#' * `xinit`---A [`data.table`] of initial particle samples;
 #' * `states`---A [`data.table`] of simulated states;
 #' * `diagnostics`---A [`data.table`] of diagnostic statistics;
 #' * `convergence`---A `logical` variable that defines whether or not the algorithm converged;
-#'
-#' # `xinit`
-#'
-#' `xinit` is a [`data.table`] that defines initial particles (from [`sim_states_init()`]). This includes one row for each particle and one column for each state dimension (e.g., `map_value`, `x`, `y`).
+#' * `trials`---An integer that defines the number of trials;
 #'
 #' # `states`
 #'
@@ -35,6 +31,10 @@
 #'
 #' `convergence` is a `logical` variable that defines whether or not the algorithm converged (that is, reached the end of the time series).
 #'
+#' # `trials`
+#'
+#' `trials` is an `integer` that defines the number of trials.
+#'
 #' @author Edward Lavender
 #' @inherit assemble seealso
 #' @name pf_particles-class
@@ -42,10 +42,10 @@ NULL
 
 
 # Build a `pf_particles` class object from Patter.jl outputs
-pf_particles <- function(.xinit = NULL, .pf_obj) {
+pf_particles <- function(.pf_obj) {
 
   # Initialise output list
-  out <- list(xinit = .xinit)
+  out <- list()
 
   # Add Julia outputs
   # * states, diagnostics, convergence

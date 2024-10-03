@@ -73,7 +73,11 @@ julia_connect <- function(...,
   if (!is.null(.pkg_config)) {
     julia_code(.pkg_config)
   }
-  pkgs <- c("Patter", "DataFrames", "Distributions", "GeoArrays", "JLD2", "Random")
+  pkgs <- c("Patter",
+            "DataFrames", "Distributions",
+            "Rasters", "ArchGDAL",
+            "GeoArrays",
+            "JLD2", "Random")
   julia_packages(.packages = pkgs, .update = .pkg_update)
 
   #### Validate Julia settings

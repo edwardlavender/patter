@@ -2,13 +2,6 @@
 
 S3method(example_setup,default)
 S3method(example_setup,pf_smoother_two_filter)
-S3method(map_init,ModelObsAcousticLogisTrunc)
-S3method(map_init,ModelObsDepthNormalTrunc)
-S3method(map_init,ModelObsDepthUniform)
-S3method(map_init,default)
-S3method(states_init,StateXY)
-S3method(states_init,StateXYZD)
-S3method(states_init,default)
 export(as.im.SpatRaster)
 export(as.owin.SpatRaster)
 export(as.owin.sf)

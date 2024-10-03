@@ -5,47 +5,64 @@
 \alias{set_seed}
 \alias{set_map}
 \alias{set_threads}
-\alias{set_states_init}
-\alias{set_model_move}
 \alias{set_timeline}
+\alias{set_state_type}
+\alias{set_xinit}
+\alias{set_model_move}
 \alias{set_path}
 \alias{set_model_obs_types}
 \alias{set_model_obs}
-\alias{set_model_obs_pars}
-\alias{set_yobs_via_sim}
-\alias{set_datasets}
-\alias{set_yobs_via_datasets}
+\alias{set_yobs_vect}
+\alias{set_yobs_dict}
+\alias{set_yobs_dict_via_sim}
+\alias{set_n_particle}
+\alias{set_direction}
+\alias{set_states_init}
 \alias{set_pf_filter}
 \alias{set_smoother_two_filter}
 \title{\code{Julia}: set objects in \code{Julia}}
 \usage{
 set_seed(.seed = 123L)
 
-set_map(.x, .name = "env")
+set_map(.x, .as_Raster = TRUE, .as_GeoArray = TRUE)
 
 set_threads(.threads)
 
-set_states_init(.xinit, .state)
+set_timeline(.timeline)
+
+set_state_type(.state)
+
+set_xinit(.xinit)
 
 set_model_move(.model_move)
 
-set_timeline(.timeline)
-
 set_path()
 
-set_model_obs_types(.model_obs)
+set_model_obs_types(.datasets)
 
 set_model_obs(.model_obs)
 
-set_model_obs_pars(.model_obs_pars)
+set_yobs_vect(.timeline, .yobs)
 
-set_yobs_via_sim()
+set_yobs_dict(.yobs)
 
-set_datasets(.datasets)
+set_yobs_dict_via_sim()
 
-set_yobs_via_datasets(.datasets, .model_obs)
+set_n_particle(.n_particle)
 
-set_pf_filter(.n_move, .n_resample, .n_record, .direction)
+set_direction(.direction = c("forward", "backward"))
+
+set_states_init(
+  .timeline,
+  .state,
+  .xinit,
+  .model_move,
+  .yobs,
+  .n_particle,
+  .direction
+)
+
+set_pf_filter(.n_move, .n_resample, .n_record, .n_iter, .direction)
 
 set_smoother_two_filter(.n_particle, .n_sim)
 }

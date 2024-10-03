@@ -59,17 +59,15 @@ arrays <- sim_array(.map = map,
                     .n_receiver = 500L)
 
 #### Simulate observation(s)
-models <- c("ModelObsAcousticLogisTrunc", "ModelObsDepthUniform")
 obs <- sim_observations(.timeline = timeline,
-                        .model_obs = models,
-                        .model_obs_pars =
+                        .model_obs =
                           list(
-                            arrays |>
+                            ModelObsAcousticLogisTrunc = arrays |>
                               select(sensor_id = "receiver_id",
                                      "receiver_x", "receiver_y",
                                      "receiver_alpha", "receiver_beta", "receiver_gamma") |>
                               as.data.table(),
-                            data.table(sensor_id = 1L,
+                            ModelObsDepthUniform = data.table(sensor_id = 1L,
                                        depth_shallow_eps = 30,
                                        depth_deep_eps = 30)
                           ))
@@ -85,13 +83,11 @@ out_coa <- coa(.map = map,
 
 #### Run the particle filter
 # Define filter args
-args <- list(.map = map,
-             .timeline = timeline,
+args <- list(.timeline = timeline,
              .state = "StateXY",
-             .xinit_pars = list(mobility = 750),
              .model_move = move_xy(),
-             .yobs = list(obs$ModelObsAcousticLogisTrunc[[1]], obs$ModelObsDepthUniform[[1]]),
-             .model_obs = c("ModelObsAcousticLogisTrunc", "ModelObsDepthUniform"),
+             .yobs = list(ModelObsAcousticLogisTrunc = obs$ModelObsAcousticLogisTrunc[[1]],
+                          ModelObsDepthUniform = obs$ModelObsDepthUniform[[1]]),
              .n_particle = 1e5L,
              .n_record = 100L)
 # Run the filter forwards

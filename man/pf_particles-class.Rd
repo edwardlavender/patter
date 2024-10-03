@@ -9,15 +9,11 @@ An \code{S3}-\code{\link{class}} that defines the named \code{list} returned by 
 \section{Structure}{
 \code{\linkS4class{pf_particles}} is a label used to denote outputs from selected functions in \code{\link{patter}}. The structure of this class is not strictly defined and primarily exists to streamline documentation. At the time of writing, \code{\linkS4class{pf_particles}} objects may comprise the following elements:
 \itemize{
-\item \code{xinit}---A \code{\link{data.table}} of initial particle samples;
 \item \code{states}---A \code{\link{data.table}} of simulated states;
 \item \code{diagnostics}---A \code{\link{data.table}} of diagnostic statistics;
 \item \code{convergence}---A \code{logical} variable that defines whether or not the algorithm converged;
+\item \code{trials}---An integer that defines the number of trials;
 }
-}
-
-\section{\code{xinit}}{
-\code{xinit} is a \code{\link{data.table}} that defines initial particles (from \code{\link[=sim_states_init]{sim_states_init()}}). This includes one row for each particle and one column for each state dimension (e.g., \code{map_value}, \code{x}, \code{y}).
 }
 
 \section{\code{states}}{
@@ -42,6 +38,10 @@ Particles are equally weighted, as the \code{.n_record} particles recorded at ea
 
 \section{\code{convergence}}{
 \code{convergence} is a \code{logical} variable that defines whether or not the algorithm converged (that is, reached the end of the time series).
+}
+
+\section{\code{trials}}{
+\code{trials} is an \code{integer} that defines the number of trials.
 }
 
 \seealso{

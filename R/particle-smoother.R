@@ -55,7 +55,7 @@ set_vmap  <- function(.map = NULL, .mobility = NULL, .vmap = NULL, .plot = FALSE
     if (.plot) {
       terra::plot(.vmap, ...)
     }
-    set_map(.vmap, .name = "vmap")
+    set_map(.vmap, .as_Raster = FALSE, .as_GeoArray = "vmap")
   }
   invisible(.vmap)
 }
@@ -96,6 +96,6 @@ pf_smoother_two_filter <- function(.n_particle = NULL,
 
   #### Get particles in R
   cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Collating outputs..."))
-  pf_particles(.xinit = NULL, .pf_obj = pf_obj)
+  pf_particles(.pf_obj = pf_obj)
 
 }

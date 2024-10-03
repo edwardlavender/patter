@@ -479,14 +479,18 @@ we bundle together the observations with the parameters of the
 observation models:
 
 ``` r
-model_1   <- "ModelObsAcousticLogisTrunc"
+# ModelObsAcousticLogisTrunc
 acoustics <- assemble_acoustics(.timeline = timeline,
                                 .acoustics = acc,
                                 .moorings = dat_moorings)
 
-model_2  <- "ModelObsDepthNormalTrunc"
+# ModelObsDepthNormalTrunc
 archival <- assemble_archival(.timeline = timeline,
                               .archival = arc)
+
+# Named list of ModelObs sub-types and associated observations
+yobs     <- list(ModelObsAcousticLogisTrunc = acoustics, 
+                 ModelObsDepthNormalTrunc = archival)
 ```
 
 Of course, you do not need acoustic and archival data to implement the
@@ -505,12 +509,9 @@ distribution for the location of the animal, at each time step:
 
 ``` r
 # List filter arguments
-args <- list(.map = map,
-             .timeline = timeline,
+args <- list(.timeline = timeline,
              .state = state,
-             .xinit_pars = list(mobility = as.numeric(mobility)),
-             .yobs = list(acoustics, archival),
-             .model_obs = c(model_1, model_2),
+             .yobs = yobs,
              .model_move = model_move,
              .n_record = 500L,
              .n_particle = 2e5L)
@@ -520,12 +521,12 @@ fwd <- do.call(pf_filter, args, quote = TRUE)
 head(fwd$states)
 #>    path_id timestep           timestamp map_value        x       y
 #>      <int>    <int>              <POSc>     <num>    <num>   <num>
-#> 1:       1        1 2016-03-17 01:50:00  44.46762 709342.1 6252807
-#> 2:       1        2 2016-03-17 01:52:00  65.31673 709317.6 6253363
-#> 3:       1        3 2016-03-17 01:54:00  46.53543 709205.3 6252852
-#> 4:       1        4 2016-03-17 01:56:00 142.80333 708752.2 6253701
-#> 5:       1        5 2016-03-17 01:58:00  56.53801 709303.2 6253160
-#> 6:       1        6 2016-03-17 02:00:00  52.98276 709358.7 6253100
+#> 1:       1        1 2016-03-17 01:50:00  56.53801 709292.1 6253157
+#> 2:       1        2 2016-03-17 01:52:00  59.76520 709164.2 6253033
+#> 3:       1        3 2016-03-17 01:54:00  66.52094 709169.3 6253140
+#> 4:       1        4 2016-03-17 01:56:00  45.88295 709308.1 6252915
+#> 5:       1        5 2016-03-17 01:58:00  52.98276 709355.2 6253101
+#> 6:       1        6 2016-03-17 02:00:00  66.52094 709108.1 6253064
 
 # Backward run
 args$.direction <- "backward"
@@ -562,7 +563,7 @@ map_hr_home(ud, .add = TRUE)
 mtext(side = 4, "Probability density", line = -3)
 ```
 
-<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
 
 This basic workflow is highly customisable. You have the flexibility to
 define species-specific movement models, include any type of

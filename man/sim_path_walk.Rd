@@ -18,7 +18,7 @@ sim_path_walk(
 \arguments{
 \item{.map}{A \code{\link{SpatRaster}} that defines the study area for the simulation (see \code{\link{glossary}}). Here, \code{.map} is used to:
 \itemize{
-\item Simulate initial states if \code{.xinit = NULL} (via \code{\link[=sim_states_init]{sim_states_init()}});
+\item Plot the movement path, if \code{.plot = TRUE}
 }}
 
 \item{.timeline}{A \code{POSIXct} vector of regularly spaced time stamps that defines the timeline for the simulation. Here, \code{.timeline} is used to:
@@ -33,7 +33,7 @@ sim_path_walk(
 \itemize{
 \item \code{.xinit} specifies the initial states for the simulation (one for each movement path).
 \itemize{
-\item If \code{.xinit} is \code{NULL}, initial states are sampled from \code{.map} (via \code{\link[=sim_states_init]{sim_states_init()}}).
+\item If \code{.xinit} is \code{NULL}, initial states are sampled from the map.
 \item Otherwise, \code{.xinit} must be a \code{\link{data.table}} with one column for each state dimension.
 }
 \item \code{.n_path} is an \code{integer} that defines the number of paths to simulate.
@@ -41,7 +41,7 @@ sim_path_walk(
 
 \item{.model_move}{A \code{character} string that defines the movement model (see \code{\link{ModelMove}} and \code{\link{glossary}}).}
 
-\item{.plot, .one_page}{Plot options.
+\item{.plot, .one_page}{Plot options (permitted on Windows and MacOS).
 \itemize{
 \item \code{.plot} is a \code{logical} variable that defined whether or not to plot \code{.map} and simulated path(s). Each path is plotted on a separate plot.
 \item \code{.one_page} is a logical variable that defines whether or not to produce all plots on a single page.
@@ -62,7 +62,8 @@ Simulate discrete-time animal movement paths from walk models (e.g., random walk
 \details{
 This function simulates movement paths via \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.simulate_path_walk()}}:
 \itemize{
-\item The internal function \code{\link[=sim_states_init]{sim_states_init()}} is used to set the initial state(s) for the simulation; that is, initial coordinates and other variables (one for each \code{.n_path}). If \code{.state} is one of the built-in options (see \code{\link{State}}), initial state(s) can be sampled from \code{.map}. Otherwise, additional methods or a \code{\link{data.table}} of initial states must be provided (see \code{\link[=sim_states_init]{sim_states_init()}}). Initial states provided in \code{.xinit} are re-sampled, with replacement, if required, such that there is one initial state for each simulated path. Initial states are assigned to an \code{xinit} object in \code{Julia}, which is a \code{Vector} of \code{\link{State}}s.
+\item Raster and GeoArray maps must be set in \code{Julia} for the simulation (see \code{\link[=set_map]{set_map()}});
+\item The internal function \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.sim_states_init()}} is used to simulate the initial state(s) for the simulation; that is, initial coordinates and other variables (one for each \code{.n_path}). If \code{.state} is one of the built-in options (see \code{\link{State}}), initial state(s) can be sampled from the map. Otherwise, additional methods or a \code{\link{data.table}} of initial states must be provided (see \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.sim_states_init()}}). Initial states provided in \code{.xinit} are re-sampled, with replacement, if required, such that there is one initial state for each simulated path. Initial states are assigned to an \code{xinit} object in \code{Julia}, which is a \code{Vector} of \code{\link{State}}s.
 \item Using the initial states, the \code{Julia} function \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.simulate_path_walk()}} simulates movement path(s) using the movement model (\code{.model_move}).
 \item Movement paths are passed back to \code{R} for convenient visualisation and analysis.
 }
@@ -70,7 +71,7 @@ This function simulates movement paths via \href{https://edwardlavender.github.i
 To use a new \code{.state} and/or \code{.model_move} sub-type for \code{\link[=sim_path_walk]{sim_path_walk()}}:
 \itemize{
 \item Define a \code{\link{State}} sub-type in \code{Julia} and provide the name as a \code{character} string to this function;
-\item To initialise the simulation, write a \code{\link[=states_init]{states_init()}} method to enable automated sampling of initial states via \code{\link[=sim_states_init]{sim_states_init()}} or provide a \code{\link{data.table}} of initial states to \code{.xinit};
+\item To initialise the simulation, write a \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.map_init()}} and \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.states_init()}} methods to enable automated sampling of initial states via \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.sim_states_init()}} or provide a \code{\link{data.table}} of initial states to \code{.xinit};
 \item Define a corresponding \code{\link{ModelMove}} sub-type in \code{Julia};
 \item Instantiate a \code{\link{ModelMove}} instance (that is, define a specific movement model);
 }
@@ -78,124 +79,122 @@ To use a new \code{.state} and/or \code{.model_move} sub-type for \code{\link[=s
 \code{\link[=sim_path_walk]{sim_path_walk()}} replaces \href{https://edwardlavender.github.io/flapper/reference/sim_path_sa.html}{\code{flapper::sim_path_sa()}}. Other \href{https://edwardlavender.github.io/flapper/reference/sim_path_-times.html}{\verb{flapper::sim_path_*()}} functions are not currently implemented in \code{\link{patter}}.
 }
 \examples{
-if (julia_run()) {
+library(data.table)
+library(dtplyr)
+library(dplyr, warn.conflicts = FALSE)
 
-  library(data.table)
-  library(dtplyr)
-  library(dplyr, warn.conflicts = FALSE)
+#### Connect to Julia
+julia_connect()
+set_seed()
 
-  #### Connect to Julia
-  julia_connect()
-  set_seed()
+#### Set up study system
+# Define `map` (the region within which movements are permitted)
+map <- dat_gebco()
+set_map(map)
+# Define study period
+timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
+                length.out = 1000L, by = "2 mins")
 
-  #### Set up study system
-  # Define `map` (the region within which movements are permitted)
-  map <- dat_gebco()
-  set_map(map)
-  # Define study period
-  timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
-                  length.out = 1000L, by = "2 mins")
+#### Example (1): Simulate path with default options
+sim_path_walk(.map = map,
+              .timeline = timeline,
+              .state = "StateXY",
+              .model_move = move_xy())
 
-  #### Example (1): Simulate path with default options
-  sim_path_walk(.map = map,
-                .timeline = timeline,
-                .state = "StateXY",
-                .model_move = move_xy())
+#### Example (2): Set the starting location via `.xinit`
+# Define an initial location
+x <- 708212.6
+y <- 6251684
+origin <- data.table(map_value = terra::extract(map, cbind(x, y))[1, 1],
+                     x = x, y = y)
+# Run the simulation
+sim_path_walk(.map = map,
+              .timeline = timeline,
+              .state = "StateXY",
+              .xinit = origin,
+              .model_move = move_xy())
+points(origin$x, origin$y)
 
-  #### Example (2): Set the starting location via `.xinit`
-  # Define an initial location
-  x <- 708212.6
-  y <- 6251684
-  origin <- data.table(map_value = terra::extract(map, cbind(x, y))[1, 1],
-                       x = x, y = y)
-  # Run the simulation
-  sim_path_walk(.map = map,
-                .timeline = timeline,
-                .state = "StateXY",
-                .xinit = origin,
-                .model_move = move_xy())
-  points(origin$x, origin$y)
+#### Example (3): Simulate multiple paths with the same origin via `.xinit`
+sim_path_walk(.map = map,
+              .timeline = timeline,
+              .state = "StateXY",
+              .xinit = origin,
+              .model_move = move_xy(),
+              .n_path = 4L,
+              .one_page = TRUE)
 
-  #### Example (3): Simulate multiple paths with the same origin via `.xinit`
-  sim_path_walk(.map = map,
-                .timeline = timeline,
-                .state = "StateXY",
-                .xinit = origin,
-                .model_move = move_xy(),
-                .n_path = 4L,
-                .one_page = TRUE)
+#### Example (4): Simulate multiple paths with different origins via `.xinit`
+# Manually specify origins
+origins <-
+  map |>
+  terra::spatSample(size = 4, xy = TRUE, na.rm = TRUE) |>
+  select("map_value", "x", "y") |>
+  as.data.table()
+# Run simulation
+sim_path_walk(.map = map,
+              .timeline = timeline,
+              .state = "StateXY",
+              .xinit = origins,
+              .model_move = move_xy(),
+              .n_path = 4L,
+              .one_page = TRUE)
 
-  #### Example (4): Simulate multiple paths with different origins via `.xinit`
-  # Manually specify origins
-  origins <-
-    map |>
-    terra::spatSample(size = 4, xy = TRUE, na.rm = TRUE) |>
-    select("map_value", "x", "y") |>
-    as.data.table()
-  # Run simulation
-  sim_path_walk(.map = map,
-                .timeline = timeline,
-                .state = "StateXY",
-                .xinit = origins,
-                .model_move = move_xy(),
-                .n_path = 4L,
-                .one_page = TRUE)
+#### Example (5): Customise two-dimensional random walks via `move_xy()`
+# Adjust distributions for step lengths and turning angles
+model_move <-
+  move_xy(mobility = "750.0",
+          dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)",
+          dbn_angle = "VonMises(0.1, 0.1)")
+sim_path_walk(.map = map,
+              .timeline = timeline,
+              .state = "StateXY",
+              .model_move = model_move)
+# Experiment with other options
+model_move <-
+  move_xy(mobility   = "300.0",
+          dbn_length = "truncated(Normal(10.0, 50.0), lower = 0.0, upper = 300.0)")
+sim_path_walk(.map = map,
+              .timeline = timeline,
+              .state = "StateXY",
+              .model_move = model_move)
 
-  #### Example (5): Customise two-dimensional random walks via `move_xy()`
-  # Adjust distributions for step lengths and turning angles
-  move <- move_xy(mobility = "750.0",
-                  dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)",
-                  dbn_angle = "VonMises(0.1, 0.1)")
-  sim_path_walk(.map = map,
-                .timeline = timeline,
-                .state = "StateXY",
-                .model_move = move)
-  # Experiment with other options
-  move <- move_xy(mobility   = "300.0",
-                  dbn_length = "truncated(Normal(10.0, 50.0), lower = 0.0, upper = 300.0)")
-  sim_path_walk(.map = map,
-                .timeline = timeline,
-                .state = "StateXY",
-                .model_move = move)
+#### Example (6): Use other .state/.model_move combinations
+# Simulate a correlated random walk
+sim_path_walk(.map = map,
+              .timeline = timeline,
+              .state = "StateXYZD",
+              .model_move = move_xyzd())
+# Modify movement model parameters
+sim_path_walk(.map = map,
+              .timeline = timeline,
+              .state = "StateXYZD",
+              .model_move = move_xyzd(dbn_angle_delta = "Normal(0, 1)",
+                                      dbn_z_delta = "Normal(0, 0.5)"))
 
-  #### Example (6): Use other .state/.model_move combinations
-  # Simulate a correlated random walk
-  sim_path_walk(.map = map,
-                .timeline = timeline,
-                .state = "StateXYZD",
-                .model_move = move_xyzd())
-  # Modify movement model parameters
-  sim_path_walk(.map = map,
-                .timeline = timeline,
-                .state = "StateXYZD",
-                .model_move = move_xyzd(dbn_angle_delta = "Normal(0, 1)",
-                                        dbn_z_delta = "Normal(0, 0.5)"))
+#### Example (7): Use custom .state/.model_move sub-types
+# See `?State` and ?ModelMove`
 
-  #### Example (7): Use custom .state/.model_move sub-types
-  # See `?State` and ?ModelMove`
+#### Example (8): Simulate numerous paths via `.n_path`
+sim_path_walk(.map = map,
+              .timeline = timeline,
+              .state = "StateXY",
+              .model_move = move_xy(),
+              .n_path = 10L)
 
-  #### Example (8): Simulate numerous paths via `.n_path`
-  sim_path_walk(.map = map,
-                .timeline = timeline,
-                .state = "StateXY",
-                .model_move = move_xy(),
-                .n_path = 10L)
-
-  #### Example (9): Customise plotting options via `.plot` & `.one_page`
-  # Use one page via `.one_page = TRUE`
-  sim_path_walk(.map = map,
-                .timeline = timeline,
-                .state = "StateXY",
-                .model_move = move_xy(),
-                .n_path = 2L, .one_page = TRUE)
-  # Suppress plots via `.plot = FALSE`
-  sim_path_walk(.map = map,
-                .timeline = timeline,
-                .state = "StateXY",
-                .model_move = move_xy(),
-                .plot = FALSE)
-
-}
+#### Example (9): Customise plotting options via `.plot` & `.one_page`
+# Use one page via `.one_page = TRUE`
+sim_path_walk(.map = map,
+              .timeline = timeline,
+              .state = "StateXY",
+              .model_move = move_xy(),
+              .n_path = 2L, .one_page = TRUE)
+# Suppress plots via `.plot = FALSE`
+sim_path_walk(.map = map,
+              .timeline = timeline,
+              .state = "StateXY",
+              .model_move = move_xy(),
+              .plot = FALSE)
 }
 \seealso{
 \itemize{

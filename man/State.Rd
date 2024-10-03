@@ -20,7 +20,7 @@ In \code{\link{patter}} functions, the \code{.state} argument is a \code{charact
 
 See \href{https://edwardlavender.github.io/Patter.jl}{\code{State}} or \code{JuliaCall::julia_help("State")} for the fields of the built-in sub-types.
 
-\code{.state} is used by \code{\link[=sim_path_walk]{sim_path_walk()}} and \code{\link[=pf_filter]{pf_filter()}}, both of which effectively simulate time series of states. \code{.state} controls the simulation of initial locations and subsequent method dispatch in \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}. \code{\link[=sim_states_init]{sim_states_init()}} handles the simulation of initial states in these routines. When \code{.state} is`
+\code{.state} is used by \code{\link[=sim_path_walk]{sim_path_walk()}} and \code{\link[=pf_filter]{pf_filter()}}, both of which effectively simulate time series of states. \code{.state} controls the simulation of initial locations and subsequent method dispatch in \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}. \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.sim_states_init()}} handles the simulation of initial states in these routines. When \code{.state} is`
 \itemize{
 \item \code{"StateXY"}, the initial state comprises \code{x} and \code{y} coordinates;.
 \item \code{"StateXYZD"}, the initial states comprises \code{x}, \code{y} and \code{z} coordinates and an initial direction;
@@ -28,7 +28,7 @@ See \href{https://edwardlavender.github.io/Patter.jl}{\code{State}} or \code{Jul
 
 All states additionally include a \code{map_value} field that defines the value on the movement map at (\code{x}, \code{y}).
 
-The outcome of \code{\link[=sim_states_init]{sim_states_init()}} is a \code{\link{data.table}} of initial state(s), which is coerced to a \code{Vector} of \code{State}s in \code{Julia} for the simulation. In \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}, the simulation of subsequent states depends on the input state and the movement model.
+The outcome of \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.sim_states_init()}} is a \code{DataFrame} of initial state(s), which is coerced to a \code{Vector} of \code{State}s in \code{Julia} for the simulation. In \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}, the simulation of subsequent states depends on the input state and the movement model.
 
 The state must match the movement model (see \code{\link{ModelMove}}):
 \itemize{
@@ -106,18 +106,18 @@ if (julia_run()) {
     # Define the movement model `Julia` code as a String
     glue::glue('ModelMoveXYZ(env, {mobility}, {length}, {angle}, {z_delta});')
   }
-  # (optional) Define an `R` `states_init()` method to simulate initial states
+  # (optional) Define a `Patter.states_init()` method to simulate initial states
   # * This function should accept:
-  # * `.state`: the state;
-  # * `.coords`: A `data.table` with initial coordinates (x, y and map_value);
-  # * (see `?states_init` for further information)
-  states_init.StateXYZ <- function(.state, .coords) {
-    # Define global variables
-    z <- map_value <- NULL
-    # Add initial z values
-    .coords[, z := map_value * runif(.N)]
-    .coords
-  }
+  # * `state`: the state;
+  # * `coords`: A `data.table` with initial coordinates (x, y and map_value);
+  julia_command(
+    '
+    function Patter.states_init(state_type::Type{StateXYZ}, coords)
+      coords.z = coords.map_value .* rand(nrow(coords))
+      return coords
+    end
+    '
+  )
   # Define a `Patter.simulate_step()` method to update the state in Julia
   julia_command(
     '
@@ -131,7 +131,7 @@ if (julia_run()) {
     y      = state.y + length * sin(angle)
     z      = state.z + rand(model.dbn_z_delta)
     # Include the map value
-    map_value = extract(model.map, x, y)
+    map_value = Patter.extract(model.map, x, y)
     # Define the state
     StateXYZ(map_value, x, y, z)
   end
@@ -150,12 +150,13 @@ if (julia_run()) {
   #### Simulate observations arising from the simulated path
   # We consider a pelagic animal & simulate depth observations
   # At each time step, the animal may be anywhere from the surface to the seabed
+  model_obs <- list(ModelObsDepthUniform = data.table(sensor_id = 1L,
+                                                      depth_shallow_eps = 500,
+                                                      depth_deep_eps = 0))
   obs <- sim_observations(.timeline = timeline,
-                          .model_obs = "ModelObsDepthUniform",
-                          .model_obs_pars = list(data.table(sensor_id = 1L,
-                                                            depth_shallow_eps = 500,
-                                                            depth_deep_eps = 0)))
-  obs <- obs$ModelObsDepthUniform[[1]]
+                          .model_obs = model_obs)
+  obs  <- obs$ModelObsDepthUniform[[1]]
+  yobs <- list(ModelObsDepthUniform = obs)
   # Plot simulated depth trajectory
   # * Blue: simulated time series
   # * Grey: seabed depth for simulated time series
@@ -172,12 +173,11 @@ if (julia_run()) {
   origin       <- terra::setValues(map, NA)
   cell         <- terra::cellFromXY(map, cbind(paths$x[1], paths$y[1]))
   origin[cell] <- paths$map_value[1]
+  set_map(origin, .as_Raster = TRUE, .as_GeoArray = FALSE)
   # Run the filter
-  fwd <- pf_filter(.map = origin,
-                   .timeline = timeline,
+  fwd <- pf_filter(.timeline = timeline,
                    .state = "StateXYZ",
-                   .yobs = list(obs),
-                   .model_obs = "ModelObsDepthUniform",
+                   .yobs = yobs,
                    .model_move = move_xyz())
   # Visualise reconstructed time series
   # * Black: particle depths
@@ -192,12 +192,11 @@ if (julia_run()) {
   n            <- nrow(paths)
   cell         <- terra::cellFromXY(map, cbind(paths$x[n], paths$y[n]))
   origin[cell] <- paths$map_value[n]
+  set_map(origin, .as_Raster = TRUE, .as_GeoArray = FALSE)
   # Run the filter
-  bwd <- pf_filter(.map = origin,
-                   .timeline = timeline,
+  bwd <- pf_filter(.timeline = timeline,
                    .state = "StateXYZ",
-                   .yobs = list(obs),
-                   .model_obs = "ModelObsDepthUniform",
+                   .yobs = yobs,
                    .model_move = move_xyz(),
                    .direction = "backward")
 
@@ -222,7 +221,8 @@ if (julia_run()) {
     '
   )
   # Run the smoother
-  smo <- pf_smoother_two_filter()
+  # * Use a small number of particles for speed
+  smo <- pf_smoother_two_filter(.n_particle = 50)
 
   #### (optional) Map UD
   # map_dens(map, .coord = smo$states)

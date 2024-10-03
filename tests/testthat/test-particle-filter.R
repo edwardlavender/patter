@@ -35,7 +35,6 @@ test_that("pf_filter() reconstructs the true path", {
   xinit_end <- paths[.N, .(map_value, x, y)]
 
   # Simulate observations
-  model_obs <- c("ModelObsAcousticLogisTrunc", "ModelObsDepthUniform")
   pars_acc <-
     moorings |>
     select(sensor_id = "receiver_id",
@@ -45,19 +44,20 @@ test_that("pf_filter() reconstructs the true path", {
   pars_arc <- data.table(sensor_id = 1L,
                          depth_shallow_eps = 0,
                          depth_deep_eps = 0)
-  obs <-
+  model_obs <- list(ModelObsAcousticLogisTrunc = pars_acc,
+                    ModelObsDepthUniform = pars_arc)
+  sobs <-
     sim_observations(.timeline = timeline,
-                     .model_obs = model_obs,
-                     .model_obs_pars = list(pars_acc, pars_arc))
+                     .model_obs = model_obs)
+  yobs <-
+    list(ModelObsAcousticLogisTrunc = sobs$ModelObsAcousticLogisTrunc[[1]],
+         ModelObsDepthUniform = sobs$ModelObsDepthUniform[[1]])
 
   # Run forward filter
-  pff <- pf_filter(.map = map,
-                   .timeline = timeline,
-                   .state = "StateXY",
+  pff <- pf_filter(.timeline = timeline,
+                   .state = state,
                    .xinit = xinit,
-                   .yobs = list(obs$ModelObsAcousticLogisTrunc[[1]],
-                                obs$ModelObsDepthUniform[[1]]),
-                   .model_obs = model_obs,
+                   .yobs = yobs,
                    .model_move = model_move,
                    .n_particle = 1e5L) |>
     # Suppress convergence warnings
@@ -70,13 +70,10 @@ test_that("pf_filter() reconstructs the true path", {
   expect_true(all.equal(states$map_value.path, states$map_value.state))
 
   # Run backward filter
-  pfb <- pf_filter(.map = map,
-                   .timeline = timeline,
-                   .state = "StateXY",
+  pfb <- pf_filter(.timeline = timeline,
+                   .state = state,
                    .xinit = xinit_end,
-                   .yobs = list(obs$ModelObsAcousticLogisTrunc[[1]],
-                                obs$ModelObsDepthUniform[[1]]),
-                   .model_obs = model_obs,
+                   .yobs = yobs,
                    .model_move = model_move,
                    .n_particle = 1e5L,
                    .direction = "backward") |>
@@ -127,29 +124,29 @@ test_that("pf_filter() works", {
                                   mutate(depth_sigma = 50,
                                          depth_deep_eps = 20))
 
+  # Assemble yobs
+  yobs <- list(ModelObsAcousticLogisTrunc = acoustics,
+               ModelObsDepthNormalTrunc = archival)
+
   # Examine movement prior
   # sim_path_walk(.map = map, .timeline = timeline)
 
   # Run the filter (with errors)
   timeline_cet <- timeline
   lubridate::tz(timeline_cet) <- "CET"
-  fwd <- pf_filter(.map = map,
-                   .timeline = timeline_cet,
+  fwd <- pf_filter(.timeline = timeline_cet,
                    .state = "StateXY",
-                   .xinit = NULL, .xinit_pars = list(mobility = 750, plot = TRUE),
-                   .yobs = list(acoustics, archival),
-                   .model_obs = c("ModelObsAcousticLogisTrunc", "ModelObsDepthNormalTrunc"),
+                   .xinit = NULL,
+                   .yobs = yobs,
                    .model_move = move_xy()) |>
     expect_error('There is a mismatch between the time zones of `.timeline` and/or `.yobs` `timestamp`s ("CET", "UTC", "UTC").', fixed = TRUE)
 
   # Run the filter
   # * Note that we do not expect convergence given the small & coarse bathymetric data
-  fwd <- pf_filter(.map = map,
-                   .timeline = timeline,
+  fwd <- pf_filter(.timeline = timeline,
                    .state = "StateXY",
-                   .xinit = NULL, .xinit_pars = list(mobility = 750, plot = TRUE),
-                   .yobs = list(acoustics, archival),
-                   .model_obs = c("ModelObsAcousticLogisTrunc", "ModelObsDepthNormalTrunc"),
+                   .xinit = NULL,
+                   .yobs = yobs,
                    .model_move = move_xy(),
                    .n_move = 1e6L,
                    .n_particle = 1000L,
@@ -163,7 +160,7 @@ test_that("pf_filter() works", {
 
   #### Validate object output
   expect_true(all(c("list", "pf_particles") %in% class(fwd)))
-  check_names(fwd, c("xinit", "states", "diagnostics", "convergence"))
+  check_names(fwd, c("states", "diagnostics", "convergence", "trials"))
   check_names(fwd$states, c("path_id", "timestep", "timestamp", "map_value", "x", "y"))
   check_names(fwd$diagnostics, c("timestep", "timestamp", "ess", "maxlp"))
   check_inherits(fwd$convergence, "logical")

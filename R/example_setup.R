@@ -57,20 +57,18 @@ example_setup.pf_smoother_two_filter <- function(.fun, .connect = TRUE) {
                         .n_receiver = 100L)
 
   #### Simulate movements
-  state    <- "StateXY"
-  mobility <- 750
-  move     <-
+  state      <- "StateXY"
+  model_move <-
     move_xy(mobility = "750.0",
             dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
             dbn_angle = "Uniform(-pi, pi)")
   sim_path_walk(.map = map,
                 .timeline = timeline,
                 .state = state,
-                .model_move = move)
+                .model_move = model_move)
 
   #### Simulate observations
   # Define models & parameters
-  models <- c("ModelObsAcousticLogisTrunc", "ModelObsDepthUniform")
   pars_1 <-
     moorings |>
     select(sensor_id = "receiver_id", "receiver_x", "receiver_y",
@@ -79,22 +77,25 @@ example_setup.pf_smoother_two_filter <- function(.fun, .connect = TRUE) {
   pars_2 <- data.table(sensor_id = 1L,
                        depth_shallow_eps = 10,
                        depth_deep_eps = 10)
-  pars <- list(pars_1, pars_2)
+  model_obs <- list(ModelObsAcousticLogisTrunc = pars_1,
+                    ModelObsDepthUniform = pars_2)
   # Simulate observational datasets
   obs <- sim_observations(.timeline = timeline,
-                          .model_obs = models,
-                          .model_obs_pars = pars)
+                          .model_obs = model_obs)
   # Collate observations for filter
-  yobs <- list(obs$ModelObsAcousticLogisTrunc[[1]], obs$ModelObsDepthUniform[[1]])
+  yobs <- list(ModelObsAcousticLogisTrunc = obs$ModelObsAcousticLogisTrunc[[1]],
+               ModelObsDepthUniform = obs$ModelObsDepthUniform[[1]])
 
   #### Collate filter arguments
-  list(.map = map,
-       .timeline = timeline,
-       .state = state,
-       .xinit = NULL, .xinit_pars = list(mobility = mobility),
-       .yobs = yobs,
-       .model_obs = models,
-       .model_move = move,
-       .n_particle = 1e4L,
-       .n_record = 100L)
+  list(map = map,
+       pf_filter_args =
+         list(.timeline = timeline,
+              .state = state,
+              .xinit = NULL,
+              .yobs = yobs,
+              .model_move = model_move,
+              .n_particle = 1e4L,
+              .n_record = 100L)
+       )
+
 }

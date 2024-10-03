@@ -106,30 +106,31 @@ sim_array <- function(.map,
 #' @description Simulate discrete-time animal movement paths from walk models (e.g., random walks, biased random walks, correlated random walks).
 #'
 #' @param .map A [`SpatRaster`] that defines the study area for the simulation (see [`glossary`]). Here, `.map` is used to:
-#' * Simulate initial states if `.xinit = NULL` (via [`sim_states_init()`]);
+#' * Plot the movement path, if `.plot = TRUE`
 #' @param .timeline A `POSIXct` vector of regularly spaced time stamps that defines the timeline for the simulation. Here, `.timeline` is used to:
 #' * Define the number of time steps for the simulation;
 #' * Define the time resolution of the simulation;
 #' @param .state A `character` that defines the [`State`] type (see [`glossary`]).
 #' @param .xinit,.n_path Initial [`State`] arguments.
 #' * `.xinit` specifies the initial states for the simulation (one for each movement path).
-#'    - If `.xinit` is `NULL`, initial states are sampled from `.map` (via [`sim_states_init()`]).
+#'    - If `.xinit` is `NULL`, initial states are sampled from the map.
 #'    - Otherwise, `.xinit` must be a [`data.table`] with one column for each state dimension.
 #' * `.n_path` is an `integer` that defines the number of paths to simulate.
 #' @param .model_move A `character` string that defines the movement model (see [`ModelMove`] and [`glossary`]).
-#' @param .plot,.one_page Plot options.
+#' @param .plot,.one_page Plot options (permitted on Windows and MacOS).
 #' * `.plot` is a `logical` variable that defined whether or not to plot `.map` and simulated path(s). Each path is plotted on a separate plot.
 #' * `.one_page` is a logical variable that defines whether or not to produce all plots on a single page.
 #'
 #' @details
 #' This function simulates movement paths via [`Patter.simulate_path_walk()`](https://edwardlavender.github.io/Patter.jl):
-#' * The internal function [`sim_states_init()`] is used to set the initial state(s) for the simulation; that is, initial coordinates and other variables (one for each `.n_path`). If `.state` is one of the built-in options (see [`State`]), initial state(s) can be sampled from `.map`. Otherwise, additional methods or a [`data.table`] of initial states must be provided (see [`sim_states_init()`]). Initial states provided in `.xinit` are re-sampled, with replacement, if required, such that there is one initial state for each simulated path. Initial states are assigned to an `xinit` object in `Julia`, which is a `Vector` of [`State`]s.
+#' * Raster and GeoArray maps must be set in `Julia` for the simulation (see [`set_map()`]);
+#' * The internal function [`Patter.sim_states_init()`](https://edwardlavender.github.io/Patter.jl) is used to simulate the initial state(s) for the simulation; that is, initial coordinates and other variables (one for each `.n_path`). If `.state` is one of the built-in options (see [`State`]), initial state(s) can be sampled from the map. Otherwise, additional methods or a [`data.table`] of initial states must be provided (see [`Patter.sim_states_init()`](https://edwardlavender.github.io/Patter.jl)). Initial states provided in `.xinit` are re-sampled, with replacement, if required, such that there is one initial state for each simulated path. Initial states are assigned to an `xinit` object in `Julia`, which is a `Vector` of [`State`]s.
 #' * Using the initial states, the `Julia` function [`Patter.simulate_path_walk()`](https://edwardlavender.github.io/Patter.jl) simulates movement path(s) using the movement model (`.model_move`).
 #' * Movement paths are passed back to `R` for convenient visualisation and analysis.
 #'
 #' To use a new `.state` and/or `.model_move` sub-type for [`sim_path_walk()`]:
 #' * Define a [`State`] sub-type in `Julia` and provide the name as a `character` string to this function;
-#' * To initialise the simulation, write a [`states_init()`] method to enable automated sampling of initial states via [`sim_states_init()`] or provide a [`data.table`] of initial states to `.xinit`;
+#' * To initialise the simulation, write a [`Patter.map_init()`](https://edwardlavender.github.io/Patter.jl) and [`Patter.states_init()`](https://edwardlavender.github.io/Patter.jl) methods to enable automated sampling of initial states via [`Patter.sim_states_init()`](https://edwardlavender.github.io/Patter.jl) or provide a [`data.table`] of initial states to `.xinit`;
 #' * Define a corresponding [`ModelMove`] sub-type in `Julia`;
 #' * Instantiate a [`ModelMove`] instance (that is, define a specific movement model);
 #'
@@ -157,25 +158,14 @@ sim_path_walk <- function(.map,
                           .model_move = move_xy(),
                           .plot = TRUE, .one_page = FALSE) {
 
-  #### Check user inputs
-  check_inherits(.state, "character")
-  check_inherits(.model_move, "character")
-
   #### Set initial state
-  .xinit <- sim_states_init(.map = .map,
-                            .timeline = NULL,
-                            .direction = "forward",
-                            .datasets = NULL,
-                            .models = NULL,
-                            .pars = NULL,
-                            .state = .state,
-                            .xinit = .xinit,
-                            .n = .n_path)
-  set_states_init(.xinit = .xinit, .state = .state)
-
-  #### Set movement model
-  set_timeline(.timeline)
-  set_model_move(.model_move)
+  set_states_init(.timeline = .timeline,
+                  .state = .state,
+                  .xinit = .xinit,
+                  .model_move = .model_move,
+                  .yobs = list(),
+                  .n_particle = 1,
+                  .direction = "forward")
 
   #### Simulate random walk
   set_path()
@@ -219,11 +209,10 @@ sim_path_walk <- function(.map,
 #' @description Simulate a time series of observations, such as acoustic detections and depth measurements, arising from simulated animal movement path(s).
 #'
 #' @param .timeline A `POSIXct` vector of regularly spaced time stamps that defines the timeline for the simulation. This should match the `.timeline` used to simulate movement paths (see [`sim_path_walk()`]).
-#' @param .model_obs A `character` vector of [`ModelObs`] sub-type(s).
-#' @param .model_obs_pars A `list` of [`data.table`]s, one for each model in `.model_obs`, that define observation model parameters.
+#' @param .model_obs A named `list` of [`data.table`](s). Element names should refer to [`ModelObs`] structures. Each element should be a  [`data.table`] that defines observation model parameters (see [`glossary`]).
 #'
 #' @details
-#' This function wraps [`Patter.simulate_yobs()`](https://edwardlavender.github.io/Patter.jl). The function iterates over simulated paths defined in the `Julia` workspace by [`sim_path_walk()`]. For each path and time step, the function simulates observation(s). Collectively, `.model_obs` and `.model_obs_pars` define the observation models used for the simulation (that is, a `Vector` of [`ModelObs`] instances). In `Julia`, simulated observations are stored in a hash table (`Dict`) called `yobs`, which is translated into a named `list` that is returned by `R`.
+#' This function wraps [`Patter.simulate_yobs()`](https://edwardlavender.github.io/Patter.jl). The function iterates over simulated paths defined in the `Julia` workspace by [`sim_path_walk()`]. For each path and time step, the function simulates observation(s). Collectively, `.model_obs` names and parameter [`data.table`] define the observation models used for the simulation (that is, a `Vector` of [`ModelObs`] instances). In `Julia`, simulated observations are stored in a hash table (`Dict`) called `yobs`, which is translated into a named `list` that is returned by `R`.
 #'
 #' @returns The function returns a named `list`, with one element for each sensor type, that is `.model_obs` element. Each element is a `list` of `data.table`s, one for each simulated path. Each row is a time step. The columns depend on the model type.
 #'
@@ -232,15 +221,14 @@ sim_path_walk <- function(.map,
 #' @author Edward Lavender
 #' @export
 
-sim_observations <- function(.timeline, .model_obs, .model_obs_pars) {
+sim_observations <- function(.timeline, .model_obs) {
   set_timeline(.timeline)
-  set_model_obs_pars(.model_obs_pars)
   set_model_obs(.model_obs)
-  set_yobs_via_sim()
-  out <- lapply(.model_obs, function(.model) {
+  set_yobs_dict_via_sim()
+  out <- lapply(names(.model_obs), function(.model) {
     julia_eval(glue("Patter.r_get_dataset(yobs, {.model})"))
   })
   out <- lapply(out, \(l) lapply(l, \(d) as.data.table(d)))
-  names(out) <- .model_obs
+  names(out) <- names(.model_obs)
   out
 }
