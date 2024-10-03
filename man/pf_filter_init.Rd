@@ -2,12 +2,7 @@
 % Please edit documentation in R/pf-initialise.R
 \name{pf_filter_init}
 \alias{pf_filter_init}
-\title{Initialise the particle filter
-This is an internal function that initialises the particle filter:
-\itemize{
-\item Initial states are set via \code{\link[=set_states_init]{set_states_init()}};
-\item Observations are set via \code{\link[=set_yobs_dict]{set_yobs_dict()}};
-}}
+\title{Initialise the particle filter}
 \usage{
 pf_filter_init(
   .timeline,
@@ -21,7 +16,6 @@ pf_filter_init(
 )
 }
 \description{
-Initialise the particle filter
 This is an internal function that initialises the particle filter:
 \itemize{
 \item Initial states are set via \code{\link[=set_states_init]{set_states_init()}};

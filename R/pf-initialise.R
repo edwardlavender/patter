@@ -1,5 +1,5 @@
 #' @title Initialise the particle filter
-#' This is an internal function that initialises the particle filter:
+#' @description This is an internal function that initialises the particle filter:
 #' * Initial states are set via [`set_states_init()`];
 #' * Observations are set via [`set_yobs_dict()`];
 #'
