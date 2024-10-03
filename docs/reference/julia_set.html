@@ -68,31 +68,47 @@
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">set_seed</span><span class="op">(</span>.seed <span class="op">=</span> <span class="fl">123L</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">set_map</span><span class="op">(</span><span class="va">.x</span><span class="op">)</span></span>
+<span><span class="fu">set_map</span><span class="op">(</span><span class="va">.x</span>, .as_Raster <span class="op">=</span> <span class="cn">TRUE</span>, .as_GeoArray <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">set_threads</span><span class="op">(</span><span class="va">.threads</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">set_states_init</span><span class="op">(</span><span class="va">.xinit</span>, <span class="va">.state</span><span class="op">)</span></span>
+<span><span class="fu">set_timeline</span><span class="op">(</span><span class="va">.timeline</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">set_state_type</span><span class="op">(</span><span class="va">.state</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">set_xinit</span><span class="op">(</span><span class="va">.xinit</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">set_model_move</span><span class="op">(</span><span class="va">.model_move</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">set_timeline</span><span class="op">(</span><span class="va">.timeline</span><span class="op">)</span></span>
-<span></span>
 <span><span class="fu">set_path</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">set_model_obs_types</span><span class="op">(</span><span class="va">.model_obs</span><span class="op">)</span></span>
+<span><span class="fu">set_model_obs_types</span><span class="op">(</span><span class="va">.datasets</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">set_model_obs</span><span class="op">(</span><span class="va">.model_obs</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">set_model_obs_pars</span><span class="op">(</span><span class="va">.model_obs_pars</span><span class="op">)</span></span>
+<span><span class="fu">set_yobs_vect</span><span class="op">(</span><span class="va">.timeline</span>, <span class="va">.yobs</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">set_yobs_via_sim</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">set_yobs_dict</span><span class="op">(</span><span class="va">.yobs</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">set_datasets</span><span class="op">(</span><span class="va">.datasets</span><span class="op">)</span></span>
+<span><span class="fu">set_yobs_dict_via_sim</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">set_yobs_via_datasets</span><span class="op">(</span><span class="va">.datasets</span>, <span class="va">.model_obs</span><span class="op">)</span></span>
+<span><span class="fu">set_n_particle</span><span class="op">(</span><span class="va">.n_particle</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">set_pf_filter</span><span class="op">(</span><span class="va">.n_move</span>, <span class="va">.n_resample</span>, <span class="va">.n_record</span>, <span class="va">.direction</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">set_direction</span><span class="op">(</span>.direction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"forward"</span>, <span class="st">"backward"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">set_states_init</span><span class="op">(</span></span>
+<span>  <span class="va">.timeline</span>,</span>
+<span>  <span class="va">.state</span>,</span>
+<span>  <span class="va">.xinit</span>,</span>
+<span>  <span class="va">.model_move</span>,</span>
+<span>  <span class="va">.yobs</span>,</span>
+<span>  <span class="va">.n_particle</span>,</span>
+<span>  <span class="va">.direction</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">set_pf_filter</span><span class="op">(</span><span class="va">.n_move</span>, <span class="va">.n_resample</span>, <span class="va">.n_record</span>, <span class="va">.n_iter</span>, <span class="va">.direction</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">set_smoother_two_filter</span><span class="op">(</span><span class="va">.n_particle</span>, <span class="va">.n_sim</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="value">
@@ -103,7 +119,7 @@
     <h2>Details</h2>
     <p>The following functions are exported:</p><ul><li><p><code>set_seed()</code> sets a seed in both <code>R</code> and <code>Julia</code>.</p><ul><li><p>It is often a good idea to call <code>set_seed()</code> at the start of your workflow.</p></li>
 </ul></li>
-<li><p><code>set_map()</code> exports a <code>SpatRaster</code> map of the study area to a variable named <code>env</code> in <code>Julia</code> (see <code><a href="ModelMove.html">ModelMove</a></code>).</p><ul><li><p>Export the map at the start of your workflow.</p></li>
+<li><p><code>set_map()</code> exports a <code>SpatRaster</code> map of the study area to a variable named <code>env</code> in <code>Julia</code> (see <code><a href="ModelMove.html">ModelMove</a></code>). The map (<code>.x</code>) must be specified as (a) a <code>SpatRaster</code> (supported on Windows and MacOS) or a file path to a raster (supported on Windows, MacOS and Linux).</p><ul><li><p>Export the map at the start of your workflow.</p></li>
 </ul></li>
 </ul><p>Other functions are internal.</p>
     </div>
@@ -130,14 +146,14 @@
 <span class="r-in"><span>  <span class="fu">set_map</span><span class="op">(</span><span class="va">map</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-09-22 14:45:24... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-10-03 16:18:54... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_setup()`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`JULIA_NUM_THREADS` could not be set via `.threads`.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 8 thread(s). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-09-22 14:45:29 (duration: ~5 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 11 thread(s). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-10-03 16:19:00 (duration: ~6 sec(s)). </span>
 <span class="r-plt img"><img src="julia_set-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

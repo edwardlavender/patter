@@ -68,15 +68,11 @@
 
     <div id="structure">
     <h2>Structure</h2>
-    <p><code>pf_particles</code> is a label used to denote outputs from selected functions in <code><a href="patter.html">patter</a></code>. The structure of this class is not strictly defined and primarily exists to streamline documentation. At the time of writing, <code>pf_particles</code> objects may comprise the following elements:</p><ul><li><p><code>xinit</code>—A <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of initial particle samples;</p></li>
-<li><p><code>states</code>—A <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of simulated states;</p></li>
+    <p><code>pf_particles</code> is a label used to denote outputs from selected functions in <code><a href="patter.html">patter</a></code>. The structure of this class is not strictly defined and primarily exists to streamline documentation. At the time of writing, <code>pf_particles</code> objects may comprise the following elements:</p><ul><li><p><code>states</code>—A <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of simulated states;</p></li>
 <li><p><code>diagnostics</code>—A <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of diagnostic statistics;</p></li>
 <li><p><code>convergence</code>—A <code>logical</code> variable that defines whether or not the algorithm converged;</p></li>
+<li><p><code>trials</code>—An integer that defines the number of trials;</p></li>
 </ul></div>
-    <div id="xinit">
-    <h2><code>xinit</code></h2>
-    <p><code>xinit</code> is a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines initial particles (from <code><a href="sim_states_init.html">sim_states_init()</a></code>). This includes one row for each particle and one column for each state dimension (e.g., <code>map_value</code>, <code>x</code>, <code>y</code>).</p>
-    </div>
     <div id="states">
     <h2><code>states</code></h2>
     <p><code>states</code> is a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines simulated particle states, with the following columns:</p><ul><li><p><code>path_id</code>—An <code>integer</code> vector that defines the particle index;</p></li>
@@ -93,6 +89,10 @@
     <div id="convergence">
     <h2><code>convergence</code></h2>
     <p><code>convergence</code> is a <code>logical</code> variable that defines whether or not the algorithm converged (that is, reached the end of the time series).</p>
+    </div>
+    <div id="trials">
+    <h2><code>trials</code></h2>
+    <p><code>trials</code> is an <code>integer</code> that defines the number of trials.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
