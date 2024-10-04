@@ -63,6 +63,9 @@ set_map <- function(.x, .as_Raster = TRUE, .as_GeoArray = TRUE) {
     # TO DO
     # * Warn if on linux
     # Define file
+    if (terra::nlyr(.x) != 1L) {
+      abort("`.x` should contain a single layer.")
+    }
     file <- terra::sources(.x)
     if (file == "") {
       file <- tempfile(fileext = ".tif")
@@ -79,7 +82,7 @@ set_map <- function(.x, .as_Raster = TRUE, .as_GeoArray = TRUE) {
   #### Read raster into Julia using Rasters or GeoArrays
   if (.as_Raster) {
     # Read Raster
-    julia_command(glue('{.Raster} = Rasters.Raster("{file}");'))
+    julia_command(glue('{.Raster} = Rasters.Raster("{file}", replace_missing = true);'))
   }
   if (.as_GeoArray) {
     # Read GeoArray directly as `env` or `vmap`
