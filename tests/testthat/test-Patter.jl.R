@@ -23,6 +23,16 @@ test_that("Patter.jl::extract() works", {
     expect_equal(test_xy$r, test_xy$julia)
     NULL
 
+    # Test a problematic location on the boundary
+    # terra::plot(map)
+    # x <- 710492.1497468759
+    # y <- 6.270256886936354e6
+    # terra::plot(terra::crop(map, terra::vect(cbind(x, y)) |> terra::buffer(width = 200)))
+    # points(x, y)
+    expect_equal(
+      terra::extract(dat_gebco(), cbind(710492.1497468759, 6.270256886936354e6), method = "simple")[, 1],
+      julia_eval('Patter.extract(env, 710492.1497468759, 6.270256886936354e6)')
+    )
   })
 
 })
