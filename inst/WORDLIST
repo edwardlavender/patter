@@ -6,7 +6,6 @@ Biometrika
 CMD
 COA
 COAs
-Codecov
 Conserv
 DCPF
 Dipturus
@@ -15,13 +14,17 @@ EPSG
 Ecol
 Evol
 Fearnhead
+GDAL
 GEBCO
+GEOS
+GeoArray
 JuliaLang
 Lifecycle
 MEFS
 NatureScot
 ORCID
 PF
+PROJ
 RStudio
 Sci
 Thorburn
