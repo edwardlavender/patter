@@ -10,8 +10,8 @@
 #'
 #' See [`State`](https://edwardlavender.github.io/Patter.jl) or `JuliaCall::julia_help("State")` for the fields of the built-in sub-types.
 #'
-#' `.state` is used by [`sim_path_walk()`] and [`pf_filter()`], both of which effectively simulate time series of states. `.state` controls the simulation of initial locations and subsequent method dispatch in [`Patter.jl`](https://github.com/edwardlavender/Patter.jl). [`Patter.sim_states_init()`](https://github.com/edwardlavender/Patter.jl) handles the simulation of initial states in these routines. When `.state` is`
-#' * `"StateXY"`, the initial state comprises `x` and `y` coordinates;.
+#' `.state` is used by [`sim_path_walk()`] and [`pf_filter()`], both of which effectively simulate time series of states. `.state` controls the simulation of initial locations and subsequent method dispatch in [`Patter.jl`](https://github.com/edwardlavender/Patter.jl). [`Patter.sim_states_init()`](https://github.com/edwardlavender/Patter.jl) handles the simulation of initial states in these routines. When `.state` is
+#' * `"StateXY"`, the initial state comprises `x` and `y` coordinates;
 #' * `"StateXYZD"`, the initial states comprises `x`, `y` and `z` coordinates and an initial direction;
 #'
 #' All states additionally include a `map_value` field that defines the value on the movement map at (`x`, `y`).

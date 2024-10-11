@@ -37,9 +37,7 @@ pf_filter(
 \item \code{.n_move}---An \code{integer} that defines the number of attempts to find a legal move;
 }}
 
-\item{.yobs}{\itemize{
-\item \code{.yobs} is a named \code{list} of formatted datasets, one for each data type (see \code{\link{glossary}});
-}}
+\item{.yobs}{A named \code{list} of formatted datasets, one for each data type (see \code{\link{glossary}});}
 
 \item{.n_particle}{An \code{integer} that defines the number of particles.}
 
@@ -66,7 +64,7 @@ This function runs the particle filter. The filter samples possible states (typi
 \section{Overview}{
 The particle filter iterates over time steps, simulating states (termed 'particles') that are consistent with the preceding data and a movement model at each time step.
 
-A raster map of study area must be exported to \code{Julia} for this function (see \code{\link[=set_map]{set_map()}}.
+A raster map of study area must be exported to \code{Julia} for this function (see \code{\link[=set_map]{set_map()}}).
 
 The initial states for the algorithm are defined by \code{.xinit} or simulated via \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.simulate_states_init()}}. The word 'state' typically means location but may include additional parameters. If the initial state of the animal is known, it should be supplied via \code{.xinit}. Otherwise, \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.simulate_states_init()}} samples \code{.n_particle} initial coordinates from \code{.map} (via \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.coords_init()}}), which are then translated into a \code{DataFrame} of states (that is, \code{.xinit}, via \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.states_init()}}). The regions on the map from which initial coordinates are sampled can be restricted by the observations (\code{.yobs}) and other parameters. For automated handling of custom states and observation models at this stage, custom \code{Patter.map_init} and \code{Patter.states_init} methods are required (see the Details for \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.simulate_states_init()}}).
 

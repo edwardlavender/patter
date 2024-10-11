@@ -6,7 +6,7 @@
 #' * `.trim`---A `logical` variable that defines whether or not to trim the timeline to the overlapping period between datasets;
 #' @param .timeline A `POSIXct` vector of regularly spaced time stamps that defines the timeline for the simulation (optionally from [`assemble_timeline()`]). Here, `timeline` is used to:
 #' * Define the resolution of observations;
-#' @param .acoustics,.moorings,.services The [data.table]s for [`assemble_acoustics()`] (see [`pat_setup_data()`]).
+#' @param .acoustics,.moorings,.services The [`data.table`]s for [`assemble_acoustics()`] (see [`pat_setup_data()`]).
 #' * `.acoustics` is a [data.table] of acoustic detections **for a single individual**. This must contain the `receiver_id` and `timestamp` columns.
 #' * `.moorings` is a [`data.table`] of acoustic receiver deployments. This must contain the `receiver_id`, `receiver_start`, and `receiver_end` columns, plus additional parameter columns.
 #' * `.services` is a [`data.table`] of servicing events. This must contain the `receiver_id`, `service_start` and `service_end` columns.

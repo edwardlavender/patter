@@ -1,7 +1,7 @@
 #' @title Simulation: acoustic arrays
 #' @description Simulate acoustic arrays (i.e., networks of acoustic receiver(s)) on a grid.
 #'
-#' @param .map A [`SpatRaster`] that defines the region of interest (see [`glossary`]). Here, `map` is used to:
+#' @param .map A [`SpatRaster`] that defines the region of interest (see [`glossary`]). Here, `.map` is used to:
 #' * Sample receiver locations in appropriate (non `NA`) regions, via [`terra::spatSample()`];
 #' @param .timeline A `POSIXct` vector of regularly spaced time stamps that defines the timeline for the simulation. Here, `.timeline` is used to:
 #' * Define receiver deployment periods (that is, `receiver_start` and `receiver_end` columns in the output [`data.table`]). Receiver deployment periods are defined by `min(.timeline)` and `max(.timeline)` and constant for all receivers.  (These columns are added solely for use in downstream functions.)

@@ -19,7 +19,7 @@ sim_array(
 )
 }
 \arguments{
-\item{.map}{A \code{\link{SpatRaster}} that defines the region of interest (see \code{\link{glossary}}). Here, \code{map} is used to:
+\item{.map}{A \code{\link{SpatRaster}} that defines the region of interest (see \code{\link{glossary}}). Here, \code{.map} is used to:
 \itemize{
 \item Sample receiver locations in appropriate (non \code{NA}) regions, via \code{\link[terra:sample]{terra::spatSample()}};
 }}

@@ -6,8 +6,7 @@
 #' @param .state,.xinit Arguments used to simulate initial states.
 #' * `.state`---A `character` that defines the [`State`] sub-type;
 #' * `.xinit`---`NULL` or a [`data.table`] that defines the initial states for the simulation;
-#' @param .yobs
-#' * `.yobs` is a named `list` of formatted datasets, one for each data type (see [`glossary`]);
+#' @param .yobs A named `list` of formatted datasets, one for each data type (see [`glossary`]);
 #' @param .model_move,.n_move The movement model.
 #' * `.model_move`---A `character` string that defines the movement model (see [`ModelMove`]);
 #' * `.n_move`---An `integer` that defines the number of attempts to find a legal move;
@@ -24,7 +23,7 @@
 #' # Overview
 #' The particle filter iterates over time steps, simulating states (termed 'particles') that are consistent with the preceding data and a movement model at each time step.
 #'
-#' A raster map of study area must be exported to `Julia` for this function (see [`set_map()`].
+#' A raster map of study area must be exported to `Julia` for this function (see [`set_map()`]).
 #'
 #' The initial states for the algorithm are defined by `.xinit` or simulated via [`Patter.simulate_states_init()`](https://github.com/edwardlavender/Patter.jl). The word 'state' typically means location but may include additional parameters. If the initial state of the animal is known, it should be supplied via `.xinit`. Otherwise, [`Patter.simulate_states_init()`](https://github.com/edwardlavender/Patter.jl) samples `.n_particle` initial coordinates from `.map` (via [`Patter.coords_init()`](https://github.com/edwardlavender/Patter.jl)), which are then translated into a `DataFrame` of states (that is, `.xinit`, via [`Patter.states_init()`](https://github.com/edwardlavender/Patter.jl)). The regions on the map from which initial coordinates are sampled can be restricted by the observations (`.yobs`) and other parameters. For automated handling of custom states and observation models at this stage, custom `Patter.map_init` and `Patter.states_init` methods are required (see the Details for [`Patter.simulate_states_init()`](https://github.com/edwardlavender/Patter.jl)).
 #'

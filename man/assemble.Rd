@@ -26,7 +26,7 @@ assemble_archival(.timeline, .archival)
 \item Define the resolution of observations;
 }}
 
-\item{.acoustics, .moorings, .services}{The \link{data.table}s for \code{\link[=assemble_acoustics]{assemble_acoustics()}} (see \code{\link[=pat_setup_data]{pat_setup_data()}}).
+\item{.acoustics, .moorings, .services}{The \code{\link{data.table}}s for \code{\link[=assemble_acoustics]{assemble_acoustics()}} (see \code{\link[=pat_setup_data]{pat_setup_data()}}).
 \itemize{
 \item \code{.acoustics} is a \link{data.table} of acoustic detections \strong{for a single individual}. This must contain the \code{receiver_id} and \code{timestamp} columns.
 \item \code{.moorings} is a \code{\link{data.table}} of acoustic receiver deployments. This must contain the \code{receiver_id}, \code{receiver_start}, and \code{receiver_end} columns, plus additional parameter columns.
