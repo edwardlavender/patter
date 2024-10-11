@@ -384,7 +384,6 @@ essential packages:
 library(patter)
 #> This is {patter} v.1.0.1. For an overview, see `?patter`. For support, contact edward.lavender@eawag.ch.
 library(data.table)
-#> Warning: package 'data.table' was built under R version 4.3.3
 library(dtplyr)
 library(dplyr, warn.conflicts = FALSE)
 options(patter.verbose = FALSE)
@@ -521,12 +520,12 @@ fwd <- do.call(pf_filter, args, quote = TRUE)
 head(fwd$states)
 #>    path_id timestep           timestamp map_value        x       y
 #>      <int>    <int>              <POSc>     <num>    <num>   <num>
-#> 1:       1        1 2016-03-17 01:50:00  52.99475 709192.1 6252957
-#> 2:       1        2 2016-03-17 01:52:00  96.38661 709144.4 6253489
-#> 3:       1        3 2016-03-17 01:54:00  43.93122 709488.0 6252956
-#> 4:       1        4 2016-03-17 01:56:00  99.90396 709091.1 6253368
-#> 5:       1        5 2016-03-17 01:58:00  74.88351 709068.5 6253066
-#> 6:       1        6 2016-03-17 02:00:00  73.27666 709149.6 6253246
+#> 1:       1        1 2016-03-17 01:50:00  59.76520 709142.1 6253007
+#> 2:       1        2 2016-03-17 01:52:00  52.99475 709289.9 6252977
+#> 3:       1        3 2016-03-17 01:54:00  65.31673 709380.0 6253367
+#> 4:       1        4 2016-03-17 01:56:00  96.38661 709140.9 6253545
+#> 5:       1        5 2016-03-17 01:58:00  46.53543 709268.7 6252849
+#> 6:       1        6 2016-03-17 02:00:00 108.30474 709042.0 6253488
 
 # Backward run
 args$.direction <- "backward"
