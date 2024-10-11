@@ -129,7 +129,11 @@ map_init.ModelObsAcousticLogisTrunc <- function(.map,
 
   #### Define a list of container info
   # Define a timeline of detections
-  t1    <- ifelse(.direction == "forward", .timeline[1], .timeline[length(.timeline)])
+  if (.direction == "forward") {
+    t1 <- .timeline[1]
+  } else {
+    t1 <- .timeline[length(.timeline)]
+  }
   step_units <- diffunit(.timeline)
   .dataset <-
     .dataset |>
@@ -216,7 +220,11 @@ map_init.ModelObsDepthUniform <- function(.map,
                                           .model,
                                           .pars) {
   # Identify the first depth observation
-  t1 <- ifelse(.direction == "forward", .timeline[1], .timeline[length(.timeline)])
+  if (.direction == "forward") {
+    t1 <- .timeline[1]
+  } else {
+    t1 <- .timeline[length(.timeline)]
+  }
   pos   <- which(.dataset$timestamp == t1)
   if (length(pos) == 0L) {
     return(.map)
@@ -242,7 +250,11 @@ map_init.ModelObsDepthNormalTrunc <- function(.map,
                                               .model,
                                               .pars) {
   # Identify the first depth observation
-  t1    <- ifelse(.direction == "forward", .timeline[1], .timeline[length(.timeline)])
+  if (.direction == "forward") {
+    t1 <- .timeline[1]
+  } else {
+    t1 <- .timeline[length(.timeline)]
+  }
   pos   <- which(.dataset$timestamp == t1)
   if (length(pos) == 0L) {
     return(.map)
