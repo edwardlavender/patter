@@ -394,7 +394,7 @@ arc <-
   filter(individual_id == 25L) |>
   mutate(individual_id = NULL,
          depth_sigma = 50,
-         depth_deep_eps = 30) |>
+         depth_deep_eps = 50) |>
   rename(obs = depth) |>
   as.data.table()
 

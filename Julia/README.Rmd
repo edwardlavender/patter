@@ -123,7 +123,7 @@ arc <-
   filter(individual_id == 25L) |>
   mutate(individual_id = NULL,
          depth_sigma = 50,
-         depth_deep_eps = 30) |>
+         depth_deep_eps = 50) |>
   rename(obs = depth) |>
   as.data.table()
 
@@ -184,7 +184,7 @@ Third, we define the properties of our study area; namely, a `Raster` and `GeoAr
 # Read a UTM bathymetry rasters that defines the 'environment' within which movements occurred
 # * `env_init` is a Raster that is used for sampling initial states (locations)
 # * `env` is a GeoArray that is used by the algorithms (faster)
-env_init = Rasters.Raster(joinpath("data", "bathymetry.tif"));
+env_init = Patter.rast(x = joinpath("data", "bathymetry.tif"));
 env = GeoArrays.read(joinpath("data", "bathymetry.tif"));
 
 # Define a timeline for the analysis
