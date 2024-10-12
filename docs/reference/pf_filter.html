@@ -140,7 +140,7 @@
     <div id="overview">
     <h2>Overview</h2>
     <p>The particle filter iterates over time steps, simulating states (termed 'particles') that are consistent with the preceding data and a movement model at each time step.</p>
-<p>A raster map of study area must be exported to <code>Julia</code> for this function (see <code><a href="julia_set.html">set_map()</a></code>).</p>
+<p>A raster map of study area must be exported to <code>Julia</code> for this function (see <code><a href="set_map.html">set_map()</a></code>).</p>
 <p>The initial states for the algorithm are defined by <code>.xinit</code> or simulated via <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.simulate_states_init()</code></a>. The word 'state' typically means location but may include additional parameters. If the initial state of the animal is known, it should be supplied via <code>.xinit</code>. Otherwise, <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.simulate_states_init()</code></a> samples <code>.n_particle</code> initial coordinates from <code>.map</code> (via <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.coords_init()</code></a>), which are then translated into a <code>DataFrame</code> of states (that is, <code>.xinit</code>, via <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.states_init()</code></a>). The regions on the map from which initial coordinates are sampled can be restricted by the observations (<code>.yobs</code>) and other parameters. For automated handling of custom states and observation models at this stage, custom <code>Patter.map_init</code> and <code>Patter.states_init</code> methods are required (see the Details for <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.simulate_states_init()</code></a>).</p>
 <p>The filter comprises three stages:</p><ol><li><p>A movement step, in which we simulate possible states (particles) for the individual (for time steps 2, ..., T).</p></li>
 <li><p>A weights step, in which we calculate particle weights from the log-likelihood of the data at each particle.</p></li>
@@ -171,556 +171,371 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dtplyr.tidyverse.org" class="external-link">dtplyr</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="julia_helper.html">julia_run</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Julia set up</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="julia_connect.html">julia_connect</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-10-12 09:56:41... </span>
+<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dtplyr.tidyverse.org" class="external-link">dtplyr</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Julia set up</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="julia_connect.html">julia_connect</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="set_seed.html">set_seed</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Define study period</span></span></span>
+<span class="r-in"><span>  <span class="co"># The resolution of the timeline defines the resolution of the simulation</span></span></span>
+<span class="r-in"><span>  <span class="va">timeline</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2016-01-01"</span>, tz <span class="op">=</span> <span class="st">"UTC"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                  length.out <span class="op">=</span> <span class="fl">100L</span>, by <span class="op">=</span> <span class="st">"2 mins"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Define study area</span></span></span>
+<span class="r-in"><span>  <span class="co"># `map` is a SpatRaster that defines the region within which movements are permitted</span></span></span>
+<span class="r-in"><span>  <span class="co"># Here, we consider the movements of an aquatic animal in Scotland</span></span></span>
+<span class="r-in"><span>  <span class="co"># ... `map` represents the bathymetry in the relevant region</span></span></span>
+<span class="r-in"><span>  <span class="co"># Use `set_map()` to export the map to `Julia`</span></span></span>
+<span class="r-in"><span>  <span class="va">map</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">map</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="set_map.html">set_map</a></span><span class="op">(</span><span class="va">map</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### --------------------------------------------------</span></span></span>
+<span class="r-in"><span>  <span class="co">#### Simulation-based workflow</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Scenario</span></span></span>
+<span class="r-in"><span>  <span class="co"># We have studied the movements of flapper skate off the west coast of Scotland.</span></span></span>
+<span class="r-in"><span>  <span class="co"># We have collected acoustic detections at receivers and depth time series.</span></span></span>
+<span class="r-in"><span>  <span class="co"># Here, we simulate movements and acoustic/archival observations arising from movements.</span></span></span>
+<span class="r-in"><span>  <span class="co"># We then apply particle filtering to the 'observations' to reconstruct</span></span></span>
+<span class="r-in"><span>  <span class="co"># ... simulated movements.</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Simulate an acoustic array</span></span></span>
+<span class="r-in"><span>  <span class="va">moorings</span> <span class="op">&lt;-</span> <span class="fu"><a href="sim_array.html">sim_array</a></span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
+<span class="r-in"><span>                        .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                        .n_receiver <span class="op">=</span> <span class="fl">100L</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># `moorings` includes the following default observation model parameters</span></span></span>
+<span class="r-in"><span>  <span class="co"># * These describe how detection probability declines with distance from a receiver</span></span></span>
+<span class="r-in"><span>  <span class="co"># * These are the parameters of the `ModelObsAcousticLogisTrunc` observation model</span></span></span>
+<span class="r-in"><span>  <span class="va">a</span> <span class="op">&lt;-</span> <span class="va">moorings</span><span class="op">$</span><span class="va">receiver_alpha</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span></span>
+<span class="r-in"><span>  <span class="va">b</span> <span class="op">&lt;-</span> <span class="va">moorings</span><span class="op">$</span><span class="va">receiver_beta</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span></span>
+<span class="r-in"><span>  <span class="va">g</span> <span class="op">&lt;-</span> <span class="va">moorings</span><span class="op">$</span><span class="va">receiver_gamma</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span></span>
+<span class="r-in"><span>  <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1000</span>, by <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span>, <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">d</span> <span class="op">&lt;=</span> <span class="va">g</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="va">a</span> <span class="op">*</span> <span class="va">b</span> <span class="op">*</span> <span class="va">d</span><span class="op">)</span>, <span class="fl">0</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>       ylab <span class="op">=</span> <span class="st">"Detection probability"</span>,</span></span>
+<span class="r-in"><span>       xlab <span class="op">=</span> <span class="st">"Distance (m)"</span>,</span></span>
+<span class="r-in"><span>       type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Simulate a movement path</span></span></span>
+<span class="r-in"><span>  <span class="co"># Define `State` sub-type</span></span></span>
+<span class="r-in"><span>  <span class="co"># &gt; We will consider the animal's movement in two-dimensions (x, y)</span></span></span>
+<span class="r-in"><span>  <span class="va">state</span>    <span class="op">&lt;-</span> <span class="st">"StateXY"</span></span></span>
+<span class="r-in"><span>  <span class="co"># Define the maximum moveable distance (m) between two time steps</span></span></span>
+<span class="r-in"><span>  <span class="va">mobility</span> <span class="op">&lt;-</span> <span class="fl">750</span></span></span>
+<span class="r-in"><span>  <span class="co"># Define the movement model</span></span></span>
+<span class="r-in"><span>  <span class="co"># &gt; We consider a two-dimensional random walk</span></span></span>
+<span class="r-in"><span>  <span class="va">model_move</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span>mobility   <span class="op">=</span> <span class="st">"750.0"</span>,</span></span>
+<span class="r-in"><span>            dbn_length <span class="op">=</span> <span class="st">"truncated(Gamma(1, 250.0), upper = 750.0)"</span>,</span></span>
+<span class="r-in"><span>            dbn_angle  <span class="op">=</span> <span class="st">"Uniform(-pi, pi)"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># Simulate a path</span></span></span>
+<span class="r-in"><span>  <span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="sim_path_walk.html">sim_path_walk</a></span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
+<span class="r-in"><span>                         .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                         .state <span class="op">=</span> <span class="va">state</span>,</span></span>
+<span class="r-in"><span>                         .model_move <span class="op">=</span> <span class="va">model_move</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Simulate observations</span></span></span>
+<span class="r-in"><span>  <span class="co"># Define observation model(s)</span></span></span>
+<span class="r-in"><span>  <span class="co"># * We simulate acoustic observations and depth time series</span></span></span>
+<span class="r-in"><span>  <span class="co"># * Acoustic observations are simulated according to `ModelObsAcousticLogisTrunc`</span></span></span>
+<span class="r-in"><span>  <span class="co"># * Depth observations are simulated according to `ModelObsDepthUniform`</span></span></span>
+<span class="r-in"><span>  <span class="co"># Define a `list` of parameters for the observation models</span></span></span>
+<span class="r-in"><span>  <span class="co"># (See `?ModelObs` for details)</span></span></span>
+<span class="r-in"><span>  <span class="va">pars_1</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span>    <span class="va">moorings</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span>sensor_id <span class="op">=</span> <span class="st">"receiver_id"</span>, <span class="st">"receiver_x"</span>, <span class="st">"receiver_y"</span>,</span></span>
+<span class="r-in"><span>           <span class="st">"receiver_alpha"</span>, <span class="st">"receiver_beta"</span>, <span class="st">"receiver_gamma"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">pars_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>sensor_id <span class="op">=</span> <span class="fl">1L</span>,</span></span>
+<span class="r-in"><span>                       depth_shallow_eps <span class="op">=</span> <span class="fl">10</span>,</span></span>
+<span class="r-in"><span>                       depth_deep_eps <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">model_obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ModelObsAcousticLogisTrunc <span class="op">=</span> <span class="va">pars_1</span>,</span></span>
+<span class="r-in"><span>                    ModelObsDepthUniform <span class="op">=</span> <span class="va">pars_2</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># Simulate observational datasets</span></span></span>
+<span class="r-in"><span>  <span class="va">obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="sim_observations.html">sim_observations</a></span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                          .model_obs <span class="op">=</span> <span class="va">model_obs</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">obs</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">obs</span><span class="op">$</span><span class="va">ModelObsAcousticLogisTrunc</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">obs</span><span class="op">$</span><span class="va">ModelObsDepthUniform</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># Identify detections</span></span></span>
+<span class="r-in"><span>  <span class="va">detections</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span>    <span class="va">obs</span><span class="op">$</span><span class="va">ModelObsAcousticLogisTrunc</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">obs</span> <span class="op">==</span> <span class="fl">1L</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># Collate datasets for filter</span></span></span>
+<span class="r-in"><span>  <span class="co"># &gt; This requires a list of datasets, one for each data type</span></span></span>
+<span class="r-in"><span>  <span class="va">yobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ModelObsAcousticLogisTrunc <span class="op">=</span> <span class="va">obs</span><span class="op">$</span><span class="va">ModelObsAcousticLogisTrunc</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>               ModelObsDepthUniform <span class="op">=</span> <span class="va">obs</span><span class="op">$</span><span class="va">ModelObsDepthUniform</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Example (1): Run the filter using the default options</span></span></span>
+<span class="r-in"><span>  <span class="va">fwd</span> <span class="op">&lt;-</span> <span class="fu">pf_filter</span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                   .state <span class="op">=</span> <span class="va">state</span>,</span></span>
+<span class="r-in"><span>                   .xinit <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>                   .model_move <span class="op">=</span> <span class="va">model_move</span>,</span></span>
+<span class="r-in"><span>                   .yobs <span class="op">=</span> <span class="va">yobs</span>,</span></span>
+<span class="r-in"><span>                   .n_particle <span class="op">=</span> <span class="fl">1e4L</span>,</span></span>
+<span class="r-in"><span>                   .direction <span class="op">=</span> <span class="st">"forward"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">## Output object structure:</span></span></span>
+<span class="r-in"><span>  <span class="co"># The function returns a `pf_particles` list:</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">fwd</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fwd</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># `xinit` is a `data.table` of initial particles</span></span></span>
+<span class="r-in"><span>  <span class="va">fwd</span><span class="op">$</span><span class="va">xinit</span></span></span>
+<span class="r-in"><span>  <span class="co"># `states` is a `data.table` of particles:</span></span></span>
+<span class="r-in"><span>  <span class="va">fwd</span><span class="op">$</span><span class="va">states</span></span></span>
+<span class="r-in"><span>  <span class="co"># `diagnostics` is a `data.table` of filter diagnostics</span></span></span>
+<span class="r-in"><span>  <span class="va">fwd</span><span class="op">$</span><span class="va">diagnostics</span></span></span>
+<span class="r-in"><span>  <span class="co"># fwd$convergence is a Boolean that defines whether or not the algorithm converged</span></span></span>
+<span class="r-in"><span>  <span class="va">fwd</span><span class="op">$</span><span class="va">convergence</span></span></span>
+<span class="r-in"><span>  <span class="co"># fwd$trials is an integer that defines the number of trials</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">## Map output states:</span></span></span>
+<span class="r-in"><span>  <span class="co"># Map particle coordinates</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="pf_plot_xy.html">pf_plot_xy</a></span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .coord <span class="op">=</span> <span class="va">fwd</span><span class="op">$</span><span class="va">states</span>, .steps <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># Map a utilisation distribution</span></span></span>
+<span class="r-in"><span>  <span class="co"># * Use sigma = spatstat.explore::bw.diggle() for CV bandwidth estimate</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="map_dens.html">map_dens</a></span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
+<span class="r-in"><span>           .coord <span class="op">=</span> <span class="va">fwd</span><span class="op">$</span><span class="va">states</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">## Analyse filter diagnostics</span></span></span>
+<span class="r-in"><span>  <span class="co"># `maxlp` is the maximum log-posterior at each time step</span></span></span>
+<span class="r-in"><span>  <span class="co"># &gt; exp(fwd$diagnostics$maxlp) = the highest likelihood score at each time step (0-1)</span></span></span>
+<span class="r-in"><span>  <span class="co"># &gt; This should not be too low!</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fwd</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">timestamp</span>, <span class="va">fwd</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">maxlp</span>, type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># `ess` is the effective sample size</span></span></span>
+<span class="r-in"><span>  <span class="co"># &gt; For a 2D distribution,  &gt;= 500 particles at each time step should be sufficient</span></span></span>
+<span class="r-in"><span>  <span class="co"># &gt; But we often have a low ESS at the moment of a detection</span></span></span>
+<span class="r-in"><span>  <span class="co"># &gt; If this is too low, we can trying boosting `.n_particle`</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fwd</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">timestamp</span>, <span class="va">fwd</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">ess</span>, type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">points</a></span><span class="op">(</span><span class="va">detections</span><span class="op">$</span><span class="va">timestamp</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">detections</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>         pch <span class="op">=</span> <span class="fl">21</span>, col <span class="op">=</span> <span class="st">"red"</span>, bg <span class="op">=</span> <span class="st">"red"</span>, cex <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>h <span class="op">=</span> <span class="fl">500</span>, col <span class="op">=</span> <span class="st">"royalblue"</span>, lty <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Example (2): Customise initial states for the filter</span></span></span>
+<span class="r-in"><span>  <span class="co"># Option (A): Mark the known starting location on `.map`</span></span></span>
+<span class="r-in"><span>  <span class="co"># &gt; Initial states are automatically sampled from `.map`</span></span></span>
+<span class="r-in"><span>  <span class="co"># &gt; We have to reset the initial map in Julia</span></span></span>
+<span class="r-in"><span>  <span class="co"># &gt; Use set_map with .as_Raster = TRUE and .as_GeoArray = FALSE</span></span></span>
+<span class="r-in"><span>  <span class="co"># &gt; (After the example, we reset the map for later examples)</span></span></span>
+<span class="r-in"><span>  <span class="va">origin</span>       <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/setValues.html" class="external-link">setValues</a></span><span class="op">(</span><span class="va">map</span>, <span class="cn">NA</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">cell</span>         <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/xyCellFrom.html" class="external-link">cellFromXY</a></span><span class="op">(</span><span class="va">map</span>, <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">paths</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">paths</span><span class="op">$</span><span class="va">y</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">origin</span><span class="op">[</span><span class="va">cell</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">paths</span><span class="op">$</span><span class="va">map_value</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="set_map.html">set_map</a></span><span class="op">(</span>.x <span class="op">=</span> <span class="va">origin</span>, .as_Raster <span class="op">=</span> <span class="cn">TRUE</span>, .as_GeoArray <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">fwd</span> <span class="op">&lt;-</span> <span class="fu">pf_filter</span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                   .state <span class="op">=</span> <span class="va">state</span>,</span></span>
+<span class="r-in"><span>                   .xinit <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>                   .yobs <span class="op">=</span> <span class="va">yobs</span>,</span></span>
+<span class="r-in"><span>                   .model_move <span class="op">=</span> <span class="va">model_move</span>,</span></span>
+<span class="r-in"><span>                   .n_particle <span class="op">=</span> <span class="fl">1e4L</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="set_map.html">set_map</a></span><span class="op">(</span><span class="va">map</span>, .as_Raster <span class="op">=</span> <span class="cn">TRUE</span>, .as_GeoArray <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># Option (B): Specify `.xinit` manually</span></span></span>
+<span class="r-in"><span>  <span class="co"># &gt; `.xinit` is resampled, as required, to generate `.n_particle` initial states</span></span></span>
+<span class="r-in"><span>  <span class="va">xinit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>map_value <span class="op">=</span> <span class="va">paths</span><span class="op">$</span><span class="va">map_value</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, x <span class="op">=</span> <span class="va">paths</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">paths</span><span class="op">$</span><span class="va">y</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">fwd</span>   <span class="op">&lt;-</span> <span class="fu">pf_filter</span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                     .state <span class="op">=</span> <span class="va">state</span>,</span></span>
+<span class="r-in"><span>                     .xinit <span class="op">=</span> <span class="va">xinit</span>,</span></span>
+<span class="r-in"><span>                     .yobs <span class="op">=</span> <span class="va">yobs</span>,</span></span>
+<span class="r-in"><span>                     .model_move <span class="op">=</span> <span class="va">model_move</span>,</span></span>
+<span class="r-in"><span>                     .n_particle <span class="op">=</span> <span class="fl">1e4L</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Example (3): Customise selected settings</span></span></span>
+<span class="r-in"><span>  <span class="co"># Boost the number of particles</span></span></span>
+<span class="r-in"><span>  <span class="va">fwd</span>   <span class="op">&lt;-</span> <span class="fu">pf_filter</span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                     .state <span class="op">=</span> <span class="va">state</span>,</span></span>
+<span class="r-in"><span>                     .xinit <span class="op">=</span> <span class="va">xinit</span>,</span></span>
+<span class="r-in"><span>                     .yobs <span class="op">=</span> <span class="va">yobs</span>,</span></span>
+<span class="r-in"><span>                     .model_move <span class="op">=</span> <span class="va">model_move</span>,</span></span>
+<span class="r-in"><span>                     .n_particle <span class="op">=</span> <span class="fl">1e5L</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># Change the threshold ESS for resampling</span></span></span>
+<span class="r-in"><span>  <span class="va">fwd</span>   <span class="op">&lt;-</span> <span class="fu">pf_filter</span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                     .state <span class="op">=</span> <span class="va">state</span>,</span></span>
+<span class="r-in"><span>                     .xinit <span class="op">=</span> <span class="va">xinit</span>,</span></span>
+<span class="r-in"><span>                     .yobs <span class="op">=</span> <span class="va">yobs</span>,</span></span>
+<span class="r-in"><span>                     .model_move <span class="op">=</span> <span class="va">model_move</span>,</span></span>
+<span class="r-in"><span>                     .n_particle <span class="op">=</span> <span class="fl">1e5L</span>,</span></span>
+<span class="r-in"><span>                     .n_resample <span class="op">=</span> <span class="fl">1000L</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># Change the number of particles retained in memory</span></span></span>
+<span class="r-in"><span>  <span class="va">fwd</span>   <span class="op">&lt;-</span> <span class="fu">pf_filter</span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                     .state <span class="op">=</span> <span class="va">state</span>,</span></span>
+<span class="r-in"><span>                     .xinit <span class="op">=</span> <span class="va">xinit</span>,</span></span>
+<span class="r-in"><span>                     .yobs <span class="op">=</span> <span class="va">yobs</span>,</span></span>
+<span class="r-in"><span>                     .model_move <span class="op">=</span> <span class="va">model_move</span>,</span></span>
+<span class="r-in"><span>                     .n_particle <span class="op">=</span> <span class="fl">1e5L</span>,</span></span>
+<span class="r-in"><span>                     .n_record <span class="op">=</span> <span class="fl">2000L</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Example (2): Run the filter backwards</span></span></span>
+<span class="r-in"><span>  <span class="co"># (A forward and backward run is required for the two-filter smoother)</span></span></span>
+<span class="r-in"><span>  <span class="va">fwd</span> <span class="op">&lt;-</span> <span class="fu">pf_filter</span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                   .state <span class="op">=</span> <span class="va">state</span>,</span></span>
+<span class="r-in"><span>                   .xinit <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>                   .yobs <span class="op">=</span> <span class="va">yobs</span>,</span></span>
+<span class="r-in"><span>                   .model_move <span class="op">=</span> <span class="va">model_move</span>,</span></span>
+<span class="r-in"><span>                   .n_particle <span class="op">=</span> <span class="fl">1e4L</span>,</span></span>
+<span class="r-in"><span>                   .direction <span class="op">=</span> <span class="st">"backward"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### --------------------------------------------------</span></span></span>
+<span class="r-in"><span>  <span class="co">#### Real-world examples</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Assemble datasets</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Define datasets for a selected animal</span></span></span>
+<span class="r-in"><span>  <span class="co"># &gt; Here, we consider detections and depth time series from an example flapper skate</span></span></span>
+<span class="r-in"><span>  <span class="va">individual_id</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span></span>
+<span class="r-in"><span>  <span class="va">det</span> <span class="op">&lt;-</span> <span class="va">dat_detections</span><span class="op">[</span><span class="va">individual_id</span> <span class="op">==</span> <span class="fl">25L</span>, <span class="op">]</span><span class="op">[</span>, <span class="va">individual_id</span> <span class="op">:=</span> <span class="cn">NULL</span><span class="op">]</span></span></span>
+<span class="r-in"><span>  <span class="va">arc</span> <span class="op">&lt;-</span> <span class="va">dat_archival</span><span class="op">[</span><span class="va">individual_id</span> <span class="op">==</span> <span class="fl">25L</span>, <span class="op">]</span><span class="op">[</span>, <span class="va">individual_id</span> <span class="op">:=</span> <span class="cn">NULL</span><span class="op">]</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Define a timeline</span></span></span>
+<span class="r-in"><span>  <span class="co"># * We can do this manually or use the observations to define a timeline:</span></span></span>
+<span class="r-in"><span>  <span class="va">timeline</span> <span class="op">&lt;-</span> <span class="fu"><a href="assemble.html">assemble_timeline</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">det</span>, <span class="va">arc</span><span class="op">)</span>, .step <span class="op">=</span> <span class="st">"2 mins"</span>, .trim <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">timeline</span> <span class="op">&lt;-</span> <span class="va">timeline</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">1440</span><span class="op">]</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">timeline</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Assemble a timeline of acoustic observations (0, 1) and model parameters</span></span></span>
+<span class="r-in"><span>  <span class="co"># * The default acoustic observation model parameters are taken from `.moorings`</span></span></span>
+<span class="r-in"><span>  <span class="va">acoustics</span> <span class="op">&lt;-</span> <span class="fu"><a href="assemble.html">assemble_acoustics</a></span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                                  .detections <span class="op">=</span> <span class="va">det</span>,</span></span>
+<span class="r-in"><span>                                  .moorings <span class="op">=</span> <span class="va">dat_moorings</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Assemble a timeline of archival observations and model parameters</span></span></span>
+<span class="r-in"><span>  <span class="co"># * Here, we include model parameters for `ModelObsDepthNormalTrunc`</span></span></span>
+<span class="r-in"><span>  <span class="va">archival</span> <span class="op">&lt;-</span> <span class="fu"><a href="assemble.html">assemble_archival</a></span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                                .archival <span class="op">=</span></span></span>
+<span class="r-in"><span>                                  <span class="va">arc</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>                                  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>obs <span class="op">=</span> <span class="va">depth</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>                                  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>depth_sigma <span class="op">=</span> <span class="fl">50</span>,</span></span>
+<span class="r-in"><span>                                         depth_deep_eps <span class="op">=</span> <span class="fl">20</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Define the .yobs list</span></span></span>
+<span class="r-in"><span>  <span class="va">yobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ModelObsAcousticLogisTrunc <span class="op">=</span> <span class="va">acoustics</span>,</span></span>
+<span class="r-in"><span>               ModelObsDepthNormalTrunc <span class="op">=</span> <span class="va">archival</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Visualise realisations of the movement model (the prior)</span></span></span>
+<span class="r-in"><span>  <span class="co"># We will use the same movement model as in previous examples</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="sim_path_walk.html">sim_path_walk</a></span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
+<span class="r-in"><span>                .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                .state <span class="op">=</span> <span class="va">state</span>,</span></span>
+<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="va">model_move</span>,</span></span>
+<span class="r-in"><span>                .n_path <span class="op">=</span> <span class="fl">10L</span>, .one_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Example (1): Run filter forwards</span></span></span>
+<span class="r-in"><span>  <span class="va">fwd</span> <span class="op">&lt;-</span> <span class="fu">pf_filter</span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                   .state <span class="op">=</span> <span class="va">state</span>,</span></span>
+<span class="r-in"><span>                   .yobs <span class="op">=</span> <span class="va">yobs</span>,</span></span>
+<span class="r-in"><span>                   .model_move <span class="op">=</span> <span class="va">model_move</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Example (2): Run the filter backwards</span></span></span>
+<span class="r-in"><span>  <span class="va">bwd</span> <span class="op">&lt;-</span> <span class="fu">pf_filter</span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                   .state <span class="op">=</span> <span class="va">state</span>,</span></span>
+<span class="r-in"><span>                   .yobs <span class="op">=</span> <span class="va">yobs</span>,</span></span>
+<span class="r-in"><span>                   .model_move <span class="op">=</span> <span class="va">model_move</span>,</span></span>
+<span class="r-in"><span>                   .direction <span class="op">=</span> <span class="st">"backward"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-10-12 21:02:23... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_setup()`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`JULIA_NUM_THREADS` could not be set via `.threads`.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 11 thread(s). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-10-12 09:56:47 (duration: ~6 sec(s)). </span>
-<span class="r-in"><span><span class="fu"><a href="julia_set.html">set_seed</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Define study period</span></span></span>
-<span class="r-in"><span><span class="co"># The resolution of the timeline defines the resolution of the simulation</span></span></span>
-<span class="r-in"><span><span class="va">timeline</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2016-01-01"</span>, tz <span class="op">=</span> <span class="st">"UTC"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                length.out <span class="op">=</span> <span class="fl">100L</span>, by <span class="op">=</span> <span class="st">"2 mins"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Define study area</span></span></span>
-<span class="r-in"><span><span class="co"># `map` is a SpatRaster that defines the region within which movements are permitted</span></span></span>
-<span class="r-in"><span><span class="co"># Here, we consider the movements of an aquatic animal in Scotland</span></span></span>
-<span class="r-in"><span><span class="co"># ... `map` represents the bathymetry in the relevant region</span></span></span>
-<span class="r-in"><span><span class="co"># Use `set_map()` to export the map to `Julia`</span></span></span>
-<span class="r-in"><span><span class="va">map</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">map</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-10-12 21:02:29 (duration: ~6 sec(s)). </span>
 <span class="r-plt img"><img src="pf_filter-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="fu"><a href="julia_set.html">set_map</a></span><span class="op">(</span><span class="va">map</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### --------------------------------------------------</span></span></span>
-<span class="r-in"><span><span class="co">#### Simulation-based workflow</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Scenario</span></span></span>
-<span class="r-in"><span><span class="co"># We have studied the movements of flapper skate off the west coast of Scotland.</span></span></span>
-<span class="r-in"><span><span class="co"># We have collected acoustic detections at receivers and depth time series.</span></span></span>
-<span class="r-in"><span><span class="co"># Here, we simulate movements and acoustic/archival observations arising from movements.</span></span></span>
-<span class="r-in"><span><span class="co"># We then apply particle filtering to the 'observations' to reconstruct</span></span></span>
-<span class="r-in"><span><span class="co"># ... simulated movements.</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Simulate an acoustic array</span></span></span>
-<span class="r-in"><span><span class="va">moorings</span> <span class="op">&lt;-</span> <span class="fu"><a href="sim_array.html">sim_array</a></span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
-<span class="r-in"><span>                      .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>                      .n_receiver <span class="op">=</span> <span class="fl">100L</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="pf_filter-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># `moorings` includes the following default observation model parameters</span></span></span>
-<span class="r-in"><span><span class="co"># * These describe how detection probability declines with distance from a receiver</span></span></span>
-<span class="r-in"><span><span class="co"># * These are the parameters of the `ModelObsAcousticLogisTrunc` observation model</span></span></span>
-<span class="r-in"><span><span class="va">a</span> <span class="op">&lt;-</span> <span class="va">moorings</span><span class="op">$</span><span class="va">receiver_alpha</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">b</span> <span class="op">&lt;-</span> <span class="va">moorings</span><span class="op">$</span><span class="va">receiver_beta</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">g</span> <span class="op">&lt;-</span> <span class="va">moorings</span><span class="op">$</span><span class="va">receiver_gamma</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1000</span>, by <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span>, <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">d</span> <span class="op">&lt;=</span> <span class="va">g</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="va">a</span> <span class="op">*</span> <span class="va">b</span> <span class="op">*</span> <span class="va">d</span><span class="op">)</span>, <span class="fl">0</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>     ylab <span class="op">=</span> <span class="st">"Detection probability"</span>,</span></span>
-<span class="r-in"><span>     xlab <span class="op">=</span> <span class="st">"Distance (m)"</span>,</span></span>
-<span class="r-in"><span>     type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="pf_filter-3.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Simulate a movement path</span></span></span>
-<span class="r-in"><span><span class="co"># Define `State` sub-type</span></span></span>
-<span class="r-in"><span><span class="co"># &gt; We will consider the animal's movement in two-dimensions (x, y)</span></span></span>
-<span class="r-in"><span><span class="va">state</span>    <span class="op">&lt;-</span> <span class="st">"StateXY"</span></span></span>
-<span class="r-in"><span><span class="co"># Define the maximum moveable distance (m) between two time steps</span></span></span>
-<span class="r-in"><span><span class="va">mobility</span> <span class="op">&lt;-</span> <span class="fl">750</span></span></span>
-<span class="r-in"><span><span class="co"># Define the movement model</span></span></span>
-<span class="r-in"><span><span class="co"># &gt; We consider a two-dimensional random walk</span></span></span>
-<span class="r-in"><span><span class="va">model_move</span> <span class="op">&lt;-</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span>mobility   <span class="op">=</span> <span class="st">"750.0"</span>,</span></span>
-<span class="r-in"><span>          dbn_length <span class="op">=</span> <span class="st">"truncated(Gamma(1, 250.0), upper = 750.0)"</span>,</span></span>
-<span class="r-in"><span>          dbn_angle  <span class="op">=</span> <span class="st">"Uniform(-pi, pi)"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># Simulate a path</span></span></span>
-<span class="r-in"><span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="sim_path_walk.html">sim_path_walk</a></span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
-<span class="r-in"><span>                       .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>                       .state <span class="op">=</span> <span class="va">state</span>,</span></span>
-<span class="r-in"><span>                       .model_move <span class="op">=</span> <span class="va">model_move</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="pf_filter-4.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Simulate observations</span></span></span>
-<span class="r-in"><span><span class="co"># Define observation model(s)</span></span></span>
-<span class="r-in"><span><span class="co"># * We simulate acoustic observations and depth time series</span></span></span>
-<span class="r-in"><span><span class="co"># * Acoustic observations are simulated according to `ModelObsAcousticLogisTrunc`</span></span></span>
-<span class="r-in"><span><span class="co"># * Depth observations are simulated according to `ModelObsDepthUniform`</span></span></span>
-<span class="r-in"><span><span class="co"># Define a `list` of parameters for the observation models</span></span></span>
-<span class="r-in"><span><span class="co"># (See `?ModelObs` for details)</span></span></span>
-<span class="r-in"><span><span class="va">pars_1</span> <span class="op">&lt;-</span></span></span>
-<span class="r-in"><span>  <span class="va">moorings</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span>sensor_id <span class="op">=</span> <span class="st">"receiver_id"</span>, <span class="st">"receiver_x"</span>, <span class="st">"receiver_y"</span>,</span></span>
-<span class="r-in"><span>         <span class="st">"receiver_alpha"</span>, <span class="st">"receiver_beta"</span>, <span class="st">"receiver_gamma"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pars_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>sensor_id <span class="op">=</span> <span class="fl">1L</span>,</span></span>
-<span class="r-in"><span>                     depth_shallow_eps <span class="op">=</span> <span class="fl">10</span>,</span></span>
-<span class="r-in"><span>                     depth_deep_eps <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">model_obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ModelObsAcousticLogisTrunc <span class="op">=</span> <span class="va">pars_1</span>,</span></span>
-<span class="r-in"><span>                  ModelObsDepthUniform <span class="op">=</span> <span class="va">pars_2</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># Simulate observational datasets</span></span></span>
-<span class="r-in"><span><span class="va">obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="sim_observations.html">sim_observations</a></span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>                        .model_obs <span class="op">=</span> <span class="va">model_obs</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">obs</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                            Length Class  Mode</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ModelObsAcousticLogisTrunc 1      -none- list</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ModelObsDepthUniform       1      -none- list</span>
-<span class="r-in"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">obs</span><span class="op">$</span><span class="va">ModelObsAcousticLogisTrunc</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     timestamp   obs sensor_id receiver_x receiver_y receiver_alpha</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        &lt;POSc&gt; &lt;int&gt;     &lt;int&gt;      &lt;num&gt;      &lt;num&gt;          &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 2016-01-01     0         1   709142.1    6266607              4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: 2016-01-01     0         2   698042.1    6267507              4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: 2016-01-01     0         3   708442.1    6266307              4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: 2016-01-01     0         4   709942.1    6255107              4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5: 2016-01-01     0         5   701642.1    6265107              4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6: 2016-01-01     0         6   704442.1    6262807              4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    receiver_beta receiver_gamma</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            &lt;num&gt;          &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:         -0.01            750</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:         -0.01            750</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:         -0.01            750</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:         -0.01            750</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:         -0.01            750</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:         -0.01            750</span>
-<span class="r-in"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">obs</span><span class="op">$</span><span class="va">ModelObsDepthUniform</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              timestamp      obs sensor_id depth_shallow_eps depth_deep_eps</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 &lt;POSc&gt;    &lt;num&gt;     &lt;int&gt;             &lt;num&gt;          &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 2016-01-01 00:00:00 27.79555         1                10             10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: 2016-01-01 00:02:00 36.54936         1                10             10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: 2016-01-01 00:04:00 35.09541         1                10             10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: 2016-01-01 00:06:00 48.12920         1                10             10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5: 2016-01-01 00:08:00 38.15062         1                10             10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6: 2016-01-01 00:10:00 34.07264         1                10             10</span>
-<span class="r-in"><span><span class="co"># Identify detections</span></span></span>
-<span class="r-in"><span><span class="va">detections</span> <span class="op">&lt;-</span></span></span>
-<span class="r-in"><span>  <span class="va">obs</span><span class="op">$</span><span class="va">ModelObsAcousticLogisTrunc</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">obs</span> <span class="op">==</span> <span class="fl">1L</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># Collate datasets for filter</span></span></span>
-<span class="r-in"><span><span class="co"># &gt; This requires a list of datasets, one for each data type</span></span></span>
-<span class="r-in"><span><span class="va">yobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ModelObsAcousticLogisTrunc <span class="op">=</span> <span class="va">obs</span><span class="op">$</span><span class="va">ModelObsAcousticLogisTrunc</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>             ModelObsDepthUniform <span class="op">=</span> <span class="va">obs</span><span class="op">$</span><span class="va">ModelObsDepthUniform</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Example (1): Run the filter using the default options</span></span></span>
-<span class="r-in"><span><span class="va">fwd</span> <span class="op">&lt;-</span> <span class="fu">pf_filter</span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>                 .state <span class="op">=</span> <span class="va">state</span>,</span></span>
-<span class="r-in"><span>                 .xinit <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
-<span class="r-in"><span>                 .model_move <span class="op">=</span> <span class="va">model_move</span>,</span></span>
-<span class="r-in"><span>                 .yobs <span class="op">=</span> <span class="va">yobs</span>,</span></span>
-<span class="r-in"><span>                 .n_particle <span class="op">=</span> <span class="fl">1e4L</span>,</span></span>
-<span class="r-in"><span>                 .direction <span class="op">=</span> <span class="st">"forward"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-10-12 09:56:48... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-10-12 09:56:48... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:48: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:51: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-10-12 09:56:51 (duration: ~3 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:51: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:52: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-10-12 09:56:52 (duration: ~4 sec(s)). </span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## Output object structure:</span></span></span>
-<span class="r-in"><span><span class="co"># The function returns a `pf_particles` list:</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">fwd</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "list"         "pf_particles"</span>
-<span class="r-in"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fwd</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             Length Class      Mode   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> states      6      data.table list   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> diagnostics 4      data.table list   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> convergence 1      -none-     logical</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> trials      1      -none-     numeric</span>
-<span class="r-in"><span><span class="co"># `xinit` is a `data.table` of initial particles</span></span></span>
-<span class="r-in"><span><span class="va">fwd</span><span class="op">$</span><span class="va">xinit</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
-<span class="r-in"><span><span class="co"># `states` is a `data.table` of particles:</span></span></span>
-<span class="r-in"><span><span class="va">fwd</span><span class="op">$</span><span class="va">states</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         path_id timestep           timestamp map_value        x       y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;int&gt;    &lt;int&gt;              &lt;POSc&gt;     &lt;num&gt;    &lt;num&gt;   &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      1:       1        1 2016-01-01 00:00:00  35.19596 711242.1 6260207</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      2:       1        2 2016-01-01 00:02:00  33.30510 711154.8 6260722</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      3:       1        3 2016-01-01 00:04:00  40.01500 711277.5 6259721</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      4:       1        4 2016-01-01 00:06:00  40.26305 710990.0 6260120</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      5:       1        5 2016-01-01 00:08:00  37.36852 711238.8 6259996</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     ---                                                                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  99996:    1000       96 2016-01-01 03:10:00  28.33798 711164.9 6261534</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  99997:    1000       97 2016-01-01 03:12:00  26.20695 711252.3 6261809</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  99998:    1000       98 2016-01-01 03:14:00  25.04944 711292.1 6262067</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  99999:    1000       99 2016-01-01 03:16:00  25.34141 711639.4 6262345</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 100000:    1000      100 2016-01-01 03:18:00  29.63942 711537.9 6261761</span>
-<span class="r-in"><span><span class="co"># `diagnostics` is a `data.table` of filter diagnostics</span></span></span>
-<span class="r-in"><span><span class="va">fwd</span><span class="op">$</span><span class="va">diagnostics</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      timestep           timestamp       ess     maxlp</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;int&gt;              &lt;POSc&gt;     &lt;num&gt;     &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   1:        1 2016-01-01 00:00:00 6223.9231 -3.113695</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   2:        2 2016-01-01 00:02:00 5906.0285 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   3:        3 2016-01-01 00:04:00 5127.1379 -3.107126</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   4:        4 2016-01-01 00:06:00 2044.5792 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   5:        5 2016-01-01 00:08:00 4060.4127 -3.109420</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   6:        6 2016-01-01 00:10:00 6504.3053 -3.106000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   7:        7 2016-01-01 00:12:00  505.5519 -3.564971</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   8:        8 2016-01-01 00:14:00 8281.9343 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   9:        9 2016-01-01 00:16:00 2449.4158 -5.842650</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  10:       10 2016-01-01 00:18:00 2252.3907 -3.108122</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  11:       11 2016-01-01 00:20:00 6138.7557 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  12:       12 2016-01-01 00:22:00 3821.4887 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  13:       13 2016-01-01 00:24:00 8039.7418 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  14:       14 2016-01-01 00:26:00 8145.6535 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  15:       15 2016-01-01 00:28:00 7022.5079 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  16:       16 2016-01-01 00:30:00 3554.8315 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  17:       17 2016-01-01 00:32:00 1491.4862 -3.023634</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  18:       18 2016-01-01 00:34:00 5636.9163 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  19:       19 2016-01-01 00:36:00 3615.3059 -3.014579</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  20:       20 2016-01-01 00:38:00 4589.1396 -3.014688</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  21:       21 2016-01-01 00:40:00 4412.0964 -3.014582</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  22:       22 2016-01-01 00:42:00 6964.9353 -3.015021</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  23:       23 2016-01-01 00:44:00 4578.4055 -3.014392</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  24:       24 2016-01-01 00:46:00  404.9280 -5.848044</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  25:       25 2016-01-01 00:48:00 7534.7251 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  26:       26 2016-01-01 00:50:00 4081.9629 -3.016848</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  27:       27 2016-01-01 00:52:00 1540.8355 -3.015220</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  28:       28 2016-01-01 00:54:00 7234.3486 -3.014134</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  29:       29 2016-01-01 00:56:00 3904.4882 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  30:       30 2016-01-01 00:58:00  647.4561 -3.302048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  31:       31 2016-01-01 01:00:00 4179.5591 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  32:       32 2016-01-01 01:02:00 6397.1463 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  33:       33 2016-01-01 01:04:00 8497.4776 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  34:       34 2016-01-01 01:06:00 2369.2684 -3.037794</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  35:       35 2016-01-01 01:08:00 3425.9846 -3.148461</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  36:       36 2016-01-01 01:10:00 1038.0366 -3.110967</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  37:       37 2016-01-01 01:12:00 6997.7543 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  38:       38 2016-01-01 01:14:00 2421.4118 -3.106329</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  39:       39 2016-01-01 01:16:00 7782.9315 -3.107452</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  40:       40 2016-01-01 01:18:00 6158.0496 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  41:       41 2016-01-01 01:20:00 5511.0374 -3.106505</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  42:       42 2016-01-01 01:22:00  980.3054 -3.232940</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  43:       43 2016-01-01 01:24:00 3931.5571 -3.115249</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  44:       44 2016-01-01 01:26:00 5413.5996 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  45:       45 2016-01-01 01:28:00 5645.7789 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  46:       46 2016-01-01 01:30:00 8138.7591 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  47:       47 2016-01-01 01:32:00 7457.9432 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  48:       48 2016-01-01 01:34:00 8337.3768 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  49:       49 2016-01-01 01:36:00 9063.1326 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  50:       50 2016-01-01 01:38:00 9281.3014 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  51:       51 2016-01-01 01:40:00 1371.1314 -3.128368</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  52:       52 2016-01-01 01:42:00 1453.8497 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  53:       53 2016-01-01 01:44:00 2114.8990 -3.536093</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  54:       54 2016-01-01 01:46:00 4120.2968 -3.113862</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  55:       55 2016-01-01 01:48:00 5423.6647 -3.113925</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  56:       56 2016-01-01 01:50:00 4475.2998 -3.114536</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  57:       57 2016-01-01 01:52:00 7910.1528 -3.113747</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  58:       58 2016-01-01 01:54:00 1948.4411 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  59:       59 2016-01-01 01:56:00 8485.3883 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  60:       60 2016-01-01 01:58:00 8941.1660 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  61:       61 2016-01-01 02:00:00 9074.3560 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  62:       62 2016-01-01 02:02:00 8277.5988 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  63:       63 2016-01-01 02:04:00 9366.0556 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  64:       64 2016-01-01 02:06:00 9475.5861 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  65:       65 2016-01-01 02:08:00 7718.1121 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  66:       66 2016-01-01 02:10:00 6801.2038 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  67:       67 2016-01-01 02:12:00 9547.3804 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  68:       68 2016-01-01 02:14:00 7101.4062 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  69:       69 2016-01-01 02:16:00  587.7811 -3.030328</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  70:       70 2016-01-01 02:18:00 3945.6221 -3.086600</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  71:       71 2016-01-01 02:20:00 7530.2356 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  72:       72 2016-01-01 02:22:00 4851.8323 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  73:       73 2016-01-01 02:24:00 8834.4262 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  74:       74 2016-01-01 02:26:00 9261.4418 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  75:       75 2016-01-01 02:28:00 9372.3725 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  76:       76 2016-01-01 02:30:00 9471.2340 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  77:       77 2016-01-01 02:32:00 5181.7935 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  78:       78 2016-01-01 02:34:00 8959.9564 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  79:       79 2016-01-01 02:36:00 9548.9575 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  80:       80 2016-01-01 02:38:00 6097.0685 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  81:       81 2016-01-01 02:40:00 9011.0949 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  82:       82 2016-01-01 02:42:00 9490.4146 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  83:       83 2016-01-01 02:44:00 9597.5991 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  84:       84 2016-01-01 02:46:00 2220.1081 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  85:       85 2016-01-01 02:48:00 9644.4623 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  86:       86 2016-01-01 02:50:00 9598.2368 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  87:       87 2016-01-01 02:52:00 9044.1534 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  88:       88 2016-01-01 02:54:00  161.8486 -3.176145</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  89:       89 2016-01-01 02:56:00 1353.4168 -3.016100</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  90:       90 2016-01-01 02:58:00 7903.7103 -3.014206</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  91:       91 2016-01-01 03:00:00 6081.0918 -3.014382</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  92:       92 2016-01-01 03:02:00 7449.7575 -3.014124</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  93:       93 2016-01-01 03:04:00 8346.6469 -3.014096</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  94:       94 2016-01-01 03:06:00 8358.1689 -3.014164</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  95:       95 2016-01-01 03:08:00 1254.5554 -3.075306</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  96:       96 2016-01-01 03:10:00 6656.6190 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  97:       97 2016-01-01 03:12:00 4267.7475 -3.015081</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  98:       98 2016-01-01 03:14:00 7549.1249 -3.014451</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  99:       99 2016-01-01 03:16:00 8012.5047 -3.014301</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 100:      100 2016-01-01 03:18:00 5949.1104 -2.995732</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      timestep           timestamp       ess     maxlp</span>
-<span class="r-in"><span><span class="co"># fwd$convergence is a Boolean that defines whether or not the algorithm converged</span></span></span>
-<span class="r-in"><span><span class="va">fwd</span><span class="op">$</span><span class="va">convergence</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
-<span class="r-in"><span><span class="co"># fwd$trials is an integer that defines the number of trials</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## Map output states:</span></span></span>
-<span class="r-in"><span><span class="co"># Map particle coordinates</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="pf_plot_xy.html">pf_plot_xy</a></span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .coord <span class="op">=</span> <span class="va">fwd</span><span class="op">$</span><span class="va">states</span>, .steps <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-10-12 21:02:30... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-10-12 21:02:30... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:30: Simulating initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:33: Setting observations... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-10-12 21:02:33 (duration: ~3 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:33: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:34: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-10-12 21:02:34 (duration: ~4 sec(s)). </span>
 <span class="r-plt img"><img src="pf_filter-5.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="co"># Map a utilisation distribution</span></span></span>
-<span class="r-in"><span><span class="co"># * Use sigma = spatstat.explore::bw.diggle() for CV bandwidth estimate</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="map_dens.html">map_dens</a></span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
-<span class="r-in"><span>         .coord <span class="op">=</span> <span class="va">fwd</span><span class="op">$</span><span class="va">states</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-10-12 09:56:52... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:52: Processing `.map`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:52: Building XYM... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:52: Defining `ppp` object... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-10-12 21:02:34... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:34: Processing `.map`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:34: Building XYM... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:34: Defining `ppp` object... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:52: Estimating density surface... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:53: Scaling density surface... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:34: Estimating density surface... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:34: Scaling density surface... </span>
 <span class="r-plt img"><img src="pf_filter-6.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-10-12 09:56:53 (duration: ~1 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $x</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Marked planar point pattern: 90294 points</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> marks are numeric, of storage type  ‘double’</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> window: binary image mask</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 264 x 190 pixel array (ny, nx)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> enclosing rectangle: [695492.1, 714492.1] x [6246657, 6273057] units</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $D</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> real-valued pixel image</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 264 x 190 pixel array (ny, nx)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> enclosing rectangle: [695490, 714490] x [6246700, 6273100] units</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $ud</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 264, 190, 1  (nrow, ncol, nlyr)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 100, 100  (x, y)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> extent      : 695492.1, 714492.1, 6246657, 6273057  (xmin, xmax, ymin, ymax)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> coord. ref. : WGS 84 / UTM zone 29N (EPSG:32629) </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> source(s)   : memory</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> name        :        lyr.1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> min value   : 1.903754e-13 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> max value   : 6.360894e-04 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## Analyse filter diagnostics</span></span></span>
-<span class="r-in"><span><span class="co"># `maxlp` is the maximum log-posterior at each time step</span></span></span>
-<span class="r-in"><span><span class="co"># &gt; exp(fwd$diagnostics$maxlp) = the highest likelihood score at each time step (0-1)</span></span></span>
-<span class="r-in"><span><span class="co"># &gt; This should not be too low!</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fwd</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">timestamp</span>, <span class="va">fwd</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">maxlp</span>, type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-10-12 21:02:34 (duration: ~0 sec(s)). </span>
 <span class="r-plt img"><img src="pf_filter-7.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="co"># `ess` is the effective sample size</span></span></span>
-<span class="r-in"><span><span class="co"># &gt; For a 2D distribution,  &gt;= 500 particles at each time step should be sufficient</span></span></span>
-<span class="r-in"><span><span class="co"># &gt; But we often have a low ESS at the moment of a detection</span></span></span>
-<span class="r-in"><span><span class="co"># &gt; If this is too low, we can trying boosting `.n_particle`</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fwd</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">timestamp</span>, <span class="va">fwd</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">ess</span>, type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">points</a></span><span class="op">(</span><span class="va">detections</span><span class="op">$</span><span class="va">timestamp</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">detections</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>       pch <span class="op">=</span> <span class="fl">21</span>, col <span class="op">=</span> <span class="st">"red"</span>, bg <span class="op">=</span> <span class="st">"red"</span>, cex <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>h <span class="op">=</span> <span class="fl">500</span>, col <span class="op">=</span> <span class="st">"royalblue"</span>, lty <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="pf_filter-8.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Example (2): Customise initial states for the filter</span></span></span>
-<span class="r-in"><span><span class="co"># Option (A): Mark the known starting location on `.map`</span></span></span>
-<span class="r-in"><span><span class="co"># &gt; Initial states are automatically sampled from `.map`</span></span></span>
-<span class="r-in"><span><span class="co"># &gt; We have to reset the initial map in Julia</span></span></span>
-<span class="r-in"><span><span class="co"># &gt; Use set_map with .as_Raster = TRUE and .as_GeoArray = FALSE</span></span></span>
-<span class="r-in"><span><span class="co"># &gt; (After the example, we reset the map for later examples)</span></span></span>
-<span class="r-in"><span><span class="va">origin</span>       <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/setValues.html" class="external-link">setValues</a></span><span class="op">(</span><span class="va">map</span>, <span class="cn">NA</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">cell</span>         <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/xyCellFrom.html" class="external-link">cellFromXY</a></span><span class="op">(</span><span class="va">map</span>, <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">paths</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">paths</span><span class="op">$</span><span class="va">y</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">origin</span><span class="op">[</span><span class="va">cell</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">paths</span><span class="op">$</span><span class="va">map_value</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="julia_set.html">set_map</a></span><span class="op">(</span>.x <span class="op">=</span> <span class="va">origin</span>, .as_Raster <span class="op">=</span> <span class="cn">TRUE</span>, .as_GeoArray <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">fwd</span> <span class="op">&lt;-</span> <span class="fu">pf_filter</span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>                 .state <span class="op">=</span> <span class="va">state</span>,</span></span>
-<span class="r-in"><span>                 .xinit <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
-<span class="r-in"><span>                 .yobs <span class="op">=</span> <span class="va">yobs</span>,</span></span>
-<span class="r-in"><span>                 .model_move <span class="op">=</span> <span class="va">model_move</span>,</span></span>
-<span class="r-in"><span>                 .n_particle <span class="op">=</span> <span class="fl">1e4L</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-10-12 09:56:53... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-10-12 09:56:53... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:53: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:53: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-10-12 09:56:53 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:53: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:53: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-10-12 09:56:53 (duration: ~0 sec(s)). </span>
-<span class="r-in"><span><span class="fu"><a href="julia_set.html">set_map</a></span><span class="op">(</span><span class="va">map</span>, .as_Raster <span class="op">=</span> <span class="cn">TRUE</span>, .as_GeoArray <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># Option (B): Specify `.xinit` manually</span></span></span>
-<span class="r-in"><span><span class="co"># &gt; `.xinit` is resampled, as required, to generate `.n_particle` initial states</span></span></span>
-<span class="r-in"><span><span class="va">xinit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>map_value <span class="op">=</span> <span class="va">paths</span><span class="op">$</span><span class="va">map_value</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, x <span class="op">=</span> <span class="va">paths</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">paths</span><span class="op">$</span><span class="va">y</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">fwd</span>   <span class="op">&lt;-</span> <span class="fu">pf_filter</span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>                   .state <span class="op">=</span> <span class="va">state</span>,</span></span>
-<span class="r-in"><span>                   .xinit <span class="op">=</span> <span class="va">xinit</span>,</span></span>
-<span class="r-in"><span>                   .yobs <span class="op">=</span> <span class="va">yobs</span>,</span></span>
-<span class="r-in"><span>                   .model_move <span class="op">=</span> <span class="va">model_move</span>,</span></span>
-<span class="r-in"><span>                   .n_particle <span class="op">=</span> <span class="fl">1e4L</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-10-12 09:56:53... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-10-12 09:56:53... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:53: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:53: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-10-12 09:56:53 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:53: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:54: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-10-12 09:56:54 (duration: ~1 sec(s)). </span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Example (3): Customise selected settings</span></span></span>
-<span class="r-in"><span><span class="co"># Boost the number of particles</span></span></span>
-<span class="r-in"><span><span class="va">fwd</span>   <span class="op">&lt;-</span> <span class="fu">pf_filter</span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>                   .state <span class="op">=</span> <span class="va">state</span>,</span></span>
-<span class="r-in"><span>                   .xinit <span class="op">=</span> <span class="va">xinit</span>,</span></span>
-<span class="r-in"><span>                   .yobs <span class="op">=</span> <span class="va">yobs</span>,</span></span>
-<span class="r-in"><span>                   .model_move <span class="op">=</span> <span class="va">model_move</span>,</span></span>
-<span class="r-in"><span>                   .n_particle <span class="op">=</span> <span class="fl">1e5L</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-10-12 09:56:54... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-10-12 09:56:54... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:54: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:54: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-10-12 09:56:54 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:54: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:57: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-10-12 09:56:57 (duration: ~3 sec(s)). </span>
-<span class="r-in"><span><span class="co"># Change the threshold ESS for resampling</span></span></span>
-<span class="r-in"><span><span class="va">fwd</span>   <span class="op">&lt;-</span> <span class="fu">pf_filter</span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>                   .state <span class="op">=</span> <span class="va">state</span>,</span></span>
-<span class="r-in"><span>                   .xinit <span class="op">=</span> <span class="va">xinit</span>,</span></span>
-<span class="r-in"><span>                   .yobs <span class="op">=</span> <span class="va">yobs</span>,</span></span>
-<span class="r-in"><span>                   .model_move <span class="op">=</span> <span class="va">model_move</span>,</span></span>
-<span class="r-in"><span>                   .n_particle <span class="op">=</span> <span class="fl">1e5L</span>,</span></span>
-<span class="r-in"><span>                   .n_resample <span class="op">=</span> <span class="fl">1000L</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-10-12 09:56:57... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-10-12 09:56:57... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:57: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:57: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-10-12 09:56:57 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:57: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:58: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-10-12 09:56:58 (duration: ~1 sec(s)). </span>
-<span class="r-in"><span><span class="co"># Change the number of particles retained in memory</span></span></span>
-<span class="r-in"><span><span class="va">fwd</span>   <span class="op">&lt;-</span> <span class="fu">pf_filter</span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>                   .state <span class="op">=</span> <span class="va">state</span>,</span></span>
-<span class="r-in"><span>                   .xinit <span class="op">=</span> <span class="va">xinit</span>,</span></span>
-<span class="r-in"><span>                   .yobs <span class="op">=</span> <span class="va">yobs</span>,</span></span>
-<span class="r-in"><span>                   .model_move <span class="op">=</span> <span class="va">model_move</span>,</span></span>
-<span class="r-in"><span>                   .n_particle <span class="op">=</span> <span class="fl">1e5L</span>,</span></span>
-<span class="r-in"><span>                   .n_record <span class="op">=</span> <span class="fl">2000L</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-10-12 09:56:58... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-10-12 09:56:58... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:58: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:58: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-10-12 09:56:58 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:56:58: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:01: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-10-12 09:57:01 (duration: ~3 sec(s)). </span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Example (2): Run the filter backwards</span></span></span>
-<span class="r-in"><span><span class="co"># (A forward and backward run is required for the two-filter smoother)</span></span></span>
-<span class="r-in"><span><span class="va">fwd</span> <span class="op">&lt;-</span> <span class="fu">pf_filter</span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>                 .state <span class="op">=</span> <span class="va">state</span>,</span></span>
-<span class="r-in"><span>                 .xinit <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
-<span class="r-in"><span>                 .yobs <span class="op">=</span> <span class="va">yobs</span>,</span></span>
-<span class="r-in"><span>                 .model_move <span class="op">=</span> <span class="va">model_move</span>,</span></span>
-<span class="r-in"><span>                 .n_particle <span class="op">=</span> <span class="fl">1e4L</span>,</span></span>
-<span class="r-in"><span>                 .direction <span class="op">=</span> <span class="st">"backward"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-10-12 09:57:01... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-10-12 09:57:01... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:01: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:01: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-10-12 09:57:01 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:01: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:02: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-10-12 09:57:02 (duration: ~1 sec(s)). </span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### --------------------------------------------------</span></span></span>
-<span class="r-in"><span><span class="co">#### Real-world examples</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Assemble datasets</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Define datasets for a selected animal</span></span></span>
-<span class="r-in"><span><span class="co"># &gt; Here, we consider detections and depth time series from an example flapper skate</span></span></span>
-<span class="r-in"><span><span class="va">individual_id</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span></span>
-<span class="r-in"><span><span class="va">acc</span> <span class="op">&lt;-</span> <span class="va">dat_acoustics</span><span class="op">[</span><span class="va">individual_id</span> <span class="op">==</span> <span class="fl">25L</span>, <span class="op">]</span><span class="op">[</span>, <span class="va">individual_id</span> <span class="op">:=</span> <span class="cn">NULL</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">arc</span> <span class="op">&lt;-</span> <span class="va">dat_archival</span><span class="op">[</span><span class="va">individual_id</span> <span class="op">==</span> <span class="fl">25L</span>, <span class="op">]</span><span class="op">[</span>, <span class="va">individual_id</span> <span class="op">:=</span> <span class="cn">NULL</span><span class="op">]</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Define a timeline</span></span></span>
-<span class="r-in"><span><span class="co"># * We can do this manually or use the observations to define a timeline:</span></span></span>
-<span class="r-in"><span><span class="va">timeline</span> <span class="op">&lt;-</span> <span class="fu"><a href="assemble.html">assemble_timeline</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">acc</span>, <span class="va">arc</span><span class="op">)</span>, .step <span class="op">=</span> <span class="st">"2 mins"</span>, .trim <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">timeline</span> <span class="op">&lt;-</span> <span class="va">timeline</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">1440</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">timeline</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2016-03-17 01:50:00 UTC" "2016-03-19 01:48:00 UTC"</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Assemble a timeline of acoustic observations (0, 1) and model parameters</span></span></span>
-<span class="r-in"><span><span class="co"># * The default acoustic observation model parameters are taken from `.moorings`</span></span></span>
-<span class="r-in"><span><span class="va">acoustics</span> <span class="op">&lt;-</span> <span class="fu"><a href="assemble.html">assemble_acoustics</a></span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>                                .acoustics <span class="op">=</span> <span class="va">acc</span>,</span></span>
-<span class="r-in"><span>                                .moorings <span class="op">=</span> <span class="va">dat_moorings</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Assemble a timeline of archival observations and model parameters</span></span></span>
-<span class="r-in"><span><span class="co"># * Here, we include model parameters for `ModelObsDepthNormalTrunc`</span></span></span>
-<span class="r-in"><span><span class="va">archival</span> <span class="op">&lt;-</span> <span class="fu"><a href="assemble.html">assemble_archival</a></span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>                              .archival <span class="op">=</span></span></span>
-<span class="r-in"><span>                                <span class="va">arc</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>                                <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>obs <span class="op">=</span> <span class="va">depth</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>                                <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>depth_sigma <span class="op">=</span> <span class="fl">50</span>,</span></span>
-<span class="r-in"><span>                                       depth_deep_eps <span class="op">=</span> <span class="fl">20</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Define the .yobs list</span></span></span>
-<span class="r-in"><span><span class="va">yobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ModelObsAcousticLogisTrunc <span class="op">=</span> <span class="va">acoustics</span>,</span></span>
-<span class="r-in"><span>             ModelObsDepthNormalTrunc <span class="op">=</span> <span class="va">archival</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Visualise realisations of the movement model (the prior)</span></span></span>
-<span class="r-in"><span><span class="co"># We will use the same movement model as in previous examples</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="sim_path_walk.html">sim_path_walk</a></span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
-<span class="r-in"><span>              .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>              .state <span class="op">=</span> <span class="va">state</span>,</span></span>
-<span class="r-in"><span>              .model_move <span class="op">=</span> <span class="va">model_move</span>,</span></span>
-<span class="r-in"><span>              .n_path <span class="op">=</span> <span class="fl">10L</span>, .one_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-10-12 21:02:34... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-10-12 21:02:34... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:34: Simulating initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:35: Setting observations... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-10-12 21:02:35 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:35: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:35: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-10-12 21:02:35 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-10-12 21:02:35... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-10-12 21:02:35... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:35: Simulating initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:35: Setting observations... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-10-12 21:02:35 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:35: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:35: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-10-12 21:02:35 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-10-12 21:02:35... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-10-12 21:02:35... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:35: Simulating initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:36: Setting observations... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-10-12 21:02:36 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:36: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:38: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-10-12 21:02:38 (duration: ~3 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-10-12 21:02:38... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-10-12 21:02:38... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:38: Simulating initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:39: Setting observations... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-10-12 21:02:39 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:39: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:40: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-10-12 21:02:40 (duration: ~2 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-10-12 21:02:40... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-10-12 21:02:40... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:40: Simulating initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:40: Setting observations... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-10-12 21:02:40 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:40: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:43: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-10-12 21:02:43 (duration: ~3 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-10-12 21:02:43... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-10-12 21:02:43... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:43: Simulating initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:43: Setting observations... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-10-12 21:02:43 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:43: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:44: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-10-12 21:02:44 (duration: ~1 sec(s)). </span>
 <span class="r-plt img"><img src="pf_filter-9.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        path_id timestep           timestamp map_value        x       y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          &lt;int&gt;    &lt;int&gt;              &lt;POSc&gt;     &lt;num&gt;    &lt;num&gt;   &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     1:       1        1 2016-03-17 01:50:00  48.59683 702742.1 6266307</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     2:       1        2 2016-03-17 01:52:00  48.59683 702748.6 6266308</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     3:       1        3 2016-03-17 01:54:00  53.34158 702712.2 6266489</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     4:       1        4 2016-03-17 01:56:00  55.11282 702725.7 6266647</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     5:       1        5 2016-03-17 01:58:00  43.95956 702387.2 6266627</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    ---                                                                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14396:      10     1436 2016-03-19 01:40:00  69.84707 704917.0 6258936</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14397:      10     1437 2016-03-19 01:42:00  36.32471 705061.4 6259167</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14398:      10     1438 2016-03-19 01:44:00  36.32471 705058.3 6259178</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14399:      10     1439 2016-03-19 01:46:00  18.92099 705278.0 6259236</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14400:      10     1440 2016-03-19 01:48:00  31.32446 705107.2 6259089</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Example (1): Run filter forwards</span></span></span>
-<span class="r-in"><span><span class="va">fwd</span> <span class="op">&lt;-</span> <span class="fu">pf_filter</span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>                 .state <span class="op">=</span> <span class="va">state</span>,</span></span>
-<span class="r-in"><span>                 .yobs <span class="op">=</span> <span class="va">yobs</span>,</span></span>
-<span class="r-in"><span>                 .model_move <span class="op">=</span> <span class="va">model_move</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-10-12 09:57:03... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-10-12 09:57:03... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:03: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:03: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-10-12 09:57:03 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:03: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:04: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-10-12 09:57:04 (duration: ~1 sec(s)). </span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Example (2): Run the filter backwards</span></span></span>
-<span class="r-in"><span><span class="va">bwd</span> <span class="op">&lt;-</span> <span class="fu">pf_filter</span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>                 .state <span class="op">=</span> <span class="va">state</span>,</span></span>
-<span class="r-in"><span>                 .yobs <span class="op">=</span> <span class="va">yobs</span>,</span></span>
-<span class="r-in"><span>                 .model_move <span class="op">=</span> <span class="va">model_move</span>,</span></span>
-<span class="r-in"><span>                 .direction <span class="op">=</span> <span class="st">"backward"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-10-12 09:57:04... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-10-12 09:57:04... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:04: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:04: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-10-12 09:57:04 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:04: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:05: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-10-12 09:57:05 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-10-12 21:02:44... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-10-12 21:02:44... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:44: Simulating initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:45: Setting observations... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-10-12 21:02:45 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:45: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:45: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-10-12 21:02:45 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-10-12 21:02:45... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-10-12 21:02:45... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:45: Simulating initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:46: Setting observations... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-10-12 21:02:46 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:46: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:02:46: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-10-12 21:02:46 (duration: ~1 sec(s)). </span>
 </code></pre></div>
     </div>
   </div>

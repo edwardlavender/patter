@@ -80,9 +80,9 @@
 
 
 <dl><dt id="arg--map-mobility-vmap-plot-">.map, .mobility, .vmap, .plot, ...<a class="anchor" aria-label="anchor" href="#arg--map-mobility-vmap-plot-"></a></dt>
-<dd><p>(optional) 'Validity map' arguments for <code><a href="julia_set.html">set_map()</a></code>, used for two-dimensional states.</p><ul><li><p><code>.map</code> is a <code><a href="https://rspatial.github.io/terra/reference/SpatRaster-class.html" class="external-link">SpatRaster</a></code> that defines the study area of the simulation (see <code><a href="pf_filter.html">pf_filter()</a></code>).</p></li>
+<dd><p>(optional) 'Validity map' arguments for <code><a href="set_map.html">set_map()</a></code>, used for two-dimensional states.</p><ul><li><p><code>.map</code> is a <code><a href="https://rspatial.github.io/terra/reference/SpatRaster-class.html" class="external-link">SpatRaster</a></code> that defines the study area of the simulation (see <code><a href="pf_filter.html">pf_filter()</a></code>).</p></li>
 <li><p><code>.mobility</code> is a <code>numeric</code> value that defines the maximum moveable distance between two time steps (e.g., <code>.timeline[1]</code> and <code>.timeline[2]</code> in <code><a href="pf_filter.html">pf_filter()</a></code>).</p></li>
-<li><p><code>.vmap</code> is a <code><a href="https://rspatial.github.io/terra/reference/SpatRaster-class.html" class="external-link">SpatRaster</a></code> (supported on Windows or MacOS), or a file path to a raster (supported on MacOS, Windows and Linux), that defines the validity map (see <code><a href="julia_set.html">set_map()</a></code>). This can be supplied, from a previous implementation of <code>set_vmap()</code> or the internal function <code><a href="spat.html">spatVmap()</a></code>, instead of <code>.map</code> and <code>.mobility</code> to avoid re-computation.</p></li>
+<li><p><code>.vmap</code> is a <code><a href="https://rspatial.github.io/terra/reference/SpatRaster-class.html" class="external-link">SpatRaster</a></code> (supported on Windows or MacOS), or a file path to a raster (supported on MacOS, Windows and Linux), that defines the validity map (see <code><a href="set_map.html">set_map()</a></code>). This can be supplied, from a previous implementation of <code>set_vmap()</code> or the internal function <code><a href="spat.html">spatVmap()</a></code>, instead of <code>.map</code> and <code>.mobility</code> to avoid re-computation.</p></li>
 <li><p><code>.plot</code> is a <code>logical</code> variable that defines whether or not to plot the map.</p></li>
 <li><p><code>...</code> is a placeholder for additional arguments, passed to <code><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">terra::plot()</a></code>, if <code>.plot = TRUE</code>.</p></li>
 </ul></dd>
@@ -135,108 +135,103 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">#### Set up example</span></span></span>
-<span class="r-in"><span><span class="co"># Set up the particle filter with an example dataset</span></span></span>
-<span class="r-in"><span><span class="co"># (See `?pf_filter()` for the full workflow)</span></span></span>
-<span class="r-in"><span><span class="va">setup</span> <span class="op">&lt;-</span> <span class="fu"><a href="example_setup.html">example_setup</a></span><span class="op">(</span><span class="st">"pf_smoother_two_filter"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-10-12 09:57:45... </span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="julia_helper.html">julia_run</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Set up example</span></span></span>
+<span class="r-in"><span>  <span class="co"># Set up the particle filter with an example dataset</span></span></span>
+<span class="r-in"><span>  <span class="co"># (See `?pf_filter()` for the full workflow)</span></span></span>
+<span class="r-in"><span>  <span class="va">setup</span> <span class="op">&lt;-</span> <span class="fu"><a href="example_setup.html">example_setup</a></span><span class="op">(</span><span class="st">"pf_smoother_two_filter"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">map</span>   <span class="op">&lt;-</span> <span class="va">setup</span><span class="op">$</span><span class="va">map</span></span></span>
+<span class="r-in"><span>  <span class="va">args</span>  <span class="op">&lt;-</span> <span class="va">setup</span><span class="op">$</span><span class="va">pf_filter_args</span></span></span>
+<span class="r-in"><span>  <span class="co"># Run the particle filter forwards</span></span></span>
+<span class="r-in"><span>  <span class="va">args</span><span class="op">$</span><span class="va">.direction</span> <span class="op">&lt;-</span> <span class="st">"forward"</span></span></span>
+<span class="r-in"><span>  <span class="va">fwd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">pf_filter</span>, <span class="va">args</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># Run the particle filter backwards</span></span></span>
+<span class="r-in"><span>  <span class="va">args</span><span class="op">$</span><span class="va">.direction</span> <span class="op">&lt;-</span> <span class="st">"backward"</span></span></span>
+<span class="r-in"><span>  <span class="va">bwd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">pf_filter</span>, <span class="va">args</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Example (1): Implement the smoother with default options</span></span></span>
+<span class="r-in"><span>  <span class="co"># Run the smoother</span></span></span>
+<span class="r-in"><span>  <span class="co"># * This uses objects defined by `pf_filter()` in `Julia`</span></span></span>
+<span class="r-in"><span>  <span class="co"># (set_vmap() is explained below)</span></span></span>
+<span class="r-in"><span>  <span class="va">smo</span> <span class="op">&lt;-</span> <span class="fu">pf_smoother_two_filter</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># The filter returns a `pf_particles`-class object</span></span></span>
+<span class="r-in"><span>  <span class="co"># (See `?pf_filter()` for examples)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">smo</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">smo</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Example (2): Implement the smoother using a validity map</span></span></span>
+<span class="r-in"><span>  <span class="co"># We can use a validity map b/c `.state` = "StateXY"</span></span></span>
+<span class="r-in"><span>  <span class="va">args</span><span class="op">$</span><span class="va">.state</span></span></span>
+<span class="r-in"><span>  <span class="co"># To define the validity map, define:</span></span></span>
+<span class="r-in"><span>  <span class="co"># * `.map`</span></span></span>
+<span class="r-in"><span>  <span class="co"># * `.mobility`, which we can see here is 750 m:</span></span></span>
+<span class="r-in"><span>  <span class="va">args</span><span class="op">$</span><span class="va">.model_move</span></span></span>
+<span class="r-in"><span>  <span class="co"># Run the smoother</span></span></span>
+<span class="r-in"><span>  <span class="fu">set_vmap</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .mobility <span class="op">=</span> <span class="fl">750.0</span>, .plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">smo</span> <span class="op">&lt;-</span> <span class="fu">pf_smoother_two_filter</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># Reset `vmap` in `Julia` to run the smoother for other state types</span></span></span>
+<span class="r-in"><span>  <span class="co"># ... in the same R session:</span></span></span>
+<span class="r-in"><span>  <span class="fu">set_vmap</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Example (3): Implement the smoother with a sub-sample of particles</span></span></span>
+<span class="r-in"><span>  <span class="co"># This is useful for quick tests</span></span></span>
+<span class="r-in"><span>  <span class="fu">set_vmap</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .mobility <span class="op">=</span> <span class="fl">750.0</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">smo</span> <span class="op">&lt;-</span> <span class="fu">pf_smoother_two_filter</span><span class="op">(</span>.n_particle <span class="op">=</span> <span class="fl">50L</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Example (4): Adjust the number of MC simulations</span></span></span>
+<span class="r-in"><span>  <span class="co"># set_vmap(.map = map, .mobility = 750.0)</span></span></span>
+<span class="r-in"><span>  <span class="va">smo</span> <span class="op">&lt;-</span> <span class="fu">pf_smoother_two_filter</span><span class="op">(</span>.n_sim <span class="op">=</span> <span class="fl">1000L</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Example (5): Analyse smoothed particles</span></span></span>
+<span class="r-in"><span>  <span class="co"># * See `map_*()` functions (e.g., `?map_dens()`) to map utilisation distributions</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Cleanup (reset vmap)</span></span></span>
+<span class="r-in"><span>  <span class="fu">set_vmap</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-10-12 21:03:17... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_setup()`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`JULIA_NUM_THREADS` could not be set via `.threads`.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 11 thread(s). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-10-12 09:57:51 (duration: ~6 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-10-12 21:03:23 (duration: ~6 sec(s)). </span>
 <span class="r-plt img"><img src="pf_smoother_two_filter-1.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="pf_smoother_two_filter-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="va">map</span>   <span class="op">&lt;-</span> <span class="va">setup</span><span class="op">$</span><span class="va">map</span></span></span>
-<span class="r-in"><span><span class="va">args</span>  <span class="op">&lt;-</span> <span class="va">setup</span><span class="op">$</span><span class="va">pf_filter_args</span></span></span>
-<span class="r-in"><span><span class="co"># Run the particle filter forwards</span></span></span>
-<span class="r-in"><span><span class="va">args</span><span class="op">$</span><span class="va">.direction</span> <span class="op">&lt;-</span> <span class="st">"forward"</span></span></span>
-<span class="r-in"><span><span class="va">fwd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">pf_filter</span>, <span class="va">args</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-10-12 09:57:52... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-10-12 09:57:52... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:52: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:53: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-10-12 09:57:53 (duration: ~1 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:53: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:53: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-10-12 09:57:53 (duration: ~1 sec(s)). </span>
-<span class="r-in"><span><span class="co"># Run the particle filter backwards</span></span></span>
-<span class="r-in"><span><span class="va">args</span><span class="op">$</span><span class="va">.direction</span> <span class="op">&lt;-</span> <span class="st">"backward"</span></span></span>
-<span class="r-in"><span><span class="va">bwd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">pf_filter</span>, <span class="va">args</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-10-12 09:57:53... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-10-12 09:57:53... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:53: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:53: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-10-12 09:57:53 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:53: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:53: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-10-12 09:57:53 (duration: ~0 sec(s)). </span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Example (1): Implement the smoother with default options</span></span></span>
-<span class="r-in"><span><span class="co"># Run the smoother</span></span></span>
-<span class="r-in"><span><span class="co"># * This uses objects defined by `pf_filter()` in `Julia`</span></span></span>
-<span class="r-in"><span><span class="co"># (set_vmap() is explained below)</span></span></span>
-<span class="r-in"><span><span class="va">smo</span> <span class="op">&lt;-</span> <span class="fu">pf_smoother_two_filter</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_smoother_two_filter()` called @ 2024-10-12 09:57:53... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:54: Running smoother... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:54: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_smoother_two_filter()` call ended @ 2024-10-12 09:57:54 (duration: ~1 sec(s)). </span>
-<span class="r-in"><span><span class="co"># The filter returns a `pf_particles`-class object</span></span></span>
-<span class="r-in"><span><span class="co"># (See `?pf_filter()` for examples)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">smo</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "list"         "pf_particles"</span>
-<span class="r-in"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">smo</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             Length Class      Mode   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> states      6      data.table list   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> diagnostics 4      data.table list   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> convergence 1      -none-     logical</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> trials      1      -none-     numeric</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Example (2): Implement the smoother using a validity map</span></span></span>
-<span class="r-in"><span><span class="co"># We can use a validity map b/c `.state` = "StateXY"</span></span></span>
-<span class="r-in"><span><span class="va">args</span><span class="op">$</span><span class="va">.state</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "StateXY"</span>
-<span class="r-in"><span><span class="co"># To define the validity map, define:</span></span></span>
-<span class="r-in"><span><span class="co"># * `.map`</span></span></span>
-<span class="r-in"><span><span class="co"># * `.mobility`, which we can see here is 750 m:</span></span></span>
-<span class="r-in"><span><span class="va">args</span><span class="op">$</span><span class="va">.model_move</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ModelMoveXY(env, 750.0, truncated(Gamma(1, 250.0), upper = 750.0), Uniform(-pi, pi));</span>
-<span class="r-in"><span><span class="co"># Run the smoother</span></span></span>
-<span class="r-in"><span><span class="fu">set_vmap</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .mobility <span class="op">=</span> <span class="fl">750.0</span>, .plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-10-12 21:03:24... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-10-12 21:03:24... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:03:24: Simulating initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:03:24: Setting observations... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-10-12 21:03:24 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:03:24: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:03:24: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-10-12 21:03:24 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-10-12 21:03:24... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-10-12 21:03:24... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:03:24: Simulating initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:03:24: Setting observations... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-10-12 21:03:24 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:03:24: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:03:25: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-10-12 21:03:25 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_smoother_two_filter()` called @ 2024-10-12 21:03:25... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:03:25: Running smoother... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:03:25: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_smoother_two_filter()` call ended @ 2024-10-12 21:03:25 (duration: ~0 sec(s)). </span>
 <span class="r-plt img"><img src="pf_smoother_two_filter-3.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="va">smo</span> <span class="op">&lt;-</span> <span class="fu">pf_smoother_two_filter</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_smoother_two_filter()` called @ 2024-10-12 09:57:55... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:55: Running smoother... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:55: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_smoother_two_filter()` call ended @ 2024-10-12 09:57:55 (duration: ~0 sec(s)). </span>
-<span class="r-in"><span><span class="co"># Reset `vmap` in `Julia` to run the smoother for other state types</span></span></span>
-<span class="r-in"><span><span class="co"># ... in the same R session:</span></span></span>
-<span class="r-in"><span><span class="fu">set_vmap</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Example (3): Implement the smoother with a sub-sample of particles</span></span></span>
-<span class="r-in"><span><span class="co"># This is useful for quick tests</span></span></span>
-<span class="r-in"><span><span class="fu">set_vmap</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .mobility <span class="op">=</span> <span class="fl">750.0</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">smo</span> <span class="op">&lt;-</span> <span class="fu">pf_smoother_two_filter</span><span class="op">(</span>.n_particle <span class="op">=</span> <span class="fl">50L</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_smoother_two_filter()` called @ 2024-10-12 09:57:55... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:55: Running smoother... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:55: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_smoother_two_filter()` call ended @ 2024-10-12 09:57:55 (duration: ~0 sec(s)). </span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Example (4): Adjust the number of MC simulations</span></span></span>
-<span class="r-in"><span><span class="co"># set_vmap(.map = map, .mobility = 750.0)</span></span></span>
-<span class="r-in"><span><span class="va">smo</span> <span class="op">&lt;-</span> <span class="fu">pf_smoother_two_filter</span><span class="op">(</span>.n_sim <span class="op">=</span> <span class="fl">1000L</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_smoother_two_filter()` called @ 2024-10-12 09:57:55... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:55: Running smoother... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:57:55: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_smoother_two_filter()` call ended @ 2024-10-12 09:57:55 (duration: ~0 sec(s)). </span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Example (5): Analyse smoothed particles</span></span></span>
-<span class="r-in"><span><span class="co"># * See `map_*()` functions (e.g., `?map_dens()`) to map utilisation distributions</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Cleanup (reset vmap)</span></span></span>
-<span class="r-in"><span><span class="fu">set_vmap</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_smoother_two_filter()` called @ 2024-10-12 21:03:26... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:03:26: Running smoother... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:03:26: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_smoother_two_filter()` call ended @ 2024-10-12 21:03:26 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_smoother_two_filter()` called @ 2024-10-12 21:03:26... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:03:26: Running smoother... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:03:26: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_smoother_two_filter()` call ended @ 2024-10-12 21:03:26 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_smoother_two_filter()` called @ 2024-10-12 21:03:26... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:03:26: Running smoother... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 21:03:26: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_smoother_two_filter()` call ended @ 2024-10-12 21:03:26 (duration: ~0 sec(s)). </span>
 </code></pre></div>
     </div>
   </div>

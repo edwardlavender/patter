@@ -68,7 +68,7 @@
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">coa</span><span class="op">(</span></span>
 <span>  <span class="va">.map</span>,</span>
-<span>  <span class="va">.acoustics</span>,</span>
+<span>  <span class="va">.detections</span>,</span>
 <span>  .moorings <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">.delta_t</span>,</span>
 <span>  .split <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -87,9 +87,9 @@
 </ul></dd>
 
 
-<dt id="arg--acoustics-moorings">.acoustics, .moorings<a class="anchor" aria-label="anchor" href="#arg--acoustics-moorings"></a></dt>
-<dd><p>Acoustic detection <a href="s"><code>data.table</code></a>.</p><ul><li><p><code>.acoustics</code> is a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of acoustic detections, with the following columns: <code>receiver_id</code> (or <code>sensor_id</code>), <code>timestamp</code> and (optionally) <code>receiver_x</code> and <code>receiver_y</code> columns;</p></li>
-<li><p>(optional) <code>.moorings</code> is a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of receiver coordinates, which should be provided if unavailable in <code>.acoustics</code>, with <code>receiver_id</code>, <code>receiver_x</code> and <code>receiver_y</code> columns;</p></li>
+<dt id="arg--detections-moorings">.detections, .moorings<a class="anchor" aria-label="anchor" href="#arg--detections-moorings"></a></dt>
+<dd><p>Acoustic detection <a href="s"><code>data.table</code></a>.</p><ul><li><p><code>.detections</code> is a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of acoustic detections, with the following columns: <code>receiver_id</code> (or <code>sensor_id</code>), <code>timestamp</code> and (optionally) <code>receiver_x</code> and <code>receiver_y</code> columns;</p></li>
+<li><p>(optional) <code>.moorings</code> is a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of receiver coordinates, which should be provided if unavailable in <code>.detections</code>, with <code>receiver_id</code>, <code>receiver_x</code> and <code>receiver_y</code> columns;</p></li>
 </ul><p>Receiver coordinates <strong>must be planar</strong>.</p></dd>
 
 
@@ -98,7 +98,7 @@
 
 
 <dt id="arg--split">.split<a class="anchor" aria-label="anchor" href="#arg--split"></a></dt>
-<dd><p>(optional) A <code>character</code> that defines the name of the grouping factor in <code>.acoustics</code> (e.g., <code>individual_id</code> for <code><a href="datasets-mefs.html">dat_acoustics</a></code>).</p></dd>
+<dd><p>(optional) A <code>character</code> that defines the name of the grouping factor in <code>.detections</code> (e.g., <code>individual_id</code> for <code><a href="datasets-mefs.html">dat_detections</a></code>).</p></dd>
 
 
 <dt id="arg--plot-weights-one-page">.plot_weights, ..., .one_page<a class="anchor" aria-label="anchor" href="#arg--plot-weights-one-page"></a></dt>
@@ -138,14 +138,14 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Set up example</span></span></span>
-<span class="r-in"><span><span class="va">map</span>       <span class="op">&lt;-</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">acoustics</span> <span class="op">&lt;-</span> <span class="va">dat_acoustics</span></span></span>
-<span class="r-in"><span><span class="va">moorings</span>  <span class="op">&lt;-</span> <span class="va">dat_moorings</span></span></span>
+<span class="r-in"><span><span class="va">map</span>        <span class="op">&lt;-</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">detections</span> <span class="op">&lt;-</span> <span class="va">dat_detections</span></span></span>
+<span class="r-in"><span><span class="va">moorings</span>   <span class="op">&lt;-</span> <span class="va">dat_moorings</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (1): Calculate COAs for an example individual</span></span></span>
-<span class="r-in"><span><span class="va">id</span>     <span class="op">&lt;-</span> <span class="va">dat_acoustics</span><span class="op">$</span><span class="va">individual_id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">acc</span>    <span class="op">&lt;-</span> <span class="va">dat_acoustics</span><span class="op">[</span><span class="va">individual_id</span> <span class="op">==</span> <span class="va">id</span>, <span class="op">]</span></span></span>
-<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .acoustics <span class="op">=</span> <span class="va">acc</span>, .moorings <span class="op">=</span> <span class="va">moorings</span>,</span></span>
+<span class="r-in"><span><span class="va">id</span>     <span class="op">&lt;-</span> <span class="va">dat_detections</span><span class="op">$</span><span class="va">individual_id</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">det</span>    <span class="op">&lt;-</span> <span class="va">dat_detections</span><span class="op">[</span><span class="va">individual_id</span> <span class="op">==</span> <span class="va">id</span>, <span class="op">]</span></span></span>
+<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .detections <span class="op">=</span> <span class="va">det</span>, .moorings <span class="op">=</span> <span class="va">moorings</span>,</span></span>
 <span class="r-in"><span>    .delta_t <span class="op">=</span> <span class="st">"2 hours"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="coa-1.png" alt="" width="700" height="433"></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      timestep           timestamp map_value        x       y</span>
@@ -163,7 +163,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 767:      767 2017-06-01 04:00:00  68.36060 703042.1 6266307</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (2): Customise the time interval via `.delta_t`</span></span></span>
-<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .acoustics <span class="op">=</span> <span class="va">acc</span>, .moorings <span class="op">=</span> <span class="va">moorings</span>,</span></span>
+<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .detections <span class="op">=</span> <span class="va">det</span>, .moorings <span class="op">=</span> <span class="va">moorings</span>,</span></span>
 <span class="r-in"><span>    .delta_t <span class="op">=</span> <span class="st">"4 hours"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="coa-2.png" alt="" width="700" height="433"></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      timestep           timestamp map_value        x       y</span>
@@ -182,7 +182,7 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Example (3): Calculate COAs for multiple individuals via `.split`</span></span></span>
 <span class="r-in"><span><span class="co"># Calculate COAs</span></span></span>
-<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .acoustics <span class="op">=</span> <span class="va">acc</span>, .moorings <span class="op">=</span> <span class="va">moorings</span>,</span></span>
+<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .detections <span class="op">=</span> <span class="va">det</span>, .moorings <span class="op">=</span> <span class="va">moorings</span>,</span></span>
 <span class="r-in"><span>    .delta_t <span class="op">=</span> <span class="st">"6 hours"</span>, .split <span class="op">=</span> <span class="st">"individual_id"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="coa-3.png" alt="" width="700" height="433"></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      individual_id timestep           timestamp map_value        x       y</span>
@@ -199,7 +199,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 472:            25      472 2017-05-31 18:00:00  56.08996 702976.4 6266241</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 473:            25      473 2017-06-01 00:00:00  68.36060 703042.1 6266307</span>
 <span class="r-in"><span><span class="co"># Use one page for plots via `.one_page = TRUE`</span></span></span>
-<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .acoustics <span class="op">=</span> <span class="va">acc</span>, .moorings <span class="op">=</span> <span class="va">moorings</span>,</span></span>
+<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .detections <span class="op">=</span> <span class="va">det</span>, .moorings <span class="op">=</span> <span class="va">moorings</span>,</span></span>
 <span class="r-in"><span>    .delta_t <span class="op">=</span> <span class="st">"6 hours"</span>, .split <span class="op">=</span> <span class="st">"individual_id"</span>,</span></span>
 <span class="r-in"><span>    .one_page <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      individual_id timestep           timestamp map_value        x       y</span>
@@ -216,7 +216,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 472:            25      472 2017-05-31 18:00:00  56.08996 702976.4 6266241</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 473:            25      473 2017-06-01 00:00:00  68.36060 703042.1 6266307</span>
 <span class="r-in"><span><span class="co"># Suppress plots via `.plot = FALSE`</span></span></span>
-<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .acoustics <span class="op">=</span> <span class="va">acc</span>, .moorings <span class="op">=</span> <span class="va">moorings</span>,</span></span>
+<span class="r-in"><span><span class="fu">coa</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .detections <span class="op">=</span> <span class="va">det</span>, .moorings <span class="op">=</span> <span class="va">moorings</span>,</span></span>
 <span class="r-in"><span>    .delta_t <span class="op">=</span> <span class="st">"6 hours"</span>, .split <span class="op">=</span> <span class="st">"individual_id"</span>,</span></span>
 <span class="r-in"><span>    .one_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      individual_id timestep           timestamp map_value        x       y</span>
@@ -233,11 +233,11 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 472:            25      472 2017-05-31 18:00:00  56.08996 702976.4 6266241</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 473:            25      473 2017-06-01 00:00:00  68.36060 703042.1 6266307</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Example (4): Specify `.acoustics` only</span></span></span>
-<span class="r-in"><span><span class="co"># `.moorings` is not required if `.acoustics` contains receiver coordinates</span></span></span>
+<span class="r-in"><span><span class="co">#### Example (4): Specify `.detections` only</span></span></span>
+<span class="r-in"><span><span class="co"># `.moorings` is not required if `.detections` contains receiver coordinates</span></span></span>
 <span class="r-in"><span><span class="fu">coa</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
-<span class="r-in"><span>    .acoustics <span class="op">=</span></span></span>
-<span class="r-in"><span>      <span class="va">acoustics</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    .detections <span class="op">=</span></span></span>
+<span class="r-in"><span>      <span class="va">detections</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>      <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">moorings</span>, by <span class="op">=</span> <span class="st">"receiver_id"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    .delta_t <span class="op">=</span> <span class="st">"6 hours"</span>, .split <span class="op">=</span> <span class="st">"individual_id"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="coa-4.png" alt="" width="700" height="433"></span>

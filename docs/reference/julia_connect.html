@@ -67,12 +67,13 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">julia_connect</span><span class="op">(</span></span>
-<span>  <span class="va">...</span>,</span>
+<span>  <span class="va">JULIA_HOME</span>,</span>
 <span>  <span class="va">JULIA_PROJ</span>,</span>
+<span>  <span class="va">JULIA_NUM_THREADS</span>,</span>
 <span>  .pkg_config <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  .pkg_update <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  .threads <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  .verbose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"patter.verbose"</span><span class="op">)</span></span>
+<span>  .verbose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"patter.verbose"</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -80,16 +81,11 @@
     <h2>Arguments</h2>
 
 
-<dl><dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Arguments, such as <code>JULIA_HOME</code>, passed to <code><a href="https://rdrr.io/pkg/JuliaCall/man/julia_setup.html" class="external-link">JuliaCall::julia_setup()</a></code> (excluding <code>verbose</code>, which is handled below).</p></dd>
-
-
-<dt id="arg-julia-proj">JULIA_PROJ<a class="anchor" aria-label="anchor" href="#arg-julia-proj"></a></dt>
-<dd><p>(optional) A <code>character</code> string that defines the directory of a <code>Julia</code> Project.</p>
-<p>If <code>missing</code>, the function scans:</p><ul><li><p>The global option, <code>JULIA_PROJ</code>;</p></li>
-<li><p>The environmental variable, <code>JULIA_PROJ</code>;</p></li>
-</ul><p>If <code>missing</code> and unfound, <code>JULIA_PROJ = NULL</code> is used with a <code><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></code>.</p>
-<p>If <code>NULL</code>, a <code>Julia</code> Project is not used and the default environment is used (e.g., <code>~/.julia/environments/v1.10/Project.toml</code>).</p></dd>
+<dl><dt id="arg-julia-home-julia-proj-julia-num-threads">JULIA_HOME, JULIA_PROJ, JULIA_NUM_THREADS<a class="anchor" aria-label="anchor" href="#arg-julia-home-julia-proj-julia-num-threads"></a></dt>
+<dd><p>(optional) <code>Julia</code> options, provided as function arguments, global options or environment variables.</p><ul><li><p><code>JULIA_HOME</code>—A <code>character</code> string that defines the location of the <code>Julia</code> installation (see <code><a href="https://rdrr.io/pkg/JuliaCall/man/julia_setup.html" class="external-link">JuliaCall::julia_setup()</a></code>). Usually, this is not required.</p></li>
+<li><p><code>JULIA_PROJ</code>—A <code>character</code> string that defines the directory of a <code>Julia</code> Project. If unspecified, the default environment (e.g., <code>~/.julia/environments/v1.10/Project.toml</code>) is used with a <code><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></code> instead of a local <code>Julia</code> project.</p></li>
+<li><p><code>JULIA_NUM_THREADS</code>—On MacOS or Linux, <code>JULIA_NUM_THREADS</code> is a <code>character</code> (<code>"auto"</code>) or an <code>integer</code> that defines the number of threads used by multi-threaded operations in <code>Julia</code>. This defaults to defaults to <code>"auto"</code> (not <code>1</code>). This can only be set once per <code>R</code> session. On Windows, <code>JULIA_NUM_THREADS</code> must be set system-wide and use of this argument produces a <code><a href="https://rdrr.io/r/base/warning.html" class="external-link">warning</a></code>. See this <a href="https://github.com/edwardlavender/patter/issues/11" class="external-link">GitHub Issue</a> for instructions.</p></li>
+</ul></dd>
 
 
 <dt id="arg--pkg-config">.pkg_config<a class="anchor" aria-label="anchor" href="#arg--pkg-config"></a></dt>
@@ -100,12 +96,12 @@
 <dd><p>A <code>logical</code> variable that defines whether or not to update installed <code>Julia</code> packages.</p></dd>
 
 
-<dt id="arg--threads">.threads<a class="anchor" aria-label="anchor" href="#arg--threads"></a></dt>
-<dd><p>A <code>character</code> (<code>"auto"</code>) or an <code>integer</code> that defines the number of threads used by multi-threaded operations in <code>Julia</code>. This can only be set once per <code>R</code> session. <strong>It is currently ignored on Windows</strong> (see below).</p></dd>
-
-
 <dt id="arg--verbose">.verbose<a class="anchor" aria-label="anchor" href="#arg--verbose"></a></dt>
 <dd><p>User output control (see <code><a href="patter-progress.html">patter-progress</a></code> for supported options).</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Additional arguments passed to <code><a href="https://rdrr.io/pkg/JuliaCall/man/julia_setup.html" class="external-link">JuliaCall::julia_setup()</a></code> (excluding <code>verbose</code>).</p></dd>
 
 </dl></div>
     <div id="value">
@@ -115,17 +111,13 @@
     <div id="details">
     <h2>Details</h2>
     <p><code><a href="patter.html">patter</a></code> is an <code>R</code> front-end for the <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a> package. This requires a local installation of <code>Julia</code>. This function connects <code>R</code> to the local <code>Julia</code> installation, sets up <code><a href="https://rdrr.io/pkg/JuliaCall/man/JuliaCall.html" class="external-link">JuliaCall</a></code>, which provides the integration between <code>R</code> and <code>Julia</code>, and <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a>. Internally, the steps are as follows:</p><ul><li><p><code><a href="https://rdrr.io/pkg/JuliaCall/man/JuliaCall.html" class="external-link">JuliaCall</a></code> is set up via <code><a href="https://rdrr.io/pkg/JuliaCall/man/julia_setup.html" class="external-link">JuliaCall::julia_setup()</a></code>.</p></li>
-<li><p>The number of threads is set via the <code>JULIA_NUM_THREADS</code> environment variable:</p><ul><li><p>If <code>.threads = NULL</code>, <code>JULIA_NUM_THREADS</code> is set to <code>"auto"</code> if unset or left unchanged otherwise;</p></li>
-<li><p>Otherwise, <code>JULIA_NUM_THREADS</code> is set to <code>.threads</code>;</p></li>
-<li><p>The number of threads can only be set once per <code>R</code> session;</p></li>
-<li><p>On Windows, setting <code>JULIA_NUM_THREADS</code> as an environment variable in <code>.Renviron</code> or using <code>.threads</code> does not work. See this <a href="https://github.com/edwardlavender/patter/issues/11" class="external-link">issue</a> for a workaround.</p></li>
-</ul></li>
+<li><p>The number of threads is set, if possible, via <code>JULIA_NUM_THREADS</code>.</p></li>
 <li><p>The <code>Julia</code> installation is validated.</p></li>
 <li><p>A local <code>Julia</code> Project is generated in <code>JULIA_PROJ</code> (if specified and required) and activated. We recommend using <code><a href="patter.html">patter</a></code> within an RStudio Project, with a <code>Julia</code> directory at the top-level that contains the <code>Julia</code> project.</p></li>
 <li><p>If specified, <code>.pkg_config</code> is run via <code><a href="julia_helper.html">julia_code()</a></code>.</p></li>
 <li><p><a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a> and supporting dependencies are installed or updated (if required) and loaded (optionally in the local <code>Julia</code> Project). If the environment variable <code>PATTER.JL_DEV = "path/to/local/clone/of/Patter.jl"</code> is set, <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a> is installed from a local source as a development dependency (via <code>Pkg.develop()</code>); otherwise, <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a> is installed from the remote.</p></li>
-</ul><p>You should run this function once per <code>R</code> session.</p>
-<p>To update the number of threads, restart <code>R</code> and re-run the function with an updated <code>.threads</code> argument.</p>
+</ul><p>You should run this function once per <code>R</code> session (and for every socket in a socket cluster, if necessary).</p>
+<p>To update the number of threads, restart <code>R</code> and re-run the function with an updated <code>JULIA_NUM_THREADS</code> argument.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -140,64 +132,43 @@
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="julia_helper.html">julia_run</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Set JULIA OPTIONS</span></span></span>
+<span class="r-in"><span>  <span class="co"># Recommended: set JULIA options in .Rprofile or .Renviron</span></span></span>
+<span class="r-in"><span>  <span class="co"># (Restart R to ensure these settings take effect)</span></span></span>
+<span class="r-in"><span>  <span class="co"># Otherwise: include JULIA options as function arguments below</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co">#### Example (1): First time use</span></span></span>
 <span class="r-in"><span>  <span class="co"># Use `...` to customise `JuliaCall::julia_setup()`</span></span></span>
 <span class="r-in"><span>  <span class="co"># Try `installJulia` if you require a Julia installation</span></span></span>
+<span class="r-in"><span>  <span class="co"># The first call to `julia_connect()` may take several minutes</span></span></span>
 <span class="r-in"><span>  <span class="fu">julia_connect</span><span class="op">(</span>installJulia <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co">#### Example (2): Connect to `Julia` using default settings</span></span></span>
-<span class="r-in"><span>  <span class="co"># You may need to tell `R` where Julia is via `JULIA_HOME`</span></span></span>
 <span class="r-in"><span>  <span class="fu">julia_connect</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co">#### Example (3): Use a local `Julia` Project (recommended)</span></span></span>
-<span class="r-in"><span>  <span class="va">proj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"Julia"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu">julia_connect</span><span class="op">(</span>JULIA_PROJ <span class="op">=</span> <span class="va">proj</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co">#### Example (4): Force an update of installed packages</span></span></span>
+<span class="r-in"><span>  <span class="co">#### Example (3): Force an update of installed packages</span></span></span>
 <span class="r-in"><span>  <span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>    <span class="fu">julia_connect</span><span class="op">(</span>JULIA_PROJ <span class="op">=</span> <span class="va">proj</span>, .pkg_update <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu">julia_connect</span><span class="op">(</span>.pkg_update <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co">#### Example (5): Specify the number of threads</span></span></span>
-<span class="r-in"><span>  <span class="co"># You can only set threads once per `R` session!</span></span></span>
-<span class="r-in"><span>  <span class="fu">julia_connect</span><span class="op">(</span>JULIA_PROJ <span class="op">=</span> <span class="va">proj</span>, .threads <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co">#### Example (4): Customise user output</span></span></span>
+<span class="r-in"><span>  <span class="fu">julia_connect</span><span class="op">(</span>.verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co">#### Example (6): Customise user output</span></span></span>
-<span class="r-in"><span>  <span class="fu">julia_connect</span><span class="op">(</span>JULIA_PROJ <span class="op">=</span> <span class="va">proj</span>, .verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="file_path.html">file_cleanup</a></span><span class="op">(</span><span class="va">proj</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-10-12 09:53:55... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-10-12 21:01:54... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_setup()`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 11 thread(s). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-10-12 09:54:01 (duration: ~6 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-10-12 09:54:01... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-10-12 21:01:59 (duration: ~5 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-10-12 21:01:59... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_setup()`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 11 thread(s). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-10-12 09:54:07 (duration: ~6 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-10-12 09:54:07... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_setup()`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 11 thread(s). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-10-12 09:54:37 (duration: ~30 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-10-12 09:54:37... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_setup()`... </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Restart `R` to update the number of threads in `Julia`.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`JULIA_NUM_THREADS` could not be set via `.threads`.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 11 thread(s). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-10-12 09:54:43 (duration: ~6 sec(s)). </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`JULIA_NUM_THREADS` could not be set via `.threads`.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-10-12 21:02:05 (duration: ~6 sec(s)). </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

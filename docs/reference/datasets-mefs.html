@@ -68,7 +68,7 @@
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="va">dat_moorings</span></span>
 <span></span>
-<span><span class="va">dat_acoustics</span></span>
+<span><span class="va">dat_detections</span></span>
 <span></span>
 <span><span class="va">dat_archival</span></span>
 <span></span>
@@ -94,16 +94,16 @@
 <li><p><code>receiver_alpha</code>, <code>receiver_beta</code>, <code>receiver_gamma</code>—a <code>numeric</code> vectors that define detection probability parameters;</p></li>
 </ul><p>Data are arranged by <code>receiver_id</code>.</p>
     </div>
-    <div id="acoustics">
-    <h2>Acoustics</h2>
-    <p><code>dat_acoustics</code> contains sample detection time series. This includes the following columns:</p><ul><li><p><code>individual_id</code>—an <code>integer</code> vector that identifies individuals;</p></li>
+    <div id="detections">
+    <h2>Detections</h2>
+    <p><code>dat_detections</code> contains sample detection time series. This includes the following columns:</p><ul><li><p><code>individual_id</code>—an <code>integer</code> vector that identifies individuals;</p></li>
 <li><p><code>timestamp</code>—a <code>POSIXct</code> vector that defines the time of each observation;</p></li>
 <li><p><code>receiver_id</code>—the receiver ID (see <code>dat_moorings</code>);</p></li>
 </ul><p>Data are arranged by <code>individual_id</code>, <code>timestamp</code> and then <code>receiver_id</code>.</p>
     </div>
     <div id="archival">
     <h2>Archival</h2>
-    <p><code>dat_archival</code> contains sample depth time series. Observations were sampled every 2 minutes. The data includes the following columns:</p><ul><li><p><code>individual_id</code>—an <code>integer</code> vector that identifies individuals (as in <code>dat_acoustics</code>);</p></li>
+    <p><code>dat_archival</code> contains sample depth time series. Observations were sampled every 2 minutes. The data includes the following columns:</p><ul><li><p><code>individual_id</code>—an <code>integer</code> vector that identifies individuals (as in <code>dat_detections</code>);</p></li>
 <li><p><code>timestamp</code>—a <code>POSIXct</code> vector that defines the time of each observation;</p></li>
 <li><p><code>depth</code>—a <code>numeric</code> vector that defines the depth (m) of the individual at each time step;</p></li>
 </ul><p>Data are arranged by <code>individual_id</code> and then <code>timestamp</code>.</p>

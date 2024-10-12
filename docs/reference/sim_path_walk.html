@@ -124,7 +124,7 @@
 </ul></div>
     <div id="details">
     <h2>Details</h2>
-    <p>This function simulates movement paths via <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.simulate_path_walk()</code></a>:</p><ul><li><p>Raster and GeoArray maps must be set in <code>Julia</code> for the simulation (see <code><a href="julia_set.html">set_map()</a></code>);</p></li>
+    <p>This function simulates movement paths via <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.simulate_path_walk()</code></a>:</p><ul><li><p>Raster and GeoArray maps must be set in <code>Julia</code> for the simulation (see <code><a href="set_map.html">set_map()</a></code>);</p></li>
 <li><p>The internal function <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.sim_states_init()</code></a> is used to simulate the initial state(s) for the simulation; that is, initial coordinates and other variables (one for each <code>.n_path</code>). If <code>.state</code> is one of the built-in options (see <code><a href="State.html">State</a></code>), initial state(s) can be sampled from the map. Otherwise, additional methods or a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of initial states must be provided (see <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.sim_states_init()</code></a>). Initial states provided in <code>.xinit</code> are re-sampled, with replacement, if required, such that there is one initial state for each simulated path. Initial states are assigned to an <code>xinit</code> object in <code>Julia</code>, which is a <code>Vector</code> of <code><a href="State.html">State</a></code>s.</p></li>
 <li><p>Using the initial states, the <code>Julia</code> function <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.simulate_path_walk()</code></a> simulates movement path(s) using the movement model (<code>.model_move</code>).</p></li>
 <li><p>Movement paths are passed back to <code>R</code> for convenient visualisation and analysis.</p></li>
@@ -150,254 +150,141 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dtplyr.tidyverse.org" class="external-link">dtplyr</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="julia_helper.html">julia_run</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Connect to Julia</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="julia_connect.html">julia_connect</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-10-12 09:58:08... </span>
+<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dtplyr.tidyverse.org" class="external-link">dtplyr</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Connect to Julia</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="julia_connect.html">julia_connect</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="set_seed.html">set_seed</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Set up study system</span></span></span>
+<span class="r-in"><span>  <span class="co"># Define `map` (the region within which movements are permitted)</span></span></span>
+<span class="r-in"><span>  <span class="va">map</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="set_map.html">set_map</a></span><span class="op">(</span><span class="va">map</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># Define study period</span></span></span>
+<span class="r-in"><span>  <span class="va">timeline</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2016-01-01"</span>, tz <span class="op">=</span> <span class="st">"UTC"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                  length.out <span class="op">=</span> <span class="fl">1000L</span>, by <span class="op">=</span> <span class="st">"2 mins"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Example (1): Simulate path with default options</span></span></span>
+<span class="r-in"><span>  <span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
+<span class="r-in"><span>                .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span></span>
+<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Example (2): Set the starting location via `.xinit`</span></span></span>
+<span class="r-in"><span>  <span class="co"># Define an initial location</span></span></span>
+<span class="r-in"><span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fl">708212.6</span></span></span>
+<span class="r-in"><span>  <span class="va">y</span> <span class="op">&lt;-</span> <span class="fl">6251684</span></span></span>
+<span class="r-in"><span>  <span class="va">origin</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>map_value <span class="op">=</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/extract.html" class="external-link">extract</a></span><span class="op">(</span><span class="va">map</span>, <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>                       x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># Run the simulation</span></span></span>
+<span class="r-in"><span>  <span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
+<span class="r-in"><span>                .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span></span>
+<span class="r-in"><span>                .xinit <span class="op">=</span> <span class="va">origin</span>,</span></span>
+<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">points</a></span><span class="op">(</span><span class="va">origin</span><span class="op">$</span><span class="va">x</span>, <span class="va">origin</span><span class="op">$</span><span class="va">y</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Example (3): Simulate multiple paths with the same origin via `.xinit`</span></span></span>
+<span class="r-in"><span>  <span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
+<span class="r-in"><span>                .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span></span>
+<span class="r-in"><span>                .xinit <span class="op">=</span> <span class="va">origin</span>,</span></span>
+<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                .n_path <span class="op">=</span> <span class="fl">4L</span>,</span></span>
+<span class="r-in"><span>                .one_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Example (4): Simulate multiple paths with different origins via `.xinit`</span></span></span>
+<span class="r-in"><span>  <span class="co"># Manually specify origins</span></span></span>
+<span class="r-in"><span>  <span class="va">origins</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span>    <span class="va">map</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/sample.html" class="external-link">spatSample</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">4</span>, xy <span class="op">=</span> <span class="cn">TRUE</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="st">"map_value"</span>, <span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># Run simulation</span></span></span>
+<span class="r-in"><span>  <span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
+<span class="r-in"><span>                .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span></span>
+<span class="r-in"><span>                .xinit <span class="op">=</span> <span class="va">origins</span>,</span></span>
+<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                .n_path <span class="op">=</span> <span class="fl">4L</span>,</span></span>
+<span class="r-in"><span>                .one_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Example (5): Customise two-dimensional random walks via `move_xy()`</span></span></span>
+<span class="r-in"><span>  <span class="co"># Adjust distributions for step lengths and turning angles</span></span></span>
+<span class="r-in"><span>  <span class="va">model_move</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span>mobility <span class="op">=</span> <span class="st">"750.0"</span>,</span></span>
+<span class="r-in"><span>            dbn_length <span class="op">=</span> <span class="st">"truncated(Normal(250, 50), lower = 0.0, upper = 750.0)"</span>,</span></span>
+<span class="r-in"><span>            dbn_angle <span class="op">=</span> <span class="st">"VonMises(0.1, 0.1)"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
+<span class="r-in"><span>                .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span></span>
+<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="va">model_move</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># Experiment with other options</span></span></span>
+<span class="r-in"><span>  <span class="va">model_move</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span>mobility   <span class="op">=</span> <span class="st">"300.0"</span>,</span></span>
+<span class="r-in"><span>            dbn_length <span class="op">=</span> <span class="st">"truncated(Normal(10.0, 50.0), lower = 0.0, upper = 300.0)"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
+<span class="r-in"><span>                .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span></span>
+<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="va">model_move</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Example (6): Use other .state/.model_move combinations</span></span></span>
+<span class="r-in"><span>  <span class="co"># Simulate a correlated random walk</span></span></span>
+<span class="r-in"><span>  <span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
+<span class="r-in"><span>                .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                .state <span class="op">=</span> <span class="st">"StateXYZD"</span>,</span></span>
+<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xyzd</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># Modify movement model parameters</span></span></span>
+<span class="r-in"><span>  <span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
+<span class="r-in"><span>                .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                .state <span class="op">=</span> <span class="st">"StateXYZD"</span>,</span></span>
+<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xyzd</a></span><span class="op">(</span>dbn_angle_delta <span class="op">=</span> <span class="st">"Normal(0, 1)"</span>,</span></span>
+<span class="r-in"><span>                                        dbn_z_delta <span class="op">=</span> <span class="st">"Normal(0, 0.5)"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Example (7): Use custom .state/.model_move sub-types</span></span></span>
+<span class="r-in"><span>  <span class="co"># See `?State` and ?ModelMove`</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Example (8): Simulate numerous paths via `.n_path`</span></span></span>
+<span class="r-in"><span>  <span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
+<span class="r-in"><span>                .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span></span>
+<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                .n_path <span class="op">=</span> <span class="fl">10L</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co">#### Example (9): Customise plotting options via `.plot` &amp; `.one_page`</span></span></span>
+<span class="r-in"><span>  <span class="co"># Use one page via `.one_page = TRUE`</span></span></span>
+<span class="r-in"><span>  <span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
+<span class="r-in"><span>                .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span></span>
+<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                .n_path <span class="op">=</span> <span class="fl">2L</span>, .one_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># Suppress plots via `.plot = FALSE`</span></span></span>
+<span class="r-in"><span>  <span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
+<span class="r-in"><span>                .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span></span>
+<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                .plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-10-12 21:03:51... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_setup()`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`JULIA_NUM_THREADS` could not be set via `.threads`.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 11 thread(s). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-10-12 09:58:14 (duration: ~6 sec(s)). </span>
-<span class="r-in"><span><span class="fu"><a href="julia_set.html">set_seed</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Set up study system</span></span></span>
-<span class="r-in"><span><span class="co"># Define `map` (the region within which movements are permitted)</span></span></span>
-<span class="r-in"><span><span class="va">map</span> <span class="op">&lt;-</span> <span class="fu"><a href="datasets-mefs.html">dat_gebco</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="julia_set.html">set_map</a></span><span class="op">(</span><span class="va">map</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># Define study period</span></span></span>
-<span class="r-in"><span><span class="va">timeline</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2016-01-01"</span>, tz <span class="op">=</span> <span class="st">"UTC"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                length.out <span class="op">=</span> <span class="fl">1000L</span>, by <span class="op">=</span> <span class="st">"2 mins"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Example (1): Simulate path with default options</span></span></span>
-<span class="r-in"><span><span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
-<span class="r-in"><span>              .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>              .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span></span>
-<span class="r-in"><span>              .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-10-12 21:03:58 (duration: ~7 sec(s)). </span>
 <span class="r-plt img"><img src="sim_path_walk-1.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       path_id timestep           timestamp map_value        x       y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;int&gt;    &lt;int&gt;              &lt;POSc&gt;     &lt;num&gt;    &lt;num&gt;   &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:       1        1 2016-01-01 00:00:00  36.76879 711542.1 6259607</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:       1        2 2016-01-01 00:02:00  38.45480 711201.8 6259885</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:       1        3 2016-01-01 00:04:00  38.45480 711288.4 6259899</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:       1        4 2016-01-01 00:06:00  48.23092 711004.8 6259817</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:       1        5 2016-01-01 00:08:00  42.40086 711135.9 6259890</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  996:       1      996 2016-01-02 09:10:00  41.67476 703417.8 6264459</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  997:       1      997 2016-01-02 09:12:00  41.35831 703420.5 6264443</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  998:       1      998 2016-01-02 09:14:00  38.62470 703370.1 6264643</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  999:       1      999 2016-01-02 09:16:00  44.64158 703417.6 6264708</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1000:       1     1000 2016-01-02 09:18:00  56.07667 703685.7 6264753</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Example (2): Set the starting location via `.xinit`</span></span></span>
-<span class="r-in"><span><span class="co"># Define an initial location</span></span></span>
-<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fl">708212.6</span></span></span>
-<span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fl">6251684</span></span></span>
-<span class="r-in"><span><span class="va">origin</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>map_value <span class="op">=</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/extract.html" class="external-link">extract</a></span><span class="op">(</span><span class="va">map</span>, <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>                     x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># Run the simulation</span></span></span>
-<span class="r-in"><span><span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
-<span class="r-in"><span>              .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>              .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span></span>
-<span class="r-in"><span>              .xinit <span class="op">=</span> <span class="va">origin</span>,</span></span>
-<span class="r-in"><span>              .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       path_id timestep           timestamp map_value        x       y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;int&gt;    &lt;int&gt;              &lt;POSc&gt;     &lt;num&gt;    &lt;num&gt;   &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:       1        1 2016-01-01 00:00:00  53.05067 708212.6 6251684</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:       1        2 2016-01-01 00:02:00  51.79487 708218.2 6251625</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:       1        3 2016-01-01 00:04:00  82.79637 707870.0 6252183</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:       1        4 2016-01-01 00:06:00  86.66679 707736.3 6252061</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:       1        5 2016-01-01 00:08:00  81.75941 707762.5 6251934</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  996:       1      996 2016-01-02 09:10:00 129.24255 709748.8 6255985</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  997:       1      997 2016-01-02 09:12:00 119.07944 709869.9 6256165</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  998:       1      998 2016-01-02 09:14:00 112.83488 710031.7 6256017</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  999:       1      999 2016-01-02 09:16:00 112.83488 710016.4 6256021</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1000:       1     1000 2016-01-02 09:18:00 118.69900 709984.4 6255958</span>
-<span class="r-in"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">points</a></span><span class="op">(</span><span class="va">origin</span><span class="op">$</span><span class="va">x</span>, <span class="va">origin</span><span class="op">$</span><span class="va">y</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_path_walk-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Example (3): Simulate multiple paths with the same origin via `.xinit`</span></span></span>
-<span class="r-in"><span><span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
-<span class="r-in"><span>              .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>              .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span></span>
-<span class="r-in"><span>              .xinit <span class="op">=</span> <span class="va">origin</span>,</span></span>
-<span class="r-in"><span>              .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>              .n_path <span class="op">=</span> <span class="fl">4L</span>,</span></span>
-<span class="r-in"><span>              .one_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_path_walk-3.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       path_id timestep           timestamp map_value        x       y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;int&gt;    &lt;int&gt;              &lt;POSc&gt;     &lt;num&gt;    &lt;num&gt;   &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:       1        1 2016-01-01 00:00:00  53.05067 708212.6 6251684</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:       1        2 2016-01-01 00:02:00  53.05067 708221.1 6251699</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:       1        3 2016-01-01 00:04:00  53.05067 708224.3 6251689</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:       1        4 2016-01-01 00:06:00  54.17428 708146.4 6251715</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:       1        5 2016-01-01 00:08:00  49.67013 708397.7 6252253</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3996:       4      996 2016-01-02 09:10:00  51.37127 706597.1 6254695</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3997:       4      997 2016-01-02 09:12:00  51.37127 706691.0 6254752</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3998:       4      998 2016-01-02 09:14:00 175.29399 707206.9 6254466</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3999:       4      999 2016-01-02 09:16:00 160.85780 707141.5 6254624</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4000:       4     1000 2016-01-02 09:18:00  64.53377 706768.5 6254840</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Example (4): Simulate multiple paths with different origins via `.xinit`</span></span></span>
-<span class="r-in"><span><span class="co"># Manually specify origins</span></span></span>
-<span class="r-in"><span><span class="va">origins</span> <span class="op">&lt;-</span></span></span>
-<span class="r-in"><span>  <span class="va">map</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/sample.html" class="external-link">spatSample</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">4</span>, xy <span class="op">=</span> <span class="cn">TRUE</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="st">"map_value"</span>, <span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># Run simulation</span></span></span>
-<span class="r-in"><span><span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
-<span class="r-in"><span>              .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>              .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span></span>
-<span class="r-in"><span>              .xinit <span class="op">=</span> <span class="va">origins</span>,</span></span>
-<span class="r-in"><span>              .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>              .n_path <span class="op">=</span> <span class="fl">4L</span>,</span></span>
-<span class="r-in"><span>              .one_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_path_walk-4.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       path_id timestep           timestamp map_value        x       y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;int&gt;    &lt;int&gt;              &lt;POSc&gt;     &lt;num&gt;    &lt;num&gt;   &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:       1        1 2016-01-01 00:00:00 182.92850 709142.1 6266607</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:       1        2 2016-01-01 00:02:00 186.53615 708951.7 6266621</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:       1        3 2016-01-01 00:04:00 179.29079 709464.6 6266774</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:       1        4 2016-01-01 00:06:00 174.88023 709531.6 6266797</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:       1        5 2016-01-01 00:08:00 174.88023 709525.2 6266803</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3996:       4      996 2016-01-02 09:10:00  73.93337 707594.6 6263219</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3997:       4      997 2016-01-02 09:12:00  77.95546 707574.9 6263222</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3998:       4      998 2016-01-02 09:14:00  89.74054 707395.4 6263403</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3999:       4      999 2016-01-02 09:16:00  89.74054 707443.7 6263401</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4000:       4     1000 2016-01-02 09:18:00  80.88096 707577.6 6263304</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Example (5): Customise two-dimensional random walks via `move_xy()`</span></span></span>
-<span class="r-in"><span><span class="co"># Adjust distributions for step lengths and turning angles</span></span></span>
-<span class="r-in"><span><span class="va">model_move</span> <span class="op">&lt;-</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span>mobility <span class="op">=</span> <span class="st">"750.0"</span>,</span></span>
-<span class="r-in"><span>          dbn_length <span class="op">=</span> <span class="st">"truncated(Normal(250, 50), lower = 0.0, upper = 750.0)"</span>,</span></span>
-<span class="r-in"><span>          dbn_angle <span class="op">=</span> <span class="st">"VonMises(0.1, 0.1)"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
-<span class="r-in"><span>              .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>              .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span></span>
-<span class="r-in"><span>              .model_move <span class="op">=</span> <span class="va">model_move</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_path_walk-5.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       path_id timestep           timestamp map_value        x       y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;int&gt;    &lt;int&gt;              &lt;POSc&gt;     &lt;num&gt;    &lt;num&gt;   &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:       1        1 2016-01-01 00:00:00  12.46380 704042.1 6266507</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:       1        2 2016-01-01 00:02:00  19.24523 704110.1 6266258</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:       1        3 2016-01-01 00:04:00  64.02796 704349.8 6266254</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:       1        4 2016-01-01 00:06:00  82.50201 704431.9 6266140</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:       1        5 2016-01-01 00:08:00  74.70495 704505.9 6266381</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  996:       1      996 2016-01-02 09:10:00  56.48796 710309.5 6259804</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  997:       1      997 2016-01-02 09:12:00  49.24576 710362.9 6260103</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  998:       1      998 2016-01-02 09:14:00  46.22526 710572.2 6259958</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  999:       1      999 2016-01-02 09:16:00  51.86604 710610.2 6259635</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1000:       1     1000 2016-01-02 09:18:00  68.13144 710291.4 6259449</span>
-<span class="r-in"><span><span class="co"># Experiment with other options</span></span></span>
-<span class="r-in"><span><span class="va">model_move</span> <span class="op">&lt;-</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span>mobility   <span class="op">=</span> <span class="st">"300.0"</span>,</span></span>
-<span class="r-in"><span>          dbn_length <span class="op">=</span> <span class="st">"truncated(Normal(10.0, 50.0), lower = 0.0, upper = 300.0)"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
-<span class="r-in"><span>              .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>              .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span></span>
-<span class="r-in"><span>              .model_move <span class="op">=</span> <span class="va">model_move</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_path_walk-6.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       path_id timestep           timestamp map_value        x       y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;int&gt;    &lt;int&gt;              &lt;POSc&gt;     &lt;num&gt;    &lt;num&gt;   &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:       1        1 2016-01-01 00:00:00  190.6635 707242.1 6265807</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:       1        2 2016-01-01 00:02:00  189.7211 707188.4 6265813</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:       1        3 2016-01-01 00:04:00  190.6635 707209.4 6265793</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:       1        4 2016-01-01 00:06:00  194.5041 707240.2 6265896</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:       1        5 2016-01-01 00:08:00  194.5041 707222.9 6265899</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  996:       1      996 2016-01-02 09:10:00  189.7211 707096.2 6265852</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  997:       1      997 2016-01-02 09:12:00  193.6377 707121.4 6265865</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  998:       1      998 2016-01-02 09:14:00  189.7211 707150.0 6265836</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  999:       1      999 2016-01-02 09:16:00  189.7211 707162.2 6265806</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1000:       1     1000 2016-01-02 09:18:00  189.7211 707160.3 6265781</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Example (6): Use other .state/.model_move combinations</span></span></span>
-<span class="r-in"><span><span class="co"># Simulate a correlated random walk</span></span></span>
-<span class="r-in"><span><span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
-<span class="r-in"><span>              .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>              .state <span class="op">=</span> <span class="st">"StateXYZD"</span>,</span></span>
-<span class="r-in"><span>              .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xyzd</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_path_walk-7.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       path_id timestep           timestamp map_value        x       y        z</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;int&gt;    &lt;int&gt;              &lt;POSc&gt;     &lt;num&gt;    &lt;num&gt;   &lt;num&gt;    &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:       1        1 2016-01-01 00:00:00  66.80056 708042.1 6257507 38.20742</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:       1        2 2016-01-01 00:02:00 108.97592 708358.5 6257493 33.15036</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:       1        3 2016-01-01 00:04:00 161.43901 708674.4 6257256 34.21252</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:       1        4 2016-01-01 00:06:00 197.23048 709039.0 6257025 39.72199</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:       1        5 2016-01-01 00:08:00 197.23048 709085.5 6256990 43.10869</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                                         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  996:       1      996 2016-01-02 09:10:00  30.23926 710530.0 6262870 23.08188</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  997:       1      997 2016-01-02 09:12:00  24.86736 710294.7 6262983 23.26454</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  998:       1      998 2016-01-02 09:14:00  58.48093 710023.0 6263387 21.30792</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  999:       1      999 2016-01-02 09:16:00  62.94251 709915.4 6263667 23.11293</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1000:       1     1000 2016-01-02 09:18:00  57.84026 709860.5 6263724 21.16009</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             angle</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:  0.18699807</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2: -0.04247576</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3: -0.64526331</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4: -0.56461362</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5: -0.63909061</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ---            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  996: 40.58587462</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  997: 40.39423205</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  998: 39.86192249</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  999: 39.63721401</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1000: 40.03221447</span>
-<span class="r-in"><span><span class="co"># Modify movement model parameters</span></span></span>
-<span class="r-in"><span><span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
-<span class="r-in"><span>              .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>              .state <span class="op">=</span> <span class="st">"StateXYZD"</span>,</span></span>
-<span class="r-in"><span>              .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xyzd</a></span><span class="op">(</span>dbn_angle_delta <span class="op">=</span> <span class="st">"Normal(0, 1)"</span>,</span></span>
-<span class="r-in"><span>                                      dbn_z_delta <span class="op">=</span> <span class="st">"Normal(0, 0.5)"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_path_walk-8.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       path_id timestep           timestamp map_value        x       y        z</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;int&gt;    &lt;int&gt;              &lt;POSc&gt;     &lt;num&gt;    &lt;num&gt;   &lt;num&gt;    &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:       1        1 2016-01-01 00:00:00  175.7076 708042.1 6255207 144.3651</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:       1        2 2016-01-01 00:02:00  192.2169 708574.0 6255721 143.6762</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:       1        3 2016-01-01 00:04:00  187.6539 708645.6 6255854 143.1167</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:       1        4 2016-01-01 00:06:00  193.1706 708559.8 6256021 144.1939</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:       1        5 2016-01-01 00:08:00  188.6577 708748.3 6256320 144.0109</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                                         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  996:       1      996 2016-01-02 09:10:00  145.7251 709135.1 6255825 100.5058</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  997:       1      997 2016-01-02 09:12:00  133.9494 709362.1 6255886 100.8292</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  998:       1      998 2016-01-02 09:14:00  119.0794 709864.8 6256237 100.9427</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  999:       1      999 2016-01-02 09:16:00  119.0794 709872.3 6256242 102.2472</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1000:       1     1000 2016-01-02 09:18:00  113.0967 709849.9 6256273 101.6713</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          angle</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1: 1.863498</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2: 0.768256</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3: 1.076227</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4: 2.043498</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5: 1.007370</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ---         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  996: 7.043176</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  997: 6.542745</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  998: 6.892708</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  999: 6.893817</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1000: 8.483044</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Example (7): Use custom .state/.model_move sub-types</span></span></span>
-<span class="r-in"><span><span class="co"># See `?State` and ?ModelMove`</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Example (8): Simulate numerous paths via `.n_path`</span></span></span>
-<span class="r-in"><span><span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
-<span class="r-in"><span>              .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>              .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span></span>
-<span class="r-in"><span>              .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>              .n_path <span class="op">=</span> <span class="fl">10L</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_path_walk-9.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="sim_path_walk-10.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="sim_path_walk-11.png" alt="" width="700" height="433"></span>
@@ -408,47 +295,7 @@
 <span class="r-plt img"><img src="sim_path_walk-16.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="sim_path_walk-17.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="sim_path_walk-18.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        path_id timestep           timestamp map_value        x       y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          &lt;int&gt;    &lt;int&gt;              &lt;POSc&gt;     &lt;num&gt;    &lt;num&gt;   &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     1:       1        1 2016-01-01 00:00:00 148.21349 708542.1 6254207</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     2:       1        2 2016-01-01 00:02:00 147.71805 708531.4 6254305</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     3:       1        3 2016-01-01 00:04:00 151.23746 708410.3 6254249</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     4:       1        4 2016-01-01 00:06:00 148.34172 708679.3 6254586</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     5:       1        5 2016-01-01 00:08:00 148.34172 708651.6 6254599</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    ---                                                                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9996:      10      996 2016-01-02 09:10:00  99.31619 710285.2 6264460</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9997:      10      997 2016-01-02 09:12:00  95.96560 710378.1 6264419</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9998:      10      998 2016-01-02 09:14:00  44.47823 710692.7 6264626</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9999:      10      999 2016-01-02 09:16:00  43.48036 710779.9 6264526</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10000:      10     1000 2016-01-02 09:18:00  43.48036 710694.4 6264537</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#### Example (9): Customise plotting options via `.plot` &amp; `.one_page`</span></span></span>
-<span class="r-in"><span><span class="co"># Use one page via `.one_page = TRUE`</span></span></span>
-<span class="r-in"><span><span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
-<span class="r-in"><span>              .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>              .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span></span>
-<span class="r-in"><span>              .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>              .n_path <span class="op">=</span> <span class="fl">2L</span>, .one_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="sim_path_walk-19.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       path_id timestep           timestamp map_value        x       y</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;int&gt;    &lt;int&gt;              &lt;POSc&gt;     &lt;num&gt;    &lt;num&gt;   &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:       1        1 2016-01-01 00:00:00  92.77470 704742.1 6251107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:       1        2 2016-01-01 00:02:00 102.82883 704658.3 6250836</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:       1        3 2016-01-01 00:04:00 102.82883 704634.6 6250801</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:       1        4 2016-01-01 00:06:00  85.00175 704549.5 6251014</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:       1        5 2016-01-01 00:08:00 107.58283 704405.0 6250645</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1996:       2      996 2016-01-02 09:10:00  25.19724 700329.7 6252418</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1997:       2      997 2016-01-02 09:12:00  25.20183 700334.7 6252514</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1998:       2      998 2016-01-02 09:14:00  24.70877 700193.3 6252531</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1999:       2      999 2016-01-02 09:16:00  19.27091 700024.8 6252611</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2000:       2     1000 2016-01-02 09:18:00  17.84912 699950.7 6252305</span>
-<span class="r-in"><span><span class="co"># Suppress plots via `.plot = FALSE`</span></span></span>
-<span class="r-in"><span><span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
-<span class="r-in"><span>              .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
-<span class="r-in"><span>              .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span></span>
-<span class="r-in"><span>              .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>              .plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       path_id timestep           timestamp map_value        x       y</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;int&gt;    &lt;int&gt;              &lt;POSc&gt;     &lt;num&gt;    &lt;num&gt;   &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    1:       1        1 2016-01-01 00:00:00 130.92583 707042.1 6254407</span>

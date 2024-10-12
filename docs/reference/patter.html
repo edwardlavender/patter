@@ -76,7 +76,7 @@
     <div id="datasets">
     <h2>Datasets</h2>
     <p>For example datasets from the Movement Ecology of Flapper Skate project (<code><a href="datasets-mefs.html">datasets-mefs</a></code>), which inspired <code>patter</code>, see:</p><ul><li><p><code><a href="datasets-mefs.html">dat_moorings</a></code> for acoustic receiver deployments;</p></li>
-<li><p><code><a href="datasets-mefs.html">dat_acoustics</a></code> for acoustic time series;</p></li>
+<li><p><code><a href="datasets-mefs.html">dat_detections</a></code> for acoustic detection time series;</p></li>
 <li><p><code><a href="datasets-mefs.html">dat_archival</a></code> for archival (depth) time series;</p></li>
 <li><p><code><a href="datasets-mefs.html">dat_gebco()</a></code> for a bathymetry grid;</p></li>
 </ul><p>To validate new datasets for use with <code>patter</code>, see <code><a href="pat_setup_data.html">pat_setup_data()</a></code> and/or the <code><a href="assemble.html">assemble</a></code><code>_*()</code> function documentation.</p>
@@ -89,8 +89,8 @@
     <h2>Set up <code>Julia</code></h2>
     <p>To link <code>patter</code> and the <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.jl</code></a> <code>Julia</code> backend, use:</p><ul><li><p><code><a href="julia_connect.html">julia_connect()</a></code> to connect to <code>R</code> to <code>Julia</code>;</p></li>
 <li><p><code><a href="julia_validate.html">julia_validate()</a></code> to validate the <code>R</code>—<code>Julia</code> connection;</p></li>
-<li><p><code><a href="julia_set.html">set_seed()</a></code> to set the seed in <code>R</code> and <code>Julia</code>;</p></li>
-<li><p><code><a href="julia_set.html">set_map()</a></code> to make a <code><a href="https://rspatial.github.io/terra/reference/SpatRaster-class.html" class="external-link">SpatRaster</a></code> of the study area available in <code>Julia</code>;</p></li>
+<li><p><code><a href="set_seed.html">set_seed()</a></code> to set the seed in <code>R</code> and <code>Julia</code>;</p></li>
+<li><p><code><a href="set_map.html">set_map()</a></code> to make a <code><a href="https://rspatial.github.io/terra/reference/SpatRaster-class.html" class="external-link">SpatRaster</a></code> of the study area available in <code>Julia</code>;</p></li>
 </ul><p>These functions should be run at the start of every <code>R</code> session.</p>
     </div>
     <div id="abstract-types">
