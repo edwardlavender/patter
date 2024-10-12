@@ -3,10 +3,10 @@ library(dtplyr)
 library(dplyr, warn.conflicts = FALSE)
 
 #### Define example dataset(s) for a selected individual
-# Acoustic time series
+# Acoustic detection time series
 # * Observation model parameters are defined in `.moorings`
-acc <-
-  dat_acoustics |>
+det <-
+  dat_detections |>
   filter(individual_id == 25L) |>
   select("timestamp", "receiver_id") |>
   as.data.table()
@@ -26,10 +26,10 @@ timeline <- seq(as.POSIXct("2016-03-01 00:00:00", tz = "UTC"),
                 as.POSIXct("2016-04-01 00:00:00"),
                 by = "2 mins")
 # Use `assemble_timeline()` with `.trim = FALSE`
-timeline <- assemble_timeline(list(acc, arc), .step = "2 mins")
+timeline <- assemble_timeline(list(det, arc), .step = "2 mins")
 range(timeline)
 # Use `assemble_timeline()` with `.trim = TRUE`
-timeline <- assemble_timeline(list(acc, arc), .step = "2 mins", .trim = TRUE)
+timeline <- assemble_timeline(list(det, arc), .step = "2 mins", .trim = TRUE)
 timeline <- timeline[1:1440]
 range(timeline)
 
@@ -38,7 +38,7 @@ range(timeline)
 # * The default acoustic observation model parameters are taken from `.moorings`
 # * But can be modified or added afterwards for custom observation models
 acoustics <- assemble_acoustics(.timeline = timeline,
-                                .acoustics = acc,
+                                .detections = det,
                                 .moorings = dat_moorings)
 head(acoustics)
 

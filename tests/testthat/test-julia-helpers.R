@@ -69,7 +69,7 @@ test_that("Julia helpers work", {
   julia_load(.file = file, .x = "x")
   expect_true(julia_exists("x"))
 
-  input <- dat_acoustics$timestamp
+  input <- dat_detections$timestamp
   output <- julia_timeline(input)
   expect_identical(input, output)
 

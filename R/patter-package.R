@@ -17,7 +17,7 @@
 #' For example datasets from the Movement Ecology of Flapper Skate project ([`datasets-mefs`]), which inspired [`patter`], see:
 #'
 #' * [`dat_moorings`] for acoustic receiver deployments;
-#' * [`dat_acoustics`] for acoustic time series;
+#' * [`dat_detections`] for acoustic detection time series;
 #' * [`dat_archival`] for archival (depth) time series;
 #' * [`dat_gebco()`] for a bathymetry grid;
 #'

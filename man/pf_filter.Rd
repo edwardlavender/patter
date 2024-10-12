@@ -302,19 +302,19 @@ fwd <- pf_filter(.timeline = timeline,
 # Define datasets for a selected animal
 # > Here, we consider detections and depth time series from an example flapper skate
 individual_id <- NULL
-acc <- dat_acoustics[individual_id == 25L, ][, individual_id := NULL]
+det <- dat_detections[individual_id == 25L, ][, individual_id := NULL]
 arc <- dat_archival[individual_id == 25L, ][, individual_id := NULL]
 
 # Define a timeline
 # * We can do this manually or use the observations to define a timeline:
-timeline <- assemble_timeline(list(acc, arc), .step = "2 mins", .trim = TRUE)
+timeline <- assemble_timeline(list(det, arc), .step = "2 mins", .trim = TRUE)
 timeline <- timeline[1:1440]
 range(timeline)
 
 # Assemble a timeline of acoustic observations (0, 1) and model parameters
 # * The default acoustic observation model parameters are taken from `.moorings`
 acoustics <- assemble_acoustics(.timeline = timeline,
-                                .acoustics = acc,
+                                .detections = det,
                                 .moorings = dat_moorings)
 
 # Assemble a timeline of archival observations and model parameters

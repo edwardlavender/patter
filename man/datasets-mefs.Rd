@@ -4,7 +4,7 @@
 \name{datasets-mefs}
 \alias{datasets-mefs}
 \alias{dat_moorings}
-\alias{dat_acoustics}
+\alias{dat_detections}
 \alias{dat_archival}
 \alias{dat_gebco}
 \title{Datasets: the MEFS project}
@@ -23,7 +23,7 @@ Bathymetry data were sourced from GEBCO Compilation Group (2019) GEBCO 2019 Grid
 \usage{
 dat_moorings
 
-dat_acoustics
+dat_detections
 
 dat_archival
 
@@ -44,8 +44,8 @@ These are sample datasets collated by the Movement Ecology of Flapper Skate (MEF
 Data are arranged by \code{receiver_id}.
 }
 
-\section{Acoustics}{
-\code{\link{dat_acoustics}} contains sample detection time series. This includes the following columns:
+\section{Detections}{
+\code{\link{dat_detections}} contains sample detection time series. This includes the following columns:
 \itemize{
 \item \code{individual_id}---an \code{integer} vector that identifies individuals;
 \item \code{timestamp}---a \code{POSIXct} vector that defines the time of each observation;
@@ -58,7 +58,7 @@ Data are arranged by \code{individual_id}, \code{timestamp} and then \code{recei
 \section{Archival}{
 \code{\link{dat_archival}} contains sample depth time series. Observations were sampled every 2 minutes. The data includes the following columns:
 \itemize{
-\item \code{individual_id}---an \code{integer} vector that identifies individuals (as in \code{\link{dat_acoustics}});
+\item \code{individual_id}---an \code{integer} vector that identifies individuals (as in \code{\link{dat_detections}});
 \item \code{timestamp}---a \code{POSIXct} vector that defines the time of each observation;
 \item \code{depth}---a \code{numeric} vector that defines the depth (m) of the individual at each time step;
 }

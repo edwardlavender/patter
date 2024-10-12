@@ -78,7 +78,7 @@ detections <-
   filter(obs == 1L) |>
   as.data.table()
 out_coa <- coa(.map = map,
-               .acoustics = detections,
+               .detections = detections,
                .delta_t = "2 hours")
 
 #### Run the particle filter

@@ -9,7 +9,7 @@
 \usage{
 assemble_timeline(.datasets = list(), .step, .trim = FALSE)
 
-assemble_acoustics(.timeline, .acoustics, .moorings, .services = NULL)
+assemble_acoustics(.timeline, .detections, .moorings, .services = NULL)
 
 assemble_archival(.timeline, .archival)
 }
@@ -26,9 +26,9 @@ assemble_archival(.timeline, .archival)
 \item Define the resolution of observations;
 }}
 
-\item{.acoustics, .moorings, .services}{The \code{\link{data.table}}s for \code{\link[=assemble_acoustics]{assemble_acoustics()}} (see \code{\link[=pat_setup_data]{pat_setup_data()}}).
+\item{.detections, .moorings, .services}{The \code{\link{data.table}}s for \code{\link[=assemble_acoustics]{assemble_acoustics()}} (see \code{\link[=pat_setup_data]{pat_setup_data()}}).
 \itemize{
-\item \code{.acoustics} is a \link{data.table} of acoustic detections \strong{for a single individual}. This must contain the \code{receiver_id} and \code{timestamp} columns.
+\item \code{.detections} is a \link{data.table} of acoustic detections \strong{for a single individual}. This must contain the \code{receiver_id} and \code{timestamp} columns.
 \item \code{.moorings} is a \code{\link{data.table}} of acoustic receiver deployments. This must contain the \code{receiver_id}, \code{receiver_start}, and \code{receiver_end} columns, plus additional parameter columns.
 \item \code{.services} is a \code{\link{data.table}} of servicing events. This must contain the \code{receiver_id}, \code{service_start} and \code{service_end} columns.
 }}
@@ -47,7 +47,7 @@ These functions assemble a timeline and observations for the particle filter (\c
 
 \code{\link[=assemble_acoustics]{assemble_acoustics()}} and \code{\link[=assemble_archival]{assemble_archival()}} prepare timelines of acoustic and archival observations as required for the particle filter (\code{\link[=pf_filter]{pf_filter()}}). The filter expects a \code{list} of datasets (one for each data type). Each dataset must contain the following columns: \code{timestamp}, \code{sensor_id}, \code{obs} and additional columns with the parameters of the observation model (see \code{\link{glossary}}).
 \itemize{
-\item \code{\link[=assemble_acoustics]{assemble_acoustics()}} prepares a timeline of acoustic observations, as required by the filter. This function expects a 'standard' acoustic dataset (that is, a \code{\link{data.table}} like \code{\link{dat_acoustics}}) that defines detections at receivers alongside a moorings dataset (like \code{\link{dat_moorings}}) that defines receiver deployment periods and optionally  a \code{\link{data.table}} of servicing events (when receiver(s) were non-operational). \code{\link[=assemble_acoustics]{assemble_acoustics()}} uses these datasets to assemble a complete time series of acoustic observations; that is, a \code{\link{data.table}} of time stamps and receivers that defines, for each time step and each operational receiver whether (\code{1L}) or not (\code{0L}) a detection was recorded at that time step. Duplicate observations (that is, detections at the same receiver in the same time step) are dropped. If available in \code{.moorings}, additional columns (\code{receiver_alpha}, \code{receiver_beta} and \code{receiver_gamma}) are included as required for the default acoustic observation model (that is, \code{\link{ModelObsAcousticLogisTrunc}}). If observation model parameters vary both by receiver and through time, simply amend these columns as required.
+\item \code{\link[=assemble_acoustics]{assemble_acoustics()}} prepares a timeline of acoustic observations, as required by the filter. This function expects a 'standard' detection dataset (that is, a \code{\link{data.table}} like \code{\link{dat_detections}}) that defines detections at receivers alongside a moorings dataset (like \code{\link{dat_moorings}}) that defines receiver deployment periods and optionally  a \code{\link{data.table}} of servicing events (when receiver(s) were non-operational). \code{\link[=assemble_acoustics]{assemble_acoustics()}} uses these datasets to assemble a complete time series of acoustic observations; that is, a \code{\link{data.table}} of time stamps and receivers that defines, for each time step and each operational receiver whether (\code{1L}) or not (\code{0L}) a detection was recorded at that time step. Duplicate observations (that is, detections at the same receiver in the same time step) are dropped. If available in \code{.moorings}, additional columns (\code{receiver_alpha}, \code{receiver_beta} and \code{receiver_gamma}) are included as required for the default acoustic observation model (that is, \code{\link{ModelObsAcousticLogisTrunc}}). If observation model parameters vary both by receiver and through time, simply amend these columns as required.
 \item \code{\link[=assemble_archival]{assemble_archival()}} prepares a timeline of archival observations (such as depth measurements), as required by the filter. This function expects a \code{\link{data.table}} that includes, at a minimum, the \code{timestamp} and \code{obs} columns. The latter defines the observations. For archival data, the \code{sensor_id} column (if unspecified) is simply set to \code{1L}. The function re-expresses time stamps at the resolution specified by \code{timeline}. Duplicate observations (that is, multiple measurements in the same time step) throw a \code{\link{warning}}.
 }
 
@@ -63,10 +63,10 @@ library(dtplyr)
 library(dplyr, warn.conflicts = FALSE)
 
 #### Define example dataset(s) for a selected individual
-# Acoustic time series
+# Acoustic detection time series
 # * Observation model parameters are defined in `.moorings`
-acc <-
-  dat_acoustics |>
+det <-
+  dat_detections |>
   filter(individual_id == 25L) |>
   select("timestamp", "receiver_id") |>
   as.data.table()
@@ -86,10 +86,10 @@ timeline <- seq(as.POSIXct("2016-03-01 00:00:00", tz = "UTC"),
                 as.POSIXct("2016-04-01 00:00:00"),
                 by = "2 mins")
 # Use `assemble_timeline()` with `.trim = FALSE`
-timeline <- assemble_timeline(list(acc, arc), .step = "2 mins")
+timeline <- assemble_timeline(list(det, arc), .step = "2 mins")
 range(timeline)
 # Use `assemble_timeline()` with `.trim = TRUE`
-timeline <- assemble_timeline(list(acc, arc), .step = "2 mins", .trim = TRUE)
+timeline <- assemble_timeline(list(det, arc), .step = "2 mins", .trim = TRUE)
 timeline <- timeline[1:1440]
 range(timeline)
 
@@ -98,7 +98,7 @@ range(timeline)
 # * The default acoustic observation model parameters are taken from `.moorings`
 # * But can be modified or added afterwards for custom observation models
 acoustics <- assemble_acoustics(.timeline = timeline,
-                                .acoustics = acc,
+                                .detections = det,
                                 .moorings = dat_moorings)
 head(acoustics)
 

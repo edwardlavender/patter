@@ -70,13 +70,13 @@ dat_moorings <-
          receiver_alpha, receiver_beta, receiver_gamma) |>
   as.data.table()
 
-#### Acoustic data
-dat_acoustics <-
+#### Acoustic detection data
+dat_detections <-
   flapper::dat_acoustics |>
   select(individual_id, timestamp, receiver_id) |>
   arrange(individual_id, timestamp, receiver_id) |>
   as.data.table()
-lubridate::tz(dat_acoustics$timestamp) <- "UTC"
+lubridate::tz(dat_detections$timestamp) <- "UTC"
 
 #### Archival data
 dat_archival <-
@@ -94,7 +94,7 @@ lubridate::tz(dat_archival$timestamp) <- "UTC"
 overwrite <- TRUE
 terra::writeRaster(dat_gebco, here::here("inst", "extdata", "dat_gebco.tif"), overwrite = TRUE)
 usethis::use_data(dat_moorings, overwrite = overwrite)
-usethis::use_data(dat_acoustics, overwrite = overwrite)
+usethis::use_data(dat_detections, overwrite = overwrite)
 usethis::use_data(dat_archival, overwrite = overwrite)
 
 

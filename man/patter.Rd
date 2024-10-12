@@ -24,7 +24,7 @@ For a glossary of key arguments, see \code{\link{glossary}}.
 For example datasets from the Movement Ecology of Flapper Skate project (\code{\link{datasets-mefs}}), which inspired \code{\link{patter}}, see:
 \itemize{
 \item \code{\link{dat_moorings}} for acoustic receiver deployments;
-\item \code{\link{dat_acoustics}} for acoustic time series;
+\item \code{\link{dat_detections}} for acoustic detection time series;
 \item \code{\link{dat_archival}} for archival (depth) time series;
 \item \code{\link[=dat_gebco]{dat_gebco()}} for a bathymetry grid;
 }

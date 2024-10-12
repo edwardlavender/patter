@@ -3,7 +3,7 @@
 \name{check_dlist}
 \alias{check_dlist}
 \alias{check_map}
-\alias{check_acoustics}
+\alias{check_detections}
 \alias{check_moorings}
 \alias{check_services}
 \alias{check_archival}
@@ -11,9 +11,9 @@
 \usage{
 check_map(.map)
 
-check_acoustics(.acoustics, .moorings = NULL)
+check_detections(.detections, .moorings = NULL)
 
-check_moorings(.moorings, .acoustics = NULL, .map)
+check_moorings(.moorings, .detections = NULL, .map)
 
 check_services(.services, .moorings)
 
@@ -22,7 +22,7 @@ check_archival(.archival)
 \arguments{
 \item{.map}{A \code{\link{SpatRaster}} that defines the study area for the simulation (see \code{\link{glossary}}).}
 
-\item{.acoustics, .moorings, .services, .archival}{Observation \code{\link{data.table}}s.}
+\item{.detections, .moorings, .services, .archival}{Observation \code{\link{data.table}}s.}
 }
 \value{
 Each function returns the input dataset, as described, formatted in line with \code{\link{patter}}'s requirements.
@@ -48,7 +48,7 @@ These are internal functions that ensure that input dataset(s) meet \code{\link{
 \item The data source may be in memory or on disk, but the former is faster for pure \code{R} functions;
 }
 }
-\item \code{\link[=check_acoustics]{check_acoustics()}} checks detection time series:
+\item \code{\link[=check_detections]{check_detections()}} checks detection time series:
 \itemize{
 \item Class: \code{\link{data.table}};
 \item Columns:
@@ -87,7 +87,7 @@ These are internal functions that ensure that input dataset(s) meet \code{\link{
 \item Properties:
 \itemize{
 \item \code{receiver_start} should precede \code{receiver_end};
-\item Receiver deployment periods should (usually) at least partially overlap with the time period of acoustic observations;
+\item Receiver deployment periods should (usually) at least partially overlap with the time period of acoustic detections;
 \item Receiver coordinates must be valid on \code{.map} (not currently validated);
 }
 }

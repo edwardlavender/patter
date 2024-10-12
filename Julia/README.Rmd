@@ -111,8 +111,8 @@ timeline <- seq(as.POSIXct("2016-03-17 01:50:00", tz = "UTC"),
                 by = "2 mins")
 
 # Define acoustic detections
-acc <-
-  dat_acoustics |>
+det <-
+  dat_detections |>
   filter(individual_id == 25L) |>
   mutate(individual_id = NULL) |>
   as.data.table()
@@ -130,7 +130,7 @@ arc <-
 # Assemble acoustic observations 
 # "ModelObsAcousticLogisTrunc"
 acoustics <- assemble_acoustics(.timeline = timeline,
-                                .acoustics = acc,
+                                .detections = det,
                                 .moorings = dat_moorings)
 
 # Assemble archival observations

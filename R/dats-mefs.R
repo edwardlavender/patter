@@ -14,9 +14,9 @@
 #'
 #' Data are arranged by `receiver_id`.
 #'
-#' # Acoustics
+#' # Detections
 #'
-#' [`dat_acoustics`] contains sample detection time series. This includes the following columns:
+#' [`dat_detections`] contains sample detection time series. This includes the following columns:
 #'   * `individual_id`---an `integer` vector that identifies individuals;
 #'   * `timestamp`---a `POSIXct` vector that defines the time of each observation;
 #'   * `receiver_id`---the receiver ID (see [`dat_moorings`]);
@@ -26,7 +26,7 @@
 #' # Archival
 #'
 #' [`dat_archival`] contains sample depth time series. Observations were sampled every 2 minutes. The data includes the following columns:
-#'   * `individual_id`---an `integer` vector that identifies individuals (as in [`dat_acoustics`]);
+#'   * `individual_id`---an `integer` vector that identifies individuals (as in [`dat_detections`]);
 #'   * `timestamp`---a `POSIXct` vector that defines the time of each observation;
 #'   * `depth`---a `numeric` vector that defines the depth (m) of the individual at each time step;
 #'
@@ -62,7 +62,7 @@ NULL
 "dat_moorings"
 
 #' @rdname datasets-mefs
-"dat_acoustics"
+"dat_detections"
 
 #' @rdname datasets-mefs
 "dat_archival"

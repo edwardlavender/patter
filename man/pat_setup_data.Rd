@@ -6,7 +6,7 @@
 \usage{
 pat_setup_data(
   .map = NULL,
-  .acoustics = NULL,
+  .detections = NULL,
   .moorings = NULL,
   .services = NULL,
   .archival = NULL
@@ -15,9 +15,9 @@ pat_setup_data(
 \arguments{
 \item{.map}{(optional) A \code{\link{SpatRaster}} that defines the study area (see \link{glossary}).}
 
-\item{.acoustics, .services, .archival, .moorings}{(optional) \code{\link{data.table}}s of observations and and associated parameters.
+\item{.detections, .services, .archival, .moorings}{(optional) \code{\link{data.table}}s of observations and and associated parameters.
 \itemize{
-\item \code{.acoustics} contains a detection time series (see \code{\link{dat_acoustics}} for an example);
+\item \code{.detections} contains a detection time series (see \code{\link{dat_detections}} for an example);
 \item \code{.moorings} contains receiver deployments (see \code{\link{dat_moorings}}) for an example);
 \item \code{.services} contains receiver servicing information (times during the deployment period of a receiver when it was not active due to servicing);
 \item \code{.archival} contains archival (depth) time series (see \code{\link{dat_archival}} for an example);
@@ -35,7 +35,7 @@ The preparation of datasets for \code{\link{patter}} is a one-off inconvenience.
 \examples{
 # Setup acoustic and archival data for use with `patter` functions
 dlist <- pat_setup_data(.map = dat_gebco(),
-                        .acoustics = dat_acoustics,
+                        .detections = dat_detections,
                         .moorings = dat_moorings,
                         .services = NULL,
                         .archival = dat_archival)
@@ -45,10 +45,10 @@ summary(dlist)
 
 # Extract updated datasets for use in downstream functions
 map <- dlist$map
-acoustics <- dlist$acoustics
-moorings <- dlist$archival
-services <- dlist$services
-archival <- dlist$archival
+detections <- dlist$detections
+moorings   <- dlist$archival
+services   <- dlist$services
+archival   <- dlist$archival
 }
 \author{
 Edward Lavender

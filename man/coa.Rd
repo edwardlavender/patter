@@ -6,7 +6,7 @@
 \usage{
 coa(
   .map,
-  .acoustics,
+  .detections,
   .moorings = NULL,
   .delta_t,
   .split = NULL,
@@ -21,17 +21,17 @@ coa(
 \item Extract \code{map_value} at centres of activity, for consistency with other routines (such as \code{\link[=pf_filter]{pf_filter()}});
 }}
 
-\item{.acoustics, .moorings}{Acoustic detection \href{s}{\code{data.table}}.
+\item{.detections, .moorings}{Acoustic detection \href{s}{\code{data.table}}.
 \itemize{
-\item \code{.acoustics} is a \code{\link{data.table}} of acoustic detections, with the following columns: \code{receiver_id} (or \code{sensor_id}), \code{timestamp} and (optionally) \code{receiver_x} and \code{receiver_y} columns;
-\item (optional) \code{.moorings} is a \code{\link{data.table}} of receiver coordinates, which should be provided if unavailable in \code{.acoustics}, with \code{receiver_id}, \code{receiver_x} and \code{receiver_y} columns;
+\item \code{.detections} is a \code{\link{data.table}} of acoustic detections, with the following columns: \code{receiver_id} (or \code{sensor_id}), \code{timestamp} and (optionally) \code{receiver_x} and \code{receiver_y} columns;
+\item (optional) \code{.moorings} is a \code{\link{data.table}} of receiver coordinates, which should be provided if unavailable in \code{.detections}, with \code{receiver_id}, \code{receiver_x} and \code{receiver_y} columns;
 }
 
 Receiver coordinates \strong{must be planar}.}
 
 \item{.delta_t}{The time interval over which to calculate COAs. This can be specified in any way understood by \code{\link[lubridate:round_date]{lubridate::floor_date()}} (see the \code{unit} argument).}
 
-\item{.split}{(optional) A \code{character} that defines the name of the grouping factor in \code{.acoustics} (e.g., \code{individual_id} for \code{\link{dat_acoustics}}).}
+\item{.split}{(optional) A \code{character} that defines the name of the grouping factor in \code{.detections} (e.g., \code{individual_id} for \code{\link{dat_detections}}).}
 
 \item{.plot_weights, ..., .one_page}{Plot arguments.
 \itemize{
@@ -63,38 +63,38 @@ This function replaces \href{https://edwardlavender.github.io/flapper/reference/
 library(data.table)
 
 #### Set up example
-map       <- dat_gebco()
-acoustics <- dat_acoustics
-moorings  <- dat_moorings
+map        <- dat_gebco()
+detections <- dat_detections
+moorings   <- dat_moorings
 
 #### Example (1): Calculate COAs for an example individual
-id     <- dat_acoustics$individual_id[1]
-acc    <- dat_acoustics[individual_id == id, ]
-coa(.map = map, .acoustics = acc, .moorings = moorings,
+id     <- dat_detections$individual_id[1]
+det    <- dat_detections[individual_id == id, ]
+coa(.map = map, .detections = det, .moorings = moorings,
     .delta_t = "2 hours")
 
 #### Example (2): Customise the time interval via `.delta_t`
-coa(.map = map, .acoustics = acc, .moorings = moorings,
+coa(.map = map, .detections = det, .moorings = moorings,
     .delta_t = "4 hours")
 
 #### Example (3): Calculate COAs for multiple individuals via `.split`
 # Calculate COAs
-coa(.map = map, .acoustics = acc, .moorings = moorings,
+coa(.map = map, .detections = det, .moorings = moorings,
     .delta_t = "6 hours", .split = "individual_id")
 # Use one page for plots via `.one_page = TRUE`
-coa(.map = map, .acoustics = acc, .moorings = moorings,
+coa(.map = map, .detections = det, .moorings = moorings,
     .delta_t = "6 hours", .split = "individual_id",
     .one_page = FALSE)
 # Suppress plots via `.plot = FALSE`
-coa(.map = map, .acoustics = acc, .moorings = moorings,
+coa(.map = map, .detections = det, .moorings = moorings,
     .delta_t = "6 hours", .split = "individual_id",
     .one_page = TRUE)
 
-#### Example (4): Specify `.acoustics` only
-# `.moorings` is not required if `.acoustics` contains receiver coordinates
+#### Example (4): Specify `.detections` only
+# `.moorings` is not required if `.detections` contains receiver coordinates
 coa(.map = map,
-    .acoustics =
-      acoustics |>
+    .detections =
+      detections |>
       merge(moorings, by = "receiver_id"),
     .delta_t = "6 hours", .split = "individual_id")
 }

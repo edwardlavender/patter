@@ -2,8 +2,8 @@
 #' @description This function is used to set up and validate telemetry data for [`patter`] functions. Use it if you have acoustic and/or archival data.
 #'
 #' @param .map (optional) A [`SpatRaster`] that defines the study area (see [glossary]).
-#' @param .acoustics,.services,.archival,.moorings (optional) [`data.table`]s of observations and and associated parameters.
-#' * `.acoustics` contains a detection time series (see [`dat_acoustics`] for an example);
+#' @param .detections,.services,.archival,.moorings (optional) [`data.table`]s of observations and and associated parameters.
+#' * `.detections` contains a detection time series (see [`dat_detections`] for an example);
 #' * `.moorings` contains receiver deployments (see [`dat_moorings`]) for an example);
 #' * `.services` contains receiver servicing information (times during the deployment period of a receiver when it was not active due to servicing);
 #' * `.archival` contains archival (depth) time series (see [`dat_archival`] for an example);
@@ -18,19 +18,19 @@
 #' @export
 
 pat_setup_data <- function(.map = NULL,
-                           .acoustics = NULL,
+                           .detections = NULL,
                            .moorings = NULL,
                            .services = NULL,
                            .archival = NULL) {
   dlist <- list(map = NULL,
-                acoustics = NULL,
+                detections = NULL,
                 moorings = NULL,
                 services = NULL,
                 archival = NULL)
   dlist$map <- check_map(.map)
-  dlist$acoustics <- check_acoustics(.acoustics = .acoustics, .moorings = .moorings)
+  dlist$detections <- check_detections(.detections = .detections, .moorings = .moorings)
   dlist$moorings  <- check_moorings(.moorings = .moorings,
-                                    .acoustics = dlist$acoustics,
+                                    .detections = dlist$detections,
                                     .map = .map)
   dlist$services  <- check_services(.services = .services, .moorings = .moorings)
   dlist$archival  <- check_archival(.archival)

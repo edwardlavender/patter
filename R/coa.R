@@ -2,13 +2,13 @@
 #' @description This function calculates centres of activity (COAs) from detections at acoustic receivers.
 #' @param .map A [`SpatRaster`] that defines the study area (see [`glossary`]). Here, `.map` is used to:
 #' * Extract `map_value` at centres of activity, for consistency with other routines (such as [`pf_filter()`]);
-#' @param .acoustics,.moorings Acoustic detection [`data.table`](s).
-#' * `.acoustics` is a [`data.table`] of acoustic detections, with the following columns: `receiver_id` (or `sensor_id`), `timestamp` and (optionally) `receiver_x` and `receiver_y` columns;
-#' * (optional) `.moorings` is a [`data.table`] of receiver coordinates, which should be provided if unavailable in `.acoustics`, with `receiver_id`, `receiver_x` and `receiver_y` columns;
+#' @param .detections,.moorings Acoustic detection [`data.table`](s).
+#' * `.detections` is a [`data.table`] of acoustic detections, with the following columns: `receiver_id` (or `sensor_id`), `timestamp` and (optionally) `receiver_x` and `receiver_y` columns;
+#' * (optional) `.moorings` is a [`data.table`] of receiver coordinates, which should be provided if unavailable in `.detections`, with `receiver_id`, `receiver_x` and `receiver_y` columns;
 #'
 #' Receiver coordinates **must be planar**.
 #'
-#' @param .split (optional) A `character` that defines the name of the grouping factor in `.acoustics` (e.g., `individual_id` for [`dat_acoustics`]).
+#' @param .split (optional) A `character` that defines the name of the grouping factor in `.detections` (e.g., `individual_id` for [`dat_detections`]).
 #' @param .delta_t The time interval over which to calculate COAs. This can be specified in any way understood by [`lubridate::floor_date()`] (see the `unit` argument).
 #' @param .plot_weights,...,.one_page Plot arguments.
 #' * `.plot_weights` is a `logical` variable that defines whether or not to plot the frequency distribution of weights for each `.split` value (i.e., the frequency distribution of the number of detections at each receiver in each time interval, excluding time intervals without detections).
@@ -35,7 +35,7 @@
 #' @export
 
 coa <- function(.map,
-                .acoustics, .moorings = NULL, .delta_t, .split = NULL,
+                .detections, .moorings = NULL, .delta_t, .split = NULL,
                 .plot_weights = TRUE, ..., .one_page = TRUE) {
 
   #### Check user inputs
@@ -44,21 +44,21 @@ coa <- function(.map,
   check_dots_for_missing_period(formals(), list(...))
 
   #### Define dataset
-  # (optional) Add receiver coordinates to `.acoustics`
-  acoustics <- copy(.acoustics)
-  if (rlang::has_name(acoustics, "sensor_id")) {
+  # (optional) Add receiver coordinates to `.detections`
+  detections <- copy(.detections)
+  if (rlang::has_name(detections, "sensor_id")) {
     receiver_id <- sensor_id <- NULL
-    acoustics[, receiver_id := sensor_id]
+    detections[, receiver_id := sensor_id]
   }
-  if (rlang::has_name(acoustics, "obs") && any(acoustics$obs == 0L)) {
-    warn("`.acoustics` contains an `obs` column with '0(s)'.")
+  if (rlang::has_name(detections, "obs") && any(detections$obs == 0L)) {
+    warn("`.detections` contains an `obs` column with '0(s)'.")
   }
   if (!is.null(.moorings)) {
-    ind        <- fmatch(acoustics$receiver_id, .moorings$receiver_id)
+    ind        <- fmatch(detections$receiver_id, .moorings$receiver_id)
     receiver_x <- receiver_y <- NULL
-    acoustics[, receiver_x := .moorings$receiver_x[ind]]
-    acoustics[, receiver_y := .moorings$receiver_y[ind]]
-    check_names(acoustics, req = .split)
+    detections[, receiver_x := .moorings$receiver_x[ind]]
+    detections[, receiver_y := .moorings$receiver_y[ind]]
+    check_names(detections, req = .split)
   }
 
   #### Identify split column e.g., individual_id
@@ -67,17 +67,17 @@ coa <- function(.map,
     keep_split <- FALSE
     .split <- "individual_id"
     individual_id <- NULL
-    acoustics[, individual_id := 1L]
+    detections[, individual_id := 1L]
   }
 
-  #### Prepare acoustics for COA calculations
+  #### Prepare detections for COA calculations
   # * Define split column
   # * Group by split & define bins
   # * Calculate the frequency of detections in each bin
-  acoustics <-
-    acoustics |>
+  detections <-
+    detections |>
     lazy_dt(immutable = FALSE) |>
-    mutate(split = acoustics[[.split]]) |>
+    mutate(split = detections[[.split]]) |>
     group_by(.data$split) |>
     mutate(bin = floor_date(.data$timestamp, .delta_t)) |>
     ungroup() |>
@@ -88,9 +88,9 @@ coa <- function(.map,
     as.data.table()
   # Plot the frequency distribution of weights
   if (.plot_weights) {
-    pp <- one_page(.one_page, fndistinct(acoustics$split))
+    pp <- one_page(.one_page, fndistinct(detections$split))
     on.exit(par(pp), add = TRUE)
-    lapply(split(acoustics, acoustics$split), function(d) {
+    lapply(split(detections, detections$split), function(d) {
       hist(d$n, main = d$split[1], ...)
     }) |> invisible()
   }
@@ -98,7 +98,7 @@ coa <- function(.map,
   #### Calculate COAs
   # Calculate COAs using weighted.mean() (assumes planar coordinates)
   out <-
-    acoustics |>
+    detections |>
     group_by(.data$split, .data$bin) |>
     summarise(x = stats::weighted.mean(.data$receiver_x, .data$n),
               y = stats::weighted.mean(.data$receiver_y, .data$n)) |>

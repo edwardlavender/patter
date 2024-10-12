@@ -6,7 +6,7 @@ test_that("coa() works", {
   map <- dat_gebco()
 
   # Define acoustic detections
-  acc <-
+  detections <-
     data.table(timestamp = as.POSIXct(c("2016-01-01 00:00:20", "2016-01-01 00:00:23",
                                         "2016-01-01 00:02:40", "2016-01-01 00:02:30"),
                                       tz = "UTC"),
@@ -18,7 +18,7 @@ test_that("coa() works", {
                          receiver_y = c(1, 2, 3))
 
   # Test 1
-  output   <- coa(.map = map, .acoustics = acc, .moorings = moorings, .delta_t = "10 mins")
+  output   <- coa(.map = map, .detections = detections, .moorings = moorings, .delta_t = "10 mins")
   expected <- data.table(timestep = 1,
                          timestamp = floor_date(as.POSIXct("2016-01-01 00:00:20", tz = "UTC"), "10 mins"),
                          map_value = NA_real_,
@@ -28,7 +28,7 @@ test_that("coa() works", {
   expect_equal(output, expected)
 
   # Test 2
-  output   <- coa(.map = map, .acoustics = acc, .moorings = moorings, .delta_t = "1 minute")
+  output   <- coa(.map = map, .detections = detections, .moorings = moorings, .delta_t = "1 minute")
   expected <- data.table(timestep = c(1L, 2L),
                          timestamp = as.POSIXct(c("2016-01-01 00:00:00",
                                                   "2016-01-01 00:02:00"),
@@ -40,20 +40,20 @@ test_that("coa() works", {
   expect_equal(output, expected)
 
   # Test 3: sim_observations() outputs permitted
-  acc <-
-    acc |>
+  detections <-
+    detections |>
     # sensor_id should be permitted
     rename(sensor_id = receiver_id) |>
     # obs = 0L should raise a warning
     mutate(obs = 0L) |>
     as.data.table()
   output <- coa(.map = map,
-                .acoustics = acc, .moorings = moorings,
+                .detections = detections, .moorings = moorings,
                 .delta_t = "1 minute") |>
-    expect_warning("`.acoustics` contains an `obs` column with '0(s)'.",
+    expect_warning("`.detections` contains an `obs` column with '0(s)'.",
                    fixed = TRUE)
   output <- coa(.map = map,
-                .acoustics = acc, .moorings = moorings,
+                .detections = detections, .moorings = moorings,
                 .delta_t = "1 minute") |>
     suppressWarnings()
   expect_equal(output, expected)
@@ -61,14 +61,14 @@ test_that("coa() works", {
   #### Tests with real data
 
   # Define acoustic detections
-  acc <-
-    dat_acoustics |>
+  detections <-
+    dat_detections |>
     group_by(individual_id) |>
     # Select a subset of rows for speed
     slice(1:100) |>
     ungroup() |>
     as.data.table()
-  acc_1 <- acc[individual_id == individual_id[1], ]
+  detections_1  <- detections[individual_id == individual_id[1], ]
 
   # Define moorings
   moorings <- dat_moorings
@@ -76,23 +76,23 @@ test_that("coa() works", {
   # Test output columns
   # * Test outputs with .split = NULL
   z <- coa(.map = map,
-           .acoustics = acc_1, .moorings = moorings,
+           .detections = detections_1, .moorings = moorings,
            .delta_t = "2 hours")
   check_inherits(z, "data.table")
   expect_equal(colnames(z), c("timestep", "timestamp", "map_value", "x", "y"))
   # * Test outputs with .split
   z <- coa(.map = map,
-           .acoustics = acc_1, .moorings = moorings,
+           .detections = detections_1, .moorings = moorings,
            .delta_t = "2 hours", .split = "individual_id")
   expect_equal(colnames(z), c("individual_id", "timestep", "timestamp", "map_value", "x", "y"))
 
   # Check dot handling
   z <- coa(.map = map,
-           .acoustics = acc_1, .moorings = moorings,
+           .detections = detections_1, .moorings = moorings,
            .delta_t = "2 hours",  .split = "individual_id",
            xlab = "x-title")
   z <- coa(.map = map,
-           .acoustics = acc_1, .moorings = moorings,
+           .detections = detections_1, .moorings = moorings,
            .delta_t = "2 hours",
            blah = "x") |>
     expect_warning('"blah" is not a graphical parameter') |> # plot.window()
@@ -104,14 +104,14 @@ test_that("coa() works", {
   lapply(c("2 hours", "4 hours"), function(delta_t) {
 
     # Use coa()
-    acc <- dplyr::left_join(acc, moorings, by = "receiver_id")
-    output <- coa(.map = map, .acoustics = acc,
+    detections <- dplyr::left_join(detections, moorings, by = "receiver_id")
+    output <- coa(.map = map, .detections = detections,
                   .delta_t = delta_t, .split = "individual_id")
 
     # Re-compute COAs manually
     expected <-
       # Loop over individuals
-      lapply(split(acc, acc$individual_id), function(d) {
+      lapply(split(detections, detections$individual_id), function(d) {
         # Define time stamps
         d$timestamp <- floor_date(d$timestamp, delta_t)
         # Calculate COAs in each time stamp

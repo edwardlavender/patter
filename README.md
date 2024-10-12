@@ -249,7 +249,7 @@ For example datasets from the Movement Ecology of Flapper Skate project
 (`datasets-mefs`), which inspired `patter`, see:
 
 - `dat_moorings` for acoustic receiver deployments;
-- `dat_acoustics` for acoustic time series;
+- `dat_detections` for acoustic detection time series;
 - `dat_archival` for archival (depth) time series;
 - `dat_gebco()` for a bathymetry grid;
 
@@ -455,8 +455,8 @@ flapper skate. Let’s pull out the time series for a selected individual:
 
 ``` r
 # Define acoustic detections
-acc <-
-  dat_acoustics |>
+det <-
+  dat_detections |>
   filter(individual_id == 25L) |>
   mutate(individual_id = NULL) |>
   as.data.table()
@@ -480,7 +480,7 @@ observation models:
 ``` r
 # ModelObsAcousticLogisTrunc
 acoustics <- assemble_acoustics(.timeline = timeline,
-                                .acoustics = acc,
+                                .detections = det,
                                 .moorings = dat_moorings)
 
 # ModelObsDepthNormalTrunc

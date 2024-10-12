@@ -45,8 +45,8 @@ test_that("assemble_timeline() works", {
 
 test_that("assemble_acoustics() works", {
 
-  # Define example acoustics data.table
-  acoustics <- data.table(receiver_id = c(1L, 1L, 2L, 3L),
+  # Define example detections data.table
+  detections <- data.table(receiver_id = c(1L, 1L, 2L, 3L),
                           timestamp = as.POSIXct(c(
                             # Two overlapping detections at one receiver
                             "2016-01-01 00:00:00",
@@ -68,13 +68,14 @@ test_that("assemble_acoustics() works", {
                          service_end = as.POSIXct("2016-01-01 00:04:00", tz = "UTC"))
 
   # Define timeline
-  timeline <- assemble_timeline(list(acoustics), .step = "2 mins")
-  expected <- seq.POSIXt(min(acoustics$timestamp), max(acoustics$timestamp), "2 mins")
+  timeline <- assemble_timeline(list(detections), .step = "2 mins")
+  expected <- seq.POSIXt(min(detections$timestamp), max(detections$timestamp), "2 mins")
   expect_equal(timeline, expected)
 
   # Assemble acoustics, ignoring servicing events
   output   <- assemble_acoustics(.timeline = timeline,
-                                 .acoustics = acoustics, .moorings = moorings)
+                                 .detections = detections,
+                                 .moorings = moorings)
   expected <- data.table(timestamp =
                            as.POSIXct(c(
                              "2016-01-01 00:00:00",
@@ -94,7 +95,8 @@ test_that("assemble_acoustics() works", {
   # Assemble acoustics, accounting for servicing events
   expect_equal(output, expected)
   output   <- assemble_acoustics(.timeline = timeline,
-                                 .acoustics = acoustics, .moorings = moorings,
+                                 .detections = detections,
+                                 .moorings = moorings,
                                  .services = services)
   expected <- data.table(timestamp =
                            as.POSIXct(c(
@@ -114,7 +116,8 @@ test_that("assemble_acoustics() works", {
   moorings[, receiver_x := 1:3]
   moorings[, receiver_y := 4:6]
   output   <- assemble_acoustics(.timeline = timeline,
-                                 .acoustics = acoustics, .moorings = moorings,
+                                 .detections = detections,
+                                 .moorings = moorings,
                                  .services = services)
   expected <- data.table(timestamp =
                            as.POSIXct(c(
@@ -132,14 +135,15 @@ test_that("assemble_acoustics() works", {
   expect_equal(output, expected)
 
   # Assemble acoustics but when moorings deployments do not overlap with detections
-  acoustics <- data.table(receiver_id = dat_moorings$receiver_id[1:2],
+  detections <- data.table(receiver_id = dat_moorings$receiver_id[1:2],
                           timestamp = as.POSIXct(c(
                             "2019-01-01 00:00:00",
                             "2020-01-01 00:00:30"
                           ), tz = "UTC"))
-  timeline <- assemble_timeline(list(acoustics), .step = "2 mins")
+  timeline <- assemble_timeline(list(detections), .step = "2 mins")
   assemble_acoustics(.timeline = timeline,
-                     .acoustics = acoustics, .moorings = dat_moorings) |>
+                     .detections = detections,
+                     .moorings = dat_moorings) |>
     expect_error("There are no receiver deployments in `timeline.", fixed = TRUE)
 
 })

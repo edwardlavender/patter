@@ -1,7 +1,7 @@
 test_that("sim_array() works", {
 
   map      <- dat_gebco()
-  timeline <- assemble_timeline(list(dat_acoustics), .step = "2 mins")
+  timeline <- assemble_timeline(list(dat_detections), .step = "2 mins")
 
   #### Test basic output properties
   a <- sim_array(.map = map,
