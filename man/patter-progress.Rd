@@ -8,7 +8,7 @@
 \itemize{
 \item User output messages (via the \code{patter.verbose} option and the \code{.verbose} argument);
 \item Progress bars (via \code{\link[pbapply:pboptions]{pbapply::pboptions()}});
-\item Parallelisation (via \code{.threads} and \code{.cl_} arguments);
+\item Parallelisation (via \code{JULIA_NUM_THREADS} and \code{.cl_} arguments);
 }
 
 Only selected \code{\link{patter}} functions support these options but this may expand in the future, depending on user feedback.
@@ -24,7 +24,7 @@ For pure \code{R} functions, progress bars are implemented via the \code{pbapply
 }
 
 \section{Parallelisation}{
-For \code{R} functions with a \code{Julia} backend, parallelisation is implemented via the \code{.threads} argument to \code{\link[=julia_connect]{julia_connect()}}. This can only be set once per \code{R} session.
+For \code{R} functions with a \code{Julia} backend, parallelisation is implemented via the \code{JULIA_NUM_THREADS} argument to \code{\link[=julia_connect]{julia_connect()}}. This can only be set once per \code{R} session.
 
 For pure \code{R} functions, parallelisation is implemented via \code{.cl_} arguments passed to \code{\link[=cl_lapply]{cl_lapply()}}, which wraps \code{\link[pbapply:pbapply]{pbapply::pblapply()}}. See the \code{\link[=cl_lapply]{cl_lapply()}} function documentation for full details.
 }

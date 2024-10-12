@@ -1,37 +1,27 @@
 #' @title Julia: connect `R` to `Julia`
 #' @description This function connects `R` to `Julia`.
 #'
-#' @param ... Arguments, such as `JULIA_HOME`, passed to [`JuliaCall::julia_setup()`] (excluding `verbose`, which is handled below).
-#' @param JULIA_PROJ (optional) A `character` string that defines the directory of a `Julia` Project.
-#'
-#' If `missing`, the function scans:
-#' * The global option, `JULIA_PROJ`;
-#' * The environmental variable, `JULIA_PROJ`;
-#'
-#' If `missing` and unfound, `JULIA_PROJ = NULL` is used with a [`message`].
-#'
-#' If `NULL`, a `Julia` Project is not used and the default environment is used (e.g., `~/.julia/environments/v1.10/Project.toml`).
+#' @param JULIA_HOME,JULIA_PROJ,JULIA_NUM_THREADS (optional) `Julia` options, provided as function arguments, global options or environment variables.
+#' * `JULIA_HOME`---A `character` string that defines the location of the `Julia` installation (see [`JuliaCall::julia_setup()`]). Usually, this is not required.
+#' * `JULIA_PROJ`---A `character` string that defines the directory of a `Julia` Project. If unspecified, the default environment (e.g., `~/.julia/environments/v1.10/Project.toml`) is used with a [`message`] instead of a local `Julia` project.
+#' * `JULIA_NUM_THREADS`---On MacOS or Linux, `JULIA_NUM_THREADS` is a `character` (`"auto"`) or an `integer` that defines the number of threads used by multi-threaded operations in `Julia`. This defaults to defaults to `"auto"` (not `1`). This can only be set once per `R` session. On Windows, `JULIA_NUM_THREADS` must be set system-wide and use of this argument produces a [`warning`]. See this [GitHub Issue](https://github.com/edwardlavender/patter/issues/11) for instructions.
 #'
 #' @param .pkg_config (optional) A `character` string of `Julia` code, evaluated by [`julia_code()`], that configures `Julia` prior to dependency management.
 #' @param .pkg_update A `logical` variable that defines whether or not to update installed `Julia` packages.
-#' @param .threads A `character` (`"auto"`) or an `integer` that defines the number of threads used by multi-threaded operations in `Julia`. This can only be set once per `R` session. **It is currently ignored on Windows** (see below).
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
+#' @param ... Additional arguments passed to [`JuliaCall::julia_setup()`] (excluding `verbose`).
 #'
 #' @details [`patter`] is an `R` front-end for the [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) package. This requires a local installation of `Julia`. This function connects `R` to the local `Julia` installation, sets up [`JuliaCall`], which provides the integration between `R` and `Julia`, and [`Patter.jl`](https://github.com/edwardlavender/Patter.jl). Internally, the steps are as follows:
 #' * [`JuliaCall`] is set up via [`JuliaCall::julia_setup()`].
-#' * The number of threads is set via the `JULIA_NUM_THREADS` environment variable:
-#'    - If `.threads = NULL`, `JULIA_NUM_THREADS` is set to `"auto"` if unset or left unchanged otherwise;
-#'    - Otherwise, `JULIA_NUM_THREADS` is set to `.threads`;
-#'    - The number of threads can only be set once per `R` session;
-#'    - On Windows, setting `JULIA_NUM_THREADS` as an environment variable in `.Renviron` or using `.threads` does not work. See this [issue](https://github.com/edwardlavender/patter/issues/11) for a workaround.
+#' * The number of threads is set, if possible, via `JULIA_NUM_THREADS`.
 #' * The `Julia` installation is validated.
 #' * A local `Julia` Project is generated in `JULIA_PROJ` (if specified and required) and activated. We recommend using [`patter`] within an RStudio Project, with a `Julia` directory at the top-level that contains the `Julia` project.
 #' * If specified, `.pkg_config` is run via [`julia_code()`].
 #' * [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) and supporting dependencies are installed or updated (if required) and loaded (optionally in the local `Julia` Project). If the environment variable `PATTER.JL_DEV = "path/to/local/clone/of/Patter.jl"` is set, [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) is installed from a local source as a development dependency (via `Pkg.develop()`); otherwise, [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) is installed from the remote.
 #'
-#' You should run this function once per `R` session.
+#' You should run this function once per `R` session (and for every socket in a socket cluster, if necessary).
 #'
-#' To update the number of threads, restart `R` and re-run the function with an updated `.threads` argument.
+#' To update the number of threads, restart `R` and re-run the function with an updated `JULIA_NUM_THREADS` argument.
 #'
 #' @return The function returns the `Julia` interface invisibly (see [`JuliaCall::julia_setup()`]).
 #'
@@ -40,12 +30,12 @@
 #' @author Edward Lavender
 #' @export
 
-julia_connect <- function(...,
+julia_connect <- function(JULIA_HOME,
                           JULIA_PROJ,
+                          JULIA_NUM_THREADS,
                           .pkg_config = NULL,
                           .pkg_update = FALSE,
-                          .threads = NULL,
-                          .verbose = getOption("patter.verbose")) {
+                          .verbose = getOption("patter.verbose"), ...) {
 
   #### Initiate
   cats <- cat_setup(.fun = "julia_connect", .verbose = .verbose)
@@ -53,8 +43,8 @@ julia_connect <- function(...,
 
   #### Set up Julia
   cats$cat("... Running `Julia` setup via `JuliaCall::julia_setup()`...")
-  .threads <- set_threads(.threads = .threads)
-  julia    <- julia_setup(..., verbose = .verbose)
+  JULIA_NUM_THREADS <- set_JULIA_NUM_THREADS(JULIA_NUM_THREADS)
+  julia             <- julia_setup(..., verbose = .verbose)
 
   #### Test Julia
   cats$cat("... Validating Julia installation...")
@@ -81,7 +71,7 @@ julia_connect <- function(...,
   julia_packages(.packages = pkgs, .update = .pkg_update)
 
   #### Validate Julia settings
-  nthreads <- julia_threads(.threads)
+  nthreads <- julia_threads(JULIA_NUM_THREADS)
   cats$cat(paste0("... `Julia` set up with ", nthreads, " thread(s)."))
 
   #### Return outputs

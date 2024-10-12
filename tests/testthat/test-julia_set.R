@@ -27,10 +27,10 @@ test_that("set_map() works", {
 
 test_that("Additional Julia set_*() functions work", {
 
-  # set_threads()
+  # set_JULIA_NUM_THREADS()
   JULIA_NUM_THREADS <- Sys.getenv("JULIA_NUM_THREADS")
-  set_threads(Inf) |>
-    expect_warning("Restart `R` to update the number of threads in `Julia`.")
+  set_JULIA_NUM_THREADS(Inf) |>
+    expect_warning("There are multiple values for `JULIA_NUM_THREADS`.", fixed = TRUE)
   Sys.setenv("JULIA_NUM_THREADS" = JULIA_NUM_THREADS)
 
   # set_yobs_vect()

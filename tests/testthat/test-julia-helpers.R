@@ -1,36 +1,43 @@
 test_that("Julia helpers work", {
 
-  # Define (local) helpers
+  # Define file.path.norm() helper
   file.path.norm <- function(...) {
     x <- file.path(...)
     normalizePath(x, winslash = "/", mustWork = FALSE)
   }
   expect_true(dir.exists(file.path.norm(tempdir())))
 
+  # Define julia_connect_mimic() helper
+  julia_connect_mimic <- function(JULIA_OPTION) {
+    julia_option(JULIA_OPTION)
+  }
 
+  # Test julia_run() and julia_works()
   check_inherits(julia_run(), "logical")
-
   expect_true(julia_works())
 
-  # julia_proj_path()
-  # Use global option
-  jproj <- file.path.norm(tempdir(), "one")
-  op    <- options(JULIA_PROJ = jproj)
-  expect_equal(julia_proj_path(), jproj)
-  options(op)
-  # Use environmental variable
-  JULIA_PROJ <- Sys.getenv("JULIA_PROJ")
-  jproj      <- file.path.norm(tempdir(), "two")
-  Sys.setenv(JULIA_PROJ = jproj)
-  expect_equal(julia_proj_path(), jproj)
-  Sys.setenv("JULIA_PROJ" = JULIA_PROJ)
+  # Test julia_option()
+  # Use missing
+  julia_connect_mimic() |> expect_null()
   # Use function argument
-  jproj <- file.path.norm(tempdir(), "three")
-  expect_equal(julia_proj_path(JULIA_PROJ = jproj), jproj)
-  Sys.unsetenv("JULIA_PROJ")
-  julia_proj_path() |>
-    expect_message("`JULIA_PROJ` not found in global options or environmental variables: using `JULIA_PROJ = NULL`.", fixed = TRUE)
-  Sys.setenv("JULIA_PROJ" = JULIA_PROJ)
+  julia_connect_mimic("auto") |> expect_equal("auto")
+  # Use global option
+  op <- options(JULIA_OPTION = 1)
+  julia_connect_mimic() |> expect_equal(1)
+  options(op)
+  # Use environment variable
+  Sys.setenv(JULIA_OPTION = 2)
+  julia_connect_mimic() |> expect_equal("2")
+  Sys.unsetenv("JULIA_OPTION")
+  # Try conflicting settings
+  op <- options(JULIA_OPTION = 1)
+  Sys.setenv(JULIA_OPTION = 2)
+  julia_connect_mimic() |>
+    expect_warning("There are multiple values for `JULIA_OPTION`.")
+  options(op)
+  Sys.unsetenv("JULIA_OPTION")
+
+  # julia_proj_path()
 
   # julia_proj_generate()
   jproj <- file.path.norm(tempdir(), "JuliaTmp")
@@ -52,8 +59,8 @@ test_that("Julia helpers work", {
   # julia_packages()
 
   # julia_threads()
-  julia_threads(.threads = 999) |>
-    expect_warning("`JULIA_NUM_THREADS` could not be set via `.threads`.", fixed = TRUE)
+  julia_threads(999) |>
+    expect_warning("`JULIA_NUM_THREADS` could not be set.", fixed = TRUE)
 
   julia_glimpse(data.frame(x = 1))
 

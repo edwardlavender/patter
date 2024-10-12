@@ -1,31 +1,27 @@
 if (julia_run()) {
 
+  #### Set JULIA OPTIONS
+  # Recommended: set JULIA options in .Rprofile or .Renviron
+  # (Restart R to ensure these settings take effect)
+  # Otherwise: include JULIA options as function arguments below
+
   #### Example (1): First time use
   # Use `...` to customise `JuliaCall::julia_setup()`
   # Try `installJulia` if you require a Julia installation
+  # The first call to `julia_connect()` may take several minutes
   julia_connect(installJulia = TRUE)
 
   #### Example (2): Connect to `Julia` using default settings
-  # You may need to tell `R` where Julia is via `JULIA_HOME`
   julia_connect()
 
-  #### Example (3): Use a local `Julia` Project (recommended)
-  proj <- file.path(tempdir(), "Julia")
-  julia_connect(JULIA_PROJ = proj)
-
-  #### Example (4): Force an update of installed packages
+  #### Example (3): Force an update of installed packages
   if (FALSE) {
-    julia_connect(JULIA_PROJ = proj, .pkg_update = TRUE)
+    julia_connect(.pkg_update = TRUE)
   }
 
-  #### Example (5): Specify the number of threads
-  # You can only set threads once per `R` session!
-  julia_connect(JULIA_PROJ = proj, .threads = 2L)
+  #### Example (4): Customise user output
+  julia_connect(.verbose = FALSE)
 
-  #### Example (6): Customise user output
-  julia_connect(JULIA_PROJ = proj, .verbose = FALSE)
-
-  file_cleanup(proj)
 }
 
 

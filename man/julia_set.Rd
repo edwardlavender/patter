@@ -2,7 +2,7 @@
 % Please edit documentation in R/julia-set.R
 \name{julia_set}
 \alias{julia_set}
-\alias{set_threads}
+\alias{set_JULIA_NUM_THREADS}
 \alias{set_timeline}
 \alias{set_state_type}
 \alias{set_xinit}
@@ -20,7 +20,7 @@
 \alias{set_smoother_two_filter}
 \title{\code{Julia}: set objects in \code{Julia}}
 \usage{
-set_threads(.threads)
+set_JULIA_NUM_THREADS(JULIA_NUM_THREADS)
 
 set_timeline(.timeline)
 

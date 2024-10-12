@@ -4,6 +4,7 @@
 \alias{julia_helper}
 \alias{julia_run}
 \alias{julia_works}
+\alias{julia_option}
 \alias{julia_proj_path}
 \alias{julia_proj_generate}
 \alias{julia_proj_activate}
@@ -27,6 +28,8 @@ julia_run()
 
 julia_works(.action = abort)
 
+julia_option(VALUE)
+
 julia_proj_path(JULIA_PROJ)
 
 julia_proj_generate(JULIA_PROJ)
@@ -43,7 +46,7 @@ julia_packages_library(.packages)
 
 julia_packages(.packages, .update)
 
-julia_threads(.threads)
+julia_threads(JULIA_NUM_THREADS)
 
 julia_glimpse(.x)
 

@@ -30,34 +30,63 @@ julia_works <- function(.action = abort) {
 #' @rdname julia_helper
 #' @keywords internal
 
+# Get the value of a julia option, if specified
+julia_option <- function(VALUE) {
+
+  OPTION <- deparse(substitute(VALUE))
+
+  #### Get VALUE(s)
+  # Get inputted value
+  if (missing(VALUE)) {
+   VALUE <- NULL
+  }
+  value_input  <- VALUE
+  # Get global option value (set or NULL)
+  value_option <- getOption(OPTION, default = NULL)
+  # Get environmental variable value (set or NULL)
+  value_env    <- Sys.getenv(OPTION)
+  if (!nzchar(value_env)) {
+    value_env <- NULL
+  }
+
+  #### Validate VALUEs
+  if (!all(is.null(value_input), is.null(value_option), is.null(value_env))) {
+    if (length(unique(c(value_input, value_option, value_env))) != 1L) {
+      warn("There are multiple values for `{OPTION}`.", .envir = environment())
+    }
+  }
+
+  #### Set VALUE
+  # Use VALUE, if specified
+  # Otherwise, try global option & then environment variable
+  if (is.null(VALUE) && !is.null(value_option)) {
+    VALUE <- value_option
+  }
+  if (is.null(VALUE) && !is.null(value_env)) {
+    VALUE <- value_env
+  }
+
+  #### Return VALUE
+  VALUE
+
+}
+
+#' @rdname julia_helper
+#' @keywords internal
+
 # Find the path to a Julia Project
 # * If missing, search global options & environmental variables
 # * If specified, return as inputted
 julia_proj_path <- function(JULIA_PROJ) {
-  if (missing(JULIA_PROJ)) {
-    # Scan global option
-    path <- getOption("JULIA_PROJ")
-    if (!is.null(path)) {
-      JULIA_PROJ <- path
-    }
-    # Scan environmental variables
-    if (missing(JULIA_PROJ)) {
-      path <- Sys.getenv("JULIA_PROJ")
-      if (path != "") {
-        JULIA_PROJ <- path
-      }
-    }
-    # If still missing, use `NULL` with a warning
-    if (missing(JULIA_PROJ)) {
-      msg("`JULIA_PROJ` not found in global options or environmental variables: using `JULIA_PROJ = NULL`.")
-      JULIA_PROJ <- NULL
-    }
-  }
-  # Normalise path
-  # * This is required for correct parsing on windows in downstream functions:
-  # * julia_proj_generate()
-  # * julia_proj_activate()
-  if (!is.null(JULIA_PROJ)) {
+  # Get JULIA_PROJ
+  JULIA_PROJ <- julia_option(JULIA_PROJ)
+  if (is.null(JULIA_PROJ)) {
+    msg("Using Julia's global environment.")
+  } else {
+    # Normalise path
+    # * This is required for correct parsing on windows in downstream functions:
+    # * julia_proj_generate()
+    # * julia_proj_activate()
     JULIA_PROJ <- normalizePath(JULIA_PROJ, winslash = "/", mustWork = FALSE)
   }
   JULIA_PROJ
@@ -162,12 +191,12 @@ julia_packages <- function(.packages, .update) {
 #' @keywords internal
 
 # Get the number of threads used by Julia
-julia_threads <- function(.threads) {
+julia_threads <- function(JULIA_NUM_THREADS) {
   nthreads <- julia_eval("Threads.nthreads()")
-  if (.threads != "auto" && nthreads != .threads) {
-    warn("`JULIA_NUM_THREADS` could not be set via `.threads`.")
+  if (!is.null(JULIA_NUM_THREADS) && JULIA_NUM_THREADS != "auto" && nthreads != JULIA_NUM_THREADS) {
+    warn("`JULIA_NUM_THREADS` could not be set.")
   }
-  nthreads
+  invisible(nthreads)
 }
 
 #' @rdname julia_helper

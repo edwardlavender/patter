@@ -7,27 +7,21 @@
 #' @keywords internal
 
 # Set Julia threads
-set_threads <- function(.threads) {
-
-  # If NULL, use `JULIA_NUM_THREADS` (if set) or set to "auto"
-  if (is.null(.threads)) {
-    .threads <- Sys.getenv("JULIA_NUM_THREADS")
-    .threads <- ifelse(.threads == "", "auto", .threads)
-
-  # If provided, validate `.threads` input
-  } else {
-    # TO DO
-    # * Add check on Windows
-    if (.threads != "auto" &&
-        Sys.getenv("JULIA_NUM_THREADS") != "" &&
-        Sys.getenv("JULIA_NUM_THREADS") != .threads) {
-      warn("Restart `R` to update the number of threads in `Julia`.")
-    }
+set_JULIA_NUM_THREADS <- function(JULIA_NUM_THREADS) {
+  # Get JULIA_NUM_THREADS
+  JULIA_NUM_THREADS <- julia_option(JULIA_NUM_THREADS)
+  if (is.null(JULIA_NUM_THREADS) & os_unix()) {
+    # On Mac/Linux, Julia is launched with one thread unless specified
+    # Hence, if unspecified, we set "auto" which permits more threads (if available)
+    JULIA_NUM_THREADS <- "auto"
   }
-
-  # Set `JULIA_NUM_THREADS`
-  Sys.setenv(JULIA_NUM_THREADS = .threads)
-  invisible(.threads)
+  if (!is.null(JULIA_NUM_THREADS)) {
+    if (os_windows()) {
+      warn("On Windows, JULIA_NUM_THREADS should be set system-wide (see https://github.com/edwardlavender/patter/issues/11).")
+    }
+    Sys.setenv(JULIA_NUM_THREADS = JULIA_NUM_THREADS)
+  }
+  invisible(JULIA_NUM_THREADS)
 }
 
 #' @rdname julia_set

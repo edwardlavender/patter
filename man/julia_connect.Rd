@@ -5,36 +5,30 @@
 \title{Julia: connect \code{R} to \code{Julia}}
 \usage{
 julia_connect(
-  ...,
+  JULIA_HOME,
   JULIA_PROJ,
+  JULIA_NUM_THREADS,
   .pkg_config = NULL,
   .pkg_update = FALSE,
-  .threads = NULL,
-  .verbose = getOption("patter.verbose")
+  .verbose = getOption("patter.verbose"),
+  ...
 )
 }
 \arguments{
-\item{...}{Arguments, such as \code{JULIA_HOME}, passed to \code{\link[JuliaCall:julia_setup]{JuliaCall::julia_setup()}} (excluding \code{verbose}, which is handled below).}
-
-\item{JULIA_PROJ}{(optional) A \code{character} string that defines the directory of a \code{Julia} Project.
-
-If \code{missing}, the function scans:
+\item{JULIA_HOME, JULIA_PROJ, JULIA_NUM_THREADS}{(optional) \code{Julia} options, provided as function arguments, global options or environment variables.
 \itemize{
-\item The global option, \code{JULIA_PROJ};
-\item The environmental variable, \code{JULIA_PROJ};
-}
-
-If \code{missing} and unfound, \code{JULIA_PROJ = NULL} is used with a \code{\link{message}}.
-
-If \code{NULL}, a \code{Julia} Project is not used and the default environment is used (e.g., \verb{~/.julia/environments/v1.10/Project.toml}).}
+\item \code{JULIA_HOME}---A \code{character} string that defines the location of the \code{Julia} installation (see \code{\link[JuliaCall:julia_setup]{JuliaCall::julia_setup()}}). Usually, this is not required.
+\item \code{JULIA_PROJ}---A \code{character} string that defines the directory of a \code{Julia} Project. If unspecified, the default environment (e.g., \verb{~/.julia/environments/v1.10/Project.toml}) is used with a \code{\link{message}} instead of a local \code{Julia} project.
+\item \code{JULIA_NUM_THREADS}---On MacOS or Linux, \code{JULIA_NUM_THREADS} is a \code{character} (\code{"auto"}) or an \code{integer} that defines the number of threads used by multi-threaded operations in \code{Julia}. This defaults to defaults to \code{"auto"} (not \code{1}). This can only be set once per \code{R} session. On Windows, \code{JULIA_NUM_THREADS} must be set system-wide and use of this argument produces a \code{\link{warning}}. See this \href{https://github.com/edwardlavender/patter/issues/11}{GitHub Issue} for instructions.
+}}
 
 \item{.pkg_config}{(optional) A \code{character} string of \code{Julia} code, evaluated by \code{\link[=julia_code]{julia_code()}}, that configures \code{Julia} prior to dependency management.}
 
 \item{.pkg_update}{A \code{logical} variable that defines whether or not to update installed \code{Julia} packages.}
 
-\item{.threads}{A \code{character} (\code{"auto"}) or an \code{integer} that defines the number of threads used by multi-threaded operations in \code{Julia}. This can only be set once per \code{R} session. \strong{It is currently ignored on Windows} (see below).}
-
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
+
+\item{...}{Additional arguments passed to \code{\link[JuliaCall:julia_setup]{JuliaCall::julia_setup()}} (excluding \code{verbose}).}
 }
 \value{
 The function returns the \code{Julia} interface invisibly (see \code{\link[JuliaCall:julia_setup]{JuliaCall::julia_setup()}}).
@@ -46,52 +40,42 @@ This function connects \code{R} to \code{Julia}.
 \code{\link{patter}} is an \code{R} front-end for the \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} package. This requires a local installation of \code{Julia}. This function connects \code{R} to the local \code{Julia} installation, sets up \code{\link{JuliaCall}}, which provides the integration between \code{R} and \code{Julia}, and \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}. Internally, the steps are as follows:
 \itemize{
 \item \code{\link{JuliaCall}} is set up via \code{\link[JuliaCall:julia_setup]{JuliaCall::julia_setup()}}.
-\item The number of threads is set via the \code{JULIA_NUM_THREADS} environment variable:
-\itemize{
-\item If \code{.threads = NULL}, \code{JULIA_NUM_THREADS} is set to \code{"auto"} if unset or left unchanged otherwise;
-\item Otherwise, \code{JULIA_NUM_THREADS} is set to \code{.threads};
-\item The number of threads can only be set once per \code{R} session;
-\item On Windows, setting \code{JULIA_NUM_THREADS} as an environment variable in \code{.Renviron} or using \code{.threads} does not work. See this \href{https://github.com/edwardlavender/patter/issues/11}{issue} for a workaround.
-}
+\item The number of threads is set, if possible, via \code{JULIA_NUM_THREADS}.
 \item The \code{Julia} installation is validated.
 \item A local \code{Julia} Project is generated in \code{JULIA_PROJ} (if specified and required) and activated. We recommend using \code{\link{patter}} within an RStudio Project, with a \code{Julia} directory at the top-level that contains the \code{Julia} project.
 \item If specified, \code{.pkg_config} is run via \code{\link[=julia_code]{julia_code()}}.
 \item \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} and supporting dependencies are installed or updated (if required) and loaded (optionally in the local \code{Julia} Project). If the environment variable \code{PATTER.JL_DEV = "path/to/local/clone/of/Patter.jl"} is set, \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} is installed from a local source as a development dependency (via \code{Pkg.develop()}); otherwise, \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} is installed from the remote.
 }
 
-You should run this function once per \code{R} session.
+You should run this function once per \code{R} session (and for every socket in a socket cluster, if necessary).
 
-To update the number of threads, restart \code{R} and re-run the function with an updated \code{.threads} argument.
+To update the number of threads, restart \code{R} and re-run the function with an updated \code{JULIA_NUM_THREADS} argument.
 }
 \examples{
 if (julia_run()) {
 
+  #### Set JULIA OPTIONS
+  # Recommended: set JULIA options in .Rprofile or .Renviron
+  # (Restart R to ensure these settings take effect)
+  # Otherwise: include JULIA options as function arguments below
+
   #### Example (1): First time use
   # Use `...` to customise `JuliaCall::julia_setup()`
   # Try `installJulia` if you require a Julia installation
+  # The first call to `julia_connect()` may take several minutes
   julia_connect(installJulia = TRUE)
 
   #### Example (2): Connect to `Julia` using default settings
-  # You may need to tell `R` where Julia is via `JULIA_HOME`
   julia_connect()
 
-  #### Example (3): Use a local `Julia` Project (recommended)
-  proj <- file.path(tempdir(), "Julia")
-  julia_connect(JULIA_PROJ = proj)
-
-  #### Example (4): Force an update of installed packages
+  #### Example (3): Force an update of installed packages
   if (FALSE) {
-    julia_connect(JULIA_PROJ = proj, .pkg_update = TRUE)
+    julia_connect(.pkg_update = TRUE)
   }
 
-  #### Example (5): Specify the number of threads
-  # You can only set threads once per `R` session!
-  julia_connect(JULIA_PROJ = proj, .threads = 2L)
+  #### Example (4): Customise user output
+  julia_connect(.verbose = FALSE)
 
-  #### Example (6): Customise user output
-  julia_connect(JULIA_PROJ = proj, .verbose = FALSE)
-
-  file_cleanup(proj)
 }
 
 
