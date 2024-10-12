@@ -9,8 +9,8 @@ test_that("example_setup() methods work", {
   setup <- example_setup("pf_smoother_two_filter")
   map   <- setup$map
   args  <- setup$pf_filter_args
-  out_pff  <- do.call(pf_filter, args)
-  check_inherits(out_pff, "list")
+  fwd   <- do.call(pf_filter, args)
+  check_inherits(fwd, "list")
 
 })
 

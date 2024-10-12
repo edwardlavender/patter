@@ -338,7 +338,7 @@ set_states_init <- function(.timeline, .state, .xinit, .model_move, .yobs, .n_pa
 #' @keywords internal
 
 # Run the particle filter in Julia
-# * This defines a `pff` or `pfb` object depending on `.direction`
+# * This defines a `fwd` or `bwd` object depending on `.direction`
 set_pf_filter <- function(.n_move, .n_resample, .n_record, .n_iter, .direction) {
   # Check inputs
   julia_check_exists("timeline", "xinit", "yobs", "model_move")

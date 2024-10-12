@@ -92,13 +92,13 @@ args <- list(.timeline = timeline,
              .n_record = 100L)
 # Run the filter forwards
 args$.direction = "forward"
-out_pff <- do.call(pf_filter, args)
+out_fwd <- do.call(pf_filter, args)
 # Run the filter backwards
 args$.direction = "backward"
-out_pfb <- do.call(pf_filter, args)
+out_bwd <- do.call(pf_filter, args)
 
 #### Run the smoother
-out_tff <- pf_smoother_two_filter()
+out_smo <- pf_smoother_two_filter()
 
 
 #########################
@@ -108,9 +108,9 @@ out_tff <- pf_smoother_two_filter()
 #### Collate datasets
 dat_path <- paths
 dat_coa  <- out_coa
-dat_pff  <- out_pff
-dat_pfb  <- out_pfb
-dat_tff  <- out_tff
+dat_pff  <- out_fwd
+dat_pfb  <- out_bwd
+dat_tff  <- out_smo
 datasets <-
   list(dat_path = dat_path,
        dat_coa = dat_coa,

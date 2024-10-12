@@ -10,14 +10,14 @@ test_that("pf_plot_xy() works", {
                               size = 1,
                               na.rm = TRUE, xy = TRUE,
                               values = FALSE)
-  pff <-
+  fwd <-
     dat_pff()$states |>
     filter(timestep %in% 1:2L) |>
     arrange(path_id, timestep) |>
     mutate(cex = 1.5) |>
     as.data.table()
   pf_plot_xy(.map = map,
-             .coord = pff,
+             .coord = fwd,
              .steps = NULL,
              .png = list(),
              .add_points = list(col = "red"),

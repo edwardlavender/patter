@@ -54,7 +54,7 @@ test_that("pf_filter() reconstructs the true path", {
          ModelObsDepthUniform = sobs$ModelObsDepthUniform[[1]])
 
   # Run forward filter
-  pff <- pf_filter(.timeline = timeline,
+  fwd <- pf_filter(.timeline = timeline,
                    .state = state,
                    .xinit = xinit,
                    .yobs = yobs,
@@ -65,12 +65,12 @@ test_that("pf_filter() reconstructs the true path", {
 
   # Validate forward filter
   states <-
-    pff$states |>
+    fwd$states |>
     left_join(paths, by = "timestep", suffix = c(".state", ".path"))
   expect_true(all.equal(states$map_value.path, states$map_value.state))
 
   # Run backward filter
-  pfb <- pf_filter(.timeline = timeline,
+  bwd <- pf_filter(.timeline = timeline,
                    .state = state,
                    .xinit = xinit_end,
                    .yobs = yobs,
@@ -82,7 +82,7 @@ test_that("pf_filter() reconstructs the true path", {
 
   # Validate backward filter
   states <-
-    pfb$states |>
+    bwd$states |>
     left_join(paths, by = "timestep", suffix = c(".state", ".path"))
   expect_true(all.equal(states$map_value.path, states$map_value.state))
 
