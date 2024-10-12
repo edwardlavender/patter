@@ -401,7 +401,6 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/edwardlavender/patter/" class="external-link">patter</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; This is {patter} v.1.0.1. For an overview, see `?patter`. For support, contact edward.lavender@eawag.ch.</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: package 'data.table' was built under R version 4.3.3</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dtplyr.tidyverse.org" class="external-link">dtplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>patter.verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
@@ -462,7 +461,7 @@
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">individual_id</span> <span class="op">==</span> <span class="fl">25L</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>individual_id <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>         depth_sigma <span class="op">=</span> <span class="fl">50</span>,</span>
-<span>         depth_deep_eps <span class="op">=</span> <span class="fl">30</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>         depth_deep_eps <span class="op">=</span> <span class="fl">50</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>obs <span class="op">=</span> <span class="va">depth</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Individual movements are connected to the observations by models of the observation process for each dataset. Without going into details, here we bundle together the observations with the parameters of the observation models:</p>
@@ -499,12 +498,12 @@
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">fwd</span><span class="op">$</span><span class="va">states</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    path_id timestep           timestamp map_value        x       y</span></span>
 <span><span class="co">#&gt;      &lt;int&gt;    &lt;int&gt;              &lt;POSc&gt;     &lt;num&gt;    &lt;num&gt;   &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:       1        1 2016-03-17 01:50:00  56.53801 709292.1 6253157</span></span>
-<span><span class="co">#&gt; 2:       1        2 2016-03-17 01:52:00  59.76520 709164.2 6253033</span></span>
-<span><span class="co">#&gt; 3:       1        3 2016-03-17 01:54:00  66.52094 709169.3 6253140</span></span>
-<span><span class="co">#&gt; 4:       1        4 2016-03-17 01:56:00  45.88295 709308.1 6252915</span></span>
-<span><span class="co">#&gt; 5:       1        5 2016-03-17 01:58:00  52.98276 709355.2 6253101</span></span>
-<span><span class="co">#&gt; 6:       1        6 2016-03-17 02:00:00  66.52094 709108.1 6253064</span></span>
+<span><span class="co">#&gt; 1:       1        1 2016-03-17 01:50:00  80.03239 709142.1 6253307</span></span>
+<span><span class="co">#&gt; 2:       1        2 2016-03-17 01:52:00  73.44244 709302.2 6253500</span></span>
+<span><span class="co">#&gt; 3:       1        3 2016-03-17 01:54:00  84.47292 709252.5 6253478</span></span>
+<span><span class="co">#&gt; 4:       1        4 2016-03-17 01:56:00 131.12650 708783.7 6253373</span></span>
+<span><span class="co">#&gt; 5:       1        5 2016-03-17 01:58:00  38.45599 709656.9 6252885</span></span>
+<span><span class="co">#&gt; 6:       1        6 2016-03-17 02:00:00  58.17422 709286.4 6253146</span></span>
 <span></span>
 <span><span class="co"># Backward run</span></span>
 <span><span class="va">args</span><span class="op">$</span><span class="va">.direction</span> <span class="op">&lt;-</span> <span class="st">"backward"</span></span>
