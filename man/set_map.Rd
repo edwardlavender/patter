@@ -28,11 +28,11 @@ Use \code{\link[=set_map]{set_map()}} at the start of your workflow to export ma
 
 Maps must be georeferenced rasters. A planar (Universal Transverse Mercator) projection with coordinates in metres is currently required.
 
-Maps are used to (a) sample initial locations from which movements are simulated and (b) as components of the movement model that define the regions within which movements are permitted (see \code{\link{ModelMove}}). \code{NAs} define inhospitable regions (such as land), from which initial locations are never sampled and into which movements are not permitted.
+Maps are used to (a) simulate initial location(s) for an individual and (b) restrict subsequent, simulated movements to habitable areas (see \code{\link{ModelMove}}). \code{NAs} define inhospitable regions (such as land). Initial location(s) and subsequent movements are restricted to non-\code{NA} regions.
 
-For computational reasons, two maps are defined in \code{Julia}. The map from which initial locations are sampled is exported \code{Julia} as a \code{Raster} (named \code{env_init}). The map incorporated into the movement model is read as a \code{GeoArray} (named \code{env}). Usually, both maps are identical. For this reason, under the default options, \code{.x} is exported as both a \code{Raster} (\code{.as_Raster = TRUE}) and a \code{GeoArray} (\code{.as_GeoArray = TRUE}).
+For computational reasons, two maps are defined in \code{Julia}. The map from which initial locations are sampled is exported as a \code{Raster} (named \code{env_init}). The map incorporated into the movement model is exported as a \code{GeoArray} (named \code{env}). Usually, both maps are identical. For this reason, under the default options, \code{.x} is exported as both a \code{Raster} (\code{.as_Raster = TRUE}) and a \code{GeoArray} (\code{.as_GeoArray = TRUE}).
 
-To sample initial locations from a different map, export the two maps separately, via:
+To simulate initial locations from a different map from that used to bound individual movements, export the two maps separately, via:
 \preformatted{
 set_map(x1, .as_Raster = TRUE, .as_GeoArray = FALSE) # set initial map
 set_map(x2, .as_Raster = FALSE, .as_GeoArray = TRUE) # set movement map

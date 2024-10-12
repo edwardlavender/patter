@@ -1,6 +1,5 @@
 #' @title `Julia`: set objects in `Julia`
 #' @description These are internal functions that assign objects to variable names in `Julia`.
-#' @example man/examples/example-julia_set.R
 #' @author Edward Lavender
 #' @name julia_set
 

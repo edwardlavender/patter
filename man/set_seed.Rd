@@ -9,6 +9,9 @@ set_seed(.seed = 123L)
 \arguments{
 \item{.seed}{An \code{integer} that defined the seed (see \code{\link[=set.seed]{set.seed()}}).}
 }
+\value{
+The function returns \code{invisible(NULL)}.
+}
 \description{
 Use \code{\link[=set_seed]{set_seed()}} to set the seed in \code{R} and \code{Julia} at the start of your workflow.
 }
