@@ -32,14 +32,14 @@ pf_plot_xy(.map = map,
 # Specify selected steps
 pf_plot_xy(.map = map,
            .coord = smo,
-           .steps = 1:5L)
+           .steps = 1:4L)
 # Plot all steps (default: .step = NULL)
 pf_plot_xy(.map = map,
            .coord = fwd)
 # Use `.prompt = TRUE`
 pf_plot_xy(.map = map,
            .coord = smo,
-           .steps = 1:5L,
+           .steps = 1:4L,
            .prompt = TRUE)
 
 #### Example (3): Customise the background map via `.add_surface`
@@ -76,13 +76,13 @@ pf_plot_xy(.map = map,
 # Write images in serial
 pf_plot_xy(.map = map,
            .coord = smo,
-           .steps = 1:50L,
+           .steps = 1:4L,
            .png = list(filename = frames))
 # Use a fork cluster
 if (.Platform$OS.type == "unix") {
   pf_plot_xy(.map = map,
              .coord = smo,
-             .steps = 1:50L,
+             .steps = 1:4L,
              .png = list(filename = frames),
              .cl = 2L,
              .chunk = TRUE)
