@@ -3,7 +3,6 @@
 \name{julia_helper}
 \alias{julia_helper}
 \alias{julia_run}
-\alias{julia_skip}
 \alias{julia_works}
 \alias{julia_proj_path}
 \alias{julia_proj_generate}
@@ -25,8 +24,6 @@
 \title{Julia: helpers}
 \usage{
 julia_run()
-
-julia_skip()
 
 julia_works(.action = abort)
 

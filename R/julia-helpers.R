@@ -18,16 +18,6 @@ julia_run <- function() {
 #' @rdname julia_helper
 #' @export
 
-# Choose whether or not to skip patter tests
-# * If TRUE, skip
-# * This is a temporary solution to skipping tests with covr, CI etc.
-julia_skip <- function() {
-  !identical(Sys.getenv("PATTER_TEST"), "true")
-}
-
-#' @rdname julia_helper
-#' @keywords internal
-
 # Test if Julia works
 julia_works <- function(.action = abort) {
   works <- isTRUE(try(julia_eval('true'), silent = TRUE))

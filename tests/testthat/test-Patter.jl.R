@@ -2,8 +2,6 @@
 
 test_that("Patter.jl::extract() works", {
 
-  skip_if(julia_skip())
-
   map <- dat_gebco()
   set_map(map)
 

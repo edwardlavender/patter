@@ -10,8 +10,6 @@ test_that("Julia helpers work", {
 
   check_inherits(julia_run(), "logical")
 
-  check_inherits(julia_skip(), "logical")
-
   expect_true(julia_works())
 
   # julia_proj_path()
