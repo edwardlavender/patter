@@ -2,8 +2,6 @@
 % Please edit documentation in R/julia-set.R
 \name{julia_set}
 \alias{julia_set}
-\alias{set_seed}
-\alias{set_map}
 \alias{set_threads}
 \alias{set_timeline}
 \alias{set_state_type}
@@ -22,10 +20,6 @@
 \alias{set_smoother_two_filter}
 \title{\code{Julia}: set objects in \code{Julia}}
 \usage{
-set_seed(.seed = 123L)
-
-set_map(.x, .as_Raster = TRUE, .as_GeoArray = TRUE)
-
 set_threads(.threads)
 
 set_timeline(.timeline)
@@ -66,45 +60,8 @@ set_pf_filter(.n_move, .n_resample, .n_record, .n_iter, .direction)
 
 set_smoother_two_filter(.n_particle, .n_sim)
 }
-\value{
-Exported functions return \code{invisible(NULL)}.
-}
 \description{
-These are functions that assign objects to variable names in \code{Julia}.
-}
-\details{
-The following functions are exported:
-\itemize{
-\item \code{\link[=set_seed]{set_seed()}} sets a seed in both \code{R} and \code{Julia}.
-\itemize{
-\item It is often a good idea to call \code{\link[=set_seed]{set_seed()}} at the start of your workflow.
-}
-\item \code{\link[=set_map]{set_map()}} exports a \code{\link{SpatRaster}} map of the study area to a variable named \code{env} in \code{Julia} (see \code{\link{ModelMove}}). The map (\code{.x}) must be specified as (a) a \code{\link{SpatRaster}} (supported on Windows and MacOS) or a file path to a raster (supported on Windows, MacOS and Linux).
-\itemize{
-\item Export the map at the start of your workflow.
-}
-}
-
-Other functions are internal.
-}
-\examples{
-if (julia_run()) {
-
-  # Connect to Julia
-  julia_connect()
-
-  # Set the seed in `R` and `Julia`
-  set_seed(1)
-
-  # Define a map of the study area & export
-  # > This map defines the region(s) within which movements are allowed
-  # > `set_map()` makes it available to `Julia` routines (see ?`ModelMove`)
-  map <- dat_gebco()
-  terra::plot(map)
-  set_map(map)
-
-}
-
+These are internal functions that assign objects to variable names in \code{Julia}.
 }
 \author{
 Edward Lavender
