@@ -10,7 +10,7 @@ map <- dat_gebco()
 # Sample example coordinates
 coord <-
   map |>
-  terra::spatSample(size = 5000L, xy = TRUE, cell = TRUE, na.rm = TRUE) |>
+  terra::spatSample(size = 100L, xy = TRUE, cell = TRUE, na.rm = TRUE) |>
   select("x", "y") |>
   as.data.table()
 # Use x, y coordinates
@@ -49,7 +49,10 @@ map_dens(map, .coord = coord)
 map_dens(map, .coord = coord, sigma = 5)
 map_dens(map, .coord = coord, sigma = 100)
 # E.g., perform automatic bandwidth selection using cross validation:
-map_dens(map, .coord = coord, sigma = bw.diggle)
-map_dens(map, .coord = coord, sigma = bw.scott)
-map_dens(map, .coord = coord, sigma = bw.ppl)
-map_dens(map, .coord = coord, sigma = bw.CvL)
+if (FALSE) {
+  # These examples are slow
+  map_dens(map, .coord = coord, sigma = bw.diggle) # 2 s
+  map_dens(map, .coord = coord, sigma = bw.scott)  # 1 s
+  map_dens(map, .coord = coord, sigma = bw.ppl)    # 65 s
+  map_dens(map, .coord = coord, sigma = bw.CvL)    # 25 s
+}
