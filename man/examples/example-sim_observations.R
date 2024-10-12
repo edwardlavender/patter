@@ -1,115 +1,118 @@
-library(data.table)
-library(dtplyr)
-library(dplyr, warn.conflicts = FALSE)
+if (julia_run()) {
 
-#### Connect to Julia
-julia_connect()
-set_seed()
+  library(data.table)
+  library(dtplyr)
+  library(dplyr, warn.conflicts = FALSE)
 
-#### Set up study system
-# Define `map` (the region within which movements are permitted)
-map <- dat_gebco()
-set_map(map)
-# Define study period
-timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
-                length.out = 1000L, by = "2 mins")
+  #### Connect to Julia
+  julia_connect()
+  set_seed()
 
-#### Simulate path with default options
-paths <- sim_path_walk(.map = map,
-                       .timeline = timeline,
-                       .state = "StateXY",
-                       .model_move = move_xy())
+  #### Set up study system
+  # Define `map` (the region within which movements are permitted)
+  map <- dat_gebco()
+  set_map(map)
+  # Define study period
+  timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
+                  length.out = 1000L, by = "2 mins")
 
-#### Example (1): Simulate observations via `ModelObsAcousticLogisTrunc`
+  #### Simulate path with default options
+  paths <- sim_path_walk(.map = map,
+                         .timeline = timeline,
+                         .state = "StateXY",
+                         .model_move = move_xy())
 
-# Overview:
-# * `ModelObsAcousticLogisTrunc`: observation model structure for acoustic observations
-# * See ?ModelObsAcousticLogisTrunc
-# * See JuliaCall::julia_help("ModelObsAcousticLogisTrunc")
-# * This structure holds:
-#   - sensor_id (the receiver_id)
-#   - receiver_x, receiver_y (the receiver coordinates)
-#   - receiver_alpha, receiver_beta, receiver_gamma
-#   - (these are parameters of a truncated logistic detection probability model)
-# * Using these fields, it is possible to simulate detections at receivers
+  #### Example (1): Simulate observations via `ModelObsAcousticLogisTrunc`
 
-# Simulate an acoustic array
-a <- 4
-b <- -0.01
-g <- 750
-moorings <- sim_array(.map = map,
-                      .timeline = timeline,
-                      .n_receiver = 100L,
-                      # (optional) Define constant detection probability parameters
-                      .receiver_alpha = a,
-                      .receiver_beta = b,
-                      .receiver_gamma = g)
+  # Overview:
+  # * `ModelObsAcousticLogisTrunc`: observation model structure for acoustic observations
+  # * See ?ModelObsAcousticLogisTrunc
+  # * See JuliaCall::julia_help("ModelObsAcousticLogisTrunc")
+  # * This structure holds:
+  #   - sensor_id (the receiver_id)
+  #   - receiver_x, receiver_y (the receiver coordinates)
+  #   - receiver_alpha, receiver_beta, receiver_gamma
+  #   - (these are parameters of a truncated logistic detection probability model)
+  # * Using these fields, it is possible to simulate detections at receivers
 
-# This is the shape of detection probability model for the parameters we have chosen
-d <- seq(1, 1000, by = 1)
-plot(d, ifelse(d <= g, plogis(a * b * d), 0),
-     ylab = "Detection probability",
-     xlab = "Distance (m)",
-     type = "l")
+  # Simulate an acoustic array
+  a <- 4
+  b <- -0.01
+  g <- 750
+  moorings <- sim_array(.map = map,
+                        .timeline = timeline,
+                        .n_receiver = 100L,
+                        # (optional) Define constant detection probability parameters
+                        .receiver_alpha = a,
+                        .receiver_beta = b,
+                        .receiver_gamma = g)
 
-# Define a data.table of observation model parameters
-moorings <-
-  moorings |>
-  select(sensor_id = "receiver_id",
-         "receiver_x", "receiver_y",
-         "receiver_alpha", "receiver_beta", "receiver_gamma") |>
-  as.data.table()
+  # This is the shape of detection probability model for the parameters we have chosen
+  d <- seq(1, 1000, by = 1)
+  plot(d, ifelse(d <= g, plogis(a * b * d), 0),
+       ylab = "Detection probability",
+       xlab = "Distance (m)",
+       type = "l")
 
-# Simulate observations
-obs <- sim_observations(.timeline = timeline,
-                        .model_obs = list(ModelObsAcousticLogisTrunc = moorings))
+  # Define a data.table of observation model parameters
+  moorings <-
+    moorings |>
+    select(sensor_id = "receiver_id",
+           "receiver_x", "receiver_y",
+           "receiver_alpha", "receiver_beta", "receiver_gamma") |>
+    as.data.table()
 
-# Examine simulated observations
-# * sim_observations() returns a list, with one element for every `.model_obs`
-# * Each element is a `list`, with one element for each simulated path
-# * Each element is a `data.table` that contains the observations
-str(obs)
+  # Simulate observations
+  obs <- sim_observations(.timeline = timeline,
+                          .model_obs = list(ModelObsAcousticLogisTrunc = moorings))
 
-# Plot detections
-detections <-
-  obs$ModelObsAcousticLogisTrunc[[1]] |>
-  lazy_dt() |>
-  filter(obs == 1L) |>
-  as.data.table()
-plot(detections$timestamp, detections$obs)
+  # Examine simulated observations
+  # * sim_observations() returns a list, with one element for every `.model_obs`
+  # * Each element is a `list`, with one element for each simulated path
+  # * Each element is a `data.table` that contains the observations
+  str(obs)
 
-# Customise `ModelObsAcousticLogisTrunc` parameters
-# > Receiver-specific parameters are permitted
-moorings[, receiver_alpha := runif(.N, 4, 5)]
-moorings[, receiver_beta := runif(.N, -0.01, -0.001)]
-moorings[, receiver_gamma := runif(.N, 500, 1000)]
-obs <- sim_observations(.timeline = timeline,
-                        .model_obs = list(ModelObsAcousticLogisTrunc = moorings))
+  # Plot detections
+  detections <-
+    obs$ModelObsAcousticLogisTrunc[[1]] |>
+    lazy_dt() |>
+    filter(obs == 1L) |>
+    as.data.table()
+  plot(detections$timestamp, detections$obs)
 
-#### Example (2): Simulate observations via `ModelObsDepthUniform`
-# `ModelObsDepthUniform` is an observation model for depth observations
-# * See ?ModelObsAcousticLogisTrunc
-# * See JuliaCall::julia_help("ModelObsAcousticLogisTrunc")
-pars <- data.frame(sensor_id = 1,
-                   depth_shallow_eps = 10,
-                   depth_deep_eps = 20)
-obs <- sim_observations(.timeline = timeline,
-                        .model_obs = list(ModelObsDepthUniform = pars))
+  # Customise `ModelObsAcousticLogisTrunc` parameters
+  # > Receiver-specific parameters are permitted
+  moorings[, receiver_alpha := runif(.N, 4, 5)]
+  moorings[, receiver_beta := runif(.N, -0.01, -0.001)]
+  moorings[, receiver_gamma := runif(.N, 500, 1000)]
+  obs <- sim_observations(.timeline = timeline,
+                          .model_obs = list(ModelObsAcousticLogisTrunc = moorings))
 
-#### Example (3): Simulate observations via `ModelObsDepthNormalTrunc`
-# `ModelObsDepthNormalTrunc` is an observation model for depth observations
-pars <- data.frame(sensor_id = 1,
-                   depth_sigma = 10,
-                   depth_deep_eps = 20)
-obs <- sim_observations(.timeline = timeline,
-                        .model_obs = list(ModelObsDepthNormalTrunc = pars))
+  #### Example (2): Simulate observations via `ModelObsDepthUniform`
+  # `ModelObsDepthUniform` is an observation model for depth observations
+  # * See ?ModelObsAcousticLogisTrunc
+  # * See JuliaCall::julia_help("ModelObsAcousticLogisTrunc")
+  pars <- data.frame(sensor_id = 1,
+                     depth_shallow_eps = 10,
+                     depth_deep_eps = 20)
+  obs <- sim_observations(.timeline = timeline,
+                          .model_obs = list(ModelObsDepthUniform = pars))
 
-#### Example (4): Simulate observations via custom `ModelObs` sub-types
-# See `?ModelObs`
+  #### Example (3): Simulate observations via `ModelObsDepthNormalTrunc`
+  # `ModelObsDepthNormalTrunc` is an observation model for depth observations
+  pars <- data.frame(sensor_id = 1,
+                     depth_sigma = 10,
+                     depth_deep_eps = 20)
+  obs <- sim_observations(.timeline = timeline,
+                          .model_obs = list(ModelObsDepthNormalTrunc = pars))
 
-#### Example (5): Use multiple observation models
-obs <- sim_observations(.timeline = timeline,
-                        .model_obs = list(ModelObsAcousticLogisTrunc = moorings,
-                                          ModelObsDepthNormalTrunc = pars))
-str(obs)
+  #### Example (4): Simulate observations via custom `ModelObs` sub-types
+  # See `?ModelObs`
 
+  #### Example (5): Use multiple observation models
+  obs <- sim_observations(.timeline = timeline,
+                          .model_obs = list(ModelObsAcousticLogisTrunc = moorings,
+                                            ModelObsDepthNormalTrunc = pars))
+  str(obs)
+
+}
