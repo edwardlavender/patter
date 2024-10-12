@@ -95,7 +95,7 @@ julia_connect <- function(...,
 #' This function validates the `R`---`Julia` interface with an example [`SpatRaster`] that is exported to `Julia` and then modified in `R`. If the function returns nothing, you should be good to go. On some systems, we have observed segmentation faults that crash `R` when the map is exported to `Julia` and/or modified in `R`. Please report issues.
 #'
 #' @return The function returns `invisible(NULL)`, unless an error is experienced.
-#' @example man/examples/julia_validate.R
+#' @example man/examples/example-julia_validate.R
 #' @seealso See [`julia_connect()`] to connect `R` to `Julia`.
 #' @author Edward Lavender
 #' @export
