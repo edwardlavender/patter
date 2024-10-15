@@ -8,23 +8,52 @@ julia_connect(
   JULIA_HOME,
   JULIA_PROJ,
   JULIA_NUM_THREADS,
+  JULIA_PATTER_SOURCE,
   .pkg_config = NULL,
-  .pkg_update = FALSE,
+  .pkg_install = NULL,
+  .pkg_update = NULL,
+  .pkg_load = NULL,
   .verbose = getOption("patter.verbose"),
   ...
 )
 }
 \arguments{
-\item{JULIA_HOME, JULIA_PROJ, JULIA_NUM_THREADS}{(optional) \code{Julia} options, provided as function arguments, global options or environment variables.
+\item{JULIA_HOME, JULIA_PROJ, JULIA_NUM_THREADS, JULIA_PATTER_SOURCE}{(optional) \code{Julia} options, provided as function arguments, global options or environment variables.
 \itemize{
 \item \code{JULIA_HOME}---A \code{character} string that defines the location of the \code{Julia} installation (see \code{\link[JuliaCall:julia_setup]{JuliaCall::julia_setup()}}). Usually, this is not required.
 \item \code{JULIA_PROJ}---A \code{character} string that defines the directory of a \code{Julia} Project. If unspecified, the default environment (e.g., \verb{~/.julia/environments/v1.10/Project.toml}) is used with a \code{\link{message}} instead of a local \code{Julia} project.
-\item \code{JULIA_NUM_THREADS}---On MacOS or Linux, \code{JULIA_NUM_THREADS} is a \code{character} (\code{"auto"}) or an \code{integer} that defines the number of threads used by multi-threaded operations in \code{Julia}. This defaults to defaults to \code{"auto"} (not \code{1}). This can only be set once per \code{R} session. On Windows, \code{JULIA_NUM_THREADS} must be set system-wide and use of this argument produces a \code{\link{warning}}. See this \href{https://github.com/edwardlavender/patter/issues/11}{GitHub Issue} for instructions.
-}}
+\item \code{JULIA_NUM_THREADS}---On MacOS or Linux, \code{JULIA_NUM_THREADS} is a \code{character} (\code{"auto"}) or an \code{integer} that defines the number of threads used by multi-threaded operations in \code{Julia}. This defaults to \code{"auto"} (not \code{1}). This can only be set once per \code{R} session. On Windows, \code{JULIA_NUM_THREADS} must be set system-wide and use of this argument produces a \code{\link{warning}}. See this \href{https://github.com/edwardlavender/patter/issues/11}{GitHub Issue} for instructions.
+\item \code{JULIA_PATTER_SOURCE}---A \code{character} string that defines the source of \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}. This may be:
+\itemize{
+\item An absolute file path to a local copy of the package, in which case it is added as a development dependency;
+\item A Git branch name (e.g., \code{"main"}, \code{"dev"}) or a commit SHA (e.g., \code{"b7c2fda733f80fcfd8770058cded7e0946b3abc0"});
+\item A valid installation URL (e.g., \code{"https://github.com/edwardlavender/Patter.jl.git"});
+}
+}
 
-\item{.pkg_config}{(optional) A \code{character} string of \code{Julia} code, evaluated by \code{\link[=julia_code]{julia_code()}}, that configures \code{Julia} prior to dependency management.}
+If missing, \code{JULIA_PATTER_SOURCE} defaults to \code{"https://github.com/edwardlavender/Patter.jl.git"}.
 
-\item{.pkg_update}{A \code{logical} variable that defines whether or not to update installed \code{Julia} packages.}
+If \code{JULIA_PATTER_SOURCE} changes, force the update by \code{.pkg_update}.}
+
+\item{.pkg_config, .pkg_install, .pkg_update, .pkg_load}{(optional) \code{Julia} package options.
+\itemize{
+\item \code{.pkg_config} is a \code{character} string of \code{Julia} code, evaluated by \code{\link[=julia_code]{julia_code()}}, that configures \code{Julia} prior to dependency management.
+\item \code{.pkg_install}---A \code{character} vector of accessory \code{Julia} packages for install.
+\item \code{.pkg_update}---Package update control:
+\itemize{
+\item \code{NULL} or \code{FALSE} suppresses package updates;
+\item \code{TRUE} updates all installed packages;
+\item A \code{character} vector updates named packages;
+}
+\item \code{.pkg_load}---Package loading (\code{using}) control:
+\itemize{
+\item \code{NULL} or \code{FALSE} loads required packages only;
+\item \code{TRUE} loads all installed packages
+\item A \code{character} vector loads required and additionally named packages;
+}
+}
+
+Note that for \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}, \code{.pkg_update} does not respect the current branch of the installation and always defaults to \code{"https://github.com/edwardlavender/Patter.jl.git"}. Specify \code{JULIA_PATTER_SOURCE} to update on a different branch.}
 
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 
@@ -44,7 +73,7 @@ This function connects \code{R} to \code{Julia}.
 \item The \code{Julia} installation is validated.
 \item A local \code{Julia} Project is generated in \code{JULIA_PROJ} (if specified and required) and activated. We recommend using \code{\link{patter}} within an RStudio Project, with a \code{Julia} directory at the top-level that contains the \code{Julia} project.
 \item If specified, \code{.pkg_config} is run via \code{\link[=julia_code]{julia_code()}}.
-\item \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} and supporting dependencies are installed or updated (if required) and loaded (optionally in the local \code{Julia} Project). If the environment variable \code{PATTER.JL_DEV = "path/to/local/clone/of/Patter.jl"} is set, \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} is installed from a local source as a development dependency (via \code{Pkg.develop()}); otherwise, \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} is installed from the remote.
+\item \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} and supporting dependencies are added or updated (if required) and loaded (optionally in the local \code{Julia} Project).
 }
 
 You should run this function once per \code{R} session (and for every socket in a socket cluster, if necessary).

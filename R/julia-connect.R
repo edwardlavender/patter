@@ -1,13 +1,33 @@
 #' @title Julia: connect `R` to `Julia`
 #' @description This function connects `R` to `Julia`.
 #'
-#' @param JULIA_HOME,JULIA_PROJ,JULIA_NUM_THREADS (optional) `Julia` options, provided as function arguments, global options or environment variables.
+#' @param JULIA_HOME,JULIA_PROJ,JULIA_NUM_THREADS,JULIA_PATTER_SOURCE (optional) `Julia` options, provided as function arguments, global options or environment variables.
 #' * `JULIA_HOME`---A `character` string that defines the location of the `Julia` installation (see [`JuliaCall::julia_setup()`]). Usually, this is not required.
 #' * `JULIA_PROJ`---A `character` string that defines the directory of a `Julia` Project. If unspecified, the default environment (e.g., `~/.julia/environments/v1.10/Project.toml`) is used with a [`message`] instead of a local `Julia` project.
-#' * `JULIA_NUM_THREADS`---On MacOS or Linux, `JULIA_NUM_THREADS` is a `character` (`"auto"`) or an `integer` that defines the number of threads used by multi-threaded operations in `Julia`. This defaults to defaults to `"auto"` (not `1`). This can only be set once per `R` session. On Windows, `JULIA_NUM_THREADS` must be set system-wide and use of this argument produces a [`warning`]. See this [GitHub Issue](https://github.com/edwardlavender/patter/issues/11) for instructions.
+#' * `JULIA_NUM_THREADS`---On MacOS or Linux, `JULIA_NUM_THREADS` is a `character` (`"auto"`) or an `integer` that defines the number of threads used by multi-threaded operations in `Julia`. This defaults to `"auto"` (not `1`). This can only be set once per `R` session. On Windows, `JULIA_NUM_THREADS` must be set system-wide and use of this argument produces a [`warning`]. See this [GitHub Issue](https://github.com/edwardlavender/patter/issues/11) for instructions.
+#' * `JULIA_PATTER_SOURCE`---A `character` string that defines the source of [`Patter.jl`](https://github.com/edwardlavender/Patter.jl). This may be:
+#'    * An absolute file path to a local copy of the package, in which case it is added as a development dependency;
+#'    * A Git branch name (e.g., `"main"`, `"dev"`) or a commit SHA (e.g., `"b7c2fda733f80fcfd8770058cded7e0946b3abc0"`);
+#'    * A valid installation URL (e.g., `"https://github.com/edwardlavender/Patter.jl.git"`);
 #'
-#' @param .pkg_config (optional) A `character` string of `Julia` code, evaluated by [`julia_code()`], that configures `Julia` prior to dependency management.
-#' @param .pkg_update A `logical` variable that defines whether or not to update installed `Julia` packages.
+#' If missing, `JULIA_PATTER_SOURCE` defaults to `"https://github.com/edwardlavender/Patter.jl.git"`.
+#'
+#' If `JULIA_PATTER_SOURCE` changes, force the update by `.pkg_update`.
+#'
+#' @param .pkg_config,.pkg_install,.pkg_update,.pkg_load (optional) `Julia` package options.
+#' * `.pkg_config` is a `character` string of `Julia` code, evaluated by [`julia_code()`], that configures `Julia` prior to dependency management.
+#' * `.pkg_install`---A `character` vector of accessory `Julia` packages for install.
+#' * `.pkg_update`---Package update control:
+#'      * `NULL` or `FALSE` suppresses package updates;
+#'      * `TRUE` updates all installed packages;
+#'      * A `character` vector updates named packages;
+#' * `.pkg_load`---Package loading (`using`) control:
+#'      * `NULL` or `FALSE` loads required packages only;
+#'      * `TRUE` loads all installed packages
+#'      * A `character` vector loads required and additionally named packages;
+#'
+#' Note that for [`Patter.jl`](https://github.com/edwardlavender/Patter.jl), `.pkg_update` does not respect the current branch of the installation and always defaults to `"https://github.com/edwardlavender/Patter.jl.git"`. Specify `JULIA_PATTER_SOURCE` to update on a different branch.
+#'
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #' @param ... Additional arguments passed to [`JuliaCall::julia_setup()`] (excluding `verbose`).
 #'
@@ -17,7 +37,7 @@
 #' * The `Julia` installation is validated.
 #' * A local `Julia` Project is generated in `JULIA_PROJ` (if specified and required) and activated. We recommend using [`patter`] within an RStudio Project, with a `Julia` directory at the top-level that contains the `Julia` project.
 #' * If specified, `.pkg_config` is run via [`julia_code()`].
-#' * [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) and supporting dependencies are installed or updated (if required) and loaded (optionally in the local `Julia` Project). If the environment variable `PATTER.JL_DEV = "path/to/local/clone/of/Patter.jl"` is set, [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) is installed from a local source as a development dependency (via `Pkg.develop()`); otherwise, [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) is installed from the remote.
+#' * [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) and supporting dependencies are added or updated (if required) and loaded (optionally in the local `Julia` Project).
 #'
 #' You should run this function once per `R` session (and for every socket in a socket cluster, if necessary).
 #'
@@ -33,8 +53,11 @@
 julia_connect <- function(JULIA_HOME,
                           JULIA_PROJ,
                           JULIA_NUM_THREADS,
+                          JULIA_PATTER_SOURCE,
                           .pkg_config = NULL,
-                          .pkg_update = FALSE,
+                          .pkg_install = NULL,
+                          .pkg_update = NULL,
+                          .pkg_load = NULL,
                           .verbose = getOption("patter.verbose"), ...) {
 
   #### Initiate
@@ -63,12 +86,10 @@ julia_connect <- function(JULIA_HOME,
   if (!is.null(.pkg_config)) {
     julia_code(.pkg_config)
   }
-  pkgs <- c("Patter",
-            "DataFrames", "Distributions",
-            "Rasters", "ArchGDAL",
-            "GeoArrays",
-            "JLD2", "Random")
-  julia_packages(.packages = pkgs, .update = .pkg_update)
+  julia_pkg_setup(JULIA_PATTER_SOURCE,
+                  .pkg_install = .pkg_install,
+                  .pkg_update = .pkg_update,
+                  .pkg_load = .pkg_load)
 
   #### Validate Julia settings
   nthreads <- julia_threads(JULIA_NUM_THREADS)

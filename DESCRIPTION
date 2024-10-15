@@ -20,7 +20,8 @@ Imports:
     terra (>= 1.7.71)
 Suggests:
     av, 
-    curl,
+    curl, 
+    configr,
     knitr, 
     rmarkdown,
     pbapply,

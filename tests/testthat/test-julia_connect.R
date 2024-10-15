@@ -1,5 +1,7 @@
 test_that("julia_connect() works", {
 
+  #### Skips
+
   # Skip on CI
   skip_on_ci()
 
@@ -10,9 +12,30 @@ test_that("julia_connect() works", {
   }
   skip_if_offline()
 
-  # Define environment variables
-  JULIA_PROJ        <- Sys.getenv("JULIA_PROJ")
-  JULIA_NUM_THREADS <- Sys.getenv("JULIA_NUM_THREADS")
+  #### Define helper functions
+
+  # Read Manifest.toml data for a specific package
+  read_pkg_metadata <- function(JULIA_PROJ, .pkg = "Patter") {
+    Manifest.toml <-
+    Manifest <- configr::read.config(file.path(JULIA_PROJ, "Manifest.toml"))
+    Manifest$deps[[.pkg]][[1]]
+  }
+  Patter_repo_url <- function(JULIA_PROJ) {
+    read_pkg_metadata(JULIA_PROJ, "Patter")[["repo-url"]]
+  }
+  CSV_repo_url <- function(JULIA_PROJ) {
+    read_pkg_metadata(JULIA_PROJ, "CSV")[["repo-url"]]
+  }
+  DataFrames_repo_url <- function(JULIA_PROJ) {
+    read_pkg_metadata(JULIA_PROJ, "DataFrames")[["repo-url"]]
+  }
+
+  #### Define environment variables
+  JULIA_PROJ          <- Sys.getenv("JULIA_PROJ")
+  JULIA_NUM_THREADS   <- Sys.getenv("JULIA_NUM_THREADS")
+  JULIA_PATTER_SOURCE <- Sys.getenv("JULIA_PATTER_SOURCE")
+
+  #### Test JULIA_PROJ implementation
 
   # Use JULIA_PROJ env variable
   jproj <- file.path(tempdir(), "Julia")
@@ -25,15 +48,9 @@ test_that("julia_connect() works", {
   # Use JULIA_PROJ argument
   julia_connect(JULIA_PROJ = jproj)
   expect_true(file.exists(file.path(jproj, "manifest.toml")))
+  file_cleanup(jproj)
 
-  # Use .pkg_*() options
-  julia_connect(JULIA_PROJ = jproj,
-                .pkg_config = 'error("Break installation")') |>
-    expect_error("Error happens in Julia.",
-                 fixed = TRUE)
-  # julia_connect(.pkg_update = TRUE)
-
-  # Use JULIA_NUM_THREADS env variable
+  #### Test JULIA_NUM_THREADS env variable
   if (JULIA_NUM_THREADS != 2L) {
 
     Sys.setenv("JULIA_NUM_THREADS" = 2L)
@@ -45,11 +62,73 @@ test_that("julia_connect() works", {
     julia_connect(JULIA_PROJ = jproj, JULIA_NUM_THREADS = 2L) |>
       expect_warning("There are multiple values for `JULIA_NUM_THREADS`.", fixed = TRUE) |>
       expect_warning("`JULIA_NUM_THREADS` could not be set.", fixed = TRUE)
+    Sys.setenv("JULIA_NUM_THREADS" = JULIA_NUM_THREADS)
   }
+  file_cleanup(jproj)
+
+  #### Test JULIA PATTER_SOURCE implementation
+
+  Sys.unsetenv("JULIA_PATTER_SOURCE")
+
+  # Test JULIA_PATTER_SOURCE = NULL
+  # > "https://github.com/edwardlavender/Patter.jl.git#main"
+  julia_connect(JULIA_PROJ = jproj, JULIA_PATTER_SOURCE = NULL)
+  expect_equal(Patter_repo_url(jproj),
+               "https://github.com/edwardlavender/Patter.jl.git")
+  file_cleanup(jproj)
+
+  # Test installation with JULIA_PATTER_SOURCE = "main" (branch)
+  # > "https://github.com/edwardlavender/Patter.jl.git#main"
+  julia_connect(JULIA_PROJ = jproj, JULIA_PATTER_SOURCE = "main")
+  expect_equal(Patter_repo_url(jproj),
+               "https://github.com/edwardlavender/Patter.jl.git#main")
+
+  # Test  installation with JULIA_PATTER_SOURCE = "dev" (different branch)
+  # > "https://github.com/edwardlavender/Patter.jl.git#main"
+  # > We expect no change b/c the update needs to be forced with .pkg_update
+  julia_connect(JULIA_PROJ = jproj, JULIA_PATTER_SOURCE = "dev")
+  expect_equal(Patter_repo_url(jproj),
+               "https://github.com/edwardlavender/Patter.jl.git#main")
+
+  # Test installation with JULIA_PATTER_SOURCE = new input & .pkg_update
+  # A) Implement update of Patter as requested via .pkg_update
+  # > "https://github.com/edwardlavender/Patter.jl.git#dev"
+  julia_connect(JULIA_PROJ = jproj, JULIA_PATTER_SOURCE = "dev", .pkg_update = "Patter")
+  expect_equal(Patter_repo_url(jproj),
+               "https://github.com/edwardlavender/Patter.jl.git#dev")
+  # B) We reset to the main branch unless specified
+  # > "https://github.com/edwardlavender/Patter.jl.git#main"
+  julia_connect(JULIA_PROJ = jproj, .pkg_update = "Patter")
+  expect_equal(Patter_repo_url(jproj),
+               "https://github.com/edwardlavender/Patter.jl.git")
+  file_cleanup(jproj)
+
+  #### Test .pkg_config
+  julia_connect(JULIA_PROJ = jproj,
+                .pkg_config = 'error("Break installation")') |>
+    expect_error("Error happens in Julia.",
+                 fixed = TRUE)
+
+  #### Test .pkg_install
+  julia_connect(JULIA_PROJ = jproj,
+                .pkg_install = c("CSV", "BenchmarkTools"))
+  expect_true(julia_installed_package("CSV") != "nothing")
+  expect_true(julia_installed_package("BenchmarkTools") != "nothing")
+
+  #### Test .pkg_update & .pkg_load
+  # Update all packages
+  julia_connect(JULIA_PROJ = jproj, .pkg_update = TRUE)
+  # Load specific package
+  julia_connect(JULIA_PROJ = jproj, .pkg_load = "CSV")
+  # Test load
+  # * This will throw an error if CSV is not loaded
+  julia_command('methods(CSV.read);')
+  file_cleanup(jproj)
 
   # Clean up
   Sys.setenv("JULIA_PROJ" = JULIA_PROJ)
   Sys.setenv("JULIA_NUM_THREADS" = JULIA_NUM_THREADS)
+  Sys.setenv("JULIA_PATTER_SOURCE" = JULIA_PATTER_SOURCE)
   file_cleanup(jproj)
 
 })

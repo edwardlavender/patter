@@ -126,42 +126,156 @@ julia_proj_temp <- function() {
 #' @rdname julia_helper
 #' @keywords internal
 
-# Install Patter.jl as a development package if PATTER.JL_DEV is set
-julia_packages_dev_Patter.jl <- function() {
-  Patter.jl_path <- Sys.getenv("PATTER.JL_DEV")
-  if (Patter.jl_path != "") {
-    check_dir_exists(Patter.jl_path)
-    Patter.jl_path <- normalizePath(Patter.jl_path, winslash = "/", mustWork = TRUE)
-    julia_command(glue('Pkg.develop(path = "{Patter.jl_path}")'))
-    return(TRUE)
-  }
-  FALSE
+# List all Julia packages, incl:
+# * Patter.jl
+# * Required dependencies (incl. Patter.jl)
+# * Additional installed packages
+julia_pkg_list_full <- function(.pkg_install) {
+  pkg_required  <- julia_pkg_list_req()
+  pkg_requested <- .pkg_install
+  pkg_installed <- julia_pkg_list_installed()
+  sort(unique(c(pkg_required, pkg_requested, pkg_installed)))
 }
 
 #' @rdname julia_helper
 #' @keywords internal
 
-# Install/update Julia packages
-julia_packages_install <- function(.packages, .update) {
-  # (optional) Install Patter.jl as a development package
-  use_dev_Patter.jl <- julia_packages_dev_Patter.jl()
-  # Handle remaining package(s)
-  lapply(.packages, function(.package) {
-    # Check whether or not we need to install or update the package
-    if (.package == "Patter" && use_dev_Patter.jl) {
+# List required Julia dependencies (incl. Patter.jl)
+julia_pkg_list_req <- function() {
+  c("Patter",
+    "DataFrames", "Distributions",
+    "Rasters", "ArchGDAL",
+    "GeoArrays",
+    "JLD2", "Random")
+}
+
+#' @rdname julia_helper
+#' @keywords internal
+
+# List all installed Julia dependencies
+julia_pkg_list_installed <- function() {
+  sort(julia_eval('collect(keys(Pkg.project().dependencies));'))
+}
+
+#' @rdname julia_helper
+#' @keywords internal
+
+# List Julia dependencies for update (incl. Patter)
+# * .pkg_update = FALSE (or NULL): don't update, returns NULL
+# * .pkg_update = TRUE: update all, returns all required & installed dependencies
+# * .pkg_update = character vector of package names: update selectively
+julia_pkg_list_update <- function(.pkg_update) {
+  if (inherits(.pkg_update, "logical")) {
+    if (isFALSE(.pkg_update)) {
       return(NULL)
+    } else {
+      return(julia_pkg_list_full(NULL))
     }
-    install  <- ifelse(julia_installed_package(.package) == "nothing", TRUE, FALSE)
-    update   <- ifelse(isFALSE(install) & .update, TRUE, FALSE)
-    .package <- ifelse(.package == "Patter",
-                       "https://github.com/edwardlavender/Patter.jl.git",
-                       .package)
+  }
+  .pkg_update
+}
+
+#' @rdname julia_helper
+#' @keywords internal
+
+# List Julia dependencies for loading (incl. Patter)
+# .pkg_load = FALSE (or NULL), load required dependencies only
+# .pkg_load = TRUE, load all dependencies
+# .pkg_load = character vector: load selected dependencies
+julia_pkg_list_load <- function(.pkg_load) {
+  pkg_required <- julia_pkg_list_req()
+  if (is.null(.pkg_load) | isFALSE(.pkg_load)) {
+    pkg_extra    <- NULL
+  } else {
+    pkg_extra <- julia_pkg_list_full(NULL)
+  }
+  sort(unique(c(pkg_required, pkg_extra)))
+}
+
+#' @rdname julia_helper
+#' @keywords internal
+
+# Get the source of Patter.jl (file path, URL)
+julia_pkg_patter_source <- function(JULIA_PATTER_SOURCE) {
+  # Get option
+  JULIA_PATTER_SOURCE <- julia_option(JULIA_PATTER_SOURCE)
+  # Set default
+  # * For simplicity, default to main (whether installed/uninstalled)
+  # * If un-installed, default to main
+  # * Otherwise, default to installed path/URL
+  default <- "https://github.com/edwardlavender/Patter.jl.git"
+  if (is.null(JULIA_PATTER_SOURCE)) {
+    JULIA_PATTER_SOURCE <- default
+    return(default)
+  }
+  # (A) JULIA_PATTER_SOURCE may be a directory
+  if (dir.exists(JULIA_PATTER_SOURCE)) {
+    JULIA_PATTER_SOURCE <-
+      normalizePath(JULIA_PATTER_SOURCE, winslash = "/", mustWork = TRUE)
+  } else {
+    # (B) JULIA_PATTER_SOURCE may be a URL/branch name/commit ("main", "dev", {commit})
+    # * We assume any string that does not contain 'Patter.jl.git' is a partial string
+    if (!grepl("Patter.jl", JULIA_PATTER_SOURCE)) {
+      JULIA_PATTER_SOURCE <- paste0(default, "#", JULIA_PATTER_SOURCE)
+    }
+    # (optional) Validate URL, if online
+    # * This is not currently implemented to minimise dependencies
+    # if (rlang::is_installed("RCurl") && online() && !RCurl::url.exists(JULIA_PATTER_SOURCE)) {
+    #  abort("`JULIA_PATTER_SOURCE` ({JULIA_PATTER_SOURCE}) is not a valid directory or URL.",
+    #        .environ = environment())
+    # }
+  }
+  JULIA_PATTER_SOURCE
+}
+
+#' @rdname julia_helper
+#' @keywords internal
+
+# Install Patter
+# * JULIA_PATTER_SOURCE is the Julia option
+# * .pkg_update is a character vector of packages for update, from julia_pkg_update_list()
+julia_pkg_install_Patter <- function(JULIA_PATTER_SOURCE, .pkg_update) {
+  # Get JULIA_PATTER_SOURCE
+  JULIA_PATTER_SOURCE <- julia_pkg_patter_source(JULIA_PATTER_SOURCE)
+  add <- FALSE
+  # Install Patter, if not already installed
+  if (julia_installed_package("Patter") == "nothing") {
+    add <- TRUE
+    # (A) Add Patter.jl as a local development dependency
+    if (dir.exists(JULIA_PATTER_SOURCE)) {
+      julia_command(glue('Pkg.develop(path = "{JULIA_PATTER_SOURCE}");'))
+    } else {
+      # Add Patter.jl from remote if not installed
+      julia_install_package(JULIA_PATTER_SOURCE)
+    }
+  }
+  # Update Patter.jl if it is in the list of packages for update
+  if (!add && "Patter" %in% .pkg_update) {
+    # Use julia_install_package() to handle changes in URL
+    julia_install_package(JULIA_PATTER_SOURCE)
+  }
+  nothing()
+}
+
+#' @rdname julia_helper
+#' @keywords internal
+
+# Install additional Julia packages
+# * .pkg_install: A list of packages for install, from julia_pkg_list_full()
+# * .pkg_update: A corresponding list that defines which of those packages to update, from julia_pkg_list_update()
+julia_pkg_install_deps <- function(.pkg_install, .pkg_update) {
+  # Drop Patter.jl, which is handled separately
+  .pkg_install <- .pkg_install[!(.pkg_install %in% "Patter")]
+  # Iteratively install & update dependencies as required
+  lapply(.pkg_install, function(.pkg) {
+    install  <- ifelse(julia_installed_package(.pkg) == "nothing", TRUE, FALSE)
+    update   <- ifelse(isFALSE(install) & .pkg %in% .pkg_update, TRUE, FALSE)
     # Run installation/update
     if (install) {
-      julia_install_package(.package)
+      julia_install_package(.pkg)
     }
     if (update) {
-      julia_update_package(.package)
+      julia_update_package(.pkg)
     }
     NULL
   })
@@ -172,8 +286,8 @@ julia_packages_install <- function(.packages, .update) {
 #' @keywords internal
 
 # Load Julia packages
-julia_packages_library <- function(.packages) {
-  lapply(.packages, \(.package) julia_library(.package))
+julia_pkg_library <- function(.pkg_load) {
+  lapply(.pkg_load, \(.pkg) julia_library(.pkg))
   nothing()
 }
 
@@ -181,9 +295,23 @@ julia_packages_library <- function(.packages) {
 #' @keywords internal
 
 # Handle (install/update/load) Julia packages
-julia_packages <- function(.packages, .update) {
-  julia_packages_install(.packages, .update)
-  julia_packages_library(.packages)
+julia_pkg_setup <- function(JULIA_PATTER_SOURCE,
+                            .pkg_install, .pkg_update,
+                            .pkg_load) {
+  # List Julia packages for install/update
+  pkg_full   <- julia_pkg_list_full(.pkg_install = .pkg_install)
+  pkg_dep    <- pkg_full[!(pkg_full %in% "Patter")]
+  pkg_update <- julia_pkg_list_update(.pkg_update)
+  # Install and optionally update Patter.jl
+  julia_pkg_install_Patter(JULIA_PATTER_SOURCE,
+                           .pkg_update = .pkg_update)
+  # Install and optionally update dependencies
+  julia_pkg_install_deps(.pkg_install = pkg_dep,
+                         .pkg_update  = pkg_update)
+  # Load relevant Julia packages
+  # (Run julia_pkg_list_load() at this point to pick up newly installed Julia packages)
+  pkg_load <- julia_pkg_list_load(.pkg_load = .pkg_load)
+  julia_pkg_library(pkg_load)
   nothing()
 }
 
