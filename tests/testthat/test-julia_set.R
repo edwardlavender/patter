@@ -1,5 +1,17 @@
 # set_*() functions are tested via wrapper functions
 
+test_that("set_seed() works", {
+
+  set_seed(1)
+  a <- julia_eval('rand()')
+
+  set_seed(1)
+  b <- julia_eval('rand()')
+
+  expect_equal(a, b)
+
+})
+
 test_that("set_map() works", {
 
   expect_true(1 == 1)
