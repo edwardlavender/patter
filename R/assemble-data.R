@@ -8,23 +8,26 @@
 #' * Define the resolution of observations;
 #' @param .detections,.moorings,.services The [`data.table`]s for [`assemble_acoustics()`] (see [`pat_setup_data()`]).
 #' * `.detections` is a [data.table] of acoustic detections **for a single individual**. This must contain the `receiver_id` and `timestamp` columns.
-#' * `.moorings` is a [`data.table`] of acoustic receiver deployments. This must contain the `receiver_id`, `receiver_start`, and `receiver_end` columns, plus additional parameter columns.
-#' * `.services` is a [`data.table`] of servicing events. This must contain the `receiver_id`, `service_start` and `service_end` columns.
+#' * `.moorings` is a [`data.table`] of acoustic receiver deployments. This must contain the `receiver_id`, `receiver_start`, and `receiver_end` columns, plus  (optional) additional parameter columns.
+#' * (optional) `.services` is a [`data.table`] of servicing events. This must contain the `receiver_id`, `service_start` and `service_end` columns.
 #'
-#' @param .archival For [`assemble_archival()`], `.archival` is a [`data.table`] of archival observations (such as depth measurements) **for a single individual**. This must contain `timestamp` and `obs` columns plus additional parameter columns.
+#' @param .archival  For [`assemble_archival()`], `.archival` is a [`data.table`] of depth observations **for a single individual** with `timestamp` and `obs` columns (see `.dataset`, below).
+#'
+#' @param .dataset For [`assemble_custom()`], `.dataset` is a [`data.table`] of observations (such as depth measurements) **for a single individual**. This must contain `timestamp` and `obs` columns plus (optional) additional parameter columns.
+#'
 #'
 #' @details
 #' [`assemble_timeline()`] is a simple function that defines a regular timeline, of resolution `.step`, from a `list` of input datasets.
 #' * If `.trim = FALSE`, this defines a sequence of regular time stamps across the full range of time stamps in the input datasets.
 #' * If `.trim = TRUE`, the timeline is trimmed to the overlapping period between datasets.
 #'
-#'  [`assemble_acoustics()`] and [`assemble_archival()`] prepare timelines of acoustic and archival observations as required for the particle filter ([`pf_filter()`]). The filter expects a `list` of datasets (one for each data type). Each dataset must contain the following columns: `timestamp`, `sensor_id`, `obs` and additional columns with the parameters of the observation model (see [`glossary`]).
+#'  `assemble_{dataset}()` functions are helper routines that prepare timelines observations for different data types as required for the particle filter ([`pf_filter()`]). The filter expects a named `list` of datasets (one for each data type). Each dataset must contain the following columns: `timestamp`, `sensor_id`, `obs` and additional columns with the parameters of the observation model (see [`glossary`]).
 #'
-#' * [`assemble_acoustics()`] prepares a timeline of acoustic observations, as required by the filter. This function expects a 'standard' detection dataset (that is, a [`data.table`] like [`dat_detections`]) that defines detections at receivers alongside a moorings dataset (like [`dat_moorings`]) that defines receiver deployment periods and optionally  a [`data.table`] of servicing events (when receiver(s) were non-operational). [`assemble_acoustics()`] uses these datasets to assemble a complete time series of acoustic observations; that is, a [`data.table`] of time stamps and receivers that defines, for each time step and each operational receiver whether (`1L`) or not (`0L`) a detection was recorded at that time step. Duplicate observations (that is, detections at the same receiver in the same time step) are dropped. If available in `.moorings`, additional columns (`receiver_alpha`, `receiver_beta` and `receiver_gamma`) are included as required for the default acoustic observation model (that is, [`ModelObsAcousticLogisTrunc`]). If observation model parameters vary both by receiver and through time, simply amend these columns as required.
+#' [`assemble_acoustics()`] prepares a timeline of acoustic observations as required by the filter **for a single individual**. This function expects a 'standard' detection dataset (that is, a [`data.table`] like [`dat_detections`] but for a single individual) that defines detections at receivers alongside a moorings dataset (like [`dat_moorings`]) that defines receiver deployment periods and, optionally, a [`data.table`] of servicing events (when receiver(s) were non-operational). [`assemble_acoustics()`] uses these datasets to assemble a complete time series of acoustic observations; that is, a [`data.table`] of time stamps and receivers that defines, for each time step and each operational receiver whether (`1L`) or not (`0L`) a detection was recorded at that time step. Duplicate observations (that is, detections at the same receiver in the same time step) are dropped. If available in `.moorings`, additional columns (`receiver_alpha`, `receiver_beta` and `receiver_gamma`) are included as required for the default acoustic observation model (that is, [`ModelObsAcousticLogisTrunc`]). If observation model parameters vary both by receiver and through time, simply amend these columns as required.
 #'
-#' * [`assemble_archival()`] prepares a timeline of archival observations (such as depth measurements), as required by the filter. This function expects a [`data.table`] that includes, at a minimum, the `timestamp` and `obs` columns. The latter defines the observations. For archival data, the `sensor_id` column (if unspecified) is simply set to `1L`. The function re-expresses time stamps at the resolution specified by `timeline`. Duplicate observations (that is, multiple measurements in the same time step) throw a [`warning`].
+#' * [`assemble_archival()`] prepares a timeline of archival functions **for a single individual**. This simply wraps [`assemble_custom()`] and is informally deprecated.
 #'
-#' Additional datasets are easy to incorporate into the particle filter but require manual preparation in the format described above. Observations can be recorded irregularly or regularly through time but must be expressed at the temporal resolution defined by the timeline.
+#' * [`assemble_custom()`] prepares a timeline of observations for other data types, as required by the filter. This function expects a [`data.table`] that includes, at a minimum, the `timestamp` and `obs` columns. The latter defines the observations. The `sensor_id` column (if unspecified) is simply set to `1L`. The function re-expresses time stamps at the resolution specified by `timeline`. Duplicate observations (that is, multiple measurements in the same time step) throw a [`warning`].
 #'
 #' In `Julia`, datasets are translated into a hash-table (`Dict`) of observations (via [`Patter.assemble_yobs()`](https://edwardlavender.github.io/Patter.jl/)). For each time stamp with an observation, this includes a `Vector` of `Tuple`s, each containing the observation and the associated [`ModelObs`] instance that defines the parameters of the observation model. The particle filter ([`Patter.particle_filter()`](https://edwardlavender.github.io/Patter.jl/)) iterates over each time step in the timeline, uses a movement model to simulate animal movement and, for the time stamps with observations, evaluates the likelihood of those observations for the simulated locations (particles).
 #'
@@ -202,14 +205,22 @@ assemble_acoustics <- function(.timeline, .detections, .moorings, .services = NU
 #' @export
 
 assemble_archival <- function(.timeline, .archival) {
+  # .Deprecated(new = "assemble_custom()", old = "assemble_archival()")
+  assemble_custom(.timeline = .timeline, .dataset = .archival)
+}
+
+#' @rdname assemble
+#' @export
+
+assemble_custom <- function(.timeline, .dataset) {
 
   # Define study time interval
   step     <- diffstep(.timeline)
   time_int <- interval(min(.timeline), max(.timeline))
 
   # Define sensor ID
-  check_names(.archival, c("timestamp", "obs"))
-  dataset <- copy(.archival)
+  check_names(.dataset, c("timestamp", "obs"))
+  dataset <- copy(.dataset)
   if (!rlang::has_name(dataset, "sensor_id")) {
     dataset <-
       dataset |>

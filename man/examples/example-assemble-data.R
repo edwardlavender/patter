@@ -48,7 +48,16 @@ archival <- assemble_archival(.timeline = timeline,
                               .archival = arc)
 head(archival)
 
-#### Example (4): Implement particle filter
+#### Example (4): Assemble custom datasets
+temperature <-
+  data.table(timestamp = c(as.POSIXct("2016-03-17 01:50:30", tz = "UTC"),
+                           as.POSIXct("2016-03-17 02:00:30 UTC", tz = "UTC")),
+             obs = c(7.6, 7.7))
+temperature <- assemble_custom(.timeline = timeline,
+                               .dataset = temperature)
+head(temperature)
+
+#### Example (5): Implement particle filter
 # Use `pf_filter()` to implement the particle filter
 # A list of assembled datasets is passed to the `yobs` argument
 # The corresponding `ModelObs` sub-types must also be specified
