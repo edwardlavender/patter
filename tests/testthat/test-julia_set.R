@@ -2,14 +2,47 @@
 
 test_that("set_seed() works", {
 
+  # Test that set_seed() works in R
   set_seed(1)
-  a <- julia_eval('rand()')
-
+  a <- rnorm(1)
   set_seed(1)
-  b <- julia_eval('rand()')
-
+  b <- rnorm(1)
   expect_equal(a, b)
 
+  # Test that set_seed() works with terra e.g., spatSample()
+  set_seed(2)
+  a <- terra::spatSample(dat_gebco(), size = 100,
+                         replace = TRUE, na.rm = TRUE)
+  set_seed(2)
+  b <- terra::spatSample(dat_gebco(), size = 100,
+                         replace = TRUE, na.rm = TRUE)
+  expect_equal(a, b)
+
+  # Test that set_seed() works in Julia
+  set_seed(3)
+  a <- julia_eval('rand()')
+  set_seed(3)
+  b <- julia_eval('rand()')
+  expect_equal(a, b)
+
+  # Test that set_seed() is thread safe in Julia
+  code <-
+    '
+  x = Vector{Float64}(undef, 10)
+  Threads.@threads for i in 1:10
+    x[i] = rand()
+  end
+  '
+  set_seed()
+  julia_code(code)
+  a <- julia_eval("x")
+  set_seed()
+  julia_code(code)
+  b <- julia_eval("x")
+  expect_equal(a, b)
+
+  # Test that set_seed() works with pf_filter()
+  # * TO DO (informally verified)
 })
 
 test_that("set_map() works", {
