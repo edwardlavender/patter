@@ -105,8 +105,8 @@ sim_array <- function(.map,
 #' @title Simulation: movement walks
 #' @description Simulate discrete-time animal movement paths from walk models (e.g., random walks, biased random walks, correlated random walks).
 #'
-#' @param .map A [`SpatRaster`] that defines the study area for the simulation (see [`glossary`]). Here, `.map` is used to:
-#' * Plot the movement path, if `.plot = TRUE`
+#' @param .map (optional) On Windows or MacOS, `.map` is a [`SpatRaster`] that defines the study area for visualisation (see [`glossary`]). Here, `.map` is used to:
+#' * Plot the movement path, if `.plot = TRUE`, via [`terra::plot()`];
 #' @param .timeline A `POSIXct` vector of regularly spaced time stamps that defines the timeline for the simulation. Here, `.timeline` is used to:
 #' * Define the number of time steps for the simulation;
 #' * Define the time resolution of the simulation;

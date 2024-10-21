@@ -16,9 +16,9 @@ sim_path_walk(
 )
 }
 \arguments{
-\item{.map}{A \code{\link{SpatRaster}} that defines the study area for the simulation (see \code{\link{glossary}}). Here, \code{.map} is used to:
+\item{.map}{(optional) On Windows or MacOS, \code{.map} is a \code{\link{SpatRaster}} that defines the study area for visualisation (see \code{\link{glossary}}). Here, \code{.map} is used to:
 \itemize{
-\item Plot the movement path, if \code{.plot = TRUE}
+\item Plot the movement path, if \code{.plot = TRUE}, via \code{\link[terra:plot]{terra::plot()}};
 }}
 
 \item{.timeline}{A \code{POSIXct} vector of regularly spaced time stamps that defines the timeline for the simulation. Here, \code{.timeline} is used to:
