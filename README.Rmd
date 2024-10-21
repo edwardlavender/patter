@@ -108,10 +108,10 @@ At the time of writing (May 2024), `patter` is more streamlined than [`flapper`]
 
 1. **Install [`R`](https://www.r-project.org)**. This package requires `R` version ≥ 4.1 (but the most recent version is recommended). You can check your version from the `R` console using `R.version.string`. 
 
-2. **Install build packages.** Package installation and configuration (may) require the [`devtools`](https://github.com/r-lib/devtools), [`pkgbuild`](https://github.com/r-lib/pkgbuild) and [`here`](https://github.com/r-lib/here) packages. Install them with:
+2. **Install build packages.** Package installation and configuration (may) require the [`devtools`](https://github.com/r-lib/devtools), [`pkgbuild`](https://github.com/r-lib/pkgbuild) packages. Install them with:
 
 ``` r
-install.packages(c("devtools", "pkgbuild", "here"))
+install.packages(c("devtools", "pkgbuild"))
 ```
 
 3. **Install system libraries**. 
@@ -120,12 +120,29 @@ install.packages(c("devtools", "pkgbuild", "here"))
 * **On MacOS**, some system-specific step up (e.g., compiler configuration) may be required. Follow the steps below and address any issues as required for your system.
 * **On Linux**, our experience is currently limited---please share yours.
 
-4. **Install [`Julia`](https://julialang.org)**. `Julia` is high-performance programming language that `patter` uses as a backend. If you do not have `Julia` installed on your system, you have three options. 
+4. **Install [`Julia`](https://julialang.org)**. `Julia` is high-performance programming language that `patter` uses as a backend. If you do not have `Julia` installed on your system, follow the instructions below to install `Julia`. 
+
+   **A. On Windows, the easiest option is to download and install `Julia` from [JuliaLang](https://julialang.org/downloads/#long_term_support_release)**. During installation, check `Add Julia to PATH`.
+
+   **B. Another option is to use `juliaup`**. Some users have found this easier on `MacOS` because you don't have to worry about finding the right `Julia` installation for your architecture.
+
+   * Install the `juliaup` installer, following the instructions [here](https://github.com/JuliaLang/juliaup). For example, on `MacOS`, open the shell (Terminal) and type:
+
+     ```bash
+     curl -fsSL https://install.julialang.org | sh
+     ```
+
+   * In the shell, then install `Julia` v1.10.5 via `juliaup`:
+
+     ```bash
+     juliaup add 1.10.5  
+     juliaup default 1.10.5
+     ```
 
 > **Note:**
 > Install a recent `Julia` version. `Julia` v1.10.5 (long-term release) is recommended. `Julia` v1.11 is _not_ currently supported by `JuliaCall` (see [here](https://github.com/Non-Contradiction/JuliaCall/issues/234)). 
 
-**A. Install `Julia` via `R` using `JuliaCall`**:
+5. **Setup JuliaCall.** The next step is to set up `JuliaCall`, which provides the integration between `R` and `Julia`.  
 
 ``` r
 # Install the {JuliaCall} package:
@@ -137,10 +154,12 @@ devtools::install_github("Non-Contradiction/JuliaCall",
 ```
 
 ``` r
-# Install `Julia` via {JuliaCall}:
+# Run julia_setup() to set up the Julia installation 
+# * This includes an installJulia argument if the above Julia installation options fail 
 # * Set `JULIA_HOME` if Julia is not found (see `?julia_setup()`)
+# * Note this may take several minutes
 library(JuliaCall)
-julia <- julia_setup(installJulia = TRUE)
+julia <- julia_setup()
 ```
 
 ``` r
@@ -152,31 +171,7 @@ isTRUE(try(julia_eval('true'), silent = TRUE))
 
 If `julia_setup()` fails with `'Julia is not found'`, you should tell `R` the location of the `Julia` binary via `JULIA_HOME` (see `?JuliaCall::julia_setup()` and the [`JuliaCall`](https://cran.r-project.org/web/packages/JuliaCall) [README](https://cran.r-project.org/web/packages/JuliaCall/readme/README.html) for troubleshooting and ways to get help). 
 
-**B. If `JuliaCall` installation fails, download and install `Julia` from [JuliaLang](https://julialang.org/downloads/#long_term_support_release)**. On `MacOS`, make sure you download a version appropriate for your architecture (Intel or ARM). Then retry `julia_setup()`:
-
-``` r
-# Set up Julia
-# * Set `JULIA_HOME` if Julia is not found (see `?julia_setup()`)
-julia <- julia_setup()
-isTRUE(try(julia_eval('true'), silent = TRUE))
-```
-
-**C. The other option is to use `juliaup`**. Some users have found this easier on `MacOS` because you don't have to worry about finding the right `Julia` installation for your architecture:
-
-* Install the `juliaup`installer, following the instructions [here](https://github.com/JuliaLang/juliaup).
-
-* In the shell (e.g., Terminal on MacOS), install `Julia` via `juliaup`:
-
-```
-juliaup add 1.10.5  
-juliaup default 1.10.5
-```
-
-* Then test the installation as described above. 
-
-_Please share the solution(s) that worked for you and help to improve these instructions._
-
-5. **Install [`patter`](https://github.com/edwardlavender/patter).** To install `patter` from the `main` branch, use: 
+6. **Install [`patter`](https://github.com/edwardlavender/patter).** To install `patter` from the `main` branch, use: 
 
 ``` r
 devtools::install_github("edwardlavender/patter", 
@@ -198,7 +193,7 @@ This branch may include bug fixes and new features but should be used **with cau
 
 We recommend using [`renv`](https://rstudio.github.io/renv/articles/renv.html) (or similar) and [RStudio Projects](https://r4ds.had.co.nz/workflow-projects.html) to track the version of `patter` that you use in your projects. This will ensure that your code continues to work, even if we have to make breaking changes to `patter` as the package evolves in response to user feedback. 
 
-6. **Connect to `Julia`**. At the start of every `R` session, you need to connect `R` to `Julia` (and `patter` to [`Patter.jl`](https://github.com/edwardlavender/Patter.jl)): 
+7. **Connect to `Julia`**. At the start of every `R` session, you need to connect `R` to `Julia` (and `patter` to [`Patter.jl`](https://github.com/edwardlavender/Patter.jl)): 
 
 ``` r
 # Load & attach {patter}:
@@ -212,9 +207,9 @@ library(patter)
 julia <- julia_connect()
 ```
 
-The first time you run `julia_connect()`, it will connect to `Julia` and install (and pre-compile) [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) and the additional `Julia` dependencies. This may take a few minutes. Subsequent `julia_connect()` calls will be faster. 
+The first time you run `julia_connect()`, it will connect to `Julia` and install (and pre-compile) [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) and the additional `Julia` dependencies. This usually takes up to five minutes on first run but may take up to twenty minutes depending on the speed of your machine. Subsequent `julia_connect()` calls will be faster. 
 
-7. **Validate the `R`---`Julia` connection**. To validate that `patter` works on your system, run:
+8. **Validate the `R`---`Julia` connection**. To validate that `patter` works on your system, run:
 
 ``` r
 julia_validate()
