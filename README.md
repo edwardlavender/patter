@@ -13,7 +13,7 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/patter)](https://CRAN.R-project.org/package=patter)
-![Coverage](https://img.shields.io/badge/coverage-93%25-brightgreen)
+![Coverage](https://img.shields.io/badge/coverage-98%25-brightgreen)
 [![R-CMD-check](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
@@ -98,11 +98,11 @@ touch if you would like to see additional functionality brought into
 
 2.  **Install build packages.** Package installation and configuration
     (may) require the [`devtools`](https://github.com/r-lib/devtools),
-    [`pkgbuild`](https://github.com/r-lib/pkgbuild) and
-    [`here`](https://github.com/r-lib/here) packages. Install them with:
+    [`pkgbuild`](https://github.com/r-lib/pkgbuild) packages. Install
+    them with:
 
 ``` r
-install.packages(c("devtools", "pkgbuild", "here"))
+install.packages(c("devtools", "pkgbuild"))
 ```
 
 3.  **Install system libraries**.
@@ -129,7 +129,7 @@ install.packages(c("devtools", "pkgbuild", "here"))
 
     **B. Another option is to use `juliaup`**. Some users have found
     this easier on `MacOS` because you don’t have to worry about finding
-    the right `Julia` installation for your architecture:
+    the right `Julia` installation for your architecture.
 
     - Install the `juliaup` installer, following the instructions
       [here](https://github.com/JuliaLang/juliaup). For example, on
