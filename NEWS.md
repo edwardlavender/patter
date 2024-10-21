@@ -19,7 +19,7 @@
         * `assemble_custom()` assembles custom datasets;
 
 * **Movement initialisation**
-    * Initial particle samples, formerly generated in `R` via `simulate_states_init()` and associated (internal) routines, have been moved to `Patter.jl`. This change affects `sim_path_walk()` and `pf_filter()`. The `.map` argument is no longer accepted. See the revised examples for automated sampling of initial states from the map. 
+    * Initial particle samples, formerly generated in `R` via `simulate_states_init()` and associated (internal) routines, have been moved to `Patter.jl`. This change affects `sim_path_walk()` and `pf_filter()`. The `.map` argument only accepted for plotting in `sim_path_walk()` and no longer accepted in `pf_filter()`. See the revised examples for automated sampling of initial states from the map. 
     *  A bug in `map_init.ModelObsAcousticLogisTrunc` that overly restricted the region from which initial samples were drawn has been fixed in the new `Julia` routines. 
 
 * **Movement simulation**

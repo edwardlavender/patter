@@ -93,7 +93,7 @@
 </ul></li>
 <li>
 <strong>Movement initialisation</strong>
-<ul><li>Initial particle samples, formerly generated in <code>R</code> via <code>simulate_states_init()</code> and associated (internal) routines, have been moved to <code>Patter.jl</code>. This change affects <code><a href="../reference/sim_path_walk.html">sim_path_walk()</a></code> and <code><a href="../reference/pf_filter.html">pf_filter()</a></code>. The <code>.map</code> argument is no longer accepted. See the revised examples for automated sampling of initial states from the map.</li>
+<ul><li>Initial particle samples, formerly generated in <code>R</code> via <code>simulate_states_init()</code> and associated (internal) routines, have been moved to <code>Patter.jl</code>. This change affects <code><a href="../reference/sim_path_walk.html">sim_path_walk()</a></code> and <code><a href="../reference/pf_filter.html">pf_filter()</a></code>. The <code>.map</code> argument only accepted for plotting in <code><a href="../reference/sim_path_walk.html">sim_path_walk()</a></code> and no longer accepted in <code><a href="../reference/pf_filter.html">pf_filter()</a></code>. See the revised examples for automated sampling of initial states from the map.</li>
 <li>A bug in <code>map_init.ModelObsAcousticLogisTrunc</code> that overly restricted the region from which initial samples were drawn has been fixed in the new <code>Julia</code> routines.</li>
 </ul></li>
 <li>
