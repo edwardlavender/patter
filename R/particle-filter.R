@@ -84,6 +84,14 @@ pf_filter <- function(.timeline,
 
   #### Get particles in R
   cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Collating outputs..."))
-  pf_particles(.pf_obj = pf_obj)
+  out <- pf_particles(.pf_obj = pf_obj)
+
+  #### Check convergence
+  # Issue a warning for convergence failures
+  if (isFALSE(out$convergence)) {
+    warn("The particle filter failed to converge.")
+  }
+
+  out
 
 }
