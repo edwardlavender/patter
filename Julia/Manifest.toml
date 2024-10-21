@@ -1080,7 +1080,7 @@ uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
 version = "2.8.1"
 
 [[deps.Patter]]
-deps = ["ArchGDAL", "DataFrames", "DataFramesMeta", "Dates", "DimensionalData", "Distributions", "GeoArrays", "LRUCache", "LibGEOS", "LogExpFunctions", "OrderedCollections", "ProgressMeter", "Random", "Rasters", "Tables"]
+deps = ["ArchGDAL", "Crayons", "DataFrames", "DataFramesMeta", "Dates", "DimensionalData", "Distributions", "GeoArrays", "LRUCache", "LibGEOS", "LogExpFunctions", "OrderedCollections", "ProgressMeter", "Random", "Rasters", "Tables"]
 path = "/Users/lavended/Documents/work/projects/particle-filters/patter/packages/Patter.jl"
 uuid = "faabfbac-af09-47ee-bc95-5e336c516b5a"
 version = "0.1.0"
