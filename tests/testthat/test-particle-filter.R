@@ -145,7 +145,7 @@ test_that("pf_filter() works", {
                    .xinit = NULL,
                    .yobs = yobs_fwd,
                    .model_move = move_xy()) |>
-    expect_error('There is a mismatch between the time zones of `.timeline` and/or `.yobs` `timestamp`s ("CET", "UTC", "UTC").', fixed = TRUE)
+    expect_error('There is a mismatch between the time zones of `.timeline` and/or `.yobs` `timestamp`s ("CET", "UTC", "UTC", "UTC").', fixed = TRUE)
 
   # Run the filter
   # * Note that we do not expect convergence given the small & coarse bathymetric data
