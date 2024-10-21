@@ -116,7 +116,9 @@ test_that("pf_filter() works", {
                                   .moorings = dat_moorings)
 
   # Assemble acoustic containers
-  # (optional) TO DO
+  containers <- assemble_acoustics_containers(.timeline = timeline,
+                                              .acoustics = acoustics,
+                                              .mobility = 750.0)
 
   # Assemble a timeline of archival observations and model parameters
   # * Here, we include model parameters for `ModelObsDepthNormalTrunc`
@@ -128,7 +130,8 @@ test_that("pf_filter() works", {
                                          depth_deep_eps = 20))
 
   # Assemble yobs
-  yobs <- list(ModelObsAcousticLogisTrunc = acoustics,
+  yobs_fwd <- list(ModelObsAcousticLogisTrunc = acoustics,
+               ModelObsAcousticContainer = containers$forward,
                ModelObsDepthNormalTrunc = archival)
 
   # Examine movement prior
@@ -140,7 +143,7 @@ test_that("pf_filter() works", {
   fwd <- pf_filter(.timeline = timeline_cet,
                    .state = "StateXY",
                    .xinit = NULL,
-                   .yobs = yobs,
+                   .yobs = yobs_fwd,
                    .model_move = move_xy()) |>
     expect_error('There is a mismatch between the time zones of `.timeline` and/or `.yobs` `timestamp`s ("CET", "UTC", "UTC").', fixed = TRUE)
 
@@ -149,7 +152,7 @@ test_that("pf_filter() works", {
   fwd <- pf_filter(.timeline = timeline,
                    .state = "StateXY",
                    .xinit = NULL,
-                   .yobs = yobs,
+                   .yobs = yobs_fwd,
                    .model_move = move_xy(),
                    .n_move = 1e6L,
                    .n_particle = 1000L,
@@ -183,7 +186,7 @@ test_that("pf_filter() works", {
     }
   }
 
-  #### Test that at the moment of detection particles are widthin detection ranges (in R)
+  #### Test that at the moment of detection particles are within detection ranges (in R)
   # Define detections
   detections <-
     acoustics |>
@@ -205,6 +208,14 @@ test_that("pf_filter() works", {
 
   #### Test the distribution of distances from receivers during detection gaps
   # * TO DO
+
+  #### Test that particles are valid given detection containers
+  lapply(split(containers$forward, seq_row(containers$forward)), function(container) {
+    # container <- containers$forward[1, ]
+    s    <- fwd$states[timestamp == container$timestamp, ]
+    dist <- terra::distance(cbind(s$x, s$y), cbind(container$receiver_x, container$receiver_y), lonlat = FALSE)[, 1]
+    expect_true(all(dist <= container$radius))
+  }) |> invisible()
 
   #### Test that particles are valid given depth observations
   check <- left_join(states, archival, by = "timestamp")
