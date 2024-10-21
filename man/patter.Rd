@@ -98,7 +98,9 @@ The main thrust of \code{\link{patter}} is the provision of fast, integrated mod
 \itemize{
 \item \code{\link[=assemble_timeline]{assemble_timeline()}} assembles a timeline;
 \item \code{\link[=assemble_acoustics]{assemble_acoustics()}} assembles an acoustic time series;
+\item \code{\link[=assemble_acoustics_containers]{assemble_acoustics_containers()}} assembles a corresponding time series of acoustic containers;
 \item \code{\link[=assemble_archival]{assemble_archival()}} assembles an archival time series;
+\item \code{\link[=assemble_custom]{assemble_custom()}} assembles custom time series;
 }
 
 Ancillary time series should be structured in the same way for inclusion in the particle filter.

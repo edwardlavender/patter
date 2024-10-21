@@ -115,6 +115,9 @@ test_that("pf_filter() works", {
                                   .detections = det,
                                   .moorings = dat_moorings)
 
+  # Assemble acoustic containers
+  # (optional) TO DO
+
   # Assemble a timeline of archival observations and model parameters
   # * Here, we include model parameters for `ModelObsDepthNormalTrunc`
   archival <- assemble_archival(.timeline = timeline,

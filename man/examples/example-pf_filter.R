@@ -98,6 +98,7 @@ if (julia_run()) {
     as.data.table()
   # Collate datasets for filter
   # > This requires a list of datasets, one for each data type
+  # > We could also include acoustic containers here for efficiency (see below)
   yobs <- list(ModelObsAcousticLogisTrunc = obs$ModelObsAcousticLogisTrunc[[1]],
                ModelObsDepthUniform = obs$ModelObsDepthUniform[[1]])
 
@@ -232,6 +233,13 @@ if (julia_run()) {
                                   .detections = det,
                                   .moorings = dat_moorings)
 
+  # Assemble corresponding acoustic containers
+  # * This is recommended with acoustic observations
+  # * Note this dataset is direction specific (see below)
+  containers <- assemble_acoustics_containers(.timeline = timeline,
+                                              .acoustics = acoustics,
+                                              .mobility = mobility)
+
   # Assemble a timeline of archival observations and model parameters
   # * Here, we include model parameters for `ModelObsDepthNormalTrunc`
   archival <- assemble_archival(.timeline = timeline,
@@ -241,9 +249,13 @@ if (julia_run()) {
                                   mutate(depth_sigma = 50,
                                          depth_deep_eps = 20))
 
-  # Define the .yobs list
-  yobs <- list(ModelObsAcousticLogisTrunc = acoustics,
-               ModelObsDepthNormalTrunc = archival)
+  # Define the .yobs list for each run of the particle filter
+  yobs_fwd <- list(ModelObsAcousticLogisTrunc = acoustics,
+                   ModelObsAcousticContainer = containers$forward,
+                   ModelObsDepthNormalTrunc = archival)
+  yobs_bwd <- list(ModelObsAcousticLogisTrunc = acoustics,
+                   ModelObsAcousticContainer = containers$backward,
+                   ModelObsDepthNormalTrunc = archival)
 
   #### Visualise realisations of the movement model (the prior)
   # We will use the same movement model as in previous examples
@@ -256,13 +268,13 @@ if (julia_run()) {
   #### Example (1): Run filter forwards
   fwd <- pf_filter(.timeline = timeline,
                    .state = state,
-                   .yobs = yobs,
+                   .yobs = yobs_fwd,
                    .model_move = model_move)
 
   #### Example (2): Run the filter backwards
   bwd <- pf_filter(.timeline = timeline,
                    .state = state,
-                   .yobs = yobs,
+                   .yobs = yobs_bwd,
                    .model_move = model_move,
                    .direction = "backward")
 

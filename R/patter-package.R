@@ -83,7 +83,9 @@
 #'
 #' * [`assemble_timeline()`] assembles a timeline;
 #' * [`assemble_acoustics()`] assembles an acoustic time series;
+#' * [`assemble_acoustics_containers()`] assembles a corresponding time series of acoustic containers;
 #' * [`assemble_archival()`] assembles an archival time series;
+#' * [`assemble_custom()`] assembles custom time series;
 #'
 #' Ancillary time series should be structured in the same way for inclusion in the particle filter.
 #'
