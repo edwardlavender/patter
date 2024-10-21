@@ -123,7 +123,9 @@
     <p>The main thrust of <code>patter</code> is the provision of fast, integrated modelling workflow based on particle filtering for reconstructing animal movement paths and emergent patterns of space use from observational time series (with a focus on passive acoustic telemetry systems).</p>
 <p><strong>To assemble datasets for particle filtering</strong>, use <code><a href="assemble.html">assemble</a></code><code>_*()</code> functions:</p><ul><li><p><code><a href="assemble.html">assemble_timeline()</a></code> assembles a timeline;</p></li>
 <li><p><code><a href="assemble.html">assemble_acoustics()</a></code> assembles an acoustic time series;</p></li>
+<li><p><code><a href="assemble.html">assemble_acoustics_containers()</a></code> assembles a corresponding time series of acoustic containers;</p></li>
 <li><p><code><a href="assemble.html">assemble_archival()</a></code> assembles an archival time series;</p></li>
+<li><p><code><a href="assemble.html">assemble_custom()</a></code> assembles custom time series;</p></li>
 </ul><p>Ancillary time series should be structured in the same way for inclusion in the particle filter.</p>
 <p><strong>To implement particle filtering (PF) routines</strong>, use:</p><ul><li><p><code><a href="pf_filter.html">pf_filter()</a></code> to implement the particle filter;</p></li>
 <li><p><code><a href="pf_smoother_two_filter.html">pf_smoother_two_filter()</a></code> to implement the two-filter smoother;</p></li>

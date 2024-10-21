@@ -70,8 +70,11 @@
 <span>  <span class="va">JULIA_HOME</span>,</span>
 <span>  <span class="va">JULIA_PROJ</span>,</span>
 <span>  <span class="va">JULIA_NUM_THREADS</span>,</span>
+<span>  <span class="va">JULIA_PATTER_SOURCE</span>,</span>
 <span>  .pkg_config <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  .pkg_update <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  .pkg_install <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .pkg_update <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  .pkg_load <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  .verbose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"patter.verbose"</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -81,19 +84,30 @@
     <h2>Arguments</h2>
 
 
-<dl><dt id="arg-julia-home-julia-proj-julia-num-threads">JULIA_HOME, JULIA_PROJ, JULIA_NUM_THREADS<a class="anchor" aria-label="anchor" href="#arg-julia-home-julia-proj-julia-num-threads"></a></dt>
+<dl><dt id="arg-julia-home-julia-proj-julia-num-threads-julia-patter-source">JULIA_HOME, JULIA_PROJ, JULIA_NUM_THREADS, JULIA_PATTER_SOURCE<a class="anchor" aria-label="anchor" href="#arg-julia-home-julia-proj-julia-num-threads-julia-patter-source"></a></dt>
 <dd><p>(optional) <code>Julia</code> options, provided as function arguments, global options or environment variables.</p><ul><li><p><code>JULIA_HOME</code>—A <code>character</code> string that defines the location of the <code>Julia</code> installation (see <code><a href="https://rdrr.io/pkg/JuliaCall/man/julia_setup.html" class="external-link">JuliaCall::julia_setup()</a></code>). Usually, this is not required.</p></li>
 <li><p><code>JULIA_PROJ</code>—A <code>character</code> string that defines the directory of a <code>Julia</code> Project. If unspecified, the default environment (e.g., <code>~/.julia/environments/v1.10/Project.toml</code>) is used with a <code><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></code> instead of a local <code>Julia</code> project.</p></li>
-<li><p><code>JULIA_NUM_THREADS</code>—On MacOS or Linux, <code>JULIA_NUM_THREADS</code> is a <code>character</code> (<code>"auto"</code>) or an <code>integer</code> that defines the number of threads used by multi-threaded operations in <code>Julia</code>. This defaults to defaults to <code>"auto"</code> (not <code>1</code>). This can only be set once per <code>R</code> session. On Windows, <code>JULIA_NUM_THREADS</code> must be set system-wide and use of this argument produces a <code><a href="https://rdrr.io/r/base/warning.html" class="external-link">warning</a></code>. See this <a href="https://github.com/edwardlavender/patter/issues/11" class="external-link">GitHub Issue</a> for instructions.</p></li>
-</ul></dd>
+<li><p><code>JULIA_NUM_THREADS</code>—On MacOS or Linux, <code>JULIA_NUM_THREADS</code> is a <code>character</code> (<code>"auto"</code>) or an <code>integer</code> that defines the number of threads used by multi-threaded operations in <code>Julia</code>. This defaults to <code>"auto"</code> (not <code>1</code>). This can only be set once per <code>R</code> session. On Windows, <code>JULIA_NUM_THREADS</code> must be set system-wide and use of this argument produces a <code><a href="https://rdrr.io/r/base/warning.html" class="external-link">warning</a></code>. See this <a href="https://github.com/edwardlavender/patter/issues/11" class="external-link">GitHub Issue</a> for instructions.</p></li>
+<li><p><code>JULIA_PATTER_SOURCE</code>—A <code>character</code> string that defines the source of <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a>. This may be:</p><ul><li><p>An absolute file path to a local copy of the package, in which case it is added as a development dependency;</p></li>
+<li><p>A Git branch name (e.g., <code>"main"</code>, <code>"dev"</code>) or a commit SHA (e.g., <code>"b7c2fda733f80fcfd8770058cded7e0946b3abc0"</code>);</p></li>
+<li><p>A valid installation URL (e.g., <code>"https://github.com/edwardlavender/Patter.jl.git"</code>);</p></li>
+</ul></li>
+</ul><p>If missing, <code>JULIA_PATTER_SOURCE</code> defaults to <code>"https://github.com/edwardlavender/Patter.jl.git"</code>.</p>
+<p>If <code>JULIA_PATTER_SOURCE</code> changes, force the update by <code>.pkg_update</code>.</p></dd>
 
 
-<dt id="arg--pkg-config">.pkg_config<a class="anchor" aria-label="anchor" href="#arg--pkg-config"></a></dt>
-<dd><p>(optional) A <code>character</code> string of <code>Julia</code> code, evaluated by <code><a href="julia_helper.html">julia_code()</a></code>, that configures <code>Julia</code> prior to dependency management.</p></dd>
-
-
-<dt id="arg--pkg-update">.pkg_update<a class="anchor" aria-label="anchor" href="#arg--pkg-update"></a></dt>
-<dd><p>A <code>logical</code> variable that defines whether or not to update installed <code>Julia</code> packages.</p></dd>
+<dt id="arg--pkg-config-pkg-install-pkg-update-pkg-load">.pkg_config, .pkg_install, .pkg_update, .pkg_load<a class="anchor" aria-label="anchor" href="#arg--pkg-config-pkg-install-pkg-update-pkg-load"></a></dt>
+<dd><p>(optional) <code>Julia</code> package options.</p><ul><li><p><code>.pkg_config</code> is a <code>character</code> string of <code>Julia</code> code, evaluated by <code><a href="julia_helper.html">julia_code()</a></code>, that configures <code>Julia</code> prior to dependency management.</p></li>
+<li><p><code>.pkg_install</code>—A <code>character</code> vector of accessory <code>Julia</code> packages for install.</p></li>
+<li><p><code>.pkg_update</code>—Package update control:</p><ul><li><p><code>NULL</code> or <code>FALSE</code> suppresses package updates;</p></li>
+<li><p><code>TRUE</code> updates all installed packages;</p></li>
+<li><p>A <code>character</code> vector updates named packages;</p></li>
+</ul></li>
+<li><p><code>.pkg_load</code>—Package loading (<code>using</code>) control:</p><ul><li><p><code>NULL</code> or <code>FALSE</code> loads required packages only;</p></li>
+<li><p><code>TRUE</code> loads all installed packages</p></li>
+<li><p>A <code>character</code> vector loads required and additionally named packages;</p></li>
+</ul></li>
+</ul><p>Note that for <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a>, <code>.pkg_update</code> does not respect the current branch of the installation and always defaults to <code>"https://github.com/edwardlavender/Patter.jl.git"</code>. Specify <code>JULIA_PATTER_SOURCE</code> to update on a different branch.</p></dd>
 
 
 <dt id="arg--verbose">.verbose<a class="anchor" aria-label="anchor" href="#arg--verbose"></a></dt>
@@ -115,7 +129,7 @@
 <li><p>The <code>Julia</code> installation is validated.</p></li>
 <li><p>A local <code>Julia</code> Project is generated in <code>JULIA_PROJ</code> (if specified and required) and activated. We recommend using <code><a href="patter.html">patter</a></code> within an RStudio Project, with a <code>Julia</code> directory at the top-level that contains the <code>Julia</code> project.</p></li>
 <li><p>If specified, <code>.pkg_config</code> is run via <code><a href="julia_helper.html">julia_code()</a></code>.</p></li>
-<li><p><a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a> and supporting dependencies are installed or updated (if required) and loaded (optionally in the local <code>Julia</code> Project). If the environment variable <code>PATTER.JL_DEV = "path/to/local/clone/of/Patter.jl"</code> is set, <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a> is installed from a local source as a development dependency (via <code>Pkg.develop()</code>); otherwise, <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a> is installed from the remote.</p></li>
+<li><p><a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a> and supporting dependencies are added or updated (if required) and loaded (optionally in the local <code>Julia</code> Project).</p></li>
 </ul><p>You should run this function once per <code>R</code> session (and for every socket in a socket cluster, if necessary).</p>
 <p>To update the number of threads, restart <code>R</code> and re-run the function with an updated <code>JULIA_NUM_THREADS</code> argument.</p>
     </div>
@@ -155,20 +169,20 @@
 <span class="r-in"><span>  <span class="fu">julia_connect</span><span class="op">(</span>.verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-10-12 21:01:54... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-10-21 17:24:25... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_setup()`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 11 thread(s). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-10-12 21:01:59 (duration: ~5 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-10-12 21:01:59... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-10-21 17:24:33 (duration: ~8 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-10-21 17:24:33... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_setup()`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 11 thread(s). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-10-12 21:02:05 (duration: ~6 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-10-21 17:24:40 (duration: ~7 sec(s)). </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
