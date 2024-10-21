@@ -65,19 +65,19 @@
 <code>patter</code> v2.0.0<a class="anchor" aria-label="anchor" href="#patter-v200"></a></h2>
 <div class="section level3">
 <h3 id="major-changes-2-0-0">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-2-0-0"></a></h3>
-<p><code>patter</code> v 2.0.0 includes some major internal changes required to required to permit use on Linux. There are small changes in the API of some functions as a result. We have also added new data-assembly routines, most notably <code><a href="../reference/assemble.html">assemble_acoustics_containers()</a></code>, which support particle filtering, alongside additional improvements to select functions.</p>
+<p><code>patter</code> v 2.0.0 includes some major internal changes required to required to permit use on Linux. There are small changes in the API of some functions as a result. We have also added new data-assembly routines, most notably <code><a href="../reference/assemble.html">assemble_acoustics_containers()</a></code>, which support particle filtering, alongside additional improvements to select functions. Where required for existing code, you can continue to use <code>patter</code> v1.0.1 with <a href="https://rstudio.github.io/renv/articles/renv.html" class="external-link"><code>renv</code></a>.</p>
 <ul><li>
-<strong>Julia setup.</strong>
+<strong>Julia setup</strong>
 <ul><li>
 <code><a href="../reference/julia_connect.html">julia_connect()</a></code> has been revised and enhanced. The <code>.threads</code> argument has been replaced with <code>JULIA_NUM_THREADS</code>.</li>
 </ul></li>
 <li>
-<strong>Map export.</strong>
+<strong>Map export</strong>
 <ul><li>
 <code><a href="../reference/set_map.html">set_map()</a></code> has been revamped to support applications on Linux. The function accepts a file path to a raster and includes <code>.as_Raster</code> and <code>.as_GeoArray</code> arguments.</li>
 </ul></li>
 <li>
-<strong>Data assembly.</strong>
+<strong>Data assembly</strong>
 <ul><li>A distinction is made between detections and acoustic observations, which include detections and non-detections:
 <ul><li>
 <code>dat_acoustics</code> has been renamed to <code>dat_detections</code>;</li>
@@ -92,21 +92,28 @@
 </ul></li>
 </ul></li>
 <li>
-<strong>Movement initialisation.</strong>
+<strong>Movement initialisation</strong>
 <ul><li>Initial particle samples, formerly generated in <code>R</code> via <code>simulate_states_init()</code> and associated (internal) routines, have been moved to <code>Patter.jl</code>. This change affects <code><a href="../reference/sim_path_walk.html">sim_path_walk()</a></code> and <code><a href="../reference/pf_filter.html">pf_filter()</a></code>. The <code>.map</code> argument is no longer accepted. See the revised examples for automated sampling of initial states from the map.</li>
 <li>A bug in <code>map_init.ModelObsAcousticLogisTrunc</code> that overly restricted the region from which initial samples were drawn has been fixed in the new <code>Julia</code> routines.</li>
 </ul></li>
 <li>
-<strong>Movement simulation.</strong>
+<strong>Movement simulation</strong>
 <ul><li>
 <code><a href="../reference/sim_path_walk.html">sim_path_walk()</a></code> now fails with an error for invalid maps/movement models.</li>
 </ul></li>
 <li>
-<strong>Particle filter.</strong>
-<ul><li>A new <code>.n_trial</code> argument permits multiple runs of the filter.</li>
+<strong>Observation simulation</strong>
+<ul><li>
+<code><a href="../reference/sim_observations.html">sim_observations()</a></code> now expects <code>ModelObs</code> structures and parameters in a single named list (passed to <code>.model_obs</code>). The <code>.model_obs_pars</code> argument has been dropped.</li>
 </ul></li>
 <li>
-<strong>Particle smoothing.</strong>
+<strong>Particle filter</strong>
+<ul><li>
+<code><a href="../reference/pf_filter.html">pf_filter()</a></code> now expects <code>ModelObs</code> structures and observations in a single named list (passed to <code>.yobs</code>). The <code>.model_obs</code> argument has been dropped.</li>
+<li>A new <code>.n_trial</code> argument permits multiple runs of the filter.</li>
+</ul></li>
+<li>
+<strong>Particle smoothing</strong>
 <ul><li>
 <code><a href="../reference/pf_smoother_two_filter.html">pf_smoother_two_filter()</a></code> uses a more flexible <code>.vmap</code> argument, supported by <code><a href="../reference/pf_smoother_two_filter.html">set_vmap()</a></code>, in place of <code>.box</code> and <code>.mobility</code>.</li>
 </ul></li>

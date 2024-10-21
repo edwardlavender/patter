@@ -2,15 +2,15 @@
 
 ## Major changes
 
-`patter` v 2.0.0 includes some major internal changes required to required to permit use on Linux. There are small changes in the API of some functions as a result. We have also added new data-assembly routines, most notably `assemble_acoustics_containers()`, which support particle filtering, alongside additional improvements to select functions. 
+`patter` v 2.0.0 includes some major internal changes required to required to permit use on Linux. There are small changes in the API of some functions as a result. We have also added new data-assembly routines, most notably `assemble_acoustics_containers()`, which support particle filtering, alongside additional improvements to select functions. Where required for existing code, you can continue to use `patter` v1.0.1 with [`renv`](https://rstudio.github.io/renv/articles/renv.html). 
 
-* **Julia setup.** 
+* **Julia setup** 
     * `julia_connect()` has been revised and enhanced. The `.threads` argument has been replaced with `JULIA_NUM_THREADS`. 
 
-* **Map export.** 
+* **Map export** 
     * `set_map()` has been revamped to support applications on Linux. The function accepts a file path to a raster and includes `.as_Raster` and `.as_GeoArray` arguments. 
 
-* **Data assembly.** 
+* **Data assembly** 
     * A distinction is made between detections and acoustic observations, which include detections and non-detections:
         * `dat_acoustics` has been renamed to `dat_detections`;
         * `assemble_acoustics(.timeline, .acoustics, ...)` has been reformulated to `assemble_acoustics(.timeline, .detections, ...)`;
@@ -18,17 +18,21 @@
         * `assemble_acoustics_containers()` assembles acoustic containers, which facilitate convergence of the particle filter with fewer particles;
         * `assemble_custom()` assembles custom datasets;
 
-* **Movement initialisation.**
+* **Movement initialisation**
     * Initial particle samples, formerly generated in `R` via `simulate_states_init()` and associated (internal) routines, have been moved to `Patter.jl`. This change affects `sim_path_walk()` and `pf_filter()`. The `.map` argument is no longer accepted. See the revised examples for automated sampling of initial states from the map. 
     *  A bug in `map_init.ModelObsAcousticLogisTrunc` that overly restricted the region from which initial samples were drawn has been fixed in the new `Julia` routines. 
 
-* **Movement simulation.**
-    *  `sim_path_walk()` now fails with an error for invalid maps/movement models.  
+* **Movement simulation**
+    * `sim_path_walk()` now fails with an error for invalid maps/movement models.  
 
-* **Particle filter.**
+* **Observation simulation**
+    * `sim_observations()` now expects `ModelObs` structures and parameters in a single named list (passed to `.model_obs`). The `.model_obs_pars` argument has been dropped. 
+
+* **Particle filter**
+    * `pf_filter()` now expects `ModelObs` structures and observations in a single named list (passed to `.yobs`). The `.model_obs` argument has been dropped. 
     *  A new `.n_trial` argument permits multiple runs of the filter. 
 
-* **Particle smoothing.**
+* **Particle smoothing**
     * `pf_smoother_two_filter()` uses a more flexible `.vmap` argument, supported by `set_vmap()`, in place of `.box` and `.mobility`. 
 
 ## Minor improvements and bug fixes
