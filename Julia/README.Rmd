@@ -133,6 +133,12 @@ acoustics <- assemble_acoustics(.timeline = timeline,
                                 .detections = det,
                                 .moorings = dat_moorings)
 
+# Assemble acoustic containers
+# "ModelObsAcousticContainer"
+containers <- assemble_acoustics_containers(.timeline = timeline,
+                                            .acoustics = acoustics, 
+                                            .mobility = 750.0)
+
 # Assemble archival observations
 # "ModelObsDepthNormalTrunc"
 archival <- assemble_archival(.timeline = timeline,
@@ -141,6 +147,8 @@ archival <- assemble_archival(.timeline = timeline,
 
 # Write data.tables to file
 write.csv(acoustics, file.path("data", "acoustics.csv"), quote = FALSE, row.names = FALSE)
+write.csv(containers$forward, file.path("data", "containers-fwd.csv"), quote = FALSE, row.names = FALSE)
+write.csv(containers$backward, file.path("data", "containers-bwd.csv"), quote = FALSE, row.names = FALSE)
 write.csv(archival, file.path("data", "archival.csv"), quote = FALSE, row.names = FALSE)
 terra::writeRaster(dat_gebco(), file.path("data", "bathymetry.tif"), overwrite = TRUE)
 ```
@@ -224,12 +232,18 @@ See `?State` and `?ModelMove` for built-in `State`s and movement models. Define 
 
 ## Observations
 
-We have collected acoustic and archival (depth) observations from tagged flapper skate. Here, we load the time series for a selected individual. For analysis using `Patter.jl`, each dataset must comprise: a `timestamp` column, that defines the time of an observation; a `sensor_id` that distinguishes sensors (such as acoustic receivers), an `obs` column that defines the observation (`0` or `1` in the case of acoustic observations); and additional columns that define the parameters of an observation model (`ModelObs`) structure that links movement to the observations. The wrapper `patter` package contains helper routines for the assembly of these datasets, if required.
+We have collected acoustic and archival (depth) observations from tagged flapper skate. Here, we load the time series for a selected individual. For analysis using `Patter.jl`, each dataset must comprise: a `timestamp` column, that defines the time of an observation; a `sensor_id` that distinguishes sensors (such as acoustic receivers), an `obs` column that defines the observation (`0` or `1` in the case of acoustic observations); and additional columns that define the parameters of an observation model (`ModelObs`) structure that links movement to the observations. The time series include (a) a standard acoustic dataset, a corresponding dataset of acoustic containers and a standard archival dataset. The acoustic containers dataset is derived from the acoustic dataset and defines the maximum possible distance of the individual from the receiver(s) that recorded the next detection(s) at each time step. This dataset facilitates convergence in the particle filter. The wrapper `patter` package contains helper routines for the assembly of these datasets, if required.
 
 ```{julia}
 # Read acoustic (0, 1) observations
 acoustics = CSV.read(joinpath("data", "acoustics.csv"), DataFrame);
 first(acoustics, 6)
+
+# Read acoustic containers looking 'forwards' or 'backwards' in time
+containers_fwd = CSV.read(joinpath("data", "containers-fwd.csv"), DataFrame);
+first(containers_fwd, 6)
+containers_bwd = CSV.read(joinpath("data", "containers-bwd.csv"), DataFrame);
+first(containers_bwd, 6)
 
 # Read archival (depth) observations
 archival = CSV.read(joinpath("data", "archival.csv"), DataFrame);
@@ -241,14 +255,22 @@ Individual movements are connected to the observations by models of the observat
 ```{julia}
 # Process time stamps
 acoustics.timestamp = DateTime.(acoustics.timestamp, "yyyy-mm-dd HH:MM:SS");
+containers_fwd.timestamp = DateTime.(containers_fwd.timestamp, "yyyy-mm-dd HH:MM:SS");
+containers_bwd.timestamp = DateTime.(containers_bwd.timestamp, "yyyy-mm-dd HH:MM:SS");
 archival.timestamp = DateTime.(archival.timestamp, "yyyy-mm-dd HH:MM:SS");
 
 # Collate datasets & associated `ModelObs` instances into a typed dictionary 
-datasets        = [acoustics, archival];
-model_obs_types = [ModelObsAcousticLogisTrunc, ModelObsDepthNormalTrunc];
-yobs = assemble_yobs(datasets = datasets,
-                     model_obs_types = model_obs_types);
-
+# * Acoustic containers are direction specific, so two datasets are required
+# * (for forward & backward runs of the particle filter, respectively)
+datasets_fwd        = [acoustics, containers_fwd, archival];
+datasets_bwd        = [acoustics, containers_bwd, archival]
+model_obs_types     = [ModelObsAcousticLogisTrunc, 
+                       ModelObsAcousticContainer, 
+                       ModelObsDepthNormalTrunc];
+yobs_fwd            = assemble_yobs(datasets = datasets_fwd,
+                                    model_obs_types = model_obs_types);
+yobs_bwd            = assemble_yobs(datasets = datasets_bwd,
+                                    model_obs_types = model_obs_types);
 ```
 
 Of course, you do not need acoustic and archival data to implement the algorithms: these are just the data we have collected from flapper skate and they are convenient to illustrate because we have built-in corresponding `ModelObs` sub-types into the package. However, other datasets can be incorporated almost as easily via custom `ModelObs` sub-types (that is, `struct ModelObsCustom <: Patter.ModelObs`) and some supporting methods (see the package help files for details). To simulate observations instead, see `simulate_yobs()`. 
@@ -264,16 +286,16 @@ xinit = simulate_states_init(map = env_init,
                              state_type = StateXY,
                              xinit = nothing, 
                              model_move = model_move, 
-                             datasets = datasets,
+                             datasets = datasets_fwd,
                              model_obs_types = model_obs_types,
-                             n_particle = 200_000, 
+                             n_particle = 20_000, 
                              direction = "forward", 
                              output = "Vector");
 
 # Run the forward filter
 fwd = particle_filter(timeline = timeline,
                       xinit = xinit,
-                      yobs = yobs,
+                      yobs = yobs_fwd,
                       model_move = model_move,
                       n_record = 500,
                       direction = "forward");
@@ -284,16 +306,16 @@ xinit = simulate_states_init(map = env_init,
                              state_type = StateXY,
                              xinit = nothing, 
                              model_move = model_move, 
-                             datasets = datasets,
+                             datasets = datasets_bwd,
                              model_obs_types = model_obs_types,
-                             n_particle = 200_000, 
+                             n_particle = 20_000, 
                              direction = "backward", 
                              output = "Vector");
 
 # Run the backward filter
 bwd = particle_filter(timeline = timeline,
                       xinit = xinit,
-                      yobs = yobs,
+                      yobs = yobs_bwd,
                       model_move = model_move,
                       n_record = 500,
                       direction = "backward");

@@ -307,7 +307,9 @@ The main thrust of `patter` is the provision of fast, integrated modelling workf
 
 * `assemble_timeline()` assembles a timeline;
 * `assemble_acoustics()` assembles an acoustic time series;
+* `assemble_acoustics_containers()` assembles a corresponding time series of acoustic containers;
 * `assemble_archival()` assembles an archival time series;
+* `assemble_custom()` assembles custom time series;
 
 Ancillary time series should be structured in the same way for inclusion in the particle filter.
 
@@ -432,12 +434,22 @@ acoustics <- assemble_acoustics(.timeline = timeline,
                                 .detections = det,
                                 .moorings = dat_moorings)
 
+# ModelObsAcousticContainers
+containers <- assemble_acoustics_containers(.timeline = timeline, 
+                                            .acoustics = acoustics, 
+                                            .mobility = mobility)
+
 # ModelObsDepthNormalTrunc
 archival <- assemble_archival(.timeline = timeline,
                               .archival = arc)
 
-# Named list of ModelObs sub-types and associated observations
-yobs     <- list(ModelObsAcousticLogisTrunc = acoustics, 
+# Named lists of ModelObs sub-types and associated observations
+# * The container dataset is direction specific so we assemble two yobs lists
+yobs_fwd <- list(ModelObsAcousticLogisTrunc = acoustics, 
+                 ModelObsAcousticContainer = containers$forward,
+                 ModelObsDepthNormalTrunc = archival)
+yobs_bwd <- list(ModelObsAcousticLogisTrunc = acoustics, 
+                 ModelObsAcousticContainer = containers$backward,
                  ModelObsDepthNormalTrunc = archival)
 ```
 
@@ -451,16 +463,17 @@ We are now in a position to run the particle filter. This runs a simulation forw
 # List filter arguments
 args <- list(.timeline = timeline,
              .state = state,
-             .yobs = yobs,
+             .yobs = yobs_fwd,
              .model_move = model_move,
              .n_record = 500L,
-             .n_particle = 2e5L)
+             .n_particle = 2e3L)
 
 # Forward run
 fwd <- do.call(pf_filter, args, quote = TRUE)
 head(fwd$states)
 
 # Backward run
+args$.yobs      <- yobs_bwd
 args$.direction <- "backward"
 bwd <- do.call(pf_filter, args, quote = TRUE)
 ```

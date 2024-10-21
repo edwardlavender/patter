@@ -13,7 +13,7 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/patter)](https://CRAN.R-project.org/package=patter)
-![Coverage](https://img.shields.io/badge/coverage-98%25-brightgreen)
+![Coverage](https://img.shields.io/badge/coverage-93%25-brightgreen)
 [![R-CMD-check](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
@@ -366,7 +366,10 @@ functions:
 
 - `assemble_timeline()` assembles a timeline;
 - `assemble_acoustics()` assembles an acoustic time series;
+- `assemble_acoustics_containers()` assembles a corresponding time
+  series of acoustic containers;
 - `assemble_archival()` assembles an archival time series;
+- `assemble_custom()` assembles custom time series;
 
 Ancillary time series should be structured in the same way for inclusion
 in the particle filter.
@@ -514,12 +517,22 @@ acoustics <- assemble_acoustics(.timeline = timeline,
                                 .detections = det,
                                 .moorings = dat_moorings)
 
+# ModelObsAcousticContainers
+containers <- assemble_acoustics_containers(.timeline = timeline, 
+                                            .acoustics = acoustics, 
+                                            .mobility = mobility)
+
 # ModelObsDepthNormalTrunc
 archival <- assemble_archival(.timeline = timeline,
                               .archival = arc)
 
-# Named list of ModelObs sub-types and associated observations
-yobs     <- list(ModelObsAcousticLogisTrunc = acoustics, 
+# Named lists of ModelObs sub-types and associated observations
+# * The container dataset is direction specific so we assemble two yobs lists
+yobs_fwd <- list(ModelObsAcousticLogisTrunc = acoustics, 
+                 ModelObsAcousticContainer = containers$forward,
+                 ModelObsDepthNormalTrunc = archival)
+yobs_bwd <- list(ModelObsAcousticLogisTrunc = acoustics, 
+                 ModelObsAcousticContainer = containers$backward,
                  ModelObsDepthNormalTrunc = archival)
 ```
 
@@ -541,24 +554,25 @@ distribution for the location of the animal, at each time step:
 # List filter arguments
 args <- list(.timeline = timeline,
              .state = state,
-             .yobs = yobs,
+             .yobs = yobs_fwd,
              .model_move = model_move,
              .n_record = 500L,
-             .n_particle = 2e5L)
+             .n_particle = 2e3L)
 
 # Forward run
 fwd <- do.call(pf_filter, args, quote = TRUE)
 head(fwd$states)
 #>    path_id timestep           timestamp map_value        x       y
 #>      <int>    <int>              <POSc>     <num>    <num>   <num>
-#> 1:       1        1 2016-03-17 01:50:00  80.03239 709142.1 6253307
-#> 2:       1        2 2016-03-17 01:52:00  73.44244 709302.2 6253500
-#> 3:       1        3 2016-03-17 01:54:00  84.47292 709252.5 6253478
-#> 4:       1        4 2016-03-17 01:56:00 131.12650 708783.7 6253373
-#> 5:       1        5 2016-03-17 01:58:00  38.45599 709656.9 6252885
-#> 6:       1        6 2016-03-17 02:00:00  58.17422 709286.4 6253146
+#> 1:       1        1 2016-03-17 01:50:00  74.88351 709042.1 6253107
+#> 2:       1        2 2016-03-17 01:52:00  42.39980 709434.1 6252826
+#> 3:       1        3 2016-03-17 01:54:00  74.88351 709057.3 6253116
+#> 4:       1        4 2016-03-17 01:56:00  59.76520 709130.0 6252981
+#> 5:       1        5 2016-03-17 01:58:00  76.37878 709425.0 6253693
+#> 6:       1        6 2016-03-17 02:00:00  50.71592 709162.2 6252838
 
 # Backward run
+args$.yobs      <- yobs_bwd
 args$.direction <- "backward"
 bwd <- do.call(pf_filter, args, quote = TRUE)
 ```
