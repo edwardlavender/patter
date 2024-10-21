@@ -203,3 +203,139 @@ test_that("assemble_archival() works", {
   expect_equal(output, expected)
 
 })
+
+test_that("assemble_acoustics_containers() works", {
+
+  #### (1) Test with dummy data
+
+  # Define example timeline
+  timeline <- seq(as.POSIXct("2016-01-01 00:00:00", tz = "UTC"),
+                  as.POSIXct("2016-01-01 00:08:00", tz = "UTC"),
+                  by = "2 mins")
+
+  # Define example acoustics dataset
+  acoustics <- data.table(timestamp =
+                            as.POSIXct(c(
+                              "2016-01-01 00:00:00",
+                              "2016-01-01 00:00:00",
+                              "2016-01-01 00:00:00",
+                              "2016-01-01 00:02:00",
+                              "2016-01-01 00:02:00",
+                              "2016-01-01 00:02:00",
+                              "2016-01-01 00:04:00",
+                              "2016-01-01 00:04:00",
+                              "2016-01-01 00:04:00",
+                              "2016-01-01 00:04:00"),
+                              tz = "UTC"),
+                          sensor_id = c(1, 2, 3, 1, 2, 3, 1, 2, 3, 4),
+                          obs = c(1, 1, 0, 0, 0, 0, 0, 0, 1, 1),
+                          receiver_x = c(1, 2, 3, 1, 2, 3, 1, 2, 3, 4),
+                          receiver_y = c(1, 2, 3, 1, 2, 3, 1, 2, 3, 4),
+                          receiver_alpha = 4,
+                          receiver_beta = -0.01,
+                          receiver_gamma = 1000)
+
+  # Define containers
+  containers <- assemble_acoustics_containers(.timeline = timeline,
+                                              .acoustics = acoustics,
+                                              .mobility = 500)
+
+  # Validate that assemble_acoustics_containers() returns a named list
+  check_inherits(containers, "list")
+  check_named_list(containers)
+  check_names(containers, req = c("forward", "backward"))
+
+  # Validate forward element is correct:
+  # "2016-01-01 00:00:00":
+  # > next detection @ 2016-01-01 00:04:00" (receivers 3 & 4)
+  # > radius: 500 + 500 + 1000
+  # "2016-01-01 00:02:00":
+  # > next detection at 2016-01-01 00:04:00" (receivers 3 & 4)
+  # > radius: 500 + 1000
+  expect_equal(containers$forward,
+               data.table(
+                 timestamp = as.POSIXct(c("2016-01-01 00:00:00", "2016-01-01 00:00:00",
+                                          "2016-01-01 00:02:00", "2016-01-01 00:02:00"),
+                                        tz = "UTC"),
+                 obs = c(1, 1, 1, 1),
+                 sensor_id = c(3, 4, 3, 4),
+                 receiver_x = c(3, 4, 3, 4),
+                 receiver_y = c(3, 4, 3, 4),
+                 radius = c(2000, 2000, 1500, 1500)
+               ))
+
+  # Validate backward element is correct:
+  # "2016-01-01 00:08:00"
+  # > next detection @ 2016-01-01 00:04:00 (receivers 3 & 4)
+  # > radius: 500 + 500 + 1000
+  # "2016-01-01 00:06:00"
+  # > next detection @ 2016-01-01 00:04:00 (receivers 3 & 4)
+  # > radius: 500 + 1000
+  # "2016-01-01 00:04:00"
+  # > next detection @ 2016-01-01 00:00:00 (receivers 1 & 2)
+  # > radius: 500 + 500 + 1000
+  # "2016-01-01 00:04:00"
+  # > next detection  @ 2016-01-01 00:00:00 (receivers 1 & 2)
+  # > radius: 500 + 1000
+  expect_equal(containers$backward,
+               data.table(
+                 timestamp = as.POSIXct(c("2016-01-01 00:02:00", "2016-01-01 00:02:00", "2016-01-01 00:04:00",
+                                          "2016-01-01 00:04:00", "2016-01-01 00:06:00", "2016-01-01 00:06:00",
+                                          "2016-01-01 00:08:00", "2016-01-01 00:08:00"), tz = "UTC"),
+                 obs = c(1, 1, 1, 1, 1, 1, 1, 1),
+                 sensor_id = c(1, 2, 1, 2, 3, 4, 3, 4),
+                 receiver_x = c(1, 2, 1, 2, 3, 4, 3, 4),
+                 receiver_y = c(1, 2, 1, 2, 3, 4, 3, 4),
+                 radius = c(1500, 1500, 2000, 2000, 1500, 1500, 2000, 2000)
+               ))
+
+  #### (1) Test with real data
+
+  # Define detections
+  # detections <- dat_detections[individual_id == 25, ]
+  detections <- data.table(
+    timestamp = as.POSIXct(c("2016-03-28 18:44:00",
+                             "2016-03-28 18:46:00",
+                             "2016-03-28 23:00:00",
+                             "2016-03-28 23:04:00"), tz = "UTC"),
+    receiver_id = c(26, 26, 3, 3)
+  )
+
+  # Assemble timeline & acoustics
+  timeline   <- assemble_timeline(.datasets = list(detections), .step = "2 mins")
+  acoustics  <- assemble_acoustics(.timeline = timeline,
+                                   .detections = detections,
+                                   .moorings = dat_moorings)
+
+  # Assemble containers
+  containers <- assemble_acoustics_containers(.timeline = timeline,
+                                              .acoustics = acoustics,
+                                              .mobility = 500,
+                                              .threshold = 10000)
+
+  # Validate example element ("forward")
+  expect_equal(containers$forward,
+               data.table(
+                 timestamp = as.POSIXct(c("2016-03-28 18:44:00", "2016-03-28 22:24:00", "2016-03-28 22:26:00",
+                                          "2016-03-28 22:28:00", "2016-03-28 22:30:00", "2016-03-28 22:32:00",
+                                          "2016-03-28 22:34:00", "2016-03-28 22:36:00", "2016-03-28 22:38:00",
+                                          "2016-03-28 22:40:00", "2016-03-28 22:42:00", "2016-03-28 22:44:00",
+                                          "2016-03-28 22:46:00", "2016-03-28 22:48:00", "2016-03-28 22:50:00",
+                                          "2016-03-28 22:52:00", "2016-03-28 22:54:00", "2016-03-28 22:56:00",
+                                          "2016-03-28 22:58:00", "2016-03-28 23:00:00", "2016-03-28 23:02:00"),
+                                        tz = "UTC"),
+                 obs = rep(1, 21),
+                 sensor_id = c(26, rep(3, 20)),
+                 receiver_x = c(dat_moorings$receiver_x[dat_moorings$receiver_id == 26],
+                                rep(dat_moorings$receiver_x[dat_moorings$receiver_id == 3], 20)),
+                 receiver_y =  c(dat_moorings$receiver_y[dat_moorings$receiver_id == 26],
+                                 rep(dat_moorings$receiver_y[dat_moorings$receiver_id == 3], 20)),
+                 radius = c(1250, 9750, 9250, 8750, 8250, 7750, 7250, 6750, 6250, 5750, 5250,
+                            4750, 4250, 3750, 3250, 2750, 2250, 1750, 1250, 1750, 1250)
+               ))
+
+  # Validate .threshold implementation
+  expect_true(all(containers$forward$radius < 10000))
+  expect_true(all(containers$backward$radius < 10000))
+
+})
