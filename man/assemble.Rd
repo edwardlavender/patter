@@ -4,6 +4,7 @@
 \alias{assemble}
 \alias{assemble_timeline}
 \alias{assemble_acoustics}
+\alias{assemble_acoustics_containers}
 \alias{assemble_archival}
 \alias{assemble_custom}
 \title{Assemble observations}
@@ -11,6 +12,13 @@
 assemble_timeline(.datasets = list(), .step, .trim = FALSE)
 
 assemble_acoustics(.timeline, .detections, .moorings, .services = NULL)
+
+assemble_acoustics_containers(
+  .timeline,
+  .acoustics,
+  .mobility,
+  .threshold = 1e+05
+)
 
 assemble_archival(.timeline, .archival)
 
@@ -36,9 +44,23 @@ assemble_custom(.timeline, .dataset)
 \item (optional) \code{.services} is a \code{\link{data.table}} of servicing events. This must contain the \code{receiver_id}, \code{service_start} and \code{service_end} columns.
 }}
 
+\item{.acoustics, .mobility, .threshold}{Arguments for \code{\link[=assemble_acoustics_containers]{assemble_acoustics_containers()}}.
+\itemize{
+\item \code{.acoustics} is a \code{\link{data.table}} of acoustic observations, from \code{\link[=assemble_acoustics]{assemble_acoustics()}}.
+\item \code{.mobility} is the maximum movement distance (m) between two time steps.
+\item \code{.threshold} is the distance (m) threshold parameter (see Details).
+}}
+
 \item{.archival}{For \code{\link[=assemble_archival]{assemble_archival()}}, \code{.archival} is a \code{\link{data.table}} of depth observations \strong{for a single individual} with \code{timestamp} and \code{obs} columns (see \code{.dataset}, below).}
 
 \item{.dataset}{For \code{\link[=assemble_custom]{assemble_custom()}}, \code{.dataset} is a \code{\link{data.table}} of observations (such as depth measurements) \strong{for a single individual}. This must contain \code{timestamp} and \code{obs} columns plus (optional) additional parameter columns.}
+}
+\value{
+\itemize{
+\item \code{\link[=assemble_timeline]{assemble_timeline()}} returns a POSIXct vector;
+\item \code{\link[=assemble_acoustics]{assemble_acoustics()}}, \code{\link[=assemble_archival]{assemble_archival()}} and \code{\link[=assemble_custom]{assemble_custom()}} return a \code{\link{data.table}} for \code{\link[=pf_filter]{pf_filter()}};
+\item \code{\link[=assemble_acoustics_containers]{assemble_acoustics_containers()}} returns a named \code{list}, with one element (\code{\link{data.table}}) for (a) the forward and (b) the backward runs of \code{\link[=pf_filter]{pf_filter()}};
+}
 }
 \description{
 These functions assemble a timeline and observations for the particle filter (\code{\link[=pf_filter]{pf_filter()}}).
@@ -53,10 +75,12 @@ These functions assemble a timeline and observations for the particle filter (\c
 \verb{assemble_\{dataset\}()} functions are helper routines that prepare timelines observations for different data types as required for the particle filter (\code{\link[=pf_filter]{pf_filter()}}). The filter expects a named \code{list} of datasets (one for each data type). Each dataset must contain the following columns: \code{timestamp}, \code{sensor_id}, \code{obs} and additional columns with the parameters of the observation model (see \code{\link{glossary}}).
 
 \code{\link[=assemble_acoustics]{assemble_acoustics()}} prepares a timeline of acoustic observations as required by the filter \strong{for a single individual}. This function expects a 'standard' detection dataset (that is, a \code{\link{data.table}} like \code{\link{dat_detections}} but for a single individual) that defines detections at receivers alongside a moorings dataset (like \code{\link{dat_moorings}}) that defines receiver deployment periods and, optionally, a \code{\link{data.table}} of servicing events (when receiver(s) were non-operational). \code{\link[=assemble_acoustics]{assemble_acoustics()}} uses these datasets to assemble a complete time series of acoustic observations; that is, a \code{\link{data.table}} of time stamps and receivers that defines, for each time step and each operational receiver whether (\code{1L}) or not (\code{0L}) a detection was recorded at that time step. Duplicate observations (that is, detections at the same receiver in the same time step) are dropped. If available in \code{.moorings}, additional columns (\code{receiver_alpha}, \code{receiver_beta} and \code{receiver_gamma}) are included as required for the default acoustic observation model (that is, \code{\link{ModelObsAcousticLogisTrunc}}). If observation model parameters vary both by receiver and through time, simply amend these columns as required.
-\itemize{
-\item \code{\link[=assemble_archival]{assemble_archival()}} prepares a timeline of archival functions \strong{for a single individual}. This simply wraps \code{\link[=assemble_custom]{assemble_custom()}} and is informally deprecated.
-\item \code{\link[=assemble_custom]{assemble_custom()}} prepares a timeline of observations for other data types, as required by the filter. This function expects a \code{\link{data.table}} that includes, at a minimum, the \code{timestamp} and \code{obs} columns. The latter defines the observations. The \code{sensor_id} column (if unspecified) is simply set to \code{1L}. The function re-expresses time stamps at the resolution specified by \code{timeline}. Duplicate observations (that is, multiple measurements in the same time step) throw a \code{\link{warning}}.
-}
+
+\code{\link[=assemble_acoustics_containers]{assemble_acoustics_containers()}} prepares a dataset of acoustic containers, given the acoustic time series from \code{\link[=assemble_acoustics]{assemble_acoustics()}}. Acoustic containers define the region within which an individual must be located at a given time step according to the receiver(s) at which it was next detected. Each container is a circular region, of radius \eqn{r}, around a receiver that recorded a detection at the next time step. The radius depends on the time until the next detection, the maximum movement speed and the detection range around the receiver at the time of the detection. For example, if an individual can move up to \code{.mobility} = 500 m per time step, and two time steps elapse between the first and second detections, then at the moment of the first detection the individual must be within 1000 m of the detection range (say, \code{receiver_gamma} = 750 m) of the second receiver; that is, at the moment of first detection, the maximum possible distance of the individual from the receiver that recorded the next detection is 1750 m. As time passes, the container shrinks towards the receiver(s) that recorded the next detection(s), in line with the individual's \code{.mobility}. Acoustic containers, coupled with regular re-sampling, facilitate convergence in the particle filter: at each time step, only particles within an acoustic container are duplicated (other particles are killed), which encourages particles to move towards the next receiver(s) by the time of the next detection(s). In practice, this works as follows. \code{\link[=assemble_acoustics_containers]{assemble_acoustics_containers()}} assembles a \code{\link{data.table}} that defines the maximum distance (radius) of the individual from the receiver(s) that recorded the next detection. For computational efficiency, this \code{\link{data.table}} only includes containers with a \code{radius} < \code{.threshold}. Set the .\code{threshold} to the maximum size (length or width) of the study area (or a smaller value, if appropriate). This \code{\link{data.table}} is used to instantiate a Vector of \code{\link{ModelObsAcousticContainer}} sub-types in \code{Julia}. In the particle filter, for each particle, we compute the log-probability of the particle from the distance of the particle from the relevant receiver (0.0 or -Inf). By re-sampling particles with replacement, particles that move in a way that is incompatible with the location of the next detection(s) are killed. The bottom line is that if have acoustic observations, you should also include acoustic containers in the list of 'observations' for the particle filter (\code{\link[=pf_filter]{pf_filter()}}). This function requires the \code{\link[tidyr:nest]{tidyr::nest()}}, \code{\link[tidyr:unnest]{tidyr::unnest()}} and \code{\link[zoo:na.locf]{zoo::na.locf()}} functions (suggested dependencies).
+
+\code{\link[=assemble_archival]{assemble_archival()}} prepares a timeline of archival functions \strong{for a single individual}. This simply wraps \code{\link[=assemble_custom]{assemble_custom()}} and is informally deprecated.
+
+\code{\link[=assemble_custom]{assemble_custom()}} prepares a timeline of observations for other data types, as required by the filter. This function expects a \code{\link{data.table}} that includes, at a minimum, the \code{timestamp} and \code{obs} columns. The latter defines the observations. The \code{sensor_id} column (if unspecified) is simply set to \code{1L}. The function re-expresses time stamps at the resolution specified by \code{timeline}. Duplicate observations (that is, multiple measurements in the same time step) throw a \code{\link{warning}}.
 
 In \code{Julia}, datasets are translated into a hash-table (\code{Dict}) of observations (via \href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.assemble_yobs()}}). For each time stamp with an observation, this includes a \code{Vector} of \code{Tuple}s, each containing the observation and the associated \code{\link{ModelObs}} instance that defines the parameters of the observation model. The particle filter (\href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.particle_filter()}}) iterates over each time step in the timeline, uses a movement model to simulate animal movement and, for the time stamps with observations, evaluates the likelihood of those observations for the simulated locations (particles).
 
@@ -107,13 +131,24 @@ acoustics <- assemble_acoustics(.timeline = timeline,
                                 .moorings = dat_moorings)
 head(acoustics)
 
-#### Example (3): Assemble an archival timeline
+#### Example (3): Assemble corresponding acoustic containers
+containers <- assemble_acoustics_containers(.timeline = timeline,
+                                            .acoustics = acoustics,
+                                            .mobility = 750)
+# This function returns a list:
+summary(containers)
+# Use the `forward` element for `pf_filter()` with `.direction = "forward"`
+head(containers$forward)
+# Use the `backward` for `pf_filter()` with `.direction = "backward"`
+head(containers$backward)
+
+#### Example (4): Assemble an archival timeline
 # Assemble a timeline of archival observations and model parameters
 archival <- assemble_archival(.timeline = timeline,
                               .archival = arc)
 head(archival)
 
-#### Example (4): Assemble custom datasets
+#### Example (5): Assemble custom datasets
 temperature <-
   data.table(timestamp = c(as.POSIXct("2016-03-17 01:50:30", tz = "UTC"),
                            as.POSIXct("2016-03-17 02:00:30 UTC", tz = "UTC")),
@@ -122,7 +157,7 @@ temperature <- assemble_custom(.timeline = timeline,
                                .dataset = temperature)
 head(temperature)
 
-#### Example (5): Implement particle filter
+#### Example (6): Implement particle filter
 # Use `pf_filter()` to implement the particle filter
 # A list of assembled datasets is passed to the `yobs` argument
 # The corresponding `ModelObs` sub-types must also be specified

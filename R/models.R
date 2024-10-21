@@ -44,6 +44,7 @@ NULL
 #'
 #' The following observation models are built in to [`Patter.jl`](https://edwardlavender.github.io/Patter.jl):
 #' * [`ModelObsAcousticLogisTrunc`]
+#' * [`ModelObsAcousticContainer`]
 #' * [`ModelObsDepthUniform`]
 #' * [`ModelObsDepthNormalTrunc`]
 #'
@@ -61,7 +62,7 @@ NULL
 #' @inherit State seealso
 #' @author Edward Lavender
 #' @name ModelObs
-#' @aliases .model_obs ModelObsAcousticLogisTrunc ModelObsDepthUniform ModelObsDepthNormalTrunc
+#' @aliases .model_obs ModelObsAcousticLogisTrunc ModelObsAcousticContainer ModelObsDepthUniform ModelObsDepthNormalTrunc
 NULL
 
 

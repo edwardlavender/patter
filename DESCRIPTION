@@ -30,6 +30,7 @@ Suggests:
     spatstat.geom,
     spelling, 
     testthat (>= 3.0.0), 
+    tidyr,
     truncdist
 Depends: R (>= 4.1)
 Config/testthat/edition: 3

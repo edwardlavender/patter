@@ -4,6 +4,7 @@
 \alias{ModelObs}
 \alias{.model_obs}
 \alias{ModelObsAcousticLogisTrunc}
+\alias{ModelObsAcousticContainer}
 \alias{ModelObsDepthUniform}
 \alias{ModelObsDepthNormalTrunc}
 \title{Observation models}
@@ -16,6 +17,7 @@ Observation model sub-types are \code{Julia} structures that hold the parameters
 The following observation models are built in to \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}}:
 \itemize{
 \item \code{\link{ModelObsAcousticLogisTrunc}}
+\item \code{\link{ModelObsAcousticContainer}}
 \item \code{\link{ModelObsDepthUniform}}
 \item \code{\link{ModelObsDepthNormalTrunc}}
 }
