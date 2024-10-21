@@ -60,6 +60,108 @@
       <small>Source: <a href="https://github.com/edwardlavender/patter/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="2.0.0" id="patter-v200">
+<code>patter</code> v2.0.0<a class="anchor" aria-label="anchor" href="#patter-v200"></a></h2>
+<div class="section level3">
+<h3 id="major-changes-2-0-0">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-2-0-0"></a></h3>
+<p><code>patter</code> v 2.0.0 includes some major internal changes required to required to permit use on Linux. There are small changes in the API of some functions as a result. We have also added new data-assembly routines, most notably <code><a href="../reference/assemble.html">assemble_acoustics_containers()</a></code>, which support particle filtering, alongside additional improvements to select functions.</p>
+<ul><li>
+<strong>Julia setup.</strong>
+<ul><li>
+<code><a href="../reference/julia_connect.html">julia_connect()</a></code> has been revised and enhanced. The <code>.threads</code> argument has been replaced with <code>JULIA_NUM_THREADS</code>.</li>
+</ul></li>
+<li>
+<strong>Map export.</strong>
+<ul><li>
+<code><a href="../reference/set_map.html">set_map()</a></code> has been revamped to support applications on Linux. The function accepts a file path to a raster and includes <code>.as_Raster</code> and <code>.as_GeoArray</code> arguments.</li>
+</ul></li>
+<li>
+<strong>Data assembly.</strong>
+<ul><li>A distinction is made between detections and acoustic observations, which include detections and non-detections:
+<ul><li>
+<code>dat_acoustics</code> has been renamed to <code>dat_detections</code>;</li>
+<li>
+<code>assemble_acoustics(.timeline, .acoustics, ...)</code> has been reformulated to <code>assemble_acoustics(.timeline, .detections, ...)</code>;</li>
+</ul></li>
+<li>New data assembly routines have been added:
+<ul><li>
+<code><a href="../reference/assemble.html">assemble_acoustics_containers()</a></code> assembles acoustic containers, which facilitate convergence of the particle filter with fewer particles;</li>
+<li>
+<code><a href="../reference/assemble.html">assemble_custom()</a></code> assembles custom datasets;</li>
+</ul></li>
+</ul></li>
+<li>
+<strong>Movement initialisation.</strong>
+<ul><li>Initial particle samples, formerly generated in <code>R</code> via <code>simulate_states_init()</code> and associated (internal) routines, have been moved to <code>Patter.jl</code>. This change affects <code><a href="../reference/sim_path_walk.html">sim_path_walk()</a></code> and <code><a href="../reference/pf_filter.html">pf_filter()</a></code>. The <code>.map</code> argument is no longer accepted. See the revised examples for automated sampling of initial states from the map.</li>
+<li>A bug in <code>map_init.ModelObsAcousticLogisTrunc</code> that overly restricted the region from which initial samples were drawn has been fixed in the new <code>Julia</code> routines.</li>
+</ul></li>
+<li>
+<strong>Movement simulation.</strong>
+<ul><li>
+<code><a href="../reference/sim_path_walk.html">sim_path_walk()</a></code> now fails with an error for invalid maps/movement models.</li>
+</ul></li>
+<li>
+<strong>Particle filter.</strong>
+<ul><li>A new <code>.n_trial</code> argument permits multiple runs of the filter.</li>
+</ul></li>
+<li>
+<strong>Particle smoothing.</strong>
+<ul><li>
+<code><a href="../reference/pf_smoother_two_filter.html">pf_smoother_two_filter()</a></code> uses a more flexible <code>.vmap</code> argument, supported by <code><a href="../reference/pf_smoother_two_filter.html">set_vmap()</a></code>, in place of <code>.box</code> and <code>.mobility</code>.</li>
+</ul></li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-improvements-and-bug-fixes-2-0-0">Minor improvements and bug fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-bug-fixes-2-0-0"></a></h3>
+<ul><li>Minor documentation improvements, including to <code>Julia</code> installation instructions;</li>
+<li>Installation via <code>JuliaLang</code> or <code>juliaup</code> is now recommended;</li>
+<li>Minor bug fixes;</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="1.0.1" id="patter-v101">
+<code>patter</code> v1.0.1<a class="anchor" aria-label="anchor" href="#patter-v101"></a></h2>
+<ul><li>This version includes minor documentation, bug fixes and tweaks, most notably:
+<ul><li>
+<code>Patter.logpdf_step()</code> now includes a <code>t</code> argument that can be used from <code>patter</code>
+</li>
+<li>
+<code><a href="../reference/map_dens.html">map_dens()</a></code> includes an <code>.fterra</code> argument that permits parallelisation of <code><a href="https://rspatial.github.io/terra/reference/resample.html" class="external-link">terra::resample()</a></code>
+</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="1.0.0" id="patter-v100">
+<code>patter</code> v1.0.0<a class="anchor" aria-label="anchor" href="#patter-v100"></a></h2>
+<div class="section level3">
+<h3 id="overview-1-0-0">Overview<a class="anchor" aria-label="anchor" href="#overview-1-0-0"></a></h3>
+<p>This is the first version of <code>patter</code>. The main thrust of the package is the provision of particle algorithms for the reconstruction of animal movement paths and emergent patterns of space, with a focus on passive acoustic telemetry systems. The package evolved from the predecessor <code>flapper</code> package, but is simpler, faster, more powerful, better tested and easier to maintain. While current functionality remains more streamlined than <code>flapper</code>, internal routines—which now used a specialised, fast <code>Julia</code> backend (<code>Patter.jl</code>)—alongside the API and supporting documentation are substantially improved. The package also benefits from fewer dependencies and has been fully upgraded in line with the evolution of <code>R</code>’s spatial packages (with <code>terra</code> and <code>sf</code> superseding <code>raster</code>, <code>sp</code>, <code>rgeos</code> and associates). Please provide feedback on the new package. Much work remains!</p>
+</div>
+<div class="section level3">
+<h3 id="de-novo-simulation-1-0-0">
+<em>De-novo</em> simulation<a class="anchor" aria-label="anchor" href="#de-novo-simulation-1-0-0"></a></h3>
+<p>The <code>sim_*()</code> functions in <code>flapper</code> have been replaced with faster and more flexible alternatives, including:</p>
+<ul><li>
+<code><a href="../reference/sim_path_walk.html">sim_path_walk()</a></code>, which replaces <code><a href="https://edwardlavender.github.io/flapper/reference/sim_path_sa.html" class="external-link">flapper::sim_path_sa()</a></code>;</li>
+<li>
+<code><a href="../reference/sim_array.html">sim_array()</a></code>, which replaces <code><a href="https://edwardlavender.github.io/flapper/reference/sim_array.html" class="external-link">flapper::sim_array()</a></code>;</li>
+<li>
+<code><a href="../reference/sim_observations.html">sim_observations()</a></code>, which replaces <code><a href="https://edwardlavender.github.io/flapper/reference/sim_detections.html" class="external-link">flapper::sim_detections()</a></code>;</li>
+</ul></div>
+<div class="section level3">
+<h3 id="particle-filter-1-0-0">Particle filter<a class="anchor" aria-label="anchor" href="#particle-filter-1-0-0"></a></h3>
+<p>The <code><a href="../reference/pf_filter.html">pf_filter()</a></code> function implements the particle filter. This brings together and enhances the <code>ac()</code>, <code>dc()</code>, <code>acdc()</code> and <code><a href="https://rdrr.io/r/stats/Fdist.html" class="external-link">pf()</a></code> functions in <code>flapper</code>. A major benefit of this integration is that the likelihood of simulated locations is evaluated exclusively at particle locations, rather than across the entire grid (as in <code>ac()</code>, <code>dc()</code> and <code>acdc()</code>), which is much faster. <code><a href="../reference/pf_filter.html">pf_filter()</a></code> also reparameterises the forward simulation of individual locations with a stochastic kick methodology. In <code>flapper</code>, we simulated new locations by calculating movement probabilities into surrounding grid cells and then sampling grid cells in line with those probabilities (a directed sampling methodology). This approach has some significant benefits but becomes prohibitively expensive as grid size (area and resolution) increases. In <code>patter</code>, the stochastic-kick methodology simulates new locations by ‘kicking’ previous locations using a movement model. Stochastic kicks are independent of grid resolution, so this approach is much faster.</p>
+</div>
+<div class="section level3">
+<h3 id="backward-smoother-1-0-0">Backward smoother<a class="anchor" aria-label="anchor" href="#backward-smoother-1-0-0"></a></h3>
+<p>The <code><a href="../reference/pf_smoother_two_filter.html">pf_smoother_two_filter()</a></code> implements particle smoothing. This is a major new routine that substantially refines maps of space use.</p>
+</div>
+<div class="section level3">
+<h3 id="mapping-1-0-0">Mapping<a class="anchor" aria-label="anchor" href="#mapping-1-0-0"></a></h3>
+<p>For mapping, <code><a href="../reference/map_pou.html">map_pou()</a></code> replaces <code><a href="https://edwardlavender.github.io/flapper/reference/pf_plot_map.html" class="external-link">flapper::pf_plot_map()</a></code> and resolves an issue with the calculation of weights. <code><a href="../reference/map_dens.html">map_dens()</a></code> is a new function for the reconstruction of maps is based on <code>spatstat</code> routines. This function accounts for particle weights and fits smooth utilisation distributions using cross validation, superseding approaches in <code>flapper</code> based on <code>adehabitatHR</code>. Both approaches can be flexibly implemented using a <code>data.table</code> of coordinates and are not restricted to particle samples. The <code>map_hr_*()</code> routines for the reconstruction of home ranges are re-implementations of the <code>get_hr_*()</code> functions in <code>flapper</code>.</p>
+<p>For the comparison of simulated and reconstructed patterns, the new <code>skill_*()</code> functions can be used.</p>
+</div>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
