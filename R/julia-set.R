@@ -83,6 +83,13 @@ set_path <- function() {
 # Set a Vector of model type strings in Julia
 # * Required for set_states_init()
 set_model_obs_types <- function(.datasets) {
+  # Permit missing
+  # * This makes it possible to re-run the filter without re-exporting yobs
+  # * (see `set_yobs_vect()`)
+  if (missing(.datasets)) {
+    return(nothing())
+  }
+  # Otherwise, set .datasets
   check_named_list(.datasets)
   if (length(.datasets) == 0L) {
     julia_command('model_obs_types = nothing;')
@@ -117,7 +124,13 @@ set_model_obs <- function(.model_obs) {
 #' @keywords internal
 
 # Set a Vector of datasets DataFrames in Julia
+# * yobs: missing  -> re-use .yobs already set in Julia
+# * yobs: list()   -> set .yobs to nothing
+# * yobs: supplied -> set yobs
 set_yobs_vect <- function(.timeline, .yobs) {
+  if (missing(.yobs)) {
+    return(nothing())
+  }
   # Check .datasets is a named list
   check_named_list(.yobs)
   if (length(.yobs) == 0L) {
@@ -153,7 +166,7 @@ set_yobs_vect <- function(.timeline, .yobs) {
 
 # Set a dictionary of observations (`yobs`) using real datasets in Julia
 # * yobs: missing  -> re-use .yobs already set in Julia
-# * yobs: NULL     -> set .yobs to nothing
+# * yobs: list()   -> set .yobs to empty Dict
 # * yobs: supplied -> set yobs
 set_yobs_dict <- function(.yobs) {
   if (missing(.yobs)) {
@@ -202,7 +215,7 @@ set_direction <- function(.direction = c("forward", "backward")) {
 # Simulate states and update xinit in Julia
 set_states_init <- function(.timeline, .state, .xinit, .model_move, .yobs, .n_particle, .direction) {
 
-  # Set Julia objects
+  # Set Julia objects incl. observations
   # set_map()
   set_timeline(.timeline)
   set_state_type(.state)

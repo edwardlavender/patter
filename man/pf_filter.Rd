@@ -9,7 +9,7 @@ pf_filter(
   .state = "StateXY",
   .xinit = NULL,
   .model_move = move_xy(),
-  .yobs = NULL,
+  .yobs,
   .n_move = 100000L,
   .n_particle = 1000L,
   .n_resample = as.numeric(.n_particle),
@@ -37,7 +37,12 @@ pf_filter(
 \item \code{.n_move}---An \code{integer} that defines the number of attempts to find a legal move;
 }}
 
-\item{.yobs}{A named \code{list} of formatted datasets, one for each data type (see \code{\link{glossary}});}
+\item{.yobs}{The observations. Acceptable inputs are:
+\itemize{
+\item A named \code{list} of formatted datasets, one for each data type (see \code{\link{glossary}});
+\item An empty \code{list}, to run the filter without observations;
+\item \code{missing}, if the datasets are already available in the \code{Julia} session (from a previous run of \code{\link[=pf_filter]{pf_filter()}}) and you want to re-run the filter without the penalty of re-exporting the observations;
+}}
 
 \item{.n_particle}{An \code{integer} that defines the number of particles.}
 
@@ -45,7 +50,7 @@ pf_filter(
 
 \item{.n_record}{An \code{integer} that defines the number of recorded particles at each time step.}
 
-\item{.n_iter}{An \code{integer} that defines the number of iterations of the filter;}
+\item{.n_iter}{An \code{integer} that defines the number of iterations of the filter.}
 
 \item{.direction}{A \code{character} string that defines the direction of the filter:
 \itemize{

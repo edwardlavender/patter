@@ -6,14 +6,17 @@
 #' @param .state,.xinit Arguments used to simulate initial states.
 #' * `.state`---A `character` that defines the [`State`] sub-type;
 #' * `.xinit`---`NULL` or a [`data.table`] that defines the initial states for the simulation;
-#' @param .yobs A named `list` of formatted datasets, one for each data type (see [`glossary`]);
+#' @param .yobs The observations. Acceptable inputs are:
+#' * A named `list` of formatted datasets, one for each data type (see [`glossary`]);
+#' * An empty `list`, to run the filter without observations;
+#' * `missing`, if the datasets are already available in the `Julia` session (from a previous run of [`pf_filter()`]) and you want to re-run the filter without the penalty of re-exporting the observations;
 #' @param .model_move,.n_move The movement model.
 #' * `.model_move`---A `character` string that defines the movement model (see [`ModelMove`]);
 #' * `.n_move`---An `integer` that defines the number of attempts to find a legal move;
 #' @param .n_particle An `integer` that defines the number of particles.
 #' @param .n_resample A `double` that defines the effective sample size at which to re-sample particles.
 #' @param .n_record An `integer` that defines the number of recorded particles at each time step.
-#' @param .n_iter An `integer` that defines the number of iterations of the filter;
+#' @param .n_iter An `integer` that defines the number of iterations of the filter.
 #' @param .direction A `character` string that defines the direction of the filter:
 #' * `"forward"` runs the filter from `.timeline[1]:.timeline[length(.timeline)]`;
 #' * `"backward"` runs the filter from `.timeline[length(.timeline)]:.timeline[1]`;
@@ -51,7 +54,7 @@ pf_filter <- function(.timeline,
                       .state = "StateXY",
                       .xinit = NULL,
                       .model_move = move_xy(),
-                      .yobs = NULL,
+                      .yobs,
                       .n_move = 1e5L,
                       .n_particle = 1000L,
                       .n_resample = as.numeric(.n_particle),

@@ -223,3 +223,35 @@ test_that("pf_filter() works", {
   expect_true(all(check$test))
 
 })
+
+test_that("pf_filter() permits .yobs = list()", {
+  setup <- example_setup("pf_smoother_two_filter", .connect = FALSE)
+  args  <- setup$pf_filter_args
+  args$.yobs <- list()
+  fwd_1 <- do.call(pf_filter, args)
+  check_named_list(fwd_1)
+  check_inherits(fwd_1$states, "data.table")
+  expect_true(all(!is.na(fwd_1$states)))
+})
+
+test_that("pf_filter() permits missing .yobs", {
+
+  setup <- example_setup("pf_smoother_two_filter", .connect = FALSE)
+  args  <- setup$pf_filter_args
+  # Run the particle filter forwards
+  set_seed()
+  fwd_1 <- do.call(pf_filter, args)
+  # Set yobs to missing
+  yobs      <- args$.yobs
+  args$yobs <- NULL
+  set_seed()
+  fwd_2 <- do.call(pf_filter, args)
+  # Expect identical outputs b/c pf_filter() uses yobs already defined in Julia
+  expect_equal(fwd_1, fwd_2)
+  # Repeat
+  args$.yobs <- yobs
+  set_seed()
+  fwd_3 <- do.call(pf_filter, args)
+  expect_equal(fwd_2, fwd_3)
+
+})
