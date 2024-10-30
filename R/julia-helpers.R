@@ -380,10 +380,33 @@ julia_load <- function(.file, .x = basename(tools::file_path_sans_ext(.file))) {
 #' @keywords internal
 
 # Format time stamps for Julia
+# See https://github.com/edwardlavender/patter/issues/17
 julia_timeline <- function(.x) {
+
+  #### Check .x
   check_inherits(.x, "POSIXct")
   .x <- check_tz(.x)
-  as.POSIXct(format(.x, "%Y-%m-%d %H:%M:%S"), tz = lubridate::tz(.x))
+
+  #### Handle timelines from seq.POSIXt(... length.out)
+  # These timelines are encodes as integers rather than numeric values
+  # This leads to integer vectors rather than timelines in Julia
+  # Here, we format timelines as required for Julia
+  # This step is slow & therefore implemented only if the timeline is encoded as an integer internally
+  # If available {fasttime} is used, though this can still be slow for long time series (> 10 s)
+  # Otherwise, as.POSIXct(format()) is used, which can be very slow (> 60 s)
+  if (inherits(unclass(.x), "integer")) {
+    warn("Use `seq.POSIXt()` with `from`, `to` and `by` rather than `length.out` for faster handling of time stamps.")
+    if (lubridate::tz(.x) %in% c("GMT", "UTC") && requireNamespace("fasttime", quietly = TRUE)) {
+      .x <- fasttime::fastPOSIXct(.x, tz = lubridate::tz(.x))
+    } else {
+      warn("Use `fasttime` for faster formatting of time stamps.")
+      .x <- as.POSIXct(format(.x, "%Y-%m-%d %H:%M:%S"), tz = lubridate::tz(.x))
+    }
+    check_inherits(unclass(.x), "numeric")
+  }
+
+  #### Return timeline
+  .x
 }
 
 #' @rdname julia_helper
