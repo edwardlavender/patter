@@ -12,10 +12,12 @@
 #' * `.moorings` is a [`data.table`] of acoustic receiver deployments. This must contain the `receiver_id`, `receiver_start`, and `receiver_end` columns, plus  (optional) additional parameter columns.
 #' * (optional) `.services` is a [`data.table`] of servicing events. This must contain the `receiver_id`, `service_start` and `service_end` columns.
 #'
-#' @param .acoustics,.mobility,.threshold Arguments for [`assemble_acoustics_containers()`].
+#' @param .acoustics,.mobility,.map,.threshold Arguments for [`assemble_acoustics_containers()`].
 #'  * `.acoustics` is a [`data.table`] of acoustic observations, from [`assemble_acoustics()`].
-#'  * `.mobility` is the maximum movement distance (m) between two time steps.
-#'  * `.threshold` is the distance (m) threshold parameter (see Details).
+#'  * `.mobility` is the maximum movement distance (m) between two time steps (and sets the rate of container contraction).
+#'  * `.map`, `.threshold` are distance threshold options (see Details). Specify `.map` or `.threshold`.
+#'      * `.map` is a two-column `matrix` of the four coordinates of the study area or a [`SpatRaster`] or [`SpatVector`] from which such a `matrix` can be obtained. If provided, `.threshold` is set automatically based on the distances between receivers and the boundaries of the study area.
+#'      * Otherwise, `.threshold` is a `double` that defines the distance threshold.
 #'
 #' @param .archival  For [`assemble_archival()`], `.archival` is a [`data.table`] of depth observations **for a single individual** with `timestamp` and `obs` columns (see `.dataset`, below).
 #'
@@ -30,7 +32,7 @@
 #'
 #' [`assemble_acoustics()`] prepares a timeline of acoustic observations as required by the filter **for a single individual**. This function expects a 'standard' detection dataset (that is, a [`data.table`] like [`dat_detections`] but for a single individual) that defines detections at receivers alongside a moorings dataset (like [`dat_moorings`]) that defines receiver deployment periods and, optionally, a [`data.table`] of servicing events (when receiver(s) were non-operational). [`assemble_acoustics()`] uses these datasets to assemble a complete time series of acoustic observations; that is, a [`data.table`] of time stamps and receivers that defines, for each time step and each operational receiver whether (`1L`) or not (`0L`) a detection was recorded at that time step. Duplicate observations (that is, detections at the same receiver in the same time step) are dropped. If available in `.moorings`, additional columns (`receiver_alpha`, `receiver_beta` and `receiver_gamma`) are included as required for the default acoustic observation model (that is, [`ModelObsAcousticLogisTrunc`]). If observation model parameters vary both by receiver and through time, simply amend these columns as required.
 #'
-#'[`assemble_acoustics_containers()`] prepares a dataset of acoustic containers, given the acoustic time series from [`assemble_acoustics()`]. Acoustic containers define the region within which an individual must be located at a given time step according to the receiver(s) at which it was next detected. Each container is a circular region, of radius \eqn{r}, around a receiver that recorded a detection at the next time step. The radius depends on the time until the next detection, the maximum movement speed and the detection range around the receiver at the time of the detection. For example, if an individual can move up to `.mobility` = 500 m per time step, and two time steps elapse between the first and second detections, then at the moment of the first detection the individual must be within 1000 m of the detection range (say, `receiver_gamma` = 750 m) of the second receiver; that is, at the moment of first detection, the maximum possible distance of the individual from the receiver that recorded the next detection is 1750 m. As time passes, the container shrinks towards the receiver(s) that recorded the next detection(s), in line with the individual's `.mobility`. Acoustic containers, coupled with regular re-sampling, facilitate convergence in the particle filter: at each time step, only particles within an acoustic container are duplicated (other particles are killed), which encourages particles to move towards the next receiver(s) by the time of the next detection(s). In practice, this works as follows. [`assemble_acoustics_containers()`] assembles a [`data.table`] that defines the maximum distance (radius) of the individual from the receiver(s) that recorded the next detection. For computational efficiency, this [`data.table`] only includes containers with a `radius` < `.threshold`. Set the .`threshold` to the maximum size (length or width) of the study area (or a smaller value, if appropriate). This [`data.table`] is used to instantiate a Vector of [`ModelObsAcousticContainer`] sub-types in `Julia`. In the particle filter, for each particle, we compute the log-probability of the particle from the distance of the particle from the relevant receiver (0.0 or -Inf). By re-sampling particles with replacement, particles that move in a way that is incompatible with the location of the next detection(s) are killed. The bottom line is that if have acoustic observations, you should also include acoustic containers in the list of 'observations' for the particle filter ([`pf_filter()`]). This function requires the [`tidyr::nest()`], [`tidyr::unnest()`] and [`zoo::na.locf()`] functions (suggested dependencies).
+#'[`assemble_acoustics_containers()`] prepares a dataset of acoustic containers, given the acoustic time series from [`assemble_acoustics()`]. Acoustic containers define the region within which an individual must be located at a given time step according to the receiver(s) at which it was next detected. Each container is a circular region, of radius \eqn{r}, around a receiver that recorded a detection at the next time step. The radius depends on the time until the next detection, the maximum movement speed and the detection range around the receiver at the time of the detection. For example, if an individual can move up to `.mobility` = 500 m per time step, and two time steps elapse between the first and second detections, then at the moment of the first detection the individual must be within 1000 m of the detection range (say, `receiver_gamma` = 750 m) of the second receiver; that is, at the moment of first detection, the maximum possible distance of the individual from the receiver that recorded the next detection is 1750 m. As time passes, the container shrinks towards the receiver(s) that recorded the next detection(s), in line with the individual's `.mobility`. Acoustic containers, coupled with regular re-sampling, facilitate convergence in the particle filter: at each time step, only particles within an acoustic container are duplicated (other particles are killed), which encourages particles to move towards the next receiver(s) by the time of the next detection(s). In practice, this works as follows. [`assemble_acoustics_containers()`] assembles a [`data.table`] that defines the maximum distance (radius) of the individual from the receiver(s) that recorded the next detection. For computational efficiency, this [`data.table`] only includes containers with a `radius` < `.threshold`. If `.map` is supplied, the `.threshold` is set to the maximum distance between each receiver and the furthest corner of the study area. Otherwise, set the .`threshold` to the desired value. The [`data.table`] from [`assemble_acoustics_containers()`] is used to instantiate a Vector of [`ModelObsAcousticContainer`] sub-types in `Julia`. In the particle filter, for each particle, we compute the log-probability of the particle from the distance of the particle from the relevant receiver (0.0 or -Inf). By re-sampling particles with replacement, particles that move in a way that is incompatible with the location of the next detection(s) are killed. The bottom line is that if have acoustic observations, you should also include acoustic containers in the list of 'observations' for the particle filter ([`pf_filter()`]). This function requires the [`tidyr::nest()`], [`tidyr::unnest()`] and [`zoo::na.locf()`] functions (suggested dependencies).
 #'
 #' [`assemble_archival()`] prepares a timeline of archival functions **for a single individual**. This simply wraps [`assemble_custom()`] and is informally deprecated.
 #'
@@ -220,12 +222,34 @@ assemble_acoustics <- function(.timeline, .detections, .moorings, .services = NU
 assemble_acoustics_containers <- function(.timeline,
                                           .acoustics,
                                           .mobility,
-                                          .threshold = 100000) {
+                                          .map = NULL,
+                                          .threshold = NULL) {
+
+  # Check user inputs
+  check_timeline(.timeline)
+  check_inherits(.acoustics, "data.table")
   directions <- c("forward", "backward")
+
+  # Define boundary box, if supplied
+  bb <- .map
+  if (!is.null(.map)) {
+    if (inherits(.map, c( "SpatRaster", "SpatVector"))) {
+      bb <- map_bbox(.map)
+    } else if (!(inherits(.map, "matrix") && nrow(.map) == 4L && ncol(.map) == 2L)) {
+      abort("`.map` should be a SpatRaster, SpatVector or 4-row matrix of boundary coordinates.")
+    }
+    if (!is.null(.threshold)) {
+      .threshold <- NULL
+      warn("`.map` is used in place of `.threshold`.")
+    }
+  }
+
+  # Assemble containers
   containers <- lapply(directions, function(.direction) {
-    .assemble_acoustics_containers(.timeline = .timeline,
+    .assemble_acoustics_containers(.timeline  = .timeline,
                                    .acoustics = .acoustics,
-                                   .mobility = .mobility,
+                                   .mobility  = .mobility,
+                                   .bbox      = bb,
                                    .threshold = .threshold,
                                    .direction = .direction)
   })

@@ -17,7 +17,8 @@ assemble_acoustics_containers(
   .timeline,
   .acoustics,
   .mobility,
-  .threshold = 1e+05
+  .map = NULL,
+  .threshold = NULL
 )
 
 assemble_archival(.timeline, .archival)
@@ -44,11 +45,15 @@ assemble_custom(.timeline, .dataset)
 \item (optional) \code{.services} is a \code{\link{data.table}} of servicing events. This must contain the \code{receiver_id}, \code{service_start} and \code{service_end} columns.
 }}
 
-\item{.acoustics, .mobility, .threshold}{Arguments for \code{\link[=assemble_acoustics_containers]{assemble_acoustics_containers()}}.
+\item{.acoustics, .mobility, .map, .threshold}{Arguments for \code{\link[=assemble_acoustics_containers]{assemble_acoustics_containers()}}.
 \itemize{
 \item \code{.acoustics} is a \code{\link{data.table}} of acoustic observations, from \code{\link[=assemble_acoustics]{assemble_acoustics()}}.
-\item \code{.mobility} is the maximum movement distance (m) between two time steps.
-\item \code{.threshold} is the distance (m) threshold parameter (see Details).
+\item \code{.mobility} is the maximum movement distance (m) between two time steps (and sets the rate of container contraction).
+\item \code{.map}, \code{.threshold} are distance threshold options (see Details). Specify \code{.map} or \code{.threshold}.
+\itemize{
+\item \code{.map} is a two-column \code{matrix} of the four coordinates of the study area or a \code{\link{SpatRaster}} or \code{\link{SpatVector}} from which such a \code{matrix} can be obtained. If provided, \code{.threshold} is set automatically based on the distances between receivers and the boundaries of the study area.
+\item Otherwise, \code{.threshold} is a \code{double} that defines the distance threshold.
+}
 }}
 
 \item{.archival}{For \code{\link[=assemble_archival]{assemble_archival()}}, \code{.archival} is a \code{\link{data.table}} of depth observations \strong{for a single individual} with \code{timestamp} and \code{obs} columns (see \code{.dataset}, below).}
@@ -76,7 +81,7 @@ These functions assemble a timeline and observations for the particle filter (\c
 
 \code{\link[=assemble_acoustics]{assemble_acoustics()}} prepares a timeline of acoustic observations as required by the filter \strong{for a single individual}. This function expects a 'standard' detection dataset (that is, a \code{\link{data.table}} like \code{\link{dat_detections}} but for a single individual) that defines detections at receivers alongside a moorings dataset (like \code{\link{dat_moorings}}) that defines receiver deployment periods and, optionally, a \code{\link{data.table}} of servicing events (when receiver(s) were non-operational). \code{\link[=assemble_acoustics]{assemble_acoustics()}} uses these datasets to assemble a complete time series of acoustic observations; that is, a \code{\link{data.table}} of time stamps and receivers that defines, for each time step and each operational receiver whether (\code{1L}) or not (\code{0L}) a detection was recorded at that time step. Duplicate observations (that is, detections at the same receiver in the same time step) are dropped. If available in \code{.moorings}, additional columns (\code{receiver_alpha}, \code{receiver_beta} and \code{receiver_gamma}) are included as required for the default acoustic observation model (that is, \code{\link{ModelObsAcousticLogisTrunc}}). If observation model parameters vary both by receiver and through time, simply amend these columns as required.
 
-\code{\link[=assemble_acoustics_containers]{assemble_acoustics_containers()}} prepares a dataset of acoustic containers, given the acoustic time series from \code{\link[=assemble_acoustics]{assemble_acoustics()}}. Acoustic containers define the region within which an individual must be located at a given time step according to the receiver(s) at which it was next detected. Each container is a circular region, of radius \eqn{r}, around a receiver that recorded a detection at the next time step. The radius depends on the time until the next detection, the maximum movement speed and the detection range around the receiver at the time of the detection. For example, if an individual can move up to \code{.mobility} = 500 m per time step, and two time steps elapse between the first and second detections, then at the moment of the first detection the individual must be within 1000 m of the detection range (say, \code{receiver_gamma} = 750 m) of the second receiver; that is, at the moment of first detection, the maximum possible distance of the individual from the receiver that recorded the next detection is 1750 m. As time passes, the container shrinks towards the receiver(s) that recorded the next detection(s), in line with the individual's \code{.mobility}. Acoustic containers, coupled with regular re-sampling, facilitate convergence in the particle filter: at each time step, only particles within an acoustic container are duplicated (other particles are killed), which encourages particles to move towards the next receiver(s) by the time of the next detection(s). In practice, this works as follows. \code{\link[=assemble_acoustics_containers]{assemble_acoustics_containers()}} assembles a \code{\link{data.table}} that defines the maximum distance (radius) of the individual from the receiver(s) that recorded the next detection. For computational efficiency, this \code{\link{data.table}} only includes containers with a \code{radius} < \code{.threshold}. Set the .\code{threshold} to the maximum size (length or width) of the study area (or a smaller value, if appropriate). This \code{\link{data.table}} is used to instantiate a Vector of \code{\link{ModelObsAcousticContainer}} sub-types in \code{Julia}. In the particle filter, for each particle, we compute the log-probability of the particle from the distance of the particle from the relevant receiver (0.0 or -Inf). By re-sampling particles with replacement, particles that move in a way that is incompatible with the location of the next detection(s) are killed. The bottom line is that if have acoustic observations, you should also include acoustic containers in the list of 'observations' for the particle filter (\code{\link[=pf_filter]{pf_filter()}}). This function requires the \code{\link[tidyr:nest]{tidyr::nest()}}, \code{\link[tidyr:unnest]{tidyr::unnest()}} and \code{\link[zoo:na.locf]{zoo::na.locf()}} functions (suggested dependencies).
+\code{\link[=assemble_acoustics_containers]{assemble_acoustics_containers()}} prepares a dataset of acoustic containers, given the acoustic time series from \code{\link[=assemble_acoustics]{assemble_acoustics()}}. Acoustic containers define the region within which an individual must be located at a given time step according to the receiver(s) at which it was next detected. Each container is a circular region, of radius \eqn{r}, around a receiver that recorded a detection at the next time step. The radius depends on the time until the next detection, the maximum movement speed and the detection range around the receiver at the time of the detection. For example, if an individual can move up to \code{.mobility} = 500 m per time step, and two time steps elapse between the first and second detections, then at the moment of the first detection the individual must be within 1000 m of the detection range (say, \code{receiver_gamma} = 750 m) of the second receiver; that is, at the moment of first detection, the maximum possible distance of the individual from the receiver that recorded the next detection is 1750 m. As time passes, the container shrinks towards the receiver(s) that recorded the next detection(s), in line with the individual's \code{.mobility}. Acoustic containers, coupled with regular re-sampling, facilitate convergence in the particle filter: at each time step, only particles within an acoustic container are duplicated (other particles are killed), which encourages particles to move towards the next receiver(s) by the time of the next detection(s). In practice, this works as follows. \code{\link[=assemble_acoustics_containers]{assemble_acoustics_containers()}} assembles a \code{\link{data.table}} that defines the maximum distance (radius) of the individual from the receiver(s) that recorded the next detection. For computational efficiency, this \code{\link{data.table}} only includes containers with a \code{radius} < \code{.threshold}. If \code{.map} is supplied, the \code{.threshold} is set to the maximum distance between each receiver and the furthest corner of the study area. Otherwise, set the .\code{threshold} to the desired value. The \code{\link{data.table}} from \code{\link[=assemble_acoustics_containers]{assemble_acoustics_containers()}} is used to instantiate a Vector of \code{\link{ModelObsAcousticContainer}} sub-types in \code{Julia}. In the particle filter, for each particle, we compute the log-probability of the particle from the distance of the particle from the relevant receiver (0.0 or -Inf). By re-sampling particles with replacement, particles that move in a way that is incompatible with the location of the next detection(s) are killed. The bottom line is that if have acoustic observations, you should also include acoustic containers in the list of 'observations' for the particle filter (\code{\link[=pf_filter]{pf_filter()}}). This function requires the \code{\link[tidyr:nest]{tidyr::nest()}}, \code{\link[tidyr:unnest]{tidyr::unnest()}} and \code{\link[zoo:na.locf]{zoo::na.locf()}} functions (suggested dependencies).
 
 \code{\link[=assemble_archival]{assemble_archival()}} prepares a timeline of archival functions \strong{for a single individual}. This simply wraps \code{\link[=assemble_custom]{assemble_custom()}} and is informally deprecated.
 
@@ -92,6 +97,8 @@ library(dtplyr)
 library(dplyr, warn.conflicts = FALSE)
 
 #### Define example dataset(s) for a selected individual
+# Study area map
+map <- dat_gebco()
 # Acoustic detection time series
 # * Observation model parameters are defined in `.moorings`
 det <-
@@ -134,7 +141,8 @@ head(acoustics)
 #### Example (3): Assemble corresponding acoustic containers
 containers <- assemble_acoustics_containers(.timeline = timeline,
                                             .acoustics = acoustics,
-                                            .mobility = 750)
+                                            .mobility = 750,
+                                            .map = map)
 # This function returns a list:
 summary(containers)
 # Use the `forward` element for `pf_filter()` with `.direction = "forward"`

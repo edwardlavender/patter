@@ -3,6 +3,8 @@ library(dtplyr)
 library(dplyr, warn.conflicts = FALSE)
 
 #### Define example dataset(s) for a selected individual
+# Study area map
+map <- dat_gebco()
 # Acoustic detection time series
 # * Observation model parameters are defined in `.moorings`
 det <-
@@ -45,7 +47,8 @@ head(acoustics)
 #### Example (3): Assemble corresponding acoustic containers
 containers <- assemble_acoustics_containers(.timeline = timeline,
                                             .acoustics = acoustics,
-                                            .mobility = 750)
+                                            .mobility = 750,
+                                            .map = map)
 # This function returns a list:
 summary(containers)
 # Use the `forward` element for `pf_filter()` with `.direction = "forward"`

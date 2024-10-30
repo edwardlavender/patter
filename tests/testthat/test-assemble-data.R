@@ -289,7 +289,10 @@ test_that("assemble_acoustics_containers() works", {
                  radius = c(1500, 1500, 2000, 2000, 1500, 1500, 2000, 2000)
                ))
 
-  #### (1) Test with real data
+  #### (2) Test `.map` and `.threshold` arguments
+  # TO DO
+
+  #### (3) Test with real data
 
   # Define detections
   # detections <- dat_detections[individual_id == 25, ]

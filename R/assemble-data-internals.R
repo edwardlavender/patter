@@ -1,7 +1,9 @@
 # Assemble acoustic containers forwards or backwards in time
+# * .bbox is an optional 4-row matrix of boundary coordinates
 .assemble_acoustics_containers <- function(.timeline,
                                            .acoustics,
                                            .mobility,
+                                           .bbox,
                                            .threshold,
                                            .direction = c("forward", "backward")) {
 
@@ -107,11 +109,26 @@
     mutate(radius = .data$receiver_gamma + .data$max_dist_mobility) |>
     select("timestamp", "obs", "sensor_id", "receiver_x", "receiver_y", "radius") |>
     filter(!is.na(.data$sensor_id) & !is.na(.data$radius)) |>
-    # For speed, we only implement acoustic containers
-    # ... when the distance an individual must be from a receiver is < .threshold
-    # ... (e.g., threshold may be the size of the study area)
-    filter(.data$radius < .threshold) |>
     as.data.table()
+
+  # Restrict containers by `.threshold`
+  # * For speed, we only implement acoustic containers
+  # * ... when the distance an individual must be from a receiver is < .threshold
+  # * If .bbox is supplied, .threshold is set as the maximum distance
+  # * ... from each receiver to the edge of the study area
+  # * Otherwise, a user-supplied (i.e., smaller) value may be used
+  if (!is.null(.bbox) | !is.null(.threshold)) {
+    if (!is.null(.bbox)) {
+      # Compute maximum distance to boundary coordinates as `.threshold`
+      .threshold <-
+        cbind(containers$receiver_x, containers$receiver_y) |>
+        terra::distance(.bbox, lonlat = FALSE) |>
+        rowMax()
+    }
+    # Filter containers by .threshold
+    radius     <- NULL
+    containers <- containers[radius <= .threshold, ]
+  }
 
   # Return containers
   containers
@@ -150,4 +167,22 @@ list_data_next <- function(.anest.data) {
   # * The last element is list(NULL)
   # * This is automatically dropped by tidyr::unnest() as desired
   out$data_next
+}
+
+# Get the boundary box of a .map as a two-columm matrix
+map_bbox <- function(.map) {
+  .map |>
+    terra::ext() |>
+    terra::vect() |>
+    terra::crds()
+}
+
+# Get the maximum value of each row, using Rfast if available
+rowMax <- function(.x) {
+  if (requireNamespace("Rfast", quietly = TRUE)) {
+    Rfast::rowMaxs(.x, value = TRUE)
+  } else {
+    warn("Install Rfast for faster rowMax() function.")
+    apply(.x, 1, max)
+  }
 }
