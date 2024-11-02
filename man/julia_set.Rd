@@ -16,6 +16,7 @@
 \alias{set_n_particle}
 \alias{set_direction}
 \alias{set_states_init}
+\alias{set_t_resample}
 \alias{set_pf_filter}
 \alias{set_smoother_two_filter}
 \title{\code{Julia}: set objects in \code{Julia}}
@@ -56,7 +57,16 @@ set_states_init(
   .direction
 )
 
-set_pf_filter(.n_move, .n_resample, .n_record, .n_iter, .direction)
+set_t_resample(.t_resample)
+
+set_pf_filter(
+  .n_move,
+  .n_resample,
+  .t_resample,
+  .n_record,
+  .n_iter,
+  .direction
+)
 
 set_smoother_two_filter(.n_particle, .n_sim)
 }

@@ -14,7 +14,15 @@
 #' * `.model_move`---A `character` string that defines the movement model (see [`ModelMove`]);
 #' * `.n_move`---An `integer` that defines the number of attempts to find a legal move;
 #' @param .n_particle An `integer` that defines the number of particles.
-#' @param .n_resample A `double` that defines the effective sample size at which to re-sample particles.
+#' @param .n_resample,.t_resample Resampling options.
+#' * `.n_resample` is an a `double` that defines the effective sample size (ESS) at which to re-sample particles;
+#' * `.t_resample` is `NULL` or an `integer`/`integer` vector that defines the time steps at which to resample particles, regardless of the ESS;
+#'
+#' Guidance:
+#' * To resample at every time step, set `.n_resample = as.numeric(.n_particle)` (default) or `.t_resample = 1:length(.timeline)`;
+#' * To only resample at selected time steps, set `.t_resample` as required and set `.n_resample > as.numeric(.n_particle)`;
+#' * To only resample based on ESS, set `.t_resample = NULL` and `.n_resample` as required;
+#'
 #' @param .n_record An `integer` that defines the number of recorded particles at each time step.
 #' @param .n_iter An `integer` that defines the number of iterations of the filter.
 #' @param .direction A `character` string that defines the direction of the filter:
@@ -58,6 +66,7 @@ pf_filter <- function(.timeline,
                       .n_move = 1e5L,
                       .n_particle = 1000L,
                       .n_resample = as.numeric(.n_particle),
+                      .t_resample = NULL,
                       .n_record = 1e3L,
                       .n_iter = 1L,
                       .direction = c("forward", "backward"),
@@ -81,6 +90,7 @@ pf_filter <- function(.timeline,
   cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Running filter..."))
   pf_obj <- set_pf_filter(.n_move = .n_move,
                           .n_resample = .n_resample,
+                          .t_resample = .t_resample,
                           .n_record = .n_record,
                           .n_iter = .n_iter,
                           .direction = .direction)

@@ -11,7 +11,8 @@ if (julia_run()) {
   #### Define study period
   # The resolution of the timeline defines the resolution of the simulation
   timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
-                  length.out = 100L, by = "2 mins")
+                  as.POSIXct("2016-01-01 03:18:00", tz = "UTC"),
+                  by = "2 mins")
 
   #### Define study area
   # `map` is a SpatRaster that defines the region within which movements are permitted
@@ -181,14 +182,24 @@ if (julia_run()) {
                      .xinit = xinit,
                      .yobs = yobs,
                      .model_move = model_move,
-                     .n_particle = 1e5L)
+                     .n_particle = 1.5e4L)
   # Change the threshold ESS for resampling
   fwd   <- pf_filter(.timeline = timeline,
                      .state = state,
                      .xinit = xinit,
                      .yobs = yobs,
                      .model_move = model_move,
-                     .n_particle = 1e5L,
+                     .n_particle = 1.5e4L,
+                     .n_resample = 1000L)
+  # Force resampling at selected time steps
+  # * Other time steps are resampled if ESS < .n_resample
+  fwd   <- pf_filter(.timeline = timeline,
+                     .state = state,
+                     .xinit = xinit,
+                     .yobs = yobs,
+                     .model_move = model_move,
+                     .t_resample = which(timeline %in% detections$timestamp),
+                     .n_particle = 1.5e4L,
                      .n_resample = 1000L)
   # Change the number of particles retained in memory
   fwd   <- pf_filter(.timeline = timeline,
@@ -196,7 +207,7 @@ if (julia_run()) {
                      .xinit = xinit,
                      .yobs = yobs,
                      .model_move = model_move,
-                     .n_particle = 1e5L,
+                     .n_particle = 1.5e4L,
                      .n_record = 2000L)
 
   #### Example (2): Run the filter backwards

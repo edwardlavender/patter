@@ -89,6 +89,14 @@ test_that("Additional Julia set_*() functions work", {
   set_yobs_vect(.timeline = NULL, .yobs = list(a = dt1)) |>
     expect_error("There are no rows in the dataset.")
 
+  # set_t_resample()
+  set_t_resample(NULL)
+  expect_true(julia_eval('isnothing(t_resample)'))
+  set_t_resample(5)
+  expect_equal(5L, julia_eval('t_resample'))
+  set_t_resample(c(5, 10, 20))
+  expect_equal(c(5L, 10L, 20L), julia_eval('t_resample'))
+
 })
 
 

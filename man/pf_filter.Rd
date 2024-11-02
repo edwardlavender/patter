@@ -13,6 +13,7 @@ pf_filter(
   .n_move = 100000L,
   .n_particle = 1000L,
   .n_resample = as.numeric(.n_particle),
+  .t_resample = NULL,
   .n_record = 1000L,
   .n_iter = 1L,
   .direction = c("forward", "backward"),
@@ -46,7 +47,18 @@ pf_filter(
 
 \item{.n_particle}{An \code{integer} that defines the number of particles.}
 
-\item{.n_resample}{A \code{double} that defines the effective sample size at which to re-sample particles.}
+\item{.n_resample, .t_resample}{Resampling options.
+\itemize{
+\item \code{.n_resample} is an a \code{double} that defines the effective sample size (ESS) at which to re-sample particles;
+\item \code{.t_resample} is \code{NULL} or an \code{integer}/\code{integer} vector that defines the time steps at which to resample particles, regardless of the ESS;
+}
+
+Guidance:
+\itemize{
+\item To resample at every time step, set \code{.n_resample = as.numeric(.n_particle)} (default) or \code{.t_resample = 1:length(.timeline)};
+\item To only resample at selected time steps, set \code{.t_resample} as required and set \code{.n_resample > as.numeric(.n_particle)};
+\item To only resample based on ESS, set \code{.t_resample = NULL} and \code{.n_resample} as required;
+}}
 
 \item{.n_record}{An \code{integer} that defines the number of recorded particles at each time step.}
 
@@ -103,7 +115,8 @@ if (julia_run()) {
   #### Define study period
   # The resolution of the timeline defines the resolution of the simulation
   timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
-                  length.out = 100L, by = "2 mins")
+                  as.POSIXct("2016-01-01 03:18:00", tz = "UTC"),
+                  by = "2 mins")
 
   #### Define study area
   # `map` is a SpatRaster that defines the region within which movements are permitted
@@ -273,14 +286,24 @@ if (julia_run()) {
                      .xinit = xinit,
                      .yobs = yobs,
                      .model_move = model_move,
-                     .n_particle = 1e5L)
+                     .n_particle = 1.5e4L)
   # Change the threshold ESS for resampling
   fwd   <- pf_filter(.timeline = timeline,
                      .state = state,
                      .xinit = xinit,
                      .yobs = yobs,
                      .model_move = model_move,
-                     .n_particle = 1e5L,
+                     .n_particle = 1.5e4L,
+                     .n_resample = 1000L)
+  # Force resampling at selected time steps
+  # * Other time steps are resampled if ESS < .n_resample
+  fwd   <- pf_filter(.timeline = timeline,
+                     .state = state,
+                     .xinit = xinit,
+                     .yobs = yobs,
+                     .model_move = model_move,
+                     .t_resample = which(timeline \%in\% detections$timestamp),
+                     .n_particle = 1.5e4L,
                      .n_resample = 1000L)
   # Change the number of particles retained in memory
   fwd   <- pf_filter(.timeline = timeline,
@@ -288,7 +311,7 @@ if (julia_run()) {
                      .xinit = xinit,
                      .yobs = yobs,
                      .model_move = model_move,
-                     .n_particle = 1e5L,
+                     .n_particle = 1.5e4L,
                      .n_record = 2000L)
 
   #### Example (2): Run the filter backwards

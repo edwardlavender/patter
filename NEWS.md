@@ -30,7 +30,8 @@
 
 * **Particle filter**
     * `pf_filter()` now expects `ModelObs` structures and observations in a single named list (passed to `.yobs`). The `.model_obs` argument has been dropped. 
-    *  A new `.n_trial` argument permits multiple runs of the filter. 
+    * A new `.t_resample` argument permits you to force resampling at selected time steps.
+    *  A new `.n_iter` argument permits multiple runs of the filter. 
 
 * **Particle smoothing**
     * `pf_smoother_two_filter()` uses a more flexible `.vmap` argument, supported by `set_vmap()`, in place of `.box` and `.mobility`. 

@@ -250,19 +250,36 @@ set_states_init <- function(.timeline, .state, .xinit, .model_move, .yobs, .n_pa
 
 }
 
+#' @rdname julia_set
+#' @keywords internal
+
+# Set t_resample
+set_t_resample <- function(.t_resample) {
+  # Force integer/integer vector
+  if (!is.null(.t_resample)) {
+    .t_resample <- as.integer(.t_resample)
+  }
+  # Assign t_resample
+  # * NULL            -> nothing
+  # * A single number -> Int
+  # * A vector        -> Vector{Int}
+  julia_assign("t_resample", .t_resample)
+  nothing()
+}
 
 #' @rdname julia_set
 #' @keywords internal
 
 # Run the particle filter in Julia
 # * This defines a `fwd` or `bwd` object depending on `.direction`
-set_pf_filter <- function(.n_move, .n_resample, .n_record, .n_iter, .direction) {
+set_pf_filter <- function(.n_move, .n_resample, .t_resample, .n_record, .n_iter, .direction) {
   # Check inputs
   julia_check_exists("timeline", "xinit", "yobs", "model_move")
   .n_move     <- as.integer(.n_move)
   .n_resample <- paste0(as.integer(.n_resample), ".0")
   .n_record   <- as.integer(.n_record)
   .n_iter     <- as.integer(.n_iter)
+  set_t_resample(.t_resample)
   # Define output name
   output <- name_particles(.fun = "pf_filter", .direction = .direction)
   # Run the filter
@@ -276,6 +293,7 @@ set_pf_filter <- function(.n_move, .n_resample, .n_record, .n_iter, .direction) 
                                       n_move = {.n_move},
                                       n_record = {.n_record},
                                       n_resample = {.n_resample},
+                                      t_resample = t_resample,
                                       n_iter = {.n_iter},
                                       direction = "{.direction}");
     '
