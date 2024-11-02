@@ -11,6 +11,7 @@ DCPF
 Dipturus
 Doucet
 EPSG
+ESS
 Ecol
 Evol
 Fearnhead
@@ -18,12 +19,15 @@ GDAL
 GEBCO
 GEOS
 GeoArray
+Inf
+JuliaCall
 JuliaLang
 Lifecycle
 MEFS
 NatureScot
 ORCID
 PF
+POSIXct
 PROJ
 RStudio
 Sci
