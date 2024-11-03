@@ -171,10 +171,15 @@ list_data_next <- function(.anest.data) {
 
 # Get the boundary box of a .map as a two-columm matrix
 map_bbox <- function(.map) {
-  .map |>
+  # Define bb
+  # * This creates 5 points (1, 2, 3, 4, 1) forming a closed polygon
+  bb <-
+    .map |>
     terra::ext() |>
     terra::vect() |>
     terra::crds()
+  # Return the four corner points
+  bb[1:4, ]
 }
 
 # Get the maximum value of each row, using Rfast if available
