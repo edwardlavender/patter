@@ -234,7 +234,10 @@ map_dens <- function(.map,
     if (!.use_tryCatch) {
       abort(D)
     } else {
-      warn(paste("\n", paste(D, collapse = "\n ")))
+      # Return error as warning
+      # * Use warning() not warn() to avoid glue() error
+      warning(paste("\n", paste(D, collapse = "\n ")),
+              call. = FALSE, immediate. = TRUE)
       return(list(x = rppp, D = NULL, ud = NULL))
     }
   }
