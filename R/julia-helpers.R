@@ -268,7 +268,15 @@ julia_pkg_install_deps <- function(.pkg_install, .pkg_update) {
   .pkg_install <- .pkg_install[!(.pkg_install %in% "Patter")]
   # Iteratively install & update dependencies as required
   lapply(.pkg_install, function(.pkg) {
-    install  <- ifelse(julia_installed_package(.pkg) == "nothing", TRUE, FALSE)
+    # Choose whether or not to install packages
+    # * For packages in Julia's standard library (e.g., Random),
+    # * ... julia_installed_package() returns 'nothing'
+    # * But these packages do not require install & this is suppressed (for speed)
+    if (.pkg %in% "Random") {
+      install <- FALSE
+    } else {
+      install  <- ifelse(julia_installed_package(.pkg) == "nothing", TRUE, FALSE)
+    }
     update   <- ifelse(isFALSE(install) & .pkg %in% .pkg_update, TRUE, FALSE)
     # Run installation/update
     if (install) {
