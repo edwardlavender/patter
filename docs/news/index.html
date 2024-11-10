@@ -110,7 +110,8 @@
 <strong>Particle filter</strong>
 <ul><li>
 <code><a href="../reference/pf_filter.html">pf_filter()</a></code> now expects <code>ModelObs</code> structures and observations in a single named list (passed to <code>.yobs</code>). The <code>.model_obs</code> argument has been dropped.</li>
-<li>A new <code>.n_trial</code> argument permits multiple runs of the filter.</li>
+<li>A new <code>.t_resample</code> argument permits you to force resampling at selected time steps.</li>
+<li>A new <code>.n_iter</code> argument permits multiple runs of the filter.</li>
 </ul></li>
 <li>
 <strong>Particle smoothing</strong>

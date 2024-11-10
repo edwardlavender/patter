@@ -75,6 +75,7 @@
 <span>  .n_move <span class="op">=</span> <span class="fl">100000L</span>,</span>
 <span>  .n_particle <span class="op">=</span> <span class="fl">1000L</span>,</span>
 <span>  .n_resample <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">.n_particle</span><span class="op">)</span>,</span>
+<span>  .t_resample <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  .n_record <span class="op">=</span> <span class="fl">1000L</span>,</span>
 <span>  .n_iter <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  .direction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"forward"</span>, <span class="st">"backward"</span><span class="op">)</span>,</span>
@@ -114,8 +115,13 @@
 <dd><p>An <code>integer</code> that defines the number of particles.</p></dd>
 
 
-<dt id="arg--n-resample">.n_resample<a class="anchor" aria-label="anchor" href="#arg--n-resample"></a></dt>
-<dd><p>A <code>double</code> that defines the effective sample size at which to re-sample particles.</p></dd>
+<dt id="arg--n-resample-t-resample">.n_resample, .t_resample<a class="anchor" aria-label="anchor" href="#arg--n-resample-t-resample"></a></dt>
+<dd><p>Resampling options.</p><ul><li><p><code>.n_resample</code> is an a <code>double</code> that defines the effective sample size (ESS) at which to re-sample particles;</p></li>
+<li><p><code>.t_resample</code> is <code>NULL</code> or an <code>integer</code>/<code>integer</code> vector that defines the time steps at which to resample particles, regardless of the ESS;</p></li>
+</ul><p>Guidance:</p><ul><li><p>To resample at every time step, set <code>.n_resample = as.numeric(.n_particle)</code> (default) or <code>.t_resample = 1:length(.timeline)</code>;</p></li>
+<li><p>To only resample at selected time steps, set <code>.t_resample</code> as required and set <code>.n_resample &gt; as.numeric(.n_particle)</code>;</p></li>
+<li><p>To only resample based on ESS, set <code>.t_resample = NULL</code> and <code>.n_resample</code> as required;</p></li>
+</ul></dd>
 
 
 <dt id="arg--n-record">.n_record<a class="anchor" aria-label="anchor" href="#arg--n-record"></a></dt>
@@ -187,7 +193,8 @@
 <span class="r-in"><span>  <span class="co">#### Define study period</span></span></span>
 <span class="r-in"><span>  <span class="co"># The resolution of the timeline defines the resolution of the simulation</span></span></span>
 <span class="r-in"><span>  <span class="va">timeline</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2016-01-01"</span>, tz <span class="op">=</span> <span class="st">"UTC"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                  length.out <span class="op">=</span> <span class="fl">100L</span>, by <span class="op">=</span> <span class="st">"2 mins"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                  <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2016-01-01 03:18:00"</span>, tz <span class="op">=</span> <span class="st">"UTC"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                  by <span class="op">=</span> <span class="st">"2 mins"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co">#### Define study area</span></span></span>
 <span class="r-in"><span>  <span class="co"># `map` is a SpatRaster that defines the region within which movements are permitted</span></span></span>
@@ -357,14 +364,24 @@
 <span class="r-in"><span>                     .xinit <span class="op">=</span> <span class="va">xinit</span>,</span></span>
 <span class="r-in"><span>                     .yobs <span class="op">=</span> <span class="va">yobs</span>,</span></span>
 <span class="r-in"><span>                     .model_move <span class="op">=</span> <span class="va">model_move</span>,</span></span>
-<span class="r-in"><span>                     .n_particle <span class="op">=</span> <span class="fl">1e5L</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                     .n_particle <span class="op">=</span> <span class="fl">1.5e4L</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="co"># Change the threshold ESS for resampling</span></span></span>
 <span class="r-in"><span>  <span class="va">fwd</span>   <span class="op">&lt;-</span> <span class="fu">pf_filter</span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
 <span class="r-in"><span>                     .state <span class="op">=</span> <span class="va">state</span>,</span></span>
 <span class="r-in"><span>                     .xinit <span class="op">=</span> <span class="va">xinit</span>,</span></span>
 <span class="r-in"><span>                     .yobs <span class="op">=</span> <span class="va">yobs</span>,</span></span>
 <span class="r-in"><span>                     .model_move <span class="op">=</span> <span class="va">model_move</span>,</span></span>
-<span class="r-in"><span>                     .n_particle <span class="op">=</span> <span class="fl">1e5L</span>,</span></span>
+<span class="r-in"><span>                     .n_particle <span class="op">=</span> <span class="fl">1.5e4L</span>,</span></span>
+<span class="r-in"><span>                     .n_resample <span class="op">=</span> <span class="fl">1000L</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># Force resampling at selected time steps</span></span></span>
+<span class="r-in"><span>  <span class="co"># * Other time steps are resampled if ESS &lt; .n_resample</span></span></span>
+<span class="r-in"><span>  <span class="va">fwd</span>   <span class="op">&lt;-</span> <span class="fu">pf_filter</span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
+<span class="r-in"><span>                     .state <span class="op">=</span> <span class="va">state</span>,</span></span>
+<span class="r-in"><span>                     .xinit <span class="op">=</span> <span class="va">xinit</span>,</span></span>
+<span class="r-in"><span>                     .yobs <span class="op">=</span> <span class="va">yobs</span>,</span></span>
+<span class="r-in"><span>                     .model_move <span class="op">=</span> <span class="va">model_move</span>,</span></span>
+<span class="r-in"><span>                     .t_resample <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">timeline</span> <span class="op"><a href="https://rspatial.github.io/terra/reference/match.html" class="external-link">%in%</a></span> <span class="va">detections</span><span class="op">$</span><span class="va">timestamp</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                     .n_particle <span class="op">=</span> <span class="fl">1.5e4L</span>,</span></span>
 <span class="r-in"><span>                     .n_resample <span class="op">=</span> <span class="fl">1000L</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="co"># Change the number of particles retained in memory</span></span></span>
 <span class="r-in"><span>  <span class="va">fwd</span>   <span class="op">&lt;-</span> <span class="fu">pf_filter</span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
@@ -372,7 +389,7 @@
 <span class="r-in"><span>                     .xinit <span class="op">=</span> <span class="va">xinit</span>,</span></span>
 <span class="r-in"><span>                     .yobs <span class="op">=</span> <span class="va">yobs</span>,</span></span>
 <span class="r-in"><span>                     .model_move <span class="op">=</span> <span class="va">model_move</span>,</span></span>
-<span class="r-in"><span>                     .n_particle <span class="op">=</span> <span class="fl">1e5L</span>,</span></span>
+<span class="r-in"><span>                     .n_particle <span class="op">=</span> <span class="fl">1.5e4L</span>,</span></span>
 <span class="r-in"><span>                     .n_record <span class="op">=</span> <span class="fl">2000L</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co">#### Example (2): Run the filter backwards</span></span></span>
@@ -455,111 +472,110 @@
 <span class="r-in"><span>                   .direction <span class="op">=</span> <span class="st">"backward"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-11-02 09:52:52... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-11-10 20:44:45... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_setup()`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 11 thread(s). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-11-02 09:53:00 (duration: ~8 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-11-10 20:44:50 (duration: ~5 sec(s)). </span>
 <span class="r-plt img"><img src="pf_filter-1.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="pf_filter-2.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="pf_filter-3.png" alt="" width="700" height="433"></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Use `seq.POSIXt()` with `from`, `to` and `by` rather than `length.out` for faster handling of time stamps.</span>
 <span class="r-plt img"><img src="pf_filter-4.png" alt="" width="700" height="433"></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Use `seq.POSIXt()` with `from`, `to` and `by` rather than `length.out` for faster handling of time stamps.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-11-02 09:53:00... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-11-02 09:53:00... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:00: Simulating initial states... </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Use `seq.POSIXt()` with `from`, `to` and `by` rather than `length.out` for faster handling of time stamps.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:03: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-11-02 09:53:03 (duration: ~3 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:03: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:04: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-11-02 09:53:04 (duration: ~4 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-11-10 20:44:51... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-11-10 20:44:51... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:51: Simulating initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:54: Setting observations... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-11-10 20:44:54 (duration: ~3 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:54: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:54: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-11-10 20:44:54 (duration: ~3 sec(s)). </span>
 <span class="r-plt img"><img src="pf_filter-5.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-11-02 09:53:04... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:04: Processing `.map`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:04: Building XYM... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:04: Defining `ppp` object... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-11-10 20:44:54... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:54: Processing `.map`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:54: Building XYM... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:55: Defining `ppp` object... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:04: Estimating density surface... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:05: Scaling density surface... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:55: Estimating density surface... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:55: Scaling density surface... </span>
 <span class="r-plt img"><img src="pf_filter-6.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-11-02 09:53:05 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-11-10 20:44:55 (duration: ~1 sec(s)). </span>
 <span class="r-plt img"><img src="pf_filter-7.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="pf_filter-8.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-11-02 09:53:05... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-11-02 09:53:05... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:05: Simulating initial states... </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Use `seq.POSIXt()` with `from`, `to` and `by` rather than `length.out` for faster handling of time stamps.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:05: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-11-02 09:53:05 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:05: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:05: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-11-02 09:53:05 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-11-02 09:53:05... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-11-02 09:53:05... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:05: Simulating initial states... </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Use `seq.POSIXt()` with `from`, `to` and `by` rather than `length.out` for faster handling of time stamps.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:05: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-11-02 09:53:05 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:05: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:05: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-11-02 09:53:05 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-11-02 09:53:05... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-11-02 09:53:05... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:05: Simulating initial states... </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Use `seq.POSIXt()` with `from`, `to` and `by` rather than `length.out` for faster handling of time stamps.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:05: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-11-02 09:53:05 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:05: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:08: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-11-02 09:53:08 (duration: ~3 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-11-02 09:53:08... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-11-02 09:53:08... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:08: Simulating initial states... </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Use `seq.POSIXt()` with `from`, `to` and `by` rather than `length.out` for faster handling of time stamps.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:08: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-11-02 09:53:08 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:08: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:10: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-11-02 09:53:10 (duration: ~2 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-11-02 09:53:10... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-11-02 09:53:10... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:10: Simulating initial states... </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Use `seq.POSIXt()` with `from`, `to` and `by` rather than `length.out` for faster handling of time stamps.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:10: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-11-02 09:53:10 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:10: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:13: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-11-02 09:53:13 (duration: ~3 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-11-02 09:53:13... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-11-02 09:53:13... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:13: Simulating initial states... </span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Use `seq.POSIXt()` with `from`, `to` and `by` rather than `length.out` for faster handling of time stamps.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:13: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-11-02 09:53:13 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:13: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:13: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-11-02 09:53:13 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-11-10 20:44:55... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-11-10 20:44:55... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:55: Simulating initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:55: Setting observations... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-11-10 20:44:55 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:55: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:55: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-11-10 20:44:55 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-11-10 20:44:55... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-11-10 20:44:55... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:55: Simulating initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:55: Setting observations... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-11-10 20:44:55 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:55: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:56: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-11-10 20:44:56 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-11-10 20:44:56... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-11-10 20:44:56... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:56: Simulating initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:56: Setting observations... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-11-10 20:44:56 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:56: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:56: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-11-10 20:44:56 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-11-10 20:44:56... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-11-10 20:44:56... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:56: Simulating initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:56: Setting observations... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-11-10 20:44:56 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:56: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:57: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-11-10 20:44:57 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-11-10 20:44:57... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-11-10 20:44:57... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:57: Simulating initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:57: Setting observations... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-11-10 20:44:57 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:57: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:57: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-11-10 20:44:57 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-11-10 20:44:57... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-11-10 20:44:57... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:57: Simulating initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:57: Setting observations... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-11-10 20:44:57 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:57: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:58: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-11-10 20:44:58 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-11-10 20:44:58... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-11-10 20:44:58... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:58: Simulating initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:58: Setting observations... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-11-10 20:44:58 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:58: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:58: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-11-10 20:44:58 (duration: ~0 sec(s)). </span>
 <span class="r-plt img"><img src="pf_filter-9.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-11-02 09:53:14... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-11-02 09:53:14... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:14: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:14: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-11-02 09:53:14 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:14: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:15: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-11-02 09:53:15 (duration: ~1 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-11-02 09:53:15... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-11-02 09:53:15... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:15: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:15: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-11-02 09:53:15 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:15: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 09:53:15: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-11-02 09:53:16 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-11-10 20:44:59... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-11-10 20:44:59... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:59: Simulating initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:59: Setting observations... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-11-10 20:44:59 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:44:59: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:45:00: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-11-10 20:45:00 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-11-10 20:45:00... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-11-10 20:45:00... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:45:00: Simulating initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:45:00: Setting observations... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-11-10 20:45:00 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:45:00: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 20:45:00: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-11-10 20:45:00 (duration: ~0 sec(s)). </span>
 </code></pre></div>
     </div>
   </div>
