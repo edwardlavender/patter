@@ -76,7 +76,7 @@ assemble_timeline <- function(.datasets = list(), .step, .trim = FALSE) {
         abort("`timestamp` column(s) should not contain NA(s).")
       }
       # Extract time range
-      data.table(start = min(dataset$timestamp), end  = max(dataset$timestamp))
+      data.table(start = min(dataset$timestamp), end = max(dataset$timestamp))
     }) |> rbindlist()
 
   # Define start and end times
