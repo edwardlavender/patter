@@ -8,4 +8,5 @@ inst/doc
 Julia/README.md
 *.pdf
 *.html
+.Rprofile
 .Renviron
