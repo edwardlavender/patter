@@ -17,6 +17,7 @@ pf_filter(
   .n_record = 1000L,
   .n_iter = 1L,
   .direction = c("forward", "backward"),
+  .collect = TRUE,
   .verbose = getOption("patter.verbose")
 )
 }
@@ -70,10 +71,12 @@ Guidance:
 \item \code{"backward"} runs the filter from \code{.timeline[length(.timeline)]:.timeline[1]};
 }}
 
+\item{.collect}{A \code{logical} variable that defines whether or not to collect outputs from the \code{Julia} session in \code{R}.}
+
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }
 \value{
-The function returns a \code{\linkS4class{pf_particles}} object.
+\href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.particle_filter()}} creates a NamedTuple in the \code{Julia} session (named  \code{pfwd} or \code{pbwd} depending on \code{.direction}). If \code{.collect = TRUE}, \code{\link[=pf_filter]{pf_filter()}} collects the outputs in \code{R} as a \code{\linkS4class{pf_particles}} object. Otherwise, \code{invisible(NULL)} is returned.
 }
 \description{
 This function runs the particle filter. The filter samples possible states (typically locations, termed particles) of an animal at each time point given the data up to (and including) that time point and a movement model.

@@ -28,6 +28,7 @@
 #' @param .direction A `character` string that defines the direction of the filter:
 #' * `"forward"` runs the filter from `.timeline[1]:.timeline[length(.timeline)]`;
 #' * `"backward"` runs the filter from `.timeline[length(.timeline)]:.timeline[1]`;
+#' @param .collect A `logical` variable that defines whether or not to collect outputs from the `Julia` session in `R`.
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
 #' @details
@@ -51,7 +52,7 @@
 #'
 #' This is highly flexible routine for the reconstruction of the possible locations of an individual through time, given the data up to that time point. By modifying the observation models, it is straightforward to implement the ACPF, DCPF and ACDCPF algorithms introduced by Lavender et al. (2023) for reconstructing animal movements in passive acoustic telemetry systems using (a) acoustic time series, (b) archival time series and (c) acoustic and archival time series. [`pf_filter()`] thus replaces (and enhances) the [`flapper::ac()`](https://edwardlavender.github.io/flapper/reference/ac.html), [`flapper::dc()`](https://edwardlavender.github.io/flapper/reference/dc.html), [`flapper::acdc()`](https://edwardlavender.github.io/flapper/reference/acdc.html) and [`flapper::pf()`](https://edwardlavender.github.io/flapper/reference/pf.html) functions.
 #'
-#' @returns The function returns a [`pf_particles-class`] object.
+#' @returns [`Patter.particle_filter()`](https://github.com/edwardlavender/Patter.jl) creates a NamedTuple in the `Julia` session (named  `pfwd` or `pbwd` depending on `.direction`). If `.collect = TRUE`, [`pf_filter()`] collects the outputs in `R` as a [`pf_particles-class`] object. Otherwise, `invisible(NULL)` is returned.
 #'
 #' @example man/examples/example-pf_filter.R
 #' @inherit assemble seealso
@@ -70,6 +71,7 @@ pf_filter <- function(.timeline,
                       .n_record = 1e3L,
                       .n_iter = 1L,
                       .direction = c("forward", "backward"),
+                      .collect = TRUE,
                       .verbose = getOption("patter.verbose")) {
 
   #### Initiate
@@ -95,16 +97,19 @@ pf_filter <- function(.timeline,
                           .n_iter = .n_iter,
                           .direction = .direction)
 
-  #### Get particles in R
-  cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Collating outputs..."))
-  out <- pf_particles(.pf_obj = pf_obj)
-
   #### Check convergence
   # Issue a warning for convergence failures
-  if (isFALSE(out$convergence)) {
+  if (isFALSE(julia_eval(glue('{pf_obj}.convergence')))) {
     warn("The particle filter failed to converge.")
   }
 
+  #### Get particles in R
+  if (.collect) {
+    cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Collating outputs..."))
+    out <- pf_particles(.pf_obj = pf_obj)
+  } else {
+    out <- nothing()
+  }
   out
 
 }

@@ -11,7 +11,8 @@ sim_path_walk(
   .xinit = NULL,
   .n_path = 1L,
   .model_move = move_xy(),
-  .plot = TRUE,
+  .collect = TRUE,
+  .plot = .collect,
   .one_page = FALSE
 )
 }
@@ -41,20 +42,28 @@ sim_path_walk(
 
 \item{.model_move}{A \code{character} string that defines the movement model (see \code{\link{ModelMove}} and \code{\link{glossary}}).}
 
-\item{.plot, .one_page}{Plot options (permitted on Windows and MacOS).
+\item{.collect}{A \code{logical} variable that defines whether or not to collect outputs from the \code{Julia} session in \code{R}.}
+
+\item{.plot, .one_page}{Plot options, if \code{.collect = TRUE} (permitted on Windows and MacOS).
 \itemize{
 \item \code{.plot} is a \code{logical} variable that defined whether or not to plot \code{.map} and simulated path(s). Each path is plotted on a separate plot.
 \item \code{.one_page} is a logical variable that defines whether or not to produce all plots on a single page.
-}}
+}
+
+Plot options are silently ignored if \code{.collect = FALSE}.}
 }
 \value{
-\code{\link[=sim_path_walk]{sim_path_walk()}} returns a \code{\link{data.table}} with the following columns:
+\href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.simulate_path_walk()}} creates a Vector of \code{\link{State}}s in the \code{Julia} session (named  \code{paths}).
+
+If \code{.collect = TRUE}, \code{\link[=sim_path_walk]{sim_path_walk()}} collects the outputs in \code{R} as a \code{\link{data.table}} with the following columns:
 \itemize{
 \item \code{path_id}---an \code{integer} vector that identifies each path;
 \item \code{timestep}---an \code{integer} vector that defines the time step;
 \item \code{timestamp}---a \code{POSIXct} vector of time stamps;
 \item \code{x},\code{y},\code{...}---\code{numeric} vectors that define the components of the state;
 }
+
+Otherwise, \code{invisible(NULL)} is returned.
 }
 \description{
 Simulate discrete-time animal movement paths from walk models (e.g., random walks, biased random walks, correlated random walks).

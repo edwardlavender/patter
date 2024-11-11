@@ -24,17 +24,21 @@
 
 * **Movement simulation**
     * `sim_path_walk()` now fails with an error for invalid maps/movement models.  
+    * A new `.collect` argument collect outputs in `R`. 
 
 * **Observation simulation**
     * `sim_observations()` now expects `ModelObs` structures and parameters in a single named list (passed to `.model_obs`). The `.model_obs_pars` argument has been dropped. 
+    * A new `.collect` argument collect outputs in `R`. 
 
 * **Particle filter**
     * `pf_filter()` now expects `ModelObs` structures and observations in a single named list (passed to `.yobs`). The `.model_obs` argument has been dropped. 
     * A new `.t_resample` argument permits you to force resampling at selected time steps.
-    *  A new `.n_iter` argument permits multiple runs of the filter. 
+    * A new `.n_iter` argument permits multiple runs of the filter. 
+    * A new `.collect` argument collects outputs in `R`. 
 
 * **Particle smoothing**
     * `pf_smoother_two_filter()` uses a more flexible `.vmap` argument, supported by `set_vmap()`, in place of `.box` and `.mobility`. 
+    * A new `.collect` argument collects outputs in `R`. 
 
 ## Minor improvements and bug fixes
 

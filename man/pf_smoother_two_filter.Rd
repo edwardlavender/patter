@@ -10,6 +10,7 @@ set_vmap(.map = NULL, .mobility = NULL, .vmap = NULL, .plot = FALSE, ...)
 pf_smoother_two_filter(
   .n_particle = NULL,
   .n_sim = 100L,
+  .collect = TRUE,
   .verbose = getOption("patter.verbose")
 )
 }
@@ -31,12 +32,20 @@ pf_smoother_two_filter(
 
 \item{.n_sim}{An \code{integer} that defines the number of Monte Carlo simulations.}
 
+\item{.collect}{A \code{logical} variable that defines whether or not to collect outputs from the \code{Julia} session in \code{R}.}
+
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }
 \value{
 \itemize{
+\item \code{\link[=set_vmap]{set_vmap()}}:
+\itemize{
 \item \code{\link[=set_vmap]{set_vmap()}} returns the validity map (a \code{\link{SpatRaster}}), invisibly;
-\item \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}} returns a \code{\linkS4class{pf_particles}} object;
+}
+\item \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}}:
+\itemize{
+\item \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.two_filter_smoother()}} creates a NamedTuple in the \code{Julia} session (named \code{ptf}). If \code{.collect = TRUE}, \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}} collects the outputs in \code{R} as a \code{\linkS4class{pf_particles}} object. Otherwise, \code{invisible(NULL)} is returned.
+}
 }
 }
 \description{

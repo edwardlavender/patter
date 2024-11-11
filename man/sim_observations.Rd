@@ -4,15 +4,21 @@
 \alias{sim_observations}
 \title{Simulation: observations}
 \usage{
-sim_observations(.timeline, .model_obs)
+sim_observations(.timeline, .model_obs, .collect = TRUE)
 }
 \arguments{
 \item{.timeline}{A \code{POSIXct} vector of regularly spaced time stamps that defines the timeline for the simulation. This should match the \code{.timeline} used to simulate movement paths (see \code{\link[=sim_path_walk]{sim_path_walk()}}).}
 
 \item{.model_obs}{A named \code{list} of \href{s}{\code{data.table}}. Element names should refer to \code{\link{ModelObs}} structures. Each element should be a  \code{\link{data.table}} that defines observation model parameters (see \code{\link{glossary}}).}
+
+\item{.collect}{A \code{logical} variable that defines whether or not to collect outputs from the \code{Julia} session in \code{R}.}
 }
 \value{
-The function returns a named \code{list}, with one element for each sensor type, that is \code{.model_obs} element. Each element is a \code{list} of \code{data.table}s, one for each simulated path. Each row is a time step. The columns depend on the model type.
+\href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.simulate_yobs()}} creates a \code{Dict} in the \code{Julia} session (named  \code{yobs}).
+
+If \code{.collect = TRUE}, \code{\link[=sim_observations]{sim_observations()}} collects the outputs in \code{R} as a named \code{list}, with one element for each sensor type, that is \code{.model_obs} element. Each element is a \code{list} of \code{\link{data.table}}s, one for each simulated path. Each row is a time step. The columns depend on the model type.
+
+Otherwise, \code{invisible(NULL)} is returned.
 }
 \description{
 Simulate a time series of observations, such as acoustic detections and depth measurements, arising from simulated animal movement path(s).

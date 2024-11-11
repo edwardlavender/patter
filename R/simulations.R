@@ -117,9 +117,12 @@ sim_array <- function(.map,
 #'    - Otherwise, `.xinit` must be a [`data.table`] with one column for each state dimension.
 #' * `.n_path` is an `integer` that defines the number of paths to simulate.
 #' @param .model_move A `character` string that defines the movement model (see [`ModelMove`] and [`glossary`]).
-#' @param .plot,.one_page Plot options (permitted on Windows and MacOS).
+#' @param .collect A `logical` variable that defines whether or not to collect outputs from the `Julia` session in `R`.
+#' @param .plot,.one_page Plot options, if `.collect = TRUE` (permitted on Windows and MacOS).
 #' * `.plot` is a `logical` variable that defined whether or not to plot `.map` and simulated path(s). Each path is plotted on a separate plot.
 #' * `.one_page` is a logical variable that defines whether or not to produce all plots on a single page.
+#'
+#' Plot options are silently ignored if `.collect = FALSE`.
 #'
 #' @details
 #' This function simulates movement paths via [`Patter.simulate_path_walk()`](https://edwardlavender.github.io/Patter.jl):
@@ -136,11 +139,15 @@ sim_array <- function(.map,
 #'
 #' [`sim_path_walk()`] replaces [`flapper::sim_path_sa()`](https://edwardlavender.github.io/flapper/reference/sim_path_sa.html). Other [`flapper::sim_path_*()`](https://edwardlavender.github.io/flapper/reference/sim_path_-times.html) functions are not currently implemented in [`patter`].
 #'
-#' @return [`sim_path_walk()`] returns a [`data.table`] with the following columns:
+#' @return [`Patter.simulate_path_walk()`](https://github.com/edwardlavender/Patter.jl) creates a Vector of [`State`]s in the `Julia` session (named  `paths`).
+#'
+#' If `.collect = TRUE`, [`sim_path_walk()`] collects the outputs in `R` as a [`data.table`] with the following columns:
 #' * `path_id`---an `integer` vector that identifies each path;
 #' * `timestep`---an `integer` vector that defines the time step;
 #' * `timestamp`---a `POSIXct` vector of time stamps;
 #' * `x`,`y`,`...`---`numeric` vectors that define the components of the state;
+#'
+#' Otherwise, `invisible(NULL)` is returned.
 #'
 #' @example man/examples/example-sim_path_walk.R
 #' @inherit sim_array seealso
@@ -156,7 +163,8 @@ sim_path_walk <- function(.map,
                           .state = "StateXY",
                           .xinit = NULL, .n_path = 1L,
                           .model_move = move_xy(),
-                          .plot = TRUE, .one_page = FALSE) {
+                          .collect = TRUE,
+                          .plot = .collect, .one_page = FALSE) {
 
   #### Set initial state
   set_states_init(.timeline = .timeline,
@@ -169,6 +177,9 @@ sim_path_walk <- function(.map,
 
   #### Simulate random walk
   set_path()
+  if (!.collect) {
+    return(nothing())
+  }
 
   #### Get paths in R
   paths       <- julia_eval('Patter.r_get_states(paths)')
@@ -188,7 +199,7 @@ sim_path_walk <- function(.map,
     as.data.table()
 
   #### Validate simulation (check for NAs)
-  # This is no longer required as `Patter.simulate_move()` is implemented with `n_trial = Inf`
+  # This is no longer required as `Patter.simulate_move()` is set to fail if trials are exhausted
   # This ensures consistency between Patter.jl & patter
 
   #### Visualise paths & return
@@ -210,21 +221,29 @@ sim_path_walk <- function(.map,
 #'
 #' @param .timeline A `POSIXct` vector of regularly spaced time stamps that defines the timeline for the simulation. This should match the `.timeline` used to simulate movement paths (see [`sim_path_walk()`]).
 #' @param .model_obs A named `list` of [`data.table`](s). Element names should refer to [`ModelObs`] structures. Each element should be a  [`data.table`] that defines observation model parameters (see [`glossary`]).
+#' @param .collect A `logical` variable that defines whether or not to collect outputs from the `Julia` session in `R`.
 #'
 #' @details
 #' This function wraps [`Patter.simulate_yobs()`](https://edwardlavender.github.io/Patter.jl). The function iterates over simulated paths defined in the `Julia` workspace by [`sim_path_walk()`]. For each path and time step, the function simulates observation(s). Collectively, `.model_obs` names and parameter [`data.table`] define the observation models used for the simulation (that is, a `Vector` of [`ModelObs`] instances). In `Julia`, simulated observations are stored in a hash table (`Dict`) called `yobs`, which is translated into a named `list` that is returned by `R`.
 #'
-#' @returns The function returns a named `list`, with one element for each sensor type, that is `.model_obs` element. Each element is a `list` of `data.table`s, one for each simulated path. Each row is a time step. The columns depend on the model type.
+#' @returns [`Patter.simulate_yobs()`](https://github.com/edwardlavender/Patter.jl) creates a `Dict` in the `Julia` session (named  `yobs`).
+#'
+#' If `.collect = TRUE`, [`sim_observations()`] collects the outputs in `R` as a named `list`, with one element for each sensor type, that is `.model_obs` element. Each element is a `list` of [`data.table`]s, one for each simulated path. Each row is a time step. The columns depend on the model type.
+#'
+#' Otherwise, `invisible(NULL)` is returned.
 #'
 #' @example man/examples/example-sim_observations.R
 #' @inherit sim_array seealso
 #' @author Edward Lavender
 #' @export
 
-sim_observations <- function(.timeline, .model_obs) {
+sim_observations <- function(.timeline, .model_obs, .collect = TRUE) {
   set_timeline(.timeline)
   set_model_obs(.model_obs)
   set_yobs_dict_via_sim()
+  if (!.collect) {
+    return(nothing())
+  }
   out <- lapply(names(.model_obs), function(.model) {
     julia_eval(glue("Patter.r_get_dataset(yobs, {.model})"))
   })
