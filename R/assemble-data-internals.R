@@ -122,7 +122,7 @@
       # Compute maximum distance to boundary coordinates as `.threshold`
       .threshold <-
         cbind(containers$receiver_x, containers$receiver_y) |>
-        terra::distance(.bbox, lonlat = FALSE) |>
+        dist_2d(.bbox, pairwise = FALSE) |>
         rowMax()
     }
     # Filter containers by .threshold
