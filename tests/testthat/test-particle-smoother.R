@@ -68,7 +68,7 @@ test_that("pf_smoother_two_filter() works", {
     summarise(n = collapse::fnunique(rleid(x, y))) |>
     as.data.table()
   expect_true(all(smo_n$n > 0))
-  expect_true(any(smo_n$n[smo_n$timestep %in% 2:length(timeline)] > 1))
+  expect_true(any(smo_n$n[smo_n$timestep %in% 2:length(args$.timeline)] > 1))
   # Check not all ESS are NaN
   expect_false(all(is.na(smo$diagnostics$ess)))
 
