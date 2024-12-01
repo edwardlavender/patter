@@ -60,6 +60,18 @@ test_that("pf_smoother_two_filter() works", {
   check_inherits(smo$diagnostics, "data.table")
   expect_true(smo$convergence)
 
+  # Check particles
+  # * Check we generally have > 1 particles valid at each time step
+  smo_n <-
+    smo$states |>
+    group_by(timestep) |>
+    summarise(n = collapse::fnunique(rleid(x, y))) |>
+    as.data.table()
+  expect_true(all(smo_n$n > 0))
+  expect_true(any(smo_n$n[smo_n$timestep %in% 2:length(timeline)] > 1))
+  # Check not all ESS are NaN
+  expect_false(all(is.na(smo$diagnostics$ess)))
+
   # Visual check
   pp <- par(mfrow = c(1, 3))
   map_dens(.map = map, .coord = fwd$states)
