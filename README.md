@@ -13,7 +13,7 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/patter)](https://CRAN.R-project.org/package=patter)
-![Coverage](https://img.shields.io/badge/coverage-98%25-brightgreen)
+![Coverage](https://img.shields.io/badge/coverage-96%25-brightgreen)
 [![R-CMD-check](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
@@ -552,7 +552,7 @@ args <- list(.timeline = timeline,
              .state = state,
              .yobs = yobs_fwd,
              .model_move = model_move,
-             .n_record = 500L,
+             .n_record = 1000L,
              .n_particle = 2e3L)
 
 # Forward run
@@ -582,7 +582,7 @@ and after each step).
 
 ``` r
 set_vmap(.map = map, .mobility = mobility)
-smo <- pf_smoother_two_filter(.n_particle = 100L, .n_sim = 100L)
+smo <- pf_smoother_two_filter(.n_particle = 750L, .n_sim = 100L)
 ```
 
 ## Mapping

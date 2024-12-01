@@ -297,7 +297,7 @@ fwd = particle_filter(timeline = timeline,
                       xinit = xinit,
                       yobs = yobs_fwd,
                       model_move = model_move,
-                      n_record = 500,
+                      n_record = 1000,
                       direction = "forward");
 
 # Simulate initial states for the backward filter
@@ -317,7 +317,7 @@ bwd = particle_filter(timeline = timeline,
                       xinit = xinit,
                       yobs = yobs_bwd,
                       model_move = model_move,
-                      n_record = 500,
+                      n_record = 1000,
                       direction = "backward");
 
 ```
@@ -334,7 +334,7 @@ Particle smoothers refine the outputs from the particle filter. Smoothed particl
 
 ```{julia}
 # (optional) Set vmap to improve speed here
-n_particle = 100;
+n_particle = 750;
 smo = two_filter_smoother(timeline = timeline,
                           xfwd = fwd.state[1:n_particle, :],
                           xbwd = bwd.state[1:n_particle, :],

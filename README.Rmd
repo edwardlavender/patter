@@ -460,7 +460,7 @@ args <- list(.timeline = timeline,
              .state = state,
              .yobs = yobs_fwd,
              .model_move = model_move,
-             .n_record = 500L,
+             .n_record = 1000L,
              .n_particle = 2e3L)
 
 # Forward run
@@ -479,7 +479,7 @@ Particle smoothers refine the outputs from the particle filter. Smoothed particl
 
 ```{r}
 set_vmap(.map = map, .mobility = mobility)
-smo <- pf_smoother_two_filter(.n_particle = 100L, .n_sim = 100L)
+smo <- pf_smoother_two_filter(.n_particle = 750L, .n_sim = 100L)
 ```
 
 ## Mapping
@@ -503,7 +503,6 @@ This basic workflow is highly customisable. You have the flexibility to define s
 options(op)
 ```
  
-
 # Resources
  
 **For full details on the methods**, see the references below. 
