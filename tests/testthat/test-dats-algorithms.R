@@ -17,5 +17,6 @@ test_that("Algorithm datasets can be loaded", {
 
   x <- dat_tff()
   x |> check_inherits("list")
+  expect_true(!all(is.na(x$diagnostics$ess)))
 
 })
