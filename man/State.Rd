@@ -221,8 +221,9 @@ if (julia_run()) {
     '
   )
   # Run the smoother
-  # * Use a small number of particles for speed
-  smo <- pf_smoother_two_filter(.n_particle = 50)
+  # * >500 particles are required here to ensure
+  # ... sufficient matching between `fwd` & `bwd`
+  smo <- pf_smoother_two_filter(.n_particle = 550L)
 
   #### (optional) Map UD
   # map_dens(map, .coord = smo$states)
