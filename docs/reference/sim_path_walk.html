@@ -73,7 +73,8 @@
 <span>  .xinit <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  .n_path <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  .plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  .collect <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  .plot <span class="op">=</span> <span class="va">.collect</span>,</span>
 <span>  .one_page <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -99,7 +100,7 @@
 
 <dt id="arg--xinit-n-path">.xinit, .n_path<a class="anchor" aria-label="anchor" href="#arg--xinit-n-path"></a></dt>
 <dd><p>Initial <code><a href="State.html">State</a></code> arguments.</p><ul><li><p><code>.xinit</code> specifies the initial states for the simulation (one for each movement path).</p><ul><li><p>If <code>.xinit</code> is <code>NULL</code>, initial states are sampled from the map.</p></li>
-<li><p>Otherwise, <code>.xinit</code> must be a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> with one column for each state dimension.</p></li>
+<li><p>Otherwise, <code>.xinit</code> must be a <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> with one column for each state dimension.</p></li>
 </ul></li>
 <li><p><code>.n_path</code> is an <code>integer</code> that defines the number of paths to simulate.</p></li>
 </ul></dd>
@@ -109,27 +110,33 @@
 <dd><p>A <code>character</code> string that defines the movement model (see <code><a href="ModelMove.html">ModelMove</a></code> and <code><a href="glossary.html">glossary</a></code>).</p></dd>
 
 
+<dt id="arg--collect">.collect<a class="anchor" aria-label="anchor" href="#arg--collect"></a></dt>
+<dd><p>A <code>logical</code> variable that defines whether or not to collect outputs from the <code>Julia</code> session in <code>R</code>.</p></dd>
+
+
 <dt id="arg--plot-one-page">.plot, .one_page<a class="anchor" aria-label="anchor" href="#arg--plot-one-page"></a></dt>
-<dd><p>Plot options (permitted on Windows and MacOS).</p><ul><li><p><code>.plot</code> is a <code>logical</code> variable that defined whether or not to plot <code>.map</code> and simulated path(s). Each path is plotted on a separate plot.</p></li>
+<dd><p>Plot options, if <code>.collect = TRUE</code> (permitted on Windows and MacOS).</p><ul><li><p><code>.plot</code> is a <code>logical</code> variable that defined whether or not to plot <code>.map</code> and simulated path(s). Each path is plotted on a separate plot.</p></li>
 <li><p><code>.one_page</code> is a logical variable that defines whether or not to produce all plots on a single page.</p></li>
-</ul></dd>
+</ul><p>Plot options are silently ignored if <code>.collect = FALSE</code>.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p><code>sim_path_walk()</code> returns a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> with the following columns:</p><ul><li><p><code>path_id</code>—an <code>integer</code> vector that identifies each path;</p></li>
+    <p><a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.simulate_path_walk()</code></a> creates a Vector of <code><a href="State.html">State</a></code>s in the <code>Julia</code> session (named  <code>paths</code>).</p>
+<p>If <code>.collect = TRUE</code>, <code>sim_path_walk()</code> collects the outputs in <code>R</code> as a <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> with the following columns:</p><ul><li><p><code>path_id</code>—an <code>integer</code> vector that identifies each path;</p></li>
 <li><p><code>timestep</code>—an <code>integer</code> vector that defines the time step;</p></li>
 <li><p><code>timestamp</code>—a <code>POSIXct</code> vector of time stamps;</p></li>
 <li><p><code>x</code>,<code>y</code>,<code>...</code>—<code>numeric</code> vectors that define the components of the state;</p></li>
-</ul></div>
+</ul><p>Otherwise, <code>invisible(NULL)</code> is returned.</p>
+    </div>
     <div id="details">
     <h2>Details</h2>
     <p>This function simulates movement paths via <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.simulate_path_walk()</code></a>:</p><ul><li><p>Raster and GeoArray maps must be set in <code>Julia</code> for the simulation (see <code><a href="set_map.html">set_map()</a></code>);</p></li>
-<li><p>The internal function <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.sim_states_init()</code></a> is used to simulate the initial state(s) for the simulation; that is, initial coordinates and other variables (one for each <code>.n_path</code>). If <code>.state</code> is one of the built-in options (see <code><a href="State.html">State</a></code>), initial state(s) can be sampled from the map. Otherwise, additional methods or a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of initial states must be provided (see <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.sim_states_init()</code></a>). Initial states provided in <code>.xinit</code> are re-sampled, with replacement, if required, such that there is one initial state for each simulated path. Initial states are assigned to an <code>xinit</code> object in <code>Julia</code>, which is a <code>Vector</code> of <code><a href="State.html">State</a></code>s.</p></li>
+<li><p>The internal function <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.sim_states_init()</code></a> is used to simulate the initial state(s) for the simulation; that is, initial coordinates and other variables (one for each <code>.n_path</code>). If <code>.state</code> is one of the built-in options (see <code><a href="State.html">State</a></code>), initial state(s) can be sampled from the map. Otherwise, additional methods or a <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> of initial states must be provided (see <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.sim_states_init()</code></a>). Initial states provided in <code>.xinit</code> are re-sampled, with replacement, if required, such that there is one initial state for each simulated path. Initial states are assigned to an <code>xinit</code> object in <code>Julia</code>, which is a <code>Vector</code> of <code><a href="State.html">State</a></code>s.</p></li>
 <li><p>Using the initial states, the <code>Julia</code> function <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.simulate_path_walk()</code></a> simulates movement path(s) using the movement model (<code>.model_move</code>).</p></li>
 <li><p>Movement paths are passed back to <code>R</code> for convenient visualisation and analysis.</p></li>
 </ul><p>To use a new <code>.state</code> and/or <code>.model_move</code> sub-type for <code>sim_path_walk()</code>:</p><ul><li><p>Define a <code><a href="State.html">State</a></code> sub-type in <code>Julia</code> and provide the name as a <code>character</code> string to this function;</p></li>
-<li><p>To initialise the simulation, write a <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.map_init()</code></a> and <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.states_init()</code></a> methods to enable automated sampling of initial states via <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.sim_states_init()</code></a> or provide a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of initial states to <code>.xinit</code>;</p></li>
+<li><p>To initialise the simulation, write a <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.map_init()</code></a> and <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.states_init()</code></a> methods to enable automated sampling of initial states via <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.sim_states_init()</code></a> or provide a <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> of initial states to <code>.xinit</code>;</p></li>
 <li><p>Define a corresponding <code><a href="ModelMove.html">ModelMove</a></code> sub-type in <code>Julia</code>;</p></li>
 <li><p>Instantiate a <code><a href="ModelMove.html">ModelMove</a></code> instance (that is, define a specific movement model);</p></li>
 </ul><p><code>sim_path_walk()</code> replaces <a href="https://edwardlavender.github.io/flapper/reference/sim_path_sa.html" class="external-link"><code><a href="https://edwardlavender.github.io/flapper/reference/sim_path_sa.html" class="external-link">flapper::sim_path_sa()</a></code></a>. Other <a href="https://edwardlavender.github.io/flapper/reference/sim_path_-times.html" class="external-link"><code>flapper::sim_path_*()</code></a> functions are not currently implemented in <code><a href="patter.html">patter</a></code>.</p>
@@ -178,7 +185,7 @@
 <span class="r-in"><span>  <span class="co"># Define an initial location</span></span></span>
 <span class="r-in"><span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fl">708212.6</span></span></span>
 <span class="r-in"><span>  <span class="va">y</span> <span class="op">&lt;-</span> <span class="fl">6251684</span></span></span>
-<span class="r-in"><span>  <span class="va">origin</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>map_value <span class="op">=</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/extract.html" class="external-link">extract</a></span><span class="op">(</span><span class="va">map</span>, <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>  <span class="va">origin</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></span><span class="op">(</span>map_value <span class="op">=</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/extract.html" class="external-link">extract</a></span><span class="op">(</span><span class="va">map</span>, <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">]</span>,</span></span>
 <span class="r-in"><span>                       x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="co"># Run the simulation</span></span></span>
 <span class="r-in"><span>  <span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
@@ -203,7 +210,7 @@
 <span class="r-in"><span>    <span class="va">map</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>    <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/sample.html" class="external-link">spatSample</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">4</span>, xy <span class="op">=</span> <span class="cn">TRUE</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="st">"map_value"</span>, <span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="co"># Run simulation</span></span></span>
 <span class="r-in"><span>  <span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
 <span class="r-in"><span>                .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
@@ -270,13 +277,13 @@
 <span class="r-in"><span>                .plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-11-10 20:45:58... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-12-02 10:41:33... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_setup()`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 11 thread(s). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-11-10 20:46:02 (duration: ~4 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-12-02 10:41:37 (duration: ~4 sec(s)). </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Use `seq.POSIXt()` with `from`, `to` and `by` rather than `length.out` for faster handling of time stamps.</span>
 <span class="r-plt img"><img src="sim_path_walk-1.png" alt="" width="700" height="433"></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Use `seq.POSIXt()` with `from`, `to` and `by` rather than `length.out` for faster handling of time stamps.</span>

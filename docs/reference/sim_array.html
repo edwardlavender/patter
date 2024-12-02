@@ -91,7 +91,7 @@
 
 
 <dt id="arg--timeline">.timeline<a class="anchor" aria-label="anchor" href="#arg--timeline"></a></dt>
-<dd><p>A <code>POSIXct</code> vector of regularly spaced time stamps that defines the timeline for the simulation. Here, <code>.timeline</code> is used to:</p><ul><li><p>Define receiver deployment periods (that is, <code>receiver_start</code> and <code>receiver_end</code> columns in the output <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>). Receiver deployment periods are defined by <code>min(.timeline)</code> and <code>max(.timeline)</code> and constant for all receivers.  (These columns are added solely for use in downstream functions.)</p></li>
+<dd><p>A <code>POSIXct</code> vector of regularly spaced time stamps that defines the timeline for the simulation. Here, <code>.timeline</code> is used to:</p><ul><li><p>Define receiver deployment periods (that is, <code>receiver_start</code> and <code>receiver_end</code> columns in the output <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code>). Receiver deployment periods are defined by <code>min(.timeline)</code> and <code>max(.timeline)</code> and constant for all receivers.  (These columns are added solely for use in downstream functions.)</p></li>
 </ul></dd>
 
 
@@ -103,7 +103,7 @@
 
 
 <dt id="arg--receiver-alpha-receiver-beta-receiver-gamma">.receiver_alpha, .receiver_beta, .receiver_gamma<a class="anchor" aria-label="anchor" href="#arg--receiver-alpha-receiver-beta-receiver-gamma"></a></dt>
-<dd><p>(optional) <code>Numeric</code> constants for the default detection probability parameters for inclusion in the output <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code>. (These columns are added solely for use in downstream functions, such as <code><a href="sim_observations.html">sim_observations()</a></code>.)</p>
+<dd><p>(optional) <code>Numeric</code> constants for the default detection probability parameters for inclusion in the output <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code>. (These columns are added solely for use in downstream functions, such as <code><a href="sim_observations.html">sim_observations()</a></code>.)</p>
 <p>Single inputs are expected to these arguments, which are constant across all receivers.</p></dd>
 
 

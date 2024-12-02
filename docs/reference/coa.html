@@ -88,8 +88,8 @@
 
 
 <dt id="arg--detections-moorings">.detections, .moorings<a class="anchor" aria-label="anchor" href="#arg--detections-moorings"></a></dt>
-<dd><p>Acoustic detection <a href="s"><code>data.table</code></a>.</p><ul><li><p><code>.detections</code> is a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of acoustic detections, with the following columns: <code>receiver_id</code> (or <code>sensor_id</code>), <code>timestamp</code> and (optionally) <code>receiver_x</code> and <code>receiver_y</code> columns;</p></li>
-<li><p>(optional) <code>.moorings</code> is a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of receiver coordinates, which should be provided if unavailable in <code>.detections</code>, with <code>receiver_id</code>, <code>receiver_x</code> and <code>receiver_y</code> columns;</p></li>
+<dd><p>Acoustic detection <a href="s"><code>data.table</code></a>.</p><ul><li><p><code>.detections</code> is a <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> of acoustic detections, with the following columns: <code>receiver_id</code> (or <code>sensor_id</code>), <code>timestamp</code> and (optionally) <code>receiver_x</code> and <code>receiver_y</code> columns;</p></li>
+<li><p>(optional) <code>.moorings</code> is a <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> of receiver coordinates, which should be provided if unavailable in <code>.detections</code>, with <code>receiver_id</code>, <code>receiver_x</code> and <code>receiver_y</code> columns;</p></li>
 </ul><p>Receiver coordinates <strong>must be planar</strong>.</p></dd>
 
 
@@ -110,7 +110,7 @@
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>The function returns a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> with the following columns:</p><ul><li><p><code>{.split}</code>—a <code>character</code> vector that distinguishes groups, if applicable;</p></li>
+    <p>The function returns a <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> with the following columns:</p><ul><li><p><code>{.split}</code>—a <code>character</code> vector that distinguishes groups, if applicable;</p></li>
 <li><p><code>timestep</code>—an <code>integer</code> vector of time steps;</p></li>
 <li><p><code>timestamp</code>—a <code>POSIXt</code> vector of time stamps;</p></li>
 <li><p><code>map_value</code>, <code>x</code>, <code>y</code>—the value of <code>.map</code> at COAs and their coordinates;</p></li>

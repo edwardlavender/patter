@@ -68,14 +68,14 @@
 
     <div id="structure">
     <h2>Structure</h2>
-    <p><code>pf_particles</code> is a label used to denote outputs from selected functions in <code><a href="patter.html">patter</a></code>. The structure of this class is not strictly defined and primarily exists to streamline documentation. At the time of writing, <code>pf_particles</code> objects may comprise the following elements:</p><ul><li><p><code>states</code>—A <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of simulated states;</p></li>
-<li><p><code>diagnostics</code>—A <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of diagnostic statistics;</p></li>
+    <p><code>pf_particles</code> is a label used to denote outputs from selected functions in <code><a href="patter.html">patter</a></code>. The structure of this class is not strictly defined and primarily exists to streamline documentation. At the time of writing, <code>pf_particles</code> objects may comprise the following elements:</p><ul><li><p><code>states</code>—A <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> of simulated states;</p></li>
+<li><p><code>diagnostics</code>—A <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> of diagnostic statistics;</p></li>
 <li><p><code>convergence</code>—A <code>logical</code> variable that defines whether or not the algorithm converged;</p></li>
 <li><p><code>trials</code>—An integer that defines the number of trials;</p></li>
 </ul></div>
     <div id="states">
     <h2><code>states</code></h2>
-    <p><code>states</code> is a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines simulated particle states, with the following columns:</p><ul><li><p><code>path_id</code>—An <code>integer</code> vector that defines the particle index;</p></li>
+    <p><code>states</code> is a <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> that defines simulated particle states, with the following columns:</p><ul><li><p><code>path_id</code>—An <code>integer</code> vector that defines the particle index;</p></li>
 <li><p><code>timestep</code>—An <code>integer</code> vector that defines the time step;</p></li>
 <li><p><code>timestamp</code>—A <code>POSIXct</code> vector of time stamps;</p></li>
 <li><p>Additional columns with the values of each state dimension;</p></li>
@@ -83,7 +83,7 @@
     </div>
     <div id="diagnostics">
     <h2><code>diagnostics</code></h2>
-    <p><code>diagnostics</code> is a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that stores diagnostic statistics for each time step. This includes <code>timestep</code>, <code>timestamp</code> and the following columns:</p><ul><li><p><code>ess</code>—A <code>numeric</code> vector that defines the effective sample size;</p></li>
+    <p><code>diagnostics</code> is a <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> that stores diagnostic statistics for each time step. This includes <code>timestep</code>, <code>timestamp</code> and the following columns:</p><ul><li><p><code>ess</code>—A <code>numeric</code> vector that defines the effective sample size;</p></li>
 <li><p><code>maxlp</code>—A <code>numeric</code> vector that defines the maximum log posterior;</p></li>
 </ul></div>
     <div id="convergence">

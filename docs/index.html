@@ -478,7 +478,7 @@
 <span>  <span class="va">dat_detections</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">individual_id</span> <span class="op">==</span> <span class="fl">25L</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>individual_id <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Define archival (depth) observations</span></span>
 <span><span class="va">arc</span> <span class="op">&lt;-</span></span>
@@ -488,7 +488,7 @@
 <span>         depth_sigma <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>         depth_deep_eps <span class="op">=</span> <span class="fl">50</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>obs <span class="op">=</span> <span class="va">depth</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Individual movements are connected to the observations by models of the observation process for each dataset. Without going into details, here we bundle together the observations with the parameters of the observation models:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># ModelObsAcousticLogisTrunc</span></span>
@@ -525,7 +525,7 @@
 <span>             .state <span class="op">=</span> <span class="va">state</span>,</span>
 <span>             .yobs <span class="op">=</span> <span class="va">yobs_fwd</span>,</span>
 <span>             .model_move <span class="op">=</span> <span class="va">model_move</span>,</span>
-<span>             .n_record <span class="op">=</span> <span class="fl">500L</span>,</span>
+<span>             .n_record <span class="op">=</span> <span class="fl">1000L</span>,</span>
 <span>             .n_particle <span class="op">=</span> <span class="fl">2e3L</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Forward run</span></span>
@@ -551,7 +551,7 @@
 <p>Particle smoothers refine the outputs from the particle filter. Smoothed particles approximate the full marginal distribution for the location of the individual at each time step (accounting for all of the data before and after each step).</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/pf_smoother_two_filter.html">set_vmap</a></span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .mobility <span class="op">=</span> <span class="va">mobility</span><span class="op">)</span></span>
-<span><span class="va">smo</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pf_smoother_two_filter.html">pf_smoother_two_filter</a></span><span class="op">(</span>.n_particle <span class="op">=</span> <span class="fl">100L</span>, .n_sim <span class="op">=</span> <span class="fl">100L</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">smo</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pf_smoother_two_filter.html">pf_smoother_two_filter</a></span><span class="op">(</span>.n_particle <span class="op">=</span> <span class="fl">750L</span>, .n_sim <span class="op">=</span> <span class="fl">100L</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="mapping">Mapping<a class="anchor" aria-label="anchor" href="#mapping"></a>

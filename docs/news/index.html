@@ -99,12 +99,14 @@
 <li>
 <strong>Movement simulation</strong>
 <ul><li>
-<code><a href="../reference/sim_path_walk.html">sim_path_walk()</a></code> now fails with an error for invalid maps/movement models.</li>
+<code><a href="../reference/sim_path_walk.html">sim_path_walk()</a></code> now fails with an error for invalid maps/movement models.<br></li>
+<li>A new <code>.collect</code> argument collect outputs in <code>R</code>.</li>
 </ul></li>
 <li>
 <strong>Observation simulation</strong>
 <ul><li>
 <code><a href="../reference/sim_observations.html">sim_observations()</a></code> now expects <code>ModelObs</code> structures and parameters in a single named list (passed to <code>.model_obs</code>). The <code>.model_obs_pars</code> argument has been dropped.</li>
+<li>A new <code>.collect</code> argument collect outputs in <code>R</code>.</li>
 </ul></li>
 <li>
 <strong>Particle filter</strong>
@@ -112,11 +114,13 @@
 <code><a href="../reference/pf_filter.html">pf_filter()</a></code> now expects <code>ModelObs</code> structures and observations in a single named list (passed to <code>.yobs</code>). The <code>.model_obs</code> argument has been dropped.</li>
 <li>A new <code>.t_resample</code> argument permits you to force resampling at selected time steps.</li>
 <li>A new <code>.n_iter</code> argument permits multiple runs of the filter.</li>
+<li>A new <code>.collect</code> argument collects outputs in <code>R</code>.</li>
 </ul></li>
 <li>
 <strong>Particle smoothing</strong>
 <ul><li>
 <code><a href="../reference/pf_smoother_two_filter.html">pf_smoother_two_filter()</a></code> uses a more flexible <code>.vmap</code> argument, supported by <code><a href="../reference/pf_smoother_two_filter.html">set_vmap()</a></code>, in place of <code>.box</code> and <code>.mobility</code>.</li>
+<li>A new <code>.collect</code> argument collects outputs in <code>R</code>.</li>
 </ul></li>
 </ul></div>
 <div class="section level3">
