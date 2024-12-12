@@ -42,6 +42,7 @@ test_that("add_sp_path() works", {
       add_sp_path(xy)
     }
   )
-  expect_snapshot_file(snapshot_png(code),
-                       "add_sp_path.png")
+  png <- snapshot_png(code)
+  expect_snapshot_file(png, "add_sp_path.png")
+  unlink(png)
 })

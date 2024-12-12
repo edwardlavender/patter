@@ -81,6 +81,7 @@ test_that("Julia helpers work", {
   expect_true(file.exists(file))
   julia_load(.file = file, .x = "x")
   expect_true(julia_exists("x"))
+  unlink(file)
 
   #### julia_timeline()
 

@@ -31,8 +31,9 @@ test_that("as.owin.sf() works", {
   # terra::plot(p, col = "blue")
   p <- sf::st_as_sf(p) |> sf::st_geometry()
   sea <- as.owin.sf(p)
-  expect_snapshot_file(snapshot_png(plot(sea, col = "blue")),
-                       "as.owin.sf.png")
+  png <- snapshot_png(plot(sea, col = "blue"))
+  expect_snapshot_file(png, "as.owin.sf.png")
+  unlink(png)
 
 })
 

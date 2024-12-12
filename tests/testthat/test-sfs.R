@@ -15,7 +15,8 @@ test_that("st_invert() works", {
 
   expect_true(all.equal(land, land_check))
 
-  expect_snapshot_file(snapshot_png(terra::plot(sea, col = "blue")),
-                       "st_invert.png")
+  png <- snapshot_png(terra::plot(sea, col = "blue"))
+  expect_snapshot_file(png, "st_invert.png")
+  unlink(png)
 
 })
