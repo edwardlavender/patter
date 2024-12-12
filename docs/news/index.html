@@ -120,6 +120,8 @@
 <strong>Particle smoothing</strong>
 <ul><li>
 <code><a href="../reference/pf_smoother_two_filter.html">pf_smoother_two_filter()</a></code> uses a more flexible <code>.vmap</code> argument, supported by <code><a href="../reference/pf_smoother_two_filter.html">set_vmap()</a></code>, in place of <code>.box</code> and <code>.mobility</code>.</li>
+<li>Instances where the two filters are incompatible (all weights are zero) are now flagged with a warning. Formerly, <code>.n_particle</code> copies of the first particle were selected by <code>Patter.resample()</code> at problematic time steps, leading to a bottleneck in the distribution of an individual’s possible locations. Now 50 % of the particles from the forward filter and 50 % from the backward filter are randomly selected at such steps (with a warning). The effective sample size at these time steps is set to NA &amp; provides a counter for the number of problematic time steps.</li>
+<li>A new <code>.cache</code> argument fixes incorrect caching for time-varying movement models and enables the user to turn the caching on or off.</li>
 <li>A new <code>.collect</code> argument collects outputs in <code>R</code>.</li>
 </ul></li>
 </ul></div>
