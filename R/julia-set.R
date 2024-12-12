@@ -305,26 +305,40 @@ set_pf_filter <- function(.n_move, .n_resample, .t_resample, .n_record, .n_iter,
 #' @rdname julia_set
 #' @keywords internal
 
+# Set cache for two-filter smoother (true/false)
+# * Use julia_assign() to handle T, TRUE, F, FALSE
+
+set_cache <- function(.cache) {
+  check_inherits(.cache, "logical")
+  julia_assign("cache", .cache)
+  nothing()
+}
+
+#' @rdname julia_set
+#' @keywords internal
+
 # Run the two-filter smoother in Julia
-set_smoother_two_filter <- function(.n_particle, .n_sim) {
+set_smoother_two_filter <- function(.n_particle, .n_sim, .cache) {
   output <- name_particles(.fun = "pf_smoother_two_filter")
   fwd    <- name_particles(.fun = "pf_filter", .direction = "forward")
   bwd    <- name_particles(.fun = "pf_filter", .direction = "backward")
-  # Define the number of particles for the smoother
+  # Define the number of particles for the smoother & associated arguments
   # * If NULL, we use all particles from the forward simulation
   if (is.null(.n_particle)) {
     .n_particle <- julia_eval(glue('size({fwd}.state)[1]'))
   }
   .n_particle <- as.integer(.n_particle)
   .n_sim      <- as.integer(.n_sim)
+  set_cache(.cache)
   # Run smoother
-  julia_check_exists("timeline", fwd, bwd, "model_move", "vmap")
+  julia_check_exists("timeline", fwd, bwd, "model_move", "vmap", "cache")
   cmd    <- glue('{output} = two_filter_smoother(timeline = timeline,
                                                  xfwd = {fwd}.state[1:{.n_particle}, :],
                                                  xbwd = {bwd}.state[1:{.n_particle}, :],
                                                  model_move = model_move,
                                                  vmap = vmap,
-                                                 n_sim = {.n_sim});')
+                                                 n_sim = {.n_sim},
+                                                 cache = cache);')
   julia_command(cmd)
   invisible(output)
 }

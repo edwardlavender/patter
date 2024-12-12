@@ -18,6 +18,7 @@
 \alias{set_states_init}
 \alias{set_t_resample}
 \alias{set_pf_filter}
+\alias{set_cache}
 \alias{set_smoother_two_filter}
 \title{\code{Julia}: set objects in \code{Julia}}
 \usage{
@@ -68,7 +69,9 @@ set_pf_filter(
   .direction
 )
 
-set_smoother_two_filter(.n_particle, .n_sim)
+set_cache(.cache)
+
+set_smoother_two_filter(.n_particle, .n_sim, .cache)
 }
 \description{
 These are internal functions that assign objects to variable names in \code{Julia}.

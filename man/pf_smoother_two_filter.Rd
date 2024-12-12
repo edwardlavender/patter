@@ -10,6 +10,7 @@ set_vmap(.map = NULL, .mobility = NULL, .vmap = NULL, .plot = FALSE, ...)
 pf_smoother_two_filter(
   .n_particle = NULL,
   .n_sim = 100L,
+  .cache = TRUE,
   .collect = TRUE,
   .verbose = getOption("patter.verbose")
 )
@@ -32,6 +33,8 @@ pf_smoother_two_filter(
 
 \item{.n_sim}{An \code{integer} that defines the number of Monte Carlo simulations.}
 
+\item{.cache}{A \code{logical} variable that defines whether or not to pre-compute and cache movement-density normalisation constants for each unique particle.}
+
 \item{.collect}{A \code{logical} variable that defines whether or not to collect outputs from the \code{Julia} session in \code{R}.}
 
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
@@ -52,7 +55,7 @@ pf_smoother_two_filter(
 \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}} function implements the two-filter particle smoother (Fearnhead et al., \href{https://doi.org/10.1093/biomet/asq013}{2010}).
 }
 \details{
-The two-filter smoother smooths particle samples from the particle filter (\code{\link[=pf_filter]{pf_filter()}}). Particles from a forward and backward filter run are required in the \code{Julia} workspace (as defined by \code{\link[=pf_filter]{pf_filter()}}). The backend function \href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.two_filter_smoother()}} does the work. Essentially, the function runs a simulation backwards in time and re-samples particles in line with the probability density of movements between each combination of states from the backward filter at time \code{t} and states from the forward filter at time \code{t - 1}. The time complexity of the algorithm is thus \eqn{O(TN^2)}. The probability density of movements is evaluated by \href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.logpdf_step()}} and \href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.logpdf_move()}}. If individual states are two-dimensional (see \code{\link{StateXY}}), a validity map can be pre-defined in \code{Julia} via \code{\link[=set_vmap]{set_vmap()}} to speed up probability calculations. The validity map is defined as the set of valid (non-\code{NA} or bordering) locations on the \code{.map}, shrunk by \code{.mobility}. Within this region, the probability density of movement between two states can be calculated directly. Otherwise, a Monte Carlo simulation, of \code{.n_sim} iterations, is required to compute the normalisation constant (accounting for movements into inhospitable areas, or beyond the boundaries of the study area).
+The two-filter smoother smooths particle samples from the particle filter (\code{\link[=pf_filter]{pf_filter()}}). Particles from a forward and backward filter run are required in the \code{Julia} workspace (as defined by \code{\link[=pf_filter]{pf_filter()}}). The backend function \href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.two_filter_smoother()}} does the work. Essentially, the function runs a simulation backwards in time and re-samples particles in line with the probability density of movements between each combination of states from the backward filter at time \code{t} and states from the forward filter at time \code{t - 1}. The time complexity of the algorithm is thus \eqn{O(TN^2)}. The probability density of movements is evaluated by \href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.logpdf_step()}} and \href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.logpdf_move()}}. If individual states are two-dimensional (see \code{\link{StateXY}}), a validity map can be pre-defined in \code{Julia} via \code{\link[=set_vmap]{set_vmap()}} to speed up probability calculations. The validity map is defined as the set of valid (non-\code{NA} or bordering) locations on the \code{.map}, shrunk by \code{.mobility}. Within this region, the probability density of movement between two states can be calculated directly. Otherwise, a Monte Carlo simulation, of \code{.n_sim} iterations, is required to compute the normalisation constant (accounting for movements into inhospitable areas, or beyond the boundaries of the study area). For movement models for which the density only depends on the particle states, set \code{.cache = TRUE} to pre-compute and cache normalisation constants for improved speed.
 }
 \examples{
 if (julia_run()) {
