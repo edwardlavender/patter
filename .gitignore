@@ -10,3 +10,4 @@ Julia/README.md
 *.html
 .Rprofile
 .Renviron
+data-raw/benchmark
