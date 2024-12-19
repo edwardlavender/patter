@@ -23,5 +23,3 @@ if (julia_run()) {
   julia_connect(.verbose = FALSE)
 
 }
-
-

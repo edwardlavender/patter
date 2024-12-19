@@ -106,8 +106,6 @@ if (julia_run()) {
   julia_connect(.verbose = FALSE)
 
 }
-
-
 }
 \seealso{
 See \code{\link[=julia_validate]{julia_validate()}} to validate the \code{R}---\code{Julia} interface.
