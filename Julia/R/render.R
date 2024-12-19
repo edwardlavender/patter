@@ -14,7 +14,7 @@ rmarkdown::render(file.path("julia", "README.Rmd"),
 toc()
 
 # Define output connection
-outcon <- "/Users/lavended/Documents/work/projects/particle-filters/patter/packages/Patter.jl"
+outcon <- "/Users/lavended/Documents/work/projects/move-smc/patter/packages/Patter.jl"
 
 # Copy MD file
 success <- file.copy(file.path("julia", "README.md"),
