@@ -209,7 +209,12 @@ julia_pkg_patter_source <- function(JULIA_PATTER_SOURCE) {
     return(default)
   }
   # (A) JULIA_PATTER_SOURCE may be a directory
-  if (dir.exists(JULIA_PATTER_SOURCE)) {
+  # * If so, an absolute path should be set
+  # * We do not explicitly test for this criterion
+  # * But this option is not implemented if a single word (e.g. dev) is provided
+  # * (We assume a single word refers to a github branch rather than a directory,
+  # ... even if such a folder exists)
+  if (!grepl("^[A-Za-z]+$", JULIA_PATTER_SOURCE) & dir.exists(JULIA_PATTER_SOURCE)) {
     JULIA_PATTER_SOURCE <-
       normalizePath(JULIA_PATTER_SOURCE, winslash = "/", mustWork = TRUE)
   } else {
@@ -238,21 +243,24 @@ julia_pkg_install_Patter <- function(JULIA_PATTER_SOURCE, .pkg_update) {
   # Get JULIA_PATTER_SOURCE
   JULIA_PATTER_SOURCE <- julia_pkg_patter_source(JULIA_PATTER_SOURCE)
   add <- FALSE
-  # Install Patter, if not already installed
-  if (julia_installed_package("Patter") == "nothing") {
-    add <- TRUE
+  # Install or update Patter
+  if (julia_installed_package("Patter") == "nothing" | "Patter" %in% .pkg_update) {
     # (A) Add Patter.jl as a local development dependency
     if (dir.exists(JULIA_PATTER_SOURCE)) {
       julia_command(glue('Pkg.develop(path = "{JULIA_PATTER_SOURCE}");'))
     } else {
       # Add Patter.jl from remote if not installed
-      julia_install_package(JULIA_PATTER_SOURCE)
+      # * Pkg.add(url = "...#dev") installs #dev#main (undesired)
+      # * Hence, we split the JULIA_PATTER_SOURCE into url and branch
+      # * And set PackageSpec()
+      spec     <- strsplit(JULIA_PATTER_SOURCE, "#")[[1]]
+      url      <- spec[1]
+      revision <- spec[2]
+      if (is.na(revision)) {
+        revision <- "main"
+      }
+      julia_command(glue('Pkg.add(PackageSpec(url = "{url}", rev = "{revision}"))'))
     }
-  }
-  # Update Patter.jl if it is in the list of packages for update
-  if (!add && "Patter" %in% .pkg_update) {
-    # Use julia_install_package() to handle changes in URL
-    julia_install_package(JULIA_PATTER_SOURCE)
   }
   nothing()
 }
@@ -312,7 +320,7 @@ julia_pkg_setup <- function(JULIA_PATTER_SOURCE,
   pkg_update <- julia_pkg_list_update(.pkg_update)
   # Install and optionally update Patter.jl
   julia_pkg_install_Patter(JULIA_PATTER_SOURCE,
-                           .pkg_update = .pkg_update)
+                           .pkg_update = pkg_update)
   # Install and optionally update dependencies
   julia_pkg_install_deps(.pkg_install = pkg_dep,
                          .pkg_update  = pkg_update)

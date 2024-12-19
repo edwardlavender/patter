@@ -21,13 +21,42 @@ test_that("julia_connect() works", {
     Manifest$deps[[.pkg]][[1]]
   }
   Patter_repo_url <- function(JULIA_PROJ) {
-    read_pkg_metadata(JULIA_PROJ, "Patter")[["repo-url"]]
+    meta <- read_pkg_metadata(JULIA_PROJ, "Patter")
+    paste0(meta[["repo-url"]], "#", meta[["repo-rev"]])
   }
   CSV_repo_url <- function(JULIA_PROJ) {
     read_pkg_metadata(JULIA_PROJ, "CSV")[["repo-url"]]
   }
   DataFrames_repo_url <- function(JULIA_PROJ) {
     read_pkg_metadata(JULIA_PROJ, "DataFrames")[["repo-url"]]
+  }
+
+  # Git clone
+  clone_Patter.jl <- function() {
+    # Define download link
+    download    <- "https://github.com/edwardlavender/Patter.jl/archive/refs/heads/main.zip"
+    # Define destination zip file
+    destination <- file.path(tempdir(), "Patter.jl.zip")
+    # Download repository
+    download.file(download, destination)
+    # Unzip package into directory (Patter.jl/)
+    directory <- file.path(dirname(destination), "Patter.jl")
+    utils::unzip(destination, exdir = directory)
+    # Drop extra folder (Patter.jl/Patter.jl-main/)
+    subdirectory <- list.files(directory, full.names = TRUE)
+    files        <- list.files(subdirectory, recursive = TRUE)
+    success <- sapply(files, function(file) {
+      folder <- file.path(directory, dirname(file))
+      if (!dir.exists(folder)) {
+        dir.create(folder, recursive = TRUE)
+      }
+      file.copy(from = file.path(subdirectory, file),
+                to = file.path(directory, file),
+                overwrite = TRUE)
+    })
+    stopifnot(all(success))
+    # Return package directory
+    normalizePath(directory, winslash = "/")
   }
 
   #### Define environment variables
@@ -74,7 +103,7 @@ test_that("julia_connect() works", {
   # > "https://github.com/edwardlavender/Patter.jl.git#main"
   julia_connect(JULIA_PROJ = jproj, JULIA_PATTER_SOURCE = NULL)
   expect_equal(Patter_repo_url(jproj),
-               "https://github.com/edwardlavender/Patter.jl.git")
+               "https://github.com/edwardlavender/Patter.jl.git#main")
   file_cleanup(jproj)
 
   # Test installation with JULIA_PATTER_SOURCE = "main" (branch)
@@ -83,10 +112,17 @@ test_that("julia_connect() works", {
   expect_equal(Patter_repo_url(jproj),
                "https://github.com/edwardlavender/Patter.jl.git#main")
 
-  # Test  installation with JULIA_PATTER_SOURCE = "dev" (different branch)
+  # Test installation with JULIA_PATTER_SOURCE = "dev" (different branch)
   # > "https://github.com/edwardlavender/Patter.jl.git#main"
   # > We expect no change b/c the update needs to be forced with .pkg_update
+  # > (This is the same if we try to swap onto a development version on file)
   julia_connect(JULIA_PROJ = jproj, JULIA_PATTER_SOURCE = "dev")
+  expect_equal(Patter_repo_url(jproj),
+               "https://github.com/edwardlavender/Patter.jl.git#main")
+
+  # (As above but swapping onto a development version on file)
+  local_Patter.jl <- clone_Patter.jl()
+  julia_connect(JULIA_PROJ = jproj, JULIA_PATTER_SOURCE = local_Patter.jl)
   expect_equal(Patter_repo_url(jproj),
                "https://github.com/edwardlavender/Patter.jl.git#main")
 
@@ -96,11 +132,17 @@ test_that("julia_connect() works", {
   julia_connect(JULIA_PROJ = jproj, JULIA_PATTER_SOURCE = "dev", .pkg_update = "Patter")
   expect_equal(Patter_repo_url(jproj),
                "https://github.com/edwardlavender/Patter.jl.git#dev")
-  # B) We reset to the main branch unless specified
+  # B) As above, but swap to development version on file
+  julia_connect(JULIA_PROJ = jproj,
+                JULIA_PATTER_SOURCE = local_Patter.jl,
+                .pkg_update = "Patter")
+  expect_equal(read_pkg_metadata(jproj, "Patter")$path,
+               local_Patter.jl)
+  # C) We reset to the main branch unless specified
   # > "https://github.com/edwardlavender/Patter.jl.git#main"
   julia_connect(JULIA_PROJ = jproj, .pkg_update = "Patter")
   expect_equal(Patter_repo_url(jproj),
-               "https://github.com/edwardlavender/Patter.jl.git")
+               "https://github.com/edwardlavender/Patter.jl.git#main")
   file_cleanup(jproj)
 
   #### Test .pkg_config
@@ -130,5 +172,6 @@ test_that("julia_connect() works", {
   Sys.setenv("JULIA_NUM_THREADS" = JULIA_NUM_THREADS)
   Sys.setenv("JULIA_PATTER_SOURCE" = JULIA_PATTER_SOURCE)
   file_cleanup(jproj)
+  file_cleanup(local_Patter.jl)
 
 })
