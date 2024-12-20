@@ -10,7 +10,7 @@
 \code{\link{State}} is an Abstract Type in \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} that groups state sub-types.
 }
 \details{
-\code{\link{State}} sub-types are \code{Julia} structures that hold the parameters that describe the state of an individual at a given time step. 'State' typically means 'location' (in two or three dimensions), but individual states may include additional fields for those state dimensions that depend on the state time step. (For example, turning angles may be included in the \code{\link{State}} if the turning angle at one time step is dependent upon that at the previous time step.) From an \code{R}-user perspective, you can think of a \code{\link{State}} sub-type as an \code{S4}-\code{\link{class}}-like object, with slots for the state dimensions.
+\code{\link{State}} sub-types are \code{Julia} structures that hold the parameters that describe the state of an individual at a given time step. 'State' typically means 'location' (in two or three dimensions), but individual states may include additional fields for those state dimensions that depend on the state time step. (For example, in correlated random walks, the \code{\link{State}} should contain the heading, given that the heading at one time step depends on the previous heading and a turning angle.) From an \code{R}-user perspective, you can think of a \code{\link{State}} sub-type as an \code{S4}-\code{\link{class}}-like object, with slots for the state dimensions.
 
 In \code{\link{patter}} functions, the \code{.state} argument is a \code{character} string that defines the animal's state sub-type. This must match a \code{\link{State}} sub-type defined in \code{Julia}. The built-in options are:
 \itemize{
@@ -32,8 +32,8 @@ The outcome of \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.s
 
 The state must match the movement model (see \code{\link{ModelMove}}):
 \itemize{
-\item For \code{"StateXY"}, a movement model that simulates step lengths and turning angles and updates state components (that is, \code{x} and \code{y} coordinates) is required;
-\item For \code{"StateXYZD"}, a movement model that simulates step lengths, changes in turning angles and changes in depth and updates \code{x}, \code{y}, \code{z} and direction state components is required.
+\item For \code{"StateXY"}, a movement model that simulates step lengths and headings and updates state components (that is, \code{x} and \code{y} coordinates) is required;
+\item For \code{"StateXYZD"}, a movement model that simulates step lengths, turning angles and changes in depth and updates \code{x}, \code{y}, \code{z} and direction state components is required.
 }
 
 To use custom \code{\link{ModelObs}} sub-types, see Examples.
@@ -88,8 +88,8 @@ if (julia_run()) {
     # Distribution for step lengths
     mobility::U
     dbn_length::V
-    # Distribution for turning angles
-    dbn_angle::W
+    # Distribution for headings
+    dbn_heading::W
     # Distribution for changes in depth
     dbn_z_delta::X
   end
@@ -97,14 +97,18 @@ if (julia_run()) {
   )
   # Instantiate the movement model
   # > We will write an R function to instantiate the movement model
-  move_xyz <- function(mobility = "750.0",
-                       length = "truncated(Gamma(1.0, 750.0), upper = 750.0)",
-                       angle = "Uniform(-pi, pi)",
-                       z_delta = "Normal(0, 3.5)") {
+  move_xyz <- function(.mobility = "750.0",
+                       .dbn_length = "truncated(Gamma(1.0, 750.0), upper = 750.0)",
+                       .dbn_heading = "Uniform(-pi, pi)",
+                       .dbn_z_delta = "Normal(0, 3.5)") {
     # (optional) Verify the map (`env` in Julia) exists:
     # patter:::julia_check_exists("env")
     # Define the movement model `Julia` code as a String
-    glue::glue('ModelMoveXYZ(env, {mobility}, {length}, {angle}, {z_delta});')
+    glue::glue('ModelMoveXYZ(env,
+                            {.mobility},
+                            {.dbn_length},
+                            {.dbn_heading},
+                            {.dbn_z_delta});')
   }
   # (optional) Define a `Patter.states_init()` method to simulate initial states
   # * This function should accept:
@@ -124,11 +128,11 @@ if (julia_run()) {
   function Patter.simulate_step(state::StateXYZ, model::ModelMoveXYZ, t::Int64)
     # Simulate a step length
     length = rand(model.dbn_length)
-    # Simulate a turning angle
-    angle  = rand(model.dbn_angle)
+    # Simulate a heading
+    heading  = rand(model.dbn_heading)
     # Calculate new x, y, z coordinates
-    x      = state.x + length * cos(angle)
-    y      = state.y + length * sin(angle)
+    x      = state.x + length * cos(heading)
+    y      = state.y + length * sin(heading)
     z      = state.z + rand(model.dbn_z_delta)
     # Include the map value
     map_value = Patter.extract(model.map, x, y)
@@ -210,12 +214,12 @@ if (julia_run()) {
     function Patter.logpdf_step(state_from::StateXYZ, state_to::StateXYZ,
                                 model_move::ModelMoveXYZ,
                                 t::Int64,
-                                length::Float64, angle::Float64)
+                                length::Float64, heading::Float64)
         # Calculate change in depth
         z_delta = state_to.z - state_from.z
         # Evaluate unnormalised log probability
         logpdf(model_move.dbn_length, length) +
-          logpdf(model_move.dbn_angle, angle) +
+          logpdf(model_move.dbn_heading, heading) +
           logpdf(model_move.dbn_z_delta, z_delta)
     end
     '

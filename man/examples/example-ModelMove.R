@@ -28,14 +28,14 @@ if (julia_run()) {
   #### Example (2): Customise `move_xy()`
   # Use a truncated normal distribution for step lengths:
   hist(rtrunc(1e5L, "norm", a = 0, b = 750, mean = 250, sd = 50))
-  move_xy(mobility = "750.0",
-          dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)")
+  move_xy(.mobility = "750.0",
+          .dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)")
   # Use an exponential distribution for step lengths
   hist(rtrunc(1e5L, "exp", b = 750, rate = 0.001))
-  move_xy(mobility = "750.0",
-          dbn_length = "truncated(Exponential(0.01), upper = 750.0)")
+  move_xy(.mobility = "750.0",
+          .dbn_length = "truncated(Exponential(0.01), upper = 750.0)")
   # Use a biased random walk
-  move_xy(dbn_angle = "VonMises(0, 1)")
+  move_xy(.dbn_heading = "VonMises(0, 1)")
   # Get help on a distribution in Julia:
   julia_help("Exponential")
 
@@ -43,10 +43,10 @@ if (julia_run()) {
   # Use default options
   move_xyzd()
   # Customise model components
-  move_xyzd(mobility = "750.0",
-            dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)",
-            dbn_angle_delta = "Normal(0, 0.25)",
-            dbn_z_delta = "Normal(0, 2.5)")
+  move_xyzd(.mobility = "750.0",
+            .dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)",
+            .dbn_heading_delta = "Normal(0, 0.25)",
+            .dbn_z_delta = "Normal(0, 2.5)")
 
   #### Example (4): Visualise different movement models
   # Define a timeline for the simulation
@@ -67,7 +67,7 @@ if (julia_run()) {
   pp <- par(mfrow = c(2, 2))
   args$.model_move <- move_xy()
   do.call(sim_path_walk, args)
-  args$.model_move <- move_xy(dbn_angle = "VonMises(0.1, 0.1)")
+  args$.model_move <- move_xy(.dbn_heading = "VonMises(0.1, 0.1)")
   do.call(sim_path_walk, args)
   par(pp)
 

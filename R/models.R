@@ -2,7 +2,7 @@
 #' @description [`State`] is an Abstract Type in [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) that groups state sub-types.
 #'
 #' @details
-#' [`State`] sub-types are `Julia` structures that hold the parameters that describe the state of an individual at a given time step. 'State' typically means 'location' (in two or three dimensions), but individual states may include additional fields for those state dimensions that depend on the state time step. (For example, turning angles may be included in the [`State`] if the turning angle at one time step is dependent upon that at the previous time step.) From an `R`-user perspective, you can think of a [`State`] sub-type as an `S4`-[`class`]-like object, with slots for the state dimensions.
+#' [`State`] sub-types are `Julia` structures that hold the parameters that describe the state of an individual at a given time step. 'State' typically means 'location' (in two or three dimensions), but individual states may include additional fields for those state dimensions that depend on the state time step. (For example, in correlated random walks, the [`State`] should contain the heading, given that the heading at one time step depends on the previous heading and a turning angle.) From an `R`-user perspective, you can think of a [`State`] sub-type as an `S4`-[`class`]-like object, with slots for the state dimensions.
 #'
 #' In [`patter`] functions, the `.state` argument is a `character` string that defines the animal's state sub-type. This must match a [`State`] sub-type defined in `Julia`. The built-in options are:
 #' * `"StateXY"`, which maps to `StateXY` in [`Patter.jl`](https://github.com/edwardlavender/Patter.jl);
@@ -19,8 +19,8 @@
 #' The outcome of [`Patter.sim_states_init()`](https://github.com/edwardlavender/Patter.jl) is a `DataFrame` of initial state(s), which is coerced to a `Vector` of `State`s in `Julia` for the simulation. In [`Patter.jl`](https://github.com/edwardlavender/Patter.jl), the simulation of subsequent states depends on the input state and the movement model.
 #'
 #' The state must match the movement model (see [`ModelMove`]):
-#' * For `"StateXY"`, a movement model that simulates step lengths and turning angles and updates state components (that is, `x` and `y` coordinates) is required;
-#' * For `"StateXYZD"`, a movement model that simulates step lengths, changes in turning angles and changes in depth and updates `x`, `y`, `z` and direction state components is required.
+#' * For `"StateXY"`, a movement model that simulates step lengths and headings and updates state components (that is, `x` and `y` coordinates) is required;
+#' * For `"StateXYZD"`, a movement model that simulates step lengths, turning angles and changes in depth and updates `x`, `y`, `z` and direction state components is required.
 #'
 #' To use custom [`ModelObs`] sub-types, see Examples.
 #'
@@ -69,12 +69,12 @@ NULL
 #' @title Movement models
 #' @description [`ModelMove`] is Abstract Type in [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) that groups movement model sub-types, of which instances can be created via an `R` `move_*()` function.
 #'
-#' @param mobility,dbn_length,dbn_angle,dbn_angle_delta,dbn_z_delta `Character` strings that define movement model components:
-#' * `mobility`---the maximum movement distance between two time steps;
-#' * `dbn_length`---the distribution of step lengths;
-#' * `dbn_angle`---the distribution of turning angles;
-#' * `dbn_angle_delta`---the distribution of changes in turning angles;
-#' * `dbn_z_delta`---the distribution of changes in depth;
+#' @param .mobility,.dbn_length,.dbn_heading,.dbn_heading_delta,.dbn_z_delta `Character` strings that define movement model components:
+#' * `.mobility`---the maximum movement distance between two time steps (m);
+#' * `.dbn_length`---the distribution of step lengths (m);
+#' * `.dbn_heading`---the distribution of headings (rad);
+#' * `.dbn_heading_delta`---the distribution of changes in heading, i.e., turning angle (rad);
+#' * `.dbn_z_delta`---the distribution of changes in depth;
 #'
 #' @details Movement model sub-types are `Julia` structures that hold the components of movement models. From an `R`-user perspective, you can think of a [`ModelMove`] sub-type as an `S4`-[`class`]-like object, with slots for the components of a movement model. With a movement model instance, we can simulate movements and evaluate the density of movements from one state (location) to another.
 #'
@@ -85,7 +85,7 @@ NULL
 #' See [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) or `JuliaCall::julia_help("ModelMove")` for the fields of the built-in sub-types. Briefly, all sub-types include:
 #' * A `map` field, that defines the region(s) within which movements are permitted. In `R`, it is convenient to represent `map` as a [`SpatRaster`], where `NAs` define inhospitable habitats (e.g., land). This should made available to `Julia` [`ModelMove`] constructors as `env` via [`set_map()`];
 #' * The `mobility` parameter;
-#' * Additional model-specific components (such as fields for the distribution of step lengths and turning angles in the case of two-dimensional random walks);
+#' * Additional model-specific components (such as fields for the distribution of step lengths and headings in the case of two-dimensional random walks);
 #'
 #' In [`patter`], movement models are required:
 #' * To simulate movement paths, via [`sim_path_walk()`];
@@ -93,8 +93,8 @@ NULL
 #' * To run the particle smoother, via [`pf_smoother_two_filter()`];
 #'
 #' In `R` functions, the movement-model instance is specified via the `.model_move` argument. This argument expects a `character` string defining a [`ModelMove`] instance that can be evaluated in `Julia` (that is, a [`ModelMove`] constructor). `move_*()` functions are convenience functions for the specification of these constructors for the built-in sub-types. All [`ModelMove`] instances contain a `map` field that defines the region(s) within which movements are permitted. To use a `move_*()` function, the map should be available in `Julia` as `env` (see [`set_map()`]). The additional components of the movement model are specified via `move_*()` function arguments as `character` strings of `Julia` code. Currently implemented `move_*()` functions are:
-#' * [`move_xy()`], which specifies a movement model of sub-type [`ModelMoveXY`] in terms of the distributions of step lengths and turning angles;
-#' * [`move_xyzd()`], which specifies a movement model of sub-type [`ModelMoveXYZD`] in terms of the distributions of step lengths, changes in turning angles and changes in depth;
+#' * [`move_xy()`], which specifies a movement model of sub-type [`ModelMoveXY`] in terms of the distributions of step lengths and headings;
+#' * [`move_xyzd()`], which specifies a movement model of sub-type [`ModelMoveXYZD`] in terms of the distributions of step lengths, turning angles and changes in depth;
 #'
 #' See [here](https://discourse.julialang.org/t/a-comparison-of-common-distributions-in-julia-python-and-r/61604) for the translations of distributions in `R` (e.g., `*norm()`) into `Julia` (e.g., `Normal()`).
 #'
@@ -113,20 +113,20 @@ NULL
 #' @rdname ModelMove
 #' @export
 
-move_xy <- function(mobility = "750.0",
-                    dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
-                    dbn_angle = "Uniform(-pi, pi)") {
+move_xy <- function(.mobility = "750.0",
+                    .dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
+                    .dbn_heading = "Uniform(-pi, pi)") {
   julia_check_exists("env")
-  glue('ModelMoveXY(env, {mobility}, {dbn_length}, {dbn_angle});')
+  glue('ModelMoveXY(env, {.mobility}, {.dbn_length}, {.dbn_heading});')
 }
 
 #' @rdname ModelMove
 #' @export
 
-move_xyzd <- function(mobility= "750.0",
-                      dbn_length = "truncated(Gamma(1.0, 750.0), upper = 750.0)",
-                      dbn_angle_delta = "Normal(0, 0.5)",
-                      dbn_z_delta = "Normal(0, 3.5)") {
+move_xyzd <- function(.mobility = "750.0",
+                      .dbn_length = "truncated(Gamma(1.0, 750.0), upper = 750.0)",
+                      .dbn_heading_delta = "Normal(0, 0.5)",
+                      .dbn_z_delta = "Normal(0, 3.5)") {
   julia_check_exists("env")
-  glue('ModelMoveXYZD(env, {mobility}, {dbn_length}, {dbn_angle_delta}, {dbn_z_delta});')
+  glue('ModelMoveXYZD(env, {.mobility}, {.dbn_length}, {.dbn_heading_delta}, {.dbn_z_delta});')
 }

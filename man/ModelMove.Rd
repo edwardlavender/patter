@@ -10,26 +10,26 @@
 \title{Movement models}
 \usage{
 move_xy(
-  mobility = "750.0",
-  dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
-  dbn_angle = "Uniform(-pi, pi)"
+  .mobility = "750.0",
+  .dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
+  .dbn_heading = "Uniform(-pi, pi)"
 )
 
 move_xyzd(
-  mobility = "750.0",
-  dbn_length = "truncated(Gamma(1.0, 750.0), upper = 750.0)",
-  dbn_angle_delta = "Normal(0, 0.5)",
-  dbn_z_delta = "Normal(0, 3.5)"
+  .mobility = "750.0",
+  .dbn_length = "truncated(Gamma(1.0, 750.0), upper = 750.0)",
+  .dbn_heading_delta = "Normal(0, 0.5)",
+  .dbn_z_delta = "Normal(0, 3.5)"
 )
 }
 \arguments{
-\item{mobility, dbn_length, dbn_angle, dbn_angle_delta, dbn_z_delta}{\code{Character} strings that define movement model components:
+\item{.mobility, .dbn_length, .dbn_heading, .dbn_heading_delta, .dbn_z_delta}{\code{Character} strings that define movement model components:
 \itemize{
-\item \code{mobility}---the maximum movement distance between two time steps;
-\item \code{dbn_length}---the distribution of step lengths;
-\item \code{dbn_angle}---the distribution of turning angles;
-\item \code{dbn_angle_delta}---the distribution of changes in turning angles;
-\item \code{dbn_z_delta}---the distribution of changes in depth;
+\item \code{.mobility}---the maximum movement distance between two time steps (m);
+\item \code{.dbn_length}---the distribution of step lengths (m);
+\item \code{.dbn_heading}---the distribution of headings (rad);
+\item \code{.dbn_heading_delta}---the distribution of changes in heading, i.e., turning angle (rad);
+\item \code{.dbn_z_delta}---the distribution of changes in depth;
 }}
 }
 \value{
@@ -51,7 +51,7 @@ See \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} or \code
 \itemize{
 \item A \code{map} field, that defines the region(s) within which movements are permitted. In \code{R}, it is convenient to represent \code{map} as a \code{\link{SpatRaster}}, where \code{NAs} define inhospitable habitats (e.g., land). This should made available to \code{Julia} \code{\link{ModelMove}} constructors as \code{env} via \code{\link[=set_map]{set_map()}};
 \item The \code{mobility} parameter;
-\item Additional model-specific components (such as fields for the distribution of step lengths and turning angles in the case of two-dimensional random walks);
+\item Additional model-specific components (such as fields for the distribution of step lengths and headings in the case of two-dimensional random walks);
 }
 
 In \code{\link{patter}}, movement models are required:
@@ -63,8 +63,8 @@ In \code{\link{patter}}, movement models are required:
 
 In \code{R} functions, the movement-model instance is specified via the \code{.model_move} argument. This argument expects a \code{character} string defining a \code{\link{ModelMove}} instance that can be evaluated in \code{Julia} (that is, a \code{\link{ModelMove}} constructor). \verb{move_*()} functions are convenience functions for the specification of these constructors for the built-in sub-types. All \code{\link{ModelMove}} instances contain a \code{map} field that defines the region(s) within which movements are permitted. To use a \verb{move_*()} function, the map should be available in \code{Julia} as \code{env} (see \code{\link[=set_map]{set_map()}}). The additional components of the movement model are specified via \verb{move_*()} function arguments as \code{character} strings of \code{Julia} code. Currently implemented \verb{move_*()} functions are:
 \itemize{
-\item \code{\link[=move_xy]{move_xy()}}, which specifies a movement model of sub-type \code{\link{ModelMoveXY}} in terms of the distributions of step lengths and turning angles;
-\item \code{\link[=move_xyzd]{move_xyzd()}}, which specifies a movement model of sub-type \code{\link{ModelMoveXYZD}} in terms of the distributions of step lengths, changes in turning angles and changes in depth;
+\item \code{\link[=move_xy]{move_xy()}}, which specifies a movement model of sub-type \code{\link{ModelMoveXY}} in terms of the distributions of step lengths and headings;
+\item \code{\link[=move_xyzd]{move_xyzd()}}, which specifies a movement model of sub-type \code{\link{ModelMoveXYZD}} in terms of the distributions of step lengths, turning angles and changes in depth;
 }
 
 See \href{https://discourse.julialang.org/t/a-comparison-of-common-distributions-in-julia-python-and-r/61604}{here} for the translations of distributions in \code{R} (e.g., \verb{*norm()}) into \code{Julia} (e.g., \code{Normal()}).
@@ -104,14 +104,14 @@ if (julia_run()) {
   #### Example (2): Customise `move_xy()`
   # Use a truncated normal distribution for step lengths:
   hist(rtrunc(1e5L, "norm", a = 0, b = 750, mean = 250, sd = 50))
-  move_xy(mobility = "750.0",
-          dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)")
+  move_xy(.mobility = "750.0",
+          .dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)")
   # Use an exponential distribution for step lengths
   hist(rtrunc(1e5L, "exp", b = 750, rate = 0.001))
-  move_xy(mobility = "750.0",
-          dbn_length = "truncated(Exponential(0.01), upper = 750.0)")
+  move_xy(.mobility = "750.0",
+          .dbn_length = "truncated(Exponential(0.01), upper = 750.0)")
   # Use a biased random walk
-  move_xy(dbn_angle = "VonMises(0, 1)")
+  move_xy(.dbn_heading = "VonMises(0, 1)")
   # Get help on a distribution in Julia:
   julia_help("Exponential")
 
@@ -119,10 +119,10 @@ if (julia_run()) {
   # Use default options
   move_xyzd()
   # Customise model components
-  move_xyzd(mobility = "750.0",
-            dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)",
-            dbn_angle_delta = "Normal(0, 0.25)",
-            dbn_z_delta = "Normal(0, 2.5)")
+  move_xyzd(.mobility = "750.0",
+            .dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)",
+            .dbn_heading_delta = "Normal(0, 0.25)",
+            .dbn_z_delta = "Normal(0, 2.5)")
 
   #### Example (4): Visualise different movement models
   # Define a timeline for the simulation
@@ -143,7 +143,7 @@ if (julia_run()) {
   pp <- par(mfrow = c(2, 2))
   args$.model_move <- move_xy()
   do.call(sim_path_walk, args)
-  args$.model_move <- move_xy(dbn_angle = "VonMises(0.1, 0.1)")
+  args$.model_move <- move_xy(.dbn_heading = "VonMises(0.1, 0.1)")
   do.call(sim_path_walk, args)
   par(pp)
 

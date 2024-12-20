@@ -455,7 +455,7 @@ the two-dimensional (x, y) location of our animal through time (that is,
 the animal’s ‘state’ is an object of type `StateXY`). The animal can
 move up to 750 m in two minutes, which is the resolution at which we
 will model movement, and we formulate a random walk model accordingly
-based on step lengths and turning angles:
+based on step lengths and headings:
 
 ``` r
 # Define the animal's state:
@@ -463,9 +463,9 @@ state      <- "StateXY"
 
 # Formulate a corresponding movement model:
 mobility   <- 750.0
-model_move <- move_xy(mobility   = "750.0", 
-                      dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
-                      dbn_angle  = "Uniform(-pi, pi)")
+model_move <- move_xy(.mobility   = "750.0", 
+                      .dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
+                      .dbn_heading  = "Uniform(-pi, pi)")
 
 # Visualise realisations of the movement model:
 map |> 

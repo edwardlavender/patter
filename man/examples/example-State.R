@@ -47,8 +47,8 @@ if (julia_run()) {
     # Distribution for step lengths
     mobility::U
     dbn_length::V
-    # Distribution for turning angles
-    dbn_angle::W
+    # Distribution for headings
+    dbn_heading::W
     # Distribution for changes in depth
     dbn_z_delta::X
   end
@@ -56,14 +56,18 @@ if (julia_run()) {
   )
   # Instantiate the movement model
   # > We will write an R function to instantiate the movement model
-  move_xyz <- function(mobility = "750.0",
-                       length = "truncated(Gamma(1.0, 750.0), upper = 750.0)",
-                       angle = "Uniform(-pi, pi)",
-                       z_delta = "Normal(0, 3.5)") {
+  move_xyz <- function(.mobility = "750.0",
+                       .dbn_length = "truncated(Gamma(1.0, 750.0), upper = 750.0)",
+                       .dbn_heading = "Uniform(-pi, pi)",
+                       .dbn_z_delta = "Normal(0, 3.5)") {
     # (optional) Verify the map (`env` in Julia) exists:
     # patter:::julia_check_exists("env")
     # Define the movement model `Julia` code as a String
-    glue::glue('ModelMoveXYZ(env, {mobility}, {length}, {angle}, {z_delta});')
+    glue::glue('ModelMoveXYZ(env,
+                            {.mobility},
+                            {.dbn_length},
+                            {.dbn_heading},
+                            {.dbn_z_delta});')
   }
   # (optional) Define a `Patter.states_init()` method to simulate initial states
   # * This function should accept:
@@ -83,11 +87,11 @@ if (julia_run()) {
   function Patter.simulate_step(state::StateXYZ, model::ModelMoveXYZ, t::Int64)
     # Simulate a step length
     length = rand(model.dbn_length)
-    # Simulate a turning angle
-    angle  = rand(model.dbn_angle)
+    # Simulate a heading
+    heading  = rand(model.dbn_heading)
     # Calculate new x, y, z coordinates
-    x      = state.x + length * cos(angle)
-    y      = state.y + length * sin(angle)
+    x      = state.x + length * cos(heading)
+    y      = state.y + length * sin(heading)
     z      = state.z + rand(model.dbn_z_delta)
     # Include the map value
     map_value = Patter.extract(model.map, x, y)
@@ -169,12 +173,12 @@ if (julia_run()) {
     function Patter.logpdf_step(state_from::StateXYZ, state_to::StateXYZ,
                                 model_move::ModelMoveXYZ,
                                 t::Int64,
-                                length::Float64, angle::Float64)
+                                length::Float64, heading::Float64)
         # Calculate change in depth
         z_delta = state_to.z - state_from.z
         # Evaluate unnormalised log probability
         logpdf(model_move.dbn_length, length) +
-          logpdf(model_move.dbn_angle, angle) +
+          logpdf(model_move.dbn_heading, heading) +
           logpdf(model_move.dbn_z_delta, z_delta)
     end
     '

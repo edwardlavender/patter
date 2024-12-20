@@ -72,9 +72,9 @@ moorings <- run(file = here_data_raw("benchmark", "moorings.rds"),
 state      <- "StateXY"
 mobility   <- 750
 model_move <-
-  move_xy(mobility   = "750.0",
-          dbn_length = glue("truncated(Gamma(15.0, 250.0), upper = {mobility})"),
-          dbn_angle  = "Uniform(-pi, pi)")
+  move_xy(.mobility     = mobility,
+          .dbn_length   = glue("truncated(Gamma(15.0, 250.0), upper = {mobility})"),
+          .dbn_heading  = "Uniform(-pi, pi)")
 # Simulate path
 path <- run(here_data_raw("benchmark", "paths.rds"),
             overwrite = overwrite,

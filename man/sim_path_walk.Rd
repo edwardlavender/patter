@@ -152,19 +152,19 @@ if (julia_run()) {
                 .one_page = TRUE)
 
   #### Example (5): Customise two-dimensional random walks via `move_xy()`
-  # Adjust distributions for step lengths and turning angles
+  # Adjust distributions for step lengths and headings
   model_move <-
-    move_xy(mobility = "750.0",
-            dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)",
-            dbn_angle = "VonMises(0.1, 0.1)")
+    move_xy(.mobility = "750.0",
+            .dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)",
+            .dbn_heading = "VonMises(0.1, 0.1)")
   sim_path_walk(.map = map,
                 .timeline = timeline,
                 .state = "StateXY",
                 .model_move = model_move)
   # Experiment with other options
   model_move <-
-    move_xy(mobility   = "300.0",
-            dbn_length = "truncated(Normal(10.0, 50.0), lower = 0.0, upper = 300.0)")
+    move_xy(.mobility   = "300.0",
+            .dbn_length = "truncated(Normal(10.0, 50.0), lower = 0.0, upper = 300.0)")
   sim_path_walk(.map = map,
                 .timeline = timeline,
                 .state = "StateXY",
@@ -180,8 +180,8 @@ if (julia_run()) {
   sim_path_walk(.map = map,
                 .timeline = timeline,
                 .state = "StateXYZD",
-                .model_move = move_xyzd(dbn_angle_delta = "Normal(0, 1)",
-                                        dbn_z_delta = "Normal(0, 0.5)"))
+                .model_move = move_xyzd(.dbn_heading_delta = "Normal(0, 1)",
+                                        .dbn_z_delta = "Normal(0, 0.5)"))
 
   #### Example (7): Use custom .state/.model_move sub-types
   # See `?State` and ?ModelMove`
