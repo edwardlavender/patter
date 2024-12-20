@@ -152,7 +152,25 @@ if (!fwd$convergence) {
   stop("Backward filter failed to converge.")
 }
 
-#### Particle smoother: ~3.8 min (loop: 2:14)
+#### Particle smoother:
+#
+# Baseline:
+# ~3.80 min (loop: 02:14)
+#
+# Replace LRUcache with Dict() in two_filter_smoother():
+# ~3.35 min (loop: 01:47)
+# - Speed of normalisation precomputation is maintained
+# - Loop is 27 s faster
+# - Smoother is 27 s faster
+#
+# Tweak Dict() cache generation:
+# ~3.40 min (loop: 01:48)
+# - Similar speed achieved
+#
+# Try multithreading smoother
+# ~2.8 min (loop: 1:16)
+# - Smoothing is ~32 s faster
+
 t1_smo   <- Sys.time()
 smo      <- pf_smoother_two_filter(.n_particle = 500L, .n_sim = 100L, .cache = TRUE)
 t2_smo   <- Sys.time()
@@ -167,14 +185,15 @@ secs_smo <- secs(t2_smo, t1_smo)
 benchmarks <- data.table(timestamp = timestamp,
                          threads   = threads,
                          routine   = c("fwd", "bwd", "smo"),
-                         time      = c(secs_fwd, secs_bwd, secs_smo)
+                         time      = c(secs_fwd, secs_bwd, secs_smo),
+                         note      = "Try multithreading smoother"
                          )
 
 #### Write to file
 write.table(benchmarks,
             here_data_raw("benchmark", "benchmarks.txt"),
             append = TRUE,
-            sep = ",", quote = FALSE, row.names = FALSE)
+            sep = ",", quote = FALSE, row.names = FALSE, col.names = FALSE)
 
 
 #### End of code.
