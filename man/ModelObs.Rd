@@ -56,14 +56,14 @@ if (julia_run()) {
   set_map(map)
 
   #### Simulate path(s)
-  # > We simulate a path in four dimensions (see `?StateXYZD`)
+  # > We simulate a path in four dimensions (see `?StateCXYZ`)
   timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
                   length.out = 1000L, by = "2 mins")
   paths <- sim_path_walk(.map = map,
                          .timeline = timeline,
-                         .state = "StateXYZD",
+                         .state = "StateCXYZ",
                          .xinit = NULL, .n_path = 1L,
-                         .model_move = move_xyzd(),
+                         .model_move = move_cxyz(),
                          .plot = TRUE,
                          .one_page = TRUE)
 
@@ -87,7 +87,7 @@ if (julia_run()) {
   # * ... the depth of the seabed (`state.map_value`) and the surface.
   julia_command(
     '
-  function Patter.simulate_obs(state::StateXYZD, model::ModelObsDepthNormal, t::Int64)
+  function Patter.simulate_obs(state::StateCXYZ, model::ModelObsDepthNormal, t::Int64)
     dbn   = truncated(Normal(state.z, model.depth_sigma), 0, state.map_value)
     rand(dbn)
   end
@@ -128,9 +128,9 @@ if (julia_run()) {
   )
   # Run the filter
   fwd <- pf_filter(.timeline = timeline,
-                   .state = "StateXYZD",
+                   .state = "StateCXYZ",
                    .yobs = yobs,
-                   .model_move = move_xyzd(),
+                   .model_move = move_cxyz(),
                    .n_particle = 1000L)
   # Visualise reconstructed time series
   # * Black: particle depths

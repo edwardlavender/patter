@@ -84,13 +84,13 @@ if (julia_run()) {
   # Simulate a correlated random walk
   sim_path_walk(.map = map,
                 .timeline = timeline,
-                .state = "StateXYZD",
-                .model_move = move_xyzd())
+                .state = "StateCXYZ",
+                .model_move = move_cxyz())
   # Modify movement model parameters
   sim_path_walk(.map = map,
                 .timeline = timeline,
-                .state = "StateXYZD",
-                .model_move = move_xyzd(.dbn_heading_delta = "Normal(0, 1)",
+                .state = "StateCXYZ",
+                .model_move = move_cxyz(.dbn_heading_delta = "Normal(0, 1)",
                                         .dbn_z_delta = "Normal(0, 0.5)"))
 
   #### Example (7): Use custom .state/.model_move sub-types

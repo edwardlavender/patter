@@ -20,12 +20,12 @@ if (julia_run()) {
   # > This is required as a component of all movement models
   set_map(map)
 
-  #### Example (1): Use `move_xy()` with default options
+  #### Example (1a): Use `move_xy()` with default options
   # `move_*()` functions simply return a character string of Julia code
   # (Downstream functions can evaluate this code, as shown below)
   move_xy()
 
-  #### Example (2): Customise `move_xy()`
+  #### Example (1b): Customise `move_xy()`
   # Use a truncated normal distribution for step lengths:
   hist(rtrunc(1e5L, "norm", a = 0, b = 750, mean = 250, sd = 50))
   move_xy(.mobility = "750.0",
@@ -39,11 +39,27 @@ if (julia_run()) {
   # Get help on a distribution in Julia:
   julia_help("Exponential")
 
-  #### Example (3): Customise `move_xyzd()`
+  #### Example (2): Use `move_xyz()`
   # Use default options
-  move_xyzd()
+  move_xyz()
   # Customise model components
-  move_xyzd(.mobility = "750.0",
+  move_xyz(.mobility = "750.0",
+           .dbn_length = "truncated(Exponential(0.01), upper = 750.0)",
+           .dbn_z = "truncated(Gamma(1.0, 250.0), lower = 0.0, upper = 350.0)")
+
+  #### Example (3): Use `move_cxy()`
+  # Use default options
+  move_cxy()
+  # Customise model components
+  move_cxy(.mobility = "750.0",
+            .dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)",
+            .dbn_heading_delta = "Normal(0, 0.25)")
+
+  #### Example (4): Use `move_cxyz()`
+  # Use default options
+  move_cxyz()
+  # Customise model components
+  move_cxyz(.mobility = "750.0",
             .dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)",
             .dbn_heading_delta = "Normal(0, 0.25)",
             .dbn_z_delta = "Normal(0, 2.5)")

@@ -4,7 +4,9 @@
 \alias{State}
 \alias{.state}
 \alias{StateXY}
-\alias{StateXYZD}
+\alias{StateXYZ}
+\alias{StateCXY}
+\alias{StateCXYZ}
 \title{States}
 \description{
 \code{\link{State}} is an Abstract Type in \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} that groups state sub-types.
@@ -14,8 +16,10 @@
 
 In \code{\link{patter}} functions, the \code{.state} argument is a \code{character} string that defines the animal's state sub-type. This must match a \code{\link{State}} sub-type defined in \code{Julia}. The built-in options are:
 \itemize{
-\item \code{"StateXY"}, which maps to \code{StateXY} in \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}};
-\item \code{"StateXYZD"}, which maps to \code{StateXYZD} in \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}};
+\item \code{"StateXY"}, which maps to \code{StateXY};
+\item \code{"StateXYX"}, which maps to \code{StateXYZ};
+\item \code{"StateCXY"}, which maps to \code{StateCXY} ;
+\item \code{"StateCXYZ"}, which maps to \code{StateCXYZ};
 }
 
 See \href{https://edwardlavender.github.io/Patter.jl}{\code{State}} or \code{JuliaCall::julia_help("State")} for the fields of the built-in sub-types.
@@ -23,7 +27,9 @@ See \href{https://edwardlavender.github.io/Patter.jl}{\code{State}} or \code{Jul
 \code{.state} is used by \code{\link[=sim_path_walk]{sim_path_walk()}} and \code{\link[=pf_filter]{pf_filter()}}, both of which effectively simulate time series of states. \code{.state} controls the simulation of initial locations and subsequent method dispatch in \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}. \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.sim_states_init()}} handles the simulation of initial states in these routines. When \code{.state} is
 \itemize{
 \item \code{"StateXY"}, the initial state comprises \code{x} and \code{y} coordinates;
-\item \code{"StateXYZD"}, the initial states comprises \code{x}, \code{y} and \code{z} coordinates and an initial direction;
+\item \code{"StateXYZ"}, the initial state comprises \code{x}, \code{y} and \code{z} coordinates;
+\item \code{"StateCXY"}, the initial state comprises \code{x} and \code{y} coordinates and an initial heading;
+\item \code{"StateCXYZ"}, the initial states comprises \code{x}, \code{y} and \code{z} coordinates and an initial heading;
 }
 
 All states additionally include a \code{map_value} field that defines the value on the movement map at (\code{x}, \code{y}).
@@ -32,8 +38,10 @@ The outcome of \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.s
 
 The state must match the movement model (see \code{\link{ModelMove}}):
 \itemize{
-\item For \code{"StateXY"}, a movement model that simulates step lengths and headings and updates state components (that is, \code{x} and \code{y} coordinates) is required;
-\item For \code{"StateXYZD"}, a movement model that simulates step lengths, turning angles and changes in depth and updates \code{x}, \code{y}, \code{z} and direction state components is required.
+\item For \code{"StateXY"}, a movement model that simulates step lengths and headings, and updates state components (that is, \code{x} and \code{y} coordinates), is required;
+\item For \code{"StateXYZ"}, a movement model that simulates step lengths, headings and depths, and updates state components (that is, \code{x}, \code{y} and \code{z} coordinates), is required;
+\item For \code{"StateCXY"}, a movement model that simulates step lengths and turning angles, and updates \code{x}, \code{y}, \code{heading} state components, is required.
+\item For \code{"StateCXYZ"}, a movement model that simulates step lengths, turning angles and changes in depth, and updates \code{x}, \code{y}, \code{z} and \code{heading} state components, is required.
 }
 
 To use custom \code{\link{ModelObs}} sub-types, see Examples.
@@ -62,11 +70,16 @@ if (julia_run()) {
   set_map(map)
 
   #### Define a `State` and a corresponding `ModelMove` instance
+
+  # We consider a random walk in X, Y, Z
+  # > This is for demonstration only!
+  # > The structures and methods below are already directly available!
+  # > (See: ?StateXYZ, ?ModelMoveXYZ, ?move_xyz)
+
   # Define a custom `State` sub-type
-  # > We consider the location of the animal in three-dimensions
   julia_command(
     '
-  struct StateXYZ <: Patter.State
+  struct StateCustom <: Patter.State
     # Map value
     # > This is required for all states & is the value on the map at (x, y)
     map_value::Float64
@@ -77,11 +90,12 @@ if (julia_run()) {
   end
   '
   )
+
   # Define a corresponding movement model sub-type
   # > We will consider a random walk in 3D
   julia_command(
     '
-  struct ModelMoveXYZ{T, U, V, W, X} <: Patter.ModelMove
+  struct ModelMoveCustom{T, U, V, W, X} <: Patter.ModelMove
     # The environment (i.e., map)
     # > This defines the regions within which movements are permitted (i.e., in water)
     map::T
@@ -95,37 +109,40 @@ if (julia_run()) {
   end
   '
   )
+
   # Instantiate the movement model
   # > We will write an R function to instantiate the movement model
-  move_xyz <- function(.mobility = "750.0",
+  move_custom <- function(.mobility = "750.0",
                        .dbn_length = "truncated(Gamma(1.0, 750.0), upper = 750.0)",
                        .dbn_heading = "Uniform(-pi, pi)",
                        .dbn_z_delta = "Normal(0, 3.5)") {
     # (optional) Verify the map (`env` in Julia) exists:
     # patter:::julia_check_exists("env")
     # Define the movement model `Julia` code as a String
-    glue::glue('ModelMoveXYZ(env,
-                            {.mobility},
-                            {.dbn_length},
-                            {.dbn_heading},
-                            {.dbn_z_delta});')
+    glue::glue('ModelMoveCustom(env,
+                                {.mobility},
+                                {.dbn_length},
+                                {.dbn_heading},
+                                {.dbn_z_delta});')
   }
+
   # (optional) Define a `Patter.states_init()` method to simulate initial states
   # * This function should accept:
   # * `state`: the state;
   # * `coords`: A `data.table` with initial coordinates (x, y and map_value);
   julia_command(
     '
-    function Patter.states_init(state_type::Type{StateXYZ}, coords)
+    function Patter.states_init(state_type::Type{StateCustom}, coords)
       coords.z = coords.map_value .* rand(nrow(coords))
       return coords
     end
     '
   )
+
   # Define a `Patter.simulate_step()` method to update the state in Julia
   julia_command(
     '
-  function Patter.simulate_step(state::StateXYZ, model::ModelMoveXYZ, t::Int64)
+  function Patter.simulate_step(state::StateCustom, model::ModelMoveCustom, t::Int64)
     # Simulate a step length
     length = rand(model.dbn_length)
     # Simulate a heading
@@ -137,7 +154,7 @@ if (julia_run()) {
     # Include the map value
     map_value = Patter.extract(model.map, x, y)
     # Define the state
-    StateXYZ(map_value, x, y, z)
+    StateCustom(map_value, x, y, z)
   end
   '
   )
@@ -147,8 +164,8 @@ if (julia_run()) {
                   length.out = 1000L, by = "2 mins")
   paths <- sim_path_walk(.map = map,
                          .timeline = timeline,
-                         .state = "StateXYZ",
-                         .model_move = move_xyz(),
+                         .state = "StateCustom",
+                         .model_move = move_custom(),
                          .plot = TRUE)
 
   #### Simulate observations arising from the simulated path
@@ -180,9 +197,9 @@ if (julia_run()) {
   set_map(origin, .as_Raster = TRUE, .as_GeoArray = FALSE)
   # Run the filter
   fwd <- pf_filter(.timeline = timeline,
-                   .state = "StateXYZ",
+                   .state = "StateCustom",
                    .yobs = yobs,
-                   .model_move = move_xyz())
+                   .model_move = move_custom())
   # Visualise reconstructed time series
   # * Black: particle depths
   # * Blue: simulated time series
@@ -199,20 +216,21 @@ if (julia_run()) {
   set_map(origin, .as_Raster = TRUE, .as_GeoArray = FALSE)
   # Run the filter
   bwd <- pf_filter(.timeline = timeline,
-                   .state = "StateXYZ",
+                   .state = "StateCustom",
                    .yobs = yobs,
-                   .model_move = move_xyz(),
+                   .model_move = move_custom(),
                    .direction = "backward")
 
   #### Run the smoother
+
   # Write a `Patter.logpdf_step()` method
   # ... to evaluate the unnormalised log probability (density)
   # ... of an unrestricted step from one state to another
   # See: julia_help("Patter.logpdf_step")
   julia_command(
     '
-    function Patter.logpdf_step(state_from::StateXYZ, state_to::StateXYZ,
-                                model_move::ModelMoveXYZ,
+    function Patter.logpdf_step(state_from::StateCustom, state_to::StateCustom,
+                                model_move::ModelMoveCustom,
                                 t::Int64,
                                 length::Float64, heading::Float64)
         # Calculate change in depth
@@ -224,6 +242,7 @@ if (julia_run()) {
     end
     '
   )
+
   # Run the smoother
   # * >500 particles are required here to ensure
   # ... sufficient matching between `fwd` & `bwd`

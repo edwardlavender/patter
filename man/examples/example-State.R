@@ -21,11 +21,16 @@ if (julia_run()) {
   set_map(map)
 
   #### Define a `State` and a corresponding `ModelMove` instance
+
+  # We consider a random walk in X, Y, Z
+  # > This is for demonstration only!
+  # > The structures and methods below are already directly available!
+  # > (See: ?StateXYZ, ?ModelMoveXYZ, ?move_xyz)
+
   # Define a custom `State` sub-type
-  # > We consider the location of the animal in three-dimensions
   julia_command(
     '
-  struct StateXYZ <: Patter.State
+  struct StateCustom <: Patter.State
     # Map value
     # > This is required for all states & is the value on the map at (x, y)
     map_value::Float64
@@ -36,11 +41,12 @@ if (julia_run()) {
   end
   '
   )
+
   # Define a corresponding movement model sub-type
   # > We will consider a random walk in 3D
   julia_command(
     '
-  struct ModelMoveXYZ{T, U, V, W, X} <: Patter.ModelMove
+  struct ModelMoveCustom{T, U, V, W, X} <: Patter.ModelMove
     # The environment (i.e., map)
     # > This defines the regions within which movements are permitted (i.e., in water)
     map::T
@@ -54,37 +60,40 @@ if (julia_run()) {
   end
   '
   )
+
   # Instantiate the movement model
   # > We will write an R function to instantiate the movement model
-  move_xyz <- function(.mobility = "750.0",
+  move_custom <- function(.mobility = "750.0",
                        .dbn_length = "truncated(Gamma(1.0, 750.0), upper = 750.0)",
                        .dbn_heading = "Uniform(-pi, pi)",
                        .dbn_z_delta = "Normal(0, 3.5)") {
     # (optional) Verify the map (`env` in Julia) exists:
     # patter:::julia_check_exists("env")
     # Define the movement model `Julia` code as a String
-    glue::glue('ModelMoveXYZ(env,
-                            {.mobility},
-                            {.dbn_length},
-                            {.dbn_heading},
-                            {.dbn_z_delta});')
+    glue::glue('ModelMoveCustom(env,
+                                {.mobility},
+                                {.dbn_length},
+                                {.dbn_heading},
+                                {.dbn_z_delta});')
   }
+
   # (optional) Define a `Patter.states_init()` method to simulate initial states
   # * This function should accept:
   # * `state`: the state;
   # * `coords`: A `data.table` with initial coordinates (x, y and map_value);
   julia_command(
     '
-    function Patter.states_init(state_type::Type{StateXYZ}, coords)
+    function Patter.states_init(state_type::Type{StateCustom}, coords)
       coords.z = coords.map_value .* rand(nrow(coords))
       return coords
     end
     '
   )
+
   # Define a `Patter.simulate_step()` method to update the state in Julia
   julia_command(
     '
-  function Patter.simulate_step(state::StateXYZ, model::ModelMoveXYZ, t::Int64)
+  function Patter.simulate_step(state::StateCustom, model::ModelMoveCustom, t::Int64)
     # Simulate a step length
     length = rand(model.dbn_length)
     # Simulate a heading
@@ -96,7 +105,7 @@ if (julia_run()) {
     # Include the map value
     map_value = Patter.extract(model.map, x, y)
     # Define the state
-    StateXYZ(map_value, x, y, z)
+    StateCustom(map_value, x, y, z)
   end
   '
   )
@@ -106,8 +115,8 @@ if (julia_run()) {
                   length.out = 1000L, by = "2 mins")
   paths <- sim_path_walk(.map = map,
                          .timeline = timeline,
-                         .state = "StateXYZ",
-                         .model_move = move_xyz(),
+                         .state = "StateCustom",
+                         .model_move = move_custom(),
                          .plot = TRUE)
 
   #### Simulate observations arising from the simulated path
@@ -139,9 +148,9 @@ if (julia_run()) {
   set_map(origin, .as_Raster = TRUE, .as_GeoArray = FALSE)
   # Run the filter
   fwd <- pf_filter(.timeline = timeline,
-                   .state = "StateXYZ",
+                   .state = "StateCustom",
                    .yobs = yobs,
-                   .model_move = move_xyz())
+                   .model_move = move_custom())
   # Visualise reconstructed time series
   # * Black: particle depths
   # * Blue: simulated time series
@@ -158,20 +167,21 @@ if (julia_run()) {
   set_map(origin, .as_Raster = TRUE, .as_GeoArray = FALSE)
   # Run the filter
   bwd <- pf_filter(.timeline = timeline,
-                   .state = "StateXYZ",
+                   .state = "StateCustom",
                    .yobs = yobs,
-                   .model_move = move_xyz(),
+                   .model_move = move_custom(),
                    .direction = "backward")
 
   #### Run the smoother
+
   # Write a `Patter.logpdf_step()` method
   # ... to evaluate the unnormalised log probability (density)
   # ... of an unrestricted step from one state to another
   # See: julia_help("Patter.logpdf_step")
   julia_command(
     '
-    function Patter.logpdf_step(state_from::StateXYZ, state_to::StateXYZ,
-                                model_move::ModelMoveXYZ,
+    function Patter.logpdf_step(state_from::StateCustom, state_to::StateCustom,
+                                model_move::ModelMoveCustom,
                                 t::Int64,
                                 length::Float64, heading::Float64)
         # Calculate change in depth
@@ -183,6 +193,7 @@ if (julia_run()) {
     end
     '
   )
+
   # Run the smoother
   # * >500 particles are required here to ensure
   # ... sufficient matching between `fwd` & `bwd`
