@@ -2,14 +2,13 @@
 
 ## Major changes
 
-`patter` v 2.0.0 includes some major internal changes required to required to permit use on Linux. There are small changes in the API of some functions as a result. We have also added new data-assembly routines, most notably `assemble_acoustics_containers()`, which support particle filtering, alongside additional improvements to select functions. Where required for existing code, you can continue to use `patter` v1.0.1 with [`renv`](https://rstudio.github.io/renv/articles/renv.html). 
+`patter` v 2.0.0 includes some major internal and external changes associated with a revamp required to permit use on Linux and other improvements. There are some breaking changes in the API of some functions as a result. We have also added new data-assembly routines, most notably `assemble_acoustics_containers()`, which support particle filtering, alongside additional improvements to select functions. Where required for existing code, you can continue to use `patter` v1.0.1 with [`renv`](https://rstudio.github.io/renv/articles/renv.html). 
 
 * **Julia setup** 
     * `julia_connect()` has been revised and enhanced. The `.threads` argument has been replaced with `JULIA_NUM_THREADS`. 
 
 * **Map export** 
     * `set_map()` has been revamped to support applications on Linux. The function accepts a file path to a raster and includes `.as_Raster` and `.as_GeoArray` arguments. 
-
 * **Data assembly** 
     * A distinction is made between detections and acoustic observations, which include detections and non-detections:
         * `dat_acoustics` has been renamed to `dat_detections`;
@@ -23,6 +22,8 @@
     *  A bug in `map_init.ModelObsAcousticLogisTrunc` that overly restricted the region from which initial samples were drawn has been fixed in the new `Julia` routines. 
 
 * **Movement simulation**
+    * New `State`s and `ModelMove`s have been implemented. Current options are `StateXY`, `StateXYZ`, `StateCXY` and `StateCXZY`, which map to `ModelMoveXY`, `ModelMoveXYZ`, `ModelMoveCXY` and `ModelMoveCXZY`. (`StateXYZD` and `ModelMoveXYZD` have been renamed.)
+    * `move_*()` wrappers now return a `character` with an additional `ModelMove` and `ModelMove*` class label. Plot methods are provided for in-build classes (see `plot.ModelMove`).
     * `sim_path_walk()` now fails with an error for invalid maps/movement models.  
     * A new `.collect` argument collect outputs in `R`. 
 
