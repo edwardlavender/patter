@@ -422,10 +422,12 @@ test_that("pf_filter_init() works", {
   expect_equal(output, sxy)
 
   # `states_init.StateXYZ()`
-  # TO DO
+  output <- states_init(state_type = "StateXYZ")
+  check_names(output, c("map_value", "x", "y", "z"))
 
   # `states_init.StateCXY`
-  # TO DO
+  output <- states_init(state_type = "StateCXY")
+  check_names(output, c("map_value", "x", "y", "heading"))
 
   # `states_init.StateCXYZ()`
   output <- states_init(state_type = "StateCXYZ")

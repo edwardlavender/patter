@@ -234,6 +234,95 @@ test_that("pf_filter() permits .yobs = list()", {
   expect_true(all(!is.na(fwd_1$states)))
 })
 
+test_that("pf_filter() & pf_smoother_two_filter() work for all states", {
+
+  set_seed()
+
+  #### Define map
+  map <- dat_gebco()
+  set_map(map)
+
+  #### Define timeline
+  timeline <- seq(as.POSIXct("2023-01-01 12:00:00", tz = "UTC"),
+                  as.POSIXct("2023-01-31 23:58:00", tz = "UTC"),
+                  by = "2 mins")
+  timeline <- timeline[1:100]
+
+  #### Define observation model parameters
+  # Simulate array
+  moorings <- sim_array(.map = map,
+                        .timeline = timeline,
+                        .n_receiver = 100L,
+                        .arrangement = "regular")
+  # Collect acoustic parameters
+  pars_acc <-
+    moorings |>
+    select(sensor_id = "receiver_id",
+           "receiver_x", "receiver_y",
+           "receiver_alpha", "receiver_beta", "receiver_gamma") |>
+    as.data.table()
+  # Collect archival parameters
+  pars_arc <- data.table(sensor_id = 1L,
+                         depth_shallow_eps = 0,
+                         depth_deep_eps = 0)
+  # Collect the model_obs list
+  model_obs <- list(ModelObsAcousticLogisTrunc = pars_acc,
+                    ModelObsDepthUniform = pars_arc)
+
+  #### Implement algorithms
+  mapply(function(.state, .model_move, .columns) {
+
+    # Simulate a movement path
+    paths <- sim_path_walk(.map         = map,
+                           .timeline    = timeline,
+                           .state       = .state,
+                           .model_move  = .model_move)
+    expect_equal(colnames(paths),
+                 c("path_id", "timestep", "timestamp", "map_value", .columns))
+
+    # Simulate observations
+    sobs <-
+      sim_observations(.timeline = timeline,
+                       .model_obs = model_obs)
+    yobs <-
+      list(ModelObsAcousticLogisTrunc = sobs$ModelObsAcousticLogisTrunc[[1]],
+           ModelObsDepthUniform       = sobs$ModelObsDepthUniform[[1]])
+
+    # Run forward filter
+    fwd <- pf_filter(.timeline   = timeline,
+                     .state      = .state,
+                     .yobs       = yobs,
+                     .model_move = .model_move,
+                     .n_particle = 1e5L)
+    expect_equal(colnames(fwd$states),
+                 c("path_id", "timestep", "timestamp", "map_value", .columns))
+
+    # Run backward filter
+    bwd <- pf_filter(.timeline   = timeline,
+                     .state      = .state,
+                     .yobs       = yobs,
+                     .model_move = .model_move,
+                     .n_particle = 1e5L,
+                     .direction  = "backward")
+    expect_equal(colnames(bwd$states),
+                 c("path_id", "timestep", "timestamp", "map_value", .columns))
+
+    # Run smoother
+    set_vmap()
+    smo <- pf_smoother_two_filter(.n_particle = 100L)
+    expect_equal(colnames(smo$states),
+                 c("path_id", "timestep", "timestamp", "map_value", .columns))
+
+    NULL
+
+  },
+  list("StateXY", "StateXYZ", "StateCXY", "StateCXYZ"),
+  list(move_xy(), move_xyz(), move_cxy(), move_cxyz()),
+  list(c("x", "y"), c("x", "y", "z"), c("x", "y", "heading"), c("x", "y", "z", "heading"))
+  )
+
+})
+
 test_that("pf_filter() permits missing .yobs", {
 
   setup <- example_setup("pf_smoother_two_filter", .connect = FALSE)
@@ -246,7 +335,7 @@ test_that("pf_filter() permits missing .yobs", {
   args$yobs <- NULL
   set_seed()
   fwd_2 <- do.call(pf_filter, args)
-  # Expect identical outputs b/c pf_filter() uses yobs already defined in Julia
+  # Expect identical outputs b/c pf_filter() uses `yobs` already defined in Julia
   expect_equal(fwd_1, fwd_2)
   # Repeat
   args$.yobs <- yobs
