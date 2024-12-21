@@ -17,7 +17,7 @@
 In \code{\link{patter}} functions, the \code{.state} argument is a \code{character} string that defines the animal's state sub-type. This must match a \code{\link{State}} sub-type defined in \code{Julia}. The built-in options are:
 \itemize{
 \item \code{"StateXY"}, which maps to \code{StateXY};
-\item \code{"StateXYX"}, which maps to \code{StateXYZ};
+\item \code{"StateXYZ"}, which maps to \code{StateXYZ};
 \item \code{"StateCXY"}, which maps to \code{StateCXY} ;
 \item \code{"StateCXYZ"}, which maps to \code{StateCXYZ};
 }
@@ -78,7 +78,7 @@ if (julia_run()) {
 
   # Define a custom `State` sub-type
   julia_command(
-    '
+  '
   struct StateCustom <: Patter.State
     # Map value
     # > This is required for all states & is the value on the map at (x, y)
@@ -94,7 +94,7 @@ if (julia_run()) {
   # Define a corresponding movement model sub-type
   # > We will consider a random walk in 3D
   julia_command(
-    '
+  '
   struct ModelMoveCustom{T, U, V, W, X} <: Patter.ModelMove
     # The environment (i.e., map)
     # > This defines the regions within which movements are permitted (i.e., in water)
@@ -131,17 +131,17 @@ if (julia_run()) {
   # * `state`: the state;
   # * `coords`: A `data.table` with initial coordinates (x, y and map_value);
   julia_command(
-    '
-    function Patter.states_init(state_type::Type{StateCustom}, coords)
-      coords.z = coords.map_value .* rand(nrow(coords))
-      return coords
-    end
-    '
+  '
+  function Patter.states_init(state_type::Type{StateCustom}, coords)
+    coords.z = coords.map_value .* rand(nrow(coords))
+    return coords
+  end
+  '
   )
 
   # Define a `Patter.simulate_step()` method to update the state in Julia
   julia_command(
-    '
+  '
   function Patter.simulate_step(state::StateCustom, model::ModelMoveCustom, t::Int64)
     # Simulate a step length
     length = rand(model.dbn_length)
@@ -228,19 +228,19 @@ if (julia_run()) {
   # ... of an unrestricted step from one state to another
   # See: julia_help("Patter.logpdf_step")
   julia_command(
-    '
-    function Patter.logpdf_step(state_from::StateCustom, state_to::StateCustom,
-                                model_move::ModelMoveCustom,
-                                t::Int64,
-                                length::Float64, heading::Float64)
-        # Calculate change in depth
-        z_delta = state_to.z - state_from.z
-        # Evaluate unnormalised log probability
-        logpdf(model_move.dbn_length, length) +
-          logpdf(model_move.dbn_heading, heading) +
-          logpdf(model_move.dbn_z_delta, z_delta)
-    end
-    '
+  '
+  function Patter.logpdf_step(state_from::StateCustom, state_to::StateCustom,
+                              model_move::ModelMoveCustom,
+                              t::Int64,
+                              length::Float64, heading::Float64)
+      # Calculate change in depth
+      z_delta = state_to.z - state_from.z
+      # Evaluate unnormalised log probability
+      logpdf(model_move.dbn_length, length) +
+        logpdf(model_move.dbn_heading, heading) +
+        logpdf(model_move.dbn_z_delta, z_delta)
+  end
+  '
   )
 
   # Run the smoother
