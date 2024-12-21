@@ -111,11 +111,13 @@ NULL
 #'
 #' See [here](https://discourse.julialang.org/t/a-comparison-of-common-distributions-in-julia-python-and-r/61604) for the translations of distributions in `R` (e.g., `*norm()`) into `Julia` (e.g., `Normal()`).
 #'
+#' To plot the dimensions of a movement model, see [`plot.ModelMove`]. To visualise realisations of a model, see [`sim_path_walk()`].
+#'
 #' In `Julia`, [`ModelMove`] instances are used to simulate states via [`Patter.simulate_step()`](https://edwardlavender.github.io/Patter.jl). In the particle smoother, the density of movement from one state to another is evaluated by [`Patter.logpdf_step()`](https://edwardlavender.github.io/Patter.jl). These are generic functions. Different methods are dispatched according to the input model. For the built-in [`ModelMove`] sub-types, corresponding methods for these routines are also built-in. For custom [`ModelMove`] sub-types, the methods need to be provided.
 #'
 #' To use custom [`ModelMove`] sub-types, see Examples.
 #'
-#' @returns `move_*()` functions return a `character` string that defines a [`ModelMove`] instance for evaluation in `Julia`. If the map (`env`) does not exist in `Julia`, an error is thrown.
+#' @returns `move_*()` functions return a `character` string that defines a [`ModelMove`] instance for evaluation in `Julia`. The [`class`] of the output is `character` plus `ModelMove` and `ModelMoveXY`, `ModelMoveXYZ`, `ModelMoveCXY` or `ModelMoveCXYZ` (see [`plot.ModelMove`]). If the map (`env`) does not exist in `Julia`, an error is thrown.
 #'
 #' @example man/examples/example-ModelMove.R
 #' @inherit State seealso
@@ -130,7 +132,9 @@ move_xy <- function(.mobility = "750.0",
                     .dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
                     .dbn_heading = "Uniform(-pi, pi)") {
   julia_check_exists("env")
-  glue('ModelMoveXY(env, {.mobility}, {.dbn_length}, {.dbn_heading});')
+  cmd <- glue('ModelMoveXY(env, {.mobility}, {.dbn_length}, {.dbn_heading});')
+  class(cmd) <- c(class(cmd), "ModelMove", "ModelMoveXY")
+  cmd
 }
 
 #' @rdname ModelMove
@@ -141,7 +145,9 @@ move_xyz <- function(.mobility = "750.0",
                      .dbn_heading = "Uniform(-pi, pi)",
                      .dbn_z = "truncated(Normal(100.0, 250.0), lower = 0.0, upper = 350.0)") {
   julia_check_exists("env")
-  glue('ModelMoveXYZ(env, {.mobility}, {.dbn_length}, {.dbn_heading}, {.dbn_z});')
+  cmd <- glue('ModelMoveXYZ(env, {.mobility}, {.dbn_length}, {.dbn_heading}, {.dbn_z});')
+  class(cmd) <- c(class(cmd), "ModelMove", "ModelMoveXYZ")
+  cmd
 }
 
 #' @rdname ModelMove
@@ -151,7 +157,9 @@ move_cxy <- function(.mobility = "750.0",
                      .dbn_length = "truncated(Gamma(1.0, 750.0), upper = 750.0)",
                      .dbn_heading_delta = "Normal(0, 0.5)") {
   julia_check_exists("env")
-  glue('ModelMoveCXY(env, {.mobility}, {.dbn_length}, {.dbn_heading_delta});')
+  cmd <- glue('ModelMoveCXY(env, {.mobility}, {.dbn_length}, {.dbn_heading_delta});')
+  class(cmd) <- c(class(cmd), "ModelMove", "ModelMoveCXY")
+  cmd
 }
 
 #' @rdname ModelMove
@@ -162,5 +170,213 @@ move_cxyz <- function(.mobility = "750.0",
                       .dbn_heading_delta = "Normal(0, 0.5)",
                       .dbn_z_delta = "Normal(0, 3.5)") {
   julia_check_exists("env")
-  glue('ModelMoveCXYZ(env, {.mobility}, {.dbn_length}, {.dbn_heading_delta}, {.dbn_z_delta});')
+  cmd <- glue('ModelMoveCXYZ(env, {.mobility}, {.dbn_length}, {.dbn_heading_delta}, {.dbn_z_delta});')
+  class(cmd) <- c(class(cmd), "ModelMove", "ModelMoveCXYZ")
+  cmd
+}
+
+#' @title Movement model plots
+#' @description [`plot()`] methods for movement models (see [`ModelMove`]).
+#' @param x A [`ModelMove`]-class object from a `move_*()` function (e.g., [`move_xy()`].
+#' @param .panel_length,.panel_heading,.panel_heading_delta,.panel_z,.panel_z_delta Panel properties:
+#' * `NULL` suppresses the panel;
+#' * `list()` uses default graphical arguments;
+#' * A named `list` of arguments, passed to [`plot()`], customises the panel;
+#' @param .par Graphical parameters:
+#' * `NULL` uses current graphical parameters;
+#' * `list()` uses default graphical parameters;
+#' * A named `list` of arguments, passed to [`par()`], customises parameters;
+#' @param ... Additional arguments, passed to [`plot()`], which affect all panels;
+#' @details For each in-built [`ModelMove`]-class (e.g., [`ModelMoveXY`]), a corresponding [`plot()`] method is provided that plots the component probability-density distributions (e.g., the distribution of step lengths and turning angles) for any model instance. Under default options, a multi-panelled plot is produced, with one panel for each model dimension (e.g., the step length and the heading). Use `.panel_*` arguments to customise individual panels, `.par` to set graphical parameters and `...` to customise all panels. Set `.panel_*` `xlim` to specify the x-axis range over which distributions are shown. If unspecified, probability density is plotted along a predefined range or from the 0.0001 to 0.9999 quantiles of the distribution.
+#' @return The functions produce a [`plot`]. `invisible(NULL)` is returned.
+#' @example man/examples/example-ModelMove-plot.R
+#' @seealso Use [`sim_path_walk()`] to visualise realisations of a movement model (i.e., trajectories).
+#' @author Edward Lavender
+#' @name plot.ModelMove
+NULL
+
+# Set plot parameters for plot_dbn_*()
+# * .default is a list of default parameters
+# * .par is the list of parameters from the user
+# * NULL is permitted in which case par is unset
+set_plot_dbn_par <- function(.default, .par) {
+  pp <- par(no.readonly = TRUE)
+  if (!is.null(.par)) {
+    .par <- list_args(.default, .par)
+    pp   <- do.call(par, .par)
+  }
+  pp
+}
+
+# Set x limits for plot_dbn_*()
+# * .dbn is a character that defines the distribution in model_move e.g., "dbn_length"
+# * .panel is a list of graphical arguments for that panel (plot) e.g., xlim
+# * If xlim is set, the distribution is plotted over xlim
+# * Otherwise, the distribution is plotted over the distribution quantiles
+# * (from 0.0001 to 0.9999)
+set_plot_dbn_lim <- function(.dbn, .panel) {
+  if (!is.null(.panel$xlim)) {
+    julia_assign("from", .panel$xlim[1])
+    julia_assign("to", .panel$xlim[2])
+  } else {
+    julia_command(glue('from = quantile(model_move.{.dbn}, 0.0001);'))
+    julia_command(glue('to = quantile(model_move.{.dbn}, 0.9999);'))
+  }
+  nothing()
+}
+
+# A wrapper function to plot any distribution
+# * .xlim, .xlab and .ylab are defaults for a particular distribution
+# * These can be overwritten by user-supplied options in .panel or ...
+# * .panel = NULL suppresses plotting
+plot_dbn_wrap <- function(.dbn,
+                          .xlim, .xlab = "x", .ylab = "Density",
+                          .panel = list(), ...) {
+  # Handle inputs
+  if (is.null(.panel)) {
+    return(nothing())
+  }
+  julia_check_exists("model_move")
+  # Set graphical properties
+  .panel <- list_args(list(xlim = .xlim,
+                           xlab = .xlab,
+                           ylab = .ylab,
+                           type = "l"),
+                      list(...),
+                      .panel)
+  # Plot distribution
+  set_plot_dbn_lim(.dbn = .dbn, .panel = .panel)
+  julia_command('x = range(from, stop = to, length = 1000);')
+  julia_command(glue('y = pdf(model_move.{.dbn}, x);'))
+  plot_dbn(.panel = .panel)
+}
+
+# Plot a distribution (x, y) with .panel graphical parameters
+# * .panel contains ... from the parent function (plot_dbn_wrap())
+plot_dbn <- function(.panel) {
+  julia_check_exists("x", "y")
+  .panel$x    <- julia_eval('x')
+  .panel$y    <- julia_eval('y')
+  do.call(plot, .panel)
+  nothing()
+}
+
+# Plot a distribution of step lengths
+plot_dbn_length <- function(.panel, ...) {
+  plot_dbn_wrap(.dbn = "dbn_length",
+                .xlim = c(-0.001, julia_eval("model_move.mobility") + 0.001),
+                .xlab = "Length (m)", .ylab = "Density",
+                .panel = .panel, ...)
+}
+
+# Plot a distribution of headings
+plot_dbn_heading <- function(.panel, ...) {
+  plot_dbn_wrap(.dbn = "dbn_heading",
+                .xlim = c(-2*pi, 2 * pi),
+                .xlab = "Heading (rad)", .ylab = "Density",
+                .panel = .panel, ...)
+}
+
+# Plot a distribution of turning angles
+plot_dbn_heading_delta <- function(.panel, ...) {
+  plot_dbn_wrap(.dbn = "dbn_heading_delta",
+                .xlim = c(-2*pi, 2 * pi),
+                .xlab = "Turning angle (rad)", .ylab = "Density",
+                .panel = .panel, ...)
+}
+
+# Plot a distribution of depths
+plot_dbn_z <- function(.panel, ...) {
+  plot_dbn_wrap(.dbn = "dbn_z",
+                .xlim = NULL,
+                .xlab = "Depth (m)", .ylab = "Density",
+                .panel = .panel, ...)
+}
+
+# Plot a distribution of changes in depth
+plot_dbn_z_delta <- function(.panel, ...) {
+  plot_dbn_wrap(.dbn = "dbn_z_delta",
+                .xlim = NULL,
+                .xlab = "Depth change (m)", .ylab = "Density",
+                .panel = .panel, ...)
+}
+
+#' @rdname plot.ModelMove
+#' @export
+
+# User-facing function: plot.ModelMoveXY()
+plot.ModelMoveXY <- function(x,
+                             .panel_length = list(),
+                             .panel_heading = list(),
+                             .par = list(),
+                             ...) {
+  # Set graphical parameters
+  pp <- set_plot_dbn_par(list(mfrow = c(1, 2)), .par)
+  on.exit(par(pp, no.readonly = TRUE), add = TRUE)
+  # Density plots
+  set_model_move(x)
+  plot_dbn_length(.panel = .panel_length, ...)
+  plot_dbn_heading(.panel = .panel_heading, ...)
+  nothing()
+}
+
+#' @rdname plot.ModelMove
+#' @export
+
+# User-facing function: plot.ModelMoveXYZ()
+plot.ModelMoveXYZ <- function(x,
+                              .panel_length = list(),
+                              .panel_heading = list(),
+                              .panel_z = list(),
+                              .par = list(),
+                              ...) {
+  # Set graphical parameters
+  pp <- set_plot_dbn_par(list(mfrow = c(1, 3)), .par)
+  on.exit(par(pp, no.readonly = TRUE), add = TRUE)
+  # Density plots
+  set_model_move(x)
+  plot_dbn_length(.panel = .panel_length, ...)
+  plot_dbn_heading(.panel = .panel_heading, ...)
+  plot_dbn_z(.panel = .panel_z, ...)
+  nothing()
+}
+
+#' @rdname plot.ModelMove
+#' @export
+
+# User-facing function: plot.ModelMoveCXY()
+plot.ModelMoveCXY <- function(x,
+                              .panel_length = list(),
+                              .panel_heading_delta = list(),
+                              .par = list(),
+                              ...) {
+  # Set graphical parameters
+  pp <- set_plot_dbn_par(list(mfrow = c(1, 2)), .par)
+  on.exit(par(pp, no.readonly = TRUE), add = TRUE)
+  # Density plots
+  set_model_move(x)
+  plot_dbn_length(.panel = .panel_length, ...)
+  plot_dbn_heading_delta(.panel = .panel_heading_delta, ...)
+  nothing()
+}
+
+#' @rdname plot.ModelMove
+#' @export
+
+# User-facing function: plot.ModelMoveCXYZ()
+plot.ModelMoveCXYZ <- function(x,
+                               .panel_length = list(),
+                               .panel_heading_delta = list(),
+                               .panel_z_delta = list(),
+                               .par = list(),
+                               ...) {
+  # Set graphical parameters
+  pp <- set_plot_dbn_par(list(mfrow = c(1, 3)), .par)
+  on.exit(par(pp, no.readonly = TRUE), add = TRUE)
+  # Density plots
+  set_model_move(x)
+  plot_dbn_length(.panel = .panel_length, ...)
+  plot_dbn_heading_delta(.panel = .panel_heading_delta, ...)
+  plot_dbn_z_delta(.panel = .panel_z_delta, ...)
+  nothing()
 }

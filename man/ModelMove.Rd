@@ -51,7 +51,7 @@ move_cxyz(
 }}
 }
 \value{
-\verb{move_*()} functions return a \code{character} string that defines a \code{\link{ModelMove}} instance for evaluation in \code{Julia}. If the map (\code{env}) does not exist in \code{Julia}, an error is thrown.
+\verb{move_*()} functions return a \code{character} string that defines a \code{\link{ModelMove}} instance for evaluation in \code{Julia}. The \code{\link{class}} of the output is \code{character} plus \code{ModelMove} and \code{ModelMoveXY}, \code{ModelMoveXYZ}, \code{ModelMoveCXY} or \code{ModelMoveCXYZ} (see \code{\link{plot.ModelMove}}). If the map (\code{env}) does not exist in \code{Julia}, an error is thrown.
 }
 \description{
 \code{\link{ModelMove}} is Abstract Type in \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} that groups movement model sub-types, of which instances can be created via an \code{R} \verb{move_*()} function.
@@ -96,6 +96,8 @@ In \code{R} functions, the movement-model instance is specified via the \code{.m
 }
 
 See \href{https://discourse.julialang.org/t/a-comparison-of-common-distributions-in-julia-python-and-r/61604}{here} for the translations of distributions in \code{R} (e.g., \verb{*norm()}) into \code{Julia} (e.g., \code{Normal()}).
+
+To plot the dimensions of a movement model, see \code{\link{plot.ModelMove}}. To visualise realisations of a model, see \code{\link[=sim_path_walk]{sim_path_walk()}}.
 
 In \code{Julia}, \code{\link{ModelMove}} instances are used to simulate states via \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.simulate_step()}}. In the particle smoother, the density of movement from one state to another is evaluated by \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.logpdf_step()}}. These are generic functions. Different methods are dispatched according to the input model. For the built-in \code{\link{ModelMove}} sub-types, corresponding methods for these routines are also built-in. For custom \code{\link{ModelMove}} sub-types, the methods need to be provided.
 

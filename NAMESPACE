@@ -2,6 +2,10 @@
 
 S3method(example_setup,default)
 S3method(example_setup,pf_smoother_two_filter)
+S3method(plot,ModelMoveCXY)
+S3method(plot,ModelMoveCXYZ)
+S3method(plot,ModelMoveXY)
+S3method(plot,ModelMoveXYZ)
 export(as.im.SpatRaster)
 export(as.owin.SpatRaster)
 export(as.owin.sf)

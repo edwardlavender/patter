@@ -4,11 +4,14 @@
 \alias{utils-lists}
 \alias{list_compact}
 \alias{list_merge}
+\alias{list_args}
 \title{Utilities: list helpers}
 \usage{
 list_compact(l)
 
 list_merge(...)
+
+list_args(.default = list(), .dots = list(), .user = list())
 }
 \description{
 These are internal list helpers in \code{\link{patter}}.
