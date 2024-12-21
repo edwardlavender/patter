@@ -130,7 +130,7 @@ if (julia_run()) {
   # Map particle coordinates
   pf_plot_xy(.map = map, .coord = fwd$states, .steps = 1L)
   # Map a utilisation distribution
-  # * Use sigma = spatstat.explore::bw.diggle() for CV bandwidth estimate
+  # * Use `.sigma = spatstat.explore::bw.diggle()` for CV bandwidth estimate
   map_dens(.map = map,
            .coord = fwd$states)
 

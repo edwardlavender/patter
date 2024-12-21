@@ -613,7 +613,7 @@ samples as follows:
 # * This must be done in a separate R session on Linux 
 ud <- map_dens(.map = map,
                .coord = smo$states,
-               sigma = spatstat.explore::bw.diggle)$ud
+               .sigma = bw.h)$ud
 #> Observation window is gridded.
 
 # Add home range

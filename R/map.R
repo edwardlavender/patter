@@ -73,6 +73,7 @@ map_pou <-
 #' * `.invert` is a logical variable that defines whether or not to invert `.poly` (e.g., to turn a terrestrial polygon into an aquatic polygon);
 #' @param .coord (optional) Coordinates for density estimation, provided in any format accepted by [`.map_coord()`]. **Coordinates must be planar**.
 #' @param .discretise If `.coord` is provided, `.discretise` is a `logical` variable that defines whether or not to discretise coordinates on `.map` (see [`.map_coord()`]).
+#' @param .sigma,X `.sigma` is a `numeric` value or a `function` that specifies the smoothing bandwidth (passed to [`spatstat.explore::density.ppp()`]'s `sigma` argument). The default option is [`bw.h()`], which sets the bandwidth based on combined variance of summarised coordinates, formatted as a point pattern `X` (see [`spatstat.geom::ppp`]), using the ad-hoc method (Worton, 1989). See `spatstat` functions (e.g., [`spatstat.explore::bw.diggle()`]) for more sophisticated methods.
 #' @param .shortcut (optional) A named `list` from a previous call to [`map_dens()`]. If supplied, the function short-cuts straight to smoothing (`.owin`, `.coord` and `.discretise` are silently unused).
 #' @param ... Arguments for density estimation, passed to [`spatstat.explore::density.ppp()`], such as `sigma` (i.e., the bandwidth). `at` and `se` are not permitted.
 #' @param .fterra A `logical` variable that defines whether or not to parallelise [`terra::resample()`].
@@ -95,9 +96,12 @@ map_pou <-
 #'
 #' If `.shortcut` is supplied, the preceding steps can be skipped and the function short-cuts straight to smoothing. Use this option if the preceding steps are slow and you want to trial different smoothing options (such as `sigma` functions).
 #'
-#' Coordinates and associated weights are smoothed via [`spatstat.explore::density.ppp()`] into an image. Pixel resolution and smoothing parameters such as bandwidth can be controlled via `...` arguments which are passed directly to this function. The output is translated into a gridded probability density surface (on the geometry defined by `.map`). This process may use [`terra::resample()`], which can be parallelised via `.fterra` (which controls the `threads` argument of that function).
+#' Coordinates and associated weights are smoothed via [`spatstat.explore::density.ppp()`] into an image. Pixel resolution and smoothing parameters such as bandwidth can be controlled via `...` arguments which are passed directly to this function. The default bandwidth is set via [`bw.h()`] (see `.sigma`). The output is translated into a gridded probability density surface (on the geometry defined by `.map`). This process may use [`terra::resample()`], which can be parallelised via `.fterra` (which controls the `threads` argument of that function).
 #'
 #' This function replaces `flapper::kud*()` and `flapper::pf_kud*()` routines based on `adehabitatHR` (see [here](https://edwardlavender.github.io/flapper/reference/)).
+#'
+#' @references
+#' Worton, B. J. (1989). Kernel Methods for Estimating the Utilization Distribution in Home-Range Studies. Ecology 70, 164–168. doi: 10.2307/1938423
 #'
 #' @return The function returns a named `list`, with the following elements:
 #' * `x`: a [`spatstat.geom::ppp`] object that defines points for density estimation;
@@ -167,10 +171,20 @@ as.owin.sf <- function(.poly, .bbox = sf::st_bbox(.poly), .invert = TRUE) {
 #' @rdname map_dens
 #' @export
 
+bw.h <- function(X) {
+  # Code from adehabitatHR:::.kernelUDs with tweaks
+  # & adapted for spatstat.explore
+  sdxy <- sqrt(0.5 * (var(X$x) + var(X$y)))
+  sdxy * (X$n^(-1/6))
+}
+
+#' @rdname map_dens
+#' @export
+
 map_dens <- function(.map,
                      .owin = as.owin.SpatRaster(.map),
                      .coord = NULL, .discretise = FALSE,
-                     .shortcut = list(), ...,
+                     .shortcut = list(), .sigma = bw.h, ...,
                      .fterra = FALSE,
                      .plot = TRUE,
                      .use_tryCatch = TRUE,
@@ -189,7 +203,7 @@ map_dens <- function(.map,
   check_inherits(.map, "SpatRaster")
   # Check dots
   # * check_dots_used(): this is not possible
-  check_dots_allowed(c("at", "se"), ...)
+  check_dots_allowed(c("sigma", "at", "se"), ...)
   check_dots_for_missing_period(formals(), list(...))
 
   #### Process SpatRaster
@@ -227,7 +241,9 @@ map_dens <- function(.map,
   #### Estimate density surface
   # Get intensity (expected number of points PER UNIT AREA)
   cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Estimating density surface..."))
-  D <- tryCatch(spatstat.explore::density.ppp(rppp, weights = expression(marks),
+  D <- tryCatch(spatstat.explore::density.ppp(x = rppp,
+                                              sigma = .sigma,
+                                              weights = expression(marks),
                                               at = "pixels", se = FALSE, ...),
                 error = function(e) e)
   if (inherits(D, "error")) {

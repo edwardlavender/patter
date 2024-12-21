@@ -10,7 +10,7 @@
 #' @details
 #' [`set_map()`] exports map(s) of the study area to `Julia`.
 #'
-#' Maps must be georeferenced rasters. A planar (Universal Transverse Mercator) projection with coordinates in metres is currently required.
+#' Maps must be georeferenced rasters. A planar (e.g., Universal Transverse Mercator) projection with coordinates in metres is currently required.
 #'
 #' Maps are used to (a) simulate initial location(s) for an individual and (b) restrict subsequent, simulated movements to habitable areas (see [`ModelMove`]). `NAs` define inhospitable regions (such as land). Initial location(s) and subsequent movements are restricted to non-`NA` regions.
 #'

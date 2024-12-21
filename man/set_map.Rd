@@ -26,7 +26,7 @@ Use \code{\link[=set_map]{set_map()}} at the start of your workflow to export ma
 \details{
 \code{\link[=set_map]{set_map()}} exports map(s) of the study area to \code{Julia}.
 
-Maps must be georeferenced rasters. A planar (Universal Transverse Mercator) projection with coordinates in metres is currently required.
+Maps must be georeferenced rasters. A planar (e.g., Universal Transverse Mercator) projection with coordinates in metres is currently required.
 
 Maps are used to (a) simulate initial location(s) for an individual and (b) restrict subsequent, simulated movements to habitable areas (see \code{\link{ModelMove}}). \code{NAs} define inhospitable regions (such as land). Initial location(s) and subsequent movements are restricted to non-\code{NA} regions.
 

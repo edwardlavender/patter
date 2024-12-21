@@ -4,7 +4,7 @@
 #'
 #' # `.map`
 #'
-#' `.map` is [`SpatRaster`] (supported on Windows or MacOS) or a `character` that defines the path to raster (supported on Windows, MacOS and Linux) to a that defines the area of interest. `NAs` define inhospitable regions (such as land). A planar (Universal Transverse Mercator) projection with coordinates in metres is currently required.
+#' `.map` is [`SpatRaster`] (supported on Windows or MacOS) or a `character` that defines the path to raster (supported on Windows, MacOS and Linux) to a that defines the area of interest. `NAs` define inhospitable regions (such as land). A planar (e.g., Universal Transverse Mercator) projection with coordinates in metres is currently required.
 #'
 #' # `.model_obs`
 #'

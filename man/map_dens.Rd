@@ -4,6 +4,7 @@
 \alias{as.im.SpatRaster}
 \alias{as.owin.SpatRaster}
 \alias{as.owin.sf}
+\alias{bw.h}
 \alias{map_dens}
 \title{Map: point density}
 \usage{
@@ -13,12 +14,15 @@ as.owin.SpatRaster(.map, .im = NULL)
 
 as.owin.sf(.poly, .bbox = sf::st_bbox(.poly), .invert = TRUE)
 
+bw.h(X)
+
 map_dens(
   .map,
   .owin = as.owin.SpatRaster(.map),
   .coord = NULL,
   .discretise = FALSE,
   .shortcut = list(),
+  .sigma = bw.h,
   ...,
   .fterra = FALSE,
   .plot = TRUE,
@@ -43,6 +47,8 @@ map_dens(
 \item{.discretise}{If \code{.coord} is provided, \code{.discretise} is a \code{logical} variable that defines whether or not to discretise coordinates on \code{.map} (see \code{\link[=.map_coord]{.map_coord()}}).}
 
 \item{.shortcut}{(optional) A named \code{list} from a previous call to \code{\link[=map_dens]{map_dens()}}. If supplied, the function short-cuts straight to smoothing (\code{.owin}, \code{.coord} and \code{.discretise} are silently unused).}
+
+\item{.sigma, X}{\code{.sigma} is a \code{numeric} value or a \code{function} that specifies the smoothing bandwidth (passed to \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}}'s \code{sigma} argument). The default option is \code{\link[=bw.h]{bw.h()}}, which sets the bandwidth based on combined variance of summarised coordinates, formatted as a point pattern \code{X} (see \code{\link[spatstat.geom:ppp]{spatstat.geom::ppp}}), using the ad-hoc method (Worton, 1989). See \code{spatstat} functions (e.g., \code{\link[spatstat.explore:bw.diggle]{spatstat.explore::bw.diggle()}}) for more sophisticated methods.}
 
 \item{...}{Arguments for density estimation, passed to \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}}, such as \code{sigma} (i.e., the bandwidth). \code{at} and \code{se} are not permitted.}
 
@@ -86,7 +92,7 @@ Cell coordinates and associated weights are converted to a \code{\link[spatstat.
 
 If \code{.shortcut} is supplied, the preceding steps can be skipped and the function short-cuts straight to smoothing. Use this option if the preceding steps are slow and you want to trial different smoothing options (such as \code{sigma} functions).
 
-Coordinates and associated weights are smoothed via \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} into an image. Pixel resolution and smoothing parameters such as bandwidth can be controlled via \code{...} arguments which are passed directly to this function. The output is translated into a gridded probability density surface (on the geometry defined by \code{.map}). This process may use \code{\link[terra:resample]{terra::resample()}}, which can be parallelised via \code{.fterra} (which controls the \code{threads} argument of that function).
+Coordinates and associated weights are smoothed via \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} into an image. Pixel resolution and smoothing parameters such as bandwidth can be controlled via \code{...} arguments which are passed directly to this function. The default bandwidth is set via \code{\link[=bw.h]{bw.h()}} (see \code{.sigma}). The output is translated into a gridded probability density surface (on the geometry defined by \code{.map}). This process may use \code{\link[terra:resample]{terra::resample()}}, which can be parallelised via \code{.fterra} (which controls the \code{threads} argument of that function).
 
 This function replaces \verb{flapper::kud*()} and \verb{flapper::pf_kud*()} routines based on \code{adehabitatHR} (see \href{https://edwardlavender.github.io/flapper/reference/}{here}).
 }
@@ -139,16 +145,19 @@ map_dens(map, .coord = coord)
 
 #### Example (5): Control smoothing via `spatstat.explore::density.ppp()`
 # E.g. use fixed bandwidth:
-map_dens(map, .coord = coord, sigma = 5)
-map_dens(map, .coord = coord, sigma = 100)
+map_dens(map, .coord = coord, .sigma = 5)
+map_dens(map, .coord = coord, .sigma = 100)
 # E.g., perform automatic bandwidth selection using cross validation:
 if (FALSE) {
   # These examples are slow
-  map_dens(map, .coord = coord, sigma = bw.diggle) # 2 s
-  map_dens(map, .coord = coord, sigma = bw.scott)  # 1 s
-  map_dens(map, .coord = coord, sigma = bw.ppl)    # 65 s
-  map_dens(map, .coord = coord, sigma = bw.CvL)    # 25 s
+  map_dens(map, .coord = coord, .sigma = bw.diggle) # 2 s
+  map_dens(map, .coord = coord, .sigma = bw.scott)  # 1 s
+  map_dens(map, .coord = coord, .sigma = bw.ppl)    # 65 s
+  map_dens(map, .coord = coord, .sigma = bw.CvL)    # 25 s
 }
+}
+\references{
+Worton, B. J. (1989). Kernel Methods for Estimating the Utilization Distribution in Home-Range Studies. Ecology 70, 164–168. doi: 10.2307/1938423
 }
 \seealso{
 \verb{map_*()} functions build maps of space use:

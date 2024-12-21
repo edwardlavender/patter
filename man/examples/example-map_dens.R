@@ -46,13 +46,13 @@ map_dens(map, .coord = coord)
 
 #### Example (5): Control smoothing via `spatstat.explore::density.ppp()`
 # E.g. use fixed bandwidth:
-map_dens(map, .coord = coord, sigma = 5)
-map_dens(map, .coord = coord, sigma = 100)
+map_dens(map, .coord = coord, .sigma = 5)
+map_dens(map, .coord = coord, .sigma = 100)
 # E.g., perform automatic bandwidth selection using cross validation:
 if (FALSE) {
   # These examples are slow
-  map_dens(map, .coord = coord, sigma = bw.diggle) # 2 s
-  map_dens(map, .coord = coord, sigma = bw.scott)  # 1 s
-  map_dens(map, .coord = coord, sigma = bw.ppl)    # 65 s
-  map_dens(map, .coord = coord, sigma = bw.CvL)    # 25 s
+  map_dens(map, .coord = coord, .sigma = bw.diggle) # 2 s
+  map_dens(map, .coord = coord, .sigma = bw.scott)  # 1 s
+  map_dens(map, .coord = coord, .sigma = bw.ppl)    # 65 s
+  map_dens(map, .coord = coord, .sigma = bw.CvL)    # 25 s
 }

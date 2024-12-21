@@ -209,6 +209,7 @@
 #' @importFrom rlang .data
 #'
 #' @importFrom stats runif
+#' @importFrom stats var
 #'
 #' @importFrom utils head
 #' @importFrom utils tail

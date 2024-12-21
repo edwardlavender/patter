@@ -40,8 +40,11 @@
 * **Particle smoothing**
     * `pf_smoother_two_filter()` uses a more flexible `.vmap` argument, supported by `set_vmap()`, in place of `.box` and `.mobility`. 
     * Instances where the two filters are incompatible (all weights are zero) are now flagged with a warning. Formerly, `.n_particle` copies of the first particle were selected by `Patter.resample()` at problematic time steps, leading to a bottleneck in the distribution of an individual's possible locations. Now 50 % of the particles from the forward filter and 50 % from the backward filter are randomly selected at such steps (with a warning). The effective sample size at these time steps is set to NA & provides a counter for the number of problematic time steps. 
-    * A new `.cache` argument fixes incorrect caching for time-varying movement models and enables the user to turn the caching on or off. 
+    * A new `.cache` argument fixes incorrect caching for time-varying movement models and enables the user to turn the caching on or off.
     * A new `.collect` argument collects outputs in `R`. 
+    
+* **Mapping**
+    * `map_dens()` now requires the smoothing bandwidth to be specified via a `.sigma` argument. A new function, `bw.h()`, is the default.
 
 ## Minor improvements and bug fixes
 

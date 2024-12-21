@@ -37,6 +37,22 @@ test_that("as.owin.sf() works", {
 
 })
 
+# test_that("bw.h() works", {
+#
+#   # Test commented to reduce suggested packages
+#   library(adehabitatHR)
+#   data(puechabonsp)
+#   loc      <- puechabonsp$relocs
+#   ud       <- kernelUD(loc[, 1])
+#   h_expect <- ud$Brock@h$h
+#   coord    <- loc[loc$Name == "Brock", ]@coords
+#   X        <- data.frame(x = coord[, 1], y = coord[, 2])
+#   sdxy     <- sqrt(0.5 * (var(X$x) + var(X$y)))
+#   h_calc   <- sdxy * (nrow(X)^(-1/6))
+#   expect_equal(h_calc, h_expect)
+#   # > TRUE
+#
+# })
 
 test_that("map_pou() and map_dens() work", {
 
@@ -77,13 +93,13 @@ test_that("map_pou() and map_dens() work", {
   map_dens(.map = map,
            .coord = coord,
            .use_tryCatch = TRUE,
-           sigma = "a")$ud |>
+           .sigma = "a")$ud |>
     suppressWarnings() |>
     expect_null()
   map_dens(.map = map,
            .coord = coord,
            .use_tryCatch = FALSE,
-           sigma = "a") |>
+           .sigma = "a") |>
     expect_error()
 
 })
