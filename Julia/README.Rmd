@@ -11,8 +11,8 @@ knitr::opts_chunk$set(
 )
 ```
 
-# `Patter.jl`: particle algorithms for animal movement
-**Particle filters, smoothers and sampling algorithms for animal movement modelling in [`Julia`](https://julialang.org)**
+# `Patter.jl` <a href="https://edwardlavender.github.io/Patter.jl"><img src="docs/figures/logo.png" align="right" height="138" /></a>
+**Particle algorithms for animal movement modelling in [`Julia`](https://julialang.org)**
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Documenter](https://github.com/edwardlavender/Patter.jl/actions/workflows/Documenter.yml/badge.svg)](https://github.com/edwardlavender/Patter.jl/actions/workflows/Documenter.yml)

@@ -6,15 +6,16 @@
 library(testthat)
 library(tictoc)
 
+# Define output connection
+outcon <- "/Users/lavended/Documents/work/projects/move-smc/patter/packages/Patter.jl"
+expect_true(dir.exists(outcon))
+
 # Render README.Rmd (~40 s)
 tic()
 rmarkdown::render(file.path("julia", "README.Rmd"),
                   output_file = "README.md",
                   output_format = "github_document")
 toc()
-
-# Define output connection
-outcon <- "/Users/lavended/Documents/work/projects/move-smc/patter/packages/Patter.jl"
 
 # Copy MD file
 success <- file.copy(file.path("julia", "README.md"),

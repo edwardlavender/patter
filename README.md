@@ -1,8 +1,8 @@
 
-# `patter`: particle algorithms for animal movement
+# `patter` <a href="https://edwardlavender.github.io/patter/"><img src="man/figures/logo.png" align="right" height="138" /></a>
 
-**Particle filters, smoothers and sampling algorithms for animal
-movement modelling in [`R`](https://www.r-project.org)**
+**Particle algorithms for animal movement modelling in
+[`R`](https://www.r-project.org)**
 
 <!-- badges: start -->
 
@@ -13,7 +13,7 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/patter)](https://CRAN.R-project.org/package=patter)
-![Coverage](https://img.shields.io/badge/coverage-96%25-brightgreen)
+![Coverage](https://img.shields.io/badge/coverage-92%25-brightgreen)
 [![R-CMD-check](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
