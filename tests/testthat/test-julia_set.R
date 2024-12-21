@@ -47,8 +47,6 @@ test_that("set_seed() works", {
 
 test_that("set_map() works", {
 
-  expect_true(1 == 1)
-
   # Specify file path
   f <- system.file("extdata", "dat_gebco.tif", package = "patter", mustWork = TRUE)
   set_map(f)
@@ -64,7 +62,7 @@ test_that("set_map() works", {
   expect_true(julia_exists("env"))
 
   # Use SpatRaster in memory
-  terra:::readAll(map)
+  map <- terra::unwrap(terra::wrap(map))
   set_map(map)
   expect_true(julia_exists("env"))
 
