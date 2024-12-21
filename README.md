@@ -32,6 +32,11 @@ et al., [2023](https://doi.org/10.1111/2041-210X.14193)).
 > should use it with a degree of caution. Please share feedback and
 > issues.
 
+> **[NEWS](NEWS)** Welcome to `patter v.2.0.0`! This includes some
+> **breaking changes**. For projects based on earlier versions, use
+> [`renv`](https://rstudio.github.io/renv/articles/renv.html). For
+> future projects, `patter v.2.0.0` is recommended.
+
 # Highlights
 
 `patter` is designed to reconstruct movement paths and emergent patterns
@@ -80,16 +85,20 @@ touch if you would like to see additional functionality brought into
 
 # Installation
 
-> **Note:** `patter` currently works on Windows and MacOS. On Windows,
-> everything *should* work if you follow the instructions below. On
-> MacOS, some additional set up (such as compiler configuration) may be
-> required, depending on your set up. In our (limited) experience,
-> `patter` installs but crashes on Debian/Ubuntu. This is due to a
-> conflict between the GDAL/GEOS/PROJ libraries used by `R` and `Julia`
-> (which we hope to solve in due course). Please let us know your
-> experiences if you are using other Linux distributions. In case of
-> issues, you should be able to use `Patter.jl` directly, which on some
-> systems may be simpler than getting `R` and `Julia` to play together!
+> **Note:** `patter` works Windows, MacOS and Linux (with some
+> restrictions). On Windows, everything *should* work if you follow the
+> instructions below. On MacOS, some additional set up (such as compiler
+> configuration) may be required, depending on your set up. On Debian,
+> {patter} can be used but you cannot simultaneously use geospatial
+> routines in `R` and `Julia`. Thus, you can only call `library(terra)`
+> or `terra::foo()` and use {patter} routines that exploit {terra} and
+> other geospatial packages in `R` sessions that are not connected to a
+> `Julia` session (via `julia_connect()`). We haven’t tried other Linux
+> distributions. Package examples were written on MacOS and may not run
+> safely on Linux without modification. Check the function documentation
+> for supported options and share your experience. In case of issues,
+> you should be able to use `Patter.jl` directly, which on some systems
+> may be simpler than getting `R` and `Julia` to play together!
 
 1.  **Install [`R`](https://www.r-project.org)**. This package requires
     `R` version ≥ 4.1 (but the most recent version is recommended). You
@@ -115,7 +124,10 @@ install.packages(c("devtools", "pkgbuild"))
 - **On MacOS**, some system-specific step up (e.g., compiler
   configuration) may be required. Follow the steps below and address any
   issues as required for your system.
-- **On Linux**, our experience is currently limited—please share yours.
+- **On Linux**, a suite of system libraries, including `GDAL`, `GEOS`
+  and `PROJ`, are required. See the package [DESCRIPTION](DESCRIPTION)
+  for required/suggested packages and follow the instructions for your
+  system.
 
 4.  **Install [`Julia`](https://julialang.org)**. `Julia` is
     high-performance programming language that `patter` uses as a
@@ -435,6 +447,7 @@ movements:
 
 ``` r
 # Define map 
+# * Use file path on Linux 
 map <- dat_gebco()
 set_map(map)
 
@@ -467,7 +480,7 @@ model_move <- move_xy(.mobility   = "750.0",
                       .dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
                       .dbn_heading  = "Uniform(-pi, pi)")
 
-# Visualise realisations of the movement model:
+# Visualise realisations of the movement model (Windows/MacOS):
 map |> 
   sim_path_walk(.timeline = timeline,
                 .state = state,
@@ -581,7 +594,11 @@ the individual at each time step (accounting for all of the data before
 and after each step).
 
 ``` r
+# Set `vmap` for probability calculations
+# * Use file path rather on Linux 
 set_vmap(.map = map, .mobility = mobility)
+
+# Run smoother 
 smo <- pf_smoother_two_filter(.n_particle = 750L, .n_sim = 100L)
 ```
 
@@ -593,6 +610,7 @@ samples as follows:
 
 ``` r
 # Estimate UD
+# * This must be done in a separate R session on Linux 
 ud <- map_dens(.map = map,
                .coord = smo$states,
                sigma = spatstat.explore::bw.diggle)$ud
