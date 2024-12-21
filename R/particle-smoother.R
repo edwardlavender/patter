@@ -81,15 +81,15 @@ pf_smoother_two_filter <- function(.n_particle = NULL,
   #### Validate vmap
   # vmap should be pre-defined and exported to Julia via set_vmap() if required
   # * If vmap is undefined, it is set to `nothing`
-  # * Otherwise, we validate that StateXY
+  # * Otherwise, we validate that StateXY or StateXYZ
   if (!julia_exists("vmap")) {
     julia_command('vmap = nothing;')
   } else {
-    if (julia_eval('isnothing(vmap)')) {
+    if (julia_eval('!isnothing(vmap)')) {
       pf_obj <- name_particles(.fun = "pf_filter", .direction = "forward")
       .state <- as.character(julia_eval(glue('typeof({pf_obj}.state[1]);')))
-      if (.state != "StateXY") {
-        warn("`vmap` is defined but `State` is not \"StateXY\".")
+      if (!(.state %in% c("StateXY", "StateCXY"))) {
+        warn("`vmap` is defined but `State` is not \"StateXY\" or \"StateXYZ\". If your model includes depth (`z`), set `vmap` to `NULL`.")
       }
     }
   }
