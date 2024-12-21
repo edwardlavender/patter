@@ -171,7 +171,17 @@ if (julia_run()) {
                 .model_move = model_move)
 
   #### Example (6): Use other .state/.model_move combinations
-  # Simulate a correlated random walk
+  # Simulate a random walk in XYZ
+  sim_path_walk(.map = map,
+                .timeline = timeline,
+                .state = "StateXYZ",
+                .model_move = move_xyz())
+  # Simulate a correlated random walk in XY
+  sim_path_walk(.map = map,
+                .timeline = timeline,
+                .state = "StateCXY",
+                .model_move = move_cxy())
+  # Simulate a correlated random walk in XYZ
   sim_path_walk(.map = map,
                 .timeline = timeline,
                 .state = "StateCXYZ",
