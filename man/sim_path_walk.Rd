@@ -17,7 +17,7 @@ sim_path_walk(
 )
 }
 \arguments{
-\item{.map}{(optional) On Windows or MacOS, \code{.map} is a \code{\link{SpatRaster}} that defines the study area for visualisation (see \code{\link{glossary}}). Here, \code{.map} is used to:
+\item{.map}{(optional) On Windows or MacOS, \code{.map} is a \code{\link{SpatRaster}} that defines the study area for visualisation (see \code{\link{glossary}}). This argument cannot be used on Linux. Here, \code{.map} is used to:
 \itemize{
 \item Plot the movement path, if \code{.plot = TRUE}, via \code{\link[terra:plot]{terra::plot()}};
 }}
@@ -88,7 +88,7 @@ To use a new \code{.state} and/or \code{.model_move} sub-type for \code{\link[=s
 \code{\link[=sim_path_walk]{sim_path_walk()}} replaces \href{https://edwardlavender.github.io/flapper/reference/sim_path_sa.html}{\code{flapper::sim_path_sa()}}. Other \href{https://edwardlavender.github.io/flapper/reference/sim_path_-times.html}{\verb{flapper::sim_path_*()}} functions are not currently implemented in \code{\link{patter}}.
 }
 \examples{
-if (julia_run()) {
+if (patter_run()) {
 
   library(data.table)
   library(dtplyr)

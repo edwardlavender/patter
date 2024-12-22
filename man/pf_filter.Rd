@@ -105,7 +105,7 @@ This is highly flexible routine for the reconstruction of the possible locations
 }
 
 \examples{
-if (julia_run()) {
+if (patter_run()) {
 
   library(data.table)
   library(dtplyr)

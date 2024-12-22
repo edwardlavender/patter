@@ -2,6 +2,10 @@
 #'
 #' @description These are sample datasets collated by the Movement Ecology of Flapper Skate (MEFS) project (Lavender, 2022). The flapper skate (*Dipturus intermedius*) is a Critically Endangered benthic elasmobranch. As part of the MEFS project, flapper skate were tagged with acoustic transmitters and archival (data storage) tags off the west coast of Scotland in 2016--17. Acoustic transmissions were recorded at an array of passive acoustic telemetry receivers. Concurrent depth time series were recorded by archival tags and recovered from recaptured individuals. For full details, see the references below. The datasets are defined within [`patter`] to illustrate package functions using real-world datasets.
 #'
+#' @param .return A `character` that defines the object returned by [`dat_gebco()`]:
+#' * `SpatRaster` returns a [`SpatRaster`];
+#' * `character` returns a file path to the raster. This is the only supported option on Linux if `JULIA_SESSION = "TRUE"`;
+#'
 #' @details
 #'
 #' # Moorings
@@ -70,6 +74,12 @@ NULL
 #' @rdname datasets-mefs
 #' @export
 
-dat_gebco <- function() {
-  terra::rast(system.file("extdata", "dat_gebco.tif", package = "patter", mustWork = TRUE))
+dat_gebco <- function(.return = c("SpatRaster", "character")) {
+  .return <- match.arg(.return)
+  path <- system.file("extdata", "dat_gebco.tif", package = "patter", mustWork = TRUE)
+  if (.return == "character") {
+    return(path)
+  } else {
+    return(terra::rast(path))
+  }
 }

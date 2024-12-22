@@ -4,7 +4,7 @@
 # ... because we have to register the sub-type in `Julia` and write the
 # ... required methods to simulate observations and/or calculate log probabilities.
 
-if (julia_run()) {
+if (patter_run()) {
 
   library(JuliaCall)
   library(data.table)

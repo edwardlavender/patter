@@ -58,6 +58,8 @@ This function calculates centres of activity (COAs) from detections at acoustic 
 COAs are calculated as a weighted mean of the locations of receivers at which individuals are detected over consecutive time intervals, weighted by the frequency of detections at each of those receivers. COAs are calculated via \code{\link[stats:weighted.mean]{stats::weighted.mean()}}, which assumes planar coordinates, for consistency with other \code{\link{patter}} routines. To handle longitude/latitude coordinates, use \code{geosphere::geomean()}.
 
 This function replaces \href{https://edwardlavender.github.io/flapper/reference/coa.html}{\code{flapper::coa()}}. See  \href{https://edwardlavender.github.io/flapper/reference/coa_setup_delta_t.html}{\code{flapper::coa_setup_delta_t()}} to evaluate alternative time internals.
+
+On Linux, this function cannot be used within a \code{Julia} session.
 }
 \examples{
 library(data.table)

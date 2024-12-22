@@ -19,8 +19,8 @@ test_that("Julia helpers work", {
     expect_equal("Dates.DateTime", julia_eval('string(eltype(tx))'))
   }
 
-  #### Test julia_run() and julia_works()
-  check_inherits(julia_run(), "logical")
+  #### Test patter_run() and julia_works()
+  check_inherits(patter_run(), "logical")
   expect_true(julia_works())
 
   #### Test julia_option()

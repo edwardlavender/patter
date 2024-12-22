@@ -13,7 +13,7 @@
 #' * [`skill_R()`] computes Spearman's rank correlation coefficient.
 #' * [`skill_d()`] computes the index of agreement.
 #'
-#' These functions are not memory safe.
+#' These functions are not memory safe. On Linux, they cannot be used within a Julia session.
 #'
 #' @return The functions return a number.
 #'

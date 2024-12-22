@@ -69,6 +69,7 @@ This function connects \code{R} to \code{Julia}.
 \code{\link{patter}} is an \code{R} front-end for the \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} package. This requires a local installation of \code{Julia}. This function connects \code{R} to the local \code{Julia} installation, sets up \code{\link{JuliaCall}}, which provides the integration between \code{R} and \code{Julia}, and \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}. Internally, the steps are as follows:
 \itemize{
 \item \code{\link{JuliaCall}} is set up via \code{\link[JuliaCall:julia_setup]{JuliaCall::julia_setup()}}.
+\item The environment variable \code{JULIA_SESSION} is set to \code{"TRUE"}.
 \item The number of threads is set, if possible, via \code{JULIA_NUM_THREADS}.
 \item The \code{Julia} installation is validated.
 \item A local \code{Julia} Project is generated in \code{JULIA_PROJ} (if specified and required) and activated. We recommend using \code{\link{patter}} within an RStudio Project, with a \code{Julia} directory at the top-level that contains the \code{Julia} project.
@@ -81,7 +82,7 @@ You should run this function once per \code{R} session (and for every socket in 
 To update the number of threads, restart \code{R} and re-run the function with an updated \code{JULIA_NUM_THREADS} argument.
 }
 \examples{
-if (julia_run()) {
+if (patter_run()) {
 
   #### Set JULIA OPTIONS
   # Recommended: set JULIA options in .Rprofile or .Renviron

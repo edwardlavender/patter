@@ -16,7 +16,7 @@
 #'  * `.acoustics` is a [`data.table`] of acoustic observations, from [`assemble_acoustics()`].
 #'  * `.mobility` is the maximum movement distance (m) between two time steps (and sets the rate of container contraction).
 #'  * `.map`, `.threshold` are distance threshold options (see Details). Specify `.map` or `.threshold`.
-#'      * `.map` is a two-column `matrix` of the four coordinates of the study area or a [`SpatRaster`] or [`SpatVector`] from which such a `matrix` can be obtained. If provided, `.threshold` is set automatically based on the distances between receivers and the boundaries of the study area.
+#'      * `.map` is a two-column `matrix` of the four coordinates of the study area or a [`SpatRaster`] or [`SpatVector`] from which such a `matrix` can be obtained. On Linux, the latter two options are only possible if `JUILA_SESSION = "FALSE"`. `.threshold` is set automatically based on the distances between receivers and the boundaries of the study area.
 #'      * Otherwise, `.threshold` is a `double` that defines the distance threshold.
 #'
 #' @param .archival  For [`assemble_archival()`], `.archival` is a [`data.table`] of depth observations **for a single individual** with `timestamp` and `obs` columns (see `.dataset`, below).

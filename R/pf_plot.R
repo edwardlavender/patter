@@ -16,6 +16,8 @@
 #'
 #' This function replaces [`flapper::pf_plot_history()`](https://edwardlavender.github.io/flapper/reference/pf_plot_history.html).
 #'
+#' On Linux, this function cannot be used within a Julia session.
+#'
 #' @return The function is called for its side effects. It returns `invisible(TRUE)`.
 #' @example man/examples/example-pf_plot_xy.R
 #' @inherit assemble seealso

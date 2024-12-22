@@ -33,6 +33,7 @@
 #'
 #' @details [`patter`] is an `R` front-end for the [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) package. This requires a local installation of `Julia`. This function connects `R` to the local `Julia` installation, sets up [`JuliaCall`], which provides the integration between `R` and `Julia`, and [`Patter.jl`](https://github.com/edwardlavender/Patter.jl). Internally, the steps are as follows:
 #' * [`JuliaCall`] is set up via [`JuliaCall::julia_setup()`].
+#' * The environment variable `JULIA_SESSION` is set to `"TRUE"`.
 #' * The number of threads is set, if possible, via `JULIA_NUM_THREADS`.
 #' * The `Julia` installation is validated.
 #' * A local `Julia` Project is generated in `JULIA_PROJ` (if specified and required) and activated. We recommend using [`patter`] within an RStudio Project, with a `Julia` directory at the top-level that contains the `Julia` project.
@@ -73,6 +74,7 @@ julia_connect <- function(JULIA_HOME,
   cats$cat("... Running `Julia` setup via `JuliaCall::julia_setup()`...")
   JULIA_NUM_THREADS <- set_JULIA_NUM_THREADS(JULIA_NUM_THREADS)
   julia             <- julia_setup(..., verbose = .verbose)
+  Sys.setenv("JULIA_SESSION" = "TRUE")
 
   #### Test Julia
   cats$cat("... Validating Julia installation...")
@@ -120,13 +122,19 @@ julia_validate <- function() {
   # Test that Julia works
   julia_works()
   # Define a map
-  map <- dat_gebco()
+  if (!os_linux()) {
+    map <- dat_gebco(.return = "SpatRaster")
+  } else {
+    map <- dat_gebco(.return = "character")
+  }
   # Export the map to Julia
   set_map(map)
   if (!julia_exists("env")) {
     abort("Failed to export an example SpatRaster to `Julia`.")
   }
   # Test use of terra to modify map
-  map <- terra::classify(map, cbind(0, NA))
+  if (!os_linux()) {
+    map <- terra::classify(map, cbind(0, NA))
+  }
   nothing()
 }

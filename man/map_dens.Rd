@@ -95,6 +95,8 @@ If \code{.shortcut} is supplied, the preceding steps can be skipped and the func
 Coordinates and associated weights are smoothed via \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} into an image. Pixel resolution and smoothing parameters such as bandwidth can be controlled via \code{...} arguments which are passed directly to this function. The default bandwidth is set via \code{\link[=bw.h]{bw.h()}} (see \code{.sigma}). The output is translated into a gridded probability density surface (on the geometry defined by \code{.map}). This process may use \code{\link[terra:resample]{terra::resample()}}, which can be parallelised via \code{.fterra} (which controls the \code{threads} argument of that function).
 
 This function replaces \verb{flapper::kud*()} and \verb{flapper::pf_kud*()} routines based on \code{adehabitatHR} (see \href{https://edwardlavender.github.io/flapper/reference/}{here}).
+
+On Linux, these functions cannot be used within a \code{Julia} session.
 }
 \examples{
 library(data.table)

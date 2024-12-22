@@ -27,7 +27,14 @@ dat_detections
 
 dat_archival
 
-dat_gebco()
+dat_gebco(.return = c("SpatRaster", "character"))
+}
+\arguments{
+\item{.return}{A \code{character} that defines the object returned by \code{\link[=dat_gebco]{dat_gebco()}}:
+\itemize{
+\item \code{SpatRaster} returns a \code{\link{SpatRaster}};
+\item \code{character} returns a file path to the raster. This is the only supported option on Linux if \code{JULIA_SESSION = "TRUE"};
+}}
 }
 \description{
 These are sample datasets collated by the Movement Ecology of Flapper Skate (MEFS) project (Lavender, 2022). The flapper skate (\emph{Dipturus intermedius}) is a Critically Endangered benthic elasmobranch. As part of the MEFS project, flapper skate were tagged with acoustic transmitters and archival (data storage) tags off the west coast of Scotland in 2016--17. Acoustic transmissions were recorded at an array of passive acoustic telemetry receivers. Concurrent depth time series were recorded by archival tags and recovered from recaptured individuals. For full details, see the references below. The datasets are defined within \code{\link{patter}} to illustrate package functions using real-world datasets.

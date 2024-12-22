@@ -16,7 +16,7 @@ Load and attach \code{\link{patter}}, connect to \code{Julia} via \code{\link[=j
 This function validates the \code{R}---\code{Julia} interface with an example \code{\link{SpatRaster}} that is exported to \code{Julia} and then modified in \code{R}. If the function returns nothing, you should be good to go. On some systems, we have observed segmentation faults that crash \code{R} when the map is exported to \code{Julia} and/or modified in \code{R}. Please report issues.
 }
 \examples{
-if (julia_run()) {
+if (patter_run()) {
 
   library(testthat)
 

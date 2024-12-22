@@ -34,6 +34,8 @@ This function builds a 'probability-of-use' utilisation distribution.
 Probability-of-use is calculated via \code{\link[=.map_coord]{.map_coord()}} (and \code{\link[=.map_mark]{.map_mark()}}). If a single dataset of unweighted coordinates is provided, probability-of-use is simply the proportion of records in each grid cell. If a time series of unweighted coordinates is provided, probability-of-use is effectively the average proportion of records in each grid cell. This becomes a weighted average if coordinates are weighted. Weights are normalised to sum to one and the result can be interpreted as a utilisation distribution in which cell values define probability-of-use. Maps are sensitive to grid resolution.
 
 This function replaces \href{https://edwardlavender.github.io/flapper/reference/pf_plot_map.html}{\code{flapper::pf_plot_map()}}.
+
+On Linux, this function cannot be used within a \code{Julia} session.
 }
 \examples{
 library(data.table)

@@ -60,8 +60,10 @@ set_map <- function(.x, .as_Raster = TRUE, .as_GeoArray = TRUE) {
     }
     file <- .x
   } else if (inherits(.x, "SpatRaster")) {
-    # TO DO
-    # * Warn if on linux
+    # Abort on linux
+    if (os_linux()) {
+      abort("On Linux, geospatial libraries in R and Julia cannot be used simultaneously in R and Julia. Restart R, connect to Julia and specify `.x` as a file path, not a SpatRaster.")
+    }
     # Define file
     if (terra::nlyr(.x) != 1L) {
       abort("`.x` should contain a single layer.")

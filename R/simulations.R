@@ -20,6 +20,8 @@
 #' @details
 #' This function replaces [`flapper::sim_array()`](https://edwardlavender.github.io/flapper/reference/sim_array.html).
 #'
+#' On Linux, this function cannot be used within a `Julia` session.
+#'
 #' @return The function returns a `data.table` with the following columns:
 #' * `array_id`---an `integer` vector of array IDs,
 #' * `receiver_id`---an `integer` vector of receiver IDs;
@@ -105,7 +107,7 @@ sim_array <- function(.map,
 #' @title Simulation: movement walks
 #' @description Simulate discrete-time animal movement paths from walk models (e.g., random walks, biased random walks, correlated random walks).
 #'
-#' @param .map (optional) On Windows or MacOS, `.map` is a [`SpatRaster`] that defines the study area for visualisation (see [`glossary`]). Here, `.map` is used to:
+#' @param .map (optional) On Windows or MacOS, `.map` is a [`SpatRaster`] that defines the study area for visualisation (see [`glossary`]). This argument cannot be used on Linux. Here, `.map` is used to:
 #' * Plot the movement path, if `.plot = TRUE`, via [`terra::plot()`];
 #' @param .timeline A `POSIXct` vector of regularly spaced time stamps that defines the timeline for the simulation. Here, `.timeline` is used to:
 #' * Define the number of time steps for the simulation;

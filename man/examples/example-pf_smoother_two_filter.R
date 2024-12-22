@@ -1,4 +1,4 @@
-if (julia_run()) {
+if (patter_run()) {
 
   #### Set up example
   # Set up the particle filter with an example dataset

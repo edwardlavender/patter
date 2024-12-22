@@ -33,6 +33,8 @@ These functions extract 'home range' estimates from a \code{\link{SpatRaster}} t
 }
 \details{
 These functions are modelled on \href{https://edwardlavender.github.io/flapper/reference/get_hr.html}{\verb{flapper::map_hr_*()}} functions, where full details are provided.
+
+On Linux, these functions cannot be used within a \code{Julia} session.
 }
 \examples{
 library(terra)

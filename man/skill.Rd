@@ -42,7 +42,7 @@ We follow the mathematical definitions in Lavender et al. (\href{https://www.doi
 \item \code{\link[=skill_d]{skill_d()}} computes the index of agreement.
 }
 
-These functions are not memory safe.
+These functions are not memory safe. On Linux, they cannot be used within a Julia session.
 }
 \examples{
 # Define template SpatRasters

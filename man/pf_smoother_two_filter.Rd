@@ -18,12 +18,16 @@ pf_smoother_two_filter(
 \arguments{
 \item{.map, .mobility, .vmap, .plot, ...}{(optional) 'Validity map' arguments for \code{\link[=set_map]{set_map()}}, used for two-dimensional states.
 \itemize{
-\item \code{.map} is a \code{\link{SpatRaster}} that defines the study area of the simulation (see \code{\link[=pf_filter]{pf_filter()}}).
+\item \code{.map} is a \code{\link{SpatRaster}} that defines the study area of the simulation (see \code{\link[=pf_filter]{pf_filter()}}). On Linux, this argument can only be used safely if \code{JULIA_SESSION = "FALSE"}.
 \item \code{.mobility} is a \code{numeric} value that defines the maximum moveable distance between two time steps (e.g., \code{.timeline[1]} and \code{.timeline[2]} in \code{\link[=pf_filter]{pf_filter()}}).
 \item \code{.vmap} is a \code{\link{SpatRaster}} (supported on Windows or MacOS), or a file path to a raster (supported on MacOS, Windows and Linux), that defines the validity map (see \code{\link[=set_map]{set_map()}}). This can be supplied, from a previous implementation of \code{\link[=set_vmap]{set_vmap()}} or the internal function \code{\link[=spatVmap]{spatVmap()}}, instead of \code{.map} and \code{.mobility} to avoid re-computation.
 \item \code{.plot} is a \code{logical} variable that defines whether or not to plot the map.
 \item \code{...} is a placeholder for additional arguments, passed to \code{\link[terra:plot]{terra::plot()}}, if \code{.plot = TRUE}.
-}}
+}
+
+The validity map is only set in Julia if \code{JULIA_SESSION = "TRUE"}.
+
+On Linux, the validity map cannot be created and set in the same \code{R} session. Running the function with \code{.map} and \code{.mobility} will create, but not set, the map. Write the map to file and then rerun the function with \code{.vmap} specified to set the map safely in \code{Julia}.}
 
 \item{.n_particle}{(optional) An \code{integer} that defines the number of particles to smooth.
 \itemize{
@@ -58,7 +62,7 @@ pf_smoother_two_filter(
 The two-filter smoother smooths particle samples from the particle filter (\code{\link[=pf_filter]{pf_filter()}}). Particles from a forward and backward filter run are required in the \code{Julia} workspace (as defined by \code{\link[=pf_filter]{pf_filter()}}). The backend function \href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.two_filter_smoother()}} does the work. Essentially, the function runs a simulation backwards in time and re-samples particles in line with the probability density of movements between each combination of states from the backward filter at time \code{t} and states from the forward filter at time \code{t - 1}. The time complexity of the algorithm is thus \eqn{O(TN^2)}. The probability density of movements is evaluated by \href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.logpdf_step()}} and \href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.logpdf_move()}}. If individual states are two-dimensional (see \code{\link{StateXY}}), a validity map can be pre-defined in \code{Julia} via \code{\link[=set_vmap]{set_vmap()}} to speed up probability calculations. The validity map is defined as the set of valid (non-\code{NA} or bordering) locations on the \code{.map}, shrunk by \code{.mobility}. Within this region, the probability density of movement between two states can be calculated directly. Otherwise, a Monte Carlo simulation, of \code{.n_sim} iterations, is required to compute the normalisation constant (accounting for movements into inhospitable areas, or beyond the boundaries of the study area). For movement models for which the density only depends on the particle states, set \code{.cache = TRUE} to pre-compute and cache normalisation constants for improved speed.
 }
 \examples{
-if (julia_run()) {
+if (patter_run()) {
 
   #### Set up example
   # Set up the particle filter with an example dataset

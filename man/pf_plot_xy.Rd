@@ -47,6 +47,8 @@ This function maps particle (\code{x}, \code{y}) locations for selected time ste
 For each \code{.step}, \code{\link[terra:plot]{terra::plot()}} is used to plot \code{.map}. Particle samples in \code{.coord} are added onto the grid via \code{\link[graphics:points]{graphics::points()}}. Particle weights are uniform thanks to resampling.
 
 This function replaces \href{https://edwardlavender.github.io/flapper/reference/pf_plot_history.html}{\code{flapper::pf_plot_history()}}.
+
+On Linux, this function cannot be used within a Julia session.
 }
 \examples{
 #### Set up

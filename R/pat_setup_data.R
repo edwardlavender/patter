@@ -11,6 +11,8 @@
 #' @details
 #' The preparation of datasets for [`patter`] is a one-off inconvenience. You should be able to analyse any kind of electronic tagging and tracking data using the main [`patter`] functions (such as [`pf_filter()`]). For passive acoustic telemetry data and archival (depth) data, [`patter`] provides some additional helper routines and functionality (such as data assembly routines for the particle filter). If you have acoustic and/or archival data, use [`pat_setup_data()`] to verify that your datasets meet [`patter`] requirements and exploit this additional functionality. See the [`check_dlist`] documentation for the required properties of each input dataset. All requirements are kept to a minimum and are straightforward to address. To minimise inconvenience, all inputs are optional in [`pat_setup_data()`]. For other data types, see the documentation for [`assemble`]`_*()` functions to incorporate them in particle filtering algorithms. Downstream functions may assume that input data are correctly formatted, which streamlines the API, documentation and internal code.
 #'
+#' On Linux, this function cannot be used within a `Julia` session.
+#'
 #' @return The function returns a named `list` with one element for each input argument.
 #'
 #' @example man/examples/example-pat_setup_data.R

@@ -1,4 +1,4 @@
-if (julia_run()) {
+if (patter_run()) {
 
   library(data.table)
   library(JuliaCall)

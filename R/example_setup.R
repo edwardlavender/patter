@@ -1,5 +1,52 @@
+#' @title Examples: run code
+#' @description This function switches code blocks on/off.
+#' @param .julia A `logical` variable that defines whether or not the code requires connection to a `Julia` session.
+#' @param .geospatial A `logical` variable that defines whether or not `R`'s geospatial packages (e.g., `terra`) are required.
+#' @details
+#' * If `.julia = TRUE`, the 'switch' is off if:
+#'    * AUTO_JULIA_INSTALL != "true";
+#'    * You are on a Linux platform and `.geospatial = TRUE`;
+#'
+#' * Otherwise, the switch if off if:
+#'    * You are on a Linux platform, `JULIA_SESSION = "TRUE"` and `.geospatial = TRUE`;
+#'
+#' (On Linux, geospatial libraries cannot be used simultaneously in `R` and `Julia`.)
+#'
+#' @return The function returns a `logical` value.
+#' @example man/examples/example-patter_run.R
+#' @author Edward Lavender
+#' @export
+
+# Choose whether or not to run code (examples/tests)
+# * `.julia`: does the code require a julia session?
+# * `.geospatial`: does the code require R's geospatial libraries e.g., terra?
+patter_run <- function(.julia = TRUE, .geospatial = TRUE) {
+
+  run       <- TRUE
+  linux_msg <- "On Linux, geospatial dependencies cannot be used in R and Julia simultaneously."
+
+  if (.julia) {
+    # Suppress Julia examples if AUTO_JULIA_INSTALL != true
+    if (!identical(Sys.getenv("AUTO_JULIA_INSTALL"), "true")) {
+      run <- FALSE
+    }
+    # On Linux, suppress Julia examples if .geospatial = TRUE
+    if (run & os_linux() & .geospatial) {
+      message(linux_msg)
+      run <- FALSE
+    }
+  } else {
+    # On Linux, suppress pure-R geospatial examples if JULIA_SESSION = TRUE
+    if (.geospatial & os_linux() & julia_session()) {
+      message(linux_msg)
+      run <- FALSE
+    }
+  }
+  run
+}
+
 #' @title Examples: streamline set up
-#' @description These functions are used to streamline package examples.
+#' @description These functions are used to streamline package examples. They are Windows and MacOS compatible.
 #' @param .fun A `character` that defines the name of a [`patter`] function with a corresponding [`example_setup()`] method.
 #' @param .connect A `logical` variable that defines whether or not to run [`julia_connect()`]. Set to `FALSE` for testing.
 #' @author Edward Lavender

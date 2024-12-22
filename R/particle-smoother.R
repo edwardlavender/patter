@@ -2,11 +2,15 @@
 #' @description [`pf_smoother_two_filter()`] function implements the two-filter particle smoother (Fearnhead et al., [2010](https://doi.org/10.1093/biomet/asq013)).
 #' @param .map,.mobility,.vmap,.plot,... (optional) 'Validity map' arguments for [`set_map()`], used for two-dimensional states.
 #'
-#' * `.map` is a [`SpatRaster`] that defines the study area of the simulation (see [`pf_filter()`]).
+#' * `.map` is a [`SpatRaster`] that defines the study area of the simulation (see [`pf_filter()`]). On Linux, this argument can only be used safely if `JULIA_SESSION = "FALSE"`.
 #' * `.mobility` is a `numeric` value that defines the maximum moveable distance between two time steps (e.g., `.timeline[1]` and `.timeline[2]` in [`pf_filter()`]).
 #' * `.vmap` is a [`SpatRaster`] (supported on Windows or MacOS), or a file path to a raster (supported on MacOS, Windows and Linux), that defines the validity map (see [`set_map()`]). This can be supplied, from a previous implementation of [`set_vmap()`] or the internal function [`spatVmap()`], instead of `.map` and `.mobility` to avoid re-computation.
 #' * `.plot` is a `logical` variable that defines whether or not to plot the map.
 #' * `...` is a placeholder for additional arguments, passed to [`terra::plot()`], if `.plot = TRUE`.
+#'
+#' The validity map is only set in Julia if `JULIA_SESSION = "TRUE"`.
+#'
+#' On Linux, the validity map cannot be created and set in the same `R` session. Running the function with `.map` and `.mobility` will create, but not set, the map. Write the map to file and then rerun the function with `.vmap` specified to set the map safely in `Julia`.
 #'
 #' @param .n_particle (optional) An `integer` that defines the number of particles to smooth.
 #' * If specified, a sub-sample of `.n_particle`s is used.
@@ -55,12 +59,16 @@ set_vmap  <- function(.map = NULL, .mobility = NULL, .vmap = NULL, .plot = FALSE
   # Set vmap in Julia
   if (is.null(.vmap)) {
     .vmap <- NULL
-    julia_command("vmap = nothing;")
+    if (julia_session()) {
+      julia_command("vmap = nothing;")
+    }
   } else {
     if (.plot) {
       terra::plot(.vmap, ...)
     }
-    set_map(.vmap, .as_Raster = FALSE, .as_GeoArray = "vmap")
+    if (julia_session()) {
+      set_map(.vmap, .as_Raster = FALSE, .as_GeoArray = "vmap")
+    }
   }
   invisible(.vmap)
 }

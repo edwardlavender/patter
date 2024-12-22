@@ -1,4 +1,4 @@
-if (julia_run()) {
+if (patter_run()) {
 
   #### Set JULIA OPTIONS
   # Recommended: set JULIA options in .Rprofile or .Renviron

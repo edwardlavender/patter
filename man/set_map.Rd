@@ -39,7 +39,7 @@ set_map(x2, .as_Raster = FALSE, .as_GeoArray = TRUE) # set movement map
 }
 }
 \examples{
-if (julia_run()) {
+if (patter_run()) {
 
   julia_connect()
   set_seed()

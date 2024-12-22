@@ -104,7 +104,7 @@ In \code{Julia}, \code{\link{ModelMove}} instances are used to simulate states v
 To use custom \code{\link{ModelMove}} sub-types, see Examples.
 }
 \examples{
-if (julia_run()) {
+if (patter_run()) {
 
   library(data.table)
   library(JuliaCall)
