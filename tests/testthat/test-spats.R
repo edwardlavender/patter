@@ -1,5 +1,7 @@
 test_that("spat*() functions work", {
 
+  skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
+
   #### `spatContainsNA()`
   expect_true(spatContainsNA(dat_gebco()))
   expect_false(spatContainsNA(terra::rast(vals = 1)))

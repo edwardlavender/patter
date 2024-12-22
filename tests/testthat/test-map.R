@@ -1,5 +1,7 @@
 test_that("as.im.SpatRaster() works", {
 
+  skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
+
   a <- readRDS(system.file("testdata", "as.im.SpatRaster.rds",
                            package = "patter", mustWork = TRUE))
   b <- as.im.SpatRaster(dat_gebco())
@@ -12,6 +14,8 @@ test_that("as.im.SpatRaster() works", {
 
 test_that("as.owin.SpatRaster() works", {
 
+  skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
+
   as.owin.SpatRaster(dat_gebco()) |>
     expect_message("Observation window is gridded.", fixed = TRUE)
 
@@ -21,9 +25,10 @@ test_that("as.owin.SpatRaster() works", {
 })
 
 test_that("as.owin.sf() works", {
-
+  skip_on_cran()
   skip_on_ci()
   skip_on_os(c("windows", "linux", "solaris"))
+  skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
 
   b <- terra::boundaries(dat_gebco())
   # terra::plot(b)
@@ -55,6 +60,8 @@ test_that("as.owin.sf() works", {
 # })
 
 test_that("map_pou() and map_dens() work", {
+
+  skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
 
   # Define map & coordinates
   map   <- dat_gebco()
@@ -106,8 +113,10 @@ test_that("map_pou() and map_dens() work", {
 
 test_that("map_hr_*() functions work", {
 
+  skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
+
   # Define hypothetical input SpatRaster
-  suppressWarnings(library(terra))
+  library(terra)
   r <- rast()
   n <- ncell(r)
   # Define 'probability densities' around a point

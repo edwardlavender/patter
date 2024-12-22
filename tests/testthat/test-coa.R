@@ -1,5 +1,7 @@
 test_that("coa() works", {
 
+  skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
+
   #### Tests with synthetic data
 
   # Define map

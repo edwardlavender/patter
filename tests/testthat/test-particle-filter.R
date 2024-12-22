@@ -1,5 +1,8 @@
 test_that("pf_filter() reconstructs the true path", {
 
+  skip_on_cran()
+  skip_if_not(patter_run(.julia = TRUE, .geospatial = TRUE))
+
   set_seed()
 
   # Define map

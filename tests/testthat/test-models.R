@@ -1,17 +1,22 @@
 test_that("move_*() functions work", {
 
+  skip_on_cran()
+  skip_if_not(patter_run(.julia = TRUE, .geospatial = FALSE))
+
   # Functions fail when the map has not been exported
-  # move_xy() |>
-  #   expect_error("'env' does not exist in Julia.")
-  # move_xyz() |>
-  #   expect_error("'env' does not exist in Julia.")
-  # move_cxy() |>
-  #   expect_error("'env' does not exist in Julia.")
-  # move_cxyz() |>
-  #   expect_error("'env' does not exist in Julia.")
+  if (!julia_exists("env")) {
+    move_xy() |>
+      expect_error("'env' does not exist in Julia.")
+    move_xyz() |>
+      expect_error("'env' does not exist in Julia.")
+    move_cxy() |>
+      expect_error("'env' does not exist in Julia.")
+    move_cxyz() |>
+      expect_error("'env' does not exist in Julia.")
+  }
 
   # Set map
-  map <- dat_gebco()
+  map <- dat_gebco(.return = "character")
   set_map(map)
 
   # Test move_xy()

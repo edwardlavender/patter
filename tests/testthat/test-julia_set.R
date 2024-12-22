@@ -2,6 +2,9 @@
 
 test_that("set_seed() works", {
 
+  skip_on_cran()
+  skip_if_not(patter_run(.julia = TRUE, .geospatial = FALSE))
+
   # Test that set_seed() works in R
   set_seed(1)
   a <- rnorm(1)
@@ -47,6 +50,9 @@ test_that("set_seed() works", {
 
 test_that("set_map() works", {
 
+  skip_on_cran()
+  skip_if_not(patter_run(.julia = TRUE, .geospatial = TRUE))
+
   # Specify file path
   f <- system.file("extdata", "dat_gebco.tif", package = "patter", mustWork = TRUE)
   set_map(f)
@@ -69,6 +75,9 @@ test_that("set_map() works", {
 })
 
 test_that("Additional Julia set_*() functions work", {
+
+  skip_on_cran()
+  skip_if_not(patter_run(.julia = TRUE, .geospatial = FALSE))
 
   # set_JULIA_NUM_THREADS()
   JULIA_NUM_THREADS <- Sys.getenv("JULIA_NUM_THREADS")

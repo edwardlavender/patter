@@ -1,5 +1,7 @@
 test_that("dist_2d() works", {
 
+  skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
+
   n <- 1e5L
 
   #### (1) Test with pairwise = TRUE

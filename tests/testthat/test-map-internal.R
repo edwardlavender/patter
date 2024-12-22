@@ -1,5 +1,7 @@
 test_that(".map_*() functions work", {
 
+  skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
+
   # Define helper to compute XYM data.table
   xym <- function(.coord) {
     .coord <- copy(.coord)

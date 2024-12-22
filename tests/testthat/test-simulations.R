@@ -1,5 +1,7 @@
 test_that("sim_array() works", {
 
+  skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
+
   map      <- dat_gebco()
   timeline <- assemble_timeline(list(dat_detections), .step = "2 mins")
 
@@ -26,6 +28,9 @@ test_that("sim_array() works", {
 })
 
 test_that("sim_path_walk() works", {
+
+  skip_on_cran()
+  skip_if_not(patter_run(.julia = TRUE, .geospatial = TRUE))
 
   #### Set up test
   timeline <- assemble_timeline(list(dat_detections), .step = "2 mins")[1:1000]

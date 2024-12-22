@@ -290,7 +290,7 @@ test_that("assemble_acoustics_containers() works", {
                ))
 
   #### (2) Test `.map` and `.threshold` arguments
-  # TO DO
+  # TO DO, use patter_run()
 
   #### (3) Test with real data
 

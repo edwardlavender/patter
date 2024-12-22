@@ -33,6 +33,7 @@ test_that("par_mf() works", {
 })
 
 test_that("add_sp_path() works", {
+  skip_on_cran()
   skip_on_ci()
   skip_on_os(c("windows", "linux", "solaris"))
   code <- expression(

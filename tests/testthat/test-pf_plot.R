@@ -1,5 +1,7 @@
 test_that("pf_plot_xy() works", {
 
+  skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
+
   # Test correct png output
   wd <- getwd()
   con <- file.path(tempdir(), "png")

@@ -1,6 +1,6 @@
 test_that("check_{dataset}() functions work", {
 
-  expect_true(1 == 1)
+  skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
 
   #### check_map()
 

@@ -1,5 +1,8 @@
 test_that("Julia helpers work", {
 
+  skip_on_cran()
+  skip_if_not(patter_run(.julia = TRUE, .geospatial = FALSE))
+
   # Define file.path.norm() helper
   file.path.norm <- function(...) {
     x <- file.path(...)

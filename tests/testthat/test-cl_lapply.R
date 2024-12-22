@@ -1,5 +1,7 @@
 test_that("cl_lapply() works", {
 
+  skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
+
   is_unix <- .Platform$OS.type == "unix"
   is_win  <- .Platform$OS.type == "windows"
 
@@ -67,4 +69,3 @@ test_that("cl_lapply() works", {
   }
 
 })
-

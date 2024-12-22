@@ -1,5 +1,19 @@
 # Connect to `Julia`
-julia <- julia_connect()
+# * We connect to Julia once
+# * Individual connections within tests are not isolated
+# * Setting the map within one test makes it available within others
+# * On MacOS/Windows, we connect to Julia & run all tests
+# * One Linux, we connect to Julia & only run tests without geospatial dependencies
+# * Tests are skipped via patter_run()
+
+Sys.setenv("JULIA_SESSION" = "FALSE")
+if (patter_run(.julia = TRUE, .geospatial = FALSE)) {
+  # Connect to Julia
+  julia <- julia_connect()
+  # Set JULIA_SESSION = TRUE
+  # This variable is made available to individual tests
+  Sys.setenv("JULIA_SESSION" = "TRUE")
+}
 
 # Define helper functions
 

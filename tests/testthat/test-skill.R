@@ -1,5 +1,6 @@
 test_that("skill_*() functions work", {
 
+  skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
   set.seed(1)
 
   mod <- obs <- terra::rast()

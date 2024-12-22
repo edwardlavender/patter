@@ -1,5 +1,8 @@
 test_that("pf_smoother_two_filter() works", {
 
+  skip_on_cran()
+  skip_if_not(patter_run(.julia = TRUE, .geospatial = TRUE))
+
   setup <- example_setup("pf_smoother_two_filter",
                          .connect = FALSE)
   map   <- setup$map

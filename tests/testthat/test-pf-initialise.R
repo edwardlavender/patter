@@ -1,5 +1,9 @@
 test_that("pf_filter_init() works", {
 
+  skip_on_cran()
+  skip_if_not(patter_run(.julia = TRUE, .geospatial = TRUE))
+
+
   #########################
   #########################
   #### Define helpers

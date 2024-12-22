@@ -2,6 +2,9 @@
 
 test_that("Patter.jl::extract() works", {
 
+  skip_on_cran()
+  skip_if_not(patter_run(.julia = TRUE, .geospatial = TRUE))
+
   map <- dat_gebco()
   set_map(map)
 
@@ -34,5 +37,3 @@ test_that("Patter.jl::extract() works", {
   })
 
 })
-
-

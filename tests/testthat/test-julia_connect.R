@@ -1,16 +1,13 @@
 test_that("julia_connect() works", {
 
   #### Skips
-
-  # Skip on CI
-  skip_on_ci()
-
-  # Skip if offline
-  # (skip_if_offline() requires the curl package)
+  # (skip_if_offline() requires curl)
+  skip_on_cran()
   if (!requireNamespace("curl", quietly = TRUE)) {
     skip()
   }
   skip_if_offline()
+  skip_if_not(patter_run(.julia = TRUE, .geospatial = FALSE))
 
   #### Define helper functions
 
