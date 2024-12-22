@@ -2,7 +2,6 @@ if (patter_run()) {
 
   library(data.table)
   library(JuliaCall)
-  library(truncdist)
 
   #### Connect to Julia
   julia_connect()
@@ -27,11 +26,9 @@ if (patter_run()) {
 
   #### Example (1b): Customise `move_xy()`
   # Use a truncated normal distribution for step lengths:
-  hist(rtrunc(1e5L, "norm", a = 0, b = 750, mean = 250, sd = 50))
   move_xy(.mobility = "750.0",
           .dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)")
   # Use an exponential distribution for step lengths
-  hist(rtrunc(1e5L, "exp", b = 750, rate = 0.001))
   move_xy(.mobility = "750.0",
           .dbn_length = "truncated(Exponential(0.01), upper = 750.0)")
   # Use a biased random walk
@@ -64,7 +61,12 @@ if (patter_run()) {
             .dbn_heading_delta = "Normal(0, 0.25)",
             .dbn_z_delta = "Normal(0, 2.5)")
 
-  #### Example (4): Visualise different movement models
+  #### Example (4): Visualise movement model component distributions
+  # See `?plot.ModelMove`
+  plot(move_xy())
+
+  #### Example (5): Visualise movement model realisations (trajectories)
+  # See `?sim_path_walk`
   # Define a timeline for the simulation
   timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
                   length.out = 1000L, by = "2 mins")
@@ -87,10 +89,10 @@ if (patter_run()) {
   do.call(sim_path_walk, args)
   par(pp)
 
-  #### Example (5): Use movement models in the particle filter
+  #### Example (6): Use movement models in the particle filter
   # See `?pf_filter()`
 
-  #### Example (6): Use custom movement model types
+  #### Example (7): Use custom movement model types
   # Patter contains multiple built-in `State` and `ModelMove` sub-types that you can use
   # ... (with custom parameters) simulate movements and for particle filtering.
   # See the help file for `?State` to use a new sub-type.
