@@ -51,125 +51,129 @@ This function replaces \href{https://edwardlavender.github.io/flapper/reference/
 On Linux, this function cannot be used within a Julia session.
 }
 \examples{
-#### Set up
-# Define map
-map <- dat_gebco()
-# Define particle samples
-fwd <- dat_pff()$states
-bwd <- dat_pfb()$states
-smo <- dat_tff()$states
-# Define directories
-con    <- file.path(tempdir(), "patter")
-frames <- file.path(con, "frame")
-mp4s   <- file.path(con, "mp4")
-dir.create(frames, recursive = TRUE)
-dir.create(mp4s, recursive = TRUE)
-# Cluster options
-pbo <- pbapply::pboptions(nout = 4L)
+if (patter_run(.julia = FALSE, .geospatial = TRUE)) {
 
-#### Example (1): Plot selected samples
-# Plot particles from the forward filter
-pf_plot_xy(.map = map,
-           .coord = fwd,
-           .steps = 1L)
-# Plot particles from the backward filter
-pf_plot_xy(.map = map,
-           .coord = bwd,
-           .steps = 1L)
-# Plot smoothed particles
-pf_plot_xy(.map = map,
-           .coord = smo,
-           .steps = 1L)
+  #### Set up
+  # Define map
+  map <- dat_gebco()
+  # Define particle samples
+  fwd <- dat_pff()$states
+  bwd <- dat_pfb()$states
+  smo <- dat_tff()$states
+  # Define directories
+  con    <- file.path(tempdir(), "patter")
+  frames <- file.path(con, "frame")
+  mp4s   <- file.path(con, "mp4")
+  dir.create(frames, recursive = TRUE)
+  dir.create(mp4s, recursive = TRUE)
+  # Cluster options
+  pbo <- pbapply::pboptions(nout = 4L)
 
-#### Example (2): Plot multiple time steps
-# Specify selected steps
-pf_plot_xy(.map = map,
-           .coord = smo,
-           .steps = 1:4L)
-# Plot all steps (default: .step = NULL)
-pf_plot_xy(.map = map,
-           .coord = fwd)
-# Use `.prompt = TRUE`
-pf_plot_xy(.map = map,
-           .coord = smo,
-           .steps = 1:4L,
-           .prompt = TRUE)
+  #### Example (1): Plot selected samples
+  # Plot particles from the forward filter
+  pf_plot_xy(.map = map,
+             .coord = fwd,
+             .steps = 1L)
+  # Plot particles from the backward filter
+  pf_plot_xy(.map = map,
+             .coord = bwd,
+             .steps = 1L)
+  # Plot smoothed particles
+  pf_plot_xy(.map = map,
+             .coord = smo,
+             .steps = 1L)
 
-#### Example (3): Customise the background map via `.add_surface`
-pf_plot_xy(.map = map,
-           .coord = smo,
-           .steps = 1L,
-           .add_surface = list(col = rev(terrain.colors(256L))))
-
-#### Example (4): Customise the points
-# Use `.add_points`
-pf_plot_xy(.map = map,
-           .coord = smo,
-           .steps = 1L,
-           .add_points = list(pch = ".", col = "red"))
-# Include `points()` arguments as columns in `.coord`
-# * Here, we colour branches from the filter pruned by the smoother in red
-fwd[, cell_id := terra::extract(map, cbind(x, y))]
-bwd[, cell_id := terra::extract(map, cbind(x, y))]
-smo[, cell_id := terra::extract(map, cbind(x, y))]
-fwd[, col := ifelse(cell_id \%in\% smo$cell_id, "black", "red")]
-bwd[, col := ifelse(cell_id \%in\% smo$cell_id, "black", "red")]
-pf_plot_xy(.map = map,
-           .coord = rbind(fwd, bwd),
-           .steps = 1L,
-           .add_points = list(pch = "."))
-
-#### Example (5): Add additional map layers
-pf_plot_xy(.map = map,
-           .coord = smo,
-           .steps = 1L,
-           .add_layer = function(t) mtext(side = 4, "Depth (m)", line = -4))
-
-#### Example (6): Write images to file
-# Write images in serial
-pf_plot_xy(.map = map,
-           .coord = smo,
-           .steps = 1:4L,
-           .png = list(filename = frames))
-# Use a fork cluster
-if (.Platform$OS.type == "unix") {
+  #### Example (2): Plot multiple time steps
+  # Specify selected steps
+  pf_plot_xy(.map = map,
+             .coord = smo,
+             .steps = 1:4L)
+  # Plot all steps (default: .step = NULL)
+  pf_plot_xy(.map = map,
+             .coord = fwd)
+  # Use `.prompt = TRUE`
   pf_plot_xy(.map = map,
              .coord = smo,
              .steps = 1:4L,
-             .png = list(filename = frames),
-             .cl = 2L,
-             .chunk = TRUE)
-}
+             .prompt = TRUE)
 
-#### Example (7): Make animations
-if (rlang::is_installed("av")) {
+  #### Example (3): Customise the background map via `.add_surface`
+  pf_plot_xy(.map = map,
+             .coord = smo,
+             .steps = 1L,
+             .add_surface = list(col = rev(terrain.colors(256L))))
 
-  # There are lots of tools to create animations:
-  # * `av::av_encode_video()`       # uses ffmpeg
-  # * `animation::saveVideo()`      # uses ffmpeg
-  # * `magick::image_write_video()` # wraps av()
-  # * `glatos::make_video()`        # wraps av()
+  #### Example (4): Customise the points
+  # Use `.add_points`
+  pf_plot_xy(.map = map,
+             .coord = smo,
+             .steps = 1L,
+             .add_points = list(pch = ".", col = "red"))
+  # Include `points()` arguments as columns in `.coord`
+  # * Here, we colour branches from the filter pruned by the smoother in red
+  fwd[, cell_id := terra::extract(map, cbind(x, y))]
+  bwd[, cell_id := terra::extract(map, cbind(x, y))]
+  smo[, cell_id := terra::extract(map, cbind(x, y))]
+  fwd[, col := ifelse(cell_id \%in\% smo$cell_id, "black", "red")]
+  bwd[, col := ifelse(cell_id \%in\% smo$cell_id, "black", "red")]
+  pf_plot_xy(.map = map,
+             .coord = rbind(fwd, bwd),
+             .steps = 1L,
+             .add_points = list(pch = "."))
 
-  # Helper function to open (mp4) files
-  Sys.open <- function(.file) {
-    if (.Platform$OS.type == "Windows") {
-      cmd <- paste("start", shQuote(.file))
-    } else {
-      cmd <- paste("open", shQuote(.file))
-    }
-    system(cmd)
+  #### Example (5): Add additional map layers
+  pf_plot_xy(.map = map,
+             .coord = smo,
+             .steps = 1L,
+             .add_layer = function(t) mtext(side = 4, "Depth (m)", line = -4))
+
+  #### Example (6): Write images to file
+  # Write images in serial
+  pf_plot_xy(.map = map,
+             .coord = smo,
+             .steps = 1:4L,
+             .png = list(filename = frames))
+  # Use a fork cluster
+  if (.Platform$OS.type == "unix") {
+    pf_plot_xy(.map = map,
+               .coord = smo,
+               .steps = 1:4L,
+               .png = list(filename = frames),
+               .cl = 2L,
+               .chunk = TRUE)
   }
 
-  # Use av::av_encode_video()
-  # * This is one of the faster options
-  input   <- file_list(frames)
-  output  <- file.path(mp4s, "ani.mp4")
-  av::av_encode_video(input, output, framerate = 10)
-  # Sys.open(output)
+  #### Example (7): Make animations
+  if (rlang::is_installed("av")) {
+
+    # There are lots of tools to create animations:
+    # * `av::av_encode_video()`       # uses ffmpeg
+    # * `animation::saveVideo()`      # uses ffmpeg
+    # * `magick::image_write_video()` # wraps av()
+    # * `glatos::make_video()`        # wraps av()
+
+    # Helper function to open (mp4) files
+    Sys.open <- function(.file) {
+      if (.Platform$OS.type == "Windows") {
+        cmd <- paste("start", shQuote(.file))
+      } else {
+        cmd <- paste("open", shQuote(.file))
+      }
+      system(cmd)
+    }
+
+    # Use av::av_encode_video()
+    # * This is one of the faster options
+    input   <- file_list(frames)
+    output  <- file.path(mp4s, "ani.mp4")
+    av::av_encode_video(input, output, framerate = 10)
+    # Sys.open(output)
+
+  }
+
+  file_cleanup(con)
 
 }
-
-file_cleanup(con)
 }
 \seealso{
 Particle filters and smoothers sample states (particles) that represent the possible locations of an individual through time, accounting for all data and the individual's movement.

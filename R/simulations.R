@@ -160,13 +160,13 @@ NULL
 #' @rdname sim_path_walk
 #' @export
 
-sim_path_walk <- function(.map,
+sim_path_walk <- function(.map = NULL,
                           .timeline,
                           .state = "StateXY",
                           .xinit = NULL, .n_path = 1L,
                           .model_move = move_xy(),
                           .collect = TRUE,
-                          .plot = .collect, .one_page = FALSE) {
+                          .plot = .collect & !is.null(.map), .one_page = FALSE) {
 
   #### Set initial state
   set_states_init(.timeline = .timeline,
@@ -205,7 +205,7 @@ sim_path_walk <- function(.map,
   # This ensures consistency between Patter.jl & patter
 
   #### Visualise paths & return
-  if (.plot) {
+  if (.plot & !is.null(.map)) {
     pp <- one_page(.one_page, fndistinct(paths$path_id))
     on.exit(par(pp), add = TRUE)
     lapply(split(paths, paths$path_id), function(d) {

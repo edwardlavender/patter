@@ -5,14 +5,14 @@
 \title{Simulation: movement walks}
 \usage{
 sim_path_walk(
-  .map,
+  .map = NULL,
   .timeline,
   .state = "StateXY",
   .xinit = NULL,
   .n_path = 1L,
   .model_move = move_xy(),
   .collect = TRUE,
-  .plot = .collect,
+  .plot = .collect & !is.null(.map),
   .one_page = FALSE
 )
 }

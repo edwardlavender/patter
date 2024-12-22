@@ -104,7 +104,7 @@ In \code{Julia}, \code{\link{ModelMove}} instances are used to simulate states v
 To use custom \code{\link{ModelMove}} sub-types, see Examples.
 }
 \examples{
-if (patter_run()) {
+if (patter_run(.geospatial = FALSE)) {
 
   library(data.table)
   library(JuliaCall)
@@ -120,7 +120,9 @@ if (patter_run()) {
   # * NaNs define regions into which movement is not permitted
   # * (i.e., on land, in the case of aquatic animals)
   map <- dat_gebco()
-  terra::plot(map)
+  # Plot map (on Windows/MacOS only!)
+  # terra::plot(map)
+
   # Using `set_map()` makes the map available as a object called 'env' in `Julia`
   # > This is required as a component of all movement models
   set_map(map)
@@ -172,28 +174,32 @@ if (patter_run()) {
   plot(move_xy())
 
   #### Example (5): Visualise movement model realisations (trajectories)
-  # See `?sim_path_walk`
-  # Define a timeline for the simulation
-  timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
-                  length.out = 1000L, by = "2 mins")
-  # Define an initial location
-  x <- 708212.6
-  y <- 6251684
-  origin <- data.table(map_value = terra::extract(map, cbind(x, y))[1, 1],
-                       x = x, y = y)
-  # Collect essential arguments for `sim_path_walk()`
-  args <- list(.map = map,
-               .xinit = origin,
-               .timeline = timeline,
-               .state = "StateXY",
-               .n_path = 2L, .one_page = FALSE)
-  # Compare different movement models via `sim_path_walk()`
-  pp <- par(mfrow = c(2, 2))
-  args$.model_move <- move_xy()
-  do.call(sim_path_walk, args)
-  args$.model_move <- move_xy(.dbn_heading = "VonMises(0.1, 0.1)")
-  do.call(sim_path_walk, args)
-  par(pp)
+  if (patter_run()) {
+
+    # See `?sim_path_walk`
+    # Define a timeline for the simulation
+    timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
+                    length.out = 1000L, by = "2 mins")
+    # Define an initial location
+    x <- 708212.6
+    y <- 6251684
+    origin <- data.table(map_value = terra::extract(map, cbind(x, y))[1, 1],
+                         x = x, y = y)
+    # Collect essential arguments for `sim_path_walk()`
+    args <- list(.map = map,
+                 .xinit = origin,
+                 .timeline = timeline,
+                 .state = "StateXY",
+                 .n_path = 2L, .one_page = FALSE)
+    # Compare different movement models via `sim_path_walk()`
+    pp <- par(mfrow = c(2, 2))
+    args$.model_move <- move_xy()
+    do.call(sim_path_walk, args)
+    args$.model_move <- move_xy(.dbn_heading = "VonMises(0.1, 0.1)")
+    do.call(sim_path_walk, args)
+    par(pp)
+
+  }
 
   #### Example (6): Use movement models in the particle filter
   # See `?pf_filter()`

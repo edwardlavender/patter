@@ -5,6 +5,7 @@
 #' @details
 #' * If `.julia = TRUE`, the 'switch' is off if:
 #'    * AUTO_JULIA_INSTALL != "true";
+#'    * You are on a Linux platform and geospatial packages are currently in use;
 #'    * You are on a Linux platform and `.geospatial = TRUE`;
 #'
 #' * Otherwise, the switch if off if:
@@ -30,7 +31,11 @@ patter_run <- function(.julia = TRUE, .geospatial = TRUE) {
     if (!identical(Sys.getenv("AUTO_JULIA_INSTALL"), "true")) {
       run <- FALSE
     }
-    # On Linux, suppress Julia examples if .geospatial = TRUE
+    # On Linux, suppress Julia examples if geospatial packages in use
+    if (run & os_linux() & any(c("sf", "terra") %in% loadedNamespaces())) {
+      message(linux_msg)
+      run <- FALSE
+    }
     if (run & os_linux() & .geospatial) {
       message(linux_msg)
       run <- FALSE

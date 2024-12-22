@@ -1,4 +1,4 @@
-if (patter_run()) {
+if (patter_run(.geospatial = FALSE)) {
 
   #### Set JULIA OPTIONS
   # Recommended: set JULIA options in .Rprofile or .Renviron

@@ -1,4 +1,4 @@
-if (patter_run()) {
+if (patter_run(.geospatial = FALSE)) {
 
   library(testthat)
 

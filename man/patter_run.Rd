@@ -22,6 +22,7 @@ This function switches code blocks on/off.
 \item If \code{.julia = TRUE}, the 'switch' is off if:
 \itemize{
 \item AUTO_JULIA_INSTALL != "true";
+\item You are on a Linux platform and geospatial packages are currently in use;
 \item You are on a Linux platform and \code{.geospatial = TRUE};
 }
 \item Otherwise, the switch if off if:

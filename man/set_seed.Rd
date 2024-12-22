@@ -16,7 +16,7 @@ The function returns \code{invisible(NULL)}.
 Use \code{\link[=set_seed]{set_seed()}} to set the seed in \code{R} and \code{Julia} at the start of your workflow.
 }
 \examples{
-if (patter_run()) {
+if (patter_run(.geospatial = FALSE)) {
   julia_connect()
   set_seed(2024L)
 }

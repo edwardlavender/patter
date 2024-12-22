@@ -82,7 +82,7 @@ You should run this function once per \code{R} session (and for every socket in 
 To update the number of threads, restart \code{R} and re-run the function with an updated \code{JULIA_NUM_THREADS} argument.
 }
 \examples{
-if (patter_run()) {
+if (patter_run(.geospatial = FALSE)) {
 
   #### Set JULIA OPTIONS
   # Recommended: set JULIA options in .Rprofile or .Renviron
