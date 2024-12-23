@@ -100,8 +100,10 @@ example_setup.pf_smoother_two_filter <- function(.fun, .connect = TRUE) {
   set_map(map)
   # terra::plot(map)
   # Define timeline
+  # * Set start and end, rather than length.out, to avoid test warnings
   timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
-                  length.out = 100L, by = "2 mins")
+                  as.POSIXct("2016-01-01 03:18:00 UTC", tz = "UTC"),
+                  by = "2 mins")
 
   #### Simulate an acoustic array
   moorings <- sim_array(.map = map,
