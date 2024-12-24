@@ -1,8 +1,7 @@
 if (patter_run(.geospatial = FALSE)) {
 
   #### Set JULIA OPTIONS
-  # Recommended: set JULIA options in .Rprofile or .Renviron
-  # (Restart R to ensure these settings take effect)
+  # Recommended: set JULIA options in .Rprofile or .Renviron (see Details)
   # Otherwise: include JULIA options as function arguments below
 
   #### Example (1): First time use
@@ -15,7 +14,11 @@ if (patter_run(.geospatial = FALSE)) {
   julia_connect()
 
   #### Example (3): Force an update of installed packages
+  # This example is potentially slow
   if (FALSE) {
+    # Update a specific package
+    julia_connect(.pkg_update = "GeoArrays")
+    # Update all packages
     julia_connect(.pkg_update = TRUE)
   }
 

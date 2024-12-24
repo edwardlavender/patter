@@ -66,13 +66,13 @@ test_that("julia_connect() works", {
   # Use JULIA_PROJ env variable
   jproj <- file.path(tempdir(), "Julia")
   Sys.setenv("JULIA_PROJ" = jproj)
-  julia_connect()
+  julia_connect(.socket = TRUE)
   expect_true(file.exists(file.path(jproj, "manifest.toml")))
   Sys.unsetenv("JULIA_PROJ")
   file_cleanup(jproj)
 
   # Use JULIA_PROJ argument
-  julia_connect(JULIA_PROJ = jproj)
+  julia_connect(JULIA_PROJ = jproj, .socket = TRUE)
   expect_true(file.exists(file.path(jproj, "manifest.toml")))
   file_cleanup(jproj)
 
@@ -80,12 +80,12 @@ test_that("julia_connect() works", {
   if (JULIA_NUM_THREADS != 2L) {
 
     Sys.setenv("JULIA_NUM_THREADS" = 2L)
-    julia_connect(JULIA_PROJ = jproj) |>
+    julia_connect(JULIA_PROJ = jproj, .socket = TRUE) |>
       expect_warning("`JULIA_NUM_THREADS` could not be set.", fixed = TRUE)
 
     # Use .threads argument
     Sys.setenv("JULIA_NUM_THREADS" = JULIA_NUM_THREADS)
-    julia_connect(JULIA_PROJ = jproj, JULIA_NUM_THREADS = 2L) |>
+    julia_connect(JULIA_PROJ = jproj, JULIA_NUM_THREADS = 2L, .socket = TRUE) |>
       expect_warning("There are multiple values for `JULIA_NUM_THREADS`.", fixed = TRUE) |>
       expect_warning("`JULIA_NUM_THREADS` could not be set.", fixed = TRUE)
     Sys.setenv("JULIA_NUM_THREADS" = JULIA_NUM_THREADS)
@@ -98,14 +98,14 @@ test_that("julia_connect() works", {
 
   # Test JULIA_PATTER_SOURCE = NULL
   # > "https://github.com/edwardlavender/Patter.jl.git#main"
-  julia_connect(JULIA_PROJ = jproj, JULIA_PATTER_SOURCE = NULL)
+  julia_connect(JULIA_PROJ = jproj, JULIA_PATTER_SOURCE = NULL, .socket = TRUE)
   expect_equal(Patter_repo_url(jproj),
                "https://github.com/edwardlavender/Patter.jl.git#main")
   file_cleanup(jproj)
 
   # Test installation with JULIA_PATTER_SOURCE = "main" (branch)
   # > "https://github.com/edwardlavender/Patter.jl.git#main"
-  julia_connect(JULIA_PROJ = jproj, JULIA_PATTER_SOURCE = "main")
+  julia_connect(JULIA_PROJ = jproj, JULIA_PATTER_SOURCE = "main", .socket = TRUE)
   expect_equal(Patter_repo_url(jproj),
                "https://github.com/edwardlavender/Patter.jl.git#main")
 
@@ -113,52 +113,57 @@ test_that("julia_connect() works", {
   # > "https://github.com/edwardlavender/Patter.jl.git#main"
   # > We expect no change b/c the update needs to be forced with .pkg_update
   # > (This is the same if we try to swap onto a development version on file)
-  julia_connect(JULIA_PROJ = jproj, JULIA_PATTER_SOURCE = "dev")
+  julia_connect(JULIA_PROJ = jproj, JULIA_PATTER_SOURCE = "dev", .socket = TRUE)
   expect_equal(Patter_repo_url(jproj),
                "https://github.com/edwardlavender/Patter.jl.git#main")
 
   # (As above but swapping onto a development version on file)
   local_Patter.jl <- clone_Patter.jl()
-  julia_connect(JULIA_PROJ = jproj, JULIA_PATTER_SOURCE = local_Patter.jl)
+  julia_connect(JULIA_PROJ = jproj, JULIA_PATTER_SOURCE = local_Patter.jl, .socket = TRUE)
   expect_equal(Patter_repo_url(jproj),
                "https://github.com/edwardlavender/Patter.jl.git#main")
 
   # Test installation with JULIA_PATTER_SOURCE = new input & .pkg_update
   # A) Implement update of Patter as requested via .pkg_update
   # > "https://github.com/edwardlavender/Patter.jl.git#dev"
-  julia_connect(JULIA_PROJ = jproj, JULIA_PATTER_SOURCE = "dev", .pkg_update = "Patter")
+  julia_connect(JULIA_PROJ = jproj,
+                JULIA_PATTER_SOURCE = "dev", .pkg_update = "Patter",
+                .socket = TRUE)
   expect_equal(Patter_repo_url(jproj),
                "https://github.com/edwardlavender/Patter.jl.git#dev")
   # B) As above, but swap to development version on file
   julia_connect(JULIA_PROJ = jproj,
                 JULIA_PATTER_SOURCE = local_Patter.jl,
-                .pkg_update = "Patter")
+                .pkg_update = "Patter",
+                .socket = TRUE)
   expect_equal(read_pkg_metadata(jproj, "Patter")$path,
                local_Patter.jl)
   # C) We reset to the main branch unless specified
   # > "https://github.com/edwardlavender/Patter.jl.git#main"
-  julia_connect(JULIA_PROJ = jproj, .pkg_update = "Patter")
+  julia_connect(JULIA_PROJ = jproj, .pkg_update = "Patter", .socket = TRUE)
   expect_equal(Patter_repo_url(jproj),
                "https://github.com/edwardlavender/Patter.jl.git#main")
   file_cleanup(jproj)
 
   #### Test .pkg_config
   julia_connect(JULIA_PROJ = jproj,
-                .pkg_config = 'error("Break installation")') |>
+                .pkg_config = 'error("Break installation")',
+                .socket = TRUE) |>
     expect_error("Error happens in Julia.",
                  fixed = TRUE)
 
   #### Test .pkg_install
   julia_connect(JULIA_PROJ = jproj,
-                .pkg_install = c("CSV", "BenchmarkTools"))
+                .pkg_install = c("CSV", "BenchmarkTools"),
+                .socket = TRUE)
   expect_true(julia_installed_package("CSV") != "nothing")
   expect_true(julia_installed_package("BenchmarkTools") != "nothing")
 
   #### Test .pkg_update & .pkg_load
   # Update all packages
-  julia_connect(JULIA_PROJ = jproj, .pkg_update = TRUE)
+  julia_connect(JULIA_PROJ = jproj, .pkg_update = TRUE, .socket = TRUE)
   # Load specific package
-  julia_connect(JULIA_PROJ = jproj, .pkg_load = "CSV")
+  julia_connect(JULIA_PROJ = jproj, .pkg_load = "CSV", .socket = TRUE)
   # Test load
   # * This will throw an error if CSV is not loaded
   julia_command('methods(CSV.read);')

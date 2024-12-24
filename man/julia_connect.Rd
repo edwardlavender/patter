@@ -13,6 +13,7 @@ julia_connect(
   .pkg_install = NULL,
   .pkg_update = NULL,
   .pkg_load = NULL,
+  .socket = FALSE,
   .verbose = getOption("patter.verbose"),
   ...
 )
@@ -23,7 +24,7 @@ julia_connect(
 \item \code{JULIA_HOME}---A \code{character} string that defines the location of the \code{Julia} installation (see \code{\link[JuliaCall:julia_setup]{JuliaCall::julia_setup()}}). Usually, this is not required.
 \item \code{JULIA_PROJ}---A \code{character} string that defines the directory of a \code{Julia} Project. If unspecified, the default environment (e.g., \verb{~/.julia/environments/v1.10/Project.toml}) is used with a \code{\link{message}} instead of a local \code{Julia} project.
 \item \code{JULIA_NUM_THREADS}---On MacOS or Linux, \code{JULIA_NUM_THREADS} is a \code{character} (\code{"auto"}) or an \code{integer} that defines the number of threads used by multi-threaded operations in \code{Julia}. This defaults to \code{"auto"} (not \code{1}). This can only be set once per \code{R} session. On Windows, \code{JULIA_NUM_THREADS} must be set system-wide and use of this argument produces a \code{\link{warning}}. See this \href{https://github.com/edwardlavender/patter/issues/11}{GitHub Issue} for instructions.
-\item \code{JULIA_PATTER_SOURCE}---A \code{character} string that defines the source of \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}. This may be:
+\item \code{JULIA_PATTER_SOURCE}---For advanced use only: a \code{character} string that defines the source of \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}. This may be:
 \itemize{
 \item An absolute file path to a local copy of the package, in which case it is added as a development dependency;
 \item A Git branch name (e.g., \code{"main"}, \code{"dev"}) or a commit SHA (e.g., \code{"b7c2fda733f80fcfd8770058cded7e0946b3abc0"});
@@ -55,12 +56,18 @@ If \code{JULIA_PATTER_SOURCE} changes, force the update by \code{.pkg_update}.}
 
 Note that for \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}, \code{.pkg_update} does not respect the current branch of the installation and always defaults to \code{"https://github.com/edwardlavender/Patter.jl.git"}. Specify \code{JULIA_PATTER_SOURCE} to update on a different branch.}
 
+\item{.socket}{A \code{logical} variable that defines whether or not to reconnect to \code{Julia}.
+\itemize{
+\item Use \code{FALSE} (default) to skip re-running the function (i.e., if \code{JULIA_SESSION = "TRUE"});
+\item Use \code{TRUE} to force a reconnect. This is required for nodes in a socket cluster, which inherit \code{JULIA_SESSION = "TRUE"} but which are not connected to \code{Julia};
+}}
+
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 
 \item{...}{Additional arguments passed to \code{\link[JuliaCall:julia_setup]{JuliaCall::julia_setup()}} (excluding \code{verbose}).}
 }
 \value{
-The function returns the \code{Julia} interface invisibly (see \code{\link[JuliaCall:julia_setup]{JuliaCall::julia_setup()}}).
+The function returns the \code{Julia} interface invisibly (see \code{\link[JuliaCall:julia_setup]{JuliaCall::julia_setup()}}). If \code{JULIA_SESSION} is already \code{"TRUE"} and \code{.socket = FALSE}, \code{invisible(NULL)} is returned.
 }
 \description{
 This function connects \code{R} to \code{Julia}.
@@ -77,7 +84,38 @@ This function connects \code{R} to \code{Julia}.
 \item \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} and supporting dependencies are added or updated (if required) and loaded (optionally in the local \code{Julia} Project).
 }
 
-You should run this function once per \code{R} session (and for every socket in a socket cluster, if necessary).
+To set \verb{JULIA_*} options (e.g., \code{JULIA_HOME}, \code{JULIA_PROJ}, \code{JULIA_NUM_THREADS}), it is recommended to use \code{.Rprofile} or \code{.Renviron}. To set these options in \code{.Rprofile}, follow these instructions:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{# (1) Open .Rprofile
+usethis::edit_r_profile()
+
+# (2) Add the following to .Rprofile
+
+# Use a local `Julia` project:
+if (!requireNamespace("here", quietly = TRUE)) \{
+  install.packages("here")
+\}
+julia_proj <- here::here("Julia")
+if (!dir.exists(julia_proj)) \{
+  dir.create(julia_proj)
+\}
+Sys.setenv(JULIA_PROJ = here::here("Julia"))
+
+# Set `JULIA_NUM_THREADS` (on MacOS/Linux):
+# - In general, more threads faster, up to a point;
+# - On Windows, follow the alternative instructions linked above;
+# - (You may also set `data.table` threads here via `OMP_NUM_THREADS`)
+Sys.setenv(JULIA_NUM_THREADS = parallel::detectCores() - 1L)
+
+# (3) Save .Rprofile and restart R:
+
+# (3) Run `julia_connect()` in the `R` console as usual:
+# There is no need to specify `JULIA_*` arguments e.g., JULIA_PROJ
+# There are inherited from .Rprofile
+julia_connect()
+}\if{html}{\out{</div>}}
+
+You should run \code{\link[=julia_connect]{julia_connect()}} once per \code{R} session (and additionally for every socket in a socket cluster, if necessary).
 
 To update the number of threads, restart \code{R} and re-run the function with an updated \code{JULIA_NUM_THREADS} argument.
 }
@@ -85,8 +123,7 @@ To update the number of threads, restart \code{R} and re-run the function with a
 if (patter_run(.geospatial = FALSE)) {
 
   #### Set JULIA OPTIONS
-  # Recommended: set JULIA options in .Rprofile or .Renviron
-  # (Restart R to ensure these settings take effect)
+  # Recommended: set JULIA options in .Rprofile or .Renviron (see Details)
   # Otherwise: include JULIA options as function arguments below
 
   #### Example (1): First time use
@@ -99,7 +136,11 @@ if (patter_run(.geospatial = FALSE)) {
   julia_connect()
 
   #### Example (3): Force an update of installed packages
+  # This example is potentially slow
   if (FALSE) {
+    # Update a specific package
+    julia_connect(.pkg_update = "GeoArrays")
+    # Update all packages
     julia_connect(.pkg_update = TRUE)
   }
 
