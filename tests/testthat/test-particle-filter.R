@@ -93,6 +93,9 @@ test_that("pf_filter() reconstructs the true path", {
 
 test_that("pf_filter() works", {
 
+  skip_on_cran()
+  skip_if_not(patter_run(.julia = TRUE, .geospatial = TRUE))
+
   #########################
   #### Run the particle filter
 
@@ -239,6 +242,9 @@ test_that("pf_filter() permits .yobs = list()", {
 
 test_that("pf_filter() & pf_smoother_two_filter() work for all states", {
 
+  skip_on_cran()
+  skip_if_not(patter_run(.julia = TRUE, .geospatial = TRUE))
+
   set_seed()
 
   #### Define map
@@ -327,6 +333,9 @@ test_that("pf_filter() & pf_smoother_two_filter() work for all states", {
 })
 
 test_that("pf_filter() permits missing .yobs", {
+
+  skip_on_cran()
+  skip_if_not(patter_run(.julia = TRUE, .geospatial = TRUE))
 
   setup <- example_setup("pf_smoother_two_filter", .connect = FALSE)
   args  <- setup$pf_filter_args
