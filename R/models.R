@@ -219,8 +219,8 @@ set_plot_dbn_lim <- function(.dbn, .panel) {
     julia_assign("from", .panel$xlim[1])
     julia_assign("to", .panel$xlim[2])
   } else {
-    julia_command(glue('from = quantile(model_move.{.dbn}, 0.0001);'))
-    julia_command(glue('to = quantile(model_move.{.dbn}, 0.9999);'))
+    julia_command(glue('from = quantile({.dbn}, 0.0001);'))
+    julia_command(glue('to = quantile({.dbn}, 0.9999);'))
   }
   nothing()
 }
@@ -247,7 +247,7 @@ plot_dbn_wrap <- function(.dbn,
   # Plot distribution
   set_plot_dbn_lim(.dbn = .dbn, .panel = .panel)
   julia_command('x = range(from, stop = to, length = 1000);')
-  julia_command(glue('y = pdf(model_move.{.dbn}, x);'))
+  julia_command(glue('y = pdf({.dbn}, x);'))
   plot_dbn(.panel = .panel)
 }
 
@@ -263,7 +263,7 @@ plot_dbn <- function(.panel) {
 
 # Plot a distribution of step lengths
 plot_dbn_length <- function(.panel, ...) {
-  plot_dbn_wrap(.dbn = "dbn_length",
+  plot_dbn_wrap(.dbn = "model_move.dbn_length",
                 .xlim = c(-0.001, julia_eval("model_move.mobility") + 0.001),
                 .xlab = "Length (m)", .ylab = "Density",
                 .panel = .panel, ...)
@@ -271,7 +271,7 @@ plot_dbn_length <- function(.panel, ...) {
 
 # Plot a distribution of headings
 plot_dbn_heading <- function(.panel, ...) {
-  plot_dbn_wrap(.dbn = "dbn_heading",
+  plot_dbn_wrap(.dbn = "model_move.dbn_heading",
                 .xlim = c(-2*pi, 2 * pi),
                 .xlab = "Heading (rad)", .ylab = "Density",
                 .panel = .panel, ...)
@@ -279,7 +279,7 @@ plot_dbn_heading <- function(.panel, ...) {
 
 # Plot a distribution of turning angles
 plot_dbn_heading_delta <- function(.panel, ...) {
-  plot_dbn_wrap(.dbn = "dbn_heading_delta",
+  plot_dbn_wrap(.dbn = "model_move.dbn_heading_delta",
                 .xlim = c(-2*pi, 2 * pi),
                 .xlab = "Turning angle (rad)", .ylab = "Density",
                 .panel = .panel, ...)
@@ -287,7 +287,7 @@ plot_dbn_heading_delta <- function(.panel, ...) {
 
 # Plot a distribution of depths
 plot_dbn_z <- function(.panel, ...) {
-  plot_dbn_wrap(.dbn = "dbn_z",
+  plot_dbn_wrap(.dbn = "model_move.dbn_z",
                 .xlim = NULL,
                 .xlab = "Depth (m)", .ylab = "Density",
                 .panel = .panel, ...)
@@ -295,7 +295,7 @@ plot_dbn_z <- function(.panel, ...) {
 
 # Plot a distribution of changes in depth
 plot_dbn_z_delta <- function(.panel, ...) {
-  plot_dbn_wrap(.dbn = "dbn_z_delta",
+  plot_dbn_wrap(.dbn = "model_move.dbn_z_delta",
                 .xlim = NULL,
                 .xlab = "Depth change (m)", .ylab = "Density",
                 .panel = .panel, ...)
