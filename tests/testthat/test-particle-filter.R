@@ -231,6 +231,10 @@ test_that("pf_filter() works", {
 })
 
 test_that("pf_filter() permits .yobs = list()", {
+
+  skip_on_cran()
+  skip_if_not(patter_run(.julia = TRUE, .geospatial = TRUE))
+
   setup <- example_setup("pf_smoother_two_filter", .connect = FALSE)
   args  <- setup$pf_filter_args
   args$.yobs <- list()
