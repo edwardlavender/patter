@@ -105,6 +105,3 @@ test_that("Additional Julia set_*() functions work", {
   expect_equal(c(5L, 10L, 20L), julia_eval('t_resample'))
 
 })
-
-
-

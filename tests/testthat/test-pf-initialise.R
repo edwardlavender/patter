@@ -437,7 +437,4 @@ test_that("pf_filter_init() works", {
   output <- states_init(state_type = "StateCXYZ")
   check_names(output, c("map_value", "x", "y", "z", "heading"))
 
-
-
 })
-
