@@ -41,7 +41,8 @@ if (patter_run(.julia = TRUE, .geospatial = FALSE)) {
   # Set `.map` argument to visualise trajectories
   # (On Linux, this is only possible if JULIA_SESSION = "FALSE")
   sim_path_walk(.timeline = seq(as.POSIXct("2016-01-01", tz = "UTC"),
-                                length.out = 1000L, by = "2 mins"),
+                                as.POSIXct("2016-01-01 12:00:00", tz = "UTC"),
+                                by = "2 mins"),
                 .state = "StateXY",
                 .model_move = move_xy())
 
