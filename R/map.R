@@ -80,9 +80,9 @@ map_pou <-
 #' @param ... Arguments for density estimation, passed to [`spatstat.explore::density.ppp()`], such as `sigma` (i.e., the bandwidth). `at` and `se` are not permitted.
 #' @param .fterra A `logical` variable that defines whether or not to parallelise [`terra::resample()`].
 #' @param .plot A `logical` variable that defines whether or not to plot the output.
-#' @param .use_tryCatch A `logical` variable that controls error handling:
-#' * If `.use_tryCatch = FALSE`, if density estimation fails with an error, the function fails with the same error.
-#' * If `.use_tryCatch = TRUE`, if density estimation fails with an error, the function produces a warning with the error message and returns `NULL`.
+#' @param .tryCatch A `logical` variable that controls error handling:
+#' * If `.tryCatch = FALSE`, if density estimation fails with an error, the function fails with the same error.
+#' * If `.tryCatch = TRUE`, if density estimation fails with an error, the function produces a warning with the error message and returns `NULL`.
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
 #' @details
@@ -112,7 +112,7 @@ map_pou <-
 #' * `D`: a [`spatstat.geom::im`] object of estimated intensities, from [`spatstat.explore::density.ppp()`];
 #' * `ud`: a normalised [`SpatRaster`];
 #'
-#' `D` and `ud` are `NULL` if [`spatstat.explore::density.ppp()`] fails and `.use_tryCatch = TRUE`.
+#' `D` and `ud` are `NULL` if [`spatstat.explore::density.ppp()`] fails and `.tryCatch = TRUE`.
 #'
 #' @example man/examples/example-map_dens.R
 #' @inherit map_pou seealso
@@ -191,7 +191,7 @@ map_dens <- function(.map,
                      .shortcut = list(), .sigma = bw.h, ...,
                      .fterra = FALSE,
                      .plot = TRUE,
-                     .use_tryCatch = TRUE,
+                     .tryCatch = TRUE,
                      .verbose = getOption("patter.verbose")
                      ) {
 
@@ -251,7 +251,7 @@ map_dens <- function(.map,
                                               at = "pixels", se = FALSE, ...),
                 error = function(e) e)
   if (inherits(D, "error")) {
-    if (!.use_tryCatch) {
+    if (!.tryCatch) {
       abort(D)
     } else {
       # Return error as warning

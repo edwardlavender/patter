@@ -26,7 +26,7 @@ map_dens(
   ...,
   .fterra = FALSE,
   .plot = TRUE,
-  .use_tryCatch = TRUE,
+  .tryCatch = TRUE,
   .verbose = getOption("patter.verbose")
 )
 }
@@ -56,10 +56,10 @@ map_dens(
 
 \item{.plot}{A \code{logical} variable that defines whether or not to plot the output.}
 
-\item{.use_tryCatch}{A \code{logical} variable that controls error handling:
+\item{.tryCatch}{A \code{logical} variable that controls error handling:
 \itemize{
-\item If \code{.use_tryCatch = FALSE}, if density estimation fails with an error, the function fails with the same error.
-\item If \code{.use_tryCatch = TRUE}, if density estimation fails with an error, the function produces a warning with the error message and returns \code{NULL}.
+\item If \code{.tryCatch = FALSE}, if density estimation fails with an error, the function fails with the same error.
+\item If \code{.tryCatch = TRUE}, if density estimation fails with an error, the function produces a warning with the error message and returns \code{NULL}.
 }}
 
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
@@ -72,7 +72,7 @@ The function returns a named \code{list}, with the following elements:
 \item \code{ud}: a normalised \code{\link{SpatRaster}};
 }
 
-\code{D} and \code{ud} are \code{NULL} if \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} fails and \code{.use_tryCatch = TRUE}.
+\code{D} and \code{ud} are \code{NULL} if \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} fails and \code{.tryCatch = TRUE}.
 }
 \description{
 \code{\link[=map_dens]{map_dens()}} creates a smoothed utilisation distribution (UD).

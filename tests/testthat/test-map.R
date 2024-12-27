@@ -99,13 +99,13 @@ test_that("map_pou() and map_dens() work", {
   # Test map_dens() tryCatch() handling
   map_dens(.map = map,
            .coord = coord,
-           .use_tryCatch = TRUE,
+           .tryCatch = TRUE,
            .sigma = "a")$ud |>
     suppressWarnings() |>
     expect_null()
   map_dens(.map = map,
            .coord = coord,
-           .use_tryCatch = FALSE,
+           .tryCatch = FALSE,
            .sigma = "a") |>
     expect_error()
 
