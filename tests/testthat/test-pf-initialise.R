@@ -33,9 +33,9 @@ test_that("pf_filter_init() works", {
     expect_map_value_correct(.map = .map, .input = .input, .output = .output)
   }
 
-  # Validate ModelObsDepthUniform
+  # Validate ModelObsDepthUniformSeabed
   # > Confirm map_value lies within valid limits
-  expect_ModelObsDepthUniform_correct <- function(.map, .input, .output) {
+  expect_ModelObsDepthUniformSeabed_correct <- function(.map, .input, .output) {
     depth <- .input$obs[1]
     es    <- .input$depth_shallow_eps[1]
     ed    <- .input$depth_deep_eps[1]
@@ -43,9 +43,9 @@ test_that("pf_filter_init() works", {
     expect_map_value_correct(.map = .map, .input = .input, .output = .output)
   }
 
-  # Validate ModelObsDepthNormalTrunc
+  # Validate ModelObsDepthNormalTruncSeabed
   # > Confirm map_value lies within valid limits
-  expect_ModelObsDepthNormalTrunc_correct <- function(.map, .input, .output) {
+  expect_ModelObsDepthNormalTruncSeabed_correct <- function(.map, .input, .output) {
     depth <- .input$obs[1]
     ed    <- .input$depth_deep_eps[1]
     expect_true(all(depth <= .output$map_value + ed))
@@ -156,7 +156,7 @@ test_that("pf_filter_init() works", {
     depth_sigma = 50)
   # Define list of observations
   yobs <- list(ModelObsAcousticLogisTrunc = acc,
-               ModelObsDepthUniform = arc)
+               ModelObsDepthUniformSeabed = arc)
 
 
   #########################
@@ -205,29 +205,29 @@ test_that("pf_filter_init() works", {
                              .direction = "forward")
     expect_ModelObsAcousticLogisTrunc_correct(.map = map_i, .input = acc, .output = output)
 
-    #### ModelObsDepthUniform
-    yobs <- list(ModelObsDepthUniform = arc)
+    #### ModelObsDepthUniformSeabed
+    yobs <- list(ModelObsDepthUniformSeabed = arc)
     output <- pf_filter_init(.timeline = timeline,
                              .state = "StateXY",
                              .model_move = move_xy(),
                              .yobs = yobs,
                              .n_particle = np,
                              .direction = "forward")
-    expect_ModelObsDepthNormalTrunc_correct(.map = map_i, .input = arc, .output = output)
+    expect_ModelObsDepthNormalTruncSeabed_correct(.map = map_i, .input = arc, .output = output)
 
-    #### ModelObsDepthNormalTrunc
-    yobs <- list(ModelObsDepthNormalTrunc = arc)
+    #### ModelObsDepthNormalTruncSeabed
+    yobs <- list(ModelObsDepthNormalTruncSeabed = arc)
     output <- pf_filter_init(.timeline = timeline,
                              .state = "StateXY",
                              .model_move = move_xy(),
                              .yobs = yobs,
                              .n_particle = np,
                              .direction = "forward")
-    expect_ModelObsDepthNormalTrunc_correct(.map = map_i, .input = arc, .output = output)
+    expect_ModelObsDepthNormalTruncSeabed_correct(.map = map_i, .input = arc, .output = output)
 
-    #### ModelObsAcousticLogisTrunc, ModelObsDepthUniform
+    #### ModelObsAcousticLogisTrunc, ModelObsDepthUniformSeabed
     yobs <- list(ModelObsAcousticLogisTrunc = acc,
-                 ModelObsDepthUniform = arc)
+                 ModelObsDepthUniformSeabed = arc)
     output <- pf_filter_init(.timeline = timeline,
                              .state = "StateXY",
                              .model_move = move_xy(),
@@ -235,10 +235,10 @@ test_that("pf_filter_init() works", {
                              .n_particle = np,
                              .direction = "forward")
     expect_ModelObsAcousticLogisTrunc_correct(.map = map_i, .input = acc, .output = output)
-    expect_ModelObsDepthUniform_correct(.map = map_i, .input = arc, .output = output)
+    expect_ModelObsDepthUniformSeabed_correct(.map = map_i, .input = arc, .output = output)
 
-    #### ModelObsDepthUniform, ModelObsAcousticLogisTrunc
-    yobs <- list(ModelObsDepthUniform = arc,
+    #### ModelObsDepthUniformSeabed, ModelObsAcousticLogisTrunc
+    yobs <- list(ModelObsDepthUniformSeabed = arc,
                  ModelObsAcousticLogisTrunc = acc)
     output <- pf_filter_init(.timeline = timeline,
                              .state = "StateXY",
@@ -247,7 +247,7 @@ test_that("pf_filter_init() works", {
                              .n_particle = np,
                              .direction = "forward")
     expect_ModelObsAcousticLogisTrunc_correct(.map = map_i, .input = acc, .output = output)
-    expect_ModelObsDepthUniform_correct(.map = map_i, .input = arc, .output = output)
+    expect_ModelObsDepthUniformSeabed_correct(.map = map_i, .input = arc, .output = output)
 
   })
   # Reset map
@@ -336,32 +336,32 @@ test_that("pf_filter_init() works", {
   yobs <- list(ModelObsAcousticLogisTrunc = acc)
   expect_spatequal(map_init(timeline, yobs, "backward"), spatContainer(acc, map))
 
-  #### `map_init.ModelObsDepthUniform()`
+  #### `map_init.ModelObsDepthUniformSeabed()`
 
   # No observation
-  yobs <- list(ModelObsDepthUniform = arc[2, ])
+  yobs <- list(ModelObsDepthUniformSeabed = arc[2, ])
   expect_spatequal(map_init(timeline, yobs), map)
 
   # Observation at timeline[1]
-  yobs <- list(ModelObsDepthUniform = arc[1, ])
+  yobs <- list(ModelObsDepthUniformSeabed = arc[1, ])
   expect_spatequal(map_init(timeline, yobs), spatDepthUniform(arc[1, ], map))
 
   # Observation at timeline[T]
-  yobs <- list(ModelObsDepthUniform = arc[3, ])
+  yobs <- list(ModelObsDepthUniformSeabed = arc[3, ])
   expect_spatequal(map_init(timeline, yobs, "backward"), spatDepthUniform(arc[3, ], map))
 
-  #### `map_init.ModelObsDepthNormalTrunc()`
+  #### `map_init.ModelObsDepthNormalTruncSeabed()`
 
   # No observation
-  yobs <- list(ModelObsDepthNormalTrunc = arc[2, ])
+  yobs <- list(ModelObsDepthNormalTruncSeabed = arc[2, ])
   expect_spatequal(map_init(timeline, yobs), map)
 
   # Observation at timeline[1]
-  yobs <- list(ModelObsDepthNormalTrunc = arc[1, ])
+  yobs <- list(ModelObsDepthNormalTruncSeabed = arc[1, ])
   expect_spatequal(map_init(timeline, yobs), spatDepthNormalTrunc(arc[1, ], map))
 
   # Observation at timeline[T]
-  yobs <- list(ModelObsDepthNormalTrunc = arc[3, ])
+  yobs <- list(ModelObsDepthNormalTruncSeabed = arc[3, ])
   expect_spatequal(map_init(timeline, yobs, "backward"), spatDepthNormalTrunc(arc[3, ], map))
 
   # map_init_iter()

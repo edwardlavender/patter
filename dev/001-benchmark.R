@@ -93,7 +93,7 @@ model_obs <- list(ModelObsAcousticLogisTrunc =
                            "receiver_x", "receiver_y",
                            "receiver_alpha", "receiver_beta", "receiver_gamma") |>
                     as.data.table(),
-                  ModelObsDepthUniform =
+                  ModelObsDepthUniformSeabed =
                     data.table(sensor_id = 1L,
                                depth_shallow_eps = 20,
                                depth_deep_eps = 20))
@@ -107,7 +107,7 @@ obs <- run(file = here_data_raw("benchmark", "obs.rds"),
            })
 # Extract datasets
 acc <- obs$ModelObsAcousticLogisTrunc[[1]]
-arc <- obs$ModelObsDepthUniform[[1]]
+arc <- obs$ModelObsDepthUniformSeabed[[1]]
 # Define acoustic containers
 containers <- assemble_acoustics_containers(.timeline = timeline,
                                             .acoustics = acc,
@@ -115,10 +115,10 @@ containers <- assemble_acoustics_containers(.timeline = timeline,
                                             .map = map)
 # Collate datasets
 yobs_fwd <- list(ModelObsAcousticLogisTrunc = acc,
-             ModelObsDepthUniform           = arc,
+             ModelObsDepthUniformSeabed           = arc,
              ModelObsAcousticContainer      = containers$forward)
 yobs_bwd <- list(ModelObsAcousticLogisTrunc = acc,
-                 ModelObsDepthUniform       = arc,
+                 ModelObsDepthUniformSeabed       = arc,
                  ModelObsAcousticContainer  = containers$backward)
 
 #### Define filter args

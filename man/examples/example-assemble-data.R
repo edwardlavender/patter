@@ -16,7 +16,7 @@ if (patter_run(.julia = FALSE)) {
     as.data.table()
   # Archival time series
   # * Observation model parameters must be included
-  # * Here, we define parameters for `?ModelObsDepthNormalTrunc`
+  # * Here, we define parameters for `?ModelObsDepthNormalTruncSeabed`
   arc <-
     dat_archival |>
     filter(individual_id == 25L) |>

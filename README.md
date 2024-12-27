@@ -531,7 +531,7 @@ containers <- assemble_acoustics_containers(.timeline = timeline,
                                             .acoustics = acoustics, 
                                             .mobility = mobility)
 
-# ModelObsDepthNormalTrunc
+# ModelObsDepthNormalTruncSeabed
 archival <- assemble_archival(.timeline = timeline,
                               .archival = arc)
 
@@ -539,10 +539,10 @@ archival <- assemble_archival(.timeline = timeline,
 # * The container dataset is direction specific so we assemble two yobs lists
 yobs_fwd <- list(ModelObsAcousticLogisTrunc = acoustics, 
                  ModelObsAcousticContainer = containers$forward,
-                 ModelObsDepthNormalTrunc = archival)
+                 ModelObsDepthNormalTruncSeabed = archival)
 yobs_bwd <- list(ModelObsAcousticLogisTrunc = acoustics, 
                  ModelObsAcousticContainer = containers$backward,
-                 ModelObsDepthNormalTrunc = archival)
+                 ModelObsDepthNormalTruncSeabed = archival)
 ```
 
 Of course, you do not need acoustic and archival data to implement the

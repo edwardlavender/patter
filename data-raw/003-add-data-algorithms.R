@@ -67,7 +67,7 @@ obs <- sim_observations(.timeline = timeline,
                                      "receiver_x", "receiver_y",
                                      "receiver_alpha", "receiver_beta", "receiver_gamma") |>
                               as.data.table(),
-                            ModelObsDepthUniform = data.table(sensor_id = 1L,
+                            ModelObsDepthUniformSeabed = data.table(sensor_id = 1L,
                                        depth_shallow_eps = 30,
                                        depth_deep_eps = 30)
                           ))
@@ -87,7 +87,7 @@ args <- list(.timeline = timeline,
              .state = "StateXY",
              .model_move = move_xy(),
              .yobs = list(ModelObsAcousticLogisTrunc = obs$ModelObsAcousticLogisTrunc[[1]],
-                          ModelObsDepthUniform = obs$ModelObsDepthUniform[[1]]),
+                          ModelObsDepthUniformSeabed = obs$ModelObsDepthUniformSeabed[[1]]),
              .n_particle = 1e5L,
              .n_record = 100L)
 # Run the filter forwards

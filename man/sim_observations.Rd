@@ -117,23 +117,23 @@ if (patter_run()) {
   obs <- sim_observations(.timeline = timeline,
                           .model_obs = list(ModelObsAcousticLogisTrunc = moorings))
 
-  #### Example (2): Simulate observations via `ModelObsDepthUniform`
-  # `ModelObsDepthUniform` is an observation model for depth observations
+  #### Example (2): Simulate observations via `ModelObsDepthUniformSeabed`
+  # `ModelObsDepthUniformSeabed` is an observation model for depth observations
   # * See ?ModelObsAcousticLogisTrunc
   # * See JuliaCall::julia_help("ModelObsAcousticLogisTrunc")
   pars <- data.frame(sensor_id = 1,
                      depth_shallow_eps = 10,
                      depth_deep_eps = 20)
   obs <- sim_observations(.timeline = timeline,
-                          .model_obs = list(ModelObsDepthUniform = pars))
+                          .model_obs = list(ModelObsDepthUniformSeabed = pars))
 
-  #### Example (3): Simulate observations via `ModelObsDepthNormalTrunc`
-  # `ModelObsDepthNormalTrunc` is an observation model for depth observations
+  #### Example (3): Simulate observations via `ModelObsDepthNormalTruncSeabed`
+  # `ModelObsDepthNormalTruncSeabed` is an observation model for depth observations
   pars <- data.frame(sensor_id = 1,
                      depth_sigma = 10,
                      depth_deep_eps = 20)
   obs <- sim_observations(.timeline = timeline,
-                          .model_obs = list(ModelObsDepthNormalTrunc = pars))
+                          .model_obs = list(ModelObsDepthNormalTruncSeabed = pars))
 
   #### Example (4): Simulate observations via custom `ModelObs` sub-types
   # See `?ModelObs`
@@ -141,7 +141,7 @@ if (patter_run()) {
   #### Example (5): Use multiple observation models
   obs <- sim_observations(.timeline = timeline,
                           .model_obs = list(ModelObsAcousticLogisTrunc = moorings,
-                                            ModelObsDepthNormalTrunc = pars))
+                                            ModelObsDepthNormalTruncSeabed = pars))
   str(obs)
 
 }

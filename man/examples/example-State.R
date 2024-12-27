@@ -122,13 +122,13 @@ if (patter_run()) {
   #### Simulate observations arising from the simulated path
   # We consider a pelagic animal & simulate depth observations
   # At each time step, the animal may be anywhere from the surface to the seabed
-  model_obs <- list(ModelObsDepthUniform = data.table(sensor_id = 1L,
+  model_obs <- list(ModelObsDepthUniformSeabed = data.table(sensor_id = 1L,
                                                       depth_shallow_eps = 500,
                                                       depth_deep_eps = 0))
   obs <- sim_observations(.timeline = timeline,
                           .model_obs = model_obs)
-  obs  <- obs$ModelObsDepthUniform[[1]]
-  yobs <- list(ModelObsDepthUniform = obs)
+  obs  <- obs$ModelObsDepthUniformSeabed[[1]]
+  yobs <- list(ModelObsDepthUniformSeabed = obs)
   # Plot simulated depth trajectory
   # * Blue: simulated time series
   # * Grey: seabed depth for simulated time series

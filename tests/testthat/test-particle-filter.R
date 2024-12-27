@@ -48,13 +48,13 @@ test_that("pf_filter() reconstructs the true path", {
                          depth_shallow_eps = 0,
                          depth_deep_eps = 0)
   model_obs <- list(ModelObsAcousticLogisTrunc = pars_acc,
-                    ModelObsDepthUniform = pars_arc)
+                    ModelObsDepthUniformSeabed = pars_arc)
   sobs <-
     sim_observations(.timeline = timeline,
                      .model_obs = model_obs)
   yobs <-
     list(ModelObsAcousticLogisTrunc = sobs$ModelObsAcousticLogisTrunc[[1]],
-         ModelObsDepthUniform = sobs$ModelObsDepthUniform[[1]])
+         ModelObsDepthUniformSeabed = sobs$ModelObsDepthUniformSeabed[[1]])
 
   # Run forward filter
   fwd <- pf_filter(.timeline = timeline,
@@ -127,7 +127,7 @@ test_that("pf_filter() works", {
                                               .mobility = 750.0)
 
   # Assemble a timeline of archival observations and model parameters
-  # * Here, we include model parameters for `ModelObsDepthNormalTrunc`
+  # * Here, we include model parameters for `ModelObsDepthNormalTruncSeabed`
   archival <- assemble_archival(.timeline = timeline,
                                 .archival =
                                   arc |>
@@ -138,7 +138,7 @@ test_that("pf_filter() works", {
   # Assemble yobs
   yobs_fwd <- list(ModelObsAcousticLogisTrunc = acoustics,
                ModelObsAcousticContainer = containers$forward,
-               ModelObsDepthNormalTrunc = archival)
+               ModelObsDepthNormalTruncSeabed = archival)
 
   # Examine movement prior
   # sim_path_walk(.map = map, .timeline = timeline)
@@ -293,7 +293,7 @@ test_that("pf_filter() & pf_smoother_two_filter() work for all states", {
                          depth_deep_eps = 0)
   # Collect the model_obs list
   model_obs <- list(ModelObsAcousticLogisTrunc = pars_acc,
-                    ModelObsDepthUniform = pars_arc)
+                    ModelObsDepthUniformSeabed = pars_arc)
 
   #### Implement algorithms
   mapply(function(.state, .model_move, .columns) {
@@ -312,7 +312,7 @@ test_that("pf_filter() & pf_smoother_two_filter() work for all states", {
                        .model_obs = model_obs)
     yobs <-
       list(ModelObsAcousticLogisTrunc = sobs$ModelObsAcousticLogisTrunc[[1]],
-           ModelObsDepthUniform       = sobs$ModelObsDepthUniform[[1]])
+           ModelObsDepthUniformSeabed       = sobs$ModelObsDepthUniformSeabed[[1]])
 
     # Run forward filter
     fwd <- pf_filter(.timeline   = timeline,
@@ -421,12 +421,12 @@ test_that("pf_filter() callstats are correct", {
              select(sensor_id = "receiver_id", "receiver_x", "receiver_y",
                     "receiver_alpha", "receiver_beta", "receiver_gamma") |>
              as.data.table(),
-           ModelObsDepthUniform =
+           ModelObsDepthUniformSeabed =
              data.table(sensor_id = 1L,
                         depth_shallow_eps = 10,
                         depth_deep_eps = 10)))
   yobs <- list(ModelObsAcousticLogisTrunc = obs$ModelObsAcousticLogisTrunc[[1]],
-               ModelObsDepthUniform = obs$ModelObsDepthUniform[[1]])
+               ModelObsDepthUniformSeabed = obs$ModelObsDepthUniformSeabed[[1]])
 
   #### Run forward filter with few particles
   fwd <- pf_filter(.timeline = timeline,

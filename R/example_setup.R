@@ -132,13 +132,13 @@ example_setup.pf_smoother_two_filter <- function(.fun, .connect = TRUE) {
                        depth_shallow_eps = 10,
                        depth_deep_eps = 10)
   model_obs <- list(ModelObsAcousticLogisTrunc = pars_1,
-                    ModelObsDepthUniform = pars_2)
+                    ModelObsDepthUniformSeabed = pars_2)
   # Simulate observational datasets
   obs <- sim_observations(.timeline = timeline,
                           .model_obs = model_obs)
   # Collate observations for filter
   yobs <- list(ModelObsAcousticLogisTrunc = obs$ModelObsAcousticLogisTrunc[[1]],
-               ModelObsDepthUniform = obs$ModelObsDepthUniform[[1]])
+               ModelObsDepthUniformSeabed = obs$ModelObsDepthUniformSeabed[[1]])
 
   #### Collate filter arguments
   list(map = map,

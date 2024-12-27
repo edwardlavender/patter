@@ -73,7 +73,7 @@ if (patter_run()) {
   # Define observation model(s)
   # * We simulate acoustic observations and depth time series
   # * Acoustic observations are simulated according to `ModelObsAcousticLogisTrunc`
-  # * Depth observations are simulated according to `ModelObsDepthUniform`
+  # * Depth observations are simulated according to `ModelObsDepthUniformSeabed`
   # Define a `list` of parameters for the observation models
   # (See `?ModelObs` for details)
   pars_1 <-
@@ -85,13 +85,13 @@ if (patter_run()) {
                        depth_shallow_eps = 10,
                        depth_deep_eps = 10)
   model_obs <- list(ModelObsAcousticLogisTrunc = pars_1,
-                    ModelObsDepthUniform = pars_2)
+                    ModelObsDepthUniformSeabed = pars_2)
   # Simulate observational datasets
   obs <- sim_observations(.timeline = timeline,
                           .model_obs = model_obs)
   summary(obs)
   head(obs$ModelObsAcousticLogisTrunc[[1]])
-  head(obs$ModelObsDepthUniform[[1]])
+  head(obs$ModelObsDepthUniformSeabed[[1]])
   # Identify detections
   detections <-
     obs$ModelObsAcousticLogisTrunc[[1]] |>
@@ -101,7 +101,7 @@ if (patter_run()) {
   # > This requires a list of datasets, one for each data type
   # > We could also include acoustic containers here for efficiency (see below)
   yobs <- list(ModelObsAcousticLogisTrunc = obs$ModelObsAcousticLogisTrunc[[1]],
-               ModelObsDepthUniform = obs$ModelObsDepthUniform[[1]])
+               ModelObsDepthUniformSeabed = obs$ModelObsDepthUniformSeabed[[1]])
 
   #### Example (1): Run the filter using the default options
   fwd <- pf_filter(.timeline = timeline,
@@ -249,7 +249,7 @@ if (patter_run()) {
                                               .mobility = mobility)
 
   # Assemble a timeline of archival observations and model parameters
-  # * Here, we include model parameters for `ModelObsDepthNormalTrunc`
+  # * Here, we include model parameters for `ModelObsDepthNormalTruncSeabed`
   archival <- assemble_archival(.timeline = timeline,
                                 .archival =
                                   arc |>
@@ -260,10 +260,10 @@ if (patter_run()) {
   # Define the .yobs list for each run of the particle filter
   yobs_fwd <- list(ModelObsAcousticLogisTrunc = acoustics,
                    ModelObsAcousticContainer = containers$forward,
-                   ModelObsDepthNormalTrunc = archival)
+                   ModelObsDepthNormalTruncSeabed = archival)
   yobs_bwd <- list(ModelObsAcousticLogisTrunc = acoustics,
                    ModelObsAcousticContainer = containers$backward,
-                   ModelObsDepthNormalTrunc = archival)
+                   ModelObsDepthNormalTruncSeabed = archival)
 
   #### Visualise realisations of the movement model (the prior)
   # We will use the same movement model as in previous examples

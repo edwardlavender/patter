@@ -21,5 +21,5 @@ char_to_class <- function(.x) {
 }
 
 # Convert a `character` vector to a list of classes for dispatch
-# (e.g., c("ModelObsAcousticLogisTrunc", "ModelObsDepthUniform"))
+# (e.g., c("ModelObsAcousticLogisTrunc", "ModelObsDepthUniformSeabed"))
 chars_to_classes <- Vectorize(char_to_class)

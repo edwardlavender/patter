@@ -5,8 +5,8 @@
 \alias{.model_obs}
 \alias{ModelObsAcousticLogisTrunc}
 \alias{ModelObsAcousticContainer}
-\alias{ModelObsDepthUniform}
-\alias{ModelObsDepthNormalTrunc}
+\alias{ModelObsDepthUniformSeabed}
+\alias{ModelObsDepthNormalTruncSeabed}
 \title{Observation models}
 \description{
 \code{\link{ModelObs}} is Abstract Type in \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} that groups observation model sub-types.
@@ -18,8 +18,8 @@ The following observation models are built in to \href{https://edwardlavender.gi
 \itemize{
 \item \code{\link{ModelObsAcousticLogisTrunc}}
 \item \code{\link{ModelObsAcousticContainer}}
-\item \code{\link{ModelObsDepthUniform}}
-\item \code{\link{ModelObsDepthNormalTrunc}}
+\item \code{\link{ModelObsDepthUniformSeabed}}
+\item \code{\link{ModelObsDepthNormalTruncSeabed}}
 }
 
 See \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} or \code{JuliaCall::julia_help("ModelObs")} for the fields of the built-in sub-types.

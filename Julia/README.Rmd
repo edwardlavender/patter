@@ -140,7 +140,7 @@ containers <- assemble_acoustics_containers(.timeline = timeline,
                                             .mobility = 750.0)
 
 # Assemble archival observations
-# "ModelObsDepthNormalTrunc"
+# "ModelObsDepthNormalTruncSeabed"
 archival <- assemble_archival(.timeline = timeline,
                               .archival = arc)
 
@@ -266,7 +266,7 @@ datasets_fwd        = [acoustics, containers_fwd, archival];
 datasets_bwd        = [acoustics, containers_bwd, archival]
 model_obs_types     = [ModelObsAcousticLogisTrunc, 
                        ModelObsAcousticContainer, 
-                       ModelObsDepthNormalTrunc];
+                       ModelObsDepthNormalTruncSeabed];
 yobs_fwd            = assemble_yobs(datasets = datasets_fwd,
                                     model_obs_types = model_obs_types);
 yobs_bwd            = assemble_yobs(datasets = datasets_bwd,
