@@ -179,6 +179,17 @@ test_that("pf_filter() works", {
                                "n_particle", "n_iter", "convergence",
                                "time"))
 
+  #### Validate timestamps
+  times <- data.table(timestep = seq_len(length(timeline)),
+                      timestamp = timeline)
+  expect_equal(fwd$states$timestep,
+               times$timestep[match(fwd$states$timestamp, times$timestamp)]
+               )
+  expect_equal(fwd$states$timestamp,
+               times$timestamp[match(fwd$states$timestep, times$timestep)]
+  )
+  expect_equal(fwd$diagnostics[, .(timestep, timestamp)], times)
+
   #### Test that that movement distances are within mobility
   # This is not possible directly since we do not track particle histories
   # But we can confirm that at least some some movement distances are < mobility at each time step
@@ -361,5 +372,111 @@ test_that("pf_filter() permits missing .yobs", {
   set_seed()
   fwd_3 <- do.call(pf_filter, args)
   expect_equal(fwd_2[elms], fwd_3[elms])
+
+})
+
+test_that("pf_filter() callstats are correct", {
+
+  skip_on_cran()
+  skip_if_not(patter_run(.julia = TRUE, .geospatial = TRUE))
+
+  library(data.table)
+  library(dtplyr)
+  library(dplyr, warn.conflicts = FALSE)
+
+  set_seed()
+
+  #### Define study period
+  timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
+                  as.POSIXct("2016-01-01 03:18:00", tz = "UTC"),
+                  by = "2 mins")
+
+  ### Define study period
+  map <- dat_gebco()
+  set_map(map)
+
+  #### Simulate an acoustic array
+  moorings <- sim_array(.map = map,
+                        .timeline = timeline,
+                        .n_receiver = 100L)
+
+  #### Simulate a movement path
+  state    <- "StateXY"
+  mobility <- 750
+  model_move <-
+    move_xy(.mobility   = "750.0",
+            .dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
+            .dbn_heading  = "Uniform(-pi, pi)")
+  paths <- sim_path_walk(.map = map,
+                         .timeline = timeline,
+                         .state = state,
+                         .model_move = model_move)
+
+  #### Simulate observations
+  obs <- sim_observations(
+    .timeline = timeline,
+    .model_obs =
+      list(ModelObsAcousticLogisTrunc =
+             moorings |>
+             select(sensor_id = "receiver_id", "receiver_x", "receiver_y",
+                    "receiver_alpha", "receiver_beta", "receiver_gamma") |>
+             as.data.table(),
+           ModelObsDepthUniform =
+             data.table(sensor_id = 1L,
+                        depth_shallow_eps = 10,
+                        depth_deep_eps = 10)))
+  yobs <- list(ModelObsAcousticLogisTrunc = obs$ModelObsAcousticLogisTrunc[[1]],
+               ModelObsDepthUniform = obs$ModelObsDepthUniform[[1]])
+
+  #### Run forward filter with few particles
+  fwd <- pf_filter(.timeline = timeline,
+                   .state = state,
+                   .xinit = NULL,
+                   .model_move = model_move,
+                   .yobs = yobs,
+                   .n_particle = 10L,
+                   .n_record = 10L,
+                   .n_iter = 3,
+                   .direction = "forward")
+
+  expect_equal(fwd$callstats$routine, "filter: forward")
+  expect_equal(fwd$callstats$n_particle, 10L)
+  expect_equal(fwd$callstats$n_iter, 3L)
+  expect_false(fwd$callstats$convergence)
+
+  #### Run forward filter with more particles
+  fwd <- pf_filter(.timeline = timeline,
+                   .state = state,
+                   .xinit = NULL,
+                   .model_move = model_move,
+                   .yobs = yobs,
+                   .n_particle = 1e4L,
+                   .direction = "forward")
+
+  expect_equal(fwd$callstats$routine, "filter: forward")
+  expect_equal(fwd$callstats$n_particle, 1e4L)
+  expect_equal(fwd$callstats$n_iter, 1L)
+  expect_true(fwd$callstats$convergence)
+
+  #### Run backward filter with more particles
+  bwd <- pf_filter(.timeline = timeline,
+                   .state = state,
+                   .xinit = NULL,
+                   .model_move = model_move,
+                   .yobs = yobs,
+                   .n_particle = 1e4L,
+                   .direction = "backward")
+
+  expect_equal(bwd$callstats$routine, "filter: backward")
+  expect_equal(bwd$callstats$n_particle, 1e4L)
+  expect_equal(bwd$callstats$n_iter, 1L)
+  expect_true(bwd$callstats$convergence)
+
+  #### Run smoother
+  smo <- pf_smoother_two_filter(.n_particle = 10)
+  expect_equal(smo$callstats$routine, "smoother: two-filter")
+  expect_equal(smo$callstats$n_particle, 10L)
+  expect_equal(smo$callstats$n_iter, NA_integer_)
+  expect_true(smo$callstats$convergence)
 
 })
