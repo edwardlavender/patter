@@ -154,6 +154,7 @@
 #' @importFrom data.table rbindlist
 #' @importFrom data.table rleid
 #' @importFrom data.table setDT
+#' @importFrom data.table setnames
 #' @importFrom data.table :=
 #'
 #' @importFrom dplyr all_of
@@ -161,6 +162,7 @@
 #' @importFrom dplyr arrange
 #' @importFrom dplyr desc
 #' @importFrom dplyr dense_rank
+#' @importFrom dplyr distinct
 #' @importFrom dplyr everything
 #' @importFrom dplyr filter
 #' @importFrom dplyr group_by
@@ -169,6 +171,7 @@
 #' @importFrom dplyr left_join
 #' @importFrom dplyr mutate
 #' @importFrom dplyr n
+#' @importFrom dplyr pull
 #' @importFrom dplyr reframe
 #' @importFrom dplyr rename
 #' @importFrom dplyr row_number
@@ -209,6 +212,7 @@
 #'
 #' @importFrom rlang .data
 #'
+#' @importFrom stats plogis
 #' @importFrom stats runif
 #' @importFrom stats var
 #'

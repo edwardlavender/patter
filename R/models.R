@@ -43,7 +43,35 @@ NULL
 
 
 #' @title Observation models
-#' @description [`ModelObs`] is Abstract Type in [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) that groups observation model sub-types.
+#' @description [`ModelObs`] is Abstract Type in [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) that groups observation model sub-types. `model_obs_*()` `R` functions create [`data.table`]s of observation model parameters which can be visualised in `R` (via `plot.ModelObs*()` methods) and instantiated as [`ModelObs`] instances in `Julia`.
+#'
+#' @param .data A [`data.table`] that contains observation model parameters.
+#'
+#' * For [`ModelObsAcousticLogisTrunc`], required columns are:
+#'      * `sensor_id`
+#'      * `receiver_x` and `receiver_y`
+#'      * `receiver_alpha`, `receiver_beta` and `receiver_gamma`
+#'
+#' * For [`ModelObsAcousticContainer`], required columns are:
+#'      * `sensor_id`
+#'      * `receiver_x` and `receiver_y`
+#'      * `radius`
+#'
+#' * For [`ModelObsDepthUniformSeabed`], required columns are:
+#'      * `sensor_id`
+#'      * `depth_shallow_eps`
+#'      * `depth_deep_eps`
+#'
+#' * For [`ModelObsDepthNormalTruncSeabed`], required columns are:
+#'      * `sensor_id`
+#'      * `depth_sigma`
+#'      * `depth_deep_eps`
+#'
+#' See [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) or `JuliaCall::julia_help("ModelObs")` for details.
+#'
+#' @param .strict A `logical` variable that defines whether or not to only retain columns in `.data` defined in the corresponding `ModelObs` structure.
+#' * Set `.strict = TRUE` (default) in [`sim_observations()`];
+#' * Set `.strict = FALSE` in [`pf_filter()`] to include time stamps and observations in the [`data.table`];
 #'
 #' @details
 #' Observation model sub-types are `Julia` structures that hold the parameters of observation models. From an `R`-user perspective, you can think of a [`ModelObs`] sub-type as an `S4`-[`class`]-like object, with slots for the parameters of an observation model. With an observation model structure, we can simulate new observations and evaluate the log-probability of existing observations.
@@ -54,15 +82,17 @@ NULL
 #' * [`ModelObsDepthUniformSeabed`]
 #' * [`ModelObsDepthNormalTruncSeabed`]
 #'
-#' See [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) or `JuliaCall::julia_help("ModelObs")` for the fields of the built-in sub-types.
-#'
 #' In [`patter`], observation models are required:
 #' * To simulate new observational datasets, via [`sim_observations()`];
 #' * To run the particle filter, via [`pf_filter()`];
 #'
-#' Observation model sub-types and parameters should be specified as a named `list` of [`data.table`](s). Internally, observation model sub-types and parameters are instantiated and used to simulate observations or in the particle filter. The simulation of observations is implemented via [`Patter.simulate_obs()`](https://edwardlavender.github.io/Patter.jl). In the particle filter, log-probabilities are evaluated by [`Patter.logpdf_obs()`](https://edwardlavender.github.io/Patter.jl). These are generic functions. Different methods are dispatched according to the input model. For the built-in [`ModelObs`] sub-types, corresponding methods for these routines are also built-in. For custom [`ModelObs`] sub-types, the methods need to be provided.
+#' Observation model sub-types and parameters should be specified as a named `list` of [`data.table`]s. To assemble a [`data.table`] of parameters for a given [`ModelObs`] structure, see [`assemble`] functions. A named list can be created manually from individual [`data.table`]s or via `model_obs_*()` `R` functions. The `R` functions simply check the inputs and wrap inputted [`data.table`]s of `ModelObs*` parameters in a named `list`. A [`S3-class`]-`ModelObs*` label is added and enables supporting methods (e.g., [`plot.ModelObs()`]) to be implemented for observation models.
+#'
+#' Internally in [`patter`] algorithms, observation model sub-types and parameters are instantiated and used to simulate observations or in the particle filter. The simulation of observations is implemented via [`Patter.simulate_obs()`](https://edwardlavender.github.io/Patter.jl). In the particle filter, log-probabilities are evaluated by [`Patter.logpdf_obs()`](https://edwardlavender.github.io/Patter.jl). These are generic functions. Different methods are dispatched according to the input model. For the built-in [`ModelObs`] sub-types, corresponding methods for these routines are also built-in. For custom [`ModelObs`] sub-types, the methods need to be provided.
 #'
 #' To use custom [`ModelObs`] sub-types, see Examples.
+#'
+#' @return `model_obs_*()` `R` wrapper functions return a named `list`, with a single element that defines the parameters of the observation models for the corresponding [`ModelObs`] structure.
 #'
 #' @example man/examples/example-ModelObs.R
 #' @inherit State seealso
@@ -70,6 +100,243 @@ NULL
 #' @name ModelObs
 #' @aliases .model_obs ModelObsAcousticLogisTrunc ModelObsAcousticContainer ModelObsDepthUniformSeabed ModelObsDepthNormalTruncSeabed
 NULL
+
+#' @rdname ModelObs
+#' @export
+
+# Standard acoustic observation model
+model_obs_acoustic_logis_trunc <- function(.data, .strict = TRUE) {
+  .data <- copy(.data)
+  # Set sensor_id column
+  if (rlang::has_name(.data, "receiver_id")) {
+    setnames(.data, "receiver_id", "sensor_id")
+  }
+  # Select columns
+  cols <- c("sensor_id",
+            "receiver_x", "receiver_y",
+            "receiver_alpha", "receiver_beta", "receiver_gamma")
+  check_names(.data, cols)
+  if (.strict) {
+    .data <-
+      .data |>
+      select(all_of(cols)) |>
+      as.data.table()
+  }
+  # Define structure
+  .data        <- list(.data)
+  names(.data) <- "ModelObsAcousticLogisTrunc"
+  structure(
+    .data,
+    class = c("list", "ModelObs", "ModelObsAcousticLogisTrunc")
+  )
+
+}
+
+#' @rdname ModelObs
+#' @export
+
+# Depth observation uniform around seabed
+model_obs_depth_uniform_seabed <- function(.data, .strict = TRUE) {
+  .data <- copy(.data)
+  cols  <- c("sensor_id", "depth_shallow_eps", "depth_deep_eps")
+  check_names(.data, cols)
+  if (.strict) {
+    .data <-
+      .data |>
+      select(all_of(cols)) |>
+      as.data.table()
+  }
+  .data <- list(.data)
+  names(.data) <- "ModelObsDepthUniformSeabed"
+  structure(
+    .data,
+    class = c("list", "ModelObs", "ModelObsDepthUniformSeabed")
+  )
+}
+
+#' @rdname ModelObs
+#' @export
+
+# Depth observation normal around seabed
+model_obs_depth_normal_trunc_seabed <- function(.data, .strict = TRUE) {
+  .data <- copy(.data)
+  cols  <- c("sensor_id", "depth_sigma", "depth_deep_eps")
+  check_names(.data, cols)
+  if (.strict) {
+    .data <-
+      .data |>
+      select(all_of(cols)) |>
+      as.data.table()
+  }
+  .data <- list(.data)
+  names(.data) <- "ModelObsDepthNormalTruncSeabed"
+  structure(
+    .data,
+    class = c("list", "ModelObs", "ModelObsDepthNormalTruncSeabed")
+  )
+}
+
+
+#' @title Observation model plots
+#' @description [`plot()`] methods for observation models (see [`ModelObs`]).
+#' @param x A named `list` of observation model parameters, including a [`ModelObs`] [`S3-class`] label (from a `model_obs_*()` function).
+#' @param .sensor_id,.seabed Model-specific parameters:
+#' * `.sensor_id`: For [`plot.ModelObsAcousticLogisTrunc()`], `.sensor_id` controls the sensors (receivers) for which detection probability curves are shown:
+#'      * `missing` (default) plots all unique curves;
+#'      *  An `integer` vector of sensor IDs plots curves for selected sensors;
+#'      * `NULL` plots curves for all sensors;
+#' * `.seabed`: For `plot.ModelObsDepth*Seabed()`, `.seabed` is the seabed depth at which distributions are plotted.
+#' @param .par Graphical parameters:
+#' * `NULL` uses current graphical parameters;
+#' * `list()` uses default graphical parameters;
+#' * A named `list` of arguments, passed to [`par()`], customises parameters;
+#' @param ... Additional arguments, passed to [`plot()`].
+#' @details
+#'
+#' Observation model ([`ModelObs`]) structures are objects that define the parameters of an observation model. The model specifies the probability of an observation (e.g., a particular depth record) given the data (e.g., a depth measurement).
+#'
+#' * [`plot.ModelObsAcousticLogisTrunc()`] plots detection probability as a function of distance from a receiver;
+#' * [`plot.ModelObsDepthUniformSeabed()`] plots a uniform distribution for  for the probability of a depth observation around a particular `.seabed` depth;
+#' * [`plot.ModelObsDepthNormalTruncSeabed()`] plot a truncated normal distribution for the probability of a depth observation around a particularly `.seabed` depth;
+#'
+#' @return The functions produce a [`plot`]. `invisible(NULL)` is returned.
+#' @example man/examples/example-ModelObs-plot.R
+#' @author Edward Lavender
+#' @name plot.ModelObs
+NULL
+
+# plot_dbn_ModelObsAcousticTruncLogis
+# (unused)
+
+# Plot the depth likelihood for ModelObsDepthUniformSeabed
+plot_dbn_ModelObsDepthUniformSeabed <- function(.panel) {
+  plot_dbn_wrap(.dbn = "dbn_ModelObsDepthUniformSeabed",
+                .xlim = NULL,
+                .xlab = "Depth (m)", .ylab = "Density",
+                .panel = .panel)
+}
+
+# Plot the depth likelihood for ModelObsDepthNormalTruncSeabed(
+plot_dbn_ModelObsDepthNormalTruncSeabed <- function(.panel) {
+  plot_dbn_wrap(.dbn = "dbn_ModelObsDepthNormalTruncSeabed",
+                .xlim = NULL,
+                .xlab = "Depth (m)", .ylab = "Density",
+                .panel = .panel)
+}
+
+# Plot the depth likelihood for ModelObsDepthNormal
+plot_dbn_ModelObsDepthNormal <- function(.panel) {
+  plot_dbn_wrap(.dbn = "dbn_ModelObsDepthNormal",
+                .xlim = NULL,
+                .xlab = "Depth (m)", .ylab = "Density",
+                .panel = .panel)
+}
+
+#' @rdname plot.ModelObs
+#' @export
+
+# User-facing function: plot.ModelObsAcousticLogisTrunc()
+plot.ModelObsAcousticLogisTrunc <- function(x,
+                                            .sensor_id,
+                                            .par = list(),
+                                            ...) {
+  # Extract data
+  x <- x$ModelObsAcousticLogisTrunc
+  if (missing(.sensor_id)) {
+    .sensor_id <-
+      x |>
+      distinct(.data$receiver_alpha, .data$receiver_beta, .data$receiver_gamma,
+               .keep_all = TRUE) |>
+      pull("sensor_id")
+  }
+  if (!is.null(.sensor_id)) {
+    x <-
+      x |>
+      filter(.data$sensor_id %in% .sensor_id) |>
+      # Select one row (e.g., timestep) for each sensor
+      group_by(.data$sensor_id) |>
+      slice(1L) |>
+      ungroup() |>
+      as.data.table()
+  }
+
+  # Set graphical parameters
+  pp <- set_plot_dbn_par(list(mfrow = par_mf(nrow(x))), .par)
+  on.exit(par(pp, no.readonly = TRUE), add = TRUE)
+  dots <- list(...)
+  if (rlang::has_name(dots, "xlim")) {
+    xlim <- dots$xlim
+  } else {
+    xlim <- c(0, max(x$receiver_gamma) * 1.1)
+  }
+
+  # Density plots
+  # * plot_dbn_*() is not used here
+  # * We do not plot the dbn
+  # * We plot the probability mass of a detection as a function of distance
+  lapply(split(x, seq_row(x)), function(xi) {
+    dist   <- seq(xlim[1], xlim[2], length.out = 1000)
+    prop   <- plogis(xi$receiver_alpha + xi$receiver_beta * dist)
+    prop[dist > xi$receiver_gamma] <- 0
+    args   <- list_args(list(main = xi$sensor_id,
+                             xlab = "Distance (m)",
+                             ylab = "Probability",
+                             type = "l"),
+                        .dots = list(...))
+    args$x <- dist
+    args$y <- prop
+    do.call(plot, args)
+  })
+  nothing()
+}
+
+#' @rdname plot.ModelObs
+#' @export
+
+# User facing function: plot.ModelObsDepthUniformSeabed()
+plot.ModelObsDepthUniformSeabed <- function(x,
+                                            .seabed = 100,
+                                            .par = list(),
+                                            ...) {
+  # Extract data
+  x <- x$ModelObsDepthUniformSeabed
+
+  # Set graphical parameters
+  pp <- set_plot_dbn_par(list(mfrow = par_mf(nrow(x))), .par)
+  on.exit(par(pp, no.readonly = TRUE), add = TRUE)
+
+  # Density plots
+  lapply(split(x, seq_row(x)), function(xi) {
+    julia_command(glue('dbn_ModelObsDepthUniformSeabed = truncated(Uniform({.seabed - xi$depth_shallow_eps}, {.seabed + xi$depth_deep_eps}), lower = 0.0);'))
+    panel <- list_args(list(main = xi$sensor_id), .dots = list(...))
+    plot_dbn_ModelObsDepthUniformSeabed(panel)
+  })
+  nothing()
+}
+
+#' @rdname plot.ModelObs
+#' @export
+
+# User facing function: plot.ModelObsDepthNormalTruncSeabed()
+plot.ModelObsDepthNormalTruncSeabed <- function(x,
+                                                .seabed = 100,
+                                                .par = list(),
+                                                ...) {
+  # Extract data
+  x <- x$ModelObsDepthNormalTruncSeabed
+
+  # Set graphical parameters
+  pp <- set_plot_dbn_par(list(mfrow = par_mf(nrow(x))), .par)
+  on.exit(par(pp, no.readonly = TRUE), add = TRUE)
+
+  # Density plots
+  lapply(split(x, seq_row(x)), function(xi) {
+    julia_command(glue('dbn_ModelObsDepthNormalTruncSeabed = truncated(Normal({.seabed}, {xi$depth_sigma}), lower = 0.0, upper = {.seabed + xi$depth_deep_eps});'))
+    panel <- list_args(list(main = xi$sensor_id), .dots = list(...))
+    plot_dbn_ModelObsDepthNormalTruncSeabed(panel)
+  })
+  nothing()
+}
 
 
 #' @title Movement models
@@ -174,6 +441,7 @@ move_cxyz <- function(.mobility = "750.0",
   class(cmd) <- c(class(cmd), "ModelMove", "ModelMoveCXYZ")
   cmd
 }
+
 
 #' @title Movement model plots
 #' @description [`plot()`] methods for movement models (see [`ModelMove`]).

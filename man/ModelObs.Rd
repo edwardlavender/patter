@@ -7,9 +7,59 @@
 \alias{ModelObsAcousticContainer}
 \alias{ModelObsDepthUniformSeabed}
 \alias{ModelObsDepthNormalTruncSeabed}
+\alias{model_obs_acoustic_logis_trunc}
+\alias{model_obs_depth_uniform_seabed}
+\alias{model_obs_depth_normal_trunc_seabed}
 \title{Observation models}
+\usage{
+model_obs_acoustic_logis_trunc(.data, .strict = TRUE)
+
+model_obs_depth_uniform_seabed(.data, .strict = TRUE)
+
+model_obs_depth_normal_trunc_seabed(.data, .strict = TRUE)
+}
+\arguments{
+\item{.data}{A \code{\link{data.table}} that contains observation model parameters.
+\itemize{
+\item For \code{\link{ModelObsAcousticLogisTrunc}}, required columns are:
+\itemize{
+\item \code{sensor_id}
+\item \code{receiver_x} and \code{receiver_y}
+\item \code{receiver_alpha}, \code{receiver_beta} and \code{receiver_gamma}
+}
+\item For \code{\link{ModelObsAcousticContainer}}, required columns are:
+\itemize{
+\item \code{sensor_id}
+\item \code{receiver_x} and \code{receiver_y}
+\item \code{radius}
+}
+\item For \code{\link{ModelObsDepthUniformSeabed}}, required columns are:
+\itemize{
+\item \code{sensor_id}
+\item \code{depth_shallow_eps}
+\item \code{depth_deep_eps}
+}
+\item For \code{\link{ModelObsDepthNormalTruncSeabed}}, required columns are:
+\itemize{
+\item \code{sensor_id}
+\item \code{depth_sigma}
+\item \code{depth_deep_eps}
+}
+}
+
+See \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} or \code{JuliaCall::julia_help("ModelObs")} for details.}
+
+\item{.strict}{A \code{logical} variable that defines whether or not to only retain columns in \code{.data} defined in the corresponding \code{ModelObs} structure.
+\itemize{
+\item Set \code{.strict = TRUE} (default) in \code{\link[=sim_observations]{sim_observations()}};
+\item Set \code{.strict = FALSE} in \code{\link[=pf_filter]{pf_filter()}} to include time stamps and observations in the \code{\link{data.table}};
+}}
+}
+\value{
+\verb{model_obs_*()} \code{R} wrapper functions return a named \code{list}, with a single element that defines the parameters of the observation models for the corresponding \code{\link{ModelObs}} structure.
+}
 \description{
-\code{\link{ModelObs}} is Abstract Type in \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} that groups observation model sub-types.
+\code{\link{ModelObs}} is Abstract Type in \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} that groups observation model sub-types. \verb{model_obs_*()} \code{R} functions create \code{\link{data.table}}s of observation model parameters which can be visualised in \code{R} (via \verb{plot.ModelObs*()} methods) and instantiated as \code{\link{ModelObs}} instances in \code{Julia}.
 }
 \details{
 Observation model sub-types are \code{Julia} structures that hold the parameters of observation models. From an \code{R}-user perspective, you can think of a \code{\link{ModelObs}} sub-type as an \code{S4}-\code{\link{class}}-like object, with slots for the parameters of an observation model. With an observation model structure, we can simulate new observations and evaluate the log-probability of existing observations.
@@ -22,50 +72,138 @@ The following observation models are built in to \href{https://edwardlavender.gi
 \item \code{\link{ModelObsDepthNormalTruncSeabed}}
 }
 
-See \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} or \code{JuliaCall::julia_help("ModelObs")} for the fields of the built-in sub-types.
-
 In \code{\link{patter}}, observation models are required:
 \itemize{
 \item To simulate new observational datasets, via \code{\link[=sim_observations]{sim_observations()}};
 \item To run the particle filter, via \code{\link[=pf_filter]{pf_filter()}};
 }
 
-Observation model sub-types and parameters should be specified as a named \code{list} of \href{s}{\code{data.table}}. Internally, observation model sub-types and parameters are instantiated and used to simulate observations or in the particle filter. The simulation of observations is implemented via \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.simulate_obs()}}. In the particle filter, log-probabilities are evaluated by \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.logpdf_obs()}}. These are generic functions. Different methods are dispatched according to the input model. For the built-in \code{\link{ModelObs}} sub-types, corresponding methods for these routines are also built-in. For custom \code{\link{ModelObs}} sub-types, the methods need to be provided.
+Observation model sub-types and parameters should be specified as a named \code{list} of \code{\link{data.table}}s. To assemble a \code{\link{data.table}} of parameters for a given \code{\link{ModelObs}} structure, see \code{\link{assemble}} functions. A named list can be created manually from individual \code{\link{data.table}}s or via \verb{model_obs_*()} \code{R} functions. The \code{R} functions simply check the inputs and wrap inputted \code{\link{data.table}}s of \verb{ModelObs*} parameters in a named \code{list}. A \code{\linkS4class{S3}}-\verb{ModelObs*} label is added and enables supporting methods (e.g., \code{\link[=plot.ModelObs]{plot.ModelObs()}}) to be implemented for observation models.
+
+Internally in \code{\link{patter}} algorithms, observation model sub-types and parameters are instantiated and used to simulate observations or in the particle filter. The simulation of observations is implemented via \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.simulate_obs()}}. In the particle filter, log-probabilities are evaluated by \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.logpdf_obs()}}. These are generic functions. Different methods are dispatched according to the input model. For the built-in \code{\link{ModelObs}} sub-types, corresponding methods for these routines are also built-in. For custom \code{\link{ModelObs}} sub-types, the methods need to be provided.
 
 To use custom \code{\link{ModelObs}} sub-types, see Examples.
 }
 \examples{
-# Patter contains multiple built-in `ModelObs` sub-types that you can use
-# ... (with custom parameters) simulate observations and for particle filtering.
-# To use a new sub-type, follow the workflow below. Some extra work is required
-# ... because we have to register the sub-type in `Julia` and write the
-# ... required methods to simulate observations and/or calculate log probabilities.
-
 if (patter_run()) {
 
   library(JuliaCall)
   library(data.table)
+  library(dtplyr)
+  library(dplyr, warn.conflicts = FALSE)
+
 
   #### Julia set up
   # Connect to Julia
   julia <- julia_connect()
   # Set seed
   set_seed()
-  # Export map to Julia
+
+  #### Set map in Julia
   map <- dat_gebco()
   set_map(map)
 
   #### Simulate path(s)
   # > We simulate a path in four dimensions (see `?StateCXYZ`)
-  timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
-                  length.out = 1000L, by = "2 mins")
-  paths <- sim_path_walk(.map = map,
-                         .timeline = timeline,
-                         .state = "StateCXYZ",
-                         .xinit = NULL, .n_path = 1L,
-                         .model_move = move_cxyz(),
-                         .plot = TRUE,
-                         .one_page = TRUE)
+  timeline <- seq(as.POSIXct("2016-01-01 00:00:00", tz = "UTC"),
+                  as.POSIXct("2016-01-02 09:18:00", tz = "UTC"),
+                  by = "2 mins")
+  paths <- sim_path_walk(.map        = map,
+                         .timeline   = timeline,
+                         .state      = "StateCXYZ",
+                         .xinit      = NULL,
+                         .n_path     = 1L,
+                         .model_move = move_cxyz())
+
+
+  #### --------------------------------------------------
+  #### In-built ModelObs types
+
+  #### Example (1): ModelObsAcousticLogisTrunc
+
+  # ModelObsAcousticLogisTrunc is an in-built ModelObs structure
+  # This holds the parameters of a
+  # ... truncated logistic acoustic observation model
+  # To evaluate the probability of an acoustic observation,
+  # ... under this model, we need to know receiver positions
+  # ... and the coefficients in the logistic equation.
+  # We can then simulate observations or run the particle filter.
+
+  # Simulate an acoustic array
+  array <- sim_array(.map = map,
+                     .timeline = timeline,
+                     .n_receiver = 100L,
+                     .arrangement = "regular",
+                     # Define logistic equation coefficients
+                     .receiver_alpha = 4,
+                     .receiver_beta = -0.01,
+                     .receiver_gamma = 750)
+
+  # This is a data.table of our acoustic observation model parameters
+  array
+
+  # The model_obs_*() function simply returns these in a list
+  # ... with a `ModelObsAcousticLogisTrunc` S3-class label
+  model_obs_acoustic_logis_trunc(array)
+
+  # We can plot observation model structures via corresponding `plot` methods
+  # See `?plot.ModelObs`
+  model_obs <- model_obs_acoustic_logis_trunc(array)
+  plot(model_obs)
+
+  # Simulate observations with a named list of observation model parameters
+  obs <- sim_observations(.timeline = timeline,
+                          .model_obs = model_obs)
+
+  # In long-form, the code above can be expressed as follows
+  sim_observations(
+    .timeline = timeline,
+    .model_obs =
+      list(
+        ModelObsAcousticLogisTrunc =
+          array |>
+          select(sensor_id = "receiver_id",
+                 "receiver_x", "receiver_y",
+                 "receiver_alpha", "receiver_beta", "receiver_gamma") |>
+          as.data.table()))
+
+  # In real-world scenarios, we must assemble a `data.table` of acoustic observations
+  # (For convenience, here we simply use our simulated observations)
+  acc <- assemble_acoustics(
+    .timeline   = timeline,
+    .detections = obs$ModelObsAcousticLogisTrunc[[1]][obs == 1L, ],
+    .moorings   = array
+    )
+
+  # The particle filter expects observations & parameters to be supplied as a named list
+  fwd <- pf_filter(.timeline   = timeline,
+                   .state      = "StateCXYZ",
+                   .model_move = move_cxyz(),
+                   .yobs       = model_obs_acoustic_logis_trunc(acc, .strict = FALSE),
+                   .n_particle = 1000L)
+
+  # This implementation is identical
+  fwd <- pf_filter(.timeline   = timeline,
+                   .state      = "StateCXYZ",
+                   .model_move = move_cxyz(),
+                   .yobs       = list(ModelObsAcousticLogisTrunc = acc),
+                   .n_particle = 1000L)
+
+  # But with the model_obs_*() implementation we benefit from in-built `plot()` methods
+  plot(model_obs_acoustic_logis_trunc(acc))
+
+  # See `?ModelObs` for other in-built `ModelObs` structures
+
+
+  #### --------------------------------------------------
+  #### Custom ModelObs types
+
+  # Patter contains multiple built-in `ModelObs` sub-types that you can use
+  # ... (with custom parameters) simulate observations and for particle filtering.
+  # To use a new sub-type, follow the workflow below. Some extra work is required
+  # ... because we have to register the sub-type in `Julia` and write the
+  # ... required methods to simulate observations and/or calculate log probabilities.
+
 
   #### Simulate observations arising from the simulated path
   # Register a custom `ModelObs` sub-type in Julia

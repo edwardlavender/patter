@@ -114,13 +114,37 @@ assemble_acoustics <- function(.timeline, .detections, .moorings, .services = NU
   step     <- diffstep(.timeline)
   time_int <- interval(min(.timeline), max(.timeline))
 
+  # Handle format
+  # (Use as.data.frame() to copy data and for reframe etc., below)
+  .detections <- as.data.frame(.detections)
+  .moorings   <- as.data.frame(.moorings)
+  if (!is.null(.services)) {
+    .services <- as.data.frame(.services)
+  }
+
+  # Handle receiver_id/sensor_id
+  # * We expect receiver_id (below)
+  # * Occasionally, outputs may be provided from sim_*() functions with sensor_id
+  # * We allow for that here by (temporarily) renaming columns
+  if (rlang::has_name(.detections, "sensor_id")) {
+    .detections$receiver_id <- .detections$sensor_id
+    .detections$sensor_id   <- NULL
+  }
+  if (rlang::has_name(.moorings, "sensor_id")) {
+    .moorings$receiver_id <- .moorings$sensor_id
+    .moorings$sensor_id   <- NULL
+  }
+  if (!is.null(.services) && rlang::has_name(.services, "sensor_id")) {
+    .services$receiver_id <- .services$sensor_id
+    .services$sensor_id   <- NULL
+  }
+
   # Define moorings
+  # * Focus on receivers within the study interval
   .moorings <-
     .moorings |>
-    as.data.frame() |>
-    # Focus on receivers within the study interval
     rename(sensor_id = "receiver_id") |>
-    mutate(receiver_start = lubridate::round_date(.data$receiver_start, step),
+      mutate(receiver_start = lubridate::round_date(.data$receiver_start, step),
            receiver_end = lubridate::round_date(.data$receiver_end, step),
            int = interval(.data$receiver_start, .data$receiver_end)) |>
     filter(int_overlaps(.data$int, time_int)) |>
@@ -135,8 +159,6 @@ assemble_acoustics <- function(.timeline, .detections, .moorings, .services = NU
   if (!is.null(.services)) {
     .services <-
       .services |>
-      # (Use data.frame() for reframe(), below)
-      as.data.frame() |>
       # Define servicing events
       select(sensor_id = "receiver_id", "service_start", "service_end") |>
       mutate(service_start = lubridate::round_date(.data$service_start, step),
