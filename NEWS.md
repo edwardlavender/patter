@@ -1,7 +1,5 @@
 # `patter` v2.0.0
 
-## Major changes
-
 `patter` v 2.0.0 includes some major internal and external changes associated with a revamp required to permit use on Linux and other improvements. There are some breaking changes in the API of some functions as a result. We have also added new data-assembly routines, most notably `assemble_acoustics_containers()`, which support particle filtering, alongside additional improvements to select functions. Where required for existing code, you can continue to use `patter` v1.0.1 with [`renv`](https://rstudio.github.io/renv/articles/renv.html). 
 
 * **Julia setup** 
@@ -9,6 +7,7 @@
 
 * **Map export** 
     * `set_map()` has been revamped to support applications on Linux. The function accepts a file path to a raster and includes `.as_Raster` and `.as_GeoArray` arguments. 
+    
 * **Data assembly** 
     * A distinction is made between detections and acoustic observations, which include detections and non-detections:
         * `dat_acoustics` has been renamed to `dat_detections`;
@@ -23,11 +22,12 @@
 
 * **Movement simulation**
     * New `State`s and `ModelMove`s have been implemented. Current options are `StateXY`, `StateXYZ`, `StateCXY` and `StateCXZY`, which map to `ModelMoveXY`, `ModelMoveXYZ`, `ModelMoveCXY` and `ModelMoveCXZY`. (`StateXYZD` and `ModelMoveXYZD` have been renamed.)
-    * `model_move_*()` wrappers now return a `character` with an additional `ModelMove` and `ModelMove*` class label. Plot methods are provided for in-build classes (see `plot.ModelMove`).
+    * `model_move_*()` wrappers (formely `move_*()`) now return a `character` with an additional `ModelMove` and `ModelMove*` class label. Plot methods are provided for in-build classes (see `plot.ModelMove`).
     * `sim_path_walk()` now fails with an error for invalid maps/movement models.  
     * A new `.collect` argument collect outputs in `R`. 
 
 * **Observation simulation**
+    * New `model_obs_*()` functions have been implemented, along with `plot()` methods, to streamline code. 
     * `sim_observations()` now expects `ModelObs` structures and parameters in a single named list (passed to `.model_obs`). The `.model_obs_pars` argument has been dropped. 
     * A new `.collect` argument collect outputs in `R`. 
 
@@ -36,21 +36,18 @@
     * A new `.t_resample` argument permits you to force resampling at selected time steps.
     * A new `.n_iter` argument permits multiple runs of the filter. 
     * A new `.collect` argument collects outputs in `R`. 
+    * A revised `pf_particles` object is returned that includes a `callstats` `data.table` that replaces the `convergence` element.  
 
 * **Particle smoothing**
     * `pf_smoother_two_filter()` uses a more flexible `.vmap` argument, supported by `set_vmap()`, in place of `.box` and `.mobility`. 
     * Instances where the two filters are incompatible (all weights are zero) are now flagged with a warning. Formerly, `.n_particle` copies of the first particle were selected by `Patter.resample()` at problematic time steps, leading to a bottleneck in the distribution of an individual's possible locations. Now 50 % of the particles from the forward filter and 50 % from the backward filter are randomly selected at such steps (with a warning). The effective sample size at these time steps is set to NA & provides a counter for the number of problematic time steps. 
     * A new `.cache` argument fixes incorrect caching for time-varying movement models and enables the user to turn the caching on or off.
     * A new `.collect` argument collects outputs in `R`. 
+    * A revised `pf_particles` object is returned (see above). 
     
 * **Mapping**
     * `map_dens()` now requires the smoothing bandwidth to be specified via a `.sigma` argument. A new function, `bw.h()`, is the default.
-
-## Minor improvements and bug fixes
-
-* Minor documentation improvements, including to `Julia` installation instructions;
-* Installation via `JuliaLang` or `juliaup` is now recommended;
-* Minor bug fixes;
+    * The `.use_tryCatch` argument is now simply named `.tryCatch`. 
 
 # `patter` v1.0.1
 
