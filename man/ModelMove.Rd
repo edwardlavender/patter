@@ -2,37 +2,37 @@
 % Please edit documentation in R/models.R
 \name{ModelMove}
 \alias{ModelMove}
-\alias{move_xy}
+\alias{model_move_xy}
 \alias{.model_move}
 \alias{ModelMoveXY}
 \alias{ModelMoveXYZ}
 \alias{ModelMoveCXY}
 \alias{ModelMoveCXYZ}
-\alias{move_xyz}
-\alias{move_cxy}
-\alias{move_cxyz}
+\alias{model_move_xyz}
+\alias{model_move_cxy}
+\alias{model_move_cxyz}
 \title{Movement models}
 \usage{
-move_xy(
+model_move_xy(
   .mobility = "750.0",
   .dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
   .dbn_heading = "Uniform(-pi, pi)"
 )
 
-move_xyz(
+model_move_xyz(
   .mobility = "750.0",
   .dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
   .dbn_heading = "Uniform(-pi, pi)",
   .dbn_z = "truncated(Normal(100.0, 250.0), lower = 0.0, upper = 350.0)"
 )
 
-move_cxy(
+model_move_cxy(
   .mobility = "750.0",
   .dbn_length = "truncated(Gamma(1.0, 750.0), upper = 750.0)",
   .dbn_heading_delta = "Normal(0, 0.5)"
 )
 
-move_cxyz(
+model_move_cxyz(
   .mobility = "750.0",
   .dbn_length = "truncated(Gamma(1.0, 750.0), upper = 750.0)",
   .dbn_heading_delta = "Normal(0, 0.5)",
@@ -51,10 +51,10 @@ move_cxyz(
 }}
 }
 \value{
-\verb{move_*()} functions return a \code{character} string that defines a \code{\link{ModelMove}} instance for evaluation in \code{Julia}. The \code{\link{class}} of the output is \code{character} plus \code{ModelMove} and \code{ModelMoveXY}, \code{ModelMoveXYZ}, \code{ModelMoveCXY} or \code{ModelMoveCXYZ} (see \code{\link{plot.ModelMove}}). If the map (\code{env}) does not exist in \code{Julia}, an error is thrown.
+\verb{model_move_*()} functions return a \code{character} string that defines a \code{\link{ModelMove}} instance for evaluation in \code{Julia}. The \code{\link{class}} of the output is \code{character} plus \code{ModelMove} and \code{ModelMoveXY}, \code{ModelMoveXYZ}, \code{ModelMoveCXY} or \code{ModelMoveCXYZ} (see \code{\link{plot.ModelMove}}). If the map (\code{env}) does not exist in \code{Julia}, an error is thrown.
 }
 \description{
-\code{\link{ModelMove}} is Abstract Type in \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} that groups movement model sub-types, of which instances can be created via an \code{R} \verb{move_*()} function.
+\code{\link{ModelMove}} is Abstract Type in \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} that groups movement model sub-types, of which instances can be created via an \code{R} \verb{model_move_*()} function.
 }
 \details{
 Movement model sub-types are \code{Julia} structures that hold the components of movement models. From an \code{R}-user perspective, you can think of a \code{\link{ModelMove}} sub-type as an \code{S4}-\code{\link{class}}-like object, with slots for the components of a movement model. With a movement model instance, we can simulate movements and evaluate the density of movements from one state (location) to another.
@@ -87,12 +87,12 @@ In \code{\link{patter}}, movement models are required:
 \item To run the particle smoother, via \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}};
 }
 
-In \code{R} functions, the movement-model instance is specified via the \code{.model_move} argument. This argument expects a \code{character} string defining a \code{\link{ModelMove}} instance that can be evaluated in \code{Julia} (that is, a \code{\link{ModelMove}} constructor). \verb{move_*()} functions are convenience functions for the specification of these constructors for the built-in sub-types. All \code{\link{ModelMove}} instances contain a \code{map} field that defines the region(s) within which movements are permitted. To use a \verb{move_*()} function, the map should be available in \code{Julia} as \code{env} (see \code{\link[=set_map]{set_map()}}). The additional components of the movement model are specified via \verb{move_*()} function arguments as \code{character} strings of \code{Julia} code. Currently implemented \verb{move_*()} functions are:
+In \code{R} functions, the movement-model instance is specified via the \code{.model_move} argument. This argument expects a \code{character} string defining a \code{\link{ModelMove}} instance that can be evaluated in \code{Julia} (that is, a \code{\link{ModelMove}} constructor). \verb{model_move_*()} functions are convenience functions for the specification of these constructors for the built-in sub-types. All \code{\link{ModelMove}} instances contain a \code{map} field that defines the region(s) within which movements are permitted. To use a \verb{model_move_*()} function, the map should be available in \code{Julia} as \code{env} (see \code{\link[=set_map]{set_map()}}). The additional components of the movement model are specified via \verb{model_move_*()} function arguments as \code{character} strings of \code{Julia} code. Currently implemented \verb{model_move_*()} functions are:
 \itemize{
-\item \code{\link[=move_xy]{move_xy()}}, which specifies a RW in X and Y of sub-type \code{\link{ModelMoveXY}} in terms of the distributions of step lengths and headings;
-\item \code{\link[=move_xyz]{move_xyz()}}, which specifies a RW in X, Y and Z of sub-type \code{\link{ModelMoveXY}} in terms of the distributions of step lengths, headings and depths;
-\item \code{\link[=move_cxy]{move_cxy()}}, which specifies a CRW in X and Y of sub-type \code{\link{ModelMoveXY}} in terms of the distributions of step lengths and turning angles;
-\item \code{\link[=move_cxyz]{move_cxyz()}}, which specifies a CRW in X, Y and Z of sub-type \code{\link{ModelMoveCXYZ}} in terms of the distributions of step lengths, turning angles and changes in depth;
+\item \code{\link[=model_move_xy]{model_move_xy()}}, which specifies a RW in X and Y of sub-type \code{\link{ModelMoveXY}} in terms of the distributions of step lengths and headings;
+\item \code{\link[=model_move_xyz]{model_move_xyz()}}, which specifies a RW in X, Y and Z of sub-type \code{\link{ModelMoveXY}} in terms of the distributions of step lengths, headings and depths;
+\item \code{\link[=model_move_cxy]{model_move_cxy()}}, which specifies a CRW in X and Y of sub-type \code{\link{ModelMoveXY}} in terms of the distributions of step lengths and turning angles;
+\item \code{\link[=model_move_cxyz]{model_move_cxyz()}}, which specifies a CRW in X, Y and Z of sub-type \code{\link{ModelMoveCXYZ}} in terms of the distributions of step lengths, turning angles and changes in depth;
 }
 
 See \href{https://discourse.julialang.org/t/a-comparison-of-common-distributions-in-julia-python-and-r/61604}{here} for the translations of distributions in \code{R} (e.g., \verb{*norm()}) into \code{Julia} (e.g., \code{Normal()}).
@@ -127,51 +127,51 @@ if (patter_run(.geospatial = FALSE)) {
   # > This is required as a component of all movement models
   set_map(map)
 
-  #### Example (1a): Use `move_xy()` with default options
-  # `move_*()` functions simply return a character string of Julia code
+  #### Example (1a): Use `model_move_xy()` with default options
+  # `model_move_*()` functions simply return a character string of Julia code
   # (Downstream functions can evaluate this code, as shown below)
-  move_xy()
+  model_move_xy()
 
-  #### Example (1b): Customise `move_xy()`
+  #### Example (1b): Customise `model_move_xy()`
   # Use a truncated normal distribution for step lengths:
-  move_xy(.mobility = "750.0",
+  model_move_xy(.mobility = "750.0",
           .dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)")
   # Use an exponential distribution for step lengths
-  move_xy(.mobility = "750.0",
+  model_move_xy(.mobility = "750.0",
           .dbn_length = "truncated(Exponential(0.01), upper = 750.0)")
   # Use a biased random walk
-  move_xy(.dbn_heading = "VonMises(0, 1)")
+  model_move_xy(.dbn_heading = "VonMises(0, 1)")
   # Get help on a distribution in Julia:
   julia_help("Exponential")
 
-  #### Example (2): Use `move_xyz()`
+  #### Example (2): Use `model_move_xyz()`
   # Use default options
-  move_xyz()
+  model_move_xyz()
   # Customise model components
-  move_xyz(.mobility = "750.0",
+  model_move_xyz(.mobility = "750.0",
            .dbn_length = "truncated(Exponential(0.01), upper = 750.0)",
            .dbn_z = "truncated(Gamma(1.0, 250.0), lower = 0.0, upper = 350.0)")
 
-  #### Example (3): Use `move_cxy()`
+  #### Example (3): Use `model_move_cxy()`
   # Use default options
-  move_cxy()
+  model_move_cxy()
   # Customise model components
-  move_cxy(.mobility = "750.0",
+  model_move_cxy(.mobility = "750.0",
             .dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)",
             .dbn_heading_delta = "Normal(0, 0.25)")
 
-  #### Example (4): Use `move_cxyz()`
+  #### Example (4): Use `model_move_cxyz()`
   # Use default options
-  move_cxyz()
+  model_move_cxyz()
   # Customise model components
-  move_cxyz(.mobility = "750.0",
+  model_move_cxyz(.mobility = "750.0",
             .dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)",
             .dbn_heading_delta = "Normal(0, 0.25)",
             .dbn_z_delta = "Normal(0, 2.5)")
 
   #### Example (4): Visualise movement model component distributions
   # See `?plot.ModelMove`
-  plot(move_xy())
+  plot(model_move_xy())
 
   #### Example (5): Visualise movement model realisations (trajectories)
   if (patter_run()) {
@@ -193,9 +193,9 @@ if (patter_run(.geospatial = FALSE)) {
                  .n_path = 2L, .one_page = FALSE)
     # Compare different movement models via `sim_path_walk()`
     pp <- par(mfrow = c(2, 2))
-    args$.model_move <- move_xy()
+    args$.model_move <- model_move_xy()
     do.call(sim_path_walk, args)
-    args$.model_move <- move_xy(.dbn_heading = "VonMises(0.1, 0.1)")
+    args$.model_move <- model_move_xy(.dbn_heading = "VonMises(0.1, 0.1)")
     do.call(sim_path_walk, args)
     par(pp)
 

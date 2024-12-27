@@ -25,7 +25,7 @@ if (patter_run()) {
                          .state      = "StateCXYZ",
                          .xinit      = NULL,
                          .n_path     = 1L,
-                         .model_move = move_cxyz())
+                         .model_move = model_move_cxyz())
 
 
   #### --------------------------------------------------
@@ -90,14 +90,14 @@ if (patter_run()) {
   # The particle filter expects observations & parameters to be supplied as a named list
   fwd <- pf_filter(.timeline   = timeline,
                    .state      = "StateCXYZ",
-                   .model_move = move_cxyz(),
+                   .model_move = model_move_cxyz(),
                    .yobs       = model_obs_acoustic_logis_trunc(acc, .strict = FALSE),
                    .n_particle = 1000L)
 
   # This implementation is identical
   fwd <- pf_filter(.timeline   = timeline,
                    .state      = "StateCXYZ",
-                   .model_move = move_cxyz(),
+                   .model_move = model_move_cxyz(),
                    .yobs       = list(ModelObsAcousticLogisTrunc = acc),
                    .n_particle = 1000L)
 
@@ -180,7 +180,7 @@ if (patter_run()) {
   fwd <- pf_filter(.timeline = timeline,
                    .state = "StateCXYZ",
                    .yobs = yobs,
-                   .model_move = move_cxyz(),
+                   .model_move = model_move_cxyz(),
                    .n_particle = 1000L)
   # Visualise reconstructed time series
   # * Black: particle depths

@@ -121,7 +121,7 @@ install.packages(c("devtools", "pkgbuild"))
 
 * **On Windows**, package building requires `RTools`. You can check whether `RTools` is installed with `pkgbuild::has_rtools()`. If `RTools` is not installed, it is necessary to download and install the appropriate version of `RTools` before proceeding by following the instructions [here](https://cran.r-project.org/bin/windows/RTools/). 
 * **On MacOS**, some system-specific step up (e.g., compiler configuration) may be required. Follow the steps below and address any issues as required for your system.
-* **On Linux**, a suite of system libraries, including `GDAL`, `GEOS` and `PROJ`, are required. See the package [DESCRIPTION](DESCRIPTION) for required/suggested packages and follow the instructions for your system. On Debian/Ubuntu, see [r2u](https://eddelbuettel.github.io/r2u/) or follow the instructions below to get up and running.
+* **On Linux**, a suite of system libraries, including `GDAL`, `GEOS` and `PROJ`, are required. See the package [DESCRIPTION](DESCRIPTION) for required/suggested packages and follow the instructions for your system. On Debian/Ubuntu, see [`r2u`](https://eddelbuettel.github.io/r2u/) or follow the instructions below to get up and running.
     <details><summary><b>Click</b> for system dependency installation instructions on Ubuntu.</summary>
     ```bash
     sudo apt update
@@ -412,7 +412,7 @@ state      <- "StateXY"
 
 # Formulate a corresponding movement model:
 mobility   <- 750.0
-model_move <- move_xy(.mobility   = "750.0", 
+model_move <- model_move_xy(.mobility   = "750.0", 
                       .dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
                       .dbn_heading  = "Uniform(-pi, pi)")
 

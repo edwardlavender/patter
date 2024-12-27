@@ -169,7 +169,7 @@ test_that("pf_filter_init() works", {
   set_map(map_na)
   output <- pf_filter_init(.timeline = timeline,
                            .state = "StateXY",
-                           .model_move = move_xy(),
+                           .model_move = model_move_xy(),
                            .yobs = list(),
                            .n_particle = 2L,
                            .direction = "forward") |>
@@ -199,7 +199,7 @@ test_that("pf_filter_init() works", {
     yobs <- list(ModelObsAcousticLogisTrunc = acc)
     output <- pf_filter_init(.timeline = timeline,
                              .state = "StateXY",
-                             .model_move = move_xy(),
+                             .model_move = model_move_xy(),
                              .yobs = yobs,
                              .n_particle = np,
                              .direction = "forward")
@@ -209,7 +209,7 @@ test_that("pf_filter_init() works", {
     yobs <- list(ModelObsDepthUniformSeabed = arc)
     output <- pf_filter_init(.timeline = timeline,
                              .state = "StateXY",
-                             .model_move = move_xy(),
+                             .model_move = model_move_xy(),
                              .yobs = yobs,
                              .n_particle = np,
                              .direction = "forward")
@@ -219,7 +219,7 @@ test_that("pf_filter_init() works", {
     yobs <- list(ModelObsDepthNormalTruncSeabed = arc)
     output <- pf_filter_init(.timeline = timeline,
                              .state = "StateXY",
-                             .model_move = move_xy(),
+                             .model_move = model_move_xy(),
                              .yobs = yobs,
                              .n_particle = np,
                              .direction = "forward")
@@ -230,7 +230,7 @@ test_that("pf_filter_init() works", {
                  ModelObsDepthUniformSeabed = arc)
     output <- pf_filter_init(.timeline = timeline,
                              .state = "StateXY",
-                             .model_move = move_xy(),
+                             .model_move = model_move_xy(),
                              .yobs = yobs,
                              .n_particle = np,
                              .direction = "forward")
@@ -242,7 +242,7 @@ test_that("pf_filter_init() works", {
                  ModelObsAcousticLogisTrunc = acc)
     output <- pf_filter_init(.timeline = timeline,
                              .state = "StateXY",
-                             .model_move = move_xy(),
+                             .model_move = model_move_xy(),
                              .yobs = yobs,
                              .n_particle = np,
                              .direction = "forward")
@@ -258,7 +258,7 @@ test_that("pf_filter_init() works", {
   output <- pf_filter_init(.timeline = timeline,
                            .state = "StateXY",
                            .xinit = data.table(map_value = 1, x = 2, y = 3),
-                           .model_move = move_xy(),
+                           .model_move = model_move_xy(),
                            .yobs = list(),
                            .n_particle = 2L,
                            .direction = "forward")
@@ -271,7 +271,7 @@ test_that("pf_filter_init() works", {
 
   #### Define movement model
   mobility = 750.0
-  set_model_move(move_xy())
+  set_model_move(model_move_xy())
 
   #### `map_init.default()`
   # `map_init.default()` simply returns `.map`

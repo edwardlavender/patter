@@ -10,6 +10,7 @@
 ^dev$
 ^docs$
 ^Julia$
+^pkgdown$
 .Rprofile
 .Renviron
 

@@ -62,7 +62,7 @@
 pf_filter <- function(.timeline,
                       .state = "StateXY",
                       .xinit = NULL,
-                      .model_move = move_xy(),
+                      .model_move = model_move_xy(),
                       .yobs,
                       .n_move = 1e5L,
                       .n_particle = 1000L,

@@ -51,7 +51,7 @@ timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
 paths <- sim_path_walk(.map = map,
                        .timeline = timeline,
                        .state = "StateXY",
-                       .model_move = move_xy())
+                       .model_move = model_move_xy())
 
 #### Simulate array(s)
 arrays <- sim_array(.map = map,
@@ -85,7 +85,7 @@ out_coa <- coa(.map = map,
 # Define filter args
 args <- list(.timeline = timeline,
              .state = "StateXY",
-             .model_move = move_xy(),
+             .model_move = model_move_xy(),
              .yobs = list(ModelObsAcousticLogisTrunc = obs$ModelObsAcousticLogisTrunc[[1]],
                           ModelObsDepthUniformSeabed = obs$ModelObsDepthUniformSeabed[[1]]),
              .n_particle = 1e5L,

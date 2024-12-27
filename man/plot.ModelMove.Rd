@@ -37,7 +37,7 @@
 )
 }
 \arguments{
-\item{x}{A \code{\link{ModelMove}}-class object from a \verb{move_*()} function (e.g., \code{\link[=move_xy]{move_xy()}}.}
+\item{x}{A \code{\link{ModelMove}}-class object from a \verb{model_move_*()} function (e.g., \code{\link[=model_move_xy]{model_move_xy()}}.}
 
 \item{.panel_length, .panel_heading, .panel_heading_delta, .panel_z, .panel_z_delta}{Panel properties:
 \itemize{
@@ -73,34 +73,34 @@ if (patter_run(.julia = TRUE, .geospatial = FALSE)) {
 
   #### Example (1): Plot movement models
   # Plot default models
-  plot(move_xy())
-  plot(move_xyz())
-  plot(move_cxy())
-  plot(move_cxyz())
+  plot(model_move_xy())
+  plot(model_move_xyz())
+  plot(model_move_cxy())
+  plot(model_move_cxyz())
   # Plot customised model
-  plot(move_cxyz(.dbn_length = "truncated(Normal(0.0, 100.0),
+  plot(model_move_cxyz(.dbn_length = "truncated(Normal(0.0, 100.0),
                                         lower = 0.0, upper = 1000.0)"))
 
   #### Example (2): Use `...` to pass graphical arguments to all panels
-  plot(move_xy(), col = "red")
+  plot(model_move_xy(), col = "red")
 
   #### Example (3): Use `.panel_* = NULL` to suppress selected panels
-  plot(move_xy(),
+  plot(model_move_xy(),
        .panel_heading = NULL)
 
   #### Example (4): Customise individual panels via `.panel_*` lists
-  plot(move_xy(),
+  plot(model_move_xy(),
        .panel_length = list(main = "A"),
        .panel_heading = list(main = "B"))
 
   #### Example (5): Control graphical parameters via the `.par` list
   # Use default options
-  plot(move_xy(), .par = list())
+  plot(model_move_xy(), .par = list())
   # Specify par options
-  plot(move_xy(), .par = list(oma = c(3, 3, 3, 3)))
+  plot(model_move_xy(), .par = list(oma = c(3, 3, 3, 3)))
   # Set `.par = NULL` to leave `par` unchanged
   pp <- par(mfrow = c(2, 1))
-  plot(move_xy(), .par = NULL)
+  plot(model_move_xy(), .par = NULL)
   par(pp)
 
   #### Example (6): Simulate reasliations of the movement model
@@ -111,7 +111,7 @@ if (patter_run(.julia = TRUE, .geospatial = FALSE)) {
                                 as.POSIXct("2016-01-01 12:00:00", tz = "UTC"),
                                 by = "2 mins"),
                 .state = "StateXY",
-                .model_move = move_xy())
+                .model_move = model_move_xy())
 
 }
 }

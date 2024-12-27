@@ -43,7 +43,7 @@ test_that("sim_path_walk() works", {
   sim_path_walk(.map = map,
                 .timeline = timeline,
                 .state = "StateXY",
-                .model_move = move_xy(.dbn_heading = "VonMises(0, 100)")) |>
+                .model_move = model_move_xy(.dbn_heading = "VonMises(0, 100)")) |>
     expect_error()
 
   #### Test correct implementation

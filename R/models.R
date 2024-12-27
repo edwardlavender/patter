@@ -417,7 +417,7 @@ plot.ModelObsDepthNormalTruncSeabed <- function(x,
 
 
 #' @title Movement models
-#' @description [`ModelMove`] is Abstract Type in [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) that groups movement model sub-types, of which instances can be created via an `R` `move_*()` function.
+#' @description [`ModelMove`] is Abstract Type in [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) that groups movement model sub-types, of which instances can be created via an `R` `model_move_*()` function.
 #'
 #' @param .mobility,.dbn_length,.dbn_heading,.dbn_heading_delta,.dbn_z,.dbn_z_delta `Character` strings that define movement model components:
 #' * `.mobility`---the maximum movement distance between two time steps (m);
@@ -447,11 +447,11 @@ plot.ModelObsDepthNormalTruncSeabed <- function(x,
 #' * To run the particle filter, via [`pf_filter()`];
 #' * To run the particle smoother, via [`pf_smoother_two_filter()`];
 #'
-#' In `R` functions, the movement-model instance is specified via the `.model_move` argument. This argument expects a `character` string defining a [`ModelMove`] instance that can be evaluated in `Julia` (that is, a [`ModelMove`] constructor). `move_*()` functions are convenience functions for the specification of these constructors for the built-in sub-types. All [`ModelMove`] instances contain a `map` field that defines the region(s) within which movements are permitted. To use a `move_*()` function, the map should be available in `Julia` as `env` (see [`set_map()`]). The additional components of the movement model are specified via `move_*()` function arguments as `character` strings of `Julia` code. Currently implemented `move_*()` functions are:
-#' * [`move_xy()`], which specifies a RW in X and Y of sub-type [`ModelMoveXY`] in terms of the distributions of step lengths and headings;
-#' * [`move_xyz()`], which specifies a RW in X, Y and Z of sub-type [`ModelMoveXY`] in terms of the distributions of step lengths, headings and depths;
-#' * [`move_cxy()`], which specifies a CRW in X and Y of sub-type [`ModelMoveXY`] in terms of the distributions of step lengths and turning angles;
-#' * [`move_cxyz()`], which specifies a CRW in X, Y and Z of sub-type [`ModelMoveCXYZ`] in terms of the distributions of step lengths, turning angles and changes in depth;
+#' In `R` functions, the movement-model instance is specified via the `.model_move` argument. This argument expects a `character` string defining a [`ModelMove`] instance that can be evaluated in `Julia` (that is, a [`ModelMove`] constructor). `model_move_*()` functions are convenience functions for the specification of these constructors for the built-in sub-types. All [`ModelMove`] instances contain a `map` field that defines the region(s) within which movements are permitted. To use a `model_move_*()` function, the map should be available in `Julia` as `env` (see [`set_map()`]). The additional components of the movement model are specified via `model_move_*()` function arguments as `character` strings of `Julia` code. Currently implemented `model_move_*()` functions are:
+#' * [`model_move_xy()`], which specifies a RW in X and Y of sub-type [`ModelMoveXY`] in terms of the distributions of step lengths and headings;
+#' * [`model_move_xyz()`], which specifies a RW in X, Y and Z of sub-type [`ModelMoveXY`] in terms of the distributions of step lengths, headings and depths;
+#' * [`model_move_cxy()`], which specifies a CRW in X and Y of sub-type [`ModelMoveXY`] in terms of the distributions of step lengths and turning angles;
+#' * [`model_move_cxyz()`], which specifies a CRW in X, Y and Z of sub-type [`ModelMoveCXYZ`] in terms of the distributions of step lengths, turning angles and changes in depth;
 #'
 #' See [here](https://discourse.julialang.org/t/a-comparison-of-common-distributions-in-julia-python-and-r/61604) for the translations of distributions in `R` (e.g., `*norm()`) into `Julia` (e.g., `Normal()`).
 #'
@@ -461,18 +461,18 @@ plot.ModelObsDepthNormalTruncSeabed <- function(x,
 #'
 #' To use custom [`ModelMove`] sub-types, see Examples.
 #'
-#' @returns `move_*()` functions return a `character` string that defines a [`ModelMove`] instance for evaluation in `Julia`. The [`class`] of the output is `character` plus `ModelMove` and `ModelMoveXY`, `ModelMoveXYZ`, `ModelMoveCXY` or `ModelMoveCXYZ` (see [`plot.ModelMove`]). If the map (`env`) does not exist in `Julia`, an error is thrown.
+#' @returns `model_move_*()` functions return a `character` string that defines a [`ModelMove`] instance for evaluation in `Julia`. The [`class`] of the output is `character` plus `ModelMove` and `ModelMoveXY`, `ModelMoveXYZ`, `ModelMoveCXY` or `ModelMoveCXYZ` (see [`plot.ModelMove`]). If the map (`env`) does not exist in `Julia`, an error is thrown.
 #'
 #' @example man/examples/example-ModelMove.R
 #' @inherit State seealso
 #' @author Edward Lavender
 #' @name ModelMove
-#' @aliases .model_move ModelMoveXY ModelMoveXYZ ModelMoveCXY ModelMoveCXYZ move_xy move_xyz move_cxy move_cxyz
+#' @aliases .model_move ModelMoveXY ModelMoveXYZ ModelMoveCXY ModelMoveCXYZ model_move_xy model_move_xyz model_move_cxy model_move_cxyz
 
 #' @rdname ModelMove
 #' @export
 
-move_xy <- function(.mobility = "750.0",
+model_move_xy <- function(.mobility = "750.0",
                     .dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
                     .dbn_heading = "Uniform(-pi, pi)") {
   julia_check_exists("env")
@@ -484,7 +484,7 @@ move_xy <- function(.mobility = "750.0",
 #' @rdname ModelMove
 #' @export
 
-move_xyz <- function(.mobility = "750.0",
+model_move_xyz <- function(.mobility = "750.0",
                      .dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
                      .dbn_heading = "Uniform(-pi, pi)",
                      .dbn_z = "truncated(Normal(100.0, 250.0), lower = 0.0, upper = 350.0)") {
@@ -497,7 +497,7 @@ move_xyz <- function(.mobility = "750.0",
 #' @rdname ModelMove
 #' @export
 
-move_cxy <- function(.mobility = "750.0",
+model_move_cxy <- function(.mobility = "750.0",
                      .dbn_length = "truncated(Gamma(1.0, 750.0), upper = 750.0)",
                      .dbn_heading_delta = "Normal(0, 0.5)") {
   julia_check_exists("env")
@@ -509,7 +509,7 @@ move_cxy <- function(.mobility = "750.0",
 #' @rdname ModelMove
 #' @export
 
-move_cxyz <- function(.mobility = "750.0",
+model_move_cxyz <- function(.mobility = "750.0",
                       .dbn_length = "truncated(Gamma(1.0, 750.0), upper = 750.0)",
                       .dbn_heading_delta = "Normal(0, 0.5)",
                       .dbn_z_delta = "Normal(0, 3.5)") {
@@ -522,7 +522,7 @@ move_cxyz <- function(.mobility = "750.0",
 
 #' @title Movement model plots
 #' @description [`plot()`] methods for movement models (see [`ModelMove`]).
-#' @param x A [`ModelMove`]-class object from a `move_*()` function (e.g., [`move_xy()`].
+#' @param x A [`ModelMove`]-class object from a `model_move_*()` function (e.g., [`model_move_xy()`].
 #' @param .panel_length,.panel_heading,.panel_heading_delta,.panel_z,.panel_z_delta Panel properties:
 #' * `NULL` suppresses the panel;
 #' * `list()` uses default graphical arguments;

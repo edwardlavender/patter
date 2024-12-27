@@ -29,7 +29,7 @@ test_that("pf_filter() reconstructs the true path", {
                       x = x, y = y)
   expect_true(!is.na(xinit$map_value))
   state      <- "StateXY"
-  model_move <- move_xy()
+  model_move <- model_move_xy()
   paths      <- sim_path_walk(.map = map,
                               .timeline = timeline,
                               .state = state,
@@ -150,7 +150,7 @@ test_that("pf_filter() works", {
                    .state = "StateXY",
                    .xinit = NULL,
                    .yobs = yobs_fwd,
-                   .model_move = move_xy()) |>
+                   .model_move = model_move_xy()) |>
     expect_error('There is a mismatch between the time zones of `.timeline` and/or `.yobs` `timestamp`s ("CET", "UTC", "UTC", "UTC").', fixed = TRUE)
 
   # Run the filter
@@ -159,7 +159,7 @@ test_that("pf_filter() works", {
                    .state = "StateXY",
                    .xinit = NULL,
                    .yobs = yobs_fwd,
-                   .model_move = move_xy(),
+                   .model_move = model_move_xy(),
                    .n_move = 1e6L,
                    .n_particle = 1000L,
                    .n_resample = 1000,
@@ -343,7 +343,7 @@ test_that("pf_filter() & pf_smoother_two_filter() work for all states", {
 
   },
   list("StateXY", "StateXYZ", "StateCXY", "StateCXYZ"),
-  list(move_xy(), move_xyz(), move_cxy(), move_cxyz()),
+  list(model_move_xy(), model_move_xyz(), model_move_cxy(), model_move_cxyz()),
   list(c("x", "y"), c("x", "y", "z"), c("x", "y", "heading"), c("x", "y", "z", "heading"))
   )
 
@@ -404,7 +404,7 @@ test_that("pf_filter() callstats are correct", {
   state    <- "StateXY"
   mobility <- 750
   model_move <-
-    move_xy(.mobility   = "750.0",
+    model_move_xy(.mobility   = "750.0",
             .dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
             .dbn_heading  = "Uniform(-pi, pi)")
   paths <- sim_path_walk(.map = map,

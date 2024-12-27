@@ -23,7 +23,7 @@
 
 * **Movement simulation**
     * New `State`s and `ModelMove`s have been implemented. Current options are `StateXY`, `StateXYZ`, `StateCXY` and `StateCXZY`, which map to `ModelMoveXY`, `ModelMoveXYZ`, `ModelMoveCXY` and `ModelMoveCXZY`. (`StateXYZD` and `ModelMoveXYZD` have been renamed.)
-    * `move_*()` wrappers now return a `character` with an additional `ModelMove` and `ModelMove*` class label. Plot methods are provided for in-build classes (see `plot.ModelMove`).
+    * `model_move_*()` wrappers now return a `character` with an additional `ModelMove` and `ModelMove*` class label. Plot methods are provided for in-build classes (see `plot.ModelMove`).
     * `sim_path_walk()` now fails with an error for invalid maps/movement models.  
     * A new `.collect` argument collect outputs in `R`. 
 

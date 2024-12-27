@@ -510,7 +510,7 @@ state      <- "StateXY"
 
 # Formulate a corresponding movement model:
 mobility   <- 750.0
-model_move <- move_xy(.mobility   = "750.0", 
+model_move <- model_move_xy(.mobility   = "750.0", 
                       .dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
                       .dbn_heading  = "Uniform(-pi, pi)")
 

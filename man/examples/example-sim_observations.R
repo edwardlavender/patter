@@ -20,7 +20,7 @@ if (patter_run()) {
   paths <- sim_path_walk(.map = map,
                          .timeline = timeline,
                          .state = "StateXY",
-                         .model_move = move_xy())
+                         .model_move = model_move_xy())
 
   #### Example (1): Simulate observations via `ModelObsAcousticLogisTrunc`
 

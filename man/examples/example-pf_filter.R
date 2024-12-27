@@ -60,7 +60,7 @@ if (patter_run()) {
   # Define the movement model
   # > We consider a two-dimensional random walk
   model_move <-
-    move_xy(.mobility   = "750.0",
+    model_move_xy(.mobility   = "750.0",
             .dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
             .dbn_heading  = "Uniform(-pi, pi)")
   # Simulate a path

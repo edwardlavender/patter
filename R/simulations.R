@@ -164,7 +164,7 @@ sim_path_walk <- function(.map = NULL,
                           .timeline,
                           .state = "StateXY",
                           .xinit = NULL, .n_path = 1L,
-                          .model_move = move_xy(),
+                          .model_move = model_move_xy(),
                           .collect = TRUE,
                           .plot = .collect & !is.null(.map), .one_page = FALSE) {
 

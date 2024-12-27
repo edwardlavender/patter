@@ -25,7 +25,7 @@ if (patter_run()) {
   # We consider a random walk in X, Y, Z
   # > This is for demonstration only!
   # > The structures and methods below are already directly available!
-  # > (See: ?StateXYZ, ?ModelMoveXYZ, ?move_xyz)
+  # > (See: ?StateXYZ, ?ModelMoveXYZ, ?model_move_xyz)
 
   # Define a custom `State` sub-type
   julia_command(
@@ -63,7 +63,7 @@ if (patter_run()) {
 
   # Instantiate the movement model
   # > We will write an R function to instantiate the movement model
-  move_custom <- function(.mobility = "750.0",
+  model_move_custom <- function(.mobility = "750.0",
                        .dbn_length = "truncated(Gamma(1.0, 750.0), upper = 750.0)",
                        .dbn_heading = "Uniform(-pi, pi)",
                        .dbn_z_delta = "Normal(0, 3.5)") {
@@ -116,7 +116,7 @@ if (patter_run()) {
   paths <- sim_path_walk(.map = map,
                          .timeline = timeline,
                          .state = "StateCustom",
-                         .model_move = move_custom(),
+                         .model_move = model_move_custom(),
                          .plot = TRUE)
 
   #### Simulate observations arising from the simulated path
@@ -150,7 +150,7 @@ if (patter_run()) {
   fwd <- pf_filter(.timeline = timeline,
                    .state = "StateCustom",
                    .yobs = yobs,
-                   .model_move = move_custom())
+                   .model_move = model_move_custom())
   # Visualise reconstructed time series
   # * Black: particle depths
   # * Blue: simulated time series
@@ -169,7 +169,7 @@ if (patter_run()) {
   bwd <- pf_filter(.timeline = timeline,
                    .state = "StateCustom",
                    .yobs = yobs,
-                   .model_move = move_custom(),
+                   .model_move = model_move_custom(),
                    .direction = "backward")
 
   #### Run the smoother
