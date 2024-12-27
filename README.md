@@ -13,7 +13,7 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/patter)](https://CRAN.R-project.org/package=patter)
-![Coverage](https://img.shields.io/badge/coverage-92%25-brightgreen)
+![Coverage](https://img.shields.io/badge/coverage-86%25-orange)
 [![R-CMD-check](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
@@ -88,17 +88,18 @@ touch if you would like to see additional functionality brought into
 > **Note:** `patter` works Windows, MacOS and Linux (with some
 > restrictions). On Windows, everything *should* work if you follow the
 > instructions below. On MacOS, some additional set up (such as compiler
-> configuration) may be required, depending on your set up. On Debian,
-> {patter} can be used but you cannot simultaneously use geospatial
-> routines in `R` and `Julia`. Thus, you can only call `library(terra)`
-> or `terra::foo()` and use {patter} routines that exploit {terra} and
-> other geospatial packages in `R` sessions that are not connected to a
-> `Julia` session (via `julia_connect()`). We haven’t tried other Linux
-> distributions. Package examples were written on MacOS and may not run
-> safely on Linux without modification. Check the function documentation
-> for supported options and share your experience. In case of issues,
-> you should be able to use `Patter.jl` directly, which on some systems
-> may be simpler than getting `R` and `Julia` to play together!
+> configuration) may be required, depending on your set up. On
+> Debian/Ubuntu, {patter} can be used but you cannot simultaneously use
+> geospatial routines in `R` and `Julia`. Thus, you can only call
+> `library(terra)` or `terra::foo()` and use {patter} routines that
+> exploit `terra` and other geospatial packages in `R` sessions that are
+> not connected to a `Julia` session (via `julia_connect()`). We haven’t
+> tried other Linux distributions. Package examples were written on
+> MacOS and may not run safely on Linux without modification. Check the
+> function documentation for supported options and share your
+> experience. In case of issues, you should be able to use `Patter.jl`
+> directly, which on some systems may be simpler than getting `R` and
+> `Julia` to play together!
 
 1.  **Install [`R`](https://www.r-project.org)**. This package requires
     `R` version ≥ 4.1 (but the most recent version is recommended). You
@@ -127,7 +128,40 @@ install.packages(c("devtools", "pkgbuild"))
 - **On Linux**, a suite of system libraries, including `GDAL`, `GEOS`
   and `PROJ`, are required. See the package [DESCRIPTION](DESCRIPTION)
   for required/suggested packages and follow the instructions for your
-  system.
+  system. On Debian/Ubuntu, see
+  [r2u](https://eddelbuettel.github.io/r2u/) or follow the instructions
+  below to get up and running.
+  <details>
+  <summary>
+  <b>Click</b> for system dependency installation instructions on
+  Ubuntu.
+  </summary>
+
+  ``` bash
+  sudo apt update
+
+  # `make` utility required to compile packages e.g., data.table
+  sudo apt install build-essential
+
+  # Geospatial dependencies for {terra}
+  sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
+  sudo apt install libgdal-dev libgeos-dev libproj-dev
+
+  # `ffpmeg` and `libavfilter-dev` for {av} (suggested)
+  sudo apt install ffmpeg
+  sudo apt install libavfilter-dev
+
+  # `GSL` for {RcppGSL} for {Rfast} (suggested)
+  sudo apt install libgsl-dev
+
+  # `gfortran` for {classInt} -> {sf} (suggested)
+  sudo apt install gfortran
+
+  # `units` for {units} -> {sf} (suggested)
+  sudo apt install libudunits2-dev
+  ```
+
+  </details>
 
 4.  **Install [`Julia`](https://julialang.org)**. `Julia` is
     high-performance programming language that `patter` uses as a
