@@ -3,11 +3,14 @@
 \name{plot.ModelObs}
 \alias{plot.ModelObs}
 \alias{plot.ModelObsAcousticLogisTrunc}
+\alias{plot.ModelObsAcousticContainer}
 \alias{plot.ModelObsDepthUniformSeabed}
 \alias{plot.ModelObsDepthNormalTruncSeabed}
 \title{Observation model plots}
 \usage{
 \method{plot}{ModelObsAcousticLogisTrunc}(x, .sensor_id, .par = list(), ...)
+
+\method{plot}{ModelObsAcousticContainer}(x, .radius, .par = list(), ...)
 
 \method{plot}{ModelObsDepthUniformSeabed}(x, .seabed = 100, .par = list(), ...)
 
@@ -16,13 +19,19 @@
 \arguments{
 \item{x}{A named \code{list} of observation model parameters, including a \code{\link{ModelObs}} \code{\linkS4class{S3}} label (from a \verb{model_obs_*()} function).}
 
-\item{.sensor_id, .seabed}{Model-specific parameters:
+\item{.sensor_id, .radius, .seabed}{Model-specific parameters:
 \itemize{
 \item \code{.sensor_id}: For \code{\link[=plot.ModelObsAcousticLogisTrunc]{plot.ModelObsAcousticLogisTrunc()}}, \code{.sensor_id} controls the sensors (receivers) for which detection probability curves are shown:
 \itemize{
 \item \code{missing} (default) plots all unique curves;
 \item An \code{integer} vector of sensor IDs plots curves for selected sensors;
 \item \code{NULL} plots curves for all sensors;
+}
+\item \code{.radius}: For \code{\link[=plot.ModelObsAcousticContainer]{plot.ModelObsAcousticContainer()}}, \code{.radius} controls the radii for which distributions are shown:
+\itemize{
+\item \code{missing} (default) plots distributions for first three unique radii;
+\item A vector of radii plots curves for selected radii;
+\item \code{NULL} plots distributions for all radii;
 }
 \item \code{.seabed}: For \code{plot.ModelObsDepth*Seabed()}, \code{.seabed} is the seabed depth at which distributions are plotted.
 }}
@@ -46,7 +55,8 @@ The functions produce a \code{\link{plot}}. \code{invisible(NULL)} is returned.
 Observation model (\code{\link{ModelObs}}) structures are objects that define the parameters of an observation model. The model specifies the probability of an observation (e.g., a particular depth record) given the data (e.g., a depth measurement).
 \itemize{
 \item \code{\link[=plot.ModelObsAcousticLogisTrunc]{plot.ModelObsAcousticLogisTrunc()}} plots detection probability as a function of distance from a receiver;
-\item \code{\link[=plot.ModelObsDepthUniformSeabed]{plot.ModelObsDepthUniformSeabed()}} plots a uniform distribution for  for the probability of a depth observation around a particular \code{.seabed} depth;
+\item \code{\link[=plot.ModelObsAcousticContainer]{plot.ModelObsAcousticContainer()}} plots a uniform distribution for the probability of a \emph{future} acoustic detection given the maximum possible distance (container radius) from the receiver (and a maximum movement speed) at the current time;
+\item \code{\link[=plot.ModelObsDepthUniformSeabed]{plot.ModelObsDepthUniformSeabed()}} plots a uniform distribution for the probability of a depth observation around a particular \code{.seabed} depth;
 \item \code{\link[=plot.ModelObsDepthNormalTruncSeabed]{plot.ModelObsDepthNormalTruncSeabed()}} plot a truncated normal distribution for the probability of a depth observation around a particularly \code{.seabed} depth;
 }
 }
@@ -67,6 +77,24 @@ if (patter_run(.julia = TRUE, .geospatial = FALSE)) {
     model_obs_acoustic_logis_trunc() |>
     plot(.sensor_id = unique(dat_moorings$receiver_id)[1:10])
 
+  #### Example (2): ModelObsAcousticContainer
+  # Define detections (1)
+  detections <- dat_detections[individual_id == individual_id[1], ]
+  # Assemble acoustic observations (0, 1) for a given timeline
+  timeline   <- assemble_timeline(list(detections), .step = "2 mins")[1:100]
+  acoustics  <- assemble_acoustics(.timeline   = timeline,
+                                   .detections = detections,
+                                   .moorings   = dat_moorings)
+  # Assemble acoustic containers
+  containers <- assemble_acoustics_containers(.timeline = timeline,
+                                              .acoustics = acoustics,
+                                              .mobility = 750,
+                                              .map = dat_gebco())
+  # Plot a few example distributions
+  containers$forward |>
+    model_obs_acoustic_container() |>
+    plot()
+
   #### Example (2): ModelObsDepthUniformSeabed
   data.table(sensor_id = 1L, depth_shallow_eps = 10, depth_deep_eps = 10) |>
     model_obs_depth_uniform_seabed() |>
@@ -83,13 +111,13 @@ if (patter_run(.julia = TRUE, .geospatial = FALSE)) {
     model_obs_depth_normal_trunc_seabed() |>
     plot(.seabed = 150)
 
-  #### Example (4): Customise plot layout via `.par`
+  #### Example (5): Customise plot layout via `.par`
   dat_moorings |>
     model_obs_acoustic_logis_trunc() |>
     plot(.sensor_id = unique(dat_moorings$receiver_id)[1:4],
          .par = list(mfrow = c(2, 2)))
 
-  #### Example (5): Customise plot properties via `...`
+  #### Example (6): Customise plot properties via `...`
   dat_moorings |>
     model_obs_acoustic_logis_trunc() |>
     plot(.sensor_id = unique(dat_moorings$receiver_id)[1:4],

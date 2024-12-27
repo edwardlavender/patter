@@ -8,11 +8,14 @@
 \alias{ModelObsDepthUniformSeabed}
 \alias{ModelObsDepthNormalTruncSeabed}
 \alias{model_obs_acoustic_logis_trunc}
+\alias{model_obs_acoustic_container}
 \alias{model_obs_depth_uniform_seabed}
 \alias{model_obs_depth_normal_trunc_seabed}
 \title{Observation models}
 \usage{
 model_obs_acoustic_logis_trunc(.data, .strict = TRUE)
+
+model_obs_acoustic_container(.data, .strict = TRUE)
 
 model_obs_depth_uniform_seabed(.data, .strict = TRUE)
 
@@ -91,7 +94,6 @@ if (patter_run()) {
   library(data.table)
   library(dtplyr)
   library(dplyr, warn.conflicts = FALSE)
-
 
   #### Julia set up
   # Connect to Julia

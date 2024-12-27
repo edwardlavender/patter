@@ -135,6 +135,32 @@ model_obs_acoustic_logis_trunc <- function(.data, .strict = TRUE) {
 #' @rdname ModelObs
 #' @export
 
+# Acoustic containers
+model_obs_acoustic_container <- function(.data, .strict = TRUE) {
+  .data <- copy(.data)
+  if (rlang::has_name(.data, "receiver_id")) {
+    setnames(.data, "receiver_id", "sensor_id")
+  }
+  cols <- c("sensor_id", "receiver_x", "receiver_y", "radius")
+  check_names(.data, cols)
+  if (.strict) {
+    .data <-
+      .data |>
+      select(all_of(cols)) |>
+      as.data.table()
+  }
+  # Define structure
+  .data        <- list(.data)
+  names(.data) <- "ModelObsAcousticContainer"
+  structure(
+    .data,
+    class = c("list", "ModelObs", "ModelObsAcousticContainer")
+  )
+}
+
+#' @rdname ModelObs
+#' @export
+
 # Depth observation uniform around seabed
 model_obs_depth_uniform_seabed <- function(.data, .strict = TRUE) {
   .data <- copy(.data)
@@ -180,11 +206,15 @@ model_obs_depth_normal_trunc_seabed <- function(.data, .strict = TRUE) {
 #' @title Observation model plots
 #' @description [`plot()`] methods for observation models (see [`ModelObs`]).
 #' @param x A named `list` of observation model parameters, including a [`ModelObs`] [`S3-class`] label (from a `model_obs_*()` function).
-#' @param .sensor_id,.seabed Model-specific parameters:
+#' @param .sensor_id,.radius,.seabed Model-specific parameters:
 #' * `.sensor_id`: For [`plot.ModelObsAcousticLogisTrunc()`], `.sensor_id` controls the sensors (receivers) for which detection probability curves are shown:
 #'      * `missing` (default) plots all unique curves;
 #'      *  An `integer` vector of sensor IDs plots curves for selected sensors;
 #'      * `NULL` plots curves for all sensors;
+#' * `.radius`: For [`plot.ModelObsAcousticContainer()`], `.radius` controls the radii for which distributions are shown:
+#'      * `missing` (default) plots distributions for first three unique radii;
+#'      *  A vector of radii plots curves for selected radii;
+#'      * `NULL` plots distributions for all radii;
 #' * `.seabed`: For `plot.ModelObsDepth*Seabed()`, `.seabed` is the seabed depth at which distributions are plotted.
 #' @param .par Graphical parameters:
 #' * `NULL` uses current graphical parameters;
@@ -196,7 +226,8 @@ model_obs_depth_normal_trunc_seabed <- function(.data, .strict = TRUE) {
 #' Observation model ([`ModelObs`]) structures are objects that define the parameters of an observation model. The model specifies the probability of an observation (e.g., a particular depth record) given the data (e.g., a depth measurement).
 #'
 #' * [`plot.ModelObsAcousticLogisTrunc()`] plots detection probability as a function of distance from a receiver;
-#' * [`plot.ModelObsDepthUniformSeabed()`] plots a uniform distribution for  for the probability of a depth observation around a particular `.seabed` depth;
+#' * [`plot.ModelObsAcousticContainer()`] plots a uniform distribution for the probability of a _future_ acoustic detection given the maximum possible distance (container radius) from the receiver (and a maximum movement speed) at the current time;
+#' * [`plot.ModelObsDepthUniformSeabed()`] plots a uniform distribution for the probability of a depth observation around a particular `.seabed` depth;
 #' * [`plot.ModelObsDepthNormalTruncSeabed()`] plot a truncated normal distribution for the probability of a depth observation around a particularly `.seabed` depth;
 #'
 #' @return The functions produce a [`plot`]. `invisible(NULL)` is returned.
@@ -288,6 +319,52 @@ plot.ModelObsAcousticLogisTrunc <- function(x,
     do.call(plot, args)
   })
   nothing()
+}
+
+#' @rdname plot.ModelObs
+#' @export
+
+plot.ModelObsAcousticContainer <- function(x, .radius, .par = list(), ...) {
+  x <- x$ModelObsAcousticContainer
+  if (missing(.radius)) {
+    .radius <- unique(x$radius)
+    .radius <- .radius[seq_len(min(length(.radius), 3L))]
+  }
+  if (!is.null(.radius)) {
+    x <-
+      x |>
+      filter(.data$radius %in% .radius) |>
+      # Select one row (e.g., timestep) for each radius
+      group_by(.data$radius) |>
+      slice(1L) |>
+      ungroup() |>
+      as.data.table()
+  }
+  pp <- set_plot_dbn_par(list(mfrow = par_mf(nrow(x))), .par)
+  on.exit(par(pp, no.readonly = TRUE), add = TRUE)
+  dots <- list(...)
+  if (rlang::has_name(dots, "xlim")) {
+    xlim <- dots$xlim
+  } else {
+    xlim <- c(0, max(x$radius) * 1.1, max(.radius))
+  }
+
+  # Density plots
+  lapply(split(x, seq_row(x)), function(xi) {
+    dist   <- seq(xlim[1], xlim[2], length.out = 1000)
+    prop   <- rep(1, 1000)
+    prop[dist > xi$radius] <- 0
+    args   <- list_args(list(main = xi$radius,
+                             xlab = "Distance (m)",
+                             ylab = "Probability",
+                             type = "l"),
+                        .dots = list(...))
+    args$x <- dist
+    args$y <- prop
+    do.call(plot, args)
+  })
+  nothing()
+
 }
 
 #' @rdname plot.ModelObs

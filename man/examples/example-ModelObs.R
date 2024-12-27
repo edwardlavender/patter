@@ -5,7 +5,6 @@ if (patter_run()) {
   library(dtplyr)
   library(dplyr, warn.conflicts = FALSE)
 
-
   #### Julia set up
   # Connect to Julia
   julia <- julia_connect()
