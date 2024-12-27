@@ -336,8 +336,8 @@ Particle smoothers refine the outputs from the particle filter. Smoothed particl
 # (optional) Set vmap to improve speed here
 n_particle = 750;
 smo = two_filter_smoother(timeline = timeline,
-                          xfwd = fwd.state[1:n_particle, :],
-                          xbwd = bwd.state[1:n_particle, :],
+                          xfwd = fwd.states[1:n_particle, :],
+                          xbwd = bwd.states[1:n_particle, :],
                           model_move = model_move,
                           n_sim = 100);
 ```

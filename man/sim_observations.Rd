@@ -56,7 +56,7 @@ if (patter_run()) {
   # Overview:
   # * `ModelObsAcousticLogisTrunc`: observation model structure for acoustic observations
   # * See ?ModelObsAcousticLogisTrunc
-  # * See JuliaCall::julia_help("ModelObsAcousticLogisTrunc")
+  # * See JuliaCall::julia_help("ModelObs")
   # * This structure holds:
   #   - sensor_id (the receiver_id)
   #   - receiver_x, receiver_y (the receiver coordinates)

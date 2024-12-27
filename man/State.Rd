@@ -132,7 +132,7 @@ if (patter_run()) {
   # * `coords`: A `data.table` with initial coordinates (x, y and map_value);
   julia_command(
   '
-  function Patter.states_init(state_type::Type{StateCustom}, coords)
+  function Patter.states_init(state_type::Type{StateCustom}, coords::DataFrame)
     coords.z = coords.map_value .* rand(nrow(coords))
     return coords
   end
