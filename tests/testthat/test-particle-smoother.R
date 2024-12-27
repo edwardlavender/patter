@@ -61,7 +61,7 @@ test_that("pf_smoother_two_filter() works", {
   expect_null(smo$xinit)
   check_inherits(smo$states, "data.table")
   check_inherits(smo$diagnostics, "data.table")
-  expect_true(smo$convergence)
+  check_inherits(smo$callstats, "data.table")
 
   # Check particles
   # * Check we generally have > 1 particles valid at each time step

@@ -172,10 +172,12 @@ test_that("pf_filter() works", {
 
   #### Validate object output
   expect_true(all(c("list", "pf_particles") %in% class(fwd)))
-  check_names(fwd, c("states", "diagnostics", "convergence", "trials"))
+  check_names(fwd, c("states", "diagnostics", "callstats"))
   check_names(fwd$states, c("path_id", "timestep", "timestamp", "map_value", "x", "y"))
   check_names(fwd$diagnostics, c("timestep", "timestamp", "ess", "maxlp"))
-  check_inherits(fwd$convergence, "logical")
+  check_names(fwd$callstats, c("timestamp", "routine",
+                               "n_particle", "n_iter", "convergence",
+                               "time"))
 
   #### Test that that movement distances are within mobility
   # This is not possible directly since we do not track particle histories
@@ -235,10 +237,10 @@ test_that("pf_filter() permits .yobs = list()", {
   skip_on_cran()
   skip_if_not(patter_run(.julia = TRUE, .geospatial = TRUE))
 
-  setup <- example_setup("pf_smoother_two_filter", .connect = FALSE)
-  args  <- setup$pf_filter_args
+  setup      <- example_setup("pf_smoother_two_filter", .connect = FALSE)
+  args       <- setup$pf_filter_args
   args$.yobs <- list()
-  fwd_1 <- do.call(pf_filter, args)
+  fwd_1      <- do.call(pf_filter, args)
   check_named_list(fwd_1)
   check_inherits(fwd_1$states, "data.table")
   expect_true(all(!is.na(fwd_1$states)))
@@ -352,11 +354,12 @@ test_that("pf_filter() permits missing .yobs", {
   set_seed()
   fwd_2 <- do.call(pf_filter, args)
   # Expect identical outputs b/c pf_filter() uses `yobs` already defined in Julia
-  expect_equal(fwd_1, fwd_2)
+  elms <- c("states", "diagnostics")
+  expect_equal(fwd_1[elms], fwd_2[elms])
   # Repeat
   args$.yobs <- yobs
   set_seed()
   fwd_3 <- do.call(pf_filter, args)
-  expect_equal(fwd_2, fwd_3)
+  expect_equal(fwd_2[elms], fwd_3[elms])
 
 })

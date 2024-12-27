@@ -83,6 +83,7 @@ pf_smoother_two_filter <- function(.n_particle = NULL,
                                    .verbose = getOption("patter.verbose")) {
 
   #### Initiate
+  t1   <- Sys.time()
   cats <- cat_setup(.fun = "pf_smoother_two_filter", .verbose = .verbose)
   on.exit(eval(cats$exit, envir = cats$envir), add = TRUE)
 
@@ -95,7 +96,7 @@ pf_smoother_two_filter <- function(.n_particle = NULL,
   } else {
     if (julia_eval('!isnothing(vmap)')) {
       pf_obj <- name_particles(.fun = "pf_filter", .direction = "forward")
-      .state <- as.character(julia_eval(glue('typeof({pf_obj}.state[1]);')))
+      .state <- as.character(julia_eval(glue('typeof({pf_obj}.states[1]);')))
       if (!(.state %in% c("StateXY", "StateCXY"))) {
         warn("`vmap` is defined but `State` is not \"StateXY\" or \"StateXYZ\". If your model includes depth (`z`), set `vmap` to `NULL`.")
       }
@@ -112,7 +113,7 @@ pf_smoother_two_filter <- function(.n_particle = NULL,
   #### Get particles in R
   if (.collect) {
     cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Collating outputs..."))
-    out <- pf_particles(.pf_obj = pf_obj)
+    out <- pf_particles(.pf_obj = pf_obj, .call_start = t1)
   } else {
     out <- nothing()
   }

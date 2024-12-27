@@ -6,6 +6,8 @@ Biometrika
 CMD
 COA
 COAs
+CRW
+CRWs
 Conserv
 DCPF
 Dipturus
@@ -15,9 +17,7 @@ ESS
 Ecol
 Evol
 Fearnhead
-GDAL
 GEBCO
-GEOS
 GeoArray
 Inf
 JuliaCall
@@ -29,8 +29,9 @@ NatureScot
 ORCID
 PF
 POSIXct
-PROJ
 RStudio
+RW
+RWs
 Sci
 Thorburn
 UD
@@ -39,6 +40,7 @@ biotelemetry
 ch
 core’
 discretise
+doi
 eawag
 edward
 elasmobranch
@@ -49,4 +51,5 @@ novo
 particles’
 reparameterises
 state’
+terra
 un

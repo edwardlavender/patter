@@ -11,8 +11,7 @@ An \code{S3}-\code{\link{class}} that defines the named \code{list} returned by 
 \itemize{
 \item \code{states}---A \code{\link{data.table}} of simulated states;
 \item \code{diagnostics}---A \code{\link{data.table}} of diagnostic statistics;
-\item \code{convergence}---A \code{logical} variable that defines whether or not the algorithm converged;
-\item \code{trials}---An integer that defines the number of trials;
+\item \code{callstats}---A \code{\link{data.table}} of call statistics;
 }
 }
 
@@ -22,7 +21,7 @@ An \code{S3}-\code{\link{class}} that defines the named \code{list} returned by 
 \item \code{path_id}---An \code{integer} vector that defines the particle index;
 \item \code{timestep}---An \code{integer} vector that defines the time step;
 \item \code{timestamp}---A \code{POSIXct} vector of time stamps;
-\item Additional columns with the values of each state dimension;
+\item Additional columns with the values of each state dimension (e.g., \code{map_value}, \code{x}, \code{y});
 }
 
 Particles are equally weighted, as the \code{.n_record} particles recorded at each time step are selected by resampling (see \code{\link[=pf_filter]{pf_filter()}}).
@@ -36,12 +35,17 @@ Particles are equally weighted, as the \code{.n_record} particles recorded at ea
 }
 }
 
-\section{\code{convergence}}{
-\code{convergence} is a \code{logical} variable that defines whether or not the algorithm converged (that is, reached the end of the time series).
+\section{\code{callstats}}{
+\code{callstats} is a one-row \code{\link{data.table}} that stores call statistics for the function call. This includes the following columns:
+\itemize{
+\item \code{timestamp}---A \code{POSIXct} value that defines the start time of the function call;
+\item \code{routine}---A \code{character} vector that defines the routine (e.g., \code{"filter: forward"}, \code{"filter: backward"}, \code{"smoother: two-filter"});
+\item \code{n_particle}---An \code{integer} that defines the number of particles;
+\item \code{n_iter}---An \code{integer} that defines the number of iterations (trials);
+\item \code{error}---A \code{character} vector of error message(s);
+\item \code{convergence}---A \code{logical} variable that defines whether or not the algorithm converged (that is, reached the end of the time series);
+\item \code{time}---A \code{numeric} value that defines the duration (s) of the function call;
 }
-
-\section{\code{trials}}{
-\code{trials} is an \code{integer} that defines the number of trials.
 }
 
 \seealso{

@@ -325,7 +325,7 @@ set_smoother_two_filter <- function(.n_particle, .n_sim, .cache) {
   # Define the number of particles for the smoother & associated arguments
   # * If NULL, we use all particles from the forward simulation
   if (is.null(.n_particle)) {
-    .n_particle <- julia_eval(glue('size({fwd}.state)[1]'))
+    .n_particle <- julia_eval(glue('size({fwd}.states)[1]'))
   }
   .n_particle <- as.integer(.n_particle)
   .n_sim      <- as.integer(.n_sim)
@@ -333,8 +333,8 @@ set_smoother_two_filter <- function(.n_particle, .n_sim, .cache) {
   # Run smoother
   julia_check_exists("timeline", fwd, bwd, "model_move", "vmap", "cache")
   cmd    <- glue('{output} = two_filter_smoother(timeline = timeline,
-                                                 xfwd = {fwd}.state[1:{.n_particle}, :],
-                                                 xbwd = {bwd}.state[1:{.n_particle}, :],
+                                                 xfwd = {fwd}.states[1:{.n_particle}, :],
+                                                 xbwd = {bwd}.states[1:{.n_particle}, :],
                                                  model_move = model_move,
                                                  vmap = vmap,
                                                  n_sim = {.n_sim},

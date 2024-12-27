@@ -116,15 +116,12 @@ if (patter_run()) {
   # The function returns a `pf_particles` list:
   class(fwd)
   summary(fwd)
-  # `xinit` is a `data.table` of initial particles
-  fwd$xinit
   # `states` is a `data.table` of particles:
   fwd$states
   # `diagnostics` is a `data.table` of filter diagnostics
   fwd$diagnostics
-  # fwd$convergence is a Boolean that defines whether or not the algorithm converged
-  fwd$convergence
-  # fwd$trials is an integer that defines the number of trials
+  # fwd$callstats is a `data.table` of call statistics
+  fwd$callstats
 
   ## Map output states:
   # Map particle coordinates

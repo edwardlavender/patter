@@ -153,6 +153,7 @@
 #' @importFrom data.table .N
 #' @importFrom data.table rbindlist
 #' @importFrom data.table rleid
+#' @importFrom data.table setDT
 #' @importFrom data.table :=
 #'
 #' @importFrom dplyr all_of

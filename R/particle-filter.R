@@ -75,38 +75,39 @@ pf_filter <- function(.timeline,
                       .verbose = getOption("patter.verbose")) {
 
   #### Initiate
+  t1   <- Sys.time()
   cats <- cat_setup(.fun = "pf_filter", .verbose = .verbose)
   on.exit(eval(cats$exit, envir = cats$envir), add = TRUE)
 
   #### Initialise filter
   .direction <- match.arg(.direction)
-  pf_filter_init(.timeline = .timeline,
-                 .state = .state,
-                 .xinit = .xinit,
+  pf_filter_init(.timeline   = .timeline,
+                 .state      = .state,
+                 .xinit      = .xinit,
                  .model_move = .model_move,
-                 .yobs = .yobs,
+                 .yobs       = .yobs,
                  .n_particle = .n_particle,
-                 .direction = .direction)
+                 .direction  = .direction)
 
   #### Run filter
   cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Running filter..."))
-  pf_obj <- set_pf_filter(.n_move = .n_move,
+  pf_obj <- set_pf_filter(.n_move     = .n_move,
                           .n_resample = .n_resample,
                           .t_resample = .t_resample,
-                          .n_record = .n_record,
-                          .n_iter = .n_iter,
-                          .direction = .direction)
+                          .n_record   = .n_record,
+                          .n_iter     = .n_iter,
+                          .direction  = .direction)
 
   #### Check convergence
   # Issue a warning for convergence failures
-  if (isFALSE(julia_eval(glue('{pf_obj}.convergence')))) {
+  if (isFALSE(julia_eval(glue('{pf_obj}.callstats.convergence[1]')))) {
     warn("The particle filter failed to converge.")
   }
 
   #### Get particles in R
   if (.collect) {
     cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Collating outputs..."))
-    out <- pf_particles(.pf_obj = pf_obj)
+    out <- pf_particles(.pf_obj = pf_obj, .call_start = t1)
   } else {
     out <- nothing()
   }

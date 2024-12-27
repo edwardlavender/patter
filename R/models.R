@@ -236,7 +236,6 @@ plot_dbn_wrap <- function(.dbn,
   if (is.null(.panel)) {
     return(nothing())
   }
-  julia_check_exists("model_move")
   # Set graphical properties
   .panel <- list_args(list(xlim = .xlim,
                            xlab = .xlab,
@@ -263,6 +262,7 @@ plot_dbn <- function(.panel) {
 
 # Plot a distribution of step lengths
 plot_dbn_length <- function(.panel, ...) {
+  julia_check_exists("model_move")
   plot_dbn_wrap(.dbn = "model_move.dbn_length",
                 .xlim = c(-0.001, julia_eval("model_move.mobility") + 0.001),
                 .xlab = "Length (m)", .ylab = "Density",
@@ -271,6 +271,7 @@ plot_dbn_length <- function(.panel, ...) {
 
 # Plot a distribution of headings
 plot_dbn_heading <- function(.panel, ...) {
+  julia_check_exists("model_move")
   plot_dbn_wrap(.dbn = "model_move.dbn_heading",
                 .xlim = c(-2*pi, 2 * pi),
                 .xlab = "Heading (rad)", .ylab = "Density",
@@ -279,6 +280,7 @@ plot_dbn_heading <- function(.panel, ...) {
 
 # Plot a distribution of turning angles
 plot_dbn_heading_delta <- function(.panel, ...) {
+  julia_check_exists("model_move")
   plot_dbn_wrap(.dbn = "model_move.dbn_heading_delta",
                 .xlim = c(-2*pi, 2 * pi),
                 .xlab = "Turning angle (rad)", .ylab = "Density",
@@ -287,6 +289,7 @@ plot_dbn_heading_delta <- function(.panel, ...) {
 
 # Plot a distribution of depths
 plot_dbn_z <- function(.panel, ...) {
+  julia_check_exists("model_move")
   plot_dbn_wrap(.dbn = "model_move.dbn_z",
                 .xlim = NULL,
                 .xlab = "Depth (m)", .ylab = "Density",
@@ -295,6 +298,7 @@ plot_dbn_z <- function(.panel, ...) {
 
 # Plot a distribution of changes in depth
 plot_dbn_z_delta <- function(.panel, ...) {
+  julia_check_exists("model_move")
   plot_dbn_wrap(.dbn = "model_move.dbn_z_delta",
                 .xlim = NULL,
                 .xlab = "Depth change (m)", .ylab = "Density",
