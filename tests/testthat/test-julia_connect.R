@@ -67,13 +67,13 @@ test_that("julia_connect() works", {
   jproj <- file.path(tempdir(), "Julia")
   Sys.setenv("JULIA_PROJ" = jproj)
   julia_connect(.socket = TRUE)
-  expect_true(file.exists(file.path(jproj, "manifest.toml")))
+  expect_true(file.exists(file.path(jproj, "Manifest.toml")))
   Sys.unsetenv("JULIA_PROJ")
   file_cleanup(jproj)
 
   # Use JULIA_PROJ argument
   julia_connect(JULIA_PROJ = jproj, .socket = TRUE)
-  expect_true(file.exists(file.path(jproj, "manifest.toml")))
+  expect_true(file.exists(file.path(jproj, "Manifest.toml")))
   file_cleanup(jproj)
 
   #### Test JULIA_NUM_THREADS env variable

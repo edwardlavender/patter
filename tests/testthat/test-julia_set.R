@@ -3,7 +3,7 @@
 test_that("set_seed() works", {
 
   skip_on_cran()
-  skip_if_not(patter_run(.julia = TRUE, .geospatial = FALSE))
+  skip_if_not(patter_run(.julia = TRUE, .geospatial = TRUE))
 
   # Test that set_seed() works in R
   set_seed(1)

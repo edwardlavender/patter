@@ -1,4 +1,4 @@
-if (patter_run(.julia = FALSE)) {
+if (patter_run(.julia = FALSE, .geospatial = TRUE)) {
 
   library(data.table)
   library(dtplyr)
