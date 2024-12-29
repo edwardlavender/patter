@@ -107,7 +107,7 @@ if (!file.exists(.Renviron)) {
 }
 
 # (B) Set `JULIA_PROJ`, if unset (see `?julia_connect` for details)
-if (Sys.getenv("JULIA_PROJ")) {
+if (Sys.getenv("JULIA_PROJ") == "") {
   write(paste0("JULIA_PROJ = \"", here("Julia"), "\""),
         .Renviron,
         append = TRUE)
@@ -143,8 +143,11 @@ if (Sys.getenv("AUTO_JULIA_INSTALL") == "") {
 library(patter)
 
 # Connect to Julia and update Julia dependencies
+JULIA_PROJ <- Sys.getenv("JULIA_PROJ")
+unlink(file.path(JULIA_PROJ, "Manifest.toml"))
+unlink(file.path(JULIA_PROJ, "Project.toml"))
 julia_connect(JULIA_PATTER_SOURCE = JULIA_PATTER_SOURCE,
-              pkg_update = TRUE)
+              .pkg_update = TRUE)
 
 # Check patter works
 julia_validate()
