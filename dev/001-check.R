@@ -32,7 +32,11 @@
 
 #### (A) MacOS/Windows
 
-# (optional) Download & install the following:
+# (optional) Check if pandoc is required:
+install.packages("rmarkdown")
+rmarkdown::pandoc_available()
+
+# (optional) Download & install pandoc:
 # * pandoc: https://github.com/jgm/pandoc/blob/main/INSTALL.md
 
 # This is required to build vignettes. You can still test the package without it.
