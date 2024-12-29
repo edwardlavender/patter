@@ -88,7 +88,7 @@ Internally in \code{\link{patter}} algorithms, observation model sub-types and p
 To use custom \code{\link{ModelObs}} sub-types, see Examples.
 }
 \examples{
-if (patter_run()) {
+if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
 
   library(JuliaCall)
   library(data.table)

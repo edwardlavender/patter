@@ -54,7 +54,7 @@ To use custom \code{\link{ModelObs}} sub-types, see Examples.
 # ... required methods to simulate initial states, movement and/or
 # ... evaluate movement densities.
 
-if (patter_run()) {
+if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
 
   library(data.table)
   library(JuliaCall)

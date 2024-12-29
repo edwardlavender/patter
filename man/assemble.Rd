@@ -92,7 +92,7 @@ In \code{Julia}, datasets are translated into a hash-table (\code{Dict}) of obse
 \verb{assemble_*()} routines are only required for real-world analyses.
 }
 \examples{
-if (patter_run(.julia = FALSE)) {
+if (patter_run(.julia = FALSE, .geospatial = TRUE)) {
 
   library(data.table)
   library(dtplyr)

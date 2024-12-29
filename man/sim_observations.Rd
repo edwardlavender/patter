@@ -27,7 +27,7 @@ Simulate a time series of observations, such as acoustic detections and depth me
 This function wraps \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.simulate_yobs()}}. The function iterates over simulated paths defined in the \code{Julia} workspace by \code{\link[=sim_path_walk]{sim_path_walk()}}. For each path and time step, the function simulates observation(s). Collectively, \code{.model_obs} names and parameter \code{\link{data.table}} define the observation models used for the simulation (that is, a \code{Vector} of \code{\link{ModelObs}} instances). In \code{Julia}, simulated observations are stored in a hash table (\code{Dict}) called \code{yobs}, which is translated into a named \code{list} that is returned by \code{R}.
 }
 \examples{
-if (patter_run()) {
+if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
 
   library(data.table)
   library(dtplyr)

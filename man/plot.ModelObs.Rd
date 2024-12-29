@@ -88,8 +88,7 @@ if (patter_run(.julia = TRUE, .geospatial = FALSE)) {
   # Assemble acoustic containers
   containers <- assemble_acoustics_containers(.timeline = timeline,
                                               .acoustics = acoustics,
-                                              .mobility = 750,
-                                              .map = dat_gebco())
+                                              .mobility = 750)
   # Plot a few example distributions
   containers$forward |>
     model_obs_acoustic_container() |>

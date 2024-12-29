@@ -104,7 +104,7 @@ In \code{Julia}, \code{\link{ModelMove}} instances are used to simulate states v
 To use custom \code{\link{ModelMove}} sub-types, see Examples.
 }
 \examples{
-if (patter_run(.geospatial = FALSE)) {
+if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
 
   library(data.table)
   library(JuliaCall)
@@ -120,8 +120,6 @@ if (patter_run(.geospatial = FALSE)) {
   # * NaNs define regions into which movement is not permitted
   # * (i.e., on land, in the case of aquatic animals)
   map <- dat_gebco()
-  # Plot map (on Windows/MacOS only!)
-  # terra::plot(map)
 
   # Using `set_map()` makes the map available as a object called 'env' in `Julia`
   # > This is required as a component of all movement models
@@ -135,10 +133,10 @@ if (patter_run(.geospatial = FALSE)) {
   #### Example (1b): Customise `model_move_xy()`
   # Use a truncated normal distribution for step lengths:
   model_move_xy(.mobility = "750.0",
-          .dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)")
+                .dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)")
   # Use an exponential distribution for step lengths
   model_move_xy(.mobility = "750.0",
-          .dbn_length = "truncated(Exponential(0.01), upper = 750.0)")
+                .dbn_length = "truncated(Exponential(0.01), upper = 750.0)")
   # Use a biased random walk
   model_move_xy(.dbn_heading = "VonMises(0, 1)")
   # Get help on a distribution in Julia:
@@ -149,57 +147,53 @@ if (patter_run(.geospatial = FALSE)) {
   model_move_xyz()
   # Customise model components
   model_move_xyz(.mobility = "750.0",
-           .dbn_length = "truncated(Exponential(0.01), upper = 750.0)",
-           .dbn_z = "truncated(Gamma(1.0, 250.0), lower = 0.0, upper = 350.0)")
+                 .dbn_length = "truncated(Exponential(0.01), upper = 750.0)",
+                 .dbn_z = "truncated(Gamma(1.0, 250.0), lower = 0.0, upper = 350.0)")
 
   #### Example (3): Use `model_move_cxy()`
   # Use default options
   model_move_cxy()
   # Customise model components
   model_move_cxy(.mobility = "750.0",
-            .dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)",
-            .dbn_heading_delta = "Normal(0, 0.25)")
+                 .dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)",
+                 .dbn_heading_delta = "Normal(0, 0.25)")
 
   #### Example (4): Use `model_move_cxyz()`
   # Use default options
   model_move_cxyz()
   # Customise model components
   model_move_cxyz(.mobility = "750.0",
-            .dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)",
-            .dbn_heading_delta = "Normal(0, 0.25)",
-            .dbn_z_delta = "Normal(0, 2.5)")
+                  .dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)",
+                  .dbn_heading_delta = "Normal(0, 0.25)",
+                  .dbn_z_delta = "Normal(0, 2.5)")
 
   #### Example (4): Visualise movement model component distributions
   # See `?plot.ModelMove`
   plot(model_move_xy())
 
   #### Example (5): Visualise movement model realisations (trajectories)
-  if (patter_run()) {
-
-    # See `?sim_path_walk`
-    # Define a timeline for the simulation
-    timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
-                    length.out = 1000L, by = "2 mins")
-    # Define an initial location
-    x <- 708212.6
-    y <- 6251684
-    origin <- data.table(map_value = terra::extract(map, cbind(x, y))[1, 1],
-                         x = x, y = y)
-    # Collect essential arguments for `sim_path_walk()`
-    args <- list(.map = map,
-                 .xinit = origin,
-                 .timeline = timeline,
-                 .state = "StateXY",
-                 .n_path = 2L, .one_page = FALSE)
-    # Compare different movement models via `sim_path_walk()`
-    pp <- par(mfrow = c(2, 2))
-    args$.model_move <- model_move_xy()
-    do.call(sim_path_walk, args)
-    args$.model_move <- model_move_xy(.dbn_heading = "VonMises(0.1, 0.1)")
-    do.call(sim_path_walk, args)
-    par(pp)
-
-  }
+  # See `?sim_path_walk`
+  # Define a timeline for the simulation
+  timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
+                  length.out = 1000L, by = "2 mins")
+  # Define an initial location
+  x <- 708212.6
+  y <- 6251684
+  origin <- data.table(map_value = terra::extract(map, cbind(x, y))[1, 1],
+                       x = x, y = y)
+  # Collect essential arguments for `sim_path_walk()`
+  args <- list(.map = map,
+               .xinit = origin,
+               .timeline = timeline,
+               .state = "StateXY",
+               .n_path = 2L, .one_page = FALSE)
+  # Compare different movement models via `sim_path_walk()`
+  pp <- par(mfrow = c(2, 2))
+  args$.model_move <- model_move_xy()
+  do.call(sim_path_walk, args)
+  args$.model_move <- model_move_xy(.dbn_heading = "VonMises(0.1, 0.1)")
+  do.call(sim_path_walk, args)
+  par(pp)
 
   #### Example (6): Use movement models in the particle filter
   # See `?pf_filter()`
