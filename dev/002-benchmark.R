@@ -106,8 +106,10 @@ obs <- run(file = here_data_raw("benchmark", "obs.rds"),
                               .model_obs = model_obs)
            })
 # Extract datasets
+# * Data were created with ModelObsDepthUniform element
+# * (Now ModelObsDepthUniformSeabed)
 acc <- obs$ModelObsAcousticLogisTrunc[[1]]
-arc <- obs$ModelObsDepthUniformSeabed[[1]]
+arc <- obs$ModelObsDepthUniform[[1]]      # old
 # Define acoustic containers
 containers <- assemble_acoustics_containers(.timeline = timeline,
                                             .acoustics = acc,
@@ -115,10 +117,10 @@ containers <- assemble_acoustics_containers(.timeline = timeline,
                                             .map = map)
 # Collate datasets
 yobs_fwd <- list(ModelObsAcousticLogisTrunc = acc,
-             ModelObsDepthUniformSeabed           = arc,
+             ModelObsDepthUniformSeabed     = arc,
              ModelObsAcousticContainer      = containers$forward)
 yobs_bwd <- list(ModelObsAcousticLogisTrunc = acc,
-                 ModelObsDepthUniformSeabed       = arc,
+                 ModelObsDepthUniformSeabed = arc,
                  ModelObsAcousticContainer  = containers$backward)
 
 #### Define filter args
@@ -135,7 +137,7 @@ t1_fwd   <- Sys.time()
 fwd      <- do.call(pf_filter, args, quote = TRUE)
 t2_fwd   <- Sys.time()
 secs_fwd <- secs(t2_fwd, t1_fwd)
-if (!fwd$convergence) {
+if (!fwd$callstats$convergence) {
   stop("Forward filter failed to converge.")
 }
 
@@ -148,7 +150,7 @@ t1_bwd   <- Sys.time()
 bwd      <- do.call(pf_filter, args, quote = TRUE)
 t2_bwd   <- Sys.time()
 secs_bwd <- secs(t2_bwd, t1_bwd)
-if (!fwd$convergence) {
+if (!bwd$callstats$convergence) {
   stop("Backward filter failed to converge.")
 }
 
@@ -172,7 +174,9 @@ if (!fwd$convergence) {
 # - Smoothing is ~32 s faster
 
 t1_smo   <- Sys.time()
-smo      <- pf_smoother_two_filter(.n_particle = 500L, .n_sim = 100L, .cache = TRUE)
+smo      <- pf_smoother_two_filter(.n_particle = 500L,
+                                   .n_sim = 100L,
+                                   .cache = TRUE)
 t2_smo   <- Sys.time()
 secs_smo <- secs(t2_smo, t1_smo)
 
@@ -186,10 +190,11 @@ benchmarks <- data.table(timestamp = timestamp,
                          threads   = threads,
                          routine   = c("fwd", "bwd", "smo"),
                          time      = c(secs_fwd, secs_bwd, secs_smo),
-                         note      = "Try multithreading smoother"
+                         note      = "Add misc updates"
                          )
 
 #### Write to file
+# (Set col.names = TRUE if !file.exists)
 write.table(benchmarks,
             here_data_raw("benchmark", "benchmarks.txt"),
             append = TRUE,
