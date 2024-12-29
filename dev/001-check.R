@@ -154,8 +154,18 @@ julia_connect(JULIA_PATTER_SOURCE = JULIA_PATTER_SOURCE,
               .pkg_update = TRUE)
 
 # Check Pkg.status()
-julia_command('using Pkg')
-julia_command('Pkg.status()')
+patter:::julia_code(
+  '
+  using Pkg
+  open("pkg-status.txt", "w") do io
+    redirect_stdout(io) do
+        Pkg.status()
+    end
+  end
+  '
+)
+readLines("pkg-status.txt")
+unlink("pkg-status.txt")
 
 # Check patter works
 julia_validate()
