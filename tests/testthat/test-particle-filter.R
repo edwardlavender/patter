@@ -437,7 +437,9 @@ test_that("pf_filter() callstats are correct", {
                    .n_particle = 10L,
                    .n_record = 10L,
                    .n_iter = 3,
-                   .direction = "forward")
+                   .direction = "forward") |>
+    # Suppress expected convergence warnings
+    suppressWarnings()
 
   expect_equal(fwd$callstats$routine, "filter: forward")
   expect_equal(fwd$callstats$n_particle, 10L)
