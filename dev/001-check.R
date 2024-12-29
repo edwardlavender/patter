@@ -77,7 +77,7 @@ install.packages("qpdf")
 
 #### (5) Update all R packages -------------------------------------------------
 
-# We will test {patter} against the latest version of all packages
+# (optional) We will test {patter} against the latest version of all packages
 update.packages(ask = FALSE)
 
 
@@ -91,7 +91,7 @@ update.packages(ask = FALSE)
 # JULIA_PATTER_SOURCE <- "main"
 # renv::install("edwardlavender/patter@main", prompt = FALSE, dependencies = TRUE)
 
-# Install P from dev branch
+# Install {patter} from dev branch
 JULIA_PATTER_SOURCE <- "dev"
 renv::install("edwardlavender/patter@dev", prompt = FALSE, dependencies = TRUE)
 
@@ -144,14 +144,29 @@ rstudioapi::restartSession()
 library(JuliaCall)
 library(patter)
 
-# Connect to Julia and update Julia dependencies
+# (optional) Clean Julia records
 JULIA_PROJ <- Sys.getenv("JULIA_PROJ")
 unlink(file.path(JULIA_PROJ, "Manifest.toml"))
 unlink(file.path(JULIA_PROJ, "Project.toml"))
 # unlink(file.path(Sys.getenv("USERPROFILE"), ".julia", "compiled"),
 #       recursive = TRUE)
-julia_connect(JULIA_PATTER_SOURCE = JULIA_PATTER_SOURCE,
-              .pkg_update = TRUE)
+
+# Install Julia dependencies
+# * This is handled below
+# * Note that some dependencies e.g., ArchGDAL can be problematic
+# * If you experience errors below, try:
+# - (Important) Clean base Julia environment, update, gc
+# - Activate patter/Julia
+# - Install packages manually & precompile in Julia:
+# julia> cd("Julia")
+# ]
+# (@v1.10) pkg> activate .
+# (@v1.10) pkg> gc
+# julia> using ArchGDAL
+# Then restart RStudio & re-run julia_connect().
+
+# Connect to Julia and update Julia dependencies (~15 mins)
+julia_connect(JULIA_PATTER_SOURCE = JULIA_PATTER_SOURCE)
 
 # Check Pkg.status()
 patter:::julia_code(
@@ -179,13 +194,22 @@ rstudioapi::restartSession()
 # We'll build vignettes if pandoc is available
 build_vignettes <- rmarkdown::pandoc_available()
 
-# Run package checks
+# Run package checks (>10 mins)
 # * This takes ~10 minutes on my machine
 # * On other machines, it may take >30 minutes depending on your setup!
 t1 <- Sys.time()
 devtools::check(vignettes = build_vignettes)
 t2 <- Sys.time()
 difftime(t2, t1)
+
+# Approximate timings (mins):
+# * Local M2 MacBook (2023):            8.0   (2024-12-29)
+# * Local Intel MacBook (2017):         22.2  (2024-12-29)
+# * Local Intel MacBook (2014):         TO DO
+# * Local Lenovo (XXXX):                TO DO
+# * Local Optimum Desktop:              33.8  (2024-12-29)
+# * Eawag SIA-USER024-P HP workstation: 28.5  (2024-12-29)
+# * Eawag (x86_64 siam-linux20):        TO DO
 
 
 #### (10) Report tests ---------------------------------------------------------
