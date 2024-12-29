@@ -140,14 +140,22 @@ if (Sys.getenv("AUTO_JULIA_INSTALL") == "") {
 #### (8) Connect to Julia ------------------------------------------------------
 
 # Load & attach patter
+rstudioapi::restartSession()
+library(JuliaCall)
 library(patter)
 
 # Connect to Julia and update Julia dependencies
 JULIA_PROJ <- Sys.getenv("JULIA_PROJ")
 unlink(file.path(JULIA_PROJ, "Manifest.toml"))
 unlink(file.path(JULIA_PROJ, "Project.toml"))
+# unlink(file.path(Sys.getenv("USERPROFILE"), ".julia", "compiled"),
+#       recursive = TRUE)
 julia_connect(JULIA_PATTER_SOURCE = JULIA_PATTER_SOURCE,
               .pkg_update = TRUE)
+
+# Check Pkg.status()
+julia_command('using Pkg')
+julia_command('Pkg.status()')
 
 # Check patter works
 julia_validate()
