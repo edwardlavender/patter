@@ -188,17 +188,19 @@ On Linux, this step may require system libraries (see below).
       curl -fsSL https://install.julialang.org | sh
       ```
 
-    - In the shell, then install `Julia` v1.10.5 via `juliaup`:
+    - In the shell, then install `Julia` 1.10.5 via `juliaup`:
 
       ``` bash
       juliaup add 1.10.5  
       juliaup default 1.10.5
       ```
 
-> **Note:** Install a recent `Julia` version. `Julia` v1.10.5 (long-term
-> release) is recommended. `Julia` v1.11 is *not* currently supported by
-> `JuliaCall` (see
+> **Note:** Install a recent `Julia` version. At the time of writing
+> (December 2024), `Julia` 1.10.5 (long-term release) is recommended, as
+> we run most tests against that version. However, `Julia` 1.11 is now
+> also supported by `JuliaCall` (see
 > [here](https://github.com/Non-Contradiction/JuliaCall/issues/234)).
+> This README was last built on 2024-12-29 with Julia 1.10.5.
 
 5.  **Setup JuliaCall.** The next step is to set up `JuliaCall`, which
     provides the integration between `R` and `Julia`.
@@ -208,7 +210,7 @@ On Linux, this step may require system libraries (see below).
 install.packages("JuliaCall")
 
 # Use the development version if the CRAN version is unavailable:
-devtools::install_github("Non-Contradiction/JuliaCall",
+devtools::install_github("JuliaInterop/JuliaCall",
                          dependencies = TRUE)
 ```
 
@@ -300,9 +302,12 @@ julia_validate()
 ```
 
 This should return `NULL`, invisibly, in which case you are good to go.
-Otherwise, the function will return an error (or `R` may crash). Please
-report any [issues](https://github.com/edwardlavender/patter/issues) you
-experience during this process.
+Otherwise, the function will return an error (or `R` may crash).
+
+9.  **(optional) Run package checks**. To run package checks locally,
+    follow the instructions in [dev/001-check.R](dev/001-check.R).
+    [Issue](https://github.com/edwardlavender/patter/issues) reports are
+    appreciated.
 
 # Functionality
 
@@ -526,7 +531,7 @@ map |>
   invisible()
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
 
 ## Observations
 
@@ -658,7 +663,7 @@ map_hr_home(ud, .add = TRUE)
 mtext(side = 4, "Probability density", line = -3)
 ```
 
-<img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
 
 This basic workflow is highly customisable. You have the flexibility to
 define species-specific movement models, include any type of
@@ -675,13 +680,21 @@ out with queries.
 - `?patter::patter` for an overview of package functions;
 - `?patter::pf_filter`for information on specific functions (such as
   `pf_filter()`);
+- [`patter-workshops`](https://github.com/edwardlavender/patter-workshops)
+  for introductory materials;
 
 **For further code examples**, see:
 
-- [`patter-eval`](https://github.com/edwardlavender/patter-eval) for an
-  extensive simulation-based workflow and analysis;
+- [`patter-demo`](https://github.com/edwardlavender/patter-demo) for
+  simple demonstrations;
+- [`patter-eval`](https://github.com/edwardlavender/patter-eval) for a
+  simulation-based workflow and analysis;
 - [`patter-flapper`](https://github.com/edwardlavender/patter-flapper)
-  for a complete real-world analysis;
+  for a real-world analysis on flapper skate;
+  - [`patter-trout`](https://github.com/edwardlavender/patter-trout) for
+    a real-world analysis on lake trout;
+
+Note that the code base in some repositories may be outdated.
 
 # Disclaimer and troubleshooting
 
@@ -694,15 +707,13 @@ evolution (<edward.lavender@eawag.ch>).
 
 To cite `patter` in publications, please use:
 
-- Lavender, E. et al. (2023). An integrative modelling framework for
-  passive acoustic telemetry. Methods in Ecology and Evolution.
-  <https://doi.org/10.1111/2041-210X.14193>
-- Lavender, E. et al. (in prep). Particle algorithms for animal movement
-  modelling in autonomous receiver networks.
-- Lavender, E. et al. (in prep). Particle algorithms for animal tracking
-  in `R` and `Julia`. <https://doi.org/10.1101/2024.07.30.605733>
-- Lavender, E. et al. (in prep). Particle algorithms reveal patterns of
-  space use in a Critically Endangered elasmobranch.
+- Lavender, E. et al. (2024). Particle algorithms for animal movement
+  modelling in autonomous receiver networks. bioRxiv.
+  <https://doi.org/10.1101/2024.09.16.613223>.
+- Lavender, E. et al. (2024). Particle algorithms for animal tracking in
+  `R` and `Julia`. bioRxiv. <https://doi.org/10.1101/2024.07.30.605733>
+- Lavender, E. et al. (in prep). Animal tracking for conservation with
+  particle algorithms.
 
 ------------------------------------------------------------------------
 
