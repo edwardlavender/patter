@@ -13,7 +13,7 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/patter)](https://CRAN.R-project.org/package=patter)
-![Coverage](https://img.shields.io/badge/coverage-86%25-orange)
+![Coverage](https://img.shields.io/badge/coverage-84%25-orange)
 [![R-CMD-check](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
@@ -108,12 +108,15 @@ touch if you would like to see additional functionality brought into
 
 2.  **Install build packages.** Package installation and configuration
     (may) require the [`devtools`](https://github.com/r-lib/devtools),
-    [`pkgbuild`](https://github.com/r-lib/pkgbuild) packages. Install
-    them with:
+    [`pkgbuild`](https://github.com/r-lib/pkgbuild) and
+    [`rmarkdown`](https://github.com/rstudio/rmarkdown) packages.
+    Install them with:
 
 ``` r
-install.packages(c("devtools", "pkgbuild"))
+install.packages(c("devtools", "pkgbuild", "rmarkdown"))
 ```
+
+On Linux, this step may require system libraries (see below).
 
 3.  **Install system libraries**.
 
@@ -129,8 +132,8 @@ install.packages(c("devtools", "pkgbuild"))
   and `PROJ`, are required. See the package [DESCRIPTION](DESCRIPTION)
   for required/suggested packages and follow the instructions for your
   system. On Debian/Ubuntu, see
-  [r2u](https://eddelbuettel.github.io/r2u/) or follow the instructions
-  below to get up and running.
+  [`r2u`](https://eddelbuettel.github.io/r2u/) or follow the
+  instructions below to get up and running.
   <details>
   <summary>
   <b>Click</b> for system dependency installation instructions on
@@ -238,7 +241,7 @@ for troubleshooting and ways to get help).
 ``` r
 devtools::install_github("edwardlavender/patter", 
                          dependencies = TRUE, 
-                         build_vignettes = TRUE)
+                         build_vignettes = rmarkdown::pandoc_available())
 ```
 
 The `dependencies = TRUE` argument ensures that suggested packages are
@@ -252,7 +255,7 @@ use:
 ``` r
 devtools::install_github("edwardlavender/patter@dev", 
                          dependencies = TRUE, 
-                         build_vignettes = TRUE)
+                         build_vignettes = rmarkdown::pandoc_available())
 ```
 
 This branch may include bug fixes and new features but should be used

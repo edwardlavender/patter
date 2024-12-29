@@ -111,11 +111,13 @@ At the time of writing (May 2024), `patter` is more streamlined than [`flapper`]
 
 1. **Install [`R`](https://www.r-project.org)**. This package requires `R` version ≥ 4.1 (but the most recent version is recommended). You can check your version from the `R` console using `R.version.string`. 
 
-2. **Install build packages.** Package installation and configuration (may) require the [`devtools`](https://github.com/r-lib/devtools), [`pkgbuild`](https://github.com/r-lib/pkgbuild) packages. Install them with:
+2. **Install build packages.** Package installation and configuration (may) require the [`devtools`](https://github.com/r-lib/devtools), [`pkgbuild`](https://github.com/r-lib/pkgbuild) and [`rmarkdown`](https://github.com/rstudio/rmarkdown) packages. Install them with:
 
 ``` r
-install.packages(c("devtools", "pkgbuild"))
+install.packages(c("devtools", "pkgbuild", "rmarkdown"))
 ```
+
+On Linux, this step may require system libraries (see below). 
 
 3. **Install system libraries**. 
 
@@ -204,7 +206,7 @@ If `julia_setup()` fails with `'Julia is not found'`, you should tell `R` the lo
 ``` r
 devtools::install_github("edwardlavender/patter", 
                          dependencies = TRUE, 
-                         build_vignettes = TRUE)
+                         build_vignettes = rmarkdown::pandoc_available())
 ```
 
 The `dependencies = TRUE` argument ensures that suggested packages are also installed, which are required for some functions and to build vignettes. This process may take several minutes. Set `build_vignettes = FALSE` for a faster installation.
@@ -214,7 +216,7 @@ To install `patter` from the development (`dev`) branch, if available, use:
 ``` r
 devtools::install_github("edwardlavender/patter@dev", 
                          dependencies = TRUE, 
-                         build_vignettes = TRUE)
+                         build_vignettes = rmarkdown::pandoc_available())
 ```
 
 This branch may include bug fixes and new features but should be used **with caution**. 
