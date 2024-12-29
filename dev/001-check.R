@@ -17,6 +17,12 @@
 # ... follow the instructions on GitHub
 # ... to install the package before proceeding.
 
+# You don't need to update R or Julia to check {patter}
+# ... as long as you meet the minimum requirements.
+# ... In fact, it is useful to check the package with
+# ... other versions, as our checks are generally only
+# ... run on the most recent versions.
+
 
 #### (2) Clone project ---------------------------------------------------------
 
