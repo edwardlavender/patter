@@ -8,8 +8,6 @@
 # ... and much appreciated. Thank you for helping to
 # ... improve {patter} for the community!
 
-# See XXX for a worked tutorial through this script.
-
 
 #### (1) First time package install  -------------------------------------------
 
