@@ -126,12 +126,15 @@ test_that("julia_connect() works", {
   # Test installation with JULIA_PATTER_SOURCE = new input & .pkg_update
   # A) Implement update of Patter as requested via .pkg_update
   # > "https://github.com/edwardlavender/Patter.jl.git#dev"
+  # (We have to remove the compatibility entry for Patter.jl for this.)
+  julia_command('Pkg.compat("Patter");')
   julia_connect(JULIA_PROJ = jproj,
                 JULIA_PATTER_SOURCE = "dev", .pkg_update = "Patter",
                 .socket = TRUE)
   expect_equal(Patter_repo_url(jproj),
                "https://github.com/edwardlavender/Patter.jl.git#dev")
   # B) As above, but swap to development version on file
+  julia_command('Pkg.compat("Patter");')
   julia_connect(JULIA_PROJ = jproj,
                 JULIA_PATTER_SOURCE = local_Patter.jl,
                 .pkg_update = "Patter",
