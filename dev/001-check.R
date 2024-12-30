@@ -203,7 +203,7 @@ difftime(t2, t1)
 # Approximate timings (mins):
 # * Local M2 MacBook (2023):            8.0   (2024-12-29)
 # * Local Intel MacBook (2017):         22.2  (2024-12-29)
-# * Local Intel MacBook (2014):         TO DO
+# * Local Intel MacBook (2014):         24.3  (2024-12-30)
 # * Local Lenovo (XXXX):                TO DO
 # * Local Optimum Desktop:              33.8  (2024-12-29)
 # * Eawag SIA-USER024-P HP workstation: 28.5  (2024-12-29)
