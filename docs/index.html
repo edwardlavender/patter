@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">patter</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.0.0</span>
       </span>
     </div>
 
@@ -144,10 +144,11 @@
 </blockquote>
 <ol style="list-style-type: decimal">
 <li><p><strong>Install <a href="https://www.r-project.org" class="external-link"><code>R</code></a></strong>. This package requires <code>R</code> version ≥ 4.1 (but the most recent version is recommended). You can check your version from the <code>R</code> console using <code>R.version.string</code>.</p></li>
-<li><p><strong>Install build packages.</strong> Package installation and configuration (may) require the <a href="https://github.com/r-lib/devtools" class="external-link"><code>devtools</code></a>, <a href="https://github.com/r-lib/pkgbuild" class="external-link"><code>pkgbuild</code></a> packages. Install them with:</p></li>
+<li><p><strong>Install build packages.</strong> Package installation and configuration (may) require the <a href="https://github.com/r-lib/devtools" class="external-link"><code>devtools</code></a>, <a href="https://github.com/r-lib/pkgbuild" class="external-link"><code>pkgbuild</code></a> and <a href="https://github.com/rstudio/rmarkdown" class="external-link"><code>rmarkdown</code></a> packages. Install them with:</p></li>
 </ol>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"devtools"</span>, <span class="st">"pkgbuild"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"devtools"</span>, <span class="st">"pkgbuild"</span>, <span class="st">"rmarkdown"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>On Linux, this step may require system libraries (see below).</p>
 <ol start="3" style="list-style-type: decimal">
 <li>
 <strong>Install system libraries</strong>.</li>
@@ -158,7 +159,7 @@
 <li>
 <strong>On MacOS</strong>, some system-specific step up (e.g., compiler configuration) may be required. Follow the steps below and address any issues as required for your system.</li>
 <li>
-<strong>On Linux</strong>, a suite of system libraries, including <code>GDAL</code>, <code>GEOS</code> and <code>PROJ</code>, are required. See the package <a href="DESCRIPTION">DESCRIPTION</a> for required/suggested packages and follow the instructions for your system. On Debian/Ubuntu, see <a href="https://eddelbuettel.github.io/r2u/" class="external-link">r2u</a> or follow the instructions below to get up and running.
+<strong>On Linux</strong>, a suite of system libraries, including <code>GDAL</code>, <code>GEOS</code> and <code>PROJ</code>, are required. See the package <a href="DESCRIPTION">DESCRIPTION</a> for required/suggested packages and follow the instructions for your system. On Debian/Ubuntu, see <a href="https://eddelbuettel.github.io/r2u/" class="external-link"><code>r2u</code></a> or follow the instructions below to get up and running.
 <details><summary><b>Click</b> for system dependency installation instructions on Ubuntu.
 </summary><div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">sudo</span> apt update</span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
@@ -195,7 +196,7 @@
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-fsSL</span> https://install.julialang.org <span class="kw">|</span> <span class="fu">sh</span></span></code></pre></div>
 </li>
 <li>
-<p>In the shell, then install <code>Julia</code> v1.10.5 via <code>juliaup</code>:</p>
+<p>In the shell, then install <code>Julia</code> 1.10.5 via <code>juliaup</code>:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">juliaup</span> add 1.10.5  </span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="ex">juliaup</span> default 1.10.5</span></code></pre></div>
 </li>
@@ -203,7 +204,7 @@
 </li>
 </ol>
 <blockquote>
-<p><strong>Note:</strong> Install a recent <code>Julia</code> version. <code>Julia</code> v1.10.5 (long-term release) is recommended. <code>Julia</code> v1.11 is <em>not</em> currently supported by <code>JuliaCall</code> (see <a href="https://github.com/Non-Contradiction/JuliaCall/issues/234" class="external-link">here</a>).</p>
+<p><strong>Note:</strong> Install a recent <code>Julia</code> version. At the time of writing (December 2024), <code>Julia</code> 1.10.5 (long-term release) is recommended, as we run most tests against that version. However, <code>Julia</code> 1.11 is now also supported by <code>JuliaCall</code> (see <a href="https://github.com/Non-Contradiction/JuliaCall/issues/234" class="external-link">here</a>). This README was last built on 2024-12-29 with Julia 1.10.5.</p>
 </blockquote>
 <ol start="5" style="list-style-type: decimal">
 <li>
@@ -214,7 +215,7 @@
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"JuliaCall"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Use the development version if the CRAN version is unavailable:</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"Non-Contradiction/JuliaCall"</span>,</span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"JuliaInterop/JuliaCall"</span>,</span>
 <span>                         dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run julia_setup() to set up the Julia installation </span></span>
@@ -236,13 +237,13 @@
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"edwardlavender/patter"</span>, </span>
 <span>                         dependencies <span class="op">=</span> <span class="cn">TRUE</span>, </span>
-<span>                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span>                         build_vignettes <span class="op">=</span> <span class="fu">rmarkdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgs.rstudio.com/rmarkdown/reference/pandoc_available.html" class="external-link">pandoc_available</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>The <code>dependencies = TRUE</code> argument ensures that suggested packages are also installed, which are required for some functions and to build vignettes. This process may take several minutes. Set <code>build_vignettes = FALSE</code> for a faster installation.</p>
 <p>To install <code>patter</code> from the development (<code>dev</code>) branch, if available, use:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"edwardlavender/patter@dev"</span>, </span>
 <span>                         dependencies <span class="op">=</span> <span class="cn">TRUE</span>, </span>
-<span>                         build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span>                         build_vignettes <span class="op">=</span> <span class="fu">rmarkdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgs.rstudio.com/rmarkdown/reference/pandoc_available.html" class="external-link">pandoc_available</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>This branch may include bug fixes and new features but should be used <strong>with caution</strong>.</p>
 <p>We recommend using <a href="https://rstudio.github.io/renv/articles/renv.html" class="external-link"><code>renv</code></a> (or similar) and <a href="https://r4ds.had.co.nz/workflow-projects.html" class="external-link">RStudio Projects</a> to track the version of <code>patter</code> that you use in your projects. This will ensure that your code continues to work, even if we have to make breaking changes to <code>patter</code> as the package evolves in response to user feedback.</p>
 <ol start="7" style="list-style-type: decimal">
@@ -266,7 +267,11 @@
 </ol>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/julia_validate.html">julia_validate</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>This should return <code>NULL</code>, invisibly, in which case you are good to go. Otherwise, the function will return an error (or <code>R</code> may crash). Please report any <a href="https://github.com/edwardlavender/patter/issues" class="external-link">issues</a> you experience during this process.</p>
+<p>This should return <code>NULL</code>, invisibly, in which case you are good to go. Otherwise, the function will return an error (or <code>R</code> may crash).</p>
+<ol start="9" style="list-style-type: decimal">
+<li>
+<strong>(optional) Run package checks</strong>. To run package checks locally, follow the instructions in <a href="dev/001-check.R">dev/001-check.R</a>. <a href="https://github.com/edwardlavender/patter/issues" class="external-link">Issue</a> reports are appreciated.</li>
+</ol>
 </div>
 <div class="section level1">
 <h1 id="functionality">Functionality<a class="anchor" aria-label="anchor" href="#functionality"></a>
@@ -491,7 +496,7 @@
 <span></span>
 <span><span class="co"># Formulate a corresponding movement model:</span></span>
 <span><span class="va">mobility</span>   <span class="op">&lt;-</span> <span class="fl">750.0</span></span>
-<span><span class="va">model_move</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ModelMove.html">move_xy</a></span><span class="op">(</span>.mobility   <span class="op">=</span> <span class="st">"750.0"</span>, </span>
+<span><span class="va">model_move</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ModelMove.html">model_move_xy</a></span><span class="op">(</span>.mobility   <span class="op">=</span> <span class="st">"750.0"</span>, </span>
 <span>                      .dbn_length <span class="op">=</span> <span class="st">"truncated(Gamma(1, 250.0), upper = 750.0)"</span>,</span>
 <span>                      .dbn_heading  <span class="op">=</span> <span class="st">"Uniform(-pi, pi)"</span><span class="op">)</span></span>
 <span></span>
@@ -502,7 +507,7 @@
 <span>                .model_move <span class="op">=</span> <span class="va">model_move</span>, </span>
 <span>                .n_path <span class="op">=</span> <span class="fl">4L</span>, .one_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-6-1.png" width="100%"></p>
+<p><img src="reference/figures/README-unnamed-chunk-7-1.png" width="100%"></p>
 </div>
 <div class="section level2">
 <h2 id="observations">Observations<a class="anchor" aria-label="anchor" href="#observations"></a>
@@ -608,7 +613,7 @@
 <span><span class="co"># Add home range</span></span>
 <span><span class="fu"><a href="reference/map_hr.html">map_hr_home</a></span><span class="op">(</span><span class="va">ud</span>, .add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span>side <span class="op">=</span> <span class="fl">4</span>, <span class="st">"Probability density"</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">3</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-11-1.png" width="100%"></p>
+<p><img src="reference/figures/README-unnamed-chunk-12-1.png" width="100%"></p>
 <p>This basic workflow is highly customisable. You have the flexibility to define species-specific movement models, include any type of observational dataset and implement system-specific observation models. See the vignettes and function examples for further details and reach out with queries.</p>
 </div>
 </div>
@@ -622,14 +627,24 @@
 <code><a href="reference/patter.html">?patter::patter</a></code> for an overview of package functions;</li>
 <li>
 <code><a href="reference/pf_filter.html">?patter::pf_filter</a></code>for information on specific functions (such as <code><a href="reference/pf_filter.html">pf_filter()</a></code>);</li>
+<li>
+<a href="https://github.com/edwardlavender/patter-workshops" class="external-link"><code>patter-workshops</code></a> for introductory materials;</li>
 </ul>
 <p><strong>For further code examples</strong>, see:</p>
 <ul>
 <li>
-<a href="https://github.com/edwardlavender/patter-eval" class="external-link"><code>patter-eval</code></a> for an extensive simulation-based workflow and analysis;</li>
+<a href="https://github.com/edwardlavender/patter-demo" class="external-link"><code>patter-demo</code></a> for simple demonstrations;</li>
 <li>
-<a href="https://github.com/edwardlavender/patter-flapper" class="external-link"><code>patter-flapper</code></a> for a complete real-world analysis;</li>
+<a href="https://github.com/edwardlavender/patter-eval" class="external-link"><code>patter-eval</code></a> for a simulation-based workflow and analysis;</li>
+<li>
+<a href="https://github.com/edwardlavender/patter-flapper" class="external-link"><code>patter-flapper</code></a> for a real-world analysis on flapper skate;
+<ul>
+<li>
+<a href="https://github.com/edwardlavender/patter-trout" class="external-link"><code>patter-trout</code></a> for a real-world analysis on lake trout;</li>
 </ul>
+</li>
+</ul>
+<p>Note that the code base in some repositories may be outdated.</p>
 </div>
 <div class="section level1">
 <h1 id="disclaimer-and-troubleshooting">Disclaimer and troubleshooting<a class="anchor" aria-label="anchor" href="#disclaimer-and-troubleshooting"></a>
@@ -641,12 +656,10 @@
 </h1>
 <p>To cite <code>patter</code> in publications, please use:</p>
 <ul>
-<li>Lavender, E. et al. (2023). An integrative modelling framework for passive acoustic telemetry. Methods in Ecology and Evolution. <a href="https://doi.org/10.1111/2041-210X.14193" class="external-link uri">https://doi.org/10.1111/2041-210X.14193</a>
+<li>Lavender, E. et al. (2024). Particle algorithms for animal movement modelling in autonomous receiver networks. bioRxiv. <a href="https://doi.org/10.1101/2024.09.16.613223" class="external-link uri">https://doi.org/10.1101/2024.09.16.613223</a>.</li>
+<li>Lavender, E. et al. (2024). Particle algorithms for animal tracking in <code>R</code> and <code>Julia</code>. bioRxiv. <a href="https://doi.org/10.1101/2024.07.30.605733" class="external-link uri">https://doi.org/10.1101/2024.07.30.605733</a>
 </li>
-<li>Lavender, E. et al. (in prep). Particle algorithms for animal movement modelling in autonomous receiver networks.</li>
-<li>Lavender, E. et al. (in prep). Particle algorithms for animal tracking in <code>R</code> and <code>Julia</code>. <a href="https://doi.org/10.1101/2024.07.30.605733" class="external-link uri">https://doi.org/10.1101/2024.07.30.605733</a>
-</li>
-<li>Lavender, E. et al. (in prep). Particle algorithms reveal patterns of space use in a Critically Endangered elasmobranch.</li>
+<li>Lavender, E. et al. (in prep). Animal tracking for conservation with particle algorithms.</li>
 </ul>
 <hr>
 <p>Please note that <code>patter</code> is released with a <a href="https://contributor-covenant.org/version/2/1/CODE_OF_CONDUCT.html" class="external-link">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>

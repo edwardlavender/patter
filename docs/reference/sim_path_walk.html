@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">patter</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.0.0</span>
       </span>
     </div>
 
@@ -72,7 +72,7 @@
 <span>  .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span>
 <span>  .xinit <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  .n_path <span class="op">=</span> <span class="fl">1L</span>,</span>
-<span>  .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">model_move_xy</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  .collect <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  .plot <span class="op">=</span> <span class="va">.collect</span> <span class="op">&amp;</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">.map</span><span class="op">)</span>,</span>
 <span>  .one_page <span class="op">=</span> <span class="cn">FALSE</span></span>
@@ -157,7 +157,7 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="patter_run.html">patter_run</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="patter_run.html">patter_run</a></span><span class="op">(</span>.julia <span class="op">=</span> <span class="cn">TRUE</span>, .geospatial <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dtplyr.tidyverse.org" class="external-link">dtplyr</a></span><span class="op">)</span></span></span>
@@ -179,7 +179,7 @@
 <span class="r-in"><span>  <span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
 <span class="r-in"><span>                .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
 <span class="r-in"><span>                .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span></span>
-<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">model_move_xy</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co">#### Example (2): Set the starting location via `.xinit`</span></span></span>
 <span class="r-in"><span>  <span class="co"># Define an initial location</span></span></span>
@@ -192,7 +192,7 @@
 <span class="r-in"><span>                .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
 <span class="r-in"><span>                .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span></span>
 <span class="r-in"><span>                .xinit <span class="op">=</span> <span class="va">origin</span>,</span></span>
-<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">model_move_xy</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">points</a></span><span class="op">(</span><span class="va">origin</span><span class="op">$</span><span class="va">x</span>, <span class="va">origin</span><span class="op">$</span><span class="va">y</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co">#### Example (3): Simulate multiple paths with the same origin via `.xinit`</span></span></span>
@@ -200,7 +200,7 @@
 <span class="r-in"><span>                .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
 <span class="r-in"><span>                .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span></span>
 <span class="r-in"><span>                .xinit <span class="op">=</span> <span class="va">origin</span>,</span></span>
-<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">model_move_xy</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                .n_path <span class="op">=</span> <span class="fl">4L</span>,</span></span>
 <span class="r-in"><span>                .one_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -216,14 +216,14 @@
 <span class="r-in"><span>                .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
 <span class="r-in"><span>                .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span></span>
 <span class="r-in"><span>                .xinit <span class="op">=</span> <span class="va">origins</span>,</span></span>
-<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">model_move_xy</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                .n_path <span class="op">=</span> <span class="fl">4L</span>,</span></span>
 <span class="r-in"><span>                .one_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="co">#### Example (5): Customise two-dimensional random walks via `move_xy()`</span></span></span>
+<span class="r-in"><span>  <span class="co">#### Example (5): Customise two-dimensional random walks via `model_move_xy()`</span></span></span>
 <span class="r-in"><span>  <span class="co"># Adjust distributions for step lengths and headings</span></span></span>
 <span class="r-in"><span>  <span class="va">model_move</span> <span class="op">&lt;-</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span>.mobility <span class="op">=</span> <span class="st">"750.0"</span>,</span></span>
+<span class="r-in"><span>    <span class="fu"><a href="ModelMove.html">model_move_xy</a></span><span class="op">(</span>.mobility <span class="op">=</span> <span class="st">"750.0"</span>,</span></span>
 <span class="r-in"><span>            .dbn_length <span class="op">=</span> <span class="st">"truncated(Normal(250, 50), lower = 0.0, upper = 750.0)"</span>,</span></span>
 <span class="r-in"><span>            .dbn_heading <span class="op">=</span> <span class="st">"VonMises(0.1, 0.1)"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
@@ -232,7 +232,7 @@
 <span class="r-in"><span>                .model_move <span class="op">=</span> <span class="va">model_move</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="co"># Experiment with other options</span></span></span>
 <span class="r-in"><span>  <span class="va">model_move</span> <span class="op">&lt;-</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span>.mobility   <span class="op">=</span> <span class="st">"300.0"</span>,</span></span>
+<span class="r-in"><span>    <span class="fu"><a href="ModelMove.html">model_move_xy</a></span><span class="op">(</span>.mobility   <span class="op">=</span> <span class="st">"300.0"</span>,</span></span>
 <span class="r-in"><span>            .dbn_length <span class="op">=</span> <span class="st">"truncated(Normal(10.0, 50.0), lower = 0.0, upper = 300.0)"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
 <span class="r-in"><span>                .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
@@ -244,22 +244,22 @@
 <span class="r-in"><span>  <span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
 <span class="r-in"><span>                .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
 <span class="r-in"><span>                .state <span class="op">=</span> <span class="st">"StateXYZ"</span>,</span></span>
-<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xyz</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">model_move_xyz</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="co"># Simulate a correlated random walk in XY</span></span></span>
 <span class="r-in"><span>  <span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
 <span class="r-in"><span>                .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
 <span class="r-in"><span>                .state <span class="op">=</span> <span class="st">"StateCXY"</span>,</span></span>
-<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_cxy</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">model_move_cxy</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="co"># Simulate a correlated random walk in XYZ</span></span></span>
 <span class="r-in"><span>  <span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
 <span class="r-in"><span>                .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
 <span class="r-in"><span>                .state <span class="op">=</span> <span class="st">"StateCXYZ"</span>,</span></span>
-<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_cxyz</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">model_move_cxyz</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="co"># Modify movement model parameters</span></span></span>
 <span class="r-in"><span>  <span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
 <span class="r-in"><span>                .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
 <span class="r-in"><span>                .state <span class="op">=</span> <span class="st">"StateCXYZ"</span>,</span></span>
-<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_cxyz</a></span><span class="op">(</span>.dbn_heading_delta <span class="op">=</span> <span class="st">"Normal(0, 1)"</span>,</span></span>
+<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">model_move_cxyz</a></span><span class="op">(</span>.dbn_heading_delta <span class="op">=</span> <span class="st">"Normal(0, 1)"</span>,</span></span>
 <span class="r-in"><span>                                        .dbn_z_delta <span class="op">=</span> <span class="st">"Normal(0, 0.5)"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co">#### Example (7): Use custom .state/.model_move sub-types</span></span></span>
@@ -269,7 +269,7 @@
 <span class="r-in"><span>  <span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
 <span class="r-in"><span>                .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
 <span class="r-in"><span>                .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span></span>
-<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">model_move_xy</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                .n_path <span class="op">=</span> <span class="fl">10L</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co">#### Example (9): Customise plotting options via `.plot` &amp; `.one_page`</span></span></span>
@@ -277,13 +277,13 @@
 <span class="r-in"><span>  <span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
 <span class="r-in"><span>                .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
 <span class="r-in"><span>                .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span></span>
-<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">model_move_xy</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                .n_path <span class="op">=</span> <span class="fl">2L</span>, .one_page <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="co"># Suppress plots via `.plot = FALSE`</span></span></span>
 <span class="r-in"><span>  <span class="fu">sim_path_walk</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
 <span class="r-in"><span>                .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
 <span class="r-in"><span>                .state <span class="op">=</span> <span class="st">"StateXY"</span>,</span></span>
-<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">move_xy</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                .model_move <span class="op">=</span> <span class="fu"><a href="ModelMove.html">model_move_xy</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                .plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
