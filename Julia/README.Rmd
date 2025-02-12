@@ -288,7 +288,7 @@ xinit = simulate_states_init(map             = env_init,
                              model_move      = model_move, 
                              datasets        = datasets_fwd,
                              model_obs_types = model_obs_types,
-                             n_particle      = 2000, 
+                             n_particle      = 10_000, 
                              direction       = "forward", 
                              output          = "Vector");
 
@@ -308,7 +308,7 @@ xinit = simulate_states_init(map             = env_init,
                              model_move      = model_move, 
                              datasets        = datasets_bwd,
                              model_obs_types = model_obs_types,
-                             n_particle      = 2000, 
+                             n_particle      = 10_000, 
                              direction       = "backward", 
                              output          = "Vector");
 

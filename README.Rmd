@@ -500,7 +500,7 @@ args <- list(.timeline   = timeline,
              .yobs       = yobs_fwd,
              .model_move = model_move,
              .n_record   = 1000L,
-             .n_particle = 2e3L)
+             .n_particle = 1e4L)
 
 # Forward run
 fwd <- do.call(pf_filter, args, quote = TRUE)
