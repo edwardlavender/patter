@@ -21,7 +21,7 @@
 #' @param .collect A `logical` variable that defines whether or not to collect outputs from the `Julia` session in `R`.
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #' @details
-#' The two-filter smoother smooths particle samples from the particle filter ([`pf_filter()`]). Particles from a forward and backward filter run are required in the `Julia` workspace (as defined by [`pf_filter()`]). The backend function [`Patter.two_filter_smoother()`](https://edwardlavender.github.io/Patter.jl/) does the work. Essentially, the function runs a simulation backwards in time and re-samples particles in line with the probability density of movements between each combination of states from the backward filter at time `t` and states from the forward filter at time `t - 1`. The time complexity of the algorithm is thus \eqn{O(TN^2)}. The probability density of movements is evaluated by [`Patter.logpdf_step()`](https://edwardlavender.github.io/Patter.jl/) and [`Patter.logpdf_move()`](https://edwardlavender.github.io/Patter.jl/). If individual states are two-dimensional (see [`StateXY`]), a validity map can be pre-defined in `Julia` via [`set_vmap()`] to speed up probability calculations. The validity map is defined as the set of valid (non-`NA` or bordering) locations on the `.map`, shrunk by `.mobility`. Within this region, the probability density of movement between two states can be calculated directly. Otherwise, a Monte Carlo simulation, of `.n_sim` iterations, is required to compute the normalisation constant (accounting for movements into inhospitable areas, or beyond the boundaries of the study area). For movement models for which the density only depends on the particle states, set `.cache = TRUE` to pre-compute and cache normalisation constants for improved speed.
+#' The two-filter smoother smooths particle samples from the particle filter ([`pf_filter()`]). Particles from a forward and backward filter run are required in the `Julia` workspace (as defined by [`pf_filter()`]). The backend function [`Patter.particle_smoother_two_filter()`](https://edwardlavender.github.io/Patter.jl/) does the work. Essentially, the function runs a simulation backwards in time and re-samples particles in line with the probability density of movements between each combination of states from the backward filter at time `t` and states from the forward filter at time `t - 1`. The time complexity of the algorithm is thus \eqn{O(TN^2)}. The probability density of movements is evaluated by [`Patter.logpdf_step()`](https://edwardlavender.github.io/Patter.jl/) and [`Patter.logpdf_move()`](https://edwardlavender.github.io/Patter.jl/). If individual states are two-dimensional (see [`StateXY`]), a validity map can be pre-defined in `Julia` via [`set_vmap()`] to speed up probability calculations. The validity map is defined as the set of valid (non-`NA` or bordering) locations on the `.map`, shrunk by `.mobility`. Within this region, the probability density of movement between two states can be calculated directly. Otherwise, a Monte Carlo simulation, of `.n_sim` iterations, is required to compute the normalisation constant (accounting for movements into inhospitable areas, or beyond the boundaries of the study area). For movement models for which the density only depends on the particle states, set `.cache = TRUE` to pre-compute and cache normalisation constants for improved speed.
 #'
 #' @references Fearnhead, P. et al. (2010). A sequential smoothing algorithm with linear computational cost. Biometrika 97, 447–464. \url{https://doi.org/10.1093/biomet/asq013}.
 #'
@@ -29,7 +29,7 @@
 #' * [`set_vmap()`]:
 #'      * [`set_vmap()`] returns the validity map (a [`SpatRaster`]), invisibly;
 #' * [`pf_smoother_two_filter()`]:
-#'     * [`Patter.two_filter_smoother()`](https://github.com/edwardlavender/Patter.jl) creates a NamedTuple in the `Julia` session (named `ptf`). If `.collect = TRUE`, [`pf_smoother_two_filter()`] collects the outputs in `R` as a [`pf_particles-class`] object. Otherwise, `invisible(NULL)` is returned.
+#'     * [`Patter.particle_smoother_two_filter()`](https://github.com/edwardlavender/Patter.jl) creates a NamedTuple in the `Julia` session (named `ptf`). If `.collect = TRUE`, [`pf_smoother_two_filter()`] collects the outputs in `R` as a [`pf_particles-class`] object. Otherwise, `invisible(NULL)` is returned.
 #'
 #' @example man/examples/example-pf_smoother_two_filter.R
 #' @inherit assemble seealso
@@ -104,7 +104,7 @@ pf_smoother_two_filter <- function(.n_particle = NULL,
   }
 
   #### Run the smoother
-  # two_filter_smoother(;timeline, xfwd, xbwd, model_move, vmap, n_sim, cache)
+  # Patter.particle_smoother_two_filter(;timeline, xfwd, xbwd, model_move, vmap, n_sim, cache, batch)
   # * `timeline`, `xfwd`, `xbwd`, `model_move` and `vmap` exist in Julia
   # * `n_sim` & cache is defined below
   cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Running smoother..."))
