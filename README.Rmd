@@ -504,12 +504,21 @@ args <- list(.timeline = timeline,
 
 # Forward run
 fwd <- do.call(pf_filter, args, quote = TRUE)
+
+# Forward run outputs
 head(fwd$states)
+head(fwd$diagnostics)
+fwd$callstats
 
 # Backward run
 args$.yobs      <- yobs_bwd
 args$.direction <- "backward"
 bwd <- do.call(pf_filter, args, quote = TRUE)
+
+# Backward run outputs
+head(bwd$states)
+head(bwd$diagnostics)
+bwd$callstats
 ```
 
 ## Particle smoother
@@ -523,6 +532,11 @@ set_vmap(.map = map, .mobility = mobility)
 
 # Run smoother 
 smo <- pf_smoother_two_filter(.n_particle = 750L, .n_sim = 100L)
+
+# Smoother outputs
+head(smo$states)
+head(smo$diagnostics)
+smo$callstats
 ```
 
 ## Mapping

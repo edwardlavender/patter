@@ -135,7 +135,9 @@ On Linux, this step may require system libraries (see below).
   [`r2u`](https://eddelbuettel.github.io/r2u/) or follow the
   instructions below to get up and running.
   <details>
+
   <summary>
+
   <b>Click</b> for system dependency installation instructions on
   Ubuntu.
   </summary>
@@ -200,7 +202,7 @@ On Linux, this step may require system libraries (see below).
 > we run most tests against that version. However, `Julia` 1.11 is now
 > also supported by `JuliaCall` (see
 > [here](https://github.com/Non-Contradiction/JuliaCall/issues/234)).
-> This README was last built on 2024-12-29 with Julia 1.10.5.
+> This README was last built on 2025-02-12 with Julia 1.11.3.
 
 5.  **Setup JuliaCall.** The next step is to set up `JuliaCall`, which
     provides the integration between `R` and `Julia`.
@@ -466,7 +468,7 @@ essential packages:
 
 ``` r
 library(patter)
-#> This is {patter} v.1.0.1. For an overview, see `?patter`. For support, contact edward.lavender@eawag.ch.
+#> This is {patter} v.2.0.0. For an overview, see `?patter`. For support, contact edward.lavender@eawag.ch.
 library(data.table)
 library(dtplyr)
 library(dplyr, warn.conflicts = FALSE)
@@ -612,20 +614,59 @@ args <- list(.timeline = timeline,
 
 # Forward run
 fwd <- do.call(pf_filter, args, quote = TRUE)
+
+# Forward run outputs
 head(fwd$states)
 #>    path_id timestep           timestamp map_value        x       y
 #>      <int>    <int>              <POSc>     <num>    <num>   <num>
-#> 1:       1        1 2016-03-17 01:50:00  74.88351 709042.1 6253107
-#> 2:       1        2 2016-03-17 01:52:00  42.39980 709434.1 6252826
-#> 3:       1        3 2016-03-17 01:54:00  74.88351 709057.3 6253116
-#> 4:       1        4 2016-03-17 01:56:00  59.76520 709130.0 6252981
-#> 5:       1        5 2016-03-17 01:58:00  76.37878 709425.0 6253693
-#> 6:       1        6 2016-03-17 02:00:00  50.71592 709162.2 6252838
+#> 1:       1        1 2016-03-17 01:50:00  38.47359 709842.1 6252807
+#> 2:       1        2 2016-03-17 01:52:00  49.42750 709325.3 6253037
+#> 3:       1        3 2016-03-17 01:54:00  52.99475 709273.1 6253052
+#> 4:       1        4 2016-03-17 01:56:00  38.00305 709626.8 6252782
+#> 5:       1        5 2016-03-17 01:58:00  43.93695 709229.3 6252623
+#> 6:       1        6 2016-03-17 02:00:00  49.42750 709313.7 6252958
+head(fwd$diagnostics)
+#>    timestep           timestamp       ess     maxlp
+#>       <int>              <POSc>     <num>     <num>
+#> 1:        1 2016-03-17 01:50:00  869.6815 -4.934213
+#> 2:        2 2016-03-17 01:52:00 1293.8691 -4.921395
+#> 3:        3 2016-03-17 01:54:00 1419.4306 -4.920048
+#> 4:        4 2016-03-17 01:56:00  976.7509 -4.550330
+#> 5:        5 2016-03-17 01:58:00 1011.8356 -4.924376
+#> 6:        6 2016-03-17 02:00:00 1337.5549 -4.900029
+fwd$callstats
+#>              timestamp         routine n_particle n_iter convergence     time
+#>                 <POSc>          <char>      <int>  <int>      <lgcl>    <num>
+#> 1: 2025-02-12 22:06:06 filter: forward       2000      1        TRUE 6.870363
 
 # Backward run
 args$.yobs      <- yobs_bwd
 args$.direction <- "backward"
 bwd <- do.call(pf_filter, args, quote = TRUE)
+
+# Backward run outputs
+head(bwd$states)
+#>    path_id timestep           timestamp map_value        x       y
+#>      <int>    <int>              <POSc>     <num>    <num>   <num>
+#> 1:       1        1 2016-03-17 01:50:00  60.09327 709363.9 6253327
+#> 2:       1        2 2016-03-17 01:52:00  93.25472 708969.0 6253185
+#> 3:       1        3 2016-03-17 01:54:00  45.88295 709319.1 6252872
+#> 4:       1        4 2016-03-17 01:56:00  38.47359 709879.4 6252780
+#> 5:       1        5 2016-03-17 01:58:00  87.54828 709109.2 6253380
+#> 6:       1        6 2016-03-17 02:00:00  46.53543 709286.6 6252808
+head(bwd$diagnostics)
+#>    timestep           timestamp       ess     maxlp
+#>       <int>              <POSc>     <num>     <num>
+#> 1:        1 2016-03-17 01:50:00 1418.0911 -4.917011
+#> 2:        2 2016-03-17 01:52:00 1311.4996 -4.918265
+#> 3:        3 2016-03-17 01:54:00  972.2519 -4.919036
+#> 4:        4 2016-03-17 01:56:00 1025.8200 -4.547087
+#> 5:        5 2016-03-17 01:58:00 1353.8337 -4.920917
+#> 6:        6 2016-03-17 02:00:00  992.3345 -4.896301
+bwd$callstats
+#>              timestamp          routine n_particle n_iter convergence      time
+#>                 <POSc>           <char>      <int>  <int>      <lgcl>     <num>
+#> 1: 2025-02-12 22:06:13 filter: backward       2000      1        TRUE 0.3916481
 ```
 
 ## Particle smoother
@@ -642,6 +683,33 @@ set_vmap(.map = map, .mobility = mobility)
 
 # Run smoother 
 smo <- pf_smoother_two_filter(.n_particle = 750L, .n_sim = 100L)
+
+# Smoother outputs
+head(smo$states)
+#>    path_id timestep           timestamp map_value        x       y
+#>      <int>    <int>              <POSc>     <num>    <num>   <num>
+#> 1:       1        1 2016-03-17 01:50:00  60.09327 709363.9 6253327
+#> 2:       1        2 2016-03-17 01:52:00  58.17422 709269.8 6253073
+#> 3:       1        3 2016-03-17 01:54:00  45.88295 709319.1 6252872
+#> 4:       1        4 2016-03-17 01:56:00  84.47292 709252.0 6253541
+#> 5:       1        5 2016-03-17 01:58:00  46.53543 709258.9 6252774
+#> 6:       1        6 2016-03-17 02:00:00  46.53543 709239.0 6252774
+head(smo$diagnostics)
+#>    timestep           timestamp      ess maxlp
+#>       <int>              <POSc>    <num> <num>
+#> 1:        1 2016-03-17 01:50:00 750.0000   NaN
+#> 2:        2 2016-03-17 01:52:00 649.3271   NaN
+#> 3:        3 2016-03-17 01:54:00 590.5898   NaN
+#> 4:        4 2016-03-17 01:56:00 409.9490   NaN
+#> 5:        5 2016-03-17 01:58:00 662.1839   NaN
+#> 6:        6 2016-03-17 02:00:00 649.0461   NaN
+smo$callstats
+#>              timestamp              routine n_particle n_iter convergence
+#>                 <POSc>               <char>      <int>  <int>      <lgcl>
+#> 1: 2025-02-12 22:06:14 smoother: two-filter        750     NA        TRUE
+#>        time
+#>       <num>
+#> 1: 5.653834
 ```
 
 ## Mapping
