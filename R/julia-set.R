@@ -303,16 +303,16 @@ set_pf_filter <- function(.n_move, .n_resample, .t_resample, .n_record, .n_iter,
   julia_command(
     glue(
       '
-      {output} = particle_filter_iter(timeline = timeline,
-                                      xinit = xinit,
-                                      yobs = yobs,
-                                      model_move = model_move,
-                                      n_move = {.n_move},
-                                      n_record = {.n_record},
-                                      n_resample = {.n_resample},
-                                      t_resample = t_resample,
-                                      n_iter = {.n_iter},
-                                      direction = "{.direction}");
+      {output} = particle_filter(timeline = timeline,
+                                 xinit = xinit,
+                                 yobs = yobs,
+                                 model_move = model_move,
+                                 n_move = {.n_move},
+                                 n_record = {.n_record},
+                                 n_resample = {.n_resample},
+                                 t_resample = t_resample,
+                                 n_iter = {.n_iter},
+                                 direction = "{.direction}");
     '
     )
   )
@@ -349,13 +349,13 @@ set_smoother_two_filter <- function(.n_particle, .n_sim, .cache) {
   set_cache(.cache)
   # Run smoother
   julia_check_exists("timeline", fwd, bwd, "model_move", "vmap", "cache")
-  cmd    <- glue('{output} = two_filter_smoother(timeline = timeline,
-                                                 xfwd = {fwd}.states[1:{.n_particle}, :],
-                                                 xbwd = {bwd}.states[1:{.n_particle}, :],
-                                                 model_move = model_move,
-                                                 vmap = vmap,
-                                                 n_sim = {.n_sim},
-                                                 cache = cache);')
+  cmd    <- glue('{output} = particle_smoother_two_filter(timeline   = timeline,
+                                                          xfwd       = {fwd}.states[1:{.n_particle}, :],
+                                                          xbwd       = {bwd}.states[1:{.n_particle}, :],
+                                                          model_move = model_move,
+                                                          vmap       = vmap,
+                                                          n_sim      = {.n_sim},
+                                                          cache      = cache);')
   julia_command(cmd)
   invisible(output)
 }
