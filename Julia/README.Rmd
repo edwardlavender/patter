@@ -263,7 +263,7 @@ archival.timestamp       = DateTime.(archival.timestamp, "yyyy-mm-dd HH:MM:SS");
 # * Acoustic containers are direction specific, so two datasets are required
 # * (for forward & backward runs of the particle filter, respectively)
 datasets_fwd        = [acoustics, containers_fwd, archival];
-datasets_bwd        = [acoustics, containers_bwd, archival]
+datasets_bwd        = [acoustics, containers_bwd, archival];
 model_obs_types     = [ModelObsAcousticLogisTrunc, 
                        ModelObsAcousticContainer, 
                        ModelObsDepthNormalTruncSeabed];
@@ -325,7 +325,8 @@ bwd = particle_filter(timeline   = timeline,
 The filter returns a `NamedTuple` that defines the time steps of the simulation, the simulated `State`s and other algorithm diagnostics.
 
 ```{julia}
-summary(fwd)
+fwd 
+bwd
 ```
 
 ## Particle smoother
@@ -340,6 +341,7 @@ smo = particle_smoother_two_filter(timeline   = timeline,
                                    xbwd       = bwd.states[1:n_particle, :],
                                    model_move = model_move,
                                    n_sim      = 100);
+smo
 ```
 
 # Mapping
