@@ -83,3 +83,31 @@ test_that("pf_smoother_two_filter() works", {
   par(pp)
 
 })
+
+test_that("pf_smoother_two_filter() fails if filters don't match", {
+
+  skip_on_cran()
+  skip_if_not(patter_run(.julia = TRUE, .geospatial = TRUE))
+
+  setup <- example_setup("pf_smoother_two_filter",
+                         .connect = FALSE)
+  map   <- setup$map
+  args  <- setup$pf_filter_args
+
+  # Run the particle filter forwards
+  args$.n_record <- 5
+  args$.direction <- "forward"
+  fwd <- do.call(pf_filter, args)
+  expect_true(fwd$callstats$convergence)
+
+  # Run the particle filter backwards with few particles
+  args$.direction  <- "backward"
+  args$.n_particle <- 10
+  bwd <- do.call(pf_filter, args)
+  expect_false(bwd$callstats$convergence)
+
+  # Run smoother
+  pf_smoother_two_filter() |>
+    expect_error("Forward and backward sample do not match!")
+
+})
