@@ -521,8 +521,8 @@ state      <- "StateXY"
 # Formulate a corresponding movement model:
 mobility   <- 750.0
 model_move <- model_move_xy(.mobility   = "750.0", 
-                      .dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
-                      .dbn_heading  = "Uniform(-pi, pi)")
+                            .dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
+                            .dbn_heading  = "Uniform(-pi, pi)")
 
 # Visualise realisations of the movement model (Windows/MacOS):
 map |> 
@@ -566,14 +566,14 @@ observation models:
 
 ``` r
 # ModelObsAcousticLogisTrunc
-acoustics <- assemble_acoustics(.timeline = timeline,
+acoustics <- assemble_acoustics(.timeline   = timeline,
                                 .detections = det,
-                                .moorings = dat_moorings)
+                                .moorings   = dat_moorings)
 
 # ModelObsAcousticContainers
-containers <- assemble_acoustics_containers(.timeline = timeline, 
+containers <- assemble_acoustics_containers(.timeline  = timeline, 
                                             .acoustics = acoustics, 
-                                            .mobility = mobility)
+                                            .mobility  = mobility)
 
 # ModelObsDepthNormalTruncSeabed
 archival <- assemble_archival(.timeline = timeline,
@@ -581,11 +581,11 @@ archival <- assemble_archival(.timeline = timeline,
 
 # Named lists of ModelObs sub-types and associated observations
 # * The container dataset is direction specific so we assemble two yobs lists
-yobs_fwd <- list(ModelObsAcousticLogisTrunc = acoustics, 
-                 ModelObsAcousticContainer = containers$forward,
+yobs_fwd <- list(ModelObsAcousticLogisTrunc     = acoustics, 
+                 ModelObsAcousticContainer      = containers$forward,
                  ModelObsDepthNormalTruncSeabed = archival)
-yobs_bwd <- list(ModelObsAcousticLogisTrunc = acoustics, 
-                 ModelObsAcousticContainer = containers$backward,
+yobs_bwd <- list(ModelObsAcousticLogisTrunc     = acoustics, 
+                 ModelObsAcousticContainer      = containers$backward,
                  ModelObsDepthNormalTruncSeabed = archival)
 ```
 
@@ -605,11 +605,11 @@ distribution for the location of the animal, at each time step:
 
 ``` r
 # List filter arguments
-args <- list(.timeline = timeline,
-             .state = state,
-             .yobs = yobs_fwd,
+args <- list(.timeline   = timeline,
+             .state      = state,
+             .yobs       = yobs_fwd,
              .model_move = model_move,
-             .n_record = 1000L,
+             .n_record   = 1000L,
              .n_particle = 2e3L)
 
 # Forward run
@@ -637,7 +637,7 @@ head(fwd$diagnostics)
 fwd$callstats
 #>              timestamp         routine n_particle n_iter convergence     time
 #>                 <POSc>          <char>      <int>  <int>      <lgcl>    <num>
-#> 1: 2025-02-12 22:06:06 filter: forward       2000      1        TRUE 6.870363
+#> 1: 2025-02-12 22:38:41 filter: forward       2000      1        TRUE 7.179817
 
 # Backward run
 args$.yobs      <- yobs_bwd
@@ -666,7 +666,7 @@ head(bwd$diagnostics)
 bwd$callstats
 #>              timestamp          routine n_particle n_iter convergence      time
 #>                 <POSc>           <char>      <int>  <int>      <lgcl>     <num>
-#> 1: 2025-02-12 22:06:13 filter: backward       2000      1        TRUE 0.3916481
+#> 1: 2025-02-12 22:38:49 filter: backward       2000      1        TRUE 0.4021289
 ```
 
 ## Particle smoother
@@ -706,10 +706,10 @@ head(smo$diagnostics)
 smo$callstats
 #>              timestamp              routine n_particle n_iter convergence
 #>                 <POSc>               <char>      <int>  <int>      <lgcl>
-#> 1: 2025-02-12 22:06:14 smoother: two-filter        750     NA        TRUE
+#> 1: 2025-02-12 22:38:49 smoother: two-filter        750     NA        TRUE
 #>        time
 #>       <num>
-#> 1: 5.653834
+#> 1: 6.161236
 ```
 
 ## Mapping
@@ -759,8 +759,8 @@ out with queries.
   simulation-based workflow and analysis;
 - [`patter-flapper`](https://github.com/edwardlavender/patter-flapper)
   for a real-world analysis on flapper skate;
-  - [`patter-trout`](https://github.com/edwardlavender/patter-trout) for
-    a real-world analysis on lake trout;
+- [`patter-trout`](https://github.com/edwardlavender/patter-trout) for a
+  real-world analysis on lake trout;
 
 Note that the code base in some repositories may be outdated.
 

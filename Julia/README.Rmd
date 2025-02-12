@@ -288,7 +288,7 @@ xinit = simulate_states_init(map             = env_init,
                              model_move      = model_move, 
                              datasets        = datasets_fwd,
                              model_obs_types = model_obs_types,
-                             n_particle      = 20_000, 
+                             n_particle      = 2000, 
                              direction       = "forward", 
                              output          = "Vector");
 
@@ -308,7 +308,7 @@ xinit = simulate_states_init(map             = env_init,
                              model_move      = model_move, 
                              datasets        = datasets_bwd,
                              model_obs_types = model_obs_types,
-                             n_particle      = 20_000, 
+                             n_particle      = 2000, 
                              direction       = "backward", 
                              output          = "Vector");
 
@@ -325,8 +325,19 @@ bwd = particle_filter(timeline   = timeline,
 The filter returns a `NamedTuple` that defines the time steps of the simulation, the simulated `State`s and other algorithm diagnostics.
 
 ```{julia}
-fwd 
-bwd
+# Forward run outputs
+fwd.states
+fwd.diagnostics
+fwd.callstats
+fwd.callstats.convergence
+fwd.callstats.time
+
+# Backward run outputs
+bwd.states
+bwd.diagnostics
+bwd.callstats
+bwd.callstats.convergence
+bwd.callstats.time
 ```
 
 ## Particle smoother
@@ -340,8 +351,16 @@ smo = particle_smoother_two_filter(timeline   = timeline,
                                    xfwd       = fwd.states[1:n_particle, :],
                                    xbwd       = bwd.states[1:n_particle, :],
                                    model_move = model_move,
-                                   n_sim      = 100);
-smo
+                                   vmap       = nothing,
+                                   n_sim      = 100, 
+                                   cache      = true);
+
+# Smooth outputs
+smo.states
+smo.diagnostics
+smo.callstats
+smo.callstats.convergence
+smo.callstats.time
 ```
 
 # Mapping
