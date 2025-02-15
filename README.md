@@ -202,7 +202,7 @@ On Linux, this step may require system libraries (see below).
 > we run most tests against that version. However, `Julia` 1.11 is now
 > also supported by `JuliaCall` (see
 > [here](https://github.com/Non-Contradiction/JuliaCall/issues/234)).
-> This README was last built on 2025-02-12 with Julia 1.11.3.
+> This README was last built on 2025-02-15 with Julia 1.11.3.
 
 5.  **Setup JuliaCall.** The next step is to set up `JuliaCall`, which
     provides the integration between `R` and `Julia`.
@@ -221,6 +221,7 @@ devtools::install_github("JuliaInterop/JuliaCall",
 # * This includes an installJulia argument if the above Julia installation options fail 
 # * Set `JULIA_HOME` if Julia is not found (see `?julia_setup()`)
 # * Note this may take several minutes
+# * Set `rebuild = TRUE` if you've previously used JuliaCall on an older R version
 library(JuliaCall)
 julia <- julia_setup()
 ```
@@ -236,7 +237,9 @@ If `julia_setup()` fails with `'Julia is not found'`, you should tell
 `R` the location of the `Julia` binary via `JULIA_HOME` (see
 `?JuliaCall::julia_setup()` and the
 [`JuliaCall`](https://cran.r-project.org/web/packages/JuliaCall)
-[README](https://cran.r-project.org/web/packages/JuliaCall/readme/README.html)
+[README](https://cran.r-project.org/web/packages/JuliaCall/readme/README.html),
+as well as the relevant `patter` GitHub
+[issues](https://github.com/edwardlavender/patter/issues?q=label%3Ainstallation)
 for troubleshooting and ways to get help).
 
 6.  **Install [`patter`](https://github.com/edwardlavender/patter).** To
@@ -282,10 +285,12 @@ feedback.
 library(patter)
 
 # Option (A): Connect to `Julia`: 
-# * Set JULIA_HOME if 'Julia not found'
-# * Set JULIA_PROJ to use a local Julia project (recommended)
-# * Set JULIA_NUM_THREADS to exploit multi-threading (recommended)
-# * See `julia_connect()` for guidance
+# * Set `JULIA_HOME` if 'Julia not found'
+# * Set `JULIA_PROJ` to use a local Julia project (recommended)
+# * Set `JULIA_NUM_THREADS` to exploit multi-threading (recommended)
+# * Set `.pkg_update = TRUE` if you've just installed a newer version of `patter`
+# * Set `JULIA_PATTER_SOURCE` = "dev" as well if you've installed from the `dev` branch
+# * See `julia_connect()` for further guidance
 julia <- julia_connect()
 ```
 
@@ -468,7 +473,7 @@ essential packages:
 
 ``` r
 library(patter)
-#> This is {patter} v.2.0.0. For an overview, see `?patter`. For support, contact edward.lavender@eawag.ch.
+#> This is {patter} v.2.0.0. For an overview, see `?patter`. For support, raise an issue at https://github.com/edwardlavender/patter/issues.
 library(data.table)
 library(dtplyr)
 library(dplyr, warn.conflicts = FALSE)
@@ -520,16 +525,17 @@ state      <- "StateXY"
 
 # Formulate a corresponding movement model:
 mobility   <- 750.0
-model_move <- model_move_xy(.mobility   = "750.0", 
-                            .dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
-                            .dbn_heading  = "Uniform(-pi, pi)")
+model_move <- model_move_xy(.mobility    = "750.0", 
+                            .dbn_length  = "truncated(Gamma(1, 250.0), upper = 750.0)",
+                            .dbn_heading = "Uniform(-pi, pi)")
 
 # Visualise realisations of the movement model (Windows/MacOS):
 map |> 
-  sim_path_walk(.timeline = timeline,
-                .state = state,
+  sim_path_walk(.timeline   = timeline,
+                .state      = state,
                 .model_move = model_move, 
-                .n_path = 4L, .one_page = TRUE) |> 
+                .n_path     = 4L, 
+                .one_page   = TRUE) |> 
   invisible()
 ```
 
@@ -552,8 +558,8 @@ det <-
 arc <-
   dat_archival |>
   filter(individual_id == 25L) |>
-  mutate(individual_id = NULL,
-         depth_sigma = 50,
+  mutate(individual_id  = NULL,
+         depth_sigma    = 50,
          depth_deep_eps = 50) |>
   rename(obs = depth) |>
   as.data.table()
@@ -637,7 +643,7 @@ head(fwd$diagnostics)
 fwd$callstats
 #>              timestamp         routine n_particle n_iter convergence     time
 #>                 <POSc>          <char>      <int>  <int>      <lgcl>    <num>
-#> 1: 2025-02-12 22:57:50 filter: forward      10000      1        TRUE 7.661901
+#> 1: 2025-02-15 21:52:19 filter: forward      10000      1        TRUE 7.313149
 
 # Backward run
 args$.yobs      <- yobs_bwd
@@ -666,7 +672,7 @@ head(bwd$diagnostics)
 bwd$callstats
 #>              timestamp          routine n_particle n_iter convergence     time
 #>                 <POSc>           <char>      <int>  <int>      <lgcl>    <num>
-#> 1: 2025-02-12 22:57:57 filter: backward      10000      1        TRUE 1.026864
+#> 1: 2025-02-15 21:52:26 filter: backward      10000      1        TRUE 1.070876
 ```
 
 ## Particle smoother
@@ -706,10 +712,10 @@ head(smo$diagnostics)
 smo$callstats
 #>              timestamp              routine n_particle n_iter convergence
 #>                 <POSc>               <char>      <int>  <int>      <lgcl>
-#> 1: 2025-02-12 22:57:59 smoother: two-filter        750     NA        TRUE
-#>       time
-#>      <num>
-#> 1: 5.34409
+#> 1: 2025-02-15 21:52:28 smoother: two-filter        750     NA        TRUE
+#>        time
+#>       <num>
+#> 1: 5.707504
 ```
 
 ## Mapping
@@ -721,7 +727,7 @@ samples as follows:
 ``` r
 # Estimate UD
 # * This must be done in a separate R session on Linux 
-ud <- map_dens(.map = map,
+ud <- map_dens(.map   = map,
                .coord = smo$states,
                .sigma = bw.h)$ud
 #> Observation window is gridded.

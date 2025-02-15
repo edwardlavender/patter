@@ -194,6 +194,7 @@ devtools::install_github("JuliaInterop/JuliaCall",
 # * This includes an installJulia argument if the above Julia installation options fail 
 # * Set `JULIA_HOME` if Julia is not found (see `?julia_setup()`)
 # * Note this may take several minutes
+# * Set `rebuild = TRUE` if you've previously used JuliaCall on an older R version
 library(JuliaCall)
 julia <- julia_setup()
 ```
@@ -205,7 +206,7 @@ julia <- julia_setup()
 isTRUE(try(julia_eval('true'), silent = TRUE))
 ```
 
-If `julia_setup()` fails with `'Julia is not found'`, you should tell `R` the location of the `Julia` binary via `JULIA_HOME` (see `?JuliaCall::julia_setup()` and the [`JuliaCall`](https://cran.r-project.org/web/packages/JuliaCall) [README](https://cran.r-project.org/web/packages/JuliaCall/readme/README.html) for troubleshooting and ways to get help). 
+If `julia_setup()` fails with `'Julia is not found'`, you should tell `R` the location of the `Julia` binary via `JULIA_HOME` (see `?JuliaCall::julia_setup()` and the [`JuliaCall`](https://cran.r-project.org/web/packages/JuliaCall) [README](https://cran.r-project.org/web/packages/JuliaCall/readme/README.html), as well as the relevant `patter` GitHub [issues](https://github.com/edwardlavender/patter/issues?q=label%3Ainstallation) for troubleshooting and ways to get help). 
 
 6. **Install [`patter`](https://github.com/edwardlavender/patter).** To install `patter` from the `main` branch, use: 
 
@@ -236,10 +237,12 @@ We recommend using [`renv`](https://rstudio.github.io/renv/articles/renv.html) (
 library(patter)
 
 # Option (A): Connect to `Julia`: 
-# * Set JULIA_HOME if 'Julia not found'
-# * Set JULIA_PROJ to use a local Julia project (recommended)
-# * Set JULIA_NUM_THREADS to exploit multi-threading (recommended)
-# * See `julia_connect()` for guidance
+# * Set `JULIA_HOME` if 'Julia not found'
+# * Set `JULIA_PROJ` to use a local Julia project (recommended)
+# * Set `JULIA_NUM_THREADS` to exploit multi-threading (recommended)
+# * Set `.pkg_update = TRUE` if you've just installed a newer version of `patter`
+# * Set `JULIA_PATTER_SOURCE` = "dev" as well if you've installed from the `dev` branch
+# * See `julia_connect()` for further guidance
 julia <- julia_connect()
 ```
 
@@ -422,16 +425,17 @@ state      <- "StateXY"
 
 # Formulate a corresponding movement model:
 mobility   <- 750.0
-model_move <- model_move_xy(.mobility   = "750.0", 
-                            .dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
-                            .dbn_heading  = "Uniform(-pi, pi)")
+model_move <- model_move_xy(.mobility    = "750.0", 
+                            .dbn_length  = "truncated(Gamma(1, 250.0), upper = 750.0)",
+                            .dbn_heading = "Uniform(-pi, pi)")
 
 # Visualise realisations of the movement model (Windows/MacOS):
 map |> 
-  sim_path_walk(.timeline = timeline,
-                .state = state,
+  sim_path_walk(.timeline   = timeline,
+                .state      = state,
                 .model_move = model_move, 
-                .n_path = 4L, .one_page = TRUE) |> 
+                .n_path     = 4L, 
+                .one_page   = TRUE) |> 
   invisible()
 
 ```
@@ -452,8 +456,8 @@ det <-
 arc <-
   dat_archival |>
   filter(individual_id == 25L) |>
-  mutate(individual_id = NULL,
-         depth_sigma = 50,
+  mutate(individual_id  = NULL,
+         depth_sigma    = 50,
          depth_deep_eps = 50) |>
   rename(obs = depth) |>
   as.data.table()
@@ -546,7 +550,7 @@ Particles can be used to reconstruct movement paths and patterns of space use. W
 ```{r}
 # Estimate UD
 # * This must be done in a separate R session on Linux 
-ud <- map_dens(.map = map,
+ud <- map_dens(.map   = map,
                .coord = smo$states,
                .sigma = bw.h)$ud
 
