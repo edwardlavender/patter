@@ -212,9 +212,9 @@ difftime(t2, t1)
 
 #### (10) Report tests ---------------------------------------------------------
 
-# Please report system specs * check failures
+# Please report system specs & check failures
 # @ https://github.com/edwardlavender/patter/issues.
-# Contact edward.lavender@eawag.ch for support.
+# Contact edward.lavender@eawag.ch for further support.
 # Thank you!
 
 

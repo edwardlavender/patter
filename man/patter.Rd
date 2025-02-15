@@ -160,9 +160,8 @@ Lavender, E. et al. (2023). An integrative modelling framework for passive acous
 \item For information on the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} algorithms, see Lavender et al. (\href{https://doi.org/10.1111/2041-210X.14193}{2023}).
 \item For information on \code{\link{patter}}'s predecessor, see \url{https://github.com/edwardlavender/flapper}.
 \item For further information on  \code{\link{patter}}, including useful resources, see \url{https://github.com/edwardlavender/patter}.
-\item For feature requests and bug reports, see \url{https://github.com/edwardlavender/patter/issues}.
+\item For support, feature requests and bug reports, raise an issue at \url{https://github.com/edwardlavender/patter/issues}.
 \item For the \code{Julia} backend, see \url{https://edwardlavender.github.io/Patter.jl}.
-\item For support, contact \href{mailto:edward.lavender@eawag.ch}{edward.lavender@eawag.ch}.
 }
 }
 \author{

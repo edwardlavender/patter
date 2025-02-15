@@ -130,9 +130,8 @@
 #' * For information on the [`flapper`](https://github.com/edwardlavender/flapper) algorithms, see Lavender et al. ([2023](https://doi.org/10.1111/2041-210X.14193)).
 #' * For information on [`patter`]'s predecessor, see \url{https://github.com/edwardlavender/flapper}.
 #' * For further information on  [`patter`], including useful resources, see \url{https://github.com/edwardlavender/patter}.
-#' * For feature requests and bug reports, see \url{https://github.com/edwardlavender/patter/issues}.
+#' * For support, feature requests and bug reports, raise an issue at \url{https://github.com/edwardlavender/patter/issues}.
 #' * For the `Julia` backend, see \url{https://edwardlavender.github.io/Patter.jl}.
-#' * For support, contact [edward.lavender@eawag.ch](mailto:edward.lavender@eawag.ch).
 #'
 #' @references Lavender, E. et al. (2023). An integrative modelling framework for passive acoustic telemetry. Methods in Ecology and Evolution. \url{https://doi.org/10.1111/2041-210X.14193}.
 #'
