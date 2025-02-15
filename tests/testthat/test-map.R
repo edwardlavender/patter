@@ -116,16 +116,15 @@ test_that("map_hr_*() functions work", {
   skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
 
   # Define hypothetical input SpatRaster
-  library(terra)
-  r <- rast()
-  n <- ncell(r)
+  r    <- terra::rast()
+  n    <- terra::ncell(r)
   # Define 'probability densities' around a point
-  i <- 2e4
+  i    <- 2e4
   r[i] <- 1
-  r <- distance(r)
-  r <- r / global(r, "sum")[1, 1]
+  r    <- terra::distance(r)
+  r    <- r / terra::global(r, "sum")[1, 1]
   # Convert zero 'probability densities' to NA
-  r <- classify(r, cbind(0, NA))
+  r <- terra::classify(r, cbind(0, NA))
   # terra::plot(r)
 
   # Check error handling
