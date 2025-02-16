@@ -15,6 +15,10 @@ test_that("pf_smoother_two_filter() works", {
   args$.direction <- "backward"
   bwd <- do.call(pf_filter, args)
 
+  # Continue if convergence = TRUE
+  expect_true(fwd$callstats$convergence)
+  expect_true(bwd$callstats$convergence)
+
   #### Validity map
   # Test set_vmap() with NULL inputs
   vmap <- set_vmap()
@@ -44,9 +48,9 @@ test_that("pf_smoother_two_filter() works", {
   # Check Julia handling
   # > For a valid point, extract should return 1.0
   julia_command('!isnothing(vmap)')
-  expect_true(julia_eval('!isnothing(vmap) && isone(Patter.extract(vmap, 4382.979, 4611.702))'))
+  expect_true(julia_eval('!isnothing(vmap) && isone(Patter.extract(vmap, 709774.3, 6259323))'))
   # > For points near the edge, extract should _not_ return 1.0
-  expect_false(julia_eval('!isnothing(vmap) && isone(Patter.extract(vmap, 367.0213, 5914.894))'))
+  expect_false(julia_eval('!isnothing(vmap) && isone(Patter.extract(vmap, 707837.2, 6259496))'))
 
   #### Smoother
 

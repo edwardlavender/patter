@@ -86,17 +86,8 @@ example_setup.pf_smoother_two_filter <- function(.fun, .connect = TRUE) {
 
   #### Define study system
   # Define map
-  # * Simulate depths without NAs for examples
-  map <- terra::rast(vals = 0,
-                     res = c(10, 10),
-                     xmin = 0, xmax = 1e4,
-                     ymin = 0, ymax = 1e4,
-                     crs = terra::crs(dat_gebco()))
-  map_xy        <- terra::as.data.frame(map, xy = TRUE)
-  map_xy$depth  <- 250 - 100 * cos(sqrt(map_xy$x^2 + map_xy$y^2) / (500 * 2 * pi))
-  map           <- terra::rasterize(as.matrix(map_xy[, c("x", "y")]),
-                                    map,
-                                    values = map_xy$depth)
+  # * Selection region without NAs for examples
+  map <- terra::crop(dat_gebco(), terra::ext(707383.2, 711829.3, 6257189, 6261438))
   set_map(map)
   # terra::plot(map)
   # Define timeline
@@ -143,13 +134,13 @@ example_setup.pf_smoother_two_filter <- function(.fun, .connect = TRUE) {
   #### Collate filter arguments
   list(map = map,
        pf_filter_args =
-         list(.timeline = timeline,
-              .state = state,
-              .xinit = NULL,
-              .yobs = yobs,
+         list(.timeline   = timeline,
+              .state      = state,
+              .xinit      = NULL,
+              .yobs       = yobs,
               .model_move = model_move,
               .n_particle = 1e4L,
-              .n_record = 100L)
+              .n_record   = 100L)
        )
 
 }

@@ -47,20 +47,25 @@ These functions are not memory safe. On Linux, they cannot be used within a Juli
 \examples{
 if (patter_run(.julia = FALSE, .geospatial = TRUE)) {
 
-  # Define template SpatRasters
-  mod <- obs <- terra::rast()
-  n <- terra::ncell(mod)
-  mod[] <- runif(n)
-  obs[] <- mod[] + rnorm(n)
+  set.seed(123L)
 
-  # Normalise template SpatRasters
-  mod   <- mod / terra::global(mod, "sum")[1, 1]
-  obs   <- obs / terra::global(obs, "sum")[1, 1]
+  # Generate hypothetical 'observed' utilisation distribution
+  obs        <- terra::setValues(dat_gebco(), NA)
+  obs[24073] <- 1
+  obs        <- terra::distance(obs)
+  obs        <- terra::mask(obs, dat_gebco())
+  obs        <- obs / terra::global(obs, "sum", na.rm = TRUE)[1, 1]
+
+  # Generate hypothetical modelled' distribution
+  mod    <- obs
+  mod[]  <- mod[] + rnorm(n = terra::ncell(mod), mean = 0, sd = 1e-5)
+  mod    <- terra::mask(mod, dat_gebco())
+  mod    <- mod / terra::global(mod, "sum", na.rm = TRUE)[1, 1]
 
   # Visualise 'observed' versus 'modelled' distributions
   pp <- par(mfrow = c(1, 2))
-  terra::plot(mod)
   terra::plot(obs)
+  terra::plot(mod)
   par(pp)
 
   # Calculate skill metrics
