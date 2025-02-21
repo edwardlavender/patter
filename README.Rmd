@@ -398,7 +398,7 @@ Second, we connect `R` to `Julia` and set the seed in `R` and `Julia` to ensure 
 ```{r, results = "hide"}
 julia_connect()
 julia_validate()
-set_seed()
+set_seed(123L)
 ```
 
 Third, we define the properties of our study area; namely, a `SpatRaster` of our study area that defines the area within which movements are possible and the timeline over which we will model movements:
@@ -430,6 +430,7 @@ model_move <- model_move_xy(.mobility    = "750.0",
                             .dbn_heading = "Uniform(-pi, pi)")
 
 # Visualise realisations of the movement model (Windows/MacOS):
+# (Paths are coloured by time step from purple (start) to yellow (end))
 map |> 
   sim_path_walk(.timeline   = timeline,
                 .state      = state,

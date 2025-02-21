@@ -202,7 +202,7 @@ On Linux, this step may require system libraries (see below).
 > we run most tests against that version. However, `Julia` 1.11 is now
 > also supported by `JuliaCall` (see
 > [here](https://github.com/Non-Contradiction/JuliaCall/issues/234)).
-> This README was last built on 2025-02-15 with Julia 1.11.3.
+> This README was last built on 2025-02-21 with Julia 1.11.3.
 
 5.  **Setup JuliaCall.** The next step is to set up `JuliaCall`, which
     provides the integration between `R` and `Julia`.
@@ -486,7 +486,7 @@ ensure reproducibility of our simulations:
 ``` r
 julia_connect()
 julia_validate()
-set_seed()
+set_seed(123L)
 ```
 
 Third, we define the properties of our study area; namely, a
@@ -530,6 +530,7 @@ model_move <- model_move_xy(.mobility    = "750.0",
                             .dbn_heading = "Uniform(-pi, pi)")
 
 # Visualise realisations of the movement model (Windows/MacOS):
+# (Paths are coloured by time step from purple (start) to yellow (end))
 map |> 
   sim_path_walk(.timeline   = timeline,
                 .state      = state,
@@ -643,7 +644,7 @@ head(fwd$diagnostics)
 fwd$callstats
 #>              timestamp         routine n_particle n_iter convergence     time
 #>                 <POSc>          <char>      <int>  <int>      <lgcl>    <num>
-#> 1: 2025-02-15 21:52:19 filter: forward      10000      1        TRUE 7.313149
+#> 1: 2025-02-21 17:12:44 filter: forward      10000      1        TRUE 7.533658
 
 # Backward run
 args$.yobs      <- yobs_bwd
@@ -672,7 +673,7 @@ head(bwd$diagnostics)
 bwd$callstats
 #>              timestamp          routine n_particle n_iter convergence     time
 #>                 <POSc>           <char>      <int>  <int>      <lgcl>    <num>
-#> 1: 2025-02-15 21:52:26 filter: backward      10000      1        TRUE 1.070876
+#> 1: 2025-02-21 17:12:52 filter: backward      10000      1        TRUE 1.055742
 ```
 
 ## Particle smoother
@@ -712,10 +713,10 @@ head(smo$diagnostics)
 smo$callstats
 #>              timestamp              routine n_particle n_iter convergence
 #>                 <POSc>               <char>      <int>  <int>      <lgcl>
-#> 1: 2025-02-15 21:52:28 smoother: two-filter        750     NA        TRUE
+#> 1: 2025-02-21 17:12:53 smoother: two-filter        750     NA        TRUE
 #>        time
 #>       <num>
-#> 1: 5.707504
+#> 1: 5.281717
 ```
 
 ## Mapping
