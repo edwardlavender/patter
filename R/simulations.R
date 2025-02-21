@@ -120,7 +120,7 @@ sim_array <- function(.map,
 #' * `.n_path` is an `integer` that defines the number of paths to simulate.
 #' @param .model_move A `character` string that defines the movement model (see [`ModelMove`] and [`glossary`]).
 #' @param .collect A `logical` variable that defines whether or not to collect outputs from the `Julia` session in `R`.
-#' @param .plot,.one_page Plot options, if `.collect = TRUE` (permitted on Windows and MacOS).
+#' @param .plot,.one_page Plot options, if `.collect = TRUE` (permitted on Windows and MacOS). If provided, simulated paths are plotted on `.map` and coloured by time step (via the internal function [`add_sp_path()`]).
 #' * `.plot` is a `logical` variable that defined whether or not to plot `.map` and simulated path(s). Each path is plotted on a separate plot.
 #' * `.one_page` is a logical variable that defines whether or not to produce all plots on a single page.
 #'

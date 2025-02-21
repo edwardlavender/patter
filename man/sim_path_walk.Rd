@@ -44,7 +44,7 @@ sim_path_walk(
 
 \item{.collect}{A \code{logical} variable that defines whether or not to collect outputs from the \code{Julia} session in \code{R}.}
 
-\item{.plot, .one_page}{Plot options, if \code{.collect = TRUE} (permitted on Windows and MacOS).
+\item{.plot, .one_page}{Plot options, if \code{.collect = TRUE} (permitted on Windows and MacOS). If provided, simulated paths are plotted on \code{.map} and coloured by time step (via the internal function \code{\link[=add_sp_path]{add_sp_path()}}).
 \itemize{
 \item \code{.plot} is a \code{logical} variable that defined whether or not to plot \code{.map} and simulated path(s). Each path is plotted on a separate plot.
 \item \code{.one_page} is a logical variable that defines whether or not to produce all plots on a single page.
