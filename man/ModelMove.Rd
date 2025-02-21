@@ -4,6 +4,7 @@
 \alias{ModelMove}
 \alias{model_move_xy}
 \alias{.model_move}
+\alias{model_move}
 \alias{ModelMoveXY}
 \alias{ModelMoveXYZ}
 \alias{ModelMoveCXY}

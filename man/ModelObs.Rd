@@ -3,6 +3,7 @@
 \name{ModelObs}
 \alias{ModelObs}
 \alias{.model_obs}
+\alias{model_obs}
 \alias{ModelObsAcousticLogisTrunc}
 \alias{ModelObsAcousticContainer}
 \alias{ModelObsDepthUniformSeabed}

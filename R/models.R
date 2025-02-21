@@ -38,7 +38,7 @@
 #' * See [`ModelObs`] for observation model structures;
 #' @author Edward Lavender
 #' @name State
-#' @aliases .state StateXY StateXYZ StateCXY StateCXYZ
+#' @aliases .state state StateXY StateXYZ StateCXY StateCXYZ
 NULL
 
 
@@ -98,7 +98,7 @@ NULL
 #' @inherit State seealso
 #' @author Edward Lavender
 #' @name ModelObs
-#' @aliases .model_obs ModelObsAcousticLogisTrunc ModelObsAcousticContainer ModelObsDepthUniformSeabed ModelObsDepthNormalTruncSeabed
+#' @aliases .model_obs model_obs ModelObsAcousticLogisTrunc ModelObsAcousticContainer ModelObsDepthUniformSeabed ModelObsDepthNormalTruncSeabed
 NULL
 
 #' @rdname ModelObs
@@ -467,7 +467,7 @@ plot.ModelObsDepthNormalTruncSeabed <- function(x,
 #' @inherit State seealso
 #' @author Edward Lavender
 #' @name ModelMove
-#' @aliases .model_move ModelMoveXY ModelMoveXYZ ModelMoveCXY ModelMoveCXYZ model_move_xy model_move_xyz model_move_cxy model_move_cxyz
+#' @aliases .model_move model_move ModelMoveXY ModelMoveXYZ ModelMoveCXY ModelMoveCXYZ model_move_xy model_move_xyz model_move_cxy model_move_cxyz
 
 #' @rdname ModelMove
 #' @export

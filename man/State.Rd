@@ -3,6 +3,7 @@
 \name{State}
 \alias{State}
 \alias{.state}
+\alias{state}
 \alias{StateXY}
 \alias{StateXYZ}
 \alias{StateCXY}
