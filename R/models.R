@@ -427,7 +427,10 @@ plot.ModelObsDepthNormalTruncSeabed <- function(x,
 #' * `.dbn_z`---the distribution of depths;
 #' * `.dbn_z_delta`---the distribution of changes in depth;
 #'
-#' @details Movement model sub-types are `Julia` structures that hold the components of movement models. From an `R`-user perspective, you can think of a [`ModelMove`] sub-type as an `S4`-[`class`]-like object, with slots for the components of a movement model. With a movement model instance, we can simulate movements and evaluate the density of movements from one state (location) to another.
+#' @details
+#'
+#' # Model structures
+#' Movement model sub-types are `Julia` structures that hold the components of movement models. From an `R`-user perspective, you can think of a [`ModelMove`] sub-type as an `S4`-[`class`]-like object, with slots for the components of a movement model. With a movement model instance, we can simulate movements and evaluate the density of movements from one state (location) to another.
 #'
 #' The following movement models are built in to [`Patter.jl`](https://edwardlavender.github.io/Patter.jl):
 #' * Random walks (RWs):
@@ -459,7 +462,27 @@ plot.ModelObsDepthNormalTruncSeabed <- function(x,
 #'
 #' In `Julia`, [`ModelMove`] instances are used to simulate states via [`Patter.simulate_step()`](https://edwardlavender.github.io/Patter.jl). In the particle smoother, the density of movement from one state to another is evaluated by [`Patter.logpdf_step()`](https://edwardlavender.github.io/Patter.jl). These are generic functions. Different methods are dispatched according to the input model. For the built-in [`ModelMove`] sub-types, corresponding methods for these routines are also built-in. For custom [`ModelMove`] sub-types, the methods need to be provided.
 #'
-#' To use custom [`ModelMove`] sub-types, see Examples.
+#' To use custom [`ModelMove`] sub-types, see `?State`.
+#'
+#' # Model development
+#'
+#' For inference, we encourage users to start with simple movement models (such as random walks or correlated random walks) and add complexity iteratively, as required. Movement models should be formulated, and parameterised, using available datasets, domain knowledge and literature. For example:
+#' * Lavender et al. ([2025](https://doi.org/10.1101/2025.02.13.638042)). In a study of flapper skate (_Dipturus intermedius_) movements, we formulated a behavioural-switching correlated random walk movement model. We gauged potential swimming speeds from analyses of movement rates between receivers and vertical activity (via [`get_mvt_mobility()`](https://edwardlavender.github.io/flapper/reference/get_mvt_mobility.html) in [`flapper`](https://github.com/edwardlavender/flapper)). Actual movement speeds can be affected by current speeds and we evaluated these using an ocean model (via [`fvcom.tbx`](https://github.com/edwardlavender/fvcom.tbx)). We also reviewed information in the literature for related species (from accelerometery, satellite tracking, flow tank experiments and trawl footage). These studies helped to bound our expectations for movement rates in flapper skate, in the absence of direct measurements. Given epistemic uncertainty, we also conducted analyses with 'restrictive' and 'flexible' movement models to analyse algorithm sensitivity.
+#' * Lavender et al. (in prep). In a study on lake trout (_Salvelinus namaycush_), we are leveraging swim-speed information from fine-scale positioning studies, accelerometer measurements and swim-tunnel experiments (plus other datasets such as underwater video) to parameterise our models. For this species, we can visualise the distributions of speed and turning angle measurements (with histograms) and develop data-driven models (e.g., using [`fitdistrplus::fitdist()`](https://cran.r-project.org/web/packages/fitdistrplus/vignettes/fitdistrplus_vignette.html)).
+#'
+#' For the particle filter, movement models must be defined at the resolution of the `.timeline` (see [`pf_filter()`]). For example, if you have a `.timeline` of two-minute time steps and a simple random walk, the distribution of step lengths (m) and headings (rad) should be defined for a two-minute time step (see [`model_move_xy()`]). All movements are truncated by the `.mobility` parameter. This is the maximum possible movement distance in the time between two time steps. Set `.mobility` based on the considerations above. Where necessary, you should also account for the discretisation errors in the timing of observations (e.g., see [`assemble_acoustics()`]). Since `.mobility` affects the tail of the distribution, the exact value of `.mobility` can be relatively unimportant, _providing it is large enough_. We recommend erring on the side of flexibility in cases of uncertainty.
+#'
+#' Note that model formulation and parameterisation can be an iterative process:
+#' * Develop initial model and observation models, drawing on available datasets, domain knowledge and literature;
+#' * Perform inference, using [`pf_filter()`];
+#' * Evaluate convergence;
+#' * In cases of convergence failures, re-evaluate the model(s) and try again;
+#' * Where necessary, run the algorithms with more restrictive or flexible models to analyse sensitivity;
+#'
+#' For advice for your study system, please raise an issue on [GitHub](https://github.com/edwardlavender/patter/issues).
+#'
+#' @references
+#' Lavender, E. et al. (2025). Animal tracking with particle algorithms for conservation. bioRvix. \url{https://doi.org/10.1101/2025.02.13.638042}
 #'
 #' @returns `model_move_*()` functions return a `character` string that defines a [`ModelMove`] instance for evaluation in `Julia`. The [`class`] of the output is `character` plus `ModelMove` and `ModelMoveXY`, `ModelMoveXYZ`, `ModelMoveCXY` or `ModelMoveCXYZ` (see [`plot.ModelMove`]). If the map (`env`) does not exist in `Julia`, an error is thrown.
 #'

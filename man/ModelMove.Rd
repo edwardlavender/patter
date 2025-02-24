@@ -57,7 +57,7 @@ model_move_cxyz(
 \description{
 \code{\link{ModelMove}} is Abstract Type in \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} that groups movement model sub-types, of which instances can be created via an \code{R} \verb{model_move_*()} function.
 }
-\details{
+\section{Model structures}{
 Movement model sub-types are \code{Julia} structures that hold the components of movement models. From an \code{R}-user perspective, you can think of a \code{\link{ModelMove}} sub-type as an \code{S4}-\code{\link{class}}-like object, with slots for the components of a movement model. With a movement model instance, we can simulate movements and evaluate the density of movements from one state (location) to another.
 
 The following movement models are built in to \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}}:
@@ -102,8 +102,30 @@ To plot the dimensions of a movement model, see \code{\link{plot.ModelMove}}. To
 
 In \code{Julia}, \code{\link{ModelMove}} instances are used to simulate states via \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.simulate_step()}}. In the particle smoother, the density of movement from one state to another is evaluated by \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.logpdf_step()}}. These are generic functions. Different methods are dispatched according to the input model. For the built-in \code{\link{ModelMove}} sub-types, corresponding methods for these routines are also built-in. For custom \code{\link{ModelMove}} sub-types, the methods need to be provided.
 
-To use custom \code{\link{ModelMove}} sub-types, see Examples.
+To use custom \code{\link{ModelMove}} sub-types, see \code{?State}.
 }
+
+\section{Model development}{
+For inference, we encourage users to start with simple movement models (such as random walks or correlated random walks) and add complexity iteratively, as required. Movement models should be formulated, and parameterised, using available datasets, domain knowledge and literature. For example:
+\itemize{
+\item Lavender et al. (\href{https://doi.org/10.1101/2025.02.13.638042}{2025}). In a study of flapper skate (\emph{Dipturus intermedius}) movements, we formulated a behavioural-switching correlated random walk movement model. We gauged potential swimming speeds from analyses of movement rates between receivers and vertical activity (via \href{https://edwardlavender.github.io/flapper/reference/get_mvt_mobility.html}{\code{get_mvt_mobility()}} in \href{https://github.com/edwardlavender/flapper}{\code{flapper}}). Actual movement speeds can be affected by current speeds and we evaluated these using an ocean model (via \href{https://github.com/edwardlavender/fvcom.tbx}{\code{fvcom.tbx}}). We also reviewed information in the literature for related species (from accelerometery, satellite tracking, flow tank experiments and trawl footage). These studies helped to bound our expectations for movement rates in flapper skate, in the absence of direct measurements. Given epistemic uncertainty, we also conducted analyses with 'restrictive' and 'flexible' movement models to analyse algorithm sensitivity.
+\item Lavender et al. (in prep). In a study on lake trout (\emph{Salvelinus namaycush}), we are leveraging swim-speed information from fine-scale positioning studies, accelerometer measurements and swim-tunnel experiments (plus other datasets such as underwater video) to parameterise our models. For this species, we can visualise the distributions of speed and turning angle measurements (with histograms) and develop data-driven models (e.g., using \href{https://cran.r-project.org/web/packages/fitdistrplus/vignettes/fitdistrplus_vignette.html}{\code{fitdistrplus::fitdist()}}).
+}
+
+For the particle filter, movement models must be defined at the resolution of the \code{.timeline} (see \code{\link[=pf_filter]{pf_filter()}}). For example, if you have a \code{.timeline} of two-minute time steps and a simple random walk, the distribution of step lengths (m) and headings (rad) should be defined for a two-minute time step (see \code{\link[=model_move_xy]{model_move_xy()}}). All movements are truncated by the \code{.mobility} parameter. This is the maximum possible movement distance in the time between two time steps. Set \code{.mobility} based on the considerations above. Where necessary, you should also account for the discretisation errors in the timing of observations (e.g., see \code{\link[=assemble_acoustics]{assemble_acoustics()}}). Since \code{.mobility} affects the tail of the distribution, the exact value of \code{.mobility} can be relatively unimportant, \emph{providing it is large enough}. We recommend erring on the side of flexibility in cases of uncertainty.
+
+Note that model formulation and parameterisation can be an iterative process:
+\itemize{
+\item Develop initial model and observation models, drawing on available datasets, domain knowledge and literature;
+\item Perform inference, using \code{\link[=pf_filter]{pf_filter()}};
+\item Evaluate convergence;
+\item In cases of convergence failures, re-evaluate the model(s) and try again;
+\item Where necessary, run the algorithms with more restrictive or flexible models to analyse sensitivity;
+}
+
+For advice for your study system, please raise an issue on \href{https://github.com/edwardlavender/patter/issues}{GitHub}.
+}
+
 \examples{
 if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
 
@@ -205,6 +227,9 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
   # See the help file for `?State` to use a new sub-type.
 
 }
+}
+\references{
+Lavender, E. et al. (2025). Animal tracking with particle algorithms for conservation. bioRvix. \url{https://doi.org/10.1101/2025.02.13.638042}
 }
 \seealso{
 The routines in \code{\link{patter}} for the simulation of individual movements, observations and statistical modelling are built upon three Abstract Types defined in \code{Julia}:
