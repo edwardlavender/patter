@@ -74,6 +74,8 @@ NULL
 #' * Set `.strict = FALSE` in [`pf_filter()`] to include time stamps and observations in the [`data.table`];
 #'
 #' @details
+#' # Model structures
+#'
 #' Observation model sub-types are `Julia` structures that hold the parameters of observation models. From an `R`-user perspective, you can think of a [`ModelObs`] sub-type as an `S4`-[`class`]-like object, with slots for the parameters of an observation model. With an observation model structure, we can simulate new observations and evaluate the log-probability of existing observations.
 #'
 #' The following observation models are built in to [`Patter.jl`](https://edwardlavender.github.io/Patter.jl):
@@ -91,6 +93,33 @@ NULL
 #' Internally in [`patter`] algorithms, observation model sub-types and parameters are instantiated and used to simulate observations or in the particle filter. The simulation of observations is implemented via [`Patter.simulate_obs()`](https://edwardlavender.github.io/Patter.jl). In the particle filter, log-probabilities are evaluated by [`Patter.logpdf_obs()`](https://edwardlavender.github.io/Patter.jl). These are generic functions. Different methods are dispatched according to the input model. For the built-in [`ModelObs`] sub-types, corresponding methods for these routines are also built-in. For custom [`ModelObs`] sub-types, the methods need to be provided.
 #'
 #' To use custom [`ModelObs`] sub-types, see Examples.
+#'
+#' # Model development
+#'
+#' Observation  models should be formulated, and parameterised, using available datasets, domain knowledge and literature. The appropriate model formulation/parameterisation depends on the data type and the study system. As noted above, [`patter`] provides built-in structures for acoustic and depth observations; user-defined structures for custom data types are also supported.
+#'
+#' **To parameterise acoustic observation models**, consider in-situ detection efficiency measurements (from drift tests and/or sentinel tags), manufacture guidelines and literature. Detection probability parameters can be estimated from in-situ measurements using generalised linear models. To estimate parameters for the default distance-decaying logistic detection probability model ([`ModelObsAcousticLogisTrunc`]):
+#' * Assemble a `data.frame` of detections and non-detections and a column of distances from receivers;
+#' * Model `glm(detection ~ distance, family = "binomial")`;
+#' * Take the estimated intercept and gradient as initial values for `receiver_alpha` and `receiver_beta`, respectively;
+#' * Set the maximum detection range (`receiver_gamma`) based on range tests, manufacturer specifications, domain knowledge and literature (e.g., Klinard et al. ([2019](https://doi.org/10.1186/s40317-019-0179-1))). Note that `detection_gamma` defines the distance beyond which detections are assumed impossible. Since this parameter affects the tail of the distribution, the exact value can be relatively unimportant, _providing it is large enough_. We recommend erring on the side of flexibility in cases of uncertainty. Note that manufacturer guidelines may considerably underestimate maximum detection ranges (see Klinard et al. ([2019](https://doi.org/10.1186/s40317-019-0179-1)) for an example).
+#'
+#' **To parameterise depth observation models**, you should consider:
+#' * Tag accuracy
+#' * Bathymetric accuracy
+#' * Tidal variation and storm surges
+#' * Species biology (e.g., benthic versus pelagic species)
+#'
+#' Note that model formulation and parameterisation can be an iterative processå:
+#' * Develop initial model and observation models, drawing on available datasets, domain knowledge and literature;
+#' * Perform inference, using [`pf_filter()`];
+#' * Evaluate convergence;
+#' * In cases of convergence failures, re-evaluate the model(s) and try again;
+#' * Where necessary, run the algorithms with more restrictive or flexible models to analyse sensitivity;
+#'
+#' For an example case-study analysis, see Lavender et al. ([2025](https://doi.org/10.1101/2025.02.13.638042)).
+#'
+#' For further information, see GitHub issues [23](https://github.com/edwardlavender/patter/issues/23), [31](https://github.com/edwardlavender/patter/issues/31) and [33](https://github.com/edwardlavender/patter/issues/33) or raise a new [issue](https://github.com/edwardlavender/patter/issues).
 #'
 #' @return `model_obs_*()` `R` wrapper functions return a named `list`, with a single element that defines the parameters of the observation models for the corresponding [`ModelObs`] structure.
 #'
@@ -480,9 +509,6 @@ plot.ModelObsDepthNormalTruncSeabed <- function(x,
 #' * Where necessary, run the algorithms with more restrictive or flexible models to analyse sensitivity;
 #'
 #' For advice for your study system, please raise an issue on [GitHub](https://github.com/edwardlavender/patter/issues).
-#'
-#' @references
-#' Lavender, E. et al. (2025). Animal tracking with particle algorithms for conservation. bioRvix. \url{https://doi.org/10.1101/2025.02.13.638042}
 #'
 #' @returns `model_move_*()` functions return a `character` string that defines a [`ModelMove`] instance for evaluation in `Julia`. The [`class`] of the output is `character` plus `ModelMove` and `ModelMoveXY`, `ModelMoveXYZ`, `ModelMoveCXY` or `ModelMoveCXYZ` (see [`plot.ModelMove`]). If the map (`env`) does not exist in `Julia`, an error is thrown.
 #'

@@ -228,9 +228,6 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
 
 }
 }
-\references{
-Lavender, E. et al. (2025). Animal tracking with particle algorithms for conservation. bioRvix. \url{https://doi.org/10.1101/2025.02.13.638042}
-}
 \seealso{
 The routines in \code{\link{patter}} for the simulation of individual movements, observations and statistical modelling are built upon three Abstract Types defined in \code{Julia}:
 \itemize{

@@ -65,7 +65,7 @@ See \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} or \code
 \description{
 \code{\link{ModelObs}} is Abstract Type in \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} that groups observation model sub-types. \verb{model_obs_*()} \code{R} functions create \code{\link{data.table}}s of observation model parameters which can be visualised in \code{R} (via \verb{plot.ModelObs*()} methods) and instantiated as \code{\link{ModelObs}} instances in \code{Julia}.
 }
-\details{
+\section{Model structures}{
 Observation model sub-types are \code{Julia} structures that hold the parameters of observation models. From an \code{R}-user perspective, you can think of a \code{\link{ModelObs}} sub-type as an \code{S4}-\code{\link{class}}-like object, with slots for the parameters of an observation model. With an observation model structure, we can simulate new observations and evaluate the log-probability of existing observations.
 
 The following observation models are built in to \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}}:
@@ -88,6 +88,40 @@ Internally in \code{\link{patter}} algorithms, observation model sub-types and p
 
 To use custom \code{\link{ModelObs}} sub-types, see Examples.
 }
+
+\section{Model development}{
+Observation  models should be formulated, and parameterised, using available datasets, domain knowledge and literature. The appropriate model formulation/parameterisation depends on the data type and the study system. As noted above, \code{\link{patter}} provides built-in structures for acoustic and depth observations; user-defined structures for custom data types are also supported.
+
+\strong{To parameterise acoustic observation models}, consider in-situ detection efficiency measurements (from drift tests and/or sentinel tags), manufacture guidelines and literature. Detection probability parameters can be estimated from in-situ measurements using generalised linear models. To estimate parameters for the default distance-decaying logistic detection probability model (\code{\link{ModelObsAcousticLogisTrunc}}):
+\itemize{
+\item Assemble a \code{data.frame} of detections and non-detections and a column of distances from receivers;
+\item Model \code{glm(detection ~ distance, family = "binomial")};
+\item Take the estimated intercept and gradient as initial values for \code{receiver_alpha} and \code{receiver_beta}, respectively;
+\item Set the maximum detection range (\code{receiver_gamma}) based on range tests, manufacturer specifications, domain knowledge and literature (e.g., Klinard et al. (\href{https://doi.org/10.1186/s40317-019-0179-1}{2019})). Note that \code{detection_gamma} defines the distance beyond which detections are assumed impossible. Since this parameter affects the tail of the distribution, the exact value can be relatively unimportant, \emph{providing it is large enough}. We recommend erring on the side of flexibility in cases of uncertainty. Note that manufacturer guidelines may considerably underestimate maximum detection ranges (see Klinard et al. (\href{https://doi.org/10.1186/s40317-019-0179-1}{2019}) for an example).
+}
+
+\strong{To parameterise depth observation models}, you should consider:
+\itemize{
+\item Tag accuracy
+\item Bathymetric accuracy
+\item Tidal variation and storm surges
+\item Species biology (e.g., benthic versus pelagic species)
+}
+
+Note that model formulation and parameterisation can be an iterative processå:
+\itemize{
+\item Develop initial model and observation models, drawing on available datasets, domain knowledge and literature;
+\item Perform inference, using \code{\link[=pf_filter]{pf_filter()}};
+\item Evaluate convergence;
+\item In cases of convergence failures, re-evaluate the model(s) and try again;
+\item Where necessary, run the algorithms with more restrictive or flexible models to analyse sensitivity;
+}
+
+For an example case-study analysis, see Lavender et al. (\href{https://doi.org/10.1101/2025.02.13.638042}{2025}).
+
+For further information, see GitHub issues \href{https://github.com/edwardlavender/patter/issues/23}{23}, \href{https://github.com/edwardlavender/patter/issues/31}{31} and \href{https://github.com/edwardlavender/patter/issues/33}{33} or raise a new \href{https://github.com/edwardlavender/patter/issues}{issue}.
+}
+
 \examples{
 if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
 
