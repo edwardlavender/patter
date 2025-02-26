@@ -9,14 +9,14 @@ An \code{S3}-\code{\link{class}} that defines the named \code{list} returned by 
 \section{Structure}{
 \code{\linkS4class{pf_particles}} is a label used to denote outputs from selected functions in \code{\link{patter}}. The structure of this class is not strictly defined and primarily exists to streamline documentation. At the time of writing, \code{\linkS4class{pf_particles}} objects may comprise the following elements:
 \itemize{
-\item \code{states}---A \code{\link{data.table}} of simulated states;
+\item \code{states}---\code{NULL} or a \code{\link{data.table}} of simulated states;
 \item \code{diagnostics}---A \code{\link{data.table}} of diagnostic statistics;
 \item \code{callstats}---A \code{\link{data.table}} of call statistics;
 }
 }
 
 \section{\code{states}}{
-\code{states} is a \code{\link{data.table}} that defines simulated particle states, with the following columns:
+Unless, \code{.batch} is specified in \code{\link[=pf_filter]{pf_filter()}} and \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}}, \code{states} is a \code{\link{data.table}} that defines simulated particle states, with the following columns:
 \itemize{
 \item \code{path_id}---An \code{integer} vector that defines the particle index;
 \item \code{timestep}---An \code{integer} vector that defines the time step;
@@ -25,6 +25,8 @@ An \code{S3}-\code{\link{class}} that defines the named \code{list} returned by 
 }
 
 Particles are equally weighted, as the \code{.n_record} particles recorded at each time step are selected by resampling (see \code{\link[=pf_filter]{pf_filter()}}).
+
+If the \code{.batch} is specified, \code{states} is \code{NULL}.
 }
 
 \section{\code{diagnostics}}{
@@ -39,11 +41,20 @@ Particles are equally weighted, as the \code{.n_record} particles recorded at ea
 \code{callstats} is a one-row \code{\link{data.table}} that stores call statistics for the function call. This includes the following columns:
 \itemize{
 \item \code{timestamp}---A \code{POSIXct} value that defines the start time of the function call;
-\item \code{routine}---A \code{character} vector that defines the routine (e.g., \code{"filter: forward"}, \code{"filter: backward"}, \code{"smoother: two-filter"});
+\item \code{routine}---A \code{character} vector that defines the routine:
+\itemize{
+\item \code{"filter: forward"};
+\item \code{"filter: backward"};
+\item \code{"smoother: two-filter"};
+}
 \item \code{n_particle}---An \code{integer} that defines the number of particles;
 \item \code{n_iter}---An \code{integer} that defines the number of iterations (trials);
 \item \code{error}---A \code{character} vector of error message(s);
-\item \code{convergence}---A \code{logical} variable that defines whether or not the algorithm converged (that is, reached the end of the time series);
+\item \code{convergence}---A \code{logical} variable that defines whether or not the algorithm converged
+\itemize{
+\item For \code{\link[=pf_filter]{pf_filter()}}, convergence is \code{TRUE} if the filter reaches the end of the time series;
+\item For \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}}, convergence is set to \code{TRUE} if proper smoothing is possible on at least 95 \% of time steps; i.e., if 95 \% of \code{diagnostics$ess} values are not \code{NaN} (see \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.particle_smoother_two_filter()}});
+}
 \item \code{time}---A \code{numeric} value that defines the duration (s) of the function call;
 }
 }

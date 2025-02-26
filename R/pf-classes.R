@@ -6,19 +6,21 @@
 #'
 #' [`pf_particles-class`] is a label used to denote outputs from selected functions in [`patter`]. The structure of this class is not strictly defined and primarily exists to streamline documentation. At the time of writing, [`pf_particles-class`] objects may comprise the following elements:
 #'
-#' * `states`---A [`data.table`] of simulated states;
+#' * `states`---`NULL` or a [`data.table`] of simulated states;
 #' * `diagnostics`---A [`data.table`] of diagnostic statistics;
 #' * `callstats`---A [`data.table`] of call statistics;
 #'
 #' # `states`
 #'
-#' `states` is a [`data.table`] that defines simulated particle states, with the following columns:
+#' Unless, `.batch` is specified in [`pf_filter()`] and [`pf_smoother_two_filter()`], `states` is a [`data.table`] that defines simulated particle states, with the following columns:
 #' * `path_id`---An `integer` vector that defines the particle index;
 #' * `timestep`---An `integer` vector that defines the time step;
 #' * `timestamp`---A `POSIXct` vector of time stamps;
 #' * Additional columns with the values of each state dimension (e.g., `map_value`, `x`, `y`);
 #'
 #' Particles are equally weighted, as the `.n_record` particles recorded at each time step are selected by resampling (see [`pf_filter()`]).
+#'
+#' If the `.batch` is specified, `states` is `NULL`.
 #'
 #' # `diagnostics`
 #'
@@ -30,11 +32,16 @@
 #'
 #' `callstats` is a one-row [`data.table`] that stores call statistics for the function call. This includes the following columns:
 #' * `timestamp`---A `POSIXct` value that defines the start time of the function call;
-#' * `routine`---A `character` vector that defines the routine (e.g., `"filter: forward"`, `"filter: backward"`, `"smoother: two-filter"`);
+#' * `routine`---A `character` vector that defines the routine:
+#'    * `"filter: forward"`;
+#'    * `"filter: backward"`;
+#'    * `"smoother: two-filter"`;
 #' * `n_particle`---An `integer` that defines the number of particles;
 #' * `n_iter`---An `integer` that defines the number of iterations (trials);
 #' * `error`---A `character` vector of error message(s);
-#' * `convergence`---A `logical` variable that defines whether or not the algorithm converged (that is, reached the end of the time series);
+#' * `convergence`---A `logical` variable that defines whether or not the algorithm converged
+#'    * For [`pf_filter()`], convergence is `TRUE` if the filter reaches the end of the time series;
+#'    * For [`pf_smoother_two_filter()`], convergence is set to `TRUE` if proper smoothing is possible on at least 95 % of time steps; i.e., if 95 % of `diagnostics$ess` values are not `NaN` (see [`Patter.particle_smoother_two_filter()`](https://edwardlavender.github.io/Patter.jl));
 #' * `time`---A `numeric` value that defines the duration (s) of the function call;
 #'
 #' @author Edward Lavender
