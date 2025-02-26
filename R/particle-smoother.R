@@ -18,6 +18,10 @@
 #'
 #' @param .n_sim An `integer` that defines the number of Monte Carlo simulations.
 #' @param .cache A `logical` variable that defines whether or not to pre-compute and cache movement-density normalisation constants for each unique particle.
+#' @param .batch (optional) Batching controls:
+#' * If [`pf_filter()`] was implemented with `.batch = NULL`, leave `.batch = NULL` here.
+#' * Otherwise, `.batch` must be specified. Pass a `character` vector of `.jld2` file paths to write particles in sequential batches to file (as `Julia` `Matrix{<:State}` objects) to `.batch`; for example: `./smo-1.jld2, ./smo-2.jld2, ...`. You must use the same number of batches as in [`pf_filter()`]. `.batch` is implemented as in that function.
+#'
 #' @param .collect A `logical` variable that defines whether or not to collect outputs from the `Julia` session in `R`.
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #' @details
@@ -29,7 +33,7 @@
 #' * [`set_vmap()`]:
 #'      * [`set_vmap()`] returns the validity map (a [`SpatRaster`]), invisibly;
 #' * [`pf_smoother_two_filter()`]:
-#'     * [`Patter.particle_smoother_two_filter()`](https://github.com/edwardlavender/Patter.jl) creates a NamedTuple in the `Julia` session (named `ptf`). If `.collect = TRUE`, [`pf_smoother_two_filter()`] collects the outputs in `R` as a [`pf_particles-class`] object. Otherwise, `invisible(NULL)` is returned.
+#'     * [`Patter.particle_smoother_two_filter()`](https://github.com/edwardlavender/Patter.jl) creates a NamedTuple in the `Julia` session (named `ptf`). If `.batch = NULL`, the NamedTuple contains particles (`states`) ; otherwise, the `states` element is `nothing` and `states` are written to `.jld2` files (as a  variable named `xsmo`). If `.collect = TRUE`, [`pf_smoother_two_filter()`] collects the outputs in `R` as a [`pf_particles-class`] object (the `states` element is `NULL` is `.batch` is used). Otherwise, `invisible(NULL)` is returned.
 #'
 #' @example man/examples/example-pf_smoother_two_filter.R
 #' @inherit assemble seealso
@@ -79,6 +83,7 @@ set_vmap  <- function(.map = NULL, .mobility = NULL, .vmap = NULL, .plot = FALSE
 pf_smoother_two_filter <- function(.n_particle = NULL,
                                    .n_sim = 100L,
                                    .cache = TRUE,
+                                   .batch = NULL,
                                    .collect = TRUE,
                                    .verbose = getOption("patter.verbose")) {
 
@@ -94,7 +99,7 @@ pf_smoother_two_filter <- function(.n_particle = NULL,
   if (!julia_exists("vmap")) {
     julia_command('vmap = nothing;')
   } else {
-    if (julia_eval('!isnothing(vmap)')) {
+    if (julia_eval('!isnothing(vmap)') && is.null(.batch)) {
       pf_obj <- name_particles(.fun = "pf_filter", .direction = "forward")
       .state <- as.character(julia_eval(glue('typeof({pf_obj}.states[1]);')))
       if (!(.state %in% c("StateXY", "StateCXY"))) {
@@ -108,7 +113,10 @@ pf_smoother_two_filter <- function(.n_particle = NULL,
   # * `timeline`, `xfwd`, `xbwd`, `model_move` and `vmap` exist in Julia
   # * `n_sim` & cache is defined below
   cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Running smoother..."))
-  pf_obj <- set_smoother_two_filter(.n_particle = .n_particle, .n_sim = .n_sim, .cache = .cache)
+  pf_obj <- set_smoother_two_filter(.n_particle = .n_particle,
+                                    .n_sim      = .n_sim,
+                                    .cache      = .cache,
+                                    .batch      = .batch)
 
   #### Get particles in R
   if (.collect) {

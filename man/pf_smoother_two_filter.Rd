@@ -11,6 +11,7 @@ pf_smoother_two_filter(
   .n_particle = NULL,
   .n_sim = 100L,
   .cache = TRUE,
+  .batch = NULL,
   .collect = TRUE,
   .verbose = getOption("patter.verbose")
 )
@@ -39,6 +40,12 @@ On Linux, the validity map cannot be created and set in the same \code{R} sessio
 
 \item{.cache}{A \code{logical} variable that defines whether or not to pre-compute and cache movement-density normalisation constants for each unique particle.}
 
+\item{.batch}{(optional) Batching controls:
+\itemize{
+\item If \code{\link[=pf_filter]{pf_filter()}} was implemented with \code{.batch = NULL}, leave \code{.batch = NULL} here.
+\item Otherwise, \code{.batch} must be specified. Pass a \code{character} vector of \code{.jld2} file paths to write particles in sequential batches to file (as \code{Julia} \verb{Matrix\{<:State\}} objects) to \code{.batch}; for example: \verb{./smo-1.jld2, ./smo-2.jld2, ...}. You must use the same number of batches as in \code{\link[=pf_filter]{pf_filter()}}. \code{.batch} is implemented as in that function.
+}}
+
 \item{.collect}{A \code{logical} variable that defines whether or not to collect outputs from the \code{Julia} session in \code{R}.}
 
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
@@ -51,7 +58,7 @@ On Linux, the validity map cannot be created and set in the same \code{R} sessio
 }
 \item \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}}:
 \itemize{
-\item \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.particle_smoother_two_filter()}} creates a NamedTuple in the \code{Julia} session (named \code{ptf}). If \code{.collect = TRUE}, \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}} collects the outputs in \code{R} as a \code{\linkS4class{pf_particles}} object. Otherwise, \code{invisible(NULL)} is returned.
+\item \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.particle_smoother_two_filter()}} creates a NamedTuple in the \code{Julia} session (named \code{ptf}). If \code{.batch = NULL}, the NamedTuple contains particles (\code{states}) ; otherwise, the \code{states} element is \code{nothing} and \code{states} are written to \code{.jld2} files (as a  variable named \code{xsmo}). If \code{.collect = TRUE}, \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}} collects the outputs in \code{R} as a \code{\linkS4class{pf_particles}} object (the \code{states} element is \code{NULL} is \code{.batch} is used). Otherwise, \code{invisible(NULL)} is returned.
 }
 }
 }
@@ -63,6 +70,8 @@ The two-filter smoother smooths particle samples from the particle filter (\code
 }
 \examples{
 if (patter_run()) {
+
+  library(JuliaCall)
 
   #### Set up example
   # Set up the particle filter with an example dataset
@@ -110,12 +119,51 @@ if (patter_run()) {
   # set_vmap(.map = map, .mobility = 750.0)
   smo <- pf_smoother_two_filter(.n_sim = 1000L)
 
-  #### Example (5): Analyse smoothed particles
+  #### Example (5): Batching workflow for filtering and smoothing
+  # (Use `.batch` to reduce memory demand)
+
+  ## Run forward filter with batching
+  folder          <- tempdir()
+  batch_fwd       <- file.path(folder, c("fwd-1.jld2", "fwd-2.jld2", "fwd-3.jld2"))
+  args$.direction <- "forward"
+  args$.batch     <- batch_fwd
+  args$.collect   <- TRUE
+  fwd <- do.call(pf_filter, args)
+  # In the output, the 'states' element is null
+  fwd$states
+  # Other elements are as expected
+  fwd$callstats
+  head(fwd$diagnostics)
+  # Confirm that batch files exist
+  stopifnot(all(file.exists(batch_fwd)))
+
+  ## Run backward filter with batching:
+  batch_bwd       <- file.path(folder, c("bwd-1.jld2", "bwd-2.jld2", "bwd-3.jld2"))
+  args$.direction <- "backward"
+  args$.batch     <- batch_bwd
+  bwd <- do.call(pf_filter, args)
+  summary(bwd)
+  stopifnot(all(file.exists(batch_bwd)))
+
+  ## Run smoothing with batching
+  # set_vmap(.map = map, .mobility = 750.0)
+  batch_smo <- file.path(folder, c("smo-1.jld2", "smo-2.jld2", "smo-3.jld2"))
+  smo       <- pf_smoother_two_filter(.batch = batch_smo)
+  summary(smo)
+  stopifnot(all(file.exists(batch_smo)))
+
+  ## Collate outputs in R
+  julia_command('smo_states = hcat([f["xsmo"] for f in map(jldopen, batch_smo)]...);')
+  smo$states <- julia_eval('Patter.r_get_states(smo_states, collect(1:length(timeline)), timeline);')
+  head(smo$states)
+
+  #### Example (6): Analyse smoothed particles
   # * See `map_*()` functions (e.g., `?map_dens()`) to map utilisation distributions
 
-  # Cleanup (reset vmap)
-  set_vmap()
 
+  # Cleanup
+  file_cleanup(folder)
+  set_vmap()
 }
 }
 \references{

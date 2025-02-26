@@ -446,3 +446,17 @@ julia_code <- function(.x) {
   # readLines(file)
   julia_source(file)
 }
+
+#' @rdname julia_helper
+#' @keywords internal
+
+# Define the number of particles for the smoother (nothing or integer)
+# (This avoids setting n_particle for the smoother in Julia)
+julia_n_particle <- function(.n_particle) {
+  if (is.null(.n_particle)) {
+    .n_particle <- "nothing"
+  } else {
+    .n_particle <- as.integer(.n_particle)
+  }
+  .n_particle
+}

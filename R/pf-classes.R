@@ -53,9 +53,11 @@ pf_particles <- function(.pf_obj, .call_start = NULL, call_end = Sys.time()) {
   out <- append(out, julia_eval(glue('Patter.r_get_particles({.pf_obj});')))
 
   # Process `states` data.table
-  out$states <-
-    out$states |>
-    setDT()
+  if (!is.null(out$states)) {
+    out$states <-
+      out$states |>
+      setDT()
+  }
 
   # Process `diagnostics` data.table
   out$diagnostics <-

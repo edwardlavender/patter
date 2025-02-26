@@ -17,6 +17,7 @@
 \alias{set_direction}
 \alias{set_states_init}
 \alias{set_t_resample}
+\alias{set_batch}
 \alias{set_pf_filter}
 \alias{set_cache}
 \alias{set_smoother_two_filter}
@@ -60,18 +61,21 @@ set_states_init(
 
 set_t_resample(.t_resample)
 
+set_batch(.batch, .type = c("fwd", "bwd", "smo"))
+
 set_pf_filter(
   .n_move,
   .n_resample,
   .t_resample,
   .n_record,
   .n_iter,
-  .direction
+  .direction,
+  .batch
 )
 
 set_cache(.cache)
 
-set_smoother_two_filter(.n_particle, .n_sim, .cache)
+set_smoother_two_filter(.n_particle, .n_sim, .cache, .batch)
 }
 \description{
 These are internal functions that assign objects to variable names in \code{Julia}.

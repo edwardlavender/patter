@@ -1,5 +1,7 @@
 if (patter_run()) {
 
+  library(JuliaCall)
+
   #### Set up example
   # Set up the particle filter with an example dataset
   # (See `?pf_filter()` for the full workflow)
@@ -46,10 +48,49 @@ if (patter_run()) {
   # set_vmap(.map = map, .mobility = 750.0)
   smo <- pf_smoother_two_filter(.n_sim = 1000L)
 
-  #### Example (5): Analyse smoothed particles
+  #### Example (5): Batching workflow for filtering and smoothing
+  # (Use `.batch` to reduce memory demand)
+
+  ## Run forward filter with batching
+  folder          <- tempdir()
+  batch_fwd       <- file.path(folder, c("fwd-1.jld2", "fwd-2.jld2", "fwd-3.jld2"))
+  args$.direction <- "forward"
+  args$.batch     <- batch_fwd
+  args$.collect   <- TRUE
+  fwd <- do.call(pf_filter, args)
+  # In the output, the 'states' element is null
+  fwd$states
+  # Other elements are as expected
+  fwd$callstats
+  head(fwd$diagnostics)
+  # Confirm that batch files exist
+  stopifnot(all(file.exists(batch_fwd)))
+
+  ## Run backward filter with batching:
+  batch_bwd       <- file.path(folder, c("bwd-1.jld2", "bwd-2.jld2", "bwd-3.jld2"))
+  args$.direction <- "backward"
+  args$.batch     <- batch_bwd
+  bwd <- do.call(pf_filter, args)
+  summary(bwd)
+  stopifnot(all(file.exists(batch_bwd)))
+
+  ## Run smoothing with batching
+  # set_vmap(.map = map, .mobility = 750.0)
+  batch_smo <- file.path(folder, c("smo-1.jld2", "smo-2.jld2", "smo-3.jld2"))
+  smo       <- pf_smoother_two_filter(.batch = batch_smo)
+  summary(smo)
+  stopifnot(all(file.exists(batch_smo)))
+
+  ## Collate outputs in R
+  julia_command('smo_states = hcat([f["xsmo"] for f in map(jldopen, batch_smo)]...);')
+  smo$states <- julia_eval('Patter.r_get_states(smo_states, collect(1:length(timeline)), timeline);')
+  head(smo$states)
+
+  #### Example (6): Analyse smoothed particles
   # * See `map_*()` functions (e.g., `?map_dens()`) to map utilisation distributions
 
-  # Cleanup (reset vmap)
-  set_vmap()
 
+  # Cleanup
+  file_cleanup(folder)
+  set_vmap()
 }

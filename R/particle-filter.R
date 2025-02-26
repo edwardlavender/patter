@@ -28,6 +28,17 @@
 #' @param .direction A `character` string that defines the direction of the filter:
 #' * `"forward"` runs the filter from `.timeline[1]:.timeline[length(.timeline)]`;
 #' * `"backward"` runs the filter from `.timeline[length(.timeline)]:.timeline[1]`;
+#'
+#' @param .batch (optional) Batching controls:
+#' * Use `NULL` to retain all particles for the whole `.timeline` (`.n_record` particles at each time step) in memory;
+#' * Use `character` vector of `.jld2` file paths to write particles in sequential batches to file (as `Julia` `Matrix{<:State}` objects); for example:
+#'    * `./fwd-1.jld2, ./fwd-2.jld2, ...` if `.direction = "forward"`;
+#'    * `./bwd-1.jld2, ./bwd-2.jld2, ...` if `.direction = "backward`;
+#'
+#' If specified, `.batch` is sorted alphanumerically (in `Julia`) such that 'lower' batches (e.g., `./fwd-1.jld2`, `./bwd-1.jld2`) align with the start of the `.timeline` and 'higher' batches (e.g., `./fwd-3.jld2`, `./bwd-3.jld2`) align with the end of the `.timeline` (irrespective of `.direction`). For smoothing, the same number of batches must be used for both filter runs (see [`pf_smoother_two_filter()`]).
+#'
+#' This option is designed to reduce memory demand (especially on clusters). Larger numbers of batches reduce memory demand, but incur the speed penalty of writing particles to disk. When there are only a handful of batches, this should be negligible. For examples of this argument in action, see [`pf_smoother_two_filter()`].
+#'
 #' @param .collect A `logical` variable that defines whether or not to collect outputs from the `Julia` session in `R`.
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
@@ -46,13 +57,19 @@
 #'
 #' The time complexity of the algorithm is \eqn{O(TN)}.
 #'
-#' The filter is implemented by the `Julia` function [`Patter.particle_filter()`](https://github.com/edwardlavender/Patter.jl). To multi-thread movement and likelihood evaluations, set the number of threads via [`julia_connect()`]. See [`Patter.particle_filter()`](https://github.com/edwardlavender/Patter.jl) or `JuliaCall::julia_help("particle_filter")` for further information.
+#' The filter is implemented by the `Julia` function [`Patter.particle_filter()`](https://github.com/edwardlavender/Patter.jl).
+#'
+#' To multi-thread movement and likelihood evaluations, set the number of threads via [`julia_connect()`].
+#'
+#' The filter record `.n_record` particles in memory at each time step. If `batch` is provided, the `.timeline` is split into `length(.batch)` batches. The filter still moves along the whole `.timeline`, but only records the particles for the current batch in memory. At the end of each batch, the particles for that batch are written to file. This reduces total memory demand.
+#'
+#' See [`Patter.particle_filter()`](https://github.com/edwardlavender/Patter.jl) or `JuliaCall::julia_help("particle_filter")` for further information.
 #'
 #' # Algorithms
 #'
 #' This is highly flexible routine for the reconstruction of the possible locations of an individual through time, given the data up to that time point. By modifying the observation models, it is straightforward to implement the ACPF, DCPF and ACDCPF algorithms introduced by Lavender et al. (2023) for reconstructing animal movements in passive acoustic telemetry systems using (a) acoustic time series, (b) archival time series and (c) acoustic and archival time series. [`pf_filter()`] thus replaces (and enhances) the [`flapper::ac()`](https://edwardlavender.github.io/flapper/reference/ac.html), [`flapper::dc()`](https://edwardlavender.github.io/flapper/reference/dc.html), [`flapper::acdc()`](https://edwardlavender.github.io/flapper/reference/acdc.html) and [`flapper::pf()`](https://edwardlavender.github.io/flapper/reference/pf.html) functions.
 #'
-#' @returns [`Patter.particle_filter()`](https://github.com/edwardlavender/Patter.jl) creates a NamedTuple in the `Julia` session (named  `pfwd` or `pbwd` depending on `.direction`). If `.collect = TRUE`, [`pf_filter()`] collects the outputs in `R` as a [`pf_particles-class`] object. Otherwise, `invisible(NULL)` is returned.
+#' @returns [`Patter.particle_filter()`](https://github.com/edwardlavender/Patter.jl) creates a NamedTuple in the `Julia` session (named  `pfwd` or `pbwd` depending on `.direction`). If `.batch = NULL`, the NamedTuple contains particles (`states`) ; otherwise, the `states` element is `nothing` and `states` are written to `.jld2` files (as variables named `xfwd` or `xbwd`). If `.collect = TRUE`, [`pf_filter()`] collects the outputs in `R` as a [`pf_particles-class`] object (the `states` element is `NULL` is `.batch` is used). Otherwise, `invisible(NULL)` is returned.
 #'
 #' @example man/examples/example-pf_filter.R
 #' @inherit assemble seealso
@@ -71,6 +88,7 @@ pf_filter <- function(.timeline,
                       .n_record = 1e3L,
                       .n_iter = 1L,
                       .direction = c("forward", "backward"),
+                      .batch = NULL,
                       .collect = TRUE,
                       .verbose = getOption("patter.verbose")) {
 
@@ -96,7 +114,8 @@ pf_filter <- function(.timeline,
                           .t_resample = .t_resample,
                           .n_record   = .n_record,
                           .n_iter     = .n_iter,
-                          .direction  = .direction)
+                          .direction  = .direction,
+                          .batch      = .batch)
 
   #### Check convergence
   # Issue a warning for convergence failures

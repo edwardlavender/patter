@@ -17,6 +17,7 @@ pf_filter(
   .n_record = 1000L,
   .n_iter = 1L,
   .direction = c("forward", "backward"),
+  .batch = NULL,
   .collect = TRUE,
   .verbose = getOption("patter.verbose")
 )
@@ -71,12 +72,26 @@ Guidance:
 \item \code{"backward"} runs the filter from \code{.timeline[length(.timeline)]:.timeline[1]};
 }}
 
+\item{.batch}{(optional) Batching controls:
+\itemize{
+\item Use \code{NULL} to retain all particles for the whole \code{.timeline} (\code{.n_record} particles at each time step) in memory;
+\item Use \code{character} vector of \code{.jld2} file paths to write particles in sequential batches to file (as \code{Julia} \verb{Matrix\{<:State\}} objects); for example:
+\itemize{
+\item \verb{./fwd-1.jld2, ./fwd-2.jld2, ...} if \code{.direction = "forward"};
+\item \verb{./bwd-1.jld2, ./bwd-2.jld2, ...} if \verb{.direction = "backward};
+}
+}
+
+If specified, \code{.batch} is sorted alphanumerically (in \code{Julia}) such that 'lower' batches (e.g., \verb{./fwd-1.jld2}, \verb{./bwd-1.jld2}) align with the start of the \code{.timeline} and 'higher' batches (e.g., \verb{./fwd-3.jld2}, \verb{./bwd-3.jld2}) align with the end of the \code{.timeline} (irrespective of \code{.direction}). For smoothing, the same number of batches must be used for both filter runs (see \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}}).
+
+This option is designed to reduce memory demand (especially on clusters). Larger numbers of batches reduce memory demand, but incur the speed penalty of writing particles to disk. When there are only a handful of batches, this should be negligible. For examples of this argument in action, see \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}}.}
+
 \item{.collect}{A \code{logical} variable that defines whether or not to collect outputs from the \code{Julia} session in \code{R}.}
 
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }
 \value{
-\href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.particle_filter()}} creates a NamedTuple in the \code{Julia} session (named  \code{pfwd} or \code{pbwd} depending on \code{.direction}). If \code{.collect = TRUE}, \code{\link[=pf_filter]{pf_filter()}} collects the outputs in \code{R} as a \code{\linkS4class{pf_particles}} object. Otherwise, \code{invisible(NULL)} is returned.
+\href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.particle_filter()}} creates a NamedTuple in the \code{Julia} session (named  \code{pfwd} or \code{pbwd} depending on \code{.direction}). If \code{.batch = NULL}, the NamedTuple contains particles (\code{states}) ; otherwise, the \code{states} element is \code{nothing} and \code{states} are written to \code{.jld2} files (as variables named \code{xfwd} or \code{xbwd}). If \code{.collect = TRUE}, \code{\link[=pf_filter]{pf_filter()}} collects the outputs in \code{R} as a \code{\linkS4class{pf_particles}} object (the \code{states} element is \code{NULL} is \code{.batch} is used). Otherwise, \code{invisible(NULL)} is returned.
 }
 \description{
 This function runs the particle filter. The filter samples possible states (typically locations, termed particles) of an animal at each time point given the data up to (and including) that time point and a movement model.
@@ -97,7 +112,13 @@ The filter comprises three stages:
 
 The time complexity of the algorithm is \eqn{O(TN)}.
 
-The filter is implemented by the \code{Julia} function \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.particle_filter()}}. To multi-thread movement and likelihood evaluations, set the number of threads via \code{\link[=julia_connect]{julia_connect()}}. See \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.particle_filter()}} or \code{JuliaCall::julia_help("particle_filter")} for further information.
+The filter is implemented by the \code{Julia} function \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.particle_filter()}}.
+
+To multi-thread movement and likelihood evaluations, set the number of threads via \code{\link[=julia_connect]{julia_connect()}}.
+
+The filter record \code{.n_record} particles in memory at each time step. If \code{batch} is provided, the \code{.timeline} is split into \code{length(.batch)} batches. The filter still moves along the whole \code{.timeline}, but only records the particles for the current batch in memory. At the end of each batch, the particles for that batch are written to file. This reduces total memory demand.
+
+See \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.particle_filter()}} or \code{JuliaCall::julia_help("particle_filter")} for further information.
 }
 
 \section{Algorithms}{

@@ -287,9 +287,38 @@ set_t_resample <- function(.t_resample) {
 #' @rdname julia_set
 #' @keywords internal
 
+# Set batch_fwd, batch_bwd or batch_smo
+# * Use different object names to enable smoothing
+set_batch <- function(.batch, .type = c("fwd", "bwd", "smo")) {
+  # Check file vector
+  .type <- match.arg(.type)
+  if (!is.null(.batch)) {
+    check_dir_exists(dirname(.batch[1]))
+    if (length(.batch) != length(unique(.batch))) {
+      abort("Each `.batch` element should be a unique `.jld2` file.")
+    }
+    if (!all(tools::file_ext(.batch) == "jld2")) {
+      abort("`.batch` elements should be `.jld2` files.")
+    }
+    if (any(file.exists(.batch))) {
+      warn("Existing `.batch` files will be overwritten.")
+    }
+  }
+  # Set batch Vector{String} or nothing (if .batch = NULL)
+  batch_vector <- glue("batch_{.type}")
+  julia_assign(batch_vector, .batch)
+  if (length(.batch) == 1L) {
+    julia_command(glue("{batch_vector} = [{batch_vector}];"))
+  }
+  invisible(batch_vector)
+}
+
+#' @rdname julia_set
+#' @keywords internal
+
 # Run the particle filter in Julia
 # * This defines a `fwd` or `bwd` object depending on `.direction`
-set_pf_filter <- function(.n_move, .n_resample, .t_resample, .n_record, .n_iter, .direction) {
+set_pf_filter <- function(.n_move, .n_resample, .t_resample, .n_record, .n_iter, .direction, .batch) {
   # Check inputs
   julia_check_exists("timeline", "xinit", "yobs", "model_move")
   .n_move     <- as.integer(.n_move)
@@ -297,22 +326,24 @@ set_pf_filter <- function(.n_move, .n_resample, .t_resample, .n_record, .n_iter,
   .n_record   <- as.integer(.n_record)
   .n_iter     <- as.integer(.n_iter)
   set_t_resample(.t_resample)
+  batch_vector <- set_batch(.batch, .type = ifelse(.direction == "forward", "fwd", "bwd"))
   # Define output name
   output <- name_particles(.fun = "pf_filter", .direction = .direction)
   # Run the filter
   julia_command(
     glue(
       '
-      {output} = particle_filter(timeline = timeline,
-                                 xinit = xinit,
-                                 yobs = yobs,
+      {output} = particle_filter(timeline   = timeline,
+                                 xinit      = xinit,
+                                 yobs       = yobs,
                                  model_move = model_move,
-                                 n_move = {.n_move},
-                                 n_record = {.n_record},
+                                 n_move     = {.n_move},
+                                 n_record   = {.n_record},
                                  n_resample = {.n_resample},
                                  t_resample = t_resample,
-                                 n_iter = {.n_iter},
-                                 direction = "{.direction}");
+                                 n_iter     = {.n_iter},
+                                 direction  = "{.direction}",
+                                 batch      = {batch_vector});
     '
     )
   )
@@ -324,7 +355,6 @@ set_pf_filter <- function(.n_move, .n_resample, .t_resample, .n_record, .n_iter,
 
 # Set cache for two-filter smoother (true/false)
 # * Use julia_assign() to handle T, TRUE, F, FALSE
-
 set_cache <- function(.cache) {
   check_inherits(.cache, "logical")
   julia_assign("cache", .cache)
@@ -335,27 +365,37 @@ set_cache <- function(.cache) {
 #' @keywords internal
 
 # Run the two-filter smoother in Julia
-set_smoother_two_filter <- function(.n_particle, .n_sim, .cache) {
+set_smoother_two_filter <- function(.n_particle, .n_sim, .cache, .batch) {
+
+  #### Define output names
   output <- name_particles(.fun = "pf_smoother_two_filter")
   fwd    <- name_particles(.fun = "pf_filter", .direction = "forward")
   bwd    <- name_particles(.fun = "pf_filter", .direction = "backward")
-  # Define the number of particles for the smoother & associated arguments
-  # * If NULL, we use all particles from the forward simulation
-  if (is.null(.n_particle)) {
-    .n_particle <- julia_eval(glue('size({fwd}.states)[1]'))
-  }
-  .n_particle <- as.integer(.n_particle)
+
+  #### Define inputs to smoother
+  .n_particle <- julia_n_particle(.n_particle)
   .n_sim      <- as.integer(.n_sim)
   set_cache(.cache)
-  # Run smoother
+  batch_vector <- set_batch(.batch, .type = "smo")
+  if (is.null(.batch)) {
+    julia_command(glue('xfwd_for_smo = {fwd}.states;')) # {fwd}.states[1:{.n_particle}, :]
+    julia_command(glue('xbwd_for_smo = {bwd}.states;')) # {bwd}.states[1:{.n_particle}, :]
+  } else {
+    julia_command('xfwd_for_smo = batch_fwd;')
+    julia_command('xbwd_for_smo = batch_bwd;')
+  }
+
+  #### Run smoother
   julia_check_exists("timeline", fwd, bwd, "model_move", "vmap", "cache")
   cmd    <- glue('{output} = particle_smoother_two_filter(timeline   = timeline,
-                                                          xfwd       = {fwd}.states[1:{.n_particle}, :],
-                                                          xbwd       = {bwd}.states[1:{.n_particle}, :],
+                                                          xfwd       = xfwd_for_smo,
+                                                          xbwd       = xbwd_for_smo,
                                                           model_move = model_move,
                                                           vmap       = vmap,
+                                                          n_particle = {.n_particle},
                                                           n_sim      = {.n_sim},
-                                                          cache      = cache);')
+                                                          cache      = cache,
+                                                          batch      = {batch_vector});')
   julia_command(cmd)
   invisible(output)
 }

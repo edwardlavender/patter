@@ -28,6 +28,7 @@
 \alias{julia_timeline}
 \alias{julia_check_exists}
 \alias{julia_code}
+\alias{julia_n_particle}
 \title{Julia: helpers}
 \usage{
 julia_session()
@@ -81,6 +82,8 @@ julia_timeline(.x)
 julia_check_exists(...)
 
 julia_code(.x)
+
+julia_n_particle(.n_particle)
 }
 \description{
 A set of \code{Julia} helper functions.
