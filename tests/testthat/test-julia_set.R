@@ -104,4 +104,31 @@ test_that("Additional Julia set_*() functions work", {
   set_t_resample(c(5, 10, 20))
   expect_equal(c(5L, 10L, 20L), julia_eval('t_resample'))
 
+  # set_batch()
+  # set_batch(NULL) returns nothing in Julia
+  batch <- NULL
+  set_batch(batch, .type = "fwd")
+  expect_true(julia_eval('isnothing(batch_fwd)'))
+  # set_batch() with one element returns Julia _Vector_
+  batch <- c("./fwd-1.jld2")
+  set_batch(batch, .type = "fwd")
+  expect_true(julia_eval('batch_fwd == ["./fwd-1.jld2"]'))
+  # set_batch() with multiple elements also returns Julia Vector
+  batch <- c("./fwd-1.jld2", "./fwd-2.jld2")
+  set_batch(batch, .type = "fwd")
+  expect_true(julia_eval('batch_fwd == ["./fwd-1.jld2", "./fwd-2.jld2"]'))
+  # set_batch() works for other .types
+  # a) fwd
+  batch_vector <- set_batch(NULL, .type = "fwd")
+  expect_equal(batch_vector, "batch_fwd")
+  expect_true(julia_eval('isnothing(batch_fwd)'))
+  # b) bwd
+  batch_vector <- set_batch(NULL, .type = "bwd")
+  expect_equal(batch_vector, "batch_bwd")
+  expect_true(julia_eval('isnothing(batch_bwd)'))
+  # c) smo
+  batch_vector <- set_batch(NULL, .type = "smo")
+  expect_equal(batch_vector, "batch_smo")
+  expect_true(julia_eval('isnothing(batch_smo)'))
+
 })
