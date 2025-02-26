@@ -107,7 +107,7 @@ test_that("pf_smoother_two_filter() fails if filters don't match", {
   # Run the particle filter backwards with few particles
   args$.direction  <- "backward"
   args$.n_particle <- 10
-  bwd <- do.call(pf_filter, args)
+  bwd <- do.call(pf_filter, args) |> suppressWarnings()
   expect_false(bwd$callstats$convergence)
 
   # Run smoother
@@ -175,6 +175,6 @@ test_that("pf_smoother_two_filter() works with batching", {
     expect_warning("Existing `.batch` files will be overwritten.") |>
     expect_error("Forward and backward sample do not match!")
 
-  cleanup(folder)
+  file_cleanup(folder)
 
 })
