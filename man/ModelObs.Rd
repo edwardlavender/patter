@@ -97,7 +97,7 @@ Observation  models should be formulated, and parameterised, using available dat
 \item Assemble a \code{data.frame} of detections and non-detections and a column of distances from receivers;
 \item Model \code{glm(detection ~ distance, family = "binomial")};
 \item Take the estimated intercept and gradient as initial values for \code{receiver_alpha} and \code{receiver_beta}, respectively;
-\item Set the maximum detection range (\code{receiver_gamma}) based on range tests, manufacturer specifications, domain knowledge and literature (e.g., Klinard et al. (\href{https://doi.org/10.1186/s40317-019-0179-1}{2019})). Note that \code{detection_gamma} defines the distance beyond which detections are assumed impossible. Since this parameter affects the tail of the distribution, the exact value can be relatively unimportant, \emph{providing it is large enough}. We recommend erring on the side of flexibility in cases of uncertainty. Note that manufacturer guidelines may considerably underestimate maximum detection ranges (see Klinard et al. (\href{https://doi.org/10.1186/s40317-019-0179-1}{2019}) for an example).
+\item Set the maximum detection range (\code{receiver_gamma}) based on range tests, manufacturer specifications, domain knowledge and literature (e.g., Klinard et al. (\href{https://doi.org/10.1186/s40317-019-0179-1}{2019})). Note that \code{receiver_gamma} defines the distance beyond which detections are assumed impossible. Since this parameter affects the tail of the distribution, the exact value can be relatively unimportant, \emph{providing it is large enough}. We recommend erring on the side of flexibility in cases of uncertainty. Note that manufacturer guidelines may considerably underestimate maximum detection ranges (see Klinard et al. (\href{https://doi.org/10.1186/s40317-019-0179-1}{2019}) for an example).
 }
 
 \strong{To parameterise depth observation models}, you should consider:
@@ -108,7 +108,7 @@ Observation  models should be formulated, and parameterised, using available dat
 \item Species biology (e.g., benthic versus pelagic species)
 }
 
-Note that model formulation and parameterisation can be an iterative processå:
+Note that model formulation and parameterisation can be an iterative process:
 \itemize{
 \item Develop initial model and observation models, drawing on available datasets, domain knowledge and literature;
 \item Perform inference, using \code{\link[=pf_filter]{pf_filter()}};

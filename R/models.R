@@ -102,7 +102,7 @@ NULL
 #' * Assemble a `data.frame` of detections and non-detections and a column of distances from receivers;
 #' * Model `glm(detection ~ distance, family = "binomial")`;
 #' * Take the estimated intercept and gradient as initial values for `receiver_alpha` and `receiver_beta`, respectively;
-#' * Set the maximum detection range (`receiver_gamma`) based on range tests, manufacturer specifications, domain knowledge and literature (e.g., Klinard et al. ([2019](https://doi.org/10.1186/s40317-019-0179-1))). Note that `detection_gamma` defines the distance beyond which detections are assumed impossible. Since this parameter affects the tail of the distribution, the exact value can be relatively unimportant, _providing it is large enough_. We recommend erring on the side of flexibility in cases of uncertainty. Note that manufacturer guidelines may considerably underestimate maximum detection ranges (see Klinard et al. ([2019](https://doi.org/10.1186/s40317-019-0179-1)) for an example).
+#' * Set the maximum detection range (`receiver_gamma`) based on range tests, manufacturer specifications, domain knowledge and literature (e.g., Klinard et al. ([2019](https://doi.org/10.1186/s40317-019-0179-1))). Note that `receiver_gamma` defines the distance beyond which detections are assumed impossible. Since this parameter affects the tail of the distribution, the exact value can be relatively unimportant, _providing it is large enough_. We recommend erring on the side of flexibility in cases of uncertainty. Note that manufacturer guidelines may considerably underestimate maximum detection ranges (see Klinard et al. ([2019](https://doi.org/10.1186/s40317-019-0179-1)) for an example).
 #'
 #' **To parameterise depth observation models**, you should consider:
 #' * Tag accuracy
@@ -110,7 +110,7 @@ NULL
 #' * Tidal variation and storm surges
 #' * Species biology (e.g., benthic versus pelagic species)
 #'
-#' Note that model formulation and parameterisation can be an iterative processå:
+#' Note that model formulation and parameterisation can be an iterative process:
 #' * Develop initial model and observation models, drawing on available datasets, domain knowledge and literature;
 #' * Perform inference, using [`pf_filter()`];
 #' * Evaluate convergence;
