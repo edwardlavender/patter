@@ -82,8 +82,11 @@ if (patter_run()) {
   stopifnot(all(file.exists(batch_smo)))
 
   ## Collate outputs in R
-  julia_command('smo_states = hcat([f["xsmo"] for f in map(jldopen, batch_smo)]...);')
-  smo$states <- julia_eval('Patter.r_get_states(smo_states, collect(1:length(timeline)), timeline);')
+  julia_command('
+    smo_states = hcat([f["xsmo"] for f in map(jldopen, batch_smo)]...);')
+  smo$states <- julia_eval('
+    Patter.r_get_states(smo_states, collect(1:length(timeline)), timeline);
+    ')
   head(smo$states)
 
   #### Example (6): Analyse smoothed particles
