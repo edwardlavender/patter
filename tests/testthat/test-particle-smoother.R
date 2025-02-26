@@ -115,3 +115,66 @@ test_that("pf_smoother_two_filter() fails if filters don't match", {
     expect_error("Forward and backward sample do not match!")
 
 })
+
+test_that("pf_smoother_two_filter() works with batching", {
+
+  folder <- tempdir()
+  setup  <- example_setup("pf_smoother_two_filter")
+  args   <- setup$pf_filter_args
+
+  ## Run forward filter with batching
+  batch_fwd       <- file.path(folder, c("fwd-1.jld2", "fwd-2.jld2", "fwd-3.jld2"))
+  args$.direction <- "forward"
+  args$.batch     <- batch_fwd
+  fwd <- do.call(pf_filter, args)
+  # Check outputs
+  is.null(fwd$states) |> expect_true()
+  fwd$callstats |> inherits("data.table") |> expect_true()
+  fwd$diagnostics |> inherits("data.table") |> expect_true()
+  batch_fwd |> file.exists() |> all() |> expect_true()
+
+  ## Run backward filter with batching:
+  batch_bwd       <- file.path(folder, c("bwd-1.jld2", "bwd-2.jld2", "bwd-3.jld2"))
+  args$.direction <- "backward"
+  args$.batch     <- batch_bwd
+  bwd <- do.call(pf_filter, args)
+  # Check outputs
+  is.null(bwd$states) |> expect_true()
+  bwd$callstats |> inherits("data.table") |> expect_true()
+  bwd$diagnostics |> inherits("data.table") |> expect_true()
+  batch_bwd |> file.exists() |> all() |> expect_true()
+
+  ## Run smoothing with batching
+  batch_smo <- file.path(folder, c("smo-1.jld2", "smo-2.jld2", "smo-3.jld2"))
+  smo <- pf_smoother_two_filter(.batch = batch_smo)
+  # Check outputs
+  is.null(smo$states) |> expect_true()
+  smo$callstats |> inherits("data.table") |> expect_true()
+  smo$diagnostics |> inherits("data.table") |> expect_true()
+  batch_smo |> file.exists() |> all() |> expect_true()
+
+  ## Test warning for repeated runs
+  smo <- pf_smoother_two_filter(.batch = batch_smo, .n_particle = 25) |>
+    expect_warning("Existing `.batch` files will be overwritten.")
+
+  ## Test that smoothing works with fewer particles
+  smo <- pf_smoother_two_filter(.batch = batch_smo, .n_particle = 25) |>
+    suppressWarnings()
+  expect_equal(smo$diagnostics$ess[1], 25)
+  expect_equal(smo$diagnostics$ess[nrow(smo$diagnostics)], 25)
+  expect_true(all(smo$diagnostics$ess <= 25))
+
+  # Test that smoothing fails when filters don't match
+  args$.direction  <- "backward"
+  args$.batch      <- batch_bwd
+  args$.n_particle <- args$.n_record # 100 particles
+  bwd <- do.call(pf_filter, args) |>
+    expect_warning("Existing `.batch` files will be overwritten.") |>
+    expect_warning("The particle filter failed to converge.")
+  pf_smoother_two_filter(.batch = batch_smo) |>
+    expect_warning("Existing `.batch` files will be overwritten.") |>
+    expect_error("Forward and backward sample do not match!")
+
+  cleanup(folder)
+
+})
