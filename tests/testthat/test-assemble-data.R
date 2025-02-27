@@ -151,7 +151,6 @@ test_that("assemble_acoustics() works", {
 test_that("assemble_archival() works", {
 
   # Multiple archival observations in the same step throw a warning
-
   archival <- data.table(timestamp =
                            as.POSIXct(c(
                              "2016-01-01 00:00:00",
@@ -201,6 +200,137 @@ test_that("assemble_archival() works", {
                          sensor_id = 1L,
                          obs = 1:3L)
   expect_equal(output, expected)
+
+})
+
+test_that("assemble_xinit_containers() works", {
+
+  skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
+
+  # Define map
+  map <- dat_gebco()
+
+  # Define timeline
+  timeline <- seq(as.POSIXct("2016-03-01 00:00:00", tz = "UTC"),
+                  as.POSIXct("2016-04-01 00:00:00"),
+                  by = "2 mins")
+  timeline <- timeline[1:1440]
+
+  #### Check containers for capture location
+  # Define capture location
+  capture_xy       <- data.table(x = 708913.6, y = 6256280)
+  # Compute containers
+  xinit_containers <-
+    assemble_xinit_containers(.timeline = timeline,
+                              .xinit = list(forward = capture_xy,
+                                            backward = NULL),
+                              .radius = 750,
+                              .mobility = 750,
+                              .threshold = 3000)
+  # Expected containers
+  capture_containers <-
+    data.table(timestamp = as.POSIXct(c("2016-03-01 00:00:00",
+                                        "2016-03-01 00:02:00",
+                                        "2016-03-01 00:04:00",
+                                        "2016-03-01 00:06:00"),
+                                      tz = "UTC"),
+               obs = c(1, 1, 1, 1),
+               sensor_id = c(0, 0, 0, 0),
+               centroid_x = c(708913.6, 708913.6, 708913.6, 708913.6),
+               centroid_y = c(6256280, 6256280, 6256280, 6256280),
+               radius = c(750, 1500, 2250, 3000))
+  # Check outputs
+  check_named_list(xinit_containers)
+  check_names(xinit_containers, c("forward", "backward"))
+  expect_null(xinit_containers$forward)
+  expect_equal(xinit_containers$backward, capture_containers)
+
+  #### Check containers for backward run
+  # Define recapture location
+  recapture_xy         <- data.table(x = 707816.5, y = 6265746)
+  # Compute containers
+  xinit_containers <-
+    assemble_xinit_containers(.timeline = timeline,
+                              .xinit = list(forward = NULL,
+                                            backward = recapture_xy),
+                              .radius = 750,
+                              .mobility = 750,
+                              .threshold = 3000)
+  # Expected containers
+  recapture_containers <-
+    data.table(timestamp = as.POSIXct(c("2016-03-02 23:52:00",
+                                        "2016-03-02 23:54:00",
+                                        "2016-03-02 23:56:00",
+                                        "2016-03-02 23:58:00"),
+                                      tz = "UTC"),
+               obs = c(1, 1, 1, 1),
+               sensor_id = c(0, 0, 0, 0),
+               centroid_x = c(707816.5, 707816.5, 707816.5, 707816.5),
+               centroid_y = c(6265746, 6265746, 6265746, 6265746),
+               radius = c(3000, 2250, 1500, 750)
+    )
+  # Check outputs
+  check_named_list(xinit_containers)
+  check_names(xinit_containers, c("forward", "backward"))
+  expect_equal(xinit_containers$forward, recapture_containers)
+  expect_null(xinit_containers$backward)
+
+  #### Check containers if both capture & recapture locations known
+  xinit_containers <-
+    assemble_xinit_containers(.timeline = timeline,
+                              .xinit = list(forward = capture_xy,
+                                            backward = recapture_xy),
+                              .radius = 750,
+                              .mobility = 750,
+                              .threshold = 3000)
+  check_named_list(xinit_containers)
+  check_names(xinit_containers, c("forward", "backward"))
+  expect_equal(xinit_containers$forward, recapture_containers)
+  expect_equal(xinit_containers$backward, capture_containers)
+
+  #### Check multiple possible capture/recapture locations are permitted:
+  # (i) Define possible starting locations
+  capture_xy <-
+    cbind(capture_xy$x, capture_xy$y) |>
+    terra::vect(crs = terra::crs(map)) |>
+    terra::buffer(width = 500) |>
+    terra::spatSample(size = 10L) |>
+    terra::crds(df = TRUE) |>
+    setDT()
+  # (ii) Define possible recapture locations
+  recapture_xy <-
+    cbind(recapture_xy$x, recapture_xy$y) |>
+    terra::vect(crs = terra::crs(map)) |>
+    terra::buffer(width = 500) |>
+    terra::spatSample(size = 10L) |>
+    terra::crds(df = TRUE) |>
+    setDT()
+  # (iii) Define containers
+  xinit_containers <-
+    assemble_xinit_containers(.timeline = timeline,
+                              .xinit = list(forward = capture_xy,
+                                            backward = recapture_xy),
+                              .radius = 750,
+                              .mobility = 750,
+                              .threshold = 3000)
+  # (iv) Check containers
+  # * Standard checks
+  check_named_list(xinit_containers)
+  check_names(xinit_containers, c("forward", "backward"))
+  # * Check centroids
+  capture_centroid   <- cbind(mean(capture_xy$x), mean(capture_xy$y))
+  recapture_centroid <- cbind(mean(recapture_xy$x), mean(recapture_xy$y))
+  expect_true(all(xinit_containers$forward$centroid_x == recapture_centroid[1]))
+  expect_true(all(xinit_containers$forward$centroid_y == recapture_centroid[2]))
+  expect_true(all(xinit_containers$backward$centroid_x == capture_centroid[1]))
+  expect_true(all(xinit_containers$backward$centroid_y == capture_centroid[2]))
+  # * Check radii
+  buffer <- max(terra::distance(recapture_centroid, as.matrix(recapture_xy), lonlat = FALSE))
+  expect_equal(xinit_containers$forward$radius,
+               c(buffer + 750 * 3, buffer + 750 * 2, buffer + 750))
+  buffer <- max(terra::distance(capture_centroid, as.matrix(capture_xy), lonlat = FALSE))
+  expect_equal(xinit_containers$backward$radius,
+               c(buffer + 750, buffer + 750 * 2, buffer + 750 * 3))
 
 })
 
@@ -259,8 +389,8 @@ test_that("assemble_acoustics_containers() works", {
                                         tz = "UTC"),
                  obs = c(1, 1, 1, 1),
                  sensor_id = c(3, 4, 3, 4),
-                 receiver_x = c(3, 4, 3, 4),
-                 receiver_y = c(3, 4, 3, 4),
+                 centroid_x = c(3, 4, 3, 4),
+                 centroid_y = c(3, 4, 3, 4),
                  radius = c(2000, 2000, 1500, 1500)
                ))
 
@@ -284,8 +414,8 @@ test_that("assemble_acoustics_containers() works", {
                                           "2016-01-01 00:08:00", "2016-01-01 00:08:00"), tz = "UTC"),
                  obs = c(1, 1, 1, 1, 1, 1, 1, 1),
                  sensor_id = c(1, 2, 1, 2, 3, 4, 3, 4),
-                 receiver_x = c(1, 2, 1, 2, 3, 4, 3, 4),
-                 receiver_y = c(1, 2, 1, 2, 3, 4, 3, 4),
+                 centroid_x = c(1, 2, 1, 2, 3, 4, 3, 4),
+                 centroid_y = c(1, 2, 1, 2, 3, 4, 3, 4),
                  radius = c(1500, 1500, 2000, 2000, 1500, 1500, 2000, 2000)
                ))
 
@@ -329,9 +459,9 @@ test_that("assemble_acoustics_containers() works", {
                                         tz = "UTC"),
                  obs = rep(1, 21),
                  sensor_id = c(26, rep(3, 20)),
-                 receiver_x = c(dat_moorings$receiver_x[dat_moorings$receiver_id == 26],
+                 centroid_x = c(dat_moorings$receiver_x[dat_moorings$receiver_id == 26],
                                 rep(dat_moorings$receiver_x[dat_moorings$receiver_id == 3], 20)),
-                 receiver_y =  c(dat_moorings$receiver_y[dat_moorings$receiver_id == 26],
+                 centroid_y =  c(dat_moorings$receiver_y[dat_moorings$receiver_id == 26],
                                  rep(dat_moorings$receiver_y[dat_moorings$receiver_id == 3], 20)),
                  radius = c(1250, 9750, 9250, 8750, 8250, 7750, 7250, 6750, 6250, 5750, 5250,
                             4750, 4250, 3750, 3250, 2750, 2250, 1750, 1250, 1750, 1250)

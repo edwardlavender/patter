@@ -1,9 +1,74 @@
-# Assemble acoustic containers forwards or backwards in time
-# * .bbox is an optional 4-row matrix of boundary coordinates
+# Assemble capture/recapture containers forwards/backwards in time
+.assemble_xinit_containers <- function(.timeline,
+                                        .xinit = list(),
+                                        .radius,
+                                        .mobility,
+                                        .map = NULL,
+                                        .threshold = NULL,
+                                        .direction = c("forward", "backward")) {
+
+  # Define direction
+  .direction <- match.arg(.direction)
+
+  # Define container information for the 'ending' coordinate
+  # * If direction = "forward", .xinit$backward defines the container coordinates
+  # * If direction = "backward", .xinit$forward defines the container coordinates
+  if (.direction == "forward") {
+    cinfo <- .xinit$backward
+  } else if (.direction == "backward") {
+    cinfo <- .xinit$forward
+  }
+  if (is.null(cinfo)) {
+    return(NULL)
+  }
+
+  # Define container coordinates
+  # * cx, cy are container coordinates
+  # * radius is container radius
+  if (nrow(cinfo) == 1L) {
+    cx     <- cinfo$x
+    cy     <- cinfo$y
+    radius <- .radius
+  } else {
+    # Use the central point if multiple points provided
+    # radius is defined as the maximum distance from the centre to a point
+    # (plus the .radius buffer)
+    cx     <- mean(cinfo$x)
+    cy     <- mean(cinfo$y)
+    radius <- max(dist_2d(cbind(cx, cy), cbind(cinfo$x, cinfo$y, pairwise = TRUE)))
+    radius <- radius + .radius
+  }
+
+  # Define sequence of radii
+  # For .direction = "forward", radii shrink _forward_ in time
+  # For .direction = "backward", radii shrink _backward_ in time
+  # radii[1] or radii[T] = radius
+  radii <- radius + (1:length(.timeline) - 1) * .mobility
+  if (.direction == "forward") {
+    radii <- rev(radii)
+  }
+
+  # Build containers data.table
+  # * Use sensor_id = 0L
+  # * (This shouldn't be confused for a receiver id (1, ..., n_receiver))
+  containers <-
+    data.table(timestamp  = .timeline,
+               obs        = 1L,
+               sensor_id  = 0L,
+               centroid_x = cx,
+               centroid_y = cy,
+               radius     = radii) |>
+    filter_containers(.map = .map, .threshold = .threshold)
+
+  # Return containers
+  containers
+}
+
+# Assemble acoustic containers forwards/backwards in time
 .assemble_acoustics_containers <- function(.timeline,
                                            .acoustics,
                                            .mobility,
-                                           .bbox,
+                                           .map,
                                            .threshold,
                                            .direction = c("forward", "backward")) {
 
@@ -87,7 +152,7 @@
   # - timestamp (required)
   # - sensor_id (required)
   # - obs (nominally 1, unused)
-  # - receiver_x, receiver_y, radius (ModelObsAcousticContainer parameters)
+  # - centroid_x, centroid_y, radius
   containers <-
     acoustics |>
     # Define obs (nominally 1, unused)
@@ -107,28 +172,14 @@
     # * ... a) receiver- and time-specific detection range
     # * ... b) the maximum moveable distance in the time before the next detection
     mutate(radius = .data$receiver_gamma + .data$max_dist_mobility) |>
-    select("timestamp", "obs", "sensor_id", "receiver_x", "receiver_y", "radius") |>
+    select("timestamp",
+           "obs",
+           "sensor_id",
+           centroid_x = "receiver_x", centroid_y = "receiver_y", "radius") |>
     filter(!is.na(.data$sensor_id) & !is.na(.data$radius)) |>
+    # Filter containers
+    filter_containers(.map = .map, .threshold = .threshold) |>
     as.data.table()
-
-  # Restrict containers by `.threshold`
-  # * For speed, we only implement acoustic containers
-  # * ... when the distance an individual must be from a receiver is < .threshold
-  # * If .bbox is supplied, .threshold is set as the maximum distance
-  # * ... from each receiver to the edge of the study area
-  # * Otherwise, a user-supplied (i.e., smaller) value may be used
-  if (!is.null(.bbox) | !is.null(.threshold)) {
-    if (!is.null(.bbox)) {
-      # Compute maximum distance to boundary coordinates as `.threshold`
-      .threshold <-
-        cbind(containers$receiver_x, containers$receiver_y) |>
-        dist_2d(.bbox, pairwise = FALSE) |>
-        rowMax()
-    }
-    # Filter containers by .threshold
-    radius     <- NULL
-    containers <- containers[radius <= .threshold, ]
-  }
 
   # Return containers
   containers
@@ -169,6 +220,16 @@ list_data_next <- function(.anest.data) {
   out$data_next
 }
 
+# Get the maximum value of each row, using Rfast if available
+rowMax <- function(.x) {
+  if (requireNamespace("Rfast", quietly = TRUE)) {
+    Rfast::rowMaxs(.x, value = TRUE)
+  } else {
+    warn("Install Rfast for faster rowMax() function.")
+    apply(.x, 1, max)
+  }
+}
+
 # Get the boundary box of a .map as a two-columm matrix
 map_bbox <- function(.map) {
   # Define bb
@@ -182,12 +243,41 @@ map_bbox <- function(.map) {
   bb[1:4, ]
 }
 
-# Get the maximum value of each row, using Rfast if available
-rowMax <- function(.x) {
-  if (requireNamespace("Rfast", quietly = TRUE)) {
-    Rfast::rowMaxs(.x, value = TRUE)
-  } else {
-    warn("Install Rfast for faster rowMax() function.")
-    apply(.x, 1, max)
+# Filter containers
+# * For speed, we only implement containers
+# * ... when the distance an individual must be from a point is < .threshold
+# * If .bbox is supplied, .threshold is set as the maximum distance
+# * ... from each point to the edge of the study area
+# * Otherwise, a user-supplied (i.e., smaller) value may be used
+filter_containers <- function(.containers, .map, .threshold) {
+
+  # Check inputs
+  if (!is.null(.map) & !is.null(.threshold)) {
+    .threshold <- NULL
+    warn("`.map` is used in place of `.threshold`.")
   }
+
+  # Define .threshold automatically from .map, if unspecified
+  if (!is.null(.map)) {
+    # (A) Define boundary box
+    bb <- .map
+    if (inherits(.map, c( "SpatRaster", "SpatVector"))) {
+      bb <- map_bbox(.map)
+    } else if (!(inherits(.map, "matrix") && nrow(.map) == 4L && ncol(.map) == 2L)) {
+      abort("`.map` should be a SpatRaster, SpatVector or 4-row matrix of boundary coordinates.")
+    }
+    # (B) Define .threshold as maximum distance to boundary box
+    .threshold <-
+      cbind(.containers$centroid_x, .containers$centroid_y) |>
+      dist_2d(bb, pairwise = FALSE) |>
+      rowMax()
+  }
+
+  # Filter containers by .threshold
+  if (!is.null(.threshold)) {
+    .containers <- .containers[.containers$radius <= .threshold, ]
+  }
+
+  # Return filtered containers
+  .containers
 }

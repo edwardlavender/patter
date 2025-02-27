@@ -258,11 +258,11 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
                                          depth_deep_eps = 20))
 
   # Define the .yobs list for each run of the particle filter
-  yobs_fwd <- list(ModelObsAcousticLogisTrunc = acoustics,
-                   ModelObsAcousticContainer = containers$forward,
+  yobs_fwd <- list(ModelObsAcousticLogisTrunc     = acoustics,
+                   ModelObsContainer              = containers$forward,
                    ModelObsDepthNormalTruncSeabed = archival)
-  yobs_bwd <- list(ModelObsAcousticLogisTrunc = acoustics,
-                   ModelObsAcousticContainer = containers$backward,
+  yobs_bwd <- list(ModelObsAcousticLogisTrunc     = acoustics,
+                   ModelObsContainer              = containers$backward,
                    ModelObsDepthNormalTruncSeabed = archival)
 
   #### Visualise realisations of the movement model (the prior)

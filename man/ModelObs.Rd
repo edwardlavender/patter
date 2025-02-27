@@ -5,22 +5,22 @@
 \alias{.model_obs}
 \alias{model_obs}
 \alias{ModelObsAcousticLogisTrunc}
-\alias{ModelObsAcousticContainer}
 \alias{ModelObsDepthUniformSeabed}
 \alias{ModelObsDepthNormalTruncSeabed}
+\alias{ModelObsContainer}
 \alias{model_obs_acoustic_logis_trunc}
-\alias{model_obs_acoustic_container}
 \alias{model_obs_depth_uniform_seabed}
 \alias{model_obs_depth_normal_trunc_seabed}
+\alias{model_obs_container}
 \title{Observation models}
 \usage{
 model_obs_acoustic_logis_trunc(.data, .strict = TRUE)
 
-model_obs_acoustic_container(.data, .strict = TRUE)
-
 model_obs_depth_uniform_seabed(.data, .strict = TRUE)
 
 model_obs_depth_normal_trunc_seabed(.data, .strict = TRUE)
+
+model_obs_container(.data, .strict = TRUE)
 }
 \arguments{
 \item{.data}{A \code{\link{data.table}} that contains observation model parameters.
@@ -30,12 +30,6 @@ model_obs_depth_normal_trunc_seabed(.data, .strict = TRUE)
 \item \code{sensor_id}
 \item \code{receiver_x} and \code{receiver_y}
 \item \code{receiver_alpha}, \code{receiver_beta} and \code{receiver_gamma}
-}
-\item For \code{\link{ModelObsAcousticContainer}}, required columns are:
-\itemize{
-\item \code{sensor_id}
-\item \code{receiver_x} and \code{receiver_y}
-\item \code{radius}
 }
 \item For \code{\link{ModelObsDepthUniformSeabed}}, required columns are:
 \itemize{
@@ -48,6 +42,12 @@ model_obs_depth_normal_trunc_seabed(.data, .strict = TRUE)
 \item \code{sensor_id}
 \item \code{depth_sigma}
 \item \code{depth_deep_eps}
+}
+\item For \code{\link{ModelObsContainer}}, required columns are:
+\itemize{
+\item \code{sensor_id}
+\item \code{container_x} and \code{container_y}
+\item \code{radius}
 }
 }
 
@@ -71,9 +71,9 @@ Observation model sub-types are \code{Julia} structures that hold the parameters
 The following observation models are built in to \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}}:
 \itemize{
 \item \code{\link{ModelObsAcousticLogisTrunc}}
-\item \code{\link{ModelObsAcousticContainer}}
 \item \code{\link{ModelObsDepthUniformSeabed}}
 \item \code{\link{ModelObsDepthNormalTruncSeabed}}
+\item \code{\link{ModelObsContainer}}
 }
 
 In \code{\link{patter}}, observation models are required:

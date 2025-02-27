@@ -52,11 +52,6 @@ NULL
 #'      * `receiver_x` and `receiver_y`
 #'      * `receiver_alpha`, `receiver_beta` and `receiver_gamma`
 #'
-#' * For [`ModelObsAcousticContainer`], required columns are:
-#'      * `sensor_id`
-#'      * `receiver_x` and `receiver_y`
-#'      * `radius`
-#'
 #' * For [`ModelObsDepthUniformSeabed`], required columns are:
 #'      * `sensor_id`
 #'      * `depth_shallow_eps`
@@ -66,6 +61,11 @@ NULL
 #'      * `sensor_id`
 #'      * `depth_sigma`
 #'      * `depth_deep_eps`
+#'
+#' * For [`ModelObsContainer`], required columns are:
+#'      * `sensor_id`
+#'      * `container_x` and `container_y`
+#'      * `radius`
 #'
 #' See [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) or `JuliaCall::julia_help("ModelObs")` for details.
 #'
@@ -80,9 +80,9 @@ NULL
 #'
 #' The following observation models are built in to [`Patter.jl`](https://edwardlavender.github.io/Patter.jl):
 #' * [`ModelObsAcousticLogisTrunc`]
-#' * [`ModelObsAcousticContainer`]
 #' * [`ModelObsDepthUniformSeabed`]
 #' * [`ModelObsDepthNormalTruncSeabed`]
+#' * [`ModelObsContainer`]
 #'
 #' In [`patter`], observation models are required:
 #' * To simulate new observational datasets, via [`sim_observations()`];
@@ -127,7 +127,7 @@ NULL
 #' @inherit State seealso
 #' @author Edward Lavender
 #' @name ModelObs
-#' @aliases .model_obs model_obs ModelObsAcousticLogisTrunc ModelObsAcousticContainer ModelObsDepthUniformSeabed ModelObsDepthNormalTruncSeabed
+#' @aliases .model_obs model_obs ModelObsAcousticLogisTrunc ModelObsDepthUniformSeabed ModelObsDepthNormalTruncSeabed ModelObsContainer
 NULL
 
 #' @rdname ModelObs
@@ -159,32 +159,6 @@ model_obs_acoustic_logis_trunc <- function(.data, .strict = TRUE) {
     class = c("list", "ModelObs", "ModelObsAcousticLogisTrunc")
   )
 
-}
-
-#' @rdname ModelObs
-#' @export
-
-# Acoustic containers
-model_obs_acoustic_container <- function(.data, .strict = TRUE) {
-  .data <- copy(.data)
-  if (rlang::has_name(.data, "receiver_id")) {
-    setnames(.data, "receiver_id", "sensor_id")
-  }
-  cols <- c("sensor_id", "receiver_x", "receiver_y", "radius")
-  check_names(.data, cols)
-  if (.strict) {
-    .data <-
-      .data |>
-      select(all_of(cols)) |>
-      as.data.table()
-  }
-  # Define structure
-  .data        <- list(.data)
-  names(.data) <- "ModelObsAcousticContainer"
-  structure(
-    .data,
-    class = c("list", "ModelObs", "ModelObsAcousticContainer")
-  )
 }
 
 #' @rdname ModelObs
@@ -231,6 +205,31 @@ model_obs_depth_normal_trunc_seabed <- function(.data, .strict = TRUE) {
   )
 }
 
+#' @rdname ModelObs
+#' @export
+
+# Containers
+model_obs_container <- function(.data, .strict = TRUE) {
+  .data <- copy(.data)
+  if (rlang::has_name(.data, "receiver_id")) {
+    setnames(.data, "receiver_id", "sensor_id")
+  }
+  cols <- c("sensor_id", "centroid_x", "centroid_y", "radius")
+  check_names(.data, cols)
+  if (.strict) {
+    .data <-
+      .data |>
+      select(all_of(cols)) |>
+      as.data.table()
+  }
+  # Define structure
+  .data        <- list(.data)
+  names(.data) <- "ModelObsContainer"
+  structure(
+    .data,
+    class = c("list", "ModelObs", "ModelObsContainer")
+  )
+}
 
 #' @title Observation model plots
 #' @description [`plot()`] methods for observation models (see [`ModelObs`]).
@@ -240,7 +239,7 @@ model_obs_depth_normal_trunc_seabed <- function(.data, .strict = TRUE) {
 #'      * `missing` (default) plots all unique curves;
 #'      *  An `integer` vector of sensor IDs plots curves for selected sensors;
 #'      * `NULL` plots curves for all sensors;
-#' * `.radius`: For [`plot.ModelObsAcousticContainer()`], `.radius` controls the radii for which distributions are shown:
+#' * `.radius`: For [`plot.ModelObsContainer()`], `.radius` controls the radii for which distributions are shown:
 #'      * `missing` (default) plots distributions for first three unique radii;
 #'      *  A vector of radii plots curves for selected radii;
 #'      * `NULL` plots distributions for all radii;
@@ -255,10 +254,10 @@ model_obs_depth_normal_trunc_seabed <- function(.data, .strict = TRUE) {
 #' Observation model ([`ModelObs`]) structures are objects that define the parameters of an observation model. The model specifies the probability of an observation (e.g., a particular depth record) given the data (e.g., a depth measurement).
 #'
 #' * [`plot.ModelObsAcousticLogisTrunc()`] plots detection probability as a function of distance from a receiver;
-#' * [`plot.ModelObsAcousticContainer()`] plots a uniform distribution for the probability of a _future_ acoustic detection given the maximum possible distance (container radius) from the receiver (and a maximum movement speed) at the current time;
 #' * [`plot.ModelObsDepthUniformSeabed()`] plots a uniform distribution for the probability of a depth observation around a particular `.seabed` depth;
 #' * [`plot.ModelObsDepthNormalTruncSeabed()`] plot a truncated normal distribution for the probability of a depth observation around a particularly `.seabed` depth;
-#'
+#' * [`plot.ModelObsContainer()`] plots a uniform distribution for the probability of a _future_ observation (e.g., detection) given the maximum possible distance (container radius) from the container centroid (e.g., receiver), and a maximum movement speed, at the current time;
+
 #' @return The functions produce a [`plot`]. `invisible(NULL)` is returned.
 #' @example man/examples/example-ModelObs-plot.R
 #' @author Edward Lavender
@@ -353,52 +352,6 @@ plot.ModelObsAcousticLogisTrunc <- function(x,
 #' @rdname plot.ModelObs
 #' @export
 
-plot.ModelObsAcousticContainer <- function(x, .radius, .par = list(), ...) {
-  x <- x$ModelObsAcousticContainer
-  if (missing(.radius)) {
-    .radius <- unique(x$radius)
-    .radius <- .radius[seq_len(min(length(.radius), 3L))]
-  }
-  if (!is.null(.radius)) {
-    x <-
-      x |>
-      filter(.data$radius %in% .radius) |>
-      # Select one row (e.g., timestep) for each radius
-      group_by(.data$radius) |>
-      slice(1L) |>
-      ungroup() |>
-      as.data.table()
-  }
-  pp <- set_plot_dbn_par(list(mfrow = par_mf(nrow(x))), .par)
-  on.exit(par(pp, no.readonly = TRUE), add = TRUE)
-  dots <- list(...)
-  if (rlang::has_name(dots, "xlim")) {
-    xlim <- dots$xlim
-  } else {
-    xlim <- c(0, max(x$radius) * 1.1, max(.radius))
-  }
-
-  # Density plots
-  lapply(split(x, seq_row(x)), function(xi) {
-    dist   <- seq(xlim[1], xlim[2], length.out = 1000)
-    prop   <- rep(1, 1000)
-    prop[dist > xi$radius] <- 0
-    args   <- list_args(list(main = xi$radius,
-                             xlab = "Distance (m)",
-                             ylab = "Probability",
-                             type = "l"),
-                        .dots = list(...))
-    args$x <- dist
-    args$y <- prop
-    do.call(plot, args)
-  })
-  nothing()
-
-}
-
-#' @rdname plot.ModelObs
-#' @export
-
 # User facing function: plot.ModelObsDepthUniformSeabed()
 plot.ModelObsDepthUniformSeabed <- function(x,
                                             .seabed = 100,
@@ -444,6 +397,51 @@ plot.ModelObsDepthNormalTruncSeabed <- function(x,
   nothing()
 }
 
+#' @rdname plot.ModelObs
+#' @export
+
+plot.ModelObsContainer <- function(x, .radius, .par = list(), ...) {
+  x <- x$ModelObsContainer
+  if (missing(.radius)) {
+    .radius <- unique(x$radius)
+    .radius <- .radius[seq_len(min(length(.radius), 3L))]
+  }
+  if (!is.null(.radius)) {
+    x <-
+      x |>
+      filter(.data$radius %in% .radius) |>
+      # Select one row (e.g., timestep) for each radius
+      group_by(.data$radius) |>
+      slice(1L) |>
+      ungroup() |>
+      as.data.table()
+  }
+  pp <- set_plot_dbn_par(list(mfrow = par_mf(nrow(x))), .par)
+  on.exit(par(pp, no.readonly = TRUE), add = TRUE)
+  dots <- list(...)
+  if (rlang::has_name(dots, "xlim")) {
+    xlim <- dots$xlim
+  } else {
+    xlim <- c(0, max(x$radius) * 1.1, max(.radius))
+  }
+
+  # Density plots
+  lapply(split(x, seq_row(x)), function(xi) {
+    dist   <- seq(xlim[1], xlim[2], length.out = 1000)
+    prop   <- rep(1, 1000)
+    prop[dist > xi$radius] <- 0
+    args   <- list_args(list(main = xi$radius,
+                             xlab = "Distance (m)",
+                             ylab = "Probability",
+                             type = "l"),
+                        .dots = list(...))
+    args$x <- dist
+    args$y <- prop
+    do.call(plot, args)
+  })
+  nothing()
+
+}
 
 #' @title Movement models
 #' @description [`ModelMove`] is Abstract Type in [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) that groups movement model sub-types, of which instances can be created via an `R` `model_move_*()` function.

@@ -118,10 +118,10 @@ containers <- assemble_acoustics_containers(.timeline = timeline,
 # Collate datasets
 yobs_fwd <- list(ModelObsAcousticLogisTrunc = acc,
              ModelObsDepthUniformSeabed     = arc,
-             ModelObsAcousticContainer      = containers$forward)
+             ModelObsContainer              = containers$forward)
 yobs_bwd <- list(ModelObsAcousticLogisTrunc = acc,
                  ModelObsDepthUniformSeabed = arc,
-                 ModelObsAcousticContainer  = containers$backward)
+                 ModelObsContainer          = containers$backward)
 
 #### Define filter args
 args <- list(.timeline   = timeline,

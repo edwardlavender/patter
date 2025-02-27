@@ -137,7 +137,7 @@ test_that("pf_filter() works", {
 
   # Assemble yobs
   yobs_fwd <- list(ModelObsAcousticLogisTrunc = acoustics,
-               ModelObsAcousticContainer = containers$forward,
+               ModelObsContainer              = containers$forward,
                ModelObsDepthNormalTruncSeabed = archival)
 
   # Examine movement prior
@@ -232,7 +232,7 @@ test_that("pf_filter() works", {
   lapply(split(containers$forward, seq_row(containers$forward)), function(container) {
     # container <- containers$forward[1, ]
     s    <- fwd$states[timestamp == container$timestamp, ]
-    dist <- terra::distance(cbind(s$x, s$y), cbind(container$receiver_x, container$receiver_y), lonlat = FALSE)[, 1]
+    dist <- terra::distance(cbind(s$x, s$y), cbind(container$centroid_x, container$centroid_y), lonlat = FALSE)[, 1]
     expect_true(all(dist <= container$radius))
   }) |> invisible()
 
@@ -241,20 +241,6 @@ test_that("pf_filter() works", {
   check$test <- check$obs <= check$map_value + check$depth_deep_eps
   expect_true(all(check$test))
 
-})
-
-test_that("pf_filter() permits .yobs = list()", {
-
-  skip_on_cran()
-  skip_if_not(patter_run(.julia = TRUE, .geospatial = TRUE))
-
-  setup      <- example_setup("pf_smoother_two_filter", .connect = FALSE)
-  args       <- setup$pf_filter_args
-  args$.yobs <- list()
-  fwd_1      <- do.call(pf_filter, args)
-  check_named_list(fwd_1)
-  check_inherits(fwd_1$states, "data.table")
-  expect_true(all(!is.na(fwd_1$states)))
 })
 
 test_that("pf_filter() & pf_smoother_two_filter() work for all states", {
@@ -347,6 +333,100 @@ test_that("pf_filter() & pf_smoother_two_filter() work for all states", {
   list(c("x", "y"), c("x", "y", "z"), c("x", "y", "heading"), c("x", "y", "z", "heading"))
   )
 
+})
+
+test_that("pf_filter() handles .yobs = list(ModelObsContainer)", {
+
+  skip_on_cran()
+  skip_if_not(patter_run(.julia = TRUE, .geospatial = TRUE))
+
+  julia_connect()
+  set_seed()
+
+  #### Define study area
+  # Define timeline
+  timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
+                  as.POSIXct("2016-01-01 03:18:00", tz = "UTC"),
+                  by = "2 mins")
+  # Define map
+  map <- dat_gebco()
+  set_map(map)
+
+  #### Simulate a movement path
+  state    <- "StateXY"
+  mobility <- 750
+  model_move <-
+    model_move_xy(.mobility   = "750.0",
+                  .dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
+                  .dbn_heading  = "Uniform(-pi, pi)")
+  # Simulate a path
+  capture_xy <- cbind(708856, 6258056)
+  xinit_fwd <- data.table(map_value = terra::extract(map, capture_xy)[1, 1],
+                          x = capture_xy[, 1],
+                          y = capture_xy[, 2])
+  paths <- sim_path_walk(.map = map,
+                         .timeline = timeline,
+                         .state = state,
+                         .xinit = xinit_fwd,
+                         .model_move = model_move)
+  # (optional) Record recapture location
+  xinit_bwd <- paths[.N, .(map_value, x, y)]
+
+  #### Define containers
+  rad <- 500
+  containers <- assemble_xinit_containers(.timeline = timeline,
+                                          .xinit = list(forward = xinit_fwd,
+                                                        backward = xinit_bwd),
+                                          .radius = rad,
+                                          .mobility = mobility,
+                                          .map = map)
+
+  #### Run filters
+  # Run filter forwards
+  fwd <- pf_filter(.timeline = timeline,
+                   .state = state,
+                   .xinit = xinit_fwd,
+                   .model_move = model_move,
+                   .yobs = list(ModelObsContainer = containers$forward),
+                   .n_particle = 1e4L,
+                   .direction = "forward")
+  # Verify forward run
+  # (i) Initial states
+  expect_true(all(fwd$states[timestep == 1L, x] == xinit_fwd$x))
+  expect_true(all(fwd$states[timestep == 1L, y] == xinit_fwd$y))
+  # (ii) Ending states
+  end   <- fwd$states[timestep == length(timeline), .(x, y)]
+  expect_true(all(dist_2d(as.matrix(xinit_bwd[, .(x, y)]), as.matrix(end)) <= rad))
+  # Run filter backwards
+  bwd <- pf_filter(.timeline = timeline,
+                   .state = state,
+                   .xinit = xinit_bwd,
+                   .model_move = model_move,
+                   .yobs = list(ModelObsContainer = containers$backward),
+                   .n_particle = 1e4L,
+                   .direction = "backward")
+  # Verify backward run
+  # (i) 'Initial' states (t = 1)
+  start <- bwd$states[timestep == 1L, .(x, y)]
+  expect_true(all(dist_2d(as.matrix(xinit_fwd[, .(x, y)]), as.matrix(start)) <= rad))
+  # (ii) 'Ending' states
+  expect_true(all(bwd$states[timestep == length(timeline), x] == xinit_bwd$x))
+  expect_true(all(bwd$states[timestep == length(timeline), y] == xinit_bwd$y))
+
+})
+
+test_that("pf_filter() permits .yobs = list()", {
+
+  skip_on_cran()
+  skip_if_not(patter_run(.julia = TRUE, .geospatial = TRUE))
+
+  setup      <- example_setup("pf_smoother_two_filter", .connect = FALSE)
+  args       <- setup$pf_filter_args
+  args$.yobs <- list()
+  fwd_1      <- do.call(pf_filter, args)
+  check_named_list(fwd_1)
+  check_inherits(fwd_1$states, "data.table")
+  expect_true(all(!is.na(fwd_1$states)))
 })
 
 test_that("pf_filter() permits missing .yobs", {

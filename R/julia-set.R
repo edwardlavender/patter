@@ -149,6 +149,7 @@ set_yobs_vect <- function(.timeline, .yobs) {
     return(nothing())
   }
   # Check .datasets is a named list
+  .yobs <- list_compact(.yobs)
   check_named_list(.yobs)
   if (length(.yobs) == 0L) {
     julia_command('yobs_vect = nothing;')

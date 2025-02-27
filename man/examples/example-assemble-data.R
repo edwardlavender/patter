@@ -46,25 +46,13 @@ if (patter_run(.julia = FALSE, .geospatial = TRUE)) {
                                   .moorings = dat_moorings)
   head(acoustics)
 
-  #### Example (3): Assemble corresponding acoustic containers
-  containers <- assemble_acoustics_containers(.timeline = timeline,
-                                              .acoustics = acoustics,
-                                              .mobility = 750,
-                                              .map = map)
-  # This function returns a list:
-  summary(containers)
-  # Use the `forward` element for `pf_filter()` with `.direction = "forward"`
-  head(containers$forward)
-  # Use the `backward` for `pf_filter()` with `.direction = "backward"`
-  head(containers$backward)
-
-  #### Example (4): Assemble an archival timeline
+  #### Example (3): Assemble an archival timeline
   # Assemble a timeline of archival observations and model parameters
   archival <- assemble_archival(.timeline = timeline,
                                 .archival = arc)
   head(archival)
 
-  #### Example (5): Assemble custom datasets
+  #### Example (4): Assemble custom datasets
   temperature <-
     data.table(timestamp = c(as.POSIXct("2016-03-17 01:50:30", tz = "UTC"),
                              as.POSIXct("2016-03-17 02:00:30 UTC", tz = "UTC")),
@@ -73,9 +61,81 @@ if (patter_run(.julia = FALSE, .geospatial = TRUE)) {
                                  .dataset = temperature)
   head(temperature)
 
-  #### Example (6): Implement particle filter
+  #### Example (5): Assemble xinit (capture/recapture) containers
+  # (A) If we know the capture location, containers are defined for the backward filter run
+  capture_xy       <- data.table(x = 708913.6, y = 6256280)
+  xinit_containers <-
+    assemble_xinit_containers(.timeline = timeline,
+                              .xinit = list(forward = capture_xy,
+                                            backward = NULL),
+                              .radius = 750,
+                              .mobility = 750,
+                              .map = map)
+  # (B) If we know the recapture location, containers are defined for the forward run
+  recapture_xy     <- data.table(x = 707816.5, y = 6265746)
+  xinit_containers <-
+    assemble_xinit_containers(.timeline = timeline,
+                              .xinit = list(forward = NULL,
+                                            backward = recapture_xy),
+                              .radius = 750,
+                              .mobility = 750,
+                              .map = map)
+  # (C) If we know capture & recapture locations, containers are defined for both filter runs
+  xinit_containers <-
+    assemble_xinit_containers(.timeline = timeline,
+                              .xinit = list(forward = capture_xy,
+                                            backward = recapture_xy),
+                              .radius = 750,
+                              .mobility = 750,
+                              .map = map)
+  # (D) A set of possible capture/recapture locations is permitted:
+  # (i) Define possible starting locations
+  capture_xy <-
+    cbind(capture_xy$x, capture_xy$y) |>
+    terra::vect(crs = terra::crs(map)) |>
+    terra::buffer(width = 500) |>
+    terra::spatSample(size = 10L) |>
+    terra::crds(df = TRUE) |>
+    setDT()
+  # (ii) Define possible recapture locations
+  recapture_xy <-
+    cbind(recapture_xy$x, recapture_xy$y) |>
+    terra::vect(crs = terra::crs(map)) |>
+    terra::buffer(width = 500) |>
+    terra::spatSample(size = 10L) |>
+    terra::crds(df = TRUE) |>
+    setDT()
+  # (iii) Define containers
+  xinit_containers <-
+    assemble_xinit_containers(.timeline = timeline,
+                              .xinit = list(forward = capture_xy,
+                                            backward = recapture_xy),
+                              .radius = 750,
+                              .mobility = 750,
+                              .map = map)
+
+  #### Example (6): Assemble acoustic containers
+  # Assemble acoustic containers for the `acoustics` dataset above
+  acoustics_containers <- assemble_acoustics_containers(.timeline = timeline,
+                                              .acoustics = acoustics,
+                                              .mobility = 750,
+                                              .map = map)
+  # As for assemble_xinit_containers(), this function returns a list:
+  summary(acoustics_containers)
+  # Use the `forward` element for `pf_filter()` with `.direction = "forward"`
+  head(acoustics_containers$forward)
+  # Use the `backward` for `pf_filter()` with `.direction = "backward"`
+  head(acoustics_containers$backward)
+
+  #### Example (7): Collate containers for multiple datasets
+  containers <- assemble_containers(xinit_containers, acoustics_containers)
+
+  #### Example (8): Implement particle filter
   # Use `pf_filter()` to implement the particle filter
   # A list of assembled datasets is passed to the `yobs` argument
-  # The corresponding `ModelObs` sub-types must also be specified
+  # The corresponding `ModelObs` sub-types must also be specified, e.g.:
+  # * `ModelObsAcousticLogisTrunc`
+  # * `ModelObsDepthUniformSeabed`
+  # * `ModelObsContainer`
 
 }
