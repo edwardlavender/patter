@@ -3,7 +3,7 @@ test_that("skill_*() functions work", {
   skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
   set.seed(1)
 
-  mod <- obs <- terra::rast()
+  mod <- obs <- dat_gebco()
   n <- terra::ncell(mod)
   mod[] <- runif(n)
 
@@ -12,9 +12,9 @@ test_that("skill_*() functions work", {
   expect_equal(skill_me(mod, obs), 10)
   expect_equal(skill_rmse(mod, obs), 10)
   expect_equal(skill_R(mod, obs), 1)
-  expect_equal(skill_d(mod, obs), -0.94990544)
+  expect_equal(skill_d(mod, obs), -0.9499977)
 
-  mod <- obs <- terra::rast(res = 0.1)
+  mod <- obs <- dat_gebco()
   n <- terra::ncell(mod)
   mod[] <- runif(n)
   obs[] <- mod[] + 0.5 * rnorm(n, mean = 100)

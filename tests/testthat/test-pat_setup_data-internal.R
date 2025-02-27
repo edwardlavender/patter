@@ -7,7 +7,10 @@ test_that("check_{dataset}() functions work", {
   expect_null(check_map(NULL))
   check_map(dat_gebco())
 
-  map <- terra::rast(vals = -1, res = c(5, 10))
+  map <- dat_gebco()
+  names(map) <- "lyr.1"
+  map <- terra::aggregate(map, c(2, 3))
+  map <- map * -1
   check_map(map) |>
     expect_message("`.map`: name updated from 'lyr.1' to 'map_value'.",
                    fixed = TRUE) |>

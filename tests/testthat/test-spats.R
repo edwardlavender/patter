@@ -3,8 +3,10 @@ test_that("spat*() functions work", {
   skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
 
   #### `spatContainsNA()`
-  expect_true(spatContainsNA(dat_gebco()))
-  expect_false(spatContainsNA(terra::rast(vals = 1)))
+  map_with_na <- dat_gebco()
+  expect_true(spatContainsNA(map_with_na))
+  map_without_na <- terra::classify(dat_gebco(), cbind(NA, 0))
+  expect_false(spatContainsNA(map_without_na))
 
   #### `spatIntersect()`
   # Define SpatVectors
@@ -27,8 +29,10 @@ test_that("spat*() functions work", {
   ))
 
   # spatAllNA()
-  expect_false(spatAllNA(dat_gebco()))
-  expect_true(spatAllNA(terra::rast(vals = NA)))
+  map_some_na <- dat_gebco()
+  expect_false(spatAllNA(map_some_na))
+  map_all_na <- terra::setValues(map_some_na, NA)
+  expect_true(spatAllNA(map_all_na))
 
   # spatVmap()
   vmap <- spatVmap(dat_gebco(), .mobility = 750.0)
