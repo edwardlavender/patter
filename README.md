@@ -13,7 +13,7 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/patter)](https://CRAN.R-project.org/package=patter)
-![Coverage](https://img.shields.io/badge/coverage-84%25-orange)
+![Coverage](https://img.shields.io/badge/coverage-83%25-orange)
 [![R-CMD-check](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
@@ -46,17 +46,18 @@ This framework unifies the
 [`flapper`](https://github.com/edwardlavender/flapper) algorithms and
 provides important opportunities for development, which we exploit here.
 
-The essential functions are `pf_filter()` and `pf_smoother_*()`:
+The essential functions are `pf_filter()` and
+`pf_smoother_two_filter()`:
 
 - **`pf_filter()`** is the particle filter. This simulates the possible
   locations of an individual moving forwards in time, accounting for all
   of the data (for example, acoustic observations, depth observations
   and any other observations) *up to* each time point and the animal’s
   movement (a partial marginal distribution).
-- **`pf_smoother_*()`** is a particle smoothing algorithm. At each time
-  step, the smoother accounts for all of the data from both the past
-  *and* the future (the full marginal distribution) and substantially
-  refines maps of space use.
+- **`pf_smoother_two_filter()`** is a particle smoothing algorithm. At
+  each time step, the smoother accounts for all of the data from both
+  the past *and* the future (the full marginal distribution) and
+  substantially refines maps of space use.
 
 We hope to add backward sampling algorithms to the package in due
 course.
@@ -202,7 +203,7 @@ On Linux, this step may require system libraries (see below).
 > we run most tests against that version. However, `Julia` 1.11 is now
 > also supported by `JuliaCall` (see
 > [here](https://github.com/Non-Contradiction/JuliaCall/issues/234)).
-> This README was last built on 2025-02-21 with Julia 1.11.3.
+> This README was last built on 2025-02-27 with Julia 1.11.3.
 
 5.  **Setup JuliaCall.** The next step is to set up `JuliaCall`, which
     provides the integration between `R` and `Julia`.
@@ -577,7 +578,7 @@ acoustics <- assemble_acoustics(.timeline   = timeline,
                                 .detections = det,
                                 .moorings   = dat_moorings)
 
-# ModelObsAcousticContainers
+# ModelObsContainer
 containers <- assemble_acoustics_containers(.timeline  = timeline, 
                                             .acoustics = acoustics, 
                                             .mobility  = mobility)
@@ -589,10 +590,10 @@ archival <- assemble_archival(.timeline = timeline,
 # Named lists of ModelObs sub-types and associated observations
 # * The container dataset is direction specific so we assemble two yobs lists
 yobs_fwd <- list(ModelObsAcousticLogisTrunc     = acoustics, 
-                 ModelObsAcousticContainer      = containers$forward,
+                 ModelObsContainer              = containers$forward,
                  ModelObsDepthNormalTruncSeabed = archival)
 yobs_bwd <- list(ModelObsAcousticLogisTrunc     = acoustics, 
-                 ModelObsAcousticContainer      = containers$backward,
+                 ModelObsContainer              = containers$backward,
                  ModelObsDepthNormalTruncSeabed = archival)
 ```
 
@@ -644,7 +645,7 @@ head(fwd$diagnostics)
 fwd$callstats
 #>              timestamp         routine n_particle n_iter convergence     time
 #>                 <POSc>          <char>      <int>  <int>      <lgcl>    <num>
-#> 1: 2025-02-21 17:12:44 filter: forward      10000      1        TRUE 7.533658
+#> 1: 2025-02-27 15:45:31 filter: forward      10000      1        TRUE 7.556424
 
 # Backward run
 args$.yobs      <- yobs_bwd
@@ -673,7 +674,7 @@ head(bwd$diagnostics)
 bwd$callstats
 #>              timestamp          routine n_particle n_iter convergence     time
 #>                 <POSc>           <char>      <int>  <int>      <lgcl>    <num>
-#> 1: 2025-02-21 17:12:52 filter: backward      10000      1        TRUE 1.055742
+#> 1: 2025-02-27 15:45:39 filter: backward      10000      1        TRUE 1.089052
 ```
 
 ## Particle smoother
@@ -713,10 +714,10 @@ head(smo$diagnostics)
 smo$callstats
 #>              timestamp              routine n_particle n_iter convergence
 #>                 <POSc>               <char>      <int>  <int>      <lgcl>
-#> 1: 2025-02-21 17:12:53 smoother: two-filter        750     NA        TRUE
+#> 1: 2025-02-27 15:45:40 smoother: two-filter        750     NA        TRUE
 #>        time
 #>       <num>
-#> 1: 5.281717
+#> 1: 5.218024
 ```
 
 ## Mapping
