@@ -1,6 +1,6 @@
 # `patter` v2.0.0
 
-`patter` v 2.0.0 includes some major internal and external changes associated with a revamp required to permit use on Linux and other improvements. There are some breaking changes in the API of some functions as a result. We have also added new data-assembly routines, most notably `assemble_acoustics_containers()`, which support particle filtering, alongside additional improvements to select functions. Where required for existing code, you can continue to use `patter` v1.0.1 with [`renv`](https://rstudio.github.io/renv/articles/renv.html). 
+`patter` v 2.0.0 includes some major internal and external changes associated with a revamp required to permit use on Linux and other improvements. There are some breaking changes in the API of some functions as a result. We have also added new data-assembly routines, such as `assemble_acoustics_containers()`, which support particle filtering, alongside additional improvements to select functions. Where required for existing code, you can continue to use `patter` v1.0.1 with [`renv`](https://rstudio.github.io/renv/articles/renv.html). 
 
 * **Julia setup** 
     * `julia_connect()` has been revised and enhanced. The `.threads` argument has been replaced with `JULIA_NUM_THREADS`. 
@@ -13,7 +13,9 @@
         * `dat_acoustics` has been renamed to `dat_detections`;
         * `assemble_acoustics(.timeline, .acoustics, ...)` has been reformulated to `assemble_acoustics(.timeline, .detections, ...)`;
     * New data assembly routines have been added:
-        * `assemble_acoustics_containers()` assembles acoustic containers, which facilitate convergence of the particle filter with fewer particles;
+        * `assemble_xinit_containers()` assemble capture/recapture containers, which facilitate convergence of the particle filter with fewer particles;
+        * `assemble_acoustics_containers()` assembles acoustic containers;
+        * `assemble_containers()` collates container datasets;
         * `assemble_custom()` assembles custom datasets;
 
 * **Movement initialisation**
@@ -35,13 +37,16 @@
     * `pf_filter()` now expects `ModelObs` structures and observations in a single named list (passed to `.yobs`). The `.model_obs` argument has been dropped. 
     * A new `.t_resample` argument permits you to force resampling at selected time steps.
     * A new `.n_iter` argument permits multiple runs of the filter. 
+    * A new `.batch` argument permits batching, i.e., writing particles to disk in batches (to minimise memory requirements for cluster implementations).
     * A new `.collect` argument collects outputs in `R`. 
     * A revised `pf_particles` object is returned that includes a `callstats` `data.table` that replaces the `convergence` element.  
 
 * **Particle smoothing**
+    * `Patter.particle_smoother_two_filter()` has been re-written for enhanced performance;
     * `pf_smoother_two_filter()` uses a more flexible `.vmap` argument, supported by `set_vmap()`, in place of `.box` and `.mobility`. 
     * Instances where the two filters are incompatible (all weights are zero) are now flagged with a warning. Formerly, `.n_particle` copies of the first particle were selected by `Patter.resample()` at problematic time steps, leading to a bottleneck in the distribution of an individual's possible locations. Now 50 % of the particles from the forward filter and 50 % from the backward filter are randomly selected at such steps (with a warning). The effective sample size at these time steps is set to NA & provides a counter for the number of problematic time steps. 
     * A new `.cache` argument fixes incorrect caching for time-varying movement models and enables the user to turn the caching on or off.
+    * A new `.batch` argument permits batching (for cluster implementations).
     * A new `.collect` argument collects outputs in `R`. 
     * A revised `pf_particles` object is returned (see above). 
     
