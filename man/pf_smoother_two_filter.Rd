@@ -122,8 +122,10 @@ if (patter_run()) {
   #### Example (5): Batching workflow for filtering and smoothing
   # (Use `.batch` to reduce memory demand)
 
+  folder <- file.path(tempdir(), "batch-outputs")
+  dir.create(folder)
+
   ## Run forward filter with batching
-  folder          <- tempdir()
   batch_fwd       <- file.path(folder, c("fwd-1.jld2", "fwd-2.jld2", "fwd-3.jld2"))
   args$.direction <- "forward"
   args$.batch     <- batch_fwd
