@@ -38,6 +38,7 @@
 <url><loc>/reference/map_pou.html</loc></url>
 <url><loc>/reference/name_particles.html</loc></url>
 <url><loc>/reference/pat_setup_data.html</loc></url>
+<url><loc>/reference/patter-deprecated.html</loc></url>
 <url><loc>/reference/patter-progress.html</loc></url>
 <url><loc>/reference/patter.html</loc></url>
 <url><loc>/reference/patter_run.html</loc></url>
@@ -45,10 +46,10 @@
 <url><loc>/reference/pf_filter.html</loc></url>
 <url><loc>/reference/pf_filter_init.html</loc></url>
 <url><loc>/reference/pf_particles-class.html</loc></url>
-<url><loc>/reference/plot_xyt.html</loc></url>
 <url><loc>/reference/pf_smoother_two_filter.html</loc></url>
 <url><loc>/reference/plot.ModelMove.html</loc></url>
 <url><loc>/reference/plot.ModelObs.html</loc></url>
+<url><loc>/reference/plot_xyt.html</loc></url>
 <url><loc>/reference/prettyGraphics.html</loc></url>
 <url><loc>/reference/raster.vol.html</loc></url>
 <url><loc>/reference/set_map.html</loc></url>

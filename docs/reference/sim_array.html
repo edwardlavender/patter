@@ -86,7 +86,7 @@
 
 
 <dl><dt id="arg--map">.map<a class="anchor" aria-label="anchor" href="#arg--map"></a></dt>
-<dd><p>A <code><a href="https://rspatial.github.io/terra/reference/SpatRaster-class.html" class="external-link">SpatRaster</a></code> that defines the region of interest (see <code><a href="glossary.html">glossary</a></code>). Here, <code>.map</code> is used to:</p><ul><li><p>Sample receiver locations in appropriate (non <code>NA</code>) regions, via <code><a href="https://rspatial.github.io/terra/reference/sample.html" class="external-link">terra::spatSample()</a></code>;</p></li>
+<dd><p>A <code>SpatRaster</code> that defines the region of interest (see <code><a href="glossary.html">glossary</a></code>). Here, <code>.map</code> is used to:</p><ul><li><p>Sample receiver locations in appropriate (non <code>NA</code>) regions, via <code><a href="https://rspatial.github.io/terra/reference/sample.html" class="external-link">terra::spatSample()</a></code>;</p></li>
 </ul></dd>
 
 
@@ -157,7 +157,7 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co">#### Example (1): The default implementation</span></span></span>
 <span class="r-in"><span>  <span class="va">array</span> <span class="op">&lt;-</span> <span class="fu">sim_array</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .timeline  <span class="op">=</span> <span class="va">timeline</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">array</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">array</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co">#### Example (2): Customise receiver placement/number</span></span></span>
 <span class="r-in"><span>  <span class="va">array</span> <span class="op">&lt;-</span> <span class="fu">sim_array</span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>

@@ -68,11 +68,11 @@
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">model_obs_acoustic_logis_trunc</span><span class="op">(</span><span class="va">.data</span>, .strict <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">model_obs_acoustic_container</span><span class="op">(</span><span class="va">.data</span>, .strict <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
 <span><span class="fu">model_obs_depth_uniform_seabed</span><span class="op">(</span><span class="va">.data</span>, .strict <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">model_obs_depth_normal_trunc_seabed</span><span class="op">(</span><span class="va">.data</span>, .strict <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">model_obs_depth_normal_trunc_seabed</span><span class="op">(</span><span class="va">.data</span>, .strict <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">model_obs_container</span><span class="op">(</span><span class="va">.data</span>, .strict <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -84,10 +84,6 @@
 <li><p><code>receiver_x</code> and <code>receiver_y</code></p></li>
 <li><p><code>receiver_alpha</code>, <code>receiver_beta</code> and <code>receiver_gamma</code></p></li>
 </ul></li>
-<li><p>For <code>ModelObsAcousticContainer</code>, required columns are:</p><ul><li><p><code>sensor_id</code></p></li>
-<li><p><code>receiver_x</code> and <code>receiver_y</code></p></li>
-<li><p><code>radius</code></p></li>
-</ul></li>
 <li><p>For <code>ModelObsDepthUniformSeabed</code>, required columns are:</p><ul><li><p><code>sensor_id</code></p></li>
 <li><p><code>depth_shallow_eps</code></p></li>
 <li><p><code>depth_deep_eps</code></p></li>
@@ -95,6 +91,10 @@
 <li><p>For <code>ModelObsDepthNormalTruncSeabed</code>, required columns are:</p><ul><li><p><code>sensor_id</code></p></li>
 <li><p><code>depth_sigma</code></p></li>
 <li><p><code>depth_deep_eps</code></p></li>
+</ul></li>
+<li><p>For <code>ModelObsContainer</code>, required columns are:</p><ul><li><p><code>sensor_id</code></p></li>
+<li><p><code>container_x</code> and <code>container_y</code></p></li>
+<li><p><code>radius</code></p></li>
 </ul></li>
 </ul><p>See <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.jl</code></a> or <code>JuliaCall::julia_help("ModelObs")</code> for details.</p></dd>
 
@@ -109,18 +109,37 @@
     <h2>Value</h2>
     <p><code>model_obs_*()</code> <code>R</code> wrapper functions return a named <code>list</code>, with a single element that defines the parameters of the observation models for the corresponding <code>ModelObs</code> structure.</p>
     </div>
-    <div id="details">
-    <h2>Details</h2>
+    <div id="model-structures">
+    <h2>Model structures</h2>
     <p>Observation model sub-types are <code>Julia</code> structures that hold the parameters of observation models. From an <code>R</code>-user perspective, you can think of a <code>ModelObs</code> sub-type as an <code>S4</code>-<code><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></code>-like object, with slots for the parameters of an observation model. With an observation model structure, we can simulate new observations and evaluate the log-probability of existing observations.</p>
 <p>The following observation models are built in to <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.jl</code></a>:</p><ul><li><p><code>ModelObsAcousticLogisTrunc</code></p></li>
-<li><p><code>ModelObsAcousticContainer</code></p></li>
 <li><p><code>ModelObsDepthUniformSeabed</code></p></li>
 <li><p><code>ModelObsDepthNormalTruncSeabed</code></p></li>
+<li><p><code>ModelObsContainer</code></p></li>
 </ul><p>In <code><a href="patter.html">patter</a></code>, observation models are required:</p><ul><li><p>To simulate new observational datasets, via <code><a href="sim_observations.html">sim_observations()</a></code>;</p></li>
 <li><p>To run the particle filter, via <code><a href="pf_filter.html">pf_filter()</a></code>;</p></li>
 </ul><p>Observation model sub-types and parameters should be specified as a named <code>list</code> of <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code>s. To assemble a <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> of parameters for a given <code>ModelObs</code> structure, see <code><a href="assemble.html">assemble</a></code> functions. A named list can be created manually from individual <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code>s or via <code>model_obs_*()</code> <code>R</code> functions. The <code>R</code> functions simply check the inputs and wrap inputted <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code>s of <code>ModelObs*</code> parameters in a named <code>list</code>. A <code>S3</code>-<code>ModelObs*</code> label is added and enables supporting methods (e.g., <code><a href="plot.ModelObs.html">plot.ModelObs()</a></code>) to be implemented for observation models.</p>
 <p>Internally in <code><a href="patter.html">patter</a></code> algorithms, observation model sub-types and parameters are instantiated and used to simulate observations or in the particle filter. The simulation of observations is implemented via <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.simulate_obs()</code></a>. In the particle filter, log-probabilities are evaluated by <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.logpdf_obs()</code></a>. These are generic functions. Different methods are dispatched according to the input model. For the built-in <code>ModelObs</code> sub-types, corresponding methods for these routines are also built-in. For custom <code>ModelObs</code> sub-types, the methods need to be provided.</p>
 <p>To use custom <code>ModelObs</code> sub-types, see Examples.</p>
+    </div>
+    <div id="model-development">
+    <h2>Model development</h2>
+    <p>Observation  models should be formulated, and parameterised, using available datasets, domain knowledge and literature. The appropriate model formulation/parameterisation depends on the data type and the study system. As noted above, <code><a href="patter.html">patter</a></code> provides built-in structures for acoustic and depth observations; user-defined structures for custom data types are also supported.</p>
+<p><strong>To parameterise acoustic observation models</strong>, consider in-situ detection efficiency measurements (from drift tests and/or sentinel tags), manufacture guidelines and literature. Detection probability parameters can be estimated from in-situ measurements using generalised linear models. To estimate parameters for the default distance-decaying logistic detection probability model (<code>ModelObsAcousticLogisTrunc</code>):</p><ul><li><p>Assemble a <code>data.frame</code> of detections and non-detections and a column of distances from receivers;</p></li>
+<li><p>Model <code>glm(detection ~ distance, family = "binomial")</code>;</p></li>
+<li><p>Take the estimated intercept and gradient as initial values for <code>receiver_alpha</code> and <code>receiver_beta</code>, respectively;</p></li>
+<li><p>Set the maximum detection range (<code>receiver_gamma</code>) based on range tests, manufacturer specifications, domain knowledge and literature (e.g., Klinard et al. (<a href="https://doi.org/10.1186/s40317-019-0179-1" class="external-link">2019</a>)). Note that <code>receiver_gamma</code> defines the distance beyond which detections are assumed impossible. Since this parameter affects the tail of the distribution, the exact value can be relatively unimportant, <em>providing it is large enough</em>. We recommend erring on the side of flexibility in cases of uncertainty. Note that manufacturer guidelines may considerably underestimate maximum detection ranges (see Klinard et al. (<a href="https://doi.org/10.1186/s40317-019-0179-1" class="external-link">2019</a>) for an example).</p></li>
+</ul><p><strong>To parameterise depth observation models</strong>, you should consider:</p><ul><li><p>Tag accuracy</p></li>
+<li><p>Bathymetric accuracy</p></li>
+<li><p>Tidal variation and storm surges</p></li>
+<li><p>Species biology (e.g., benthic versus pelagic species)</p></li>
+</ul><p>Note that model formulation and parameterisation can be an iterative process:</p><ul><li><p>Develop initial model and observation models, drawing on available datasets, domain knowledge and literature;</p></li>
+<li><p>Perform inference, using <code><a href="pf_filter.html">pf_filter()</a></code>;</p></li>
+<li><p>Evaluate convergence;</p></li>
+<li><p>In cases of convergence failures, re-evaluate the model(s) and try again;</p></li>
+<li><p>Where necessary, run the algorithms with more restrictive or flexible models to analyse sensitivity;</p></li>
+</ul><p>For an example case-study analysis, see Lavender et al. (<a href="https://doi.org/10.1101/2025.02.13.638042" class="external-link">2025</a>).</p>
+<p>For further information, see GitHub issues <a href="https://github.com/edwardlavender/patter/issues/23" class="external-link">23</a>, <a href="https://github.com/edwardlavender/patter/issues/31" class="external-link">31</a> and <a href="https://github.com/edwardlavender/patter/issues/33" class="external-link">33</a> or raise a new <a href="https://github.com/edwardlavender/patter/issues" class="external-link">issue</a>.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -334,33 +353,48 @@
 <span class="r-plt img"><img src="ModelObs-1.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="ModelObs-2.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="ModelObs-3.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-12-30 11:10:30... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-12-30 11:10:30... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:10:30: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:10:33: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-12-30 11:10:33 (duration: ~3 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:10:33: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:10:35: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-12-30 11:10:35 (duration: ~5 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-12-30 11:10:35... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-12-30 11:10:35... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:10:35: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:10:35: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-12-30 11:10:35 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:10:35: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:10:36: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-12-30 11:10:36 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2025-02-28 16:25:50... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2025-02-28 16:25:50... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:25:50: Setting initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:25:53: Setting observations dictionary... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2025-02-28 16:25:53 (duration: ~3 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:25:53: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: On iteration 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: Running filter for batch 1 / 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:25:55: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2025-02-28 16:25:56 (duration: ~6 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2025-02-28 16:25:56... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2025-02-28 16:25:56... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:25:56: Setting initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:25:56: Setting observations dictionary... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2025-02-28 16:25:56 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:25:56: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: On iteration 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: Running filter for batch 1 / 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">Warning: Weights from filter (1 -&gt; 1000) are zero at time 111: returning outputs from 1:111. Note that all (log) weights at 111 are -Inf.</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The particle filter failed to converge.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:25:56: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2025-02-28 16:25:56 (duration: ~0 sec(s)). </span>
 <span class="r-plt img"><img src="ModelObs-4.png" alt="" width="700" height="433"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2025-02-28 16:25:56... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2025-02-28 16:25:56... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:25:56: Setting initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:25:56: Setting observations dictionary... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2025-02-28 16:25:56 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:25:56: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: On iteration 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: Running filter for batch 1 / 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:25:57: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2025-02-28 16:25:57 (duration: ~1 sec(s)). </span>
 <span class="r-plt img"><img src="ModelObs-5.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-12-30 11:10:36... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-12-30 11:10:36... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:10:36: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:10:36: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-12-30 11:10:36 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:10:36: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:10:37: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-12-30 11:10:37 (duration: ~1 sec(s)). </span>
-<span class="r-plt img"><img src="ModelObs-6.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </div>

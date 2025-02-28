@@ -90,7 +90,7 @@
     <p>To link <code>patter</code> and the <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.jl</code></a> <code>Julia</code> backend, use:</p><ul><li><p><code><a href="julia_connect.html">julia_connect()</a></code> to connect to <code>R</code> to <code>Julia</code>;</p></li>
 <li><p><code><a href="julia_validate.html">julia_validate()</a></code> to validate the <code>R</code>—<code>Julia</code> connection;</p></li>
 <li><p><code><a href="set_seed.html">set_seed()</a></code> to set the seed in <code>R</code> and <code>Julia</code>;</p></li>
-<li><p><code><a href="set_map.html">set_map()</a></code> to make a <code><a href="https://rspatial.github.io/terra/reference/SpatRaster-class.html" class="external-link">SpatRaster</a></code> of the study area available in <code>Julia</code>;</p></li>
+<li><p><code><a href="set_map.html">set_map()</a></code> to make a <code>SpatRaster</code> of the study area available in <code>Julia</code>;</p></li>
 </ul><p>These functions should be run at the start of every <code>R</code> session.</p>
     </div>
     <div id="abstract-types">
@@ -130,7 +130,7 @@
 <p><strong>To implement particle filtering (PF) routines</strong>, use:</p><ul><li><p><code><a href="pf_filter.html">pf_filter()</a></code> to implement the particle filter;</p></li>
 <li><p><code><a href="pf_smoother_two_filter.html">pf_smoother_two_filter()</a></code> to implement the two-filter smoother;</p></li>
 </ul><p>These functions return <code><a href="pf_particles-class.html">pf_particles</a></code> objects.</p>
-<p><strong>For convenience plotting functions</strong>, see:</p><ul><li><p><code><a href="pf_plot_xy.html">pf_plot_xy()</a></code> to plot particle locations;</p></li>
+<p><strong>For convenience plotting functions</strong>, see:</p><ul><li><p><code><a href="plot_xyt.html">plot_xyt()</a></code> to plot particle locations;</p></li>
 </ul><p><strong>For mapping utilisation distributions</strong>, use:</p><ul><li><p><code><a href="map_pou.html">map_pou()</a></code> to map probability-of-use;</p></li>
 <li><p><code><a href="map_dens.html">map_dens()</a></code> to create smooth maps using <code>spatstat</code>, plus the supporting functions:</p><ul><li><p><code><a href="map_dens.html">as.im.SpatRaster()</a></code>, to convert <code>SpatRaster</code>s to pixel images;</p></li>
 <li><p><code><a href="map_dens.html">as.owin.SpatRaster()</a></code>, to convert  <code>SpatRaster</code>s to observation windows;</p></li>
@@ -163,9 +163,8 @@
 <ul><li><p>For information on the <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a> algorithms, see Lavender et al. (<a href="https://doi.org/10.1111/2041-210X.14193" class="external-link">2023</a>).</p></li>
 <li><p>For information on <code>patter</code>'s predecessor, see <a href="https://github.com/edwardlavender/flapper" class="external-link">https://github.com/edwardlavender/flapper</a>.</p></li>
 <li><p>For further information on  <code>patter</code>, including useful resources, see <a href="https://github.com/edwardlavender/patter" class="external-link">https://github.com/edwardlavender/patter</a>.</p></li>
-<li><p>For feature requests and bug reports, see <a href="https://github.com/edwardlavender/patter/issues" class="external-link">https://github.com/edwardlavender/patter/issues</a>.</p></li>
+<li><p>For support, feature requests and bug reports, raise an issue at <a href="https://github.com/edwardlavender/patter/issues" class="external-link">https://github.com/edwardlavender/patter/issues</a>.</p></li>
 <li><p>For the <code>Julia</code> backend, see <a href="https://edwardlavender.github.io/Patter.jl" class="external-link">https://edwardlavender.github.io/Patter.jl</a>.</p></li>
-<li><p>For support, contact <a href="mailto:edward.lavender@eawag.ch">edward.lavender@eawag.ch</a>.</p></li>
 </ul></div>
     </div>
     <div id="author">

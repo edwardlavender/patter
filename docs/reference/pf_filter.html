@@ -79,7 +79,9 @@
 <span>  .n_record <span class="op">=</span> <span class="fl">1000L</span>,</span>
 <span>  .n_iter <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  .direction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"forward"</span>, <span class="st">"backward"</span><span class="op">)</span>,</span>
+<span>  .batch <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  .collect <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  .progress <span class="op">=</span> <span class="fu"><a href="patter-progress.html">julia_progress</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  .verbose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"patter.verbose"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -139,8 +141,21 @@
 </ul></dd>
 
 
+<dt id="arg--batch">.batch<a class="anchor" aria-label="anchor" href="#arg--batch"></a></dt>
+<dd><p>(optional) Batching controls:</p><ul><li><p>Use <code>NULL</code> to retain all particles for the whole <code>.timeline</code> (<code>.n_record</code> particles at each time step) in memory;</p></li>
+<li><p>Use <code>character</code> vector of <code>.jld2</code> file paths to write particles in sequential batches to file (as <code>Julia</code> <code>Matrix{&lt;:State}</code> objects); for example:</p><ul><li><p><code>./fwd-1.jld2, ./fwd-2.jld2, ...</code> if <code>.direction = "forward"</code>;</p></li>
+<li><p><code>./bwd-1.jld2, ./bwd-2.jld2, ...</code> if <code>.direction = "backward</code>;</p></li>
+</ul></li>
+</ul><p>If specified, <code>.batch</code> is sorted alphanumerically (in <code>Julia</code>) such that 'lower' batches (e.g., <code>./fwd-1.jld2</code>, <code>./bwd-1.jld2</code>) align with the start of the <code>.timeline</code> and 'higher' batches (e.g., <code>./fwd-3.jld2</code>, <code>./bwd-3.jld2</code>) align with the end of the <code>.timeline</code> (irrespective of <code>.direction</code>). For smoothing, the same number of batches must be used for both filter runs (see <code><a href="pf_smoother_two_filter.html">pf_smoother_two_filter()</a></code>).</p>
+<p>This option is designed to reduce memory demand (especially on clusters). Larger numbers of batches reduce memory demand, but incur the speed penalty of writing particles to disk. When there are only a handful of batches, this should be negligible. For examples of this argument in action, see <code><a href="pf_smoother_two_filter.html">pf_smoother_two_filter()</a></code>.</p></dd>
+
+
 <dt id="arg--collect">.collect<a class="anchor" aria-label="anchor" href="#arg--collect"></a></dt>
 <dd><p>A <code>logical</code> variable that defines whether or not to collect outputs from the <code>Julia</code> session in <code>R</code>.</p></dd>
+
+
+<dt id="arg--progress">.progress<a class="anchor" aria-label="anchor" href="#arg--progress"></a></dt>
+<dd><p>Progress controls (see <code><a href="patter-progress.html">patter-progress</a></code> for supported options). If enabled, one progress bar is shown for each <code>.batch</code>.</p></dd>
 
 
 <dt id="arg--verbose">.verbose<a class="anchor" aria-label="anchor" href="#arg--verbose"></a></dt>
@@ -149,7 +164,7 @@
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p><a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.particle_filter()</code></a> creates a NamedTuple in the <code>Julia</code> session (named  <code>pfwd</code> or <code>pbwd</code> depending on <code>.direction</code>). If <code>.collect = TRUE</code>, <code>pf_filter()</code> collects the outputs in <code>R</code> as a <code><a href="pf_particles-class.html">pf_particles</a></code> object. Otherwise, <code>invisible(NULL)</code> is returned.</p>
+    <p><a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.particle_filter()</code></a> creates a NamedTuple in the <code>Julia</code> session (named  <code>pfwd</code> or <code>pbwd</code> depending on <code>.direction</code>). If <code>.batch = NULL</code>, the NamedTuple contains particles (<code>states</code>) ; otherwise, the <code>states</code> element is <code>nothing</code> and <code>states</code> are written to <code>.jld2</code> files (as variables named <code>xfwd</code> or <code>xbwd</code>). If <code>.collect = TRUE</code>, <code>pf_filter()</code> collects the outputs in <code>R</code> as a <code><a href="pf_particles-class.html">pf_particles</a></code> object (the <code>states</code> element is <code>NULL</code> is <code>.batch</code> is used). Otherwise, <code>invisible(NULL)</code> is returned.</p>
     </div>
     <div id="overview">
     <h2>Overview</h2>
@@ -160,7 +175,10 @@
 <li><p>A weights step, in which we calculate particle weights from the log-likelihood of the data at each particle.</p></li>
 <li><p>A re-sampling step, in which we optionally re-sample valid states using the weights.</p></li>
 </ol><p>The time complexity of the algorithm is \(O(TN)\).</p>
-<p>The filter is implemented by the <code>Julia</code> function <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.particle_filter()</code></a>. To multi-thread movement and likelihood evaluations, set the number of threads via <code><a href="julia_connect.html">julia_connect()</a></code>. See <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.particle_filter()</code></a> or <code>JuliaCall::julia_help("particle_filter")</code> for further information.</p>
+<p>The filter is implemented by the <code>Julia</code> function <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.particle_filter()</code></a>.</p>
+<p>To multi-thread movement and likelihood evaluations, set the number of threads via <code><a href="julia_connect.html">julia_connect()</a></code>.</p>
+<p>The filter record <code>.n_record</code> particles in memory at each time step. If <code>batch</code> is provided, the <code>.timeline</code> is split into <code>length(.batch)</code> batches. The filter still moves along the whole <code>.timeline</code>, but only records the particles for the current batch in memory. At the end of each batch, the particles for that batch are written to file. This reduces total memory demand.</p>
+<p>See <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.particle_filter()</code></a> or <code>JuliaCall::julia_help("particle_filter")</code> for further information.</p>
     </div>
     <div id="algorithms">
     <h2>Algorithms</h2>
@@ -233,7 +251,7 @@
 <span class="r-in"><span>  <span class="va">b</span> <span class="op">&lt;-</span> <span class="va">moorings</span><span class="op">$</span><span class="va">receiver_beta</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span></span>
 <span class="r-in"><span>  <span class="va">g</span> <span class="op">&lt;-</span> <span class="va">moorings</span><span class="op">$</span><span class="va">receiver_gamma</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span></span>
 <span class="r-in"><span>  <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1000</span>, by <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span>, <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">d</span> <span class="op">&lt;=</span> <span class="va">g</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="va">a</span> <span class="op">*</span> <span class="va">b</span> <span class="op">*</span> <span class="va">d</span><span class="op">)</span>, <span class="fl">0</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span>, <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">d</span> <span class="op">&lt;=</span> <span class="va">g</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="va">a</span> <span class="op">*</span> <span class="va">b</span> <span class="op">*</span> <span class="va">d</span><span class="op">)</span>, <span class="fl">0</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>       ylab <span class="op">=</span> <span class="st">"Detection probability"</span>,</span></span>
 <span class="r-in"><span>       xlab <span class="op">=</span> <span class="st">"Distance (m)"</span>,</span></span>
 <span class="r-in"><span>       type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span></span>
@@ -276,9 +294,9 @@
 <span class="r-in"><span>  <span class="co"># Simulate observational datasets</span></span></span>
 <span class="r-in"><span>  <span class="va">obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="sim_observations.html">sim_observations</a></span><span class="op">(</span>.timeline <span class="op">=</span> <span class="va">timeline</span>,</span></span>
 <span class="r-in"><span>                          .model_obs <span class="op">=</span> <span class="va">model_obs</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">obs</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">obs</span><span class="op">$</span><span class="va">ModelObsAcousticLogisTrunc</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html" class="external-link">head</a></span><span class="op">(</span><span class="va">obs</span><span class="op">$</span><span class="va">ModelObsDepthUniformSeabed</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">obs</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">obs</span><span class="op">$</span><span class="va">ModelObsAcousticLogisTrunc</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">obs</span><span class="op">$</span><span class="va">ModelObsDepthUniformSeabed</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="co"># Identify detections</span></span></span>
 <span class="r-in"><span>  <span class="va">detections</span> <span class="op">&lt;-</span></span></span>
 <span class="r-in"><span>    <span class="va">obs</span><span class="op">$</span><span class="va">ModelObsAcousticLogisTrunc</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span></span></span>
@@ -302,7 +320,7 @@
 <span class="r-in"><span>  <span class="co">## Output object structure:</span></span></span>
 <span class="r-in"><span>  <span class="co"># The function returns a `pf_particles` list:</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">fwd</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fwd</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fwd</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="co"># `states` is a `data.table` of particles:</span></span></span>
 <span class="r-in"><span>  <span class="va">fwd</span><span class="op">$</span><span class="va">states</span></span></span>
 <span class="r-in"><span>  <span class="co"># `diagnostics` is a `data.table` of filter diagnostics</span></span></span>
@@ -312,7 +330,7 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co">## Map output states:</span></span></span>
 <span class="r-in"><span>  <span class="co"># Map particle coordinates</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="pf_plot_xy.html">pf_plot_xy</a></span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .coord <span class="op">=</span> <span class="va">fwd</span><span class="op">$</span><span class="va">states</span>, .steps <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="plot_xyt.html">plot_xyt</a></span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>, .coord <span class="op">=</span> <span class="va">fwd</span><span class="op">$</span><span class="va">states</span>, .steps <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="co"># Map a utilisation distribution</span></span></span>
 <span class="r-in"><span>  <span class="co"># * Use `.sigma = spatstat.explore::bw.diggle()` for CV bandwidth estimate</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="map_dens.html">map_dens</a></span><span class="op">(</span>.map <span class="op">=</span> <span class="va">map</span>,</span></span>
@@ -322,13 +340,13 @@
 <span class="r-in"><span>  <span class="co"># `maxlp` is the maximum log-posterior at each time step</span></span></span>
 <span class="r-in"><span>  <span class="co"># &gt; exp(fwd$diagnostics$maxlp) = the highest likelihood score at each time step (0-1)</span></span></span>
 <span class="r-in"><span>  <span class="co"># &gt; This should not be too low!</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fwd</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">timestamp</span>, <span class="va">fwd</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">maxlp</span>, type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fwd</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">timestamp</span>, <span class="va">fwd</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">maxlp</span>, type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="co"># `ess` is the effective sample size</span></span></span>
 <span class="r-in"><span>  <span class="co"># &gt; For a 2D distribution,  &gt;= 500 particles at each time step should be sufficient</span></span></span>
 <span class="r-in"><span>  <span class="co"># &gt; But we often have a low ESS at the moment of a detection</span></span></span>
 <span class="r-in"><span>  <span class="co"># &gt; If this is too low, we can trying boosting `.n_particle`</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fwd</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">timestamp</span>, <span class="va">fwd</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">ess</span>, type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">points</a></span><span class="op">(</span><span class="va">detections</span><span class="op">$</span><span class="va">timestamp</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">detections</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fwd</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">timestamp</span>, <span class="va">fwd</span><span class="op">$</span><span class="va">diagnostics</span><span class="op">$</span><span class="va">ess</span>, type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">detections</span><span class="op">$</span><span class="va">timestamp</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">detections</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>         pch <span class="op">=</span> <span class="fl">21</span>, col <span class="op">=</span> <span class="st">"red"</span>, bg <span class="op">=</span> <span class="st">"red"</span>, cex <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>h <span class="op">=</span> <span class="fl">500</span>, col <span class="op">=</span> <span class="st">"royalblue"</span>, lty <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -382,7 +400,7 @@
 <span class="r-in"><span>                     .xinit <span class="op">=</span> <span class="va">xinit</span>,</span></span>
 <span class="r-in"><span>                     .yobs <span class="op">=</span> <span class="va">yobs</span>,</span></span>
 <span class="r-in"><span>                     .model_move <span class="op">=</span> <span class="va">model_move</span>,</span></span>
-<span class="r-in"><span>                     .t_resample <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">timeline</span> <span class="op"><a href="https://rspatial.github.io/terra/reference/match.html" class="external-link">%in%</a></span> <span class="va">detections</span><span class="op">$</span><span class="va">timestamp</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                     .t_resample <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">timeline</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">detections</span><span class="op">$</span><span class="va">timestamp</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                     .n_particle <span class="op">=</span> <span class="fl">1.5e4L</span>,</span></span>
 <span class="r-in"><span>                     .n_resample <span class="op">=</span> <span class="fl">1000L</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="co"># Change the number of particles retained in memory</span></span></span>
@@ -445,11 +463,11 @@
 <span class="r-in"><span>                                         depth_deep_eps <span class="op">=</span> <span class="fl">20</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co"># Define the .yobs list for each run of the particle filter</span></span></span>
-<span class="r-in"><span>  <span class="va">yobs_fwd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ModelObsAcousticLogisTrunc <span class="op">=</span> <span class="va">acoustics</span>,</span></span>
-<span class="r-in"><span>                   ModelObsAcousticContainer <span class="op">=</span> <span class="va">containers</span><span class="op">$</span><span class="va">forward</span>,</span></span>
+<span class="r-in"><span>  <span class="va">yobs_fwd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ModelObsAcousticLogisTrunc     <span class="op">=</span> <span class="va">acoustics</span>,</span></span>
+<span class="r-in"><span>                   ModelObsContainer              <span class="op">=</span> <span class="va">containers</span><span class="op">$</span><span class="va">forward</span>,</span></span>
 <span class="r-in"><span>                   ModelObsDepthNormalTruncSeabed <span class="op">=</span> <span class="va">archival</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">yobs_bwd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ModelObsAcousticLogisTrunc <span class="op">=</span> <span class="va">acoustics</span>,</span></span>
-<span class="r-in"><span>                   ModelObsAcousticContainer <span class="op">=</span> <span class="va">containers</span><span class="op">$</span><span class="va">backward</span>,</span></span>
+<span class="r-in"><span>  <span class="va">yobs_bwd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ModelObsAcousticLogisTrunc     <span class="op">=</span> <span class="va">acoustics</span>,</span></span>
+<span class="r-in"><span>                   ModelObsContainer              <span class="op">=</span> <span class="va">containers</span><span class="op">$</span><span class="va">backward</span>,</span></span>
 <span class="r-in"><span>                   ModelObsDepthNormalTruncSeabed <span class="op">=</span> <span class="va">archival</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co">#### Visualise realisations of the movement model (the prior)</span></span></span>
@@ -479,99 +497,139 @@
 <span class="r-plt img"><img src="pf_filter-2.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="pf_filter-3.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="pf_filter-4.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-12-30 11:11:09... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-12-30 11:11:09... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:09: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:09: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-12-30 11:11:09 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:09: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:10: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-12-30 11:11:10 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2025-02-28 16:26:27... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2025-02-28 16:26:27... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:27: Setting initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:28: Setting observations dictionary... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2025-02-28 16:26:28 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:28: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: On iteration 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: Running filter for batch 1 / 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:29: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2025-02-28 16:26:29 (duration: ~2 sec(s)). </span>
 <span class="r-plt img"><img src="pf_filter-5.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2024-12-30 11:11:10... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:10: Processing `.map`... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:10: Building XYM... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:11: Defining `ppp` object... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` called @ 2025-02-28 16:26:29... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:29: Processing `.map`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:29: Building XYM... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:29: Defining `ppp` object... </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Observation window is gridded.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:11: Estimating density surface... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:11: Scaling density surface... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:29: Estimating density surface... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:29: Scaling density surface... </span>
 <span class="r-plt img"><img src="pf_filter-6.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2024-12-30 11:11:11 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::map_dens()` call ended @ 2025-02-28 16:26:29 (duration: ~0 sec(s)). </span>
 <span class="r-plt img"><img src="pf_filter-7.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="pf_filter-8.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-12-30 11:11:11... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-12-30 11:11:11... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:11: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:11: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-12-30 11:11:11 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:11: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:11: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-12-30 11:11:11 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-12-30 11:11:11... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-12-30 11:11:11... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:11: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:11: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-12-30 11:11:11 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:11: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:11: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-12-30 11:11:11 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-12-30 11:11:11... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-12-30 11:11:11... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:11: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:11: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-12-30 11:11:11 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:11: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:12: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-12-30 11:11:12 (duration: ~1 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-12-30 11:11:12... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-12-30 11:11:12... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:12: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:12: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-12-30 11:11:12 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:12: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:12: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-12-30 11:11:12 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-12-30 11:11:12... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-12-30 11:11:12... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:12: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:12: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-12-30 11:11:12 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:12: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:13: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-12-30 11:11:13 (duration: ~1 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-12-30 11:11:13... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-12-30 11:11:13... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:13: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:13: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-12-30 11:11:13 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:13: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:13: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-12-30 11:11:13 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-12-30 11:11:13... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-12-30 11:11:13... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:13: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:13: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-12-30 11:11:13 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:13: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:14: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-12-30 11:11:14 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2025-02-28 16:26:29... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2025-02-28 16:26:29... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:29: Setting initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:29: Setting observations dictionary... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2025-02-28 16:26:29 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:29: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: On iteration 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: Running filter for batch 1 / 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:30: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2025-02-28 16:26:30 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2025-02-28 16:26:30... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2025-02-28 16:26:30... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:30: Setting initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:30: Setting observations dictionary... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2025-02-28 16:26:30 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:30: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: On iteration 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: Running filter for batch 1 / 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:30: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2025-02-28 16:26:30 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2025-02-28 16:26:30... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2025-02-28 16:26:30... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:30: Setting initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:30: Setting observations dictionary... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2025-02-28 16:26:30 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:30: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: On iteration 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: Running filter for batch 1 / 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:31: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2025-02-28 16:26:31 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2025-02-28 16:26:31... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2025-02-28 16:26:31... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:31: Setting initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:31: Setting observations dictionary... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2025-02-28 16:26:31 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:31: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: On iteration 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: Running filter for batch 1 / 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:31: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2025-02-28 16:26:31 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2025-02-28 16:26:31... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2025-02-28 16:26:31... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:31: Setting initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:31: Setting observations dictionary... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2025-02-28 16:26:31 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:31: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: On iteration 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: Running filter for batch 1 / 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:31: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2025-02-28 16:26:31 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2025-02-28 16:26:31... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2025-02-28 16:26:31... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:31: Setting initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:31: Setting observations dictionary... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2025-02-28 16:26:31 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:31: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: On iteration 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: Running filter for batch 1 / 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:32: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2025-02-28 16:26:32 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2025-02-28 16:26:32... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2025-02-28 16:26:32... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:32: Setting initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:32: Setting observations dictionary... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2025-02-28 16:26:32 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:32: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: On iteration 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: Running filter for batch 1 / 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:32: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2025-02-28 16:26:32 (duration: ~0 sec(s)). </span>
 <span class="r-plt img"><img src="pf_filter-9.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-12-30 11:11:15... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-12-30 11:11:15... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:15: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:15: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-12-30 11:11:15 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:15: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:15: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-12-30 11:11:16 (duration: ~1 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2024-12-30 11:11:16... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2024-12-30 11:11:16... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:16: Simulating initial states... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:16: Setting observations... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2024-12-30 11:11:16 (duration: ~0 sec(s)). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:16: Running filter... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... 11:11:16: Collating outputs... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2024-12-30 11:11:16 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2025-02-28 16:26:33... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2025-02-28 16:26:33... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:33: Setting initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:33: Setting observations dictionary... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2025-02-28 16:26:33 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:33: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: On iteration 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: Running filter for batch 1 / 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:34: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2025-02-28 16:26:34 (duration: ~1 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` called @ 2025-02-28 16:26:34... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` called @ 2025-02-28 16:26:34... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:34: Setting initial states... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:34: Setting observations dictionary... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter_init()` call ended @ 2025-02-28 16:26:34 (duration: ~0 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:34: Running filter... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: On iteration 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">Message: Running filter for batch 1 / 1 ...</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... 16:26:34: Collating outputs... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::pf_filter()` call ended @ 2025-02-28 16:26:35 (duration: ~1 sec(s)). </span>
 </code></pre></div>
     </div>
   </div>

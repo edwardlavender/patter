@@ -68,15 +68,15 @@
         </td>
         <td><p>Movement models</p></td>
       </tr><tr><td>
-          <p><code><a href="ModelObs.html">model_obs_acoustic_logis_trunc()</a></code> <code><a href="ModelObs.html">model_obs_acoustic_container()</a></code> <code><a href="ModelObs.html">model_obs_depth_uniform_seabed()</a></code> <code><a href="ModelObs.html">model_obs_depth_normal_trunc_seabed()</a></code> </p>
+          <p><code><a href="ModelObs.html">model_obs_acoustic_logis_trunc()</a></code> <code><a href="ModelObs.html">model_obs_depth_uniform_seabed()</a></code> <code><a href="ModelObs.html">model_obs_depth_normal_trunc_seabed()</a></code> <code><a href="ModelObs.html">model_obs_container()</a></code> </p>
         </td>
         <td><p>Observation models</p></td>
       </tr><tr><td>
-          <p><code><a href="State.html">State</a></code> <code><a href="State.html">.state</a></code> <code><a href="State.html">StateXY</a></code> <code><a href="State.html">StateXYZ</a></code> <code><a href="State.html">StateCXY</a></code> <code><a href="State.html">StateCXYZ</a></code> </p>
+          <p><code><a href="State.html">State</a></code> <code><a href="State.html">.state</a></code> <code><a href="State.html">state</a></code> <code><a href="State.html">StateXY</a></code> <code><a href="State.html">StateXYZ</a></code> <code><a href="State.html">StateCXY</a></code> <code><a href="State.html">StateCXYZ</a></code> </p>
         </td>
         <td><p>States</p></td>
       </tr><tr><td>
-          <p><code><a href="assemble.html">assemble_timeline()</a></code> <code><a href="assemble.html">assemble_acoustics()</a></code> <code><a href="assemble.html">assemble_acoustics_containers()</a></code> <code><a href="assemble.html">assemble_archival()</a></code> <code><a href="assemble.html">assemble_custom()</a></code> </p>
+          <p><code><a href="assemble.html">assemble_timeline()</a></code> <code><a href="assemble.html">assemble_acoustics()</a></code> <code><a href="assemble.html">assemble_archival()</a></code> <code><a href="assemble.html">assemble_custom()</a></code> <code><a href="assemble.html">assemble_xinit_containers()</a></code> <code><a href="assemble.html">assemble_acoustics_containers()</a></code> <code><a href="assemble.html">assemble_containers()</a></code> </p>
         </td>
         <td><p>Assemble observations</p></td>
       </tr><tr><td>
@@ -132,7 +132,11 @@
         </td>
         <td><p><code>patter</code> set up: datasets</p></td>
       </tr><tr><td>
-          <p><code><a href="patter-progress.html">patter-progress</a></code> </p>
+          <p><code><a href="patter-deprecated.html">pf_plot_xy()</a></code> </p>
+        </td>
+        <td><p>Deprecated functions</p></td>
+      </tr><tr><td>
+          <p><code><a href="patter-progress.html">julia_progress()</a></code> </p>
         </td>
         <td><p><code>patter</code> options: progress</p></td>
       </tr><tr><td>
@@ -152,10 +156,6 @@
         </td>
         <td><p>PF: <code>pf_particles</code> objects</p></td>
       </tr><tr><td>
-          <p><code><a href="pf_plot_xy.html">pf_plot_xy()</a></code> </p>
-        </td>
-        <td><p>PF: plot particle (<code>x</code>, <code>y</code>) locations</p></td>
-      </tr><tr><td>
           <p><code><a href="pf_smoother_two_filter.html">set_vmap()</a></code> <code><a href="pf_smoother_two_filter.html">pf_smoother_two_filter()</a></code> </p>
         </td>
         <td><p>PF: two-filter smoother</p></td>
@@ -164,9 +164,13 @@
         </td>
         <td><p>Movement model plots</p></td>
       </tr><tr><td>
-          <p><code><a href="plot.ModelObs.html">plot(<i>&lt;ModelObsAcousticLogisTrunc&gt;</i>)</a></code> <code><a href="plot.ModelObs.html">plot(<i>&lt;ModelObsAcousticContainer&gt;</i>)</a></code> <code><a href="plot.ModelObs.html">plot(<i>&lt;ModelObsDepthUniformSeabed&gt;</i>)</a></code> <code><a href="plot.ModelObs.html">plot(<i>&lt;ModelObsDepthNormalTruncSeabed&gt;</i>)</a></code> </p>
+          <p><code><a href="plot.ModelObs.html">plot(<i>&lt;ModelObsAcousticLogisTrunc&gt;</i>)</a></code> <code><a href="plot.ModelObs.html">plot(<i>&lt;ModelObsDepthUniformSeabed&gt;</i>)</a></code> <code><a href="plot.ModelObs.html">plot(<i>&lt;ModelObsDepthNormalTruncSeabed&gt;</i>)</a></code> <code><a href="plot.ModelObs.html">plot(<i>&lt;ModelObsContainer&gt;</i>)</a></code> </p>
         </td>
         <td><p>Observation model plots</p></td>
+      </tr><tr><td>
+          <p><code><a href="plot_xyt.html">plot_xyt()</a></code> </p>
+        </td>
+        <td><p>Plots: plot coordinates (<code>x</code>, <code>y</code>, <code>t</code>)</p></td>
       </tr><tr><td>
           <p><code><a href="set_map.html">set_map()</a></code> </p>
         </td>

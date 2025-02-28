@@ -68,17 +68,18 @@
 
     <div id="structure">
     <h2>Structure</h2>
-    <p><code>pf_particles</code> is a label used to denote outputs from selected functions in <code><a href="patter.html">patter</a></code>. The structure of this class is not strictly defined and primarily exists to streamline documentation. At the time of writing, <code>pf_particles</code> objects may comprise the following elements:</p><ul><li><p><code>states</code>—A <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> of simulated states;</p></li>
+    <p><code>pf_particles</code> is a label used to denote outputs from selected functions in <code><a href="patter.html">patter</a></code>. The structure of this class is not strictly defined and primarily exists to streamline documentation. At the time of writing, <code>pf_particles</code> objects may comprise the following elements:</p><ul><li><p><code>states</code>—<code>NULL</code> or a <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> of simulated states;</p></li>
 <li><p><code>diagnostics</code>—A <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> of diagnostic statistics;</p></li>
 <li><p><code>callstats</code>—A <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> of call statistics;</p></li>
 </ul></div>
     <div id="states">
     <h2><code>states</code></h2>
-    <p><code>states</code> is a <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> that defines simulated particle states, with the following columns:</p><ul><li><p><code>path_id</code>—An <code>integer</code> vector that defines the particle index;</p></li>
+    <p>Unless, <code>.batch</code> is specified in <code><a href="pf_filter.html">pf_filter()</a></code> and <code><a href="pf_smoother_two_filter.html">pf_smoother_two_filter()</a></code>, <code>states</code> is a <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> that defines simulated particle states, with the following columns:</p><ul><li><p><code>path_id</code>—An <code>integer</code> vector that defines the particle index;</p></li>
 <li><p><code>timestep</code>—An <code>integer</code> vector that defines the time step;</p></li>
 <li><p><code>timestamp</code>—A <code>POSIXct</code> vector of time stamps;</p></li>
 <li><p>Additional columns with the values of each state dimension (e.g., <code>map_value</code>, <code>x</code>, <code>y</code>);</p></li>
 </ul><p>Particles are equally weighted, as the <code>.n_record</code> particles recorded at each time step are selected by resampling (see <code><a href="pf_filter.html">pf_filter()</a></code>).</p>
+<p>If the <code>.batch</code> is specified, <code>states</code> is <code>NULL</code>.</p>
     </div>
     <div id="diagnostics">
     <h2><code>diagnostics</code></h2>
@@ -88,11 +89,16 @@
     <div id="callstats">
     <h2><code>callstats</code></h2>
     <p><code>callstats</code> is a one-row <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> that stores call statistics for the function call. This includes the following columns:</p><ul><li><p><code>timestamp</code>—A <code>POSIXct</code> value that defines the start time of the function call;</p></li>
-<li><p><code>routine</code>—A <code>character</code> vector that defines the routine (e.g., <code>"filter: forward"</code>, <code>"filter: backward"</code>, <code>"smoother: two-filter"</code>);</p></li>
+<li><p><code>routine</code>—A <code>character</code> vector that defines the routine:</p><ul><li><p><code>"filter: forward"</code>;</p></li>
+<li><p><code>"filter: backward"</code>;</p></li>
+<li><p><code>"smoother: two-filter"</code>;</p></li>
+</ul></li>
 <li><p><code>n_particle</code>—An <code>integer</code> that defines the number of particles;</p></li>
 <li><p><code>n_iter</code>—An <code>integer</code> that defines the number of iterations (trials);</p></li>
 <li><p><code>error</code>—A <code>character</code> vector of error message(s);</p></li>
-<li><p><code>convergence</code>—A <code>logical</code> variable that defines whether or not the algorithm converged (that is, reached the end of the time series);</p></li>
+<li><p><code>convergence</code>—A <code>logical</code> variable that defines whether or not the algorithm converged</p><ul><li><p>For <code><a href="pf_filter.html">pf_filter()</a></code>, convergence is <code>TRUE</code> if the filter reaches the end of the time series;</p></li>
+<li><p>For <code><a href="pf_smoother_two_filter.html">pf_smoother_two_filter()</a></code>, convergence is set to <code>TRUE</code> if proper smoothing is possible on at least 95 % of time steps; i.e., if 95 % of <code>diagnostics$ess</code> values are not <code>NaN</code> (see <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.particle_smoother_two_filter()</code></a>);</p></li>
+</ul></li>
 <li><p><code>time</code>—A <code>numeric</code> value that defines the duration (s) of the function call;</p></li>
 </ul></div>
     <div id="see-also">

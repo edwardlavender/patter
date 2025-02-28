@@ -111,8 +111,8 @@
     <h2>Value</h2>
     <p><code>model_move_*()</code> functions return a <code>character</code> string that defines a <code>ModelMove</code> instance for evaluation in <code>Julia</code>. The <code><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></code> of the output is <code>character</code> plus <code>ModelMove</code> and <code>ModelMoveXY</code>, <code>ModelMoveXYZ</code>, <code>ModelMoveCXY</code> or <code>ModelMoveCXYZ</code> (see <code><a href="plot.ModelMove.html">plot.ModelMove</a></code>). If the map (<code>env</code>) does not exist in <code>Julia</code>, an error is thrown.</p>
     </div>
-    <div id="details">
-    <h2>Details</h2>
+    <div id="model-structures">
+    <h2>Model structures</h2>
     <p>Movement model sub-types are <code>Julia</code> structures that hold the components of movement models. From an <code>R</code>-user perspective, you can think of a <code>ModelMove</code> sub-type as an <code>S4</code>-<code><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></code>-like object, with slots for the components of a movement model. With a movement model instance, we can simulate movements and evaluate the density of movements from one state (location) to another.</p>
 <p>The following movement models are built in to <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.jl</code></a>:</p><ul><li><p>Random walks (RWs):</p><ul><li><p><code>ModelMoveXY</code></p></li>
 <li><p><code>ModelMoveXYZ</code></p></li>
@@ -133,7 +133,19 @@
 </ul><p>See <a href="https://discourse.julialang.org/t/a-comparison-of-common-distributions-in-julia-python-and-r/61604" class="external-link">here</a> for the translations of distributions in <code>R</code> (e.g., <code>*norm()</code>) into <code>Julia</code> (e.g., <code>Normal()</code>).</p>
 <p>To plot the dimensions of a movement model, see <code><a href="plot.ModelMove.html">plot.ModelMove</a></code>. To visualise realisations of a model, see <code><a href="sim_path_walk.html">sim_path_walk()</a></code>.</p>
 <p>In <code>Julia</code>, <code>ModelMove</code> instances are used to simulate states via <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.simulate_step()</code></a>. In the particle smoother, the density of movement from one state to another is evaluated by <a href="https://edwardlavender.github.io/Patter.jl" class="external-link"><code>Patter.logpdf_step()</code></a>. These are generic functions. Different methods are dispatched according to the input model. For the built-in <code>ModelMove</code> sub-types, corresponding methods for these routines are also built-in. For custom <code>ModelMove</code> sub-types, the methods need to be provided.</p>
-<p>To use custom <code>ModelMove</code> sub-types, see Examples.</p>
+<p>To use custom <code>ModelMove</code> sub-types, see <code><a href="State.html">?State</a></code>.</p>
+    </div>
+    <div id="model-development">
+    <h2>Model development</h2>
+    <p>For inference, we encourage users to start with simple movement models (such as random walks or correlated random walks) and add complexity iteratively, as required. Movement models should be formulated, and parameterised, using available datasets, domain knowledge and literature. For example:</p><ul><li><p>Lavender et al. (<a href="https://doi.org/10.1101/2025.02.13.638042" class="external-link">2025</a>). In a study of flapper skate (<em>Dipturus intermedius</em>) movements, we formulated a behavioural-switching correlated random walk movement model. We gauged potential swimming speeds from analyses of movement rates between receivers and vertical activity (via <a href="https://edwardlavender.github.io/flapper/reference/get_mvt_mobility.html" class="external-link"><code>get_mvt_mobility()</code></a> in <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a>). Actual movement speeds can be affected by current speeds and we evaluated these using an ocean model (via <a href="https://github.com/edwardlavender/fvcom.tbx" class="external-link"><code>fvcom.tbx</code></a>). We also reviewed information in the literature for related species (from accelerometery, satellite tracking, flow tank experiments and trawl footage). These studies helped to bound our expectations for movement rates in flapper skate, in the absence of direct measurements. Given epistemic uncertainty, we also conducted analyses with 'restrictive' and 'flexible' movement models to analyse algorithm sensitivity.</p></li>
+<li><p>Lavender et al. (in prep). In a study on lake trout (<em>Salvelinus namaycush</em>), we are leveraging swim-speed information from fine-scale positioning studies, accelerometer measurements and swim-tunnel experiments (plus other datasets such as underwater video) to parameterise our models. For this species, we can visualise the distributions of speed and turning angle measurements (with histograms) and develop data-driven models (e.g., using <a href="https://cran.r-project.org/web/packages/fitdistrplus/vignettes/fitdistrplus_vignette.html" class="external-link"><code><a href="https://lbbe-software.github.io/fitdistrplus/reference/fitdist.html" class="external-link">fitdistrplus::fitdist()</a></code></a>).</p></li>
+</ul><p>For the particle filter, movement models must be defined at the resolution of the <code>.timeline</code> (see <code><a href="pf_filter.html">pf_filter()</a></code>). For example, if you have a <code>.timeline</code> of two-minute time steps and a simple random walk, the distribution of step lengths (m) and headings (rad) should be defined for a two-minute time step (see <code>model_move_xy()</code>). All movements are truncated by the <code>.mobility</code> parameter. This is the maximum possible movement distance in the time between two time steps. Set <code>.mobility</code> based on the considerations above. Where necessary, you should also account for the discretisation errors in the timing of observations (e.g., see <code><a href="assemble.html">assemble_acoustics()</a></code>). Since <code>.mobility</code> affects the tail of the distribution, the exact value of <code>.mobility</code> can be relatively unimportant, <em>providing it is large enough</em>. We recommend erring on the side of flexibility in cases of uncertainty.</p>
+<p>Note that model formulation and parameterisation can be an iterative process:</p><ul><li><p>Develop initial model and observation models, drawing on available datasets, domain knowledge and literature;</p></li>
+<li><p>Perform inference, using <code><a href="pf_filter.html">pf_filter()</a></code>;</p></li>
+<li><p>Evaluate convergence;</p></li>
+<li><p>In cases of convergence failures, re-evaluate the model(s) and try again;</p></li>
+<li><p>Where necessary, run the algorithms with more restrictive or flexible models to analyse sensitivity;</p></li>
+</ul><p>For advice for your study system, please raise an issue on <a href="https://github.com/edwardlavender/patter/issues" class="external-link">GitHub</a>.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -249,16 +261,16 @@
 <span class="r-in"><span>  <span class="co"># See the help file for `?State` to use a new sub-type.</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2024-12-30 11:10:01... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2025-02-28 16:25:30... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_setup()`... </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Julia version 1.10.5 at location /Users/lavended/.julia/juliaup/julia-1.10.5+0.aarch64.apple.darwin14/bin will be used.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Julia version 1.11.3 at location /Users/lavended/.julia/juliaup/julia-1.11.3+0.aarch64.apple.darwin14/bin will be used.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading setup script for JuliaCall...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Finish loading setup script for JuliaCall.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 11 thread(s). </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2024-12-30 11:10:19 (duration: ~18 sec(s)). </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2025-02-28 16:25:36 (duration: ~6 sec(s)). </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ```</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Exponential(θ)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ```</span>
