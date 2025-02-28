@@ -89,7 +89,7 @@ This option is designed to reduce memory demand (especially on clusters). Larger
 
 \item{.collect}{A \code{logical} variable that defines whether or not to collect outputs from the \code{Julia} session in \code{R}.}
 
-\item{.progress}{Progress controls (see \code{\link{patter-progress}} for supported options).}
+\item{.progress}{Progress controls (see \code{\link{patter-progress}} for supported options). If enabled, one progress bar is shown for each \code{.batch}.}
 
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }

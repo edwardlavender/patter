@@ -41,7 +41,7 @@
 #'
 #' @param .collect A `logical` variable that defines whether or not to collect outputs from the `Julia` session in `R`.
 #'
-#' @param .progress Progress controls (see [`patter-progress`] for supported options).
+#' @param .progress Progress controls (see [`patter-progress`] for supported options). If enabled, one progress bar is shown for each `.batch`.
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
 #' @details

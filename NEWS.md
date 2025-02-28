@@ -39,6 +39,7 @@
     * A new `.n_iter` argument permits multiple runs of the filter. 
     * A new `.batch` argument permits batching, i.e., writing particles to disk in batches (to minimise memory requirements for cluster implementations).
     * A new `.collect` argument collects outputs in `R`. 
+    * A new `.progress` argument supports a primitive progress bar on Windows (addressing #13) and enables customisation. 
     * A revised `pf_particles` object is returned that includes a `callstats` `data.table` that replaces the `convergence` element.  
 
 * **Particle smoothing**
@@ -48,6 +49,7 @@
     * A new `.cache` argument fixes incorrect caching for time-varying movement models and enables the user to turn the caching on or off.
     * A new `.batch` argument permits batching (for cluster implementations).
     * A new `.collect` argument collects outputs in `R`. 
+    * A new `.progress` argument enables customisation of the progress bar (see above). 
     * A revised `pf_particles` object is returned (see above). 
     
 * **Mapping**
