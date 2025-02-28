@@ -58,7 +58,8 @@ set_states_init(
   .model_move,
   .yobs,
   .n_particle,
-  .direction
+  .direction,
+  .collect
 )
 
 set_t_resample(.t_resample)

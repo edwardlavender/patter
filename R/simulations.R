@@ -175,7 +175,8 @@ sim_path_walk <- function(.map = NULL,
                   .model_move = .model_move,
                   .yobs = list(),
                   .n_particle = .n_path,
-                  .direction = "forward")
+                  .direction = "forward",
+                  .collect = FALSE)
 
   #### Simulate random walk
   set_path()

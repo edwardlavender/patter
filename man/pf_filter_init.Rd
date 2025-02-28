@@ -12,6 +12,7 @@ pf_filter_init(
   .yobs,
   .n_particle,
   .direction,
+  .collect = TRUE,
   .verbose = getOption("patter.verbose")
 )
 }

@@ -233,7 +233,7 @@ set_direction <- function(.direction = c("forward", "backward")) {
 #' @keywords internal
 
 # Simulate states and update xinit in Julia
-set_states_init <- function(.timeline, .state, .xinit, .model_move, .yobs, .n_particle, .direction) {
+set_states_init <- function(.timeline, .state, .xinit, .model_move, .yobs, .n_particle, .direction, .collect) {
 
   # Set Julia objects incl. observations
   # set_map()
@@ -266,7 +266,9 @@ set_states_init <- function(.timeline, .state, .xinit, .model_move, .yobs, .n_pa
   julia_command('xinit = Patter.julia_get_xinit(state_type, xinit_df);')
 
   # Return states to R as data.table
-  # as.data.table(julia_eval("xinit_df"))
+  if (.collect) {
+    return(as.data.table(julia_eval("xinit_df")))
+  }
   nothing()
 
 }
