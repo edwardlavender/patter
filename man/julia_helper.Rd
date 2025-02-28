@@ -18,6 +18,8 @@
 \alias{julia_pkg_install_Patter}
 \alias{julia_pkg_install_deps}
 \alias{julia_pkg_library}
+\alias{julia_pkg_version_Patter.jl}
+\alias{julia_pkg_compat}
 \alias{julia_pkg_setup}
 \alias{julia_threads}
 \alias{julia_glimpse}
@@ -62,6 +64,10 @@ julia_pkg_install_Patter(JULIA_PATTER_SOURCE, .pkg_update)
 julia_pkg_install_deps(.pkg_install, .pkg_update)
 
 julia_pkg_library(.pkg_load)
+
+julia_pkg_version_Patter.jl()
+
+julia_pkg_compat()
 
 julia_pkg_setup(JULIA_PATTER_SOURCE, .pkg_install, .pkg_update, .pkg_load)
 

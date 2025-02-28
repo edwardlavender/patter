@@ -138,11 +138,15 @@ julia_pkg_list_full <- function(.pkg_install) {
 
 # List required Julia dependencies (incl. Patter.jl)
 julia_pkg_list_req <- function() {
-  c("Patter",
-    "DataFrames", "Distributions",
-    "Rasters", "ArchGDAL",
+  c("ArchGDAL",
+    "DataFrames",
+    "Distributions",
     "GeoArrays",
-    "JLD2", "Random")
+    "JLD2",
+    "Patter",
+    "Pkg",
+    "Rasters",
+    "Random")
 }
 
 #' @rdname julia_helper
@@ -276,7 +280,7 @@ julia_pkg_install_deps <- function(.pkg_install, .pkg_update) {
     # * For packages in Julia's standard library (e.g., Random),
     # * ... julia_installed_package() returns 'nothing'
     # * But these packages do not require install & this is suppressed (for speed)
-    if (.pkg %in% "Random") {
+    if (.pkg %in% c("Pkg", "Random")) {
       install <- FALSE
     } else {
       install  <- ifelse(julia_installed_package(.pkg) == "nothing", TRUE, FALSE)
@@ -306,6 +310,45 @@ julia_pkg_library <- function(.pkg_load) {
 #' @rdname julia_helper
 #' @keywords internal
 
+# Extract the version of Patter.jl
+# * Note this requires Julia Pkg is imported
+julia_pkg_version_Patter.jl <- function() {
+  # Use tryCatch as Pkg.pkgversion requires Julia 1.9
+  tryCatch({
+    version <- julia_eval('string(Pkg.pkgversion(Patter))')
+    package_version(version)
+  },
+  error = function(e) NA)
+}
+
+#' @rdname julia_helper
+#' @keywords internal
+
+# Check {patter} and {Patter.jl} version compatibility
+julia_pkg_compat <- function() {
+  # Get package versions
+  patter_version    <- packageVersion("Patter")
+  Patter.jl_version <- julia_pkg_version_Patter.jl()
+  if (!is.na(Patter.jl_version)) {
+    # Warn if major versions do not align
+    if (patter_version$major != Patter.jl_version$major) {
+      warn("The major `patter` ({patter_version}) `Patter.jl` ({Patter.jl_version}) versions do not align.",
+           .envir = environment())
+      if (patter_version$major > Patter.jl_version$major) {
+        warn("It looks like you should run `patter::julia_connect(.pkg_update = TRUE)`. You might also need to update `JULIA_PATTER_SOURCE`.")
+      } else {
+        warn("It looks like you should update the `patter` R package.")
+      }
+    }
+  } else {
+    warn("Failed to check `patter` and `Patter.jl` version compatibility.")
+  }
+  nothing()
+}
+
+#' @rdname julia_helper
+#' @keywords internal
+
 # Handle (install/update/load) Julia packages
 julia_pkg_setup <- function(JULIA_PATTER_SOURCE,
                             .pkg_install, .pkg_update,
@@ -324,6 +367,8 @@ julia_pkg_setup <- function(JULIA_PATTER_SOURCE,
   # (Run julia_pkg_list_load() at this point to pick up newly installed Julia packages)
   pkg_load <- julia_pkg_list_load(.pkg_load = .pkg_load)
   julia_pkg_library(pkg_load)
+  # Validate Patter.jl/patter compatibility
+  julia_pkg_compat()
   nothing()
 }
 
