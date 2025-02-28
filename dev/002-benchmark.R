@@ -132,7 +132,7 @@ args <- list(.timeline   = timeline,
              .n_particle = 2.5e4L,
              .direction  = "forward")
 
-#### Particle filter (forward): ~2.53 min (loop: 2:24)
+#### Particle filter (forward): ~2.12 min (loop: 1:57)
 t1_fwd   <- Sys.time()
 fwd      <- do.call(pf_filter, args, quote = TRUE)
 t2_fwd   <- Sys.time()
@@ -141,7 +141,7 @@ if (!fwd$callstats$convergence) {
   stop("Forward filter failed to converge.")
 }
 
-#### Particle filter (backward): ~2.45 min (loop: 2:24)
+#### Particle filter (backward): ~1.97 min (loop: 1:55)
 # Update args
 args$.yobs      <- yobs_bwd
 args$.direction <- "backward"
@@ -172,6 +172,9 @@ if (!bwd$callstats$convergence) {
 # Try multithreading smoother
 # ~2.8 min (loop: 1:16)
 # - Smoothing is ~32 s faster
+#
+# patter v.2.0.0 with smooth_weights() function & Dict() caching
+# ~1.23 mins (loop: 23 s)
 
 t1_smo   <- Sys.time()
 smo      <- pf_smoother_two_filter(.n_particle = 500L,
@@ -190,7 +193,7 @@ benchmarks <- data.table(timestamp = timestamp,
                          threads   = threads,
                          routine   = c("fwd", "bwd", "smo"),
                          time      = c(secs_fwd, secs_bwd, secs_smo),
-                         note      = "Add misc updates"
+                         note      = "patter v.2.0.0"
                          )
 
 #### Write to file
