@@ -181,6 +181,10 @@
     filter_containers(.map = .map, .threshold = .threshold) |>
     as.data.table()
 
+  # TO DO (optimisation) Exclude unnecessary containers
+  # Drop containers when where we have only one time step
+  # ... between detections at the same receiver
+
   # Return containers
   containers
 
