@@ -266,7 +266,8 @@ set_states_init <- function(.timeline, .state, .xinit, .model_move, .yobs, .n_pa
   julia_command('xinit = Patter.julia_get_xinit(state_type, xinit_df);')
 
   # Return states to R as data.table
-  as.data.table(julia_eval("xinit_df"))
+  # as.data.table(julia_eval("xinit_df"))
+  nothing()
 
 }
 

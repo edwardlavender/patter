@@ -21,19 +21,17 @@ pf_filter_init <- function(.timeline,
 
   #### Simulate initial states
   cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Setting initial states..."))
-  xinit <- set_states_init(.timeline = .timeline,
-                           .state = .state,
-                           .xinit = .xinit,
-                           .model_move = .model_move,
-                           .yobs = .yobs,
-                           .n_particle = .n_particle,
-                           .direction = .direction)
+  set_states_init(.timeline = .timeline,
+                  .state = .state,
+                  .xinit = .xinit,
+                  .model_move = .model_move,
+                  .yobs = .yobs,
+                  .n_particle = .n_particle,
+                  .direction = .direction)
 
   #### Set filter observations
   cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Setting observations dictionary..."))
   set_yobs_dict(.yobs = .yobs)
-
-  # Return initial states to R
-  return(xinit)
+  nothing()
 
 }
