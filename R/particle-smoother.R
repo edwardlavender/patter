@@ -23,6 +23,7 @@
 #' * Otherwise, `.batch` must be specified. Pass a `character` vector of `.jld2` file paths to write particles in sequential batches to file (as `Julia` `Matrix{<:State}` objects) to `.batch`; for example: `./smo-1.jld2, ./smo-2.jld2, ...`. You must use the same number of batches as in [`pf_filter()`]. `.batch` is implemented as in that function.
 #'
 #' @param .collect A `logical` variable that defines whether or not to collect outputs from the `Julia` session in `R`.
+#' @param .progress Progress controls (see [`patter-progress`] for supported options).
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #' @details
 #' The two-filter smoother smooths particle samples from the particle filter ([`pf_filter()`]). Particles from a forward and backward filter run are required in the `Julia` workspace (as defined by [`pf_filter()`]). The backend function [`Patter.particle_smoother_two_filter()`](https://edwardlavender.github.io/Patter.jl/) does the work. Essentially, the function runs a simulation backwards in time and re-samples particles in line with the probability density of movements between each combination of states from the backward filter at time `t` and states from the forward filter at time `t - 1`. The time complexity of the algorithm is thus \eqn{O(TN^2)}. The probability density of movements is evaluated by [`Patter.logpdf_step()`](https://edwardlavender.github.io/Patter.jl/) and [`Patter.logpdf_move()`](https://edwardlavender.github.io/Patter.jl/). If individual states are two-dimensional (see [`StateXY`]), a validity map can be pre-defined in `Julia` via [`set_vmap()`] to speed up probability calculations. The validity map is defined as the set of valid (non-`NA` or bordering) locations on the `.map`, shrunk by `.mobility`. Within this region, the probability density of movement between two states can be calculated directly. Otherwise, a Monte Carlo simulation, of `.n_sim` iterations, is required to compute the normalisation constant (accounting for movements into inhospitable areas, or beyond the boundaries of the study area). For movement models for which the density only depends on the particle states, set `.cache = TRUE` to pre-compute and cache normalisation constants for improved speed.
@@ -85,6 +86,7 @@ pf_smoother_two_filter <- function(.n_particle = NULL,
                                    .cache = TRUE,
                                    .batch = NULL,
                                    .collect = TRUE,
+                                   .progress = julia_progress(),
                                    .verbose = getOption("patter.verbose")) {
 
   #### Initiate
@@ -116,7 +118,8 @@ pf_smoother_two_filter <- function(.n_particle = NULL,
   pf_obj <- set_smoother_two_filter(.n_particle = .n_particle,
                                     .n_sim      = .n_sim,
                                     .cache      = .cache,
-                                    .batch      = .batch)
+                                    .batch      = .batch,
+                                    .progress   = .progress)
 
   #### Get particles in R
   if (.collect) {

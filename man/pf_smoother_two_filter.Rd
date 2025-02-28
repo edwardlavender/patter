@@ -13,6 +13,7 @@ pf_smoother_two_filter(
   .cache = TRUE,
   .batch = NULL,
   .collect = TRUE,
+  .progress = julia_progress(),
   .verbose = getOption("patter.verbose")
 )
 }
@@ -47,6 +48,8 @@ On Linux, the validity map cannot be created and set in the same \code{R} sessio
 }}
 
 \item{.collect}{A \code{logical} variable that defines whether or not to collect outputs from the \code{Julia} session in \code{R}.}
+
+\item{.progress}{Progress controls (see \code{\link{patter-progress}} for supported options).}
 
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }

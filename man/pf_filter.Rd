@@ -19,6 +19,7 @@ pf_filter(
   .direction = c("forward", "backward"),
   .batch = NULL,
   .collect = TRUE,
+  .progress = julia_progress(),
   .verbose = getOption("patter.verbose")
 )
 }
@@ -87,6 +88,8 @@ If specified, \code{.batch} is sorted alphanumerically (in \code{Julia}) such th
 This option is designed to reduce memory demand (especially on clusters). Larger numbers of batches reduce memory demand, but incur the speed penalty of writing particles to disk. When there are only a handful of batches, this should be negligible. For examples of this argument in action, see \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}}.}
 
 \item{.collect}{A \code{logical} variable that defines whether or not to collect outputs from the \code{Julia} session in \code{R}.}
+
+\item{.progress}{Progress controls (see \code{\link{patter-progress}} for supported options).}
 
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }

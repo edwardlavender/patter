@@ -40,6 +40,8 @@
 #' This option is designed to reduce memory demand (especially on clusters). Larger numbers of batches reduce memory demand, but incur the speed penalty of writing particles to disk. When there are only a handful of batches, this should be negligible. For examples of this argument in action, see [`pf_smoother_two_filter()`].
 #'
 #' @param .collect A `logical` variable that defines whether or not to collect outputs from the `Julia` session in `R`.
+#'
+#' @param .progress Progress controls (see [`patter-progress`] for supported options).
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
 #' @details
@@ -90,6 +92,7 @@ pf_filter <- function(.timeline,
                       .direction = c("forward", "backward"),
                       .batch = NULL,
                       .collect = TRUE,
+                      .progress = julia_progress(),
                       .verbose = getOption("patter.verbose")) {
 
   #### Initiate
@@ -115,7 +118,8 @@ pf_filter <- function(.timeline,
                           .n_record   = .n_record,
                           .n_iter     = .n_iter,
                           .direction  = .direction,
-                          .batch      = .batch)
+                          .batch      = .batch,
+                          .progress   = .progress)
 
   #### Check convergence
   # Issue a warning for convergence failures

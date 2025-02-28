@@ -2,7 +2,11 @@
   # Collect options
   op <- options()
   # Define patter options
-  op_patter <- list(patter.verbose = TRUE)
+  patter.verbose <- TRUE
+  patter.progress <- ifelse(requireNamespace("pbapply", quietly = TRUE) &&
+                              pbapply::pboptions()$type == "none", FALSE, TRUE)
+  op_patter <- list(patter.verbose = patter.verbose,
+                    patter.progress = patter.progress)
   # Set necessary patter options
   bool <- !(names(op_patter) %in% names(op))
   if (any(bool)) {
@@ -12,7 +16,8 @@
 }
 
 .onUnload <- function(libpath){
-  options("patter.verbose" = NULL)
+  options("patter.verbose" = NULL,
+          "patter.progress" = NULL)
   invisible(NULL)
 }
 

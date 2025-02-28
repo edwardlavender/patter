@@ -24,10 +24,12 @@ set_JULIA_NUM_THREADS <- function(JULIA_NUM_THREADS) {
       # (System-wide variables are captured by Sys.getenv())
       try({
         # Obtain system-wide environment variables via registry
+        # Note this check appears to work on some, but not all, systems
+        # * Hence we use a message not a warning
         # (system("cmd.exe /c set", intern = TRUE) inherits environment variables from R)
         SET <- system("reg query \"HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment\" /s", intern = TRUE)
         if (!any(grepl("JULIA_NUM_THREADS", SET))) {
-          warn("On Windows, `JULIA_NUM_THREADS` should be set system-wide (see https://github.com/edwardlavender/patter/issues/11).")
+          msg("On Windows, `JULIA_NUM_THREADS` should be set system-wide (see https://github.com/edwardlavender/patter/issues/11).")
         }
       }, silent = TRUE)
     }
@@ -317,9 +319,37 @@ set_batch <- function(.batch, .type = c("fwd", "bwd", "smo")) {
 #' @rdname julia_set
 #' @keywords internal
 
+set_progress <- function(.progress) {
+  .progress <- list_merge(julia_progress(), .progress)
+  julia_assign("pb_enabled", .progress$enabled)
+  julia_assign("pb_dt", .progress$dt)
+  julia_assign("pb_showspeed", .progress$showspeed)
+  # Set selected Progress options
+  # * output is controlled via Patter.progress_control
+  # * color is not supported from R
+  # * Other options are not implemented from R
+  julia_command('
+  progress =
+    Patter.progress_control(enabled   = pb_enabled,
+                            dt        = pb_dt,
+                            showspeed = pb_showspeed);
+  ')
+  nothing()
+}
+
+#' @rdname julia_set
+#' @keywords internal
+
 # Run the particle filter in Julia
 # * This defines a `fwd` or `bwd` object depending on `.direction`
-set_pf_filter <- function(.n_move, .n_resample, .t_resample, .n_record, .n_iter, .direction, .batch) {
+set_pf_filter <- function(.n_move,
+                          .n_resample,
+                          .t_resample,
+                          .n_record,
+                          .n_iter,
+                          .direction,
+                          .batch,
+                          .progress) {
   # Check inputs
   julia_check_exists("timeline", "xinit", "yobs", "model_move")
   .n_move     <- as.integer(.n_move)
@@ -328,6 +358,7 @@ set_pf_filter <- function(.n_move, .n_resample, .t_resample, .n_record, .n_iter,
   .n_iter     <- as.integer(.n_iter)
   set_t_resample(.t_resample)
   batch_vector <- set_batch(.batch, .type = ifelse(.direction == "forward", "fwd", "bwd"))
+  set_progress(.progress)
   # Define output name
   output <- name_particles(.fun = "pf_filter", .direction = .direction)
   # Run the filter
@@ -344,7 +375,8 @@ set_pf_filter <- function(.n_move, .n_resample, .t_resample, .n_record, .n_iter,
                                  t_resample = t_resample,
                                  n_iter     = {.n_iter},
                                  direction  = "{.direction}",
-                                 batch      = {batch_vector});
+                                 batch      = {batch_vector},
+                                 progress   = progress);
     '
     )
   )
@@ -366,7 +398,7 @@ set_cache <- function(.cache) {
 #' @keywords internal
 
 # Run the two-filter smoother in Julia
-set_smoother_two_filter <- function(.n_particle, .n_sim, .cache, .batch) {
+set_smoother_two_filter <- function(.n_particle, .n_sim, .cache, .batch, .progress) {
 
   #### Define output names
   output <- name_particles(.fun = "pf_smoother_two_filter")
@@ -378,6 +410,7 @@ set_smoother_two_filter <- function(.n_particle, .n_sim, .cache, .batch) {
   .n_sim      <- as.integer(.n_sim)
   set_cache(.cache)
   batch_vector <- set_batch(.batch, .type = "smo")
+  set_progress(.progress)
   if (is.null(.batch)) {
     julia_command(glue('xfwd_for_smo = {fwd}.states;')) # {fwd}.states[1:{.n_particle}, :]
     julia_command(glue('xbwd_for_smo = {bwd}.states;')) # {bwd}.states[1:{.n_particle}, :]
@@ -396,7 +429,8 @@ set_smoother_two_filter <- function(.n_particle, .n_sim, .cache, .batch) {
                                                           n_particle = {.n_particle},
                                                           n_sim      = {.n_sim},
                                                           cache      = cache,
-                                                          batch      = {batch_vector});')
+                                                          batch      = {batch_vector},
+                                                          progress   = progress);')
   julia_command(cmd)
   invisible(output)
 }
