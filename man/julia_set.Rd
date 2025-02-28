@@ -19,6 +19,7 @@
 \alias{set_t_resample}
 \alias{set_batch}
 \alias{set_progress}
+\alias{set_verbose}
 \alias{set_pf_filter}
 \alias{set_cache}
 \alias{set_smoother_two_filter}
@@ -66,6 +67,8 @@ set_batch(.batch, .type = c("fwd", "bwd", "smo"))
 
 set_progress(.progress)
 
+set_verbose(.verbose)
+
 set_pf_filter(
   .n_move,
   .n_resample,
@@ -74,12 +77,20 @@ set_pf_filter(
   .n_iter,
   .direction,
   .batch,
-  .progress
+  .progress,
+  .verbose
 )
 
 set_cache(.cache)
 
-set_smoother_two_filter(.n_particle, .n_sim, .cache, .batch, .progress)
+set_smoother_two_filter(
+  .n_particle,
+  .n_sim,
+  .cache,
+  .batch,
+  .progress,
+  .verbose
+)
 }
 \description{
 These are internal functions that assign objects to variable names in \code{Julia}.

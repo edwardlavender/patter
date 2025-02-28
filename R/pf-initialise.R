@@ -20,7 +20,7 @@ pf_filter_init <- function(.timeline,
   on.exit(eval(cats$exit, envir = cats$envir), add = TRUE)
 
   #### Simulate initial states
-  cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Simulating initial states..."))
+  cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Setting initial states..."))
   xinit <- set_states_init(.timeline = .timeline,
                            .state = .state,
                            .xinit = .xinit,
@@ -30,7 +30,7 @@ pf_filter_init <- function(.timeline,
                            .direction = .direction)
 
   #### Set filter observations
-  cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Setting observations..."))
+  cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Setting observations dictionary..."))
   set_yobs_dict(.yobs = .yobs)
 
   # Return initial states to R

@@ -119,7 +119,8 @@ pf_smoother_two_filter <- function(.n_particle = NULL,
                                     .n_sim      = .n_sim,
                                     .cache      = .cache,
                                     .batch      = .batch,
-                                    .progress   = .progress)
+                                    .progress   = .progress,
+                                    .verbose    = .verbose)
 
   #### Get particles in R
   if (.collect) {

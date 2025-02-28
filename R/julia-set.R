@@ -340,6 +340,14 @@ set_progress <- function(.progress) {
 #' @rdname julia_set
 #' @keywords internal
 
+set_verbose <- function(.verbose) {
+  julia_assign("verbose", .verbose)
+  nothing()
+}
+
+#' @rdname julia_set
+#' @keywords internal
+
 # Run the particle filter in Julia
 # * This defines a `fwd` or `bwd` object depending on `.direction`
 set_pf_filter <- function(.n_move,
@@ -349,7 +357,8 @@ set_pf_filter <- function(.n_move,
                           .n_iter,
                           .direction,
                           .batch,
-                          .progress) {
+                          .progress,
+                          .verbose) {
   # Check inputs
   julia_check_exists("timeline", "xinit", "yobs", "model_move")
   .n_move     <- as.integer(.n_move)
@@ -359,6 +368,7 @@ set_pf_filter <- function(.n_move,
   set_t_resample(.t_resample)
   batch_vector <- set_batch(.batch, .type = ifelse(.direction == "forward", "fwd", "bwd"))
   set_progress(.progress)
+  set_verbose(.verbose)
   # Define output name
   output <- name_particles(.fun = "pf_filter", .direction = .direction)
   # Run the filter
@@ -376,7 +386,8 @@ set_pf_filter <- function(.n_move,
                                  n_iter     = {.n_iter},
                                  direction  = "{.direction}",
                                  batch      = {batch_vector},
-                                 progress   = progress);
+                                 progress   = progress,
+                                 verbose    = verbose);
     '
     )
   )
@@ -398,7 +409,7 @@ set_cache <- function(.cache) {
 #' @keywords internal
 
 # Run the two-filter smoother in Julia
-set_smoother_two_filter <- function(.n_particle, .n_sim, .cache, .batch, .progress) {
+set_smoother_two_filter <- function(.n_particle, .n_sim, .cache, .batch, .progress, .verbose) {
 
   #### Define output names
   output <- name_particles(.fun = "pf_smoother_two_filter")
@@ -411,6 +422,7 @@ set_smoother_two_filter <- function(.n_particle, .n_sim, .cache, .batch, .progre
   set_cache(.cache)
   batch_vector <- set_batch(.batch, .type = "smo")
   set_progress(.progress)
+  set_verbose(.verbose)
   if (is.null(.batch)) {
     julia_command(glue('xfwd_for_smo = {fwd}.states;')) # {fwd}.states[1:{.n_particle}, :]
     julia_command(glue('xbwd_for_smo = {bwd}.states;')) # {bwd}.states[1:{.n_particle}, :]
@@ -430,7 +442,8 @@ set_smoother_two_filter <- function(.n_particle, .n_sim, .cache, .batch, .progre
                                                           n_sim      = {.n_sim},
                                                           cache      = cache,
                                                           batch      = {batch_vector},
-                                                          progress   = progress);')
+                                                          progress   = progress,
+                                                          verbose    = verbose);')
   julia_command(cmd)
   invisible(output)
 }

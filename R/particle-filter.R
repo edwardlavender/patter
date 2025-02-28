@@ -108,7 +108,8 @@ pf_filter <- function(.timeline,
                  .model_move = .model_move,
                  .yobs       = .yobs,
                  .n_particle = .n_particle,
-                 .direction  = .direction)
+                 .direction  = .direction,
+                 .verbose    = .verbose)
 
   #### Run filter
   cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Running filter..."))
@@ -119,7 +120,8 @@ pf_filter <- function(.timeline,
                           .n_iter     = .n_iter,
                           .direction  = .direction,
                           .batch      = .batch,
-                          .progress   = .progress)
+                          .progress   = .progress,
+                          .verbose    = .verbose)
 
   #### Check convergence
   # Issue a warning for convergence failures
