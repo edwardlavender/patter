@@ -118,6 +118,9 @@ test_that("pf_smoother_two_filter() fails if filters don't match", {
 
 test_that("pf_smoother_two_filter() works with batching", {
 
+  skip_on_cran()
+  skip_if_not(patter_run(.julia = TRUE, .geospatial = TRUE))
+
   folder <- tempdir()
   setup  <- example_setup("pf_smoother_two_filter")
   args   <- setup$pf_filter_args
