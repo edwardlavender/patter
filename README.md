@@ -90,9 +90,9 @@ touch if you would like to see additional functionality brought into
 > restrictions). On Windows, everything *should* work if you follow the
 > instructions below. On MacOS, some additional set up (such as compiler
 > configuration) may be required, depending on your set up. On
-> Debian/Ubuntu, {patter} can be used but you cannot simultaneously use
+> Debian/Ubuntu, `patter` can be used but you cannot simultaneously use
 > geospatial routines in `R` and `Julia`. Thus, you can only call
-> `library(terra)` or `terra::foo()` and use {patter} routines that
+> `library(terra)` or `terra::foo()` and use `patter` routines that
 > exploit `terra` and other geospatial packages in `R` sessions that are
 > not connected to a `Julia` session (via `julia_connect()`). We haven’t
 > tried other Linux distributions. Package examples were written on
@@ -191,19 +191,16 @@ On Linux, this step may require system libraries (see below).
       curl -fsSL https://install.julialang.org | sh
       ```
 
-    - In the shell, then install `Julia` 1.10.5 via `juliaup`:
+    - In the shell, then install `Julia` (release version) via
+      `juliaup`:
 
       ``` bash
-      juliaup add 1.10.5  
-      juliaup default 1.10.5
+      juliaup update
+      juliaup default release
       ```
 
-> **Note:** Install a recent `Julia` version. At the time of writing
-> (December 2024), `Julia` 1.10.5 (long-term release) is recommended, as
-> we run most tests against that version. However, `Julia` 1.11 is now
-> also supported by `JuliaCall` (see
-> [here](https://github.com/Non-Contradiction/JuliaCall/issues/234)).
-> This README was last built on 2025-02-28 with Julia 1.11.3.
+> **Note:** Install a recent `Julia` version. This README was last built
+> on 2025-02-28 with Julia 1.11.3.
 
 5.  **Setup JuliaCall.** The next step is to set up `JuliaCall`, which
     provides the integration between `R` and `Julia`.
@@ -645,7 +642,7 @@ head(fwd$diagnostics)
 fwd$callstats
 #>              timestamp         routine n_particle n_iter convergence     time
 #>                 <POSc>          <char>      <int>  <int>      <lgcl>    <num>
-#> 1: 2025-02-28 16:24:16 filter: forward      10000      1        TRUE 7.452342
+#> 1: 2025-02-28 16:35:43 filter: forward      10000      1        TRUE 7.696562
 
 # Backward run
 args$.yobs      <- yobs_bwd
@@ -674,7 +671,7 @@ head(bwd$diagnostics)
 bwd$callstats
 #>              timestamp          routine n_particle n_iter convergence     time
 #>                 <POSc>           <char>      <int>  <int>      <lgcl>    <num>
-#> 1: 2025-02-28 16:24:24 filter: backward      10000      1        TRUE 1.046184
+#> 1: 2025-02-28 16:35:51 filter: backward      10000      1        TRUE 1.047809
 ```
 
 ## Particle smoother
@@ -714,10 +711,10 @@ head(smo$diagnostics)
 smo$callstats
 #>              timestamp              routine n_particle n_iter convergence
 #>                 <POSc>               <char>      <int>  <int>      <lgcl>
-#> 1: 2025-02-28 16:24:25 smoother: two-filter        750     NA        TRUE
-#>       time
-#>      <num>
-#> 1: 3.38837
+#> 1: 2025-02-28 16:35:53 smoother: two-filter        750     NA        TRUE
+#>        time
+#>       <num>
+#> 1: 3.736002
 ```
 
 ## Mapping

@@ -107,7 +107,7 @@ At the time of writing (May 2024), `patter` is more streamlined than [`flapper`]
 # Installation 
 
 > **Note:**
-> `patter` works Windows, MacOS and Linux (with some restrictions). On Windows, everything _should_ work if you follow the instructions below. On MacOS, some additional set up (such as compiler configuration) may be required, depending on your set up. On Debian/Ubuntu, {patter} can be used but you cannot simultaneously use geospatial routines in `R` and `Julia`. Thus, you can only call `library(terra)` or `terra::foo()` and use {patter} routines that exploit `terra` and other geospatial packages in `R` sessions that are not connected to a `Julia` session (via `julia_connect()`). We haven't tried other Linux distributions. Package examples were written on MacOS and may not run safely on Linux without modification. Check the function documentation for supported options and share your experience. In case of issues, you should be able to use `Patter.jl` directly, which on some systems may be simpler than getting `R` and `Julia` to play together!
+> `patter` works Windows, MacOS and Linux (with some restrictions). On Windows, everything _should_ work if you follow the instructions below. On MacOS, some additional set up (such as compiler configuration) may be required, depending on your set up. On Debian/Ubuntu, `patter` can be used but you cannot simultaneously use geospatial routines in `R` and `Julia`. Thus, you can only call `library(terra)` or `terra::foo()` and use `patter` routines that exploit `terra` and other geospatial packages in `R` sessions that are not connected to a `Julia` session (via `julia_connect()`). We haven't tried other Linux distributions. Package examples were written on MacOS and may not run safely on Linux without modification. Check the function documentation for supported options and share your experience. In case of issues, you should be able to use `Patter.jl` directly, which on some systems may be simpler than getting `R` and `Julia` to play together!
 
 1. **Install [`R`](https://www.r-project.org)**. This package requires `R` version ≥ 4.1 (but the most recent version is recommended). You can check your version from the `R` console using `R.version.string`. 
 
@@ -162,11 +162,11 @@ On Linux, this step may require system libraries (see below).
      curl -fsSL https://install.julialang.org | sh
      ```
 
-   * In the shell, then install `Julia` 1.10.5 via `juliaup`:
+   * In the shell, then install `Julia` (release version) via `juliaup`:
 
      ```bash
-     juliaup add 1.10.5  
-     juliaup default 1.10.5
+     juliaup update
+     juliaup default release
      ```
 
 ```{r, include = FALSE}
@@ -176,7 +176,7 @@ VERSION <- julia_eval("string(VERSION)")
 ```
 
 > **Note:**
-> Install a recent `Julia` version. At the time of writing (December 2024), `Julia` 1.10.5 (long-term release) is recommended, as we run most tests against that version. However, `Julia` 1.11 is now also supported by `JuliaCall` (see [here](https://github.com/Non-Contradiction/JuliaCall/issues/234)). This README was last built on `r Sys.Date()` with Julia `r VERSION`.
+> Install a recent `Julia` version. This README was last built on `r Sys.Date()` with Julia `r VERSION`.
 
 5. **Setup JuliaCall.** The next step is to set up `JuliaCall`, which provides the integration between `R` and `Julia`.  
 
