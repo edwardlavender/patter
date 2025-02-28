@@ -256,7 +256,7 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
 
   ## Map output states:
   # Map particle coordinates
-  pf_plot_xy(.map = map, .coord = fwd$states, .steps = 1L)
+  plot_xyt(.map = map, .coord = fwd$states, .steps = 1L)
   # Map a utilisation distribution
   # * Use `.sigma = spatstat.explore::bw.diggle()` for CV bandwidth estimate
   map_dens(.map = map,

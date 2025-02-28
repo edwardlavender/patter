@@ -115,7 +115,7 @@ These functions return \code{\linkS4class{pf_particles}} objects.
 
 \strong{For convenience plotting functions}, see:
 \itemize{
-\item \code{\link[=pf_plot_xy]{pf_plot_xy()}} to plot particle locations;
+\item \code{\link[=plot_xyt]{plot_xyt()}} to plot particle locations;
 }
 
 \strong{For mapping utilisation distributions}, use:

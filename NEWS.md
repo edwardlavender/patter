@@ -52,7 +52,8 @@
     * A new `.progress` argument enables customisation of the progress bar (see above). 
     * A revised `pf_particles` object is returned (see above). 
     
-* **Mapping**
+* **Plotting & mapping**
+    * `pf_plot_xy()` is deprecated; use the renamed function `plot_xyt()`.
     * `map_dens()` now requires the smoothing bandwidth to be specified via a `.sigma` argument. A new function, `bw.h()`, is the default.
     * The `.use_tryCatch` argument is now simply named `.tryCatch`. 
 

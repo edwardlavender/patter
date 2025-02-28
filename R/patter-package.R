@@ -98,7 +98,7 @@
 #'
 #' **For convenience plotting functions**, see:
 #'
-#' * [`pf_plot_xy()`] to plot particle locations;
+#' * [`plot_xyt()`] to plot particle locations;
 #'
 #' **For mapping utilisation distributions**, use:
 #'
