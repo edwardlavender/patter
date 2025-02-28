@@ -327,7 +327,7 @@ julia_pkg_version_Patter.jl <- function() {
 # Check {patter} and {Patter.jl} version compatibility
 julia_pkg_compat <- function() {
   # Get package versions
-  patter_version    <- packageVersion("Patter")
+  patter_version    <- utils::packageVersion("Patter")
   Patter.jl_version <- julia_pkg_version_Patter.jl()
   if (!is.na(Patter.jl_version)) {
     # Warn if major versions do not align
