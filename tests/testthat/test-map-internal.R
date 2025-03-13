@@ -114,6 +114,8 @@ test_that(".map_*() functions work", {
 
 test_that("raster.vol() works", {
 
+  skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
+
   map <- terra::setValues(dat_gebco(), 1)
   map <- terra::setValues(dat_gebco(), 1)
   map <- map / terra::global(map, "sum", na.rm = TRUE)[1, 1]
