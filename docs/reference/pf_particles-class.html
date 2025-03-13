@@ -68,13 +68,13 @@
 
     <div id="structure">
     <h2>Structure</h2>
-    <p><code>pf_particles</code> is a label used to denote outputs from selected functions in <code><a href="patter.html">patter</a></code>. The structure of this class is not strictly defined and primarily exists to streamline documentation. At the time of writing, <code>pf_particles</code> objects may comprise the following elements:</p><ul><li><p><code>states</code>—<code>NULL</code> or a <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> of simulated states;</p></li>
-<li><p><code>diagnostics</code>—A <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> of diagnostic statistics;</p></li>
-<li><p><code>callstats</code>—A <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> of call statistics;</p></li>
+    <p><code>pf_particles</code> is a label used to denote outputs from selected functions in <code><a href="patter.html">patter</a></code>. The structure of this class is not strictly defined and primarily exists to streamline documentation. At the time of writing, <code>pf_particles</code> objects may comprise the following elements:</p><ul><li><p><code>states</code>—<code>NULL</code> or a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of simulated states;</p></li>
+<li><p><code>diagnostics</code>—A <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of diagnostic statistics;</p></li>
+<li><p><code>callstats</code>—A <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> of call statistics;</p></li>
 </ul></div>
     <div id="states">
     <h2><code>states</code></h2>
-    <p>Unless, <code>.batch</code> is specified in <code><a href="pf_filter.html">pf_filter()</a></code> and <code><a href="pf_smoother_two_filter.html">pf_smoother_two_filter()</a></code>, <code>states</code> is a <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> that defines simulated particle states, with the following columns:</p><ul><li><p><code>path_id</code>—An <code>integer</code> vector that defines the particle index;</p></li>
+    <p>Unless, <code>.batch</code> is specified in <code><a href="pf_filter.html">pf_filter()</a></code> and <code><a href="pf_smoother_two_filter.html">pf_smoother_two_filter()</a></code>, <code>states</code> is a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that defines simulated particle states, with the following columns:</p><ul><li><p><code>path_id</code>—An <code>integer</code> vector that defines the particle index;</p></li>
 <li><p><code>timestep</code>—An <code>integer</code> vector that defines the time step;</p></li>
 <li><p><code>timestamp</code>—A <code>POSIXct</code> vector of time stamps;</p></li>
 <li><p>Additional columns with the values of each state dimension (e.g., <code>map_value</code>, <code>x</code>, <code>y</code>);</p></li>
@@ -83,12 +83,12 @@
     </div>
     <div id="diagnostics">
     <h2><code>diagnostics</code></h2>
-    <p><code>diagnostics</code> is a <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> that stores diagnostic statistics for each time step. This includes <code>timestep</code>, <code>timestamp</code> and the following columns:</p><ul><li><p><code>ess</code>—A <code>numeric</code> vector that defines the effective sample size;</p></li>
+    <p><code>diagnostics</code> is a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that stores diagnostic statistics for each time step. This includes <code>timestep</code>, <code>timestamp</code> and the following columns:</p><ul><li><p><code>ess</code>—A <code>numeric</code> vector that defines the effective sample size;</p></li>
 <li><p><code>maxlp</code>—A <code>numeric</code> vector that defines the maximum log posterior;</p></li>
 </ul></div>
     <div id="callstats">
     <h2><code>callstats</code></h2>
-    <p><code>callstats</code> is a one-row <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> that stores call statistics for the function call. This includes the following columns:</p><ul><li><p><code>timestamp</code>—A <code>POSIXct</code> value that defines the start time of the function call;</p></li>
+    <p><code>callstats</code> is a one-row <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> that stores call statistics for the function call. This includes the following columns:</p><ul><li><p><code>timestamp</code>—A <code>POSIXct</code> value that defines the start time of the function call;</p></li>
 <li><p><code>routine</code>—A <code>character</code> vector that defines the routine:</p><ul><li><p><code>"filter: forward"</code>;</p></li>
 <li><p><code>"filter: backward"</code>;</p></li>
 <li><p><code>"smoother: two-filter"</code>;</p></li>

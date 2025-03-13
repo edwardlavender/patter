@@ -72,7 +72,7 @@
     </div>
     <div id="-model-obs">
     <h2><code>.model_obs</code></h2>
-    <p><code>.model_obs</code> is a named <code>list</code> of <code><a href="ModelObs.html">ModelObs</a></code> sub-types (named) and associated parameters (<code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> elements).</p>
+    <p><code>.model_obs</code> is a named <code>list</code> of <code><a href="ModelObs.html">ModelObs</a></code> sub-types (named) and associated parameters (<code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> elements).</p>
     </div>
     <div id="-model-move">
     <h2><code>.model_move</code></h2>
@@ -84,7 +84,7 @@
     </div>
     <div id="-yobs">
     <h2><code>.yobs</code></h2>
-    <p><code>.yobs</code> is a named <code>list</code> of observational datasets, one for each data type. Element names must correspond <code><a href="ModelObs.html">ModelObs</a></code> sub-types defined in <code>Julia</code>. Each element must be a <code><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></code> with the following columns:</p><ul><li><p><code>timestamp</code>—a <code>POSIXct</code> vector of time stamps;</p></li>
+    <p><code>.yobs</code> is a named <code>list</code> of observational datasets, one for each data type. Element names must correspond <code><a href="ModelObs.html">ModelObs</a></code> sub-types defined in <code>Julia</code>. Each element must be a <code><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></code> with the following columns:</p><ul><li><p><code>timestamp</code>—a <code>POSIXct</code> vector of time stamps;</p></li>
 <li><p><code>sensor_id</code>—an <code>integer</code> vector of sensor IDs, such as receivers;</p></li>
 <li><p><code>obs</code>—a vector of observations;</p></li>
 <li><p>Additional columns that define the parameters of the observation model, as defined by a <code><a href="ModelObs.html">ModelObs</a></code> structure;</p></li>

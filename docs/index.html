@@ -140,7 +140,7 @@
 <h1 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h1>
 <blockquote>
-<p><strong>Note:</strong> <code>patter</code> works Windows, MacOS and Linux (with some restrictions). On Windows, everything <em>should</em> work if you follow the instructions below. On MacOS, some additional set up (such as compiler configuration) may be required, depending on your set up. On Debian/Ubuntu, {patter} can be used but you cannot simultaneously use geospatial routines in <code>R</code> and <code>Julia</code>. Thus, you can only call <code><a href="https://rspatial.org/" class="external-link">library(terra)</a></code> or <code>terra::foo()</code> and use {patter} routines that exploit <code>terra</code> and other geospatial packages in <code>R</code> sessions that are not connected to a <code>Julia</code> session (via <code><a href="reference/julia_connect.html">julia_connect()</a></code>). We haven’t tried other Linux distributions. Package examples were written on MacOS and may not run safely on Linux without modification. Check the function documentation for supported options and share your experience. In case of issues, you should be able to use <code>Patter.jl</code> directly, which on some systems may be simpler than getting <code>R</code> and <code>Julia</code> to play together!</p>
+<p><strong>Note:</strong> <code>patter</code> works Windows, MacOS and Linux (with some restrictions). On Windows, everything <em>should</em> work if you follow the instructions below. On MacOS, some additional set up (such as compiler configuration) may be required, depending on your set up. On Debian/Ubuntu, <code>patter</code> can be used but you cannot simultaneously use geospatial routines in <code>R</code> and <code>Julia</code>. Thus, you can only call <code><a href="https://rspatial.org/" class="external-link">library(terra)</a></code> or <code>terra::foo()</code> and use <code>patter</code> routines that exploit <code>terra</code> and other geospatial packages in <code>R</code> sessions that are not connected to a <code>Julia</code> session (via <code><a href="reference/julia_connect.html">julia_connect()</a></code>). We haven’t tried other Linux distributions. Package examples were written on MacOS and may not run safely on Linux without modification. Check the function documentation for supported options and share your experience. In case of issues, you should be able to use <code>Patter.jl</code> directly, which on some systems may be simpler than getting <code>R</code> and <code>Julia</code> to play together!</p>
 </blockquote>
 <ol style="list-style-type: decimal">
 <li><p><strong>Install <a href="https://www.r-project.org" class="external-link"><code>R</code></a></strong>. This package requires <code>R</code> version ≥ 4.1 (but the most recent version is recommended). You can check your version from the <code>R</code> console using <code>R.version.string</code>.</p></li>
@@ -196,15 +196,15 @@
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-fsSL</span> https://install.julialang.org <span class="kw">|</span> <span class="fu">sh</span></span></code></pre></div>
 </li>
 <li>
-<p>In the shell, then install <code>Julia</code> 1.10.5 via <code>juliaup</code>:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">juliaup</span> add 1.10.5  </span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="ex">juliaup</span> default 1.10.5</span></code></pre></div>
+<p>In the shell, then install <code>Julia</code> (release version) via <code>juliaup</code>:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">juliaup</span> update</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="ex">juliaup</span> default release</span></code></pre></div>
 </li>
 </ul>
 </li>
 </ol>
 <blockquote>
-<p><strong>Note:</strong> Install a recent <code>Julia</code> version. At the time of writing (December 2024), <code>Julia</code> 1.10.5 (long-term release) is recommended, as we run most tests against that version. However, <code>Julia</code> 1.11 is now also supported by <code>JuliaCall</code> (see <a href="https://github.com/Non-Contradiction/JuliaCall/issues/234" class="external-link">here</a>). This README was last built on 2025-02-28 with Julia 1.11.3.</p>
+<p><strong>Note:</strong> Install a recent <code>Julia</code> version. This README was last built on 2025-02-28 with Julia 1.11.3.</p>
 </blockquote>
 <ol start="5" style="list-style-type: decimal">
 <li>
@@ -524,7 +524,7 @@
 <span>  <span class="va">dat_detections</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">individual_id</span> <span class="op">==</span> <span class="fl">25L</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>individual_id <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Define archival (depth) observations</span></span>
 <span><span class="va">arc</span> <span class="op">&lt;-</span></span>
@@ -534,7 +534,7 @@
 <span>         depth_sigma    <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>         depth_deep_eps <span class="op">=</span> <span class="fl">50</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>obs <span class="op">=</span> <span class="va">depth</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Individual movements are connected to the observations by models of the observation process for each dataset. Without going into details, here we bundle together the observations with the parameters of the observation models:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># ModelObsAcousticLogisTrunc</span></span>
@@ -599,7 +599,7 @@
 <span><span class="va">fwd</span><span class="op">$</span><span class="va">callstats</span></span>
 <span><span class="co">#&gt;              timestamp         routine n_particle n_iter convergence     time</span></span>
 <span><span class="co">#&gt;                 &lt;POSc&gt;          &lt;char&gt;      &lt;int&gt;  &lt;int&gt;      &lt;lgcl&gt;    &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: 2025-02-28 16:24:16 filter: forward      10000      1        TRUE 7.452342</span></span>
+<span><span class="co">#&gt; 1: 2025-02-28 16:35:43 filter: forward      10000      1        TRUE 7.696562</span></span>
 <span></span>
 <span><span class="co"># Backward run</span></span>
 <span><span class="va">args</span><span class="op">$</span><span class="va">.yobs</span>      <span class="op">&lt;-</span> <span class="va">yobs_bwd</span></span>
@@ -628,7 +628,7 @@
 <span><span class="va">bwd</span><span class="op">$</span><span class="va">callstats</span></span>
 <span><span class="co">#&gt;              timestamp          routine n_particle n_iter convergence     time</span></span>
 <span><span class="co">#&gt;                 &lt;POSc&gt;           &lt;char&gt;      &lt;int&gt;  &lt;int&gt;      &lt;lgcl&gt;    &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: 2025-02-28 16:24:24 filter: backward      10000      1        TRUE 1.046184</span></span></code></pre></div>
+<span><span class="co">#&gt; 1: 2025-02-28 16:35:51 filter: backward      10000      1        TRUE 1.047809</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="particle-smoother">Particle smoother<a class="anchor" aria-label="anchor" href="#particle-smoother"></a>
@@ -664,10 +664,10 @@
 <span><span class="va">smo</span><span class="op">$</span><span class="va">callstats</span></span>
 <span><span class="co">#&gt;              timestamp              routine n_particle n_iter convergence</span></span>
 <span><span class="co">#&gt;                 &lt;POSc&gt;               &lt;char&gt;      &lt;int&gt;  &lt;int&gt;      &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1: 2025-02-28 16:24:25 smoother: two-filter        750     NA        TRUE</span></span>
-<span><span class="co">#&gt;       time</span></span>
-<span><span class="co">#&gt;      &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: 3.38837</span></span></code></pre></div>
+<span><span class="co">#&gt; 1: 2025-02-28 16:35:53 smoother: two-filter        750     NA        TRUE</span></span>
+<span><span class="co">#&gt;        time</span></span>
+<span><span class="co">#&gt;       &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: 3.736002</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="mapping">Mapping<a class="anchor" aria-label="anchor" href="#mapping"></a>
