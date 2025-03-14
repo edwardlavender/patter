@@ -94,7 +94,7 @@ julia_connect <- function(JULIA_HOME,
                           .pkg_install = NULL,
                           .pkg_update = NULL,
                           .pkg_load = NULL,
-                          .socket = FALSE,
+                          .socket = !interactive(),
                           .verbose = getOption("patter.verbose"), ...) {
 
   #### Initiate
