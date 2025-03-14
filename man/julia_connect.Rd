@@ -13,7 +13,7 @@ julia_connect(
   .pkg_install = NULL,
   .pkg_update = NULL,
   .pkg_load = NULL,
-  .socket = FALSE,
+  .socket = !interactive(),
   .verbose = getOption("patter.verbose"),
   ...
 )
