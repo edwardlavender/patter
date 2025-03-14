@@ -3,6 +3,7 @@
 ^LICENSE\.md$
 ^README\.Rmd$
 ^cran-comments\.md$
+^test-environments\.md$
 ^data-raw$
 ^CODE_OF_CONDUCT\.md$
 ^codecov\.yml$
