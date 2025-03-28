@@ -707,8 +707,11 @@ plot.ModelMoveXY <- function(x,
                              .par = list(),
                              ...) {
   # Set graphical parameters
-  pp <- set_plot_dbn_par(list(mfrow = c(1, 2)), .par)
-  on.exit(par(pp, no.readonly = TRUE), add = TRUE)
+  np <- par_mf_n(.panel_length, .panel_heading)
+  pp <- set_plot_dbn_par(list(mfrow = c(1, np)), .par)
+  if (!identical(pp, par(no.readonly = TRUE))) {
+    on.exit(par(pp, no.readonly = TRUE), add = TRUE)
+  }
   # Density plots
   set_model_move(x)
   plot_dbn_length(.panel = .panel_length, ...)
@@ -727,8 +730,11 @@ plot.ModelMoveXYZ <- function(x,
                               .par = list(),
                               ...) {
   # Set graphical parameters
-  pp <- set_plot_dbn_par(list(mfrow = c(1, 3)), .par)
-  on.exit(par(pp, no.readonly = TRUE), add = TRUE)
+  np <- par_mf_n(.panel_length, .panel_heading, .panel_z)
+  pp <- set_plot_dbn_par(list(mfrow = c(1, np)), .par)
+  if (!identical(pp, par(no.readonly = TRUE))) {
+    on.exit(par(pp, no.readonly = TRUE), add = TRUE)
+  }
   # Density plots
   set_model_move(x)
   plot_dbn_length(.panel = .panel_length, ...)
@@ -747,8 +753,11 @@ plot.ModelMoveCXY <- function(x,
                               .par = list(),
                               ...) {
   # Set graphical parameters
-  pp <- set_plot_dbn_par(list(mfrow = c(1, 2)), .par)
-  on.exit(par(pp, no.readonly = TRUE), add = TRUE)
+  np <- par_mf_n(.panel_length, .panel_heading_delta)
+  pp <- set_plot_dbn_par(list(mfrow = c(1, np)), .par)
+  if (!identical(pp, par(no.readonly = TRUE))) {
+    on.exit(par(pp, no.readonly = TRUE), add = TRUE)
+  }
   # Density plots
   set_model_move(x)
   plot_dbn_length(.panel = .panel_length, ...)
@@ -767,8 +776,11 @@ plot.ModelMoveCXYZ <- function(x,
                                .par = list(),
                                ...) {
   # Set graphical parameters
-  pp <- set_plot_dbn_par(list(mfrow = c(1, 3)), .par)
-  on.exit(par(pp, no.readonly = TRUE), add = TRUE)
+  np <- par_mf_n(.panel_length, .panel_heading_delta, .panel_z_delta)
+  pp <- set_plot_dbn_par(list(mfrow = c(1, np)), .par)
+  if (!identical(pp, par(no.readonly = TRUE))) {
+    on.exit(par(pp, no.readonly = TRUE), add = TRUE)
+  }
   # Density plots
   set_model_move(x)
   plot_dbn_length(.panel = .panel_length, ...)

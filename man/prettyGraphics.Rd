@@ -4,12 +4,15 @@
 \alias{prettyGraphics}
 \alias{one_page}
 \alias{par_mf}
+\alias{par_mf_n}
 \alias{add_sp_path}
 \title{\href{https://github.com/edwardlavender/prettyGraphics}{\code{prettyGraphics}} in \code{\link{patter}}}
 \usage{
 one_page(.one_page, .n = 1L)
 
 par_mf(.n)
+
+par_mf_n(...)
 
 add_sp_path(x, y = NULL, col = hcl.colors(length(x)), ...)
 }
