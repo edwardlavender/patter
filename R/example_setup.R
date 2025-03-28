@@ -1,10 +1,11 @@
 #' @title Examples: run code
-#' @description This function switches code blocks on/off.
+#' @description These functions switch code blocks on/off.
 #' @param .julia A `logical` variable that defines whether or not the code requires connection to a `Julia` session.
 #' @param .geospatial A `logical` variable that defines whether or not `R`'s geospatial packages (e.g., `terra`) are required.
 #' @details
+#' [`patter_run()`] is the main switch:
 #' * If `.julia = TRUE`, the 'switch' is off if:
-#'    * AUTO_JULIA_INSTALL != "true";
+#'    * `AUTO_JULIA_INSTALL != "true"`;
 #'    * You are on a Linux platform and geospatial packages are currently in use;
 #'    * You are on a Linux platform and `.geospatial = TRUE`;
 #'
@@ -13,9 +14,17 @@
 #'
 #' (On Linux, geospatial libraries cannot be used simultaneously in `R` and `Julia`.)
 #'
-#' @return The function returns a `logical` value.
+#' [`patter_run_expensive()`] is a subsidiary switch for particularly expensive routines:
+#' * If `PATTER_RUN_EXPENSIVE = "TRUE"`, this returns `TRUE`;
+#' * Otherwise, `FALSE` is returned;
+#'
+#' @return The functions return a `logical` value.
 #' @example man/examples/example-patter_run.R
 #' @author Edward Lavender
+#' @name patter_run
+
+
+#' @rdname patter_run
 #' @export
 
 # Choose whether or not to run code (examples/tests)
@@ -48,6 +57,14 @@ patter_run <- function(.julia = TRUE, .geospatial = TRUE) {
     }
   }
   run
+}
+
+
+#' @rdname patter_run
+#' @export
+
+patter_run_expensive <- function() {
+  Sys.getenv("PATTER_RUN_EXPENSIVE") == "TRUE"
 }
 
 #' @title Examples: streamline set up

@@ -2,9 +2,12 @@
 % Please edit documentation in R/example_setup.R
 \name{patter_run}
 \alias{patter_run}
+\alias{patter_run_expensive}
 \title{Examples: run code}
 \usage{
 patter_run(.julia = TRUE, .geospatial = TRUE)
+
+patter_run_expensive()
 }
 \arguments{
 \item{.julia}{A \code{logical} variable that defines whether or not the code requires connection to a \code{Julia} session.}
@@ -12,16 +15,17 @@ patter_run(.julia = TRUE, .geospatial = TRUE)
 \item{.geospatial}{A \code{logical} variable that defines whether or not \code{R}'s geospatial packages (e.g., \code{terra}) are required.}
 }
 \value{
-The function returns a \code{logical} value.
+The functions return a \code{logical} value.
 }
 \description{
-This function switches code blocks on/off.
+These functions switch code blocks on/off.
 }
 \details{
+\code{\link[=patter_run]{patter_run()}} is the main switch:
 \itemize{
 \item If \code{.julia = TRUE}, the 'switch' is off if:
 \itemize{
-\item AUTO_JULIA_INSTALL != "true";
+\item \code{AUTO_JULIA_INSTALL != "true"};
 \item You are on a Linux platform and geospatial packages are currently in use;
 \item You are on a Linux platform and \code{.geospatial = TRUE};
 }
@@ -32,6 +36,12 @@ This function switches code blocks on/off.
 }
 
 (On Linux, geospatial libraries cannot be used simultaneously in \code{R} and \code{Julia}.)
+
+\code{\link[=patter_run_expensive]{patter_run_expensive()}} is a subsidiary switch for particularly expensive routines:
+\itemize{
+\item If \code{PATTER_RUN_EXPENSIVE = "TRUE"}, this returns \code{TRUE};
+\item Otherwise, \code{FALSE} is returned;
+}
 }
 \examples{
 if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
