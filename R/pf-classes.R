@@ -39,6 +39,9 @@
 #' * `n_particle`---An `integer` that defines the number of particles;
 #' * `n_iter`---An `integer` that defines the number of iterations (trials);
 #' * `error`---A `character` vector of error message(s);
+#' * `loglik`---A `double` that defines the log likelihood of the observations given the parameters:
+#'    * For [`pf_filter()`], `loglik` is computed (if `convergence = FALSE`, `loglik = -Inf`);
+#'    * For [`pf_smoother_two_filter()`], `loglik` is `NA_real_`;
 #' * `convergence`---A `logical` variable that defines whether or not the algorithm converged
 #'    * For [`pf_filter()`], convergence is `TRUE` if the filter reaches the end of the time series;
 #'    * For [`pf_smoother_two_filter()`], convergence is set to `TRUE` if proper smoothing is possible on at least 95 % of time steps; i.e., if 95 % of `diagnostics$ess` values are not `NaN` (see [`Patter.particle_smoother_two_filter()`](https://edwardlavender.github.io/Patter.jl));

@@ -50,6 +50,11 @@ If the \code{.batch} is specified, \code{states} is \code{NULL}.
 \item \code{n_particle}---An \code{integer} that defines the number of particles;
 \item \code{n_iter}---An \code{integer} that defines the number of iterations (trials);
 \item \code{error}---A \code{character} vector of error message(s);
+\item \code{loglik}---A \code{double} that defines the log likelihood of the observations given the parameters:
+\itemize{
+\item For \code{\link[=pf_filter]{pf_filter()}}, \code{loglik} is computed (if \code{convergence = FALSE}, \code{loglik = -Inf});
+\item For \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}}, \code{loglik} is \code{NA_real_};
+}
 \item \code{convergence}---A \code{logical} variable that defines whether or not the algorithm converged
 \itemize{
 \item For \code{\link[=pf_filter]{pf_filter()}}, convergence is \code{TRUE} if the filter reaches the end of the time series;

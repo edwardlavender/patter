@@ -19,6 +19,7 @@ Imports:
     rlang,
     terra (>= 1.7.71)
 Suggests:
+    adaptMCMC,
     av, 
     curl, 
     configr,

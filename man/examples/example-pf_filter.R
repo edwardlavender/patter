@@ -3,6 +3,7 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
   library(data.table)
   library(dtplyr)
   library(dplyr, warn.conflicts = FALSE)
+  library(glue)
 
   #### Julia set up
   julia_connect()
@@ -285,5 +286,216 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
                    .yobs = yobs_bwd,
                    .model_move = model_move,
                    .direction = "backward")
+
+
+  #### --------------------------------------------------
+  #### Joint inference of states and static parameters
+
+  if (patter_run_expensive()) {
+
+    # This example shows how we can infer both states and static parameters:
+    # * States are our latent locations;
+    # * Static parameters are the parameters in the movement and observation models;
+
+    # For illustration, we'll use simulated data:
+    # * We consider a passive acoustic telemetry system;
+    # * The movement model is a Gaussian random walk;
+    # * The standard deviation of the Gaussian distribution is the 'diffusivity';
+    # * The observation model is a Bernoulli model for acoustic detections/non-detections;
+
+    # Using simulated data, we'll pretend we don't know the movement 'diffusivity':
+    # * For simplicity, we'll assume we know the other parameters;
+    # * We'll attempt to estimate the true diffusivity from multiple runs;
+
+    # We show how to use the filter log-likelihood score to estimate parameters via:
+    # * grid-search;
+    # * maximum likelihood optimisation;
+    # * Bayesian inference;
+
+    # We recommend a simulation analysis like this before real-world analyses:
+    # * Follow the example below;
+    # * For your study system and species, simulate observations;
+    # * Examine whether you have sufficient information to estimate parameters;
+
+    # Beware that the log-likelihood value from the filter is 'noisy':
+    # * This can create all kinds of issues with optimisation & sampling;
+    # * You should check the sensitivity of the results with regard to the noise;
+    # * I.e., Re-run the routines a few times to check result consistency;
+
+    # Note also that parameter estimation can be computationally expensive:
+    # * We should select an appropriate inference procedure depending on filter cost;
+    # * Compromises may be required;
+    # * We may assume some static parameters are known;
+    # * We may estimate other parameters for one or two individuals with good data;
+    # * We may use best-guess parameters + sensitivity analysis;
+    # * This example just provides a minimal workflow;
+
+    #### Define study system
+    # Define study timeline
+    timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
+                    as.POSIXct("2016-01-01 03:18:00", tz = "UTC"),
+                    by = "2 mins")
+    # Define study area
+    map      <- dat_gebco()
+    set_map(map)
+
+    #### Simulate a movement path
+    # Define movement model
+    # * `theta` is the movement 'diffusivity'
+    # * We will attempt to estimate this parameter
+    state    <- "StateXY"
+    theta    <- 250.0
+    mobility <- 750
+    model_move <-
+      model_move_xy(.mobility    = mobility,
+                    .dbn_length  = glue("truncated(Normal(0, {theta}),
+                                         lower = 0.0, upper = {mobility})"),
+                    .dbn_heading  = "Uniform(-pi, pi)")
+    # Simulate a path
+    path <- sim_path_walk(.map        = map,
+                          .timeline   = timeline,
+                          .state      = state,
+                          .model_move = model_move)
+
+    #### Simulate observations
+    # Simulate array (using default parameters)
+    # * Note we simulate a dense, regular array here
+    # * With real-world array designs, there may be less information available
+    moorings <- sim_array(.map         = map,
+                          .timeline    = timeline,
+                          .arrangement = "regular",
+                          .n_receiver  = 100L)
+    # Collate observation model parameters
+    model_obs <- model_obs_acoustic_logis_trunc(moorings)
+    # Simulate observations arising from path
+    obs <- sim_observations(.timeline  = timeline,
+                            .model_obs = model_obs)
+    acoustics <- obs$ModelObsAcousticLogisTrunc[[1]]
+    # (optional) Compute containers
+    containers <- assemble_acoustics_containers(.timeline  = timeline,
+                                                .acoustics = acoustics,
+                                                .mobility  = mobility,
+                                                .map       = map)
+    # Collate observations for forward filter
+    yobs_fwd <-
+      list(ModelObsAcousticLogisTrunc = obs$ModelObsAcousticLogisTrunc[[1]],
+           ModelObsContainer = containers$forward)
+
+    #### Prepare to estimate the diffusivity using the observations
+
+    # i) Visualise movement models with different standard deviations
+    # > This gives us a feel for how we should constrain the estimation process
+    # > (if we didn't know the true parameter values)
+    pp  <- par(mfrow = c(3, 3))
+    thetas <- seq(100, 500, by = 50)
+    cl_lapply(thetas, function(theta) {
+      plot(model_move_xy(.mobility   = mobility,
+                         .dbn_length  = glue::glue("truncated(Normal(0, {theta}),
+                                                  lower = 0.0, upper = {mobility})"),
+                         .dbn_heading = "Uniform(-pi, pi)"),
+           .panel_length = list(main = theta, font = 2),
+           .panel_heading = NULL,
+           .par = NULL)
+    })
+    par(pp)
+
+    # ii) Define a function that computes the log-likelihood given input parameters
+    # * `theta` denotes a parameter/parameter vector
+    # * (In this case, it is standard deviation in the movement model)
+    pf_filter_loglik <- function(theta) {
+
+      # (safety check) The movement standard deviation cannot be negative
+      if (theta < 0) {
+        return(-Inf)
+      }
+
+      # Instantiate movement model
+      model_move <-
+        model_move_xy(.mobility   = mobility,
+                      .dbn_length = glue::glue("truncated(Normal(0, {theta}),
+                                                lower = 0.0, upper = {mobility})"),
+                      .dbn_heading  = "Uniform(-pi, pi)")
+
+      # Run filter
+      # * Large .n_particle reduces noise in the likelihood (& filter speed)
+      fwd <- pf_filter(.timeline   = timeline,
+                       .state      = state,
+                       .xinit      = NULL,
+                       .model_move = model_move,
+                       .yobs       = yobs_fwd,
+                       .n_particle = 1e4L,
+                       .direction  = "forward",
+                       .progress   = julia_progress(enabled = TRUE),
+                       .verbose    = FALSE)
+
+      # Return log-lik
+      # (-Inf is returned for convergence failures)
+      fwd$callstats$loglik
+
+    }
+
+    #### (A) Use grid-search optimisation (~3 s)
+    # This is a good option for an initial parameter search
+    # (especially when there is only one parameter to optimise)
+    # i) Run a coarse grid search
+    theta_grid_loglik <- cl_lapply(thetas, pf_filter_loglik) |> unlist()
+    # ii) Check the noise around the optimum (~20 s)
+    noise <- lapply(1:5, function(i) {
+      loglik <- cl_lapply(thetas, pf_filter_loglik) |> unlist()
+      data.frame(iter = i, theta = thetas, loglik = loglik)
+    }) |> rbindlist()
+    # iii) Visualise log-likelihood profile
+    ylim <- range(c(theta_grid_loglik, noise$loglik))
+    plot(thetas, theta_grid_loglik, type = "b")
+    points(noise$theta, noise$loglik)
+
+    #### (B) Use optimisation routine e.g., optim or ADMB (~10 s)
+    # This may be a good option with multiple parameters
+    # We need to run the optimisation a few times to check result consistency
+    # Here, we only need 1-dimensional optimisation
+    # (So we use method = "Brent" & set the bounds on the optimisation)
+    theta_optim <- optim(par = 200, fn = pf_filter_loglik,
+                         method = "Brent", lower = 100, upper = 500,
+                         control = list(fnscale = -1))
+    theta_optim
+
+    #### (C) Use MCMC e.g., via adaptMCMC (~30 s)
+    # This is a good option for incorporating prior knowledge
+    # & characterising the uncertainty in theta
+
+    # i) Define log-posterior of parameters
+    pf_filter_posterior <- function(theta) {
+      # Log prior
+      # (For multiple thetas, simply take the product)
+      lp <- dunif(theta, 100, 500, log = TRUE)
+      if (!is.finite(lp)) {
+        return(-Inf)
+      } else {
+        # Posterior = prior * likelihood
+        lp <- lp + pf_filter_loglik(theta)
+      }
+      lp
+    }
+
+    # ii) Select variance of jump distribution
+    sd_of_jump <- 10
+    curve(dnorm(x, 0, sd_of_jump), -20, 20)
+
+    # iii) Run MCMC
+    # * For a real analysis, many more samples are recommended
+    theta_mcmc <- adaptMCMC::MCMC(pf_filter_posterior,
+                                  n = 100L,
+                                  init = 200, scale = sd_of_jump^2,
+                                  adapt = TRUE, acc.rate = 0.4)
+
+    # iv) Visualise samples (log-likelihoods, histogram, MCMC chain)
+    pp <- par(mfrow = c(1, 3))
+    o <- order(theta_mcmc$samples)
+    plot(theta_mcmc$samples[o], theta_mcmc$log.p[o], type = "b")
+    hist(theta_mcmc$samples)
+    plot(theta_mcmc$samples, type = "l")
+    par(pp)
+
+  }
 
 }

@@ -524,6 +524,7 @@ test_that("pf_filter() callstats are correct", {
   expect_equal(fwd$callstats$routine, "filter: forward")
   expect_equal(fwd$callstats$n_particle, 10L)
   expect_equal(fwd$callstats$n_iter, 3L)
+  check_inherits(fwd$callstats$loglik, "numeric")
   expect_false(fwd$callstats$convergence)
 
   #### Run forward filter with more particles
@@ -538,6 +539,7 @@ test_that("pf_filter() callstats are correct", {
   expect_equal(fwd$callstats$routine, "filter: forward")
   expect_equal(fwd$callstats$n_particle, 1e4L)
   expect_equal(fwd$callstats$n_iter, 1L)
+  check_inherits(fwd$callstats$loglik, "numeric")
   expect_true(fwd$callstats$convergence)
 
   #### Run backward filter with more particles
@@ -552,6 +554,7 @@ test_that("pf_filter() callstats are correct", {
   expect_equal(bwd$callstats$routine, "filter: backward")
   expect_equal(bwd$callstats$n_particle, 1e4L)
   expect_equal(bwd$callstats$n_iter, 1L)
+  check_inherits(fwd$callstats$loglik, "numeric")
   expect_true(bwd$callstats$convergence)
 
   #### Run smoother
@@ -559,6 +562,7 @@ test_that("pf_filter() callstats are correct", {
   expect_equal(smo$callstats$routine, "smoother: two-filter")
   expect_equal(smo$callstats$n_particle, 10L)
   expect_equal(smo$callstats$n_iter, NA_integer_)
+  expect_equal(smo$callstats$loglik, NA_real_)
   expect_true(smo$callstats$convergence)
 
 })

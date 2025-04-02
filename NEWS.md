@@ -40,7 +40,8 @@
     * A new `.batch` argument permits batching, i.e., writing particles to disk in batches (to minimise memory requirements for cluster implementations).
     * A new `.collect` argument collects outputs in `R`. 
     * A new `.progress` argument supports a primitive progress bar on Windows (addressing #13) and enables customisation. 
-    * A revised `pf_particles` object is returned that includes a `callstats` `data.table` that replaces the `convergence` element.  
+    * A revised `pf_particles` object is returned that includes a `callstats` `data.table` that replaces the `convergence` element. 
+    * The `callstats` element includes the log likelihood of the observations given the parameters for the filter run, enabling optimisation of static parameters (see the third set of examples for `pf_filter()`).
 
 * **Particle smoothing**
     * `Patter.particle_smoother_two_filter()` has been re-written for enhanced performance;

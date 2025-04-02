@@ -13,7 +13,7 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/patter)](https://CRAN.R-project.org/package=patter)
-![Coverage](https://img.shields.io/badge/coverage-84%25-orange)
+![Coverage](https://img.shields.io/badge/coverage-83%25-orange)
 [![R-CMD-check](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
@@ -200,7 +200,7 @@ On Linux, this step may require system libraries (see below).
       ```
 
 > **Note:** Install a recent `Julia` version. This README was last built
-> on 2025-02-28 with Julia 1.11.3.
+> on 2025-04-02 with Julia 1.11.4.
 
 5.  **Setup JuliaCall.** The next step is to set up `JuliaCall`, which
     provides the integration between `R` and `Julia`.
@@ -640,9 +640,12 @@ head(fwd$diagnostics)
 #> 5:        5 2016-03-17 01:58:00 4926.398 -4.917193
 #> 6:        6 2016-03-17 02:00:00 6690.797 -4.896022
 fwd$callstats
-#>              timestamp         routine n_particle n_iter convergence     time
-#>                 <POSc>          <char>      <int>  <int>      <lgcl>    <num>
-#> 1: 2025-02-28 16:35:43 filter: forward      10000      1        TRUE 7.696562
+#>              timestamp         routine n_particle n_iter    loglik convergence
+#>                 <POSc>          <char>      <int>  <int>     <num>      <lgcl>
+#> 1: 2025-04-02 10:59:03 filter: forward      10000      1 -3556.524        TRUE
+#>        time
+#>       <num>
+#> 1: 7.550832
 
 # Backward run
 args$.yobs      <- yobs_bwd
@@ -669,9 +672,12 @@ head(bwd$diagnostics)
 #> 5:        5 2016-03-17 01:58:00 6692.765 -4.914546
 #> 6:        6 2016-03-17 02:00:00 4977.524 -4.899462
 bwd$callstats
-#>              timestamp          routine n_particle n_iter convergence     time
-#>                 <POSc>           <char>      <int>  <int>      <lgcl>    <num>
-#> 1: 2025-02-28 16:35:51 filter: backward      10000      1        TRUE 1.047809
+#>              timestamp          routine n_particle n_iter    loglik convergence
+#>                 <POSc>           <char>      <int>  <int>     <num>      <lgcl>
+#> 1: 2025-04-02 10:59:10 filter: backward      10000      1 -3558.672        TRUE
+#>        time
+#>       <num>
+#> 1: 1.088591
 ```
 
 ## Particle smoother
@@ -709,12 +715,12 @@ head(smo$diagnostics)
 #> 5:        5 2016-03-17 01:58:00 664.7221   NaN
 #> 6:        6 2016-03-17 02:00:00 645.6459   NaN
 smo$callstats
-#>              timestamp              routine n_particle n_iter convergence
-#>                 <POSc>               <char>      <int>  <int>      <lgcl>
-#> 1: 2025-02-28 16:35:53 smoother: two-filter        750     NA        TRUE
-#>        time
-#>       <num>
-#> 1: 3.736002
+#>              timestamp              routine n_particle n_iter loglik
+#>                 <POSc>               <char>      <int>  <int>  <num>
+#> 1: 2025-04-02 10:59:12 smoother: two-filter        750     NA    NaN
+#>    convergence     time
+#>         <lgcl>    <num>
+#> 1:        TRUE 3.410609
 ```
 
 ## Mapping
