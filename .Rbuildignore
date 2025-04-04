@@ -14,4 +14,4 @@
 ^pkgdown$
 .Rprofile
 .Renviron
-
+^_pkgdown\.yml$
