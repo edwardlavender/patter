@@ -489,6 +489,7 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
                                   adapt = TRUE, acc.rate = 0.4)
 
     # iv) Visualise samples (log-likelihoods, histogram, MCMC chain)
+    # > Note the noise in the log-likelihoods due to the stochastic nature of the filter
     pp <- par(mfrow = c(1, 3))
     o <- order(theta_mcmc$samples)
     plot(theta_mcmc$samples[o], theta_mcmc$log.p[o], type = "b")
