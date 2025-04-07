@@ -55,6 +55,15 @@ test_that("sim_path_walk() works", {
   # Validate map_value()
   expect_equal(path$map_value, terra::extract(map, cbind(path$x, path$y))$map_value)
   # Validate movement distances
-  expect_true(all(terra::distance(cbind(path$x, path$y), lonlat = FALSE, sequential = TRUE) <= 750.0))
+  # * A manual computation of sequential distances is used
+  # * (terra 1.8-42 introduced a bug in this function)
+  path[, dist := NA_real_]
+  for (i in 1:(nrow(path) - 1)) {
+    # Compute distance from s_{t} to s_{t + 1}
+    euclid <- dist_2d(cbind(path$x[i], path$y[i]), cbind(path$x[i + 1], path$y[i + 1]))
+    path[i, dist := euclid]
+  }
+  dist <- path$dist[1:(nrow(path) - 1)]
+  expect_true(all(dist <= 750.0))
 
 })
