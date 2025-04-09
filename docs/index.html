@@ -177,7 +177,7 @@
 </li>
 </ol>
 <blockquote>
-<p><strong>Note:</strong> Install a recent <code>Julia</code> version. This README was last built on 2025-04-02 with Julia 1.11.4.</p>
+<p><strong>Note:</strong> Install a recent <code>Julia</code> version. This README was last built on 2025-04-09 with Julia 1.11.4.</p>
 </blockquote>
 <ol start="5" style="list-style-type: decimal">
 <li>
@@ -572,10 +572,10 @@
 <span><span class="va">fwd</span><span class="op">$</span><span class="va">callstats</span></span>
 <span><span class="co">#&gt;              timestamp         routine n_particle n_iter    loglik convergence</span></span>
 <span><span class="co">#&gt;                 &lt;POSc&gt;          &lt;char&gt;      &lt;int&gt;  &lt;int&gt;     &lt;num&gt;      &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1: 2025-04-02 10:59:03 filter: forward      10000      1 -3556.524        TRUE</span></span>
+<span><span class="co">#&gt; 1: 2025-04-09 15:31:17 filter: forward      10000      1 -3556.524        TRUE</span></span>
 <span><span class="co">#&gt;        time</span></span>
 <span><span class="co">#&gt;       &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: 7.550832</span></span>
+<span><span class="co">#&gt; 1: 7.527349</span></span>
 <span></span>
 <span><span class="co"># Backward run</span></span>
 <span><span class="va">args</span><span class="op">$</span><span class="va">.yobs</span>      <span class="op">&lt;-</span> <span class="va">yobs_bwd</span></span>
@@ -604,10 +604,10 @@
 <span><span class="va">bwd</span><span class="op">$</span><span class="va">callstats</span></span>
 <span><span class="co">#&gt;              timestamp          routine n_particle n_iter    loglik convergence</span></span>
 <span><span class="co">#&gt;                 &lt;POSc&gt;           &lt;char&gt;      &lt;int&gt;  &lt;int&gt;     &lt;num&gt;      &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1: 2025-04-02 10:59:10 filter: backward      10000      1 -3558.672        TRUE</span></span>
-<span><span class="co">#&gt;        time</span></span>
-<span><span class="co">#&gt;       &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: 1.088591</span></span></code></pre></div>
+<span><span class="co">#&gt; 1: 2025-04-09 15:31:24 filter: backward      10000      1 -3558.672        TRUE</span></span>
+<span><span class="co">#&gt;       time</span></span>
+<span><span class="co">#&gt;      &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: 1.15699</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="particle-smoother">Particle smoother<a class="anchor" aria-label="anchor" href="#particle-smoother"></a>
@@ -643,10 +643,10 @@
 <span><span class="va">smo</span><span class="op">$</span><span class="va">callstats</span></span>
 <span><span class="co">#&gt;              timestamp              routine n_particle n_iter loglik</span></span>
 <span><span class="co">#&gt;                 &lt;POSc&gt;               &lt;char&gt;      &lt;int&gt;  &lt;int&gt;  &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: 2025-04-02 10:59:12 smoother: two-filter        750     NA    NaN</span></span>
+<span><span class="co">#&gt; 1: 2025-04-09 15:31:26 smoother: two-filter        750     NA    NaN</span></span>
 <span><span class="co">#&gt;    convergence     time</span></span>
 <span><span class="co">#&gt;         &lt;lgcl&gt;    &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:        TRUE 3.410609</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:        TRUE 3.514281</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="mapping">Mapping<a class="anchor" aria-label="anchor" href="#mapping"></a>
