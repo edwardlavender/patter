@@ -1,5 +1,5 @@
 
-# `patter` <a href="https://edwardlavender.github.io/patter/"><img src="man/figures/logo.png" align="right" height="138" /></a>
+# `patter` <a href="https://edwardlavender.github.io/patter/"><img src="man/figures/logo.png" align="right" height="136" alt="patter website" /></a>
 
 **Particle algorithms for animal movement modelling in
 [`R`](https://www.r-project.org)**
@@ -200,7 +200,7 @@ On Linux, this step may require system libraries (see below).
       ```
 
 > **Note:** Install a recent `Julia` version. This README was last built
-> on 2025-04-02 with Julia 1.11.4.
+> on 2025-04-09 with Julia 1.11.4.
 
 5.  **Setup JuliaCall.** The next step is to set up `JuliaCall`, which
     provides the integration between `R` and `Julia`.
@@ -642,10 +642,10 @@ head(fwd$diagnostics)
 fwd$callstats
 #>              timestamp         routine n_particle n_iter    loglik convergence
 #>                 <POSc>          <char>      <int>  <int>     <num>      <lgcl>
-#> 1: 2025-04-02 10:59:03 filter: forward      10000      1 -3556.524        TRUE
+#> 1: 2025-04-09 15:31:17 filter: forward      10000      1 -3556.524        TRUE
 #>        time
 #>       <num>
-#> 1: 7.550832
+#> 1: 7.527349
 
 # Backward run
 args$.yobs      <- yobs_bwd
@@ -674,10 +674,10 @@ head(bwd$diagnostics)
 bwd$callstats
 #>              timestamp          routine n_particle n_iter    loglik convergence
 #>                 <POSc>           <char>      <int>  <int>     <num>      <lgcl>
-#> 1: 2025-04-02 10:59:10 filter: backward      10000      1 -3558.672        TRUE
-#>        time
-#>       <num>
-#> 1: 1.088591
+#> 1: 2025-04-09 15:31:24 filter: backward      10000      1 -3558.672        TRUE
+#>       time
+#>      <num>
+#> 1: 1.15699
 ```
 
 ## Particle smoother
@@ -717,10 +717,10 @@ head(smo$diagnostics)
 smo$callstats
 #>              timestamp              routine n_particle n_iter loglik
 #>                 <POSc>               <char>      <int>  <int>  <num>
-#> 1: 2025-04-02 10:59:12 smoother: two-filter        750     NA    NaN
+#> 1: 2025-04-09 15:31:26 smoother: two-filter        750     NA    NaN
 #>    convergence     time
 #>         <lgcl>    <num>
-#> 1:        TRUE 3.410609
+#> 1:        TRUE 3.514281
 ```
 
 ## Mapping
