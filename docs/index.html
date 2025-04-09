@@ -572,10 +572,10 @@
 <span><span class="va">fwd</span><span class="op">$</span><span class="va">callstats</span></span>
 <span><span class="co">#&gt;              timestamp         routine n_particle n_iter    loglik convergence</span></span>
 <span><span class="co">#&gt;                 &lt;POSc&gt;          &lt;char&gt;      &lt;int&gt;  &lt;int&gt;     &lt;num&gt;      &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1: 2025-04-09 15:31:17 filter: forward      10000      1 -3556.524        TRUE</span></span>
-<span><span class="co">#&gt;        time</span></span>
-<span><span class="co">#&gt;       &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: 7.527349</span></span>
+<span><span class="co">#&gt; 1: 2025-04-09 16:43:09 filter: forward      10000      1 -3556.524        TRUE</span></span>
+<span><span class="co">#&gt;       time</span></span>
+<span><span class="co">#&gt;      &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: 7.61696</span></span>
 <span></span>
 <span><span class="co"># Backward run</span></span>
 <span><span class="va">args</span><span class="op">$</span><span class="va">.yobs</span>      <span class="op">&lt;-</span> <span class="va">yobs_bwd</span></span>
@@ -604,10 +604,10 @@
 <span><span class="va">bwd</span><span class="op">$</span><span class="va">callstats</span></span>
 <span><span class="co">#&gt;              timestamp          routine n_particle n_iter    loglik convergence</span></span>
 <span><span class="co">#&gt;                 &lt;POSc&gt;           &lt;char&gt;      &lt;int&gt;  &lt;int&gt;     &lt;num&gt;      &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1: 2025-04-09 15:31:24 filter: backward      10000      1 -3558.672        TRUE</span></span>
-<span><span class="co">#&gt;       time</span></span>
-<span><span class="co">#&gt;      &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: 1.15699</span></span></code></pre></div>
+<span><span class="co">#&gt; 1: 2025-04-09 16:43:16 filter: backward      10000      1 -3558.672        TRUE</span></span>
+<span><span class="co">#&gt;        time</span></span>
+<span><span class="co">#&gt;       &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: 1.083156</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="particle-smoother">Particle smoother<a class="anchor" aria-label="anchor" href="#particle-smoother"></a>
@@ -643,10 +643,10 @@
 <span><span class="va">smo</span><span class="op">$</span><span class="va">callstats</span></span>
 <span><span class="co">#&gt;              timestamp              routine n_particle n_iter loglik</span></span>
 <span><span class="co">#&gt;                 &lt;POSc&gt;               &lt;char&gt;      &lt;int&gt;  &lt;int&gt;  &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: 2025-04-09 15:31:26 smoother: two-filter        750     NA    NaN</span></span>
+<span><span class="co">#&gt; 1: 2025-04-09 16:43:18 smoother: two-filter        750     NA    NaN</span></span>
 <span><span class="co">#&gt;    convergence     time</span></span>
 <span><span class="co">#&gt;         &lt;lgcl&gt;    &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:        TRUE 3.514281</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:        TRUE 3.659446</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="mapping">Mapping<a class="anchor" aria-label="anchor" href="#mapping"></a>
@@ -701,13 +701,54 @@
 <div class="section level1">
 <h1 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h1>
-<p>To cite <code>patter</code> in publications, please use:</p>
+<p><strong>To cite <code>patter</code> in publications</strong>, please use:</p>
 <ul>
-<li>Lavender, E. et al. (2024). Particle algorithms for animal movement modelling in autonomous receiver networks. bioRxiv. <a href="https://doi.org/10.1101/2024.09.16.613223" class="external-link uri">https://doi.org/10.1101/2024.09.16.613223</a>.</li>
-<li>Lavender, E. et al. (2024). Particle algorithms for animal tracking in <code>R</code> and <code>Julia</code>. bioRxiv. <a href="https://doi.org/10.1101/2024.07.30.605733" class="external-link uri">https://doi.org/10.1101/2024.07.30.605733</a>
+<li>Lavender, E., Scheidegger, A., Albert, C., Biber, S. W., Illian, J., Thorburn, J., Smout, S., &amp; Moor, H. (2025). Particle algorithms for animal movement modelling in receiver arrays. Methods in Ecology and Evolution, 00, 1–12. <a href="https://doi.org/10.1111/2041-210X.70028" class="external-link uri">https://doi.org/10.1111/2041-210X.70028</a>
 </li>
-<li>Lavender, E. et al. (in prep). Animal tracking for conservation with particle algorithms.</li>
+<li>Lavender, E., Scheidegger, A., Albert, C., Biber, S. W., Illian, J., Thorburn, J., Smout, S., &amp; Moor, H. (2025). patter: Particle algorithms for animal tracking in R and Julia. Methods in Ecology and Evolution, 00, 1–8. <a href="https://doi.org/10.1111/2041-210X.70029" class="external-link uri">https://doi.org/10.1111/2041-210X.70029</a>
+</li>
+<li>Lavender, E., Scheidegger, A., Albert, C., Biber, S. W., Brodersen, J., Aleynik, D., Cole, G., Dodd, J., Wright, P. J., Illian, J., James, M., Smout, S., Thorburn, J., &amp; Moor, H. (2025). Animal tracking with particle algorithms for conservation. bioRxiv. <a href="https://doi.org/10.1101/2025.02.13.638042" class="external-link uri">https://doi.org/10.1101/2025.02.13.638042</a>
+</li>
 </ul>
+<p>For the <code>BibTex</code>:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="va">@Article</span>{<span class="ot">Lavender2025a</span>,</span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a>  <span class="dt">author</span>  = {Lavender, Edward and Scheidegger, Andreas and Albert, Carlo and Biber, Stanisław W. and Illian, Janine and Thorburn, James and Smout, Sophie and Moor, Helen},</span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a>  <span class="dt">title</span>   = {Particle algorithms for animal movement modelling in receiver arrays},</span>
+<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a>  <span class="dt">journal</span> = {Methods in Ecology and Evolution},</span>
+<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a>  <span class="dt">year</span>    = {2025},</span>
+<span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a>  <span class="dt">volume</span>  = {00},</span>
+<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a>  <span class="dt">pages</span>   = {1--12},</span>
+<span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a>  <span class="dt">doi</span>     = {10.1111/2041-210X.70028}</span>
+<span id="cb21-9"><a href="#cb21-9" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="va">@Article</span>{<span class="ot">Lavender2025b</span>,</span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>  <span class="dt">author</span>  = {Lavender, Edward and Scheidegger, Andreas and Albert, Carlo and Biber, Stanisław W. and Illian, Janine and Thorburn, James and Smout, Sophie and Moor, Helen},</span>
+<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a>  <span class="dt">title</span>   = {patter: Particle algorithms for animal tracking in R and Julia},</span>
+<span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a>  <span class="dt">journal</span> = {Methods in Ecology and Evolution},</span>
+<span id="cb22-5"><a href="#cb22-5" tabindex="-1"></a>  <span class="dt">year</span>    = {2025},</span>
+<span id="cb22-6"><a href="#cb22-6" tabindex="-1"></a>  <span class="dt">volume</span>  = {00},</span>
+<span id="cb22-7"><a href="#cb22-7" tabindex="-1"></a>  <span class="dt">pages</span>   = {1--8},</span>
+<span id="cb22-8"><a href="#cb22-8" tabindex="-1"></a>  <span class="dt">doi</span>     = {10.1111/2041-210X.70029}</span>
+<span id="cb22-9"><a href="#cb22-9" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="va">@Article</span>{<span class="ot">Lavender2025c</span>,</span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>  <span class="dt">author</span>  = {Lavender, Edward and Scheidegger, Andreas and Albert, Carlo and Biber, Stanisław W. and Brodersen, Jakob and Aleynik, Dmitry and Cole, Georgina and Dodd, Jane and Wright, Peter J. and Illian, Janine and James, Mark and Smout, Sophie and Thorburn, James and Moor, Helen},</span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>  <span class="dt">title</span>   = {Animal tracking with particle algorithms for conservation},</span>
+<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a>  <span class="dt">journal</span> = {bioRxiv},</span>
+<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a>  <span class="dt">year</span>    = {2025},</span>
+<span id="cb23-6"><a href="#cb23-6" tabindex="-1"></a>  <span class="dt">doi</span>     = {10.1101/2025.02.13.638042}</span>
+<span id="cb23-7"><a href="#cb23-7" tabindex="-1"></a>}</span></code></pre></div>
+<p><strong><code>patter</code> evolved from the <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a> <a href="https://www.r-project.org" class="external-link"><code>R</code></a> package</strong>. Please also consider citing that publication:</p>
+<p>Lavender, E., Biber, S., Illian, J., James, M., Wright, P., Thorburn, J., &amp; Smout, S. (2023). An integrative modelling framework for passive acoustic telemetry. Methods in Ecology and Evolution, 14, 2626–2638. <a href="https://doi.org/10.1111/2041-210X.14193" class="external-link uri">https://doi.org/10.1111/2041-210X.14193</a></p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="va">@Article</span>{<span class="ot">Lavender2023</span>,</span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a>  <span class="dt">author</span>  = {Lavender, Edward and Biber, Stanisław W. and Illian, Janine and James, Mark and Wright, Peter J. and Thorburn, James and Smout, Sophie},</span>
+<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a>  <span class="dt">title</span>   = {An integrative modelling framework for passive acoustic telemetry},</span>
+<span id="cb24-4"><a href="#cb24-4" tabindex="-1"></a>  <span class="dt">journal</span> = {Methods in Ecology and Evolution},</span>
+<span id="cb24-5"><a href="#cb24-5" tabindex="-1"></a>  <span class="dt">year</span>    = {2023},</span>
+<span id="cb24-6"><a href="#cb24-6" tabindex="-1"></a>  <span class="dt">volume</span>  = {14},</span>
+<span id="cb24-7"><a href="#cb24-7" tabindex="-1"></a>  <span class="dt">pages</span>   = {2626--2638},</span>
+<span id="cb24-8"><a href="#cb24-8" tabindex="-1"></a>  <span class="dt">doi</span>     = {10.1111/2041-210X.14193}</span>
+<span id="cb24-9"><a href="#cb24-9" tabindex="-1"></a>  }</span>
+<span id="cb24-10"><a href="#cb24-10" tabindex="-1"></a><span class="co">}</span></span></code></pre></div>
+<p><strong>Thank you for citing the package. Your citations help to justify continued investments in its development.</strong></p>
 <hr>
 <p>Please note that <code>patter</code> is released with a <a href="https://contributor-covenant.org/version/2/1/CODE_OF_CONDUCT.html" class="external-link">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
 </div>
