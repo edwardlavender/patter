@@ -642,10 +642,10 @@ head(fwd$diagnostics)
 fwd$callstats
 #>              timestamp         routine n_particle n_iter    loglik convergence
 #>                 <POSc>          <char>      <int>  <int>     <num>      <lgcl>
-#> 1: 2025-04-09 15:31:17 filter: forward      10000      1 -3556.524        TRUE
-#>        time
-#>       <num>
-#> 1: 7.527349
+#> 1: 2025-04-09 16:43:09 filter: forward      10000      1 -3556.524        TRUE
+#>       time
+#>      <num>
+#> 1: 7.61696
 
 # Backward run
 args$.yobs      <- yobs_bwd
@@ -674,10 +674,10 @@ head(bwd$diagnostics)
 bwd$callstats
 #>              timestamp          routine n_particle n_iter    loglik convergence
 #>                 <POSc>           <char>      <int>  <int>     <num>      <lgcl>
-#> 1: 2025-04-09 15:31:24 filter: backward      10000      1 -3558.672        TRUE
-#>       time
-#>      <num>
-#> 1: 1.15699
+#> 1: 2025-04-09 16:43:16 filter: backward      10000      1 -3558.672        TRUE
+#>        time
+#>       <num>
+#> 1: 1.083156
 ```
 
 ## Particle smoother
@@ -717,10 +717,10 @@ head(smo$diagnostics)
 smo$callstats
 #>              timestamp              routine n_particle n_iter loglik
 #>                 <POSc>               <char>      <int>  <int>  <num>
-#> 1: 2025-04-09 15:31:26 smoother: two-filter        750     NA    NaN
+#> 1: 2025-04-09 16:43:18 smoother: two-filter        750     NA    NaN
 #>    convergence     time
 #>         <lgcl>    <num>
-#> 1:        TRUE 3.514281
+#> 1:        TRUE 3.659446
 ```
 
 ## Mapping
@@ -784,15 +784,83 @@ evolution (<edward.lavender@eawag.ch>).
 
 # Citation
 
-To cite `patter` in publications, please use:
+**To cite `patter` in publications**, please use:
 
-- Lavender, E. et al. (2024). Particle algorithms for animal movement
-  modelling in autonomous receiver networks. bioRxiv.
-  <https://doi.org/10.1101/2024.09.16.613223>.
-- Lavender, E. et al. (2024). Particle algorithms for animal tracking in
-  `R` and `Julia`. bioRxiv. <https://doi.org/10.1101/2024.07.30.605733>
-- Lavender, E. et al. (in prep). Animal tracking for conservation with
-  particle algorithms.
+- Lavender, E., Scheidegger, A., Albert, C., Biber, S. W., Illian, J.,
+  Thorburn, J., Smout, S., & Moor, H. (2025). Particle algorithms for
+  animal movement modelling in receiver arrays. Methods in Ecology and
+  Evolution, 00, 1–12. <https://doi.org/10.1111/2041-210X.70028>
+- Lavender, E., Scheidegger, A., Albert, C., Biber, S. W., Illian, J.,
+  Thorburn, J., Smout, S., & Moor, H. (2025). patter: Particle
+  algorithms for animal tracking in R and Julia. Methods in Ecology and
+  Evolution, 00, 1–8. <https://doi.org/10.1111/2041-210X.70029>
+- Lavender, E., Scheidegger, A., Albert, C., Biber, S. W., Brodersen,
+  J., Aleynik, D., Cole, G., Dodd, J., Wright, P. J., Illian, J., James,
+  M., Smout, S., Thorburn, J., & Moor, H. (2025). Animal tracking with
+  particle algorithms for conservation. bioRxiv.
+  <https://doi.org/10.1101/2025.02.13.638042>
+
+For the `BibTex`:
+
+``` bibtex
+@Article{Lavender2025a,
+  author  = {Lavender, Edward and Scheidegger, Andreas and Albert, Carlo and Biber, Stanisław W. and Illian, Janine and Thorburn, James and Smout, Sophie and Moor, Helen},
+  title   = {Particle algorithms for animal movement modelling in receiver arrays},
+  journal = {Methods in Ecology and Evolution},
+  year    = {2025},
+  volume  = {00},
+  pages   = {1--12},
+  doi     = {10.1111/2041-210X.70028}
+}
+```
+
+``` bibtex
+@Article{Lavender2025b,
+  author  = {Lavender, Edward and Scheidegger, Andreas and Albert, Carlo and Biber, Stanisław W. and Illian, Janine and Thorburn, James and Smout, Sophie and Moor, Helen},
+  title   = {patter: Particle algorithms for animal tracking in R and Julia},
+  journal = {Methods in Ecology and Evolution},
+  year    = {2025},
+  volume  = {00},
+  pages   = {1--8},
+  doi     = {10.1111/2041-210X.70029}
+}
+```
+
+``` bibtex
+@Article{Lavender2025c,
+  author  = {Lavender, Edward and Scheidegger, Andreas and Albert, Carlo and Biber, Stanisław W. and Brodersen, Jakob and Aleynik, Dmitry and Cole, Georgina and Dodd, Jane and Wright, Peter J. and Illian, Janine and James, Mark and Smout, Sophie and Thorburn, James and Moor, Helen},
+  title   = {Animal tracking with particle algorithms for conservation},
+  journal = {bioRxiv},
+  year    = {2025},
+  doi     = {10.1101/2025.02.13.638042}
+}
+```
+
+**`patter` evolved from the
+[`flapper`](https://github.com/edwardlavender/flapper)
+[`R`](https://www.r-project.org) package**. Please also consider citing
+that publication:
+
+Lavender, E., Biber, S., Illian, J., James, M., Wright, P., Thorburn,
+J., & Smout, S. (2023). An integrative modelling framework for passive
+acoustic telemetry. Methods in Ecology and Evolution, 14, 2626–2638.
+<https://doi.org/10.1111/2041-210X.14193>
+
+``` bibtex
+@Article{Lavender2023,
+  author  = {Lavender, Edward and Biber, Stanisław W. and Illian, Janine and James, Mark and Wright, Peter J. and Thorburn, James and Smout, Sophie},
+  title   = {An integrative modelling framework for passive acoustic telemetry},
+  journal = {Methods in Ecology and Evolution},
+  year    = {2023},
+  volume  = {14},
+  pages   = {2626--2638},
+  doi     = {10.1111/2041-210X.14193}
+  }
+}
+```
+
+**Thank you for citing the package. Your citations help to justify
+continued investments in its development.**
 
 ------------------------------------------------------------------------
 
