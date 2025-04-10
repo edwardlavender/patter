@@ -109,7 +109,7 @@ Sys.setenv(JULIA_NUM_THREADS = parallel::detectCores() - 1L)
 
 # (3) Save .Rprofile and restart R:
 
-# (3) Run `julia_connect()` in the `R` console as usual:
+# (4) Run `julia_connect()` in the `R` console as usual:
 # There is no need to specify `JULIA_*` arguments e.g., JULIA_PROJ
 # There are inherited from .Rprofile
 julia_connect()
