@@ -7,6 +7,8 @@
 \alias{dat_detections}
 \alias{dat_archival}
 \alias{dat_gebco}
+\alias{dat_coast}
+\alias{dat_mpa}
 \title{Datasets: the MEFS project}
 \format{
 An object of class \code{data.table} (inherits from \code{data.frame}) with 40 rows and 8 columns.
@@ -19,6 +21,10 @@ An object of class \code{data.table} (inherits from \code{data.frame}) with 7500
 Biologging and biotelemetry data were collected by, and belong to, Marine Scotland Science and NatureScot. Data were processed by Lavender (2022). If you wish to use these data, please contact Marine Scotland Science and NatureScot for further information.
 
 Bathymetry data were sourced from GEBCO Compilation Group (2019) GEBCO 2019 Grid. \url{https://www.doi.org/10.5285/836f016a-33be-6ddc-e053-6c86abc0788e}
+
+Coastline data were sourced from \href{https://edwardlavender.github.io/flapper/reference/dat_coast.html}{\code{flapper::dat_coast}}.
+
+MPA boundary data were assembled by E. Lavender.
 }
 \usage{
 dat_moorings
@@ -28,11 +34,16 @@ dat_detections
 dat_archival
 
 dat_gebco(.return = c("SpatRaster", "character"))
+
+dat_coast(.return = c("SpatVector", "character"))
+
+dat_mpa(.return = c("SpatVector", "character"))
 }
 \arguments{
-\item{.return}{A \code{character} that defines the object returned by \code{\link[=dat_gebco]{dat_gebco()}}:
+\item{.return}{A \code{character} that defines the object returned by \code{\link[=dat_gebco]{dat_gebco()}}, \code{\link[=dat_coast]{dat_coast()}} or \code{\link[=dat_mpa]{dat_mpa()}}:
 \itemize{
 \item \code{SpatRaster} returns a \code{\link{SpatRaster}};
+\item \code{SpatVector} returns a \code{\link{SpatVector}};
 \item \code{character} returns a file path to the raster. This is the only supported option on Linux if \code{JULIA_SESSION = "TRUE"};
 }}
 }
@@ -80,6 +91,19 @@ Data are arranged by \code{individual_id} and then \code{timestamp}.
 \item \code{resolution}---100, 100  (\code{x}, \code{y});
 \item \code{extent}---695492.1, 714492.1, 6246657, 6273057  (\code{xmin}, \code{xmax}, \code{ymin}, \code{ymax});
 \item \verb{coord. ref.}---WGS 84 / UTM zone 29N (EPSG:32629);
+}
+}
+
+\section{Coastline}{
+\code{\link[=dat_coast]{dat_coast()}} returns a \code{\link{SpatVector}} of coastline for the same region.
+}
+
+\section{Marine Protected Area}{
+\code{\link[=dat_mpa]{dat_mpa()}} returns a \code{\link{SpatVector}} of the boundaries of the Loch Sunart to the Sound of Jura Marine Protected Area (MPA) with the following columns:
+\itemize{
+\item \code{id}---A \code{character} label for each polygon;
+\item \code{open}---A \code{character} that defines whether or not each \code{id} is \code{open} or \code{closed} to fishing;
+\item \code{col}---A \code{character} that defines a colour (for visualising);
 }
 }
 

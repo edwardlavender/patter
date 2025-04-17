@@ -28,12 +28,24 @@ library(sf)
 #########################
 #### Prepare spatial datasets
 
+# Bathymetry
 dat_gebco <- flapper::dat_gebco
 dat_gebco <- terra::rast(dat_gebco)
 blank <- terra::rast(terra::ext(dat_gebco), res = 100)
 dat_gebco <- terra::resample(dat_gebco, blank, method = "bilinear")
 names(dat_gebco) <- "map_value"
-# terra::plot(dat_gebco)
+
+# Coastline
+dat_coast <- flapper::dat_coast
+dat_coast <- terra::vect(dat_coast)
+
+# MPA
+dat_mpa <- qs::qread(file.path("data-raw", "extdata", "mpa.qs"))
+dat_mpa <- terra::vect(dat_mpa)
+
+terra::plot(dat_gebco)
+terra::lines(dat_coast)
+terra::plot(dat_mpa, col = dat_mpa$col, add = TRUE)
 
 
 #########################
@@ -92,11 +104,18 @@ lubridate::tz(dat_archival$timestamp) <- "UTC"
 #### Update package
 
 overwrite <- TRUE
-terra::writeRaster(dat_gebco, here::here("inst", "extdata", "dat_gebco.tif"), overwrite = TRUE)
+terra::writeRaster(dat_gebco,
+                   here::here("inst", "extdata", "dat_gebco.tif"),
+                   overwrite = TRUE)
+terra::writeVector(dat_coast,
+                   here::here("inst", "extdata", "dat_coast.gpkg"),
+                   overwrite = TRUE)
+terra::writeVector(dat_mpa,
+                   here::here("inst", "extdata", "dat_mpa.gpkg"),
+                   overwrite = TRUE)
 usethis::use_data(dat_moorings, overwrite = overwrite)
 usethis::use_data(dat_detections, overwrite = overwrite)
 usethis::use_data(dat_archival, overwrite = overwrite)
-
 
 
 #### End of code.

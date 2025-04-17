@@ -12,3 +12,4 @@ Julia/README.md
 .Rprofile
 .Renviron
 data-raw/benchmark
+data-raw/extdata

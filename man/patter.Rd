@@ -27,6 +27,8 @@ For example datasets from the Movement Ecology of Flapper Skate project (\code{\
 \item \code{\link{dat_detections}} for acoustic detection time series;
 \item \code{\link{dat_archival}} for archival (depth) time series;
 \item \code{\link[=dat_gebco]{dat_gebco()}} for a bathymetry grid;
+\item \code{\link[=dat_coast]{dat_coast()}} for a coastline vector;
+\item \code{\link[=dat_mpa]{dat_mpa()}} for a Marine Protected Area boundary
 }
 
 To validate new datasets for use with \code{\link{patter}}, see \code{\link[=pat_setup_data]{pat_setup_data()}} and/or the \code{\link{assemble}}\verb{_*()} function documentation.

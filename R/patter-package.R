@@ -20,6 +20,8 @@
 #' * [`dat_detections`] for acoustic detection time series;
 #' * [`dat_archival`] for archival (depth) time series;
 #' * [`dat_gebco()`] for a bathymetry grid;
+#' * [`dat_coast()`] for a coastline vector;
+#' * [`dat_mpa()`] for a Marine Protected Area boundary
 #'
 #' To validate new datasets for use with [`patter`], see [`pat_setup_data()`] and/or the [`assemble`]`_*()` function documentation.
 #'
