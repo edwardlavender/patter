@@ -32,7 +32,7 @@ pf_filter(
 \item{.state, .xinit}{Arguments used to simulate initial states.
 \itemize{
 \item \code{.state}---A \code{character} that defines the \code{\link{State}} sub-type;
-\item \code{.xinit}---\code{NULL} or a \code{\link{data.table}} that defines the initial states for the simulation;
+\item \code{.xinit}---\code{NULL} or a \code{\link[data.table:data.table]{data.table::data.table}} that defines the initial states for the simulation;
 }}
 
 \item{.model_move, .n_move}{The movement model.
@@ -248,11 +248,11 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
   # The function returns a `pf_particles` list:
   class(fwd)
   summary(fwd)
-  # `states` is a `data.table` of particles:
+  # `states` is a [`data.table::data.table`] of particles:
   fwd$states
-  # `diagnostics` is a `data.table` of filter diagnostics
+  # `diagnostics` is a [`data.table::data.table`] of filter diagnostics
   fwd$diagnostics
-  # fwd$callstats is a `data.table` of call statistics
+  # fwd$callstats is a [`data.table::data.table`] of call statistics
   fwd$callstats
 
   ## Map output states:

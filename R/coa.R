@@ -1,10 +1,10 @@
 #' @title COA: centres of activity
 #' @description This function calculates centres of activity (COAs) from detections at acoustic receivers.
-#' @param .map A [`SpatRaster`] that defines the study area (see [`glossary`]). Here, `.map` is used to:
+#' @param .map A [`terra::SpatRaster`] that defines the study area (see [`glossary`]). Here, `.map` is used to:
 #' * Extract `map_value` at centres of activity, for consistency with other routines (such as [`pf_filter()`]);
-#' @param .detections,.moorings Acoustic detection [`data.table`](s).
-#' * `.detections` is a [`data.table`] of acoustic detections, with the following columns: `receiver_id` (or `sensor_id`), `timestamp` and (optionally) `receiver_x` and `receiver_y` columns;
-#' * (optional) `.moorings` is a [`data.table`] of receiver coordinates, which should be provided if unavailable in `.detections`, with `receiver_id`, `receiver_x` and `receiver_y` columns;
+#' @param .detections,.moorings Acoustic detection [`data.table::data.table`](s).
+#' * `.detections` is a [`data.table::data.table`] of acoustic detections, with the following columns: `receiver_id` (or `sensor_id`), `timestamp` and (optionally) `receiver_x` and `receiver_y` columns;
+#' * (optional) `.moorings` is a [`data.table::data.table`] of receiver coordinates, which should be provided if unavailable in `.detections`, with `receiver_id`, `receiver_x` and `receiver_y` columns;
 #'
 #' Receiver coordinates **must be planar**.
 #'
@@ -21,7 +21,7 @@
 #'
 #' On Linux, this function cannot be used within a `Julia` session.
 #'
-#' @return The function returns a [`data.table`] with the following columns:
+#' @return The function returns a [`data.table::data.table`] with the following columns:
 #' * `{.split}`---a `character` vector that distinguishes groups, if applicable;
 #' * `timestep`---an `integer` vector of time steps;
 #' * `timestamp`---a `POSIXt` vector of time stamps;

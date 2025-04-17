@@ -17,7 +17,7 @@ sim_path_walk(
 )
 }
 \arguments{
-\item{.map}{(optional) On Windows or MacOS, \code{.map} is a \code{\link{SpatRaster}} that defines the study area for visualisation (see \code{\link{glossary}}). This argument cannot be used on Linux. Here, \code{.map} is used to:
+\item{.map}{(optional) On Windows or MacOS, \code{.map} is a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} that defines the study area for visualisation (see \code{\link{glossary}}). This argument cannot be used on Linux. Here, \code{.map} is used to:
 \itemize{
 \item Plot the movement path, if \code{.plot = TRUE}, via \code{\link[terra:plot]{terra::plot()}};
 }}
@@ -35,7 +35,7 @@ sim_path_walk(
 \item \code{.xinit} specifies the initial states for the simulation (one for each movement path).
 \itemize{
 \item If \code{.xinit} is \code{NULL}, initial states are sampled from the map.
-\item Otherwise, \code{.xinit} must be a \code{\link{data.table}} with one column for each state dimension.
+\item Otherwise, \code{.xinit} must be a \code{\link[data.table:data.table]{data.table::data.table}} with one column for each state dimension.
 }
 \item \code{.n_path} is an \code{integer} that defines the number of paths to simulate.
 }}
@@ -55,7 +55,7 @@ Plot options are silently ignored if \code{.collect = FALSE}.}
 \value{
 \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.simulate_path_walk()}} creates a Vector of \code{\link{State}}s in the \code{Julia} session (named  \code{paths}).
 
-If \code{.collect = TRUE}, \code{\link[=sim_path_walk]{sim_path_walk()}} collects the outputs in \code{R} as a \code{\link{data.table}} with the following columns:
+If \code{.collect = TRUE}, \code{\link[=sim_path_walk]{sim_path_walk()}} collects the outputs in \code{R} as a \code{\link[data.table:data.table]{data.table::data.table}} with the following columns:
 \itemize{
 \item \code{path_id}---an \code{integer} vector that identifies each path;
 \item \code{timestep}---an \code{integer} vector that defines the time step;
@@ -72,7 +72,7 @@ Simulate discrete-time animal movement paths from walk models (e.g., random walk
 This function simulates movement paths via \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.simulate_path_walk()}}:
 \itemize{
 \item Raster and GeoArray maps must be set in \code{Julia} for the simulation (see \code{\link[=set_map]{set_map()}});
-\item The internal function \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.sim_states_init()}} is used to simulate the initial state(s) for the simulation; that is, initial coordinates and other variables (one for each \code{.n_path}). If \code{.state} is one of the built-in options (see \code{\link{State}}), initial state(s) can be sampled from the map. Otherwise, additional methods or a \code{\link{data.table}} of initial states must be provided (see \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.sim_states_init()}}). Initial states provided in \code{.xinit} are re-sampled, with replacement, if required, such that there is one initial state for each simulated path. Initial states are assigned to an \code{xinit} object in \code{Julia}, which is a \code{Vector} of \code{\link{State}}s.
+\item The internal function \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.sim_states_init()}} is used to simulate the initial state(s) for the simulation; that is, initial coordinates and other variables (one for each \code{.n_path}). If \code{.state} is one of the built-in options (see \code{\link{State}}), initial state(s) can be sampled from the map. Otherwise, additional methods or a \code{\link[data.table:data.table]{data.table::data.table}} of initial states must be provided (see \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.sim_states_init()}}). Initial states provided in \code{.xinit} are re-sampled, with replacement, if required, such that there is one initial state for each simulated path. Initial states are assigned to an \code{xinit} object in \code{Julia}, which is a \code{Vector} of \code{\link{State}}s.
 \item Using the initial states, the \code{Julia} function \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.simulate_path_walk()}} simulates movement path(s) using the movement model (\code{.model_move}).
 \item Movement paths are passed back to \code{R} for convenient visualisation and analysis.
 }
@@ -80,7 +80,7 @@ This function simulates movement paths via \href{https://edwardlavender.github.i
 To use a new \code{.state} and/or \code{.model_move} sub-type for \code{\link[=sim_path_walk]{sim_path_walk()}}:
 \itemize{
 \item Define a \code{\link{State}} sub-type in \code{Julia} and provide the name as a \code{character} string to this function;
-\item To initialise the simulation, write a \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.map_init()}} and \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.states_init()}} methods to enable automated sampling of initial states via \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.sim_states_init()}} or provide a \code{\link{data.table}} of initial states to \code{.xinit};
+\item To initialise the simulation, write a \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.map_init()}} and \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.states_init()}} methods to enable automated sampling of initial states via \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.sim_states_init()}} or provide a \code{\link[data.table:data.table]{data.table::data.table}} of initial states to \code{.xinit};
 \item Define a corresponding \code{\link{ModelMove}} sub-type in \code{Julia};
 \item Instantiate a \code{\link{ModelMove}} instance (that is, define a specific movement model);
 }

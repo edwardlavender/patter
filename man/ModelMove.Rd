@@ -76,7 +76,7 @@ The following movement models are built in to \href{https://edwardlavender.githu
 
 See \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} or \code{JuliaCall::julia_help("ModelMove")} for the fields of the built-in sub-types. Briefly, all sub-types include:
 \itemize{
-\item A \code{map} field, that defines the region(s) within which movements are permitted. In \code{R}, it is convenient to represent \code{map} as a \code{\link{SpatRaster}}, where \code{NAs} define inhospitable habitats (e.g., land). This should made available to \code{Julia} \code{\link{ModelMove}} constructors as \code{env} via \code{\link[=set_map]{set_map()}};
+\item A \code{map} field, that defines the region(s) within which movements are permitted. In \code{R}, it is convenient to represent \code{map} as a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}}, where \code{NAs} define inhospitable habitats (e.g., land). This should made available to \code{Julia} \code{\link{ModelMove}} constructors as \code{env} via \code{\link[=set_map]{set_map()}};
 \item The \code{mobility} parameter;
 \item Additional model-specific components (such as fields for the distribution of step lengths and headings in the case of two-dimensional random walks);
 }

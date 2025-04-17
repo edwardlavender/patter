@@ -43,9 +43,9 @@ NULL
 
 
 #' @title Observation models
-#' @description [`ModelObs`] is Abstract Type in [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) that groups observation model sub-types. `model_obs_*()` `R` functions create [`data.table`]s of observation model parameters which can be visualised in `R` (via `plot.ModelObs*()` methods) and instantiated as [`ModelObs`] instances in `Julia`.
+#' @description [`ModelObs`] is Abstract Type in [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) that groups observation model sub-types. `model_obs_*()` `R` functions create [`data.table::data.table`]s of observation model parameters which can be visualised in `R` (via `plot.ModelObs*()` methods) and instantiated as [`ModelObs`] instances in `Julia`.
 #'
-#' @param .data A [`data.table`] that contains observation model parameters.
+#' @param .data A [`data.table::data.table`] that contains observation model parameters.
 #'
 #' * For [`ModelObsAcousticLogisTrunc`], required columns are:
 #'      * `sensor_id`
@@ -71,7 +71,7 @@ NULL
 #'
 #' @param .strict A `logical` variable that defines whether or not to only retain columns in `.data` defined in the corresponding `ModelObs` structure.
 #' * Set `.strict = TRUE` (default) in [`sim_observations()`];
-#' * Set `.strict = FALSE` in [`pf_filter()`] to include time stamps and observations in the [`data.table`];
+#' * Set `.strict = FALSE` in [`pf_filter()`] to include time stamps and observations in the [`data.table::data.table`];
 #'
 #' @details
 #' # Model structures
@@ -88,7 +88,7 @@ NULL
 #' * To simulate new observational datasets, via [`sim_observations()`];
 #' * To run the particle filter, via [`pf_filter()`];
 #'
-#' Observation model sub-types and parameters should be specified as a named `list` of [`data.table`]s. To assemble a [`data.table`] of parameters for a given [`ModelObs`] structure, see [`assemble`] functions. A named list can be created manually from individual [`data.table`]s or via `model_obs_*()` `R` functions. The `R` functions simply check the inputs and wrap inputted [`data.table`]s of `ModelObs*` parameters in a named `list`. A [`S3-class`]-`ModelObs*` label is added and enables supporting methods (e.g., [`plot.ModelObs()`]) to be implemented for observation models.
+#' Observation model sub-types and parameters should be specified as a named `list` of [`data.table::data.table`]s. To assemble a [`data.table::data.table`] of parameters for a given [`ModelObs`] structure, see [`assemble`] functions. A named list can be created manually from individual [`data.table::data.table`]s or via `model_obs_*()` `R` functions. The `R` functions simply check the inputs and wrap inputted [`data.table::data.table`]s of `ModelObs*` parameters in a named `list`. A [`S3-class`]-`ModelObs*` label is added and enables supporting methods (e.g., [`plot.ModelObs()`]) to be implemented for observation models.
 #'
 #' Internally in [`patter`] algorithms, observation model sub-types and parameters are instantiated and used to simulate observations or in the particle filter. The simulation of observations is implemented via [`Patter.simulate_obs()`](https://edwardlavender.github.io/Patter.jl). In the particle filter, log-probabilities are evaluated by [`Patter.logpdf_obs()`](https://edwardlavender.github.io/Patter.jl). These are generic functions. Different methods are dispatched according to the input model. For the built-in [`ModelObs`] sub-types, corresponding methods for these routines are also built-in. For custom [`ModelObs`] sub-types, the methods need to be provided.
 #'
@@ -468,7 +468,7 @@ plot.ModelObsContainer <- function(x, .radius, .par = list(), ...) {
 #'    * [`ModelMoveCXYZ`]
 #'
 #' See [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) or `JuliaCall::julia_help("ModelMove")` for the fields of the built-in sub-types. Briefly, all sub-types include:
-#' * A `map` field, that defines the region(s) within which movements are permitted. In `R`, it is convenient to represent `map` as a [`SpatRaster`], where `NAs` define inhospitable habitats (e.g., land). This should made available to `Julia` [`ModelMove`] constructors as `env` via [`set_map()`];
+#' * A `map` field, that defines the region(s) within which movements are permitted. In `R`, it is convenient to represent `map` as a [`terra::SpatRaster`], where `NAs` define inhospitable habitats (e.g., land). This should made available to `Julia` [`ModelMove`] constructors as `env` via [`set_map()`];
 #' * The `mobility` parameter;
 #' * Additional model-specific components (such as fields for the distribution of step lengths and headings in the case of two-dimensional random walks);
 #'

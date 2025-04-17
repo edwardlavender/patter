@@ -20,9 +20,9 @@ pf_smoother_two_filter(
 \arguments{
 \item{.map, .mobility, .vmap, .plot, ...}{(optional) 'Validity map' arguments for \code{\link[=set_map]{set_map()}}, used for two-dimensional states.
 \itemize{
-\item \code{.map} is a \code{\link{SpatRaster}} that defines the study area of the simulation (see \code{\link[=pf_filter]{pf_filter()}}). On Linux, this argument can only be used safely if \code{JULIA_SESSION = "FALSE"}.
+\item \code{.map} is a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} that defines the study area of the simulation (see \code{\link[=pf_filter]{pf_filter()}}). On Linux, this argument can only be used safely if \code{JULIA_SESSION = "FALSE"}.
 \item \code{.mobility} is a \code{numeric} value that defines the maximum moveable distance between two time steps (e.g., \code{.timeline[1]} and \code{.timeline[2]} in \code{\link[=pf_filter]{pf_filter()}}).
-\item \code{.vmap} is a \code{\link{SpatRaster}} (supported on Windows or MacOS), or a file path to a raster (supported on MacOS, Windows and Linux), that defines the validity map (see \code{\link[=set_map]{set_map()}}). This can be supplied, from a previous implementation of \code{\link[=set_vmap]{set_vmap()}} or the internal function \code{\link[=spatVmap]{spatVmap()}}, instead of \code{.map} and \code{.mobility} to avoid re-computation.
+\item \code{.vmap} is a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} (supported on Windows or MacOS), or a file path to a raster (supported on MacOS, Windows and Linux), that defines the validity map (see \code{\link[=set_map]{set_map()}}). This can be supplied, from a previous implementation of \code{\link[=set_vmap]{set_vmap()}} or the internal function \code{\link[=spatVmap]{spatVmap()}}, instead of \code{.map} and \code{.mobility} to avoid re-computation.
 \item \code{.plot} is a \code{logical} variable that defines whether or not to plot the map.
 \item \code{...} is a placeholder for additional arguments, passed to \code{\link[terra:plot]{terra::plot()}}, if \code{.plot = TRUE}.
 }
@@ -57,7 +57,7 @@ On Linux, the validity map cannot be created and set in the same \code{R} sessio
 \itemize{
 \item \code{\link[=set_vmap]{set_vmap()}}:
 \itemize{
-\item \code{\link[=set_vmap]{set_vmap()}} returns the validity map (a \code{\link{SpatRaster}}), invisibly;
+\item \code{\link[=set_vmap]{set_vmap()}} returns the validity map (a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}}), invisibly;
 }
 \item \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}}:
 \itemize{

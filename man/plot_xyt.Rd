@@ -17,9 +17,9 @@ plot_xyt(
 )
 }
 \arguments{
-\item{.map}{A \code{\link{SpatRaster}} that defines the study area (see \code{\link{glossary}}).}
+\item{.map}{A \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} that defines the study area (see \code{\link{glossary}}).}
 
-\item{.coord}{A \code{\link{data.table}} of coordinates, including \code{x}, \code{y} and \code{timestep} columns. Point graphical parameters (\code{pch}, \code{col}, \code{bg}, \code{cex}, \code{lwd}, \code{lty}, \code{lwd}) can be included as columns to customise point appearance. (Graphical parameters provided here silently overwrite any elements of the same name in \code{.add_points}.)}
+\item{.coord}{A \code{\link[data.table:data.table]{data.table::data.table}} of coordinates, including \code{x}, \code{y} and \code{timestep} columns. Point graphical parameters (\code{pch}, \code{col}, \code{bg}, \code{cex}, \code{lwd}, \code{lty}, \code{lwd}) can be included as columns to customise point appearance. (Graphical parameters provided here silently overwrite any elements of the same name in \code{.add_points}.)}
 
 \item{.steps}{\code{NULL} or an \code{integer} vector of the time steps for which to map coordinates (e.g., \code{.steps = 1:5L}). \code{NULL} specifies all time steps.}
 

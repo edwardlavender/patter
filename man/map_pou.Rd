@@ -13,18 +13,18 @@ map_pou(
 )
 }
 \arguments{
-\item{.map}{A \code{\link{SpatRaster}} that defines the grid for probability-of-use estimation.}
+\item{.map}{A \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} that defines the grid for probability-of-use estimation.}
 
 \item{.coord}{Coordinates, provided in any format accepted by \code{\link[=.map_coord]{.map_coord()}}}
 
-\item{.plot, ...}{A logical input that defines whether or not to plot the \code{\link{SpatRaster}} and additional arguments passed to \code{\link[terra:plot]{terra::plot()}}.}
+\item{.plot, ...}{A logical input that defines whether or not to plot the \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} and additional arguments passed to \code{\link[terra:plot]{terra::plot()}}.}
 
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }
 \value{
 The function returns a named \code{list} with the following elements:
 \itemize{
-\item \code{ud}: a normalised \code{\link{SpatRaster}};
+\item \code{ud}: a normalised \code{\link[terra:SpatRaster-class]{terra::SpatRaster}};
 }
 }
 \description{
@@ -87,7 +87,7 @@ if (patter_run(.julia = FALSE, .geospatial = TRUE)) {
 \item \code{\link{map_hr}}\verb{_*()} functions map home ranges;
 }
 
-All maps are represented as \code{\link{SpatRaster}}s.
+All maps are represented as \code{\link[terra:SpatRaster-class]{terra::SpatRaster}}s.
 
 To derive coordinates for mapping patterns of space use for tagged animals, see:
 \itemize{

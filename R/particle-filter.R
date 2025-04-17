@@ -5,7 +5,7 @@
 #' * Define the time steps of the simulation;
 #' @param .state,.xinit Arguments used to simulate initial states.
 #' * `.state`---A `character` that defines the [`State`] sub-type;
-#' * `.xinit`---`NULL` or a [`data.table`] that defines the initial states for the simulation;
+#' * `.xinit`---`NULL` or a [`data.table::data.table`] that defines the initial states for the simulation;
 #' @param .yobs The observations. Acceptable inputs are:
 #' * A named `list` of formatted datasets, one for each data type (see [`glossary`]);
 #' * An empty `list`, to run the filter without observations;

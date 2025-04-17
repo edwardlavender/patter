@@ -117,11 +117,11 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
   # The function returns a `pf_particles` list:
   class(fwd)
   summary(fwd)
-  # `states` is a `data.table` of particles:
+  # `states` is a [`data.table::data.table`] of particles:
   fwd$states
-  # `diagnostics` is a `data.table` of filter diagnostics
+  # `diagnostics` is a [`data.table::data.table`] of filter diagnostics
   fwd$diagnostics
-  # fwd$callstats is a `data.table` of call statistics
+  # fwd$callstats is a [`data.table::data.table`] of call statistics
   fwd$callstats
 
   ## Map output states:

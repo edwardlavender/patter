@@ -9,7 +9,7 @@ set_map(.x, .as_Raster = TRUE, .as_GeoArray = TRUE)
 \arguments{
 \item{.x}{A map, supplied as:
 \itemize{
-\item A \code{\link{SpatRaster}}, supported on Windows and MacOS;
+\item A \code{\link[terra:SpatRaster-class]{terra::SpatRaster}}, supported on Windows and MacOS;
 \item A \code{character} string specifying the file path to a raster, supported on Windows, MacOS and Linux;
 }}
 

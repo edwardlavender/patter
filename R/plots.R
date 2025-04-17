@@ -1,8 +1,8 @@
 #' @title Plots: plot coordinates (`x`, `y`, `t`)
 #' @description This function maps `xyt` data (i.e. coordinate (`x`, `y`) locations for selected time steps (`t`) or entire time series) and can be used to create animations.
 #'
-#' @param .map A [`SpatRaster`] that defines the study area (see [`glossary`]).
-#' @param .coord A [`data.table`] of coordinates, including `x`, `y` and `timestep` columns. Point graphical parameters (`pch`, `col`, `bg`, `cex`, `lwd`, `lty`, `lwd`) can be included as columns to customise point appearance. (Graphical parameters provided here silently overwrite any elements of the same name in `.add_points`.)
+#' @param .map A [`terra::SpatRaster`] that defines the study area (see [`glossary`]).
+#' @param .coord A [`data.table::data.table`] of coordinates, including `x`, `y` and `timestep` columns. Point graphical parameters (`pch`, `col`, `bg`, `cex`, `lwd`, `lty`, `lwd`) can be included as columns to customise point appearance. (Graphical parameters provided here silently overwrite any elements of the same name in `.add_points`.)
 #' @param .steps `NULL` or an `integer` vector of the time steps for which to map coordinates (e.g., `.steps = 1:5L`). `NULL` specifies all time steps.
 #' @param .png (optional) A named `list`, passed to [`grDevices::png()`], to save plots to file. `filename` should be the directory in which to write files. Files are named `{.steps[1]}.png, {.steps[2]}.png, ..., {.steps[N]}.png`. `.png` should be supplied if `.cl` is supplied via `...`.
 #' @param .add_surface,.add_points Named `list`s for plot customisation.

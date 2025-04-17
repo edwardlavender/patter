@@ -498,7 +498,7 @@ Of course, you do not need acoustic and archival data to implement the algorithm
 
 ## Particle filter
 
-We are now in a position to run the particle filter. This runs a simulation forwards (or backwards) in time, sampling states (locations, termed 'particles') that are consistent with the movement model and the observations up to and including each time point. We end up with a time series (`data.table`) of particles that approximate the partial marginal distribution for the location of the animal, at each time step:
+We are now in a position to run the particle filter. This runs a simulation forwards (or backwards) in time, sampling states (locations, termed 'particles') that are consistent with the movement model and the observations up to and including each time point. We end up with a time series (`data.table::data.table`) of particles that approximate the partial marginal distribution for the location of the animal, at each time step:
 
 ```{r}
 # List filter arguments

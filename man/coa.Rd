@@ -16,15 +16,15 @@ coa(
 )
 }
 \arguments{
-\item{.map}{A \code{\link{SpatRaster}} that defines the study area (see \code{\link{glossary}}). Here, \code{.map} is used to:
+\item{.map}{A \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} that defines the study area (see \code{\link{glossary}}). Here, \code{.map} is used to:
 \itemize{
 \item Extract \code{map_value} at centres of activity, for consistency with other routines (such as \code{\link[=pf_filter]{pf_filter()}});
 }}
 
-\item{.detections, .moorings}{Acoustic detection \href{s}{\code{data.table}}.
+\item{.detections, .moorings}{Acoustic detection \href{s}{\code{data.table::data.table}}.
 \itemize{
-\item \code{.detections} is a \code{\link{data.table}} of acoustic detections, with the following columns: \code{receiver_id} (or \code{sensor_id}), \code{timestamp} and (optionally) \code{receiver_x} and \code{receiver_y} columns;
-\item (optional) \code{.moorings} is a \code{\link{data.table}} of receiver coordinates, which should be provided if unavailable in \code{.detections}, with \code{receiver_id}, \code{receiver_x} and \code{receiver_y} columns;
+\item \code{.detections} is a \code{\link[data.table:data.table]{data.table::data.table}} of acoustic detections, with the following columns: \code{receiver_id} (or \code{sensor_id}), \code{timestamp} and (optionally) \code{receiver_x} and \code{receiver_y} columns;
+\item (optional) \code{.moorings} is a \code{\link[data.table:data.table]{data.table::data.table}} of receiver coordinates, which should be provided if unavailable in \code{.detections}, with \code{receiver_id}, \code{receiver_x} and \code{receiver_y} columns;
 }
 
 Receiver coordinates \strong{must be planar}.}
@@ -41,7 +41,7 @@ Receiver coordinates \strong{must be planar}.}
 }}
 }
 \value{
-The function returns a \code{\link{data.table}} with the following columns:
+The function returns a \code{\link[data.table:data.table]{data.table::data.table}} with the following columns:
 \itemize{
 \item \code{{.split}}---a \code{character} vector that distinguishes groups, if applicable;
 \item \code{timestep}---an \code{integer} vector of time steps;

@@ -13,9 +13,9 @@ pat_setup_data(
 )
 }
 \arguments{
-\item{.map}{(optional) A \code{\link{SpatRaster}} that defines the study area (see \link{glossary}).}
+\item{.map}{(optional) A \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} that defines the study area (see \link{glossary}).}
 
-\item{.detections, .services, .archival, .moorings}{(optional) \code{\link{data.table}}s of observations and and associated parameters.
+\item{.detections, .services, .archival, .moorings}{(optional) \code{\link[data.table:data.table]{data.table::data.table}}s of observations and and associated parameters.
 \itemize{
 \item \code{.detections} contains a detection time series (see \code{\link{dat_detections}} for an example);
 \item \code{.moorings} contains receiver deployments (see \code{\link{dat_moorings}}) for an example);

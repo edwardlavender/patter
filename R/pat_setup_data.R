@@ -1,8 +1,8 @@
 #' @title [`patter`] set up: datasets
 #' @description This function is used to set up and validate telemetry data for [`patter`] functions. Use it if you have acoustic and/or archival data.
 #'
-#' @param .map (optional) A [`SpatRaster`] that defines the study area (see [glossary]).
-#' @param .detections,.services,.archival,.moorings (optional) [`data.table`]s of observations and and associated parameters.
+#' @param .map (optional) A [`terra::SpatRaster`] that defines the study area (see [glossary]).
+#' @param .detections,.services,.archival,.moorings (optional) [`data.table::data.table`]s of observations and and associated parameters.
 #' * `.detections` contains a detection time series (see [`dat_detections`] for an example);
 #' * `.moorings` contains receiver deployments (see [`dat_moorings`]) for an example);
 #' * `.services` contains receiver servicing information (times during the deployment period of a receiver when it was not active due to servicing);

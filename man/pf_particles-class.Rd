@@ -9,14 +9,14 @@ An \code{S3}-\code{\link{class}} that defines the named \code{list} returned by 
 \section{Structure}{
 \code{\linkS4class{pf_particles}} is a label used to denote outputs from selected functions in \code{\link{patter}}. The structure of this class is not strictly defined and primarily exists to streamline documentation. At the time of writing, \code{\linkS4class{pf_particles}} objects may comprise the following elements:
 \itemize{
-\item \code{states}---\code{NULL} or a \code{\link{data.table}} of simulated states;
-\item \code{diagnostics}---A \code{\link{data.table}} of diagnostic statistics;
-\item \code{callstats}---A \code{\link{data.table}} of call statistics;
+\item \code{states}---\code{NULL} or a \code{\link[data.table:data.table]{data.table::data.table}} of simulated states;
+\item \code{diagnostics}---A \code{\link[data.table:data.table]{data.table::data.table}} of diagnostic statistics;
+\item \code{callstats}---A \code{\link[data.table:data.table]{data.table::data.table}} of call statistics;
 }
 }
 
 \section{\code{states}}{
-Unless, \code{.batch} is specified in \code{\link[=pf_filter]{pf_filter()}} and \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}}, \code{states} is a \code{\link{data.table}} that defines simulated particle states, with the following columns:
+Unless, \code{.batch} is specified in \code{\link[=pf_filter]{pf_filter()}} and \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}}, \code{states} is a \code{\link[data.table:data.table]{data.table::data.table}} that defines simulated particle states, with the following columns:
 \itemize{
 \item \code{path_id}---An \code{integer} vector that defines the particle index;
 \item \code{timestep}---An \code{integer} vector that defines the time step;
@@ -30,7 +30,7 @@ If the \code{.batch} is specified, \code{states} is \code{NULL}.
 }
 
 \section{\code{diagnostics}}{
-\code{diagnostics} is a \code{\link{data.table}} that stores diagnostic statistics for each time step. This includes \code{timestep}, \code{timestamp} and the following columns:
+\code{diagnostics} is a \code{\link[data.table:data.table]{data.table::data.table}} that stores diagnostic statistics for each time step. This includes \code{timestep}, \code{timestamp} and the following columns:
 \itemize{
 \item \code{ess}---A \code{numeric} vector that defines the effective sample size;
 \item \code{maxlp}---A \code{numeric} vector that defines the maximum log posterior;
@@ -38,7 +38,7 @@ If the \code{.batch} is specified, \code{states} is \code{NULL}.
 }
 
 \section{\code{callstats}}{
-\code{callstats} is a one-row \code{\link{data.table}} that stores call statistics for the function call. This includes the following columns:
+\code{callstats} is a one-row \code{\link[data.table:data.table]{data.table::data.table}} that stores call statistics for the function call. This includes the following columns:
 \itemize{
 \item \code{timestamp}---A \code{POSIXct} value that defines the start time of the function call;
 \item \code{routine}---A \code{character} vector that defines the routine:

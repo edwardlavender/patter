@@ -1,8 +1,8 @@
 #' @title Skill: evaluation metrics
 #' @description These functions are standard model skill metrics. In [`patter`], they support comparisons of simulated and reconstructed patterns of space use.
-#' @param .obs The 'observed' (true) pattern of space use, as a [`SpatRaster`].
-#' @param .mod The 'modelled' (reconstructed) pattern of space use, as a [`SpatRaster`].
-#' @param .summarise A function, passed to [`terra::global()`], used to summarise [`SpatRaster`] values.
+#' @param .obs The 'observed' (true) pattern of space use, as a [`terra::SpatRaster`].
+#' @param .mod The 'modelled' (reconstructed) pattern of space use, as a [`terra::SpatRaster`].
+#' @param .summarise A function, passed to [`terra::global()`], used to summarise [`terra::SpatRaster`] values.
 #'
 #' @details
 #' We follow the mathematical definitions in Lavender et al. ([2022](https://www.doi.org/1038/s41598-022-20254-z)) Supplementary Information Sect. [3.2.1](https://static-content.springer.com/esm/art%3A10.1038%2Fs41598-022-20254-z/MediaObjects/41598_2022_20254_MOESM2_ESM.pdf).

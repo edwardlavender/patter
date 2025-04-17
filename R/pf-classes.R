@@ -6,13 +6,13 @@
 #'
 #' [`pf_particles-class`] is a label used to denote outputs from selected functions in [`patter`]. The structure of this class is not strictly defined and primarily exists to streamline documentation. At the time of writing, [`pf_particles-class`] objects may comprise the following elements:
 #'
-#' * `states`---`NULL` or a [`data.table`] of simulated states;
-#' * `diagnostics`---A [`data.table`] of diagnostic statistics;
-#' * `callstats`---A [`data.table`] of call statistics;
+#' * `states`---`NULL` or a [`data.table::data.table`] of simulated states;
+#' * `diagnostics`---A [`data.table::data.table`] of diagnostic statistics;
+#' * `callstats`---A [`data.table::data.table`] of call statistics;
 #'
 #' # `states`
 #'
-#' Unless, `.batch` is specified in [`pf_filter()`] and [`pf_smoother_two_filter()`], `states` is a [`data.table`] that defines simulated particle states, with the following columns:
+#' Unless, `.batch` is specified in [`pf_filter()`] and [`pf_smoother_two_filter()`], `states` is a [`data.table::data.table`] that defines simulated particle states, with the following columns:
 #' * `path_id`---An `integer` vector that defines the particle index;
 #' * `timestep`---An `integer` vector that defines the time step;
 #' * `timestamp`---A `POSIXct` vector of time stamps;
@@ -24,13 +24,13 @@
 #'
 #' # `diagnostics`
 #'
-#' `diagnostics` is a [`data.table`] that stores diagnostic statistics for each time step. This includes `timestep`, `timestamp` and the following columns:
+#' `diagnostics` is a [`data.table::data.table`] that stores diagnostic statistics for each time step. This includes `timestep`, `timestamp` and the following columns:
 #' * `ess`---A `numeric` vector that defines the effective sample size;
 #' * `maxlp`---A `numeric` vector that defines the maximum log posterior;
 #'
 #' # `callstats`
 #'
-#' `callstats` is a one-row [`data.table`] that stores call statistics for the function call. This includes the following columns:
+#' `callstats` is a one-row [`data.table::data.table`] that stores call statistics for the function call. This includes the following columns:
 #' * `timestamp`---A `POSIXct` value that defines the start time of the function call;
 #' * `routine`---A `character` vector that defines the routine:
 #'    * `"filter: forward"`;

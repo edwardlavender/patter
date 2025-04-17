@@ -23,7 +23,7 @@ model_obs_depth_normal_trunc_seabed(.data, .strict = TRUE)
 model_obs_container(.data, .strict = TRUE)
 }
 \arguments{
-\item{.data}{A \code{\link{data.table}} that contains observation model parameters.
+\item{.data}{A \code{\link[data.table:data.table]{data.table::data.table}} that contains observation model parameters.
 \itemize{
 \item For \code{\link{ModelObsAcousticLogisTrunc}}, required columns are:
 \itemize{
@@ -56,14 +56,14 @@ See \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} or \code
 \item{.strict}{A \code{logical} variable that defines whether or not to only retain columns in \code{.data} defined in the corresponding \code{ModelObs} structure.
 \itemize{
 \item Set \code{.strict = TRUE} (default) in \code{\link[=sim_observations]{sim_observations()}};
-\item Set \code{.strict = FALSE} in \code{\link[=pf_filter]{pf_filter()}} to include time stamps and observations in the \code{\link{data.table}};
+\item Set \code{.strict = FALSE} in \code{\link[=pf_filter]{pf_filter()}} to include time stamps and observations in the \code{\link[data.table:data.table]{data.table::data.table}};
 }}
 }
 \value{
 \verb{model_obs_*()} \code{R} wrapper functions return a named \code{list}, with a single element that defines the parameters of the observation models for the corresponding \code{\link{ModelObs}} structure.
 }
 \description{
-\code{\link{ModelObs}} is Abstract Type in \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} that groups observation model sub-types. \verb{model_obs_*()} \code{R} functions create \code{\link{data.table}}s of observation model parameters which can be visualised in \code{R} (via \verb{plot.ModelObs*()} methods) and instantiated as \code{\link{ModelObs}} instances in \code{Julia}.
+\code{\link{ModelObs}} is Abstract Type in \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} that groups observation model sub-types. \verb{model_obs_*()} \code{R} functions create \code{\link[data.table:data.table]{data.table::data.table}}s of observation model parameters which can be visualised in \code{R} (via \verb{plot.ModelObs*()} methods) and instantiated as \code{\link{ModelObs}} instances in \code{Julia}.
 }
 \section{Model structures}{
 Observation model sub-types are \code{Julia} structures that hold the parameters of observation models. From an \code{R}-user perspective, you can think of a \code{\link{ModelObs}} sub-type as an \code{S4}-\code{\link{class}}-like object, with slots for the parameters of an observation model. With an observation model structure, we can simulate new observations and evaluate the log-probability of existing observations.
@@ -82,7 +82,7 @@ In \code{\link{patter}}, observation models are required:
 \item To run the particle filter, via \code{\link[=pf_filter]{pf_filter()}};
 }
 
-Observation model sub-types and parameters should be specified as a named \code{list} of \code{\link{data.table}}s. To assemble a \code{\link{data.table}} of parameters for a given \code{\link{ModelObs}} structure, see \code{\link{assemble}} functions. A named list can be created manually from individual \code{\link{data.table}}s or via \verb{model_obs_*()} \code{R} functions. The \code{R} functions simply check the inputs and wrap inputted \code{\link{data.table}}s of \verb{ModelObs*} parameters in a named \code{list}. A \code{\linkS4class{S3}}-\verb{ModelObs*} label is added and enables supporting methods (e.g., \code{\link[=plot.ModelObs]{plot.ModelObs()}}) to be implemented for observation models.
+Observation model sub-types and parameters should be specified as a named \code{list} of \code{\link[data.table:data.table]{data.table::data.table}}s. To assemble a \code{\link[data.table:data.table]{data.table::data.table}} of parameters for a given \code{\link{ModelObs}} structure, see \code{\link{assemble}} functions. A named list can be created manually from individual \code{\link[data.table:data.table]{data.table::data.table}}s or via \verb{model_obs_*()} \code{R} functions. The \code{R} functions simply check the inputs and wrap inputted \code{\link[data.table:data.table]{data.table::data.table}}s of \verb{ModelObs*} parameters in a named \code{list}. A \code{\linkS4class{S3}}-\verb{ModelObs*} label is added and enables supporting methods (e.g., \code{\link[=plot.ModelObs]{plot.ModelObs()}}) to be implemented for observation models.
 
 Internally in \code{\link{patter}} algorithms, observation model sub-types and parameters are instantiated and used to simulate observations or in the particle filter. The simulation of observations is implemented via \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.simulate_obs()}}. In the particle filter, log-probabilities are evaluated by \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.logpdf_obs()}}. These are generic functions. Different methods are dispatched according to the input model. For the built-in \code{\link{ModelObs}} sub-types, corresponding methods for these routines are also built-in. For custom \code{\link{ModelObs}} sub-types, the methods need to be provided.
 
@@ -204,7 +204,7 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
                  "receiver_alpha", "receiver_beta", "receiver_gamma") |>
           as.data.table()))
 
-  # In real-world scenarios, we must assemble a `data.table` of acoustic observations
+  # In real-world scenarios, we must assemble a [`data.table::data.table`] of acoustic observations
   # (For convenience, here we simply use our simulated observations)
   acc <- assemble_acoustics(
     .timeline   = timeline,

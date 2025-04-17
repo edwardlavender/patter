@@ -40,7 +40,7 @@
     * A new `.batch` argument permits batching, i.e., writing particles to disk in batches (to minimise memory requirements for cluster implementations).
     * A new `.collect` argument collects outputs in `R`. 
     * A new `.progress` argument supports a primitive progress bar on Windows (addressing #13) and enables customisation. 
-    * A revised `pf_particles` object is returned that includes a `callstats` `data.table` that replaces the `convergence` element. 
+    * A revised `pf_particles` object is returned that includes a `callstats` [`data.table::data.table`] that replaces the `convergence` element. 
     * The `callstats` element includes the log likelihood of the observations given the parameters for the filter run, enabling optimisation of static parameters (see the third set of examples for `pf_filter()`).
 
 * **Particle smoothing**
@@ -89,6 +89,6 @@ The `pf_smoother_two_filter()` implements particle smoothing. This is a major ne
 
 ## Mapping 
 
-For mapping, `map_pou()` replaces `flapper::pf_plot_map()` and resolves an issue with the calculation of weights. `map_dens()` is a new function for the reconstruction of maps is based on `spatstat` routines. This function accounts for particle weights and fits smooth utilisation distributions using cross validation, superseding approaches in `flapper` based on `adehabitatHR`. Both approaches can be flexibly implemented using a `data.table` of coordinates and are not restricted to particle samples. The `map_hr_*()` routines for the reconstruction of home ranges are re-implementations of the `get_hr_*()` functions in `flapper`. 
+For mapping, `map_pou()` replaces `flapper::pf_plot_map()` and resolves an issue with the calculation of weights. `map_dens()` is a new function for the reconstruction of maps is based on `spatstat` routines. This function accounts for particle weights and fits smooth utilisation distributions using cross validation, superseding approaches in `flapper` based on `adehabitatHR`. Both approaches can be flexibly implemented using a `data.table::data.table` of coordinates and are not restricted to particle samples. The `map_hr_*()` routines for the reconstruction of home ranges are re-implementations of the `get_hr_*()` functions in `flapper`. 
 
 For the comparison of simulated and reconstructed patterns, the new `skill_*()` functions can be used. 

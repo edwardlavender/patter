@@ -17,7 +17,7 @@ spatAllNA(.x)
 spatVmap(.map, .mobility, .plot = FALSE, ...)
 }
 \description{
-Internal helpers for \code{terra} \code{\link{SpatRaster}} and \code{\link{SpatVector}} objects.
+Internal helpers for \code{terra} \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} and \code{\link[terra:SpatVector-class]{terra::SpatVector}} objects.
 }
 \author{
 Edward Lavender

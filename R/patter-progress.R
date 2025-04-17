@@ -27,7 +27,7 @@
 #'
 #' For pure `R` functions, parallelisation is implemented via `.cl_` arguments passed to [`cl_lapply()`], which wraps [`pbapply::pblapply()`]. See the [`cl_lapply()`] function documentation for full details.
 #'
-#' For `R` functions that use [`terra`], the 'fast-terra' `.fterra = TRUE` argument instructs [`terra`] to use parallelisation.
+#' For `R` functions that use [`terra::terra-package`], the 'fast-terra' `.fterra = TRUE` argument instructs [`terra::terra-package`] to use parallelisation.
 #'
 #' For `R` functions with a `Julia` backend, parallelisation is implemented via the `JULIA_NUM_THREADS` argument to [`julia_connect()`]. This can only be set once per `R` session.
 #'

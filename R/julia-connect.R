@@ -34,8 +34,8 @@
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #' @param ... Additional arguments passed to [`JuliaCall::julia_setup()`] (excluding `verbose`).
 #'
-#' @details [`patter`] is an `R` front-end for the [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) package. This requires a local installation of `Julia`. This function connects `R` to the local `Julia` installation, sets up [`JuliaCall`], which provides the integration between `R` and `Julia`, and [`Patter.jl`](https://github.com/edwardlavender/Patter.jl). Internally, the steps are as follows:
-#' * [`JuliaCall`] is set up via [`JuliaCall::julia_setup()`].
+#' @details [`patter`] is an `R` front-end for the [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) package. This requires a local installation of `Julia`. This function connects `R` to the local `Julia` installation, sets up [`JuliaCall`](https://github.com/JuliaInterop/JuliaCall), which provides the integration between `R` and `Julia`, and [`Patter.jl`](https://github.com/edwardlavender/Patter.jl). Internally, the steps are as follows:
+#' * [`JuliaCall`](https://github.com/JuliaInterop/JuliaCall) is set up via [`JuliaCall::julia_setup()`].
 #' * The environment variable `JULIA_SESSION` is set to `"TRUE"`.
 #' * The number of threads is set, if possible, via `JULIA_NUM_THREADS`.
 #' * The `Julia` installation is validated.
@@ -64,7 +64,7 @@
 #' # Set `JULIA_NUM_THREADS` (on MacOS/Linux):
 #' # - In general, more threads faster, up to a point;
 #' # - On Windows, follow the alternative instructions linked above;
-#' # - (You may also set `data.table` threads here via `OMP_NUM_THREADS`)
+#' # - (You may also set [`data.table::data.table`] threads here via `OMP_NUM_THREADS`)
 #' Sys.setenv(JULIA_NUM_THREADS = parallel::detectCores() - 1L)
 #'
 #' # (3) Save .Rprofile and restart R:
@@ -152,7 +152,7 @@ julia_connect <- function(JULIA_HOME,
 #' @title Julia: validate the `R`---`Julia` interface
 #' @description Load and attach [`patter`], connect to `Julia` via [`julia_connect()`] and then run [`julia_validate()`] to validate the `R`---`Julia` interface works.
 #' @details
-#' This function validates the `R`---`Julia` interface with an example [`SpatRaster`] that is exported to `Julia` and then modified in `R`. If the function returns nothing, you should be good to go. On some systems, we have observed segmentation faults that crash `R` when the map is exported to `Julia` and/or modified in `R`. Please report issues.
+#' This function validates the `R`---`Julia` interface with an example [`terra::SpatRaster`] that is exported to `Julia` and then modified in `R`. If the function returns nothing, you should be good to go. On some systems, we have observed segmentation faults that crash `R` when the map is exported to `Julia` and/or modified in `R`. Please report issues.
 #'
 #' @return The function returns `invisible(NULL)`, unless an error is experienced.
 #' @example man/examples/example-julia_validate.R

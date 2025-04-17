@@ -42,7 +42,7 @@ For \code{R} functions with a \code{Julia} backend, progress bars are implemente
 \section{Parallelisation}{
 For pure \code{R} functions, parallelisation is implemented via \code{.cl_} arguments passed to \code{\link[=cl_lapply]{cl_lapply()}}, which wraps \code{\link[pbapply:pbapply]{pbapply::pblapply()}}. See the \code{\link[=cl_lapply]{cl_lapply()}} function documentation for full details.
 
-For \code{R} functions that use \code{\link{terra}}, the 'fast-terra' \code{.fterra = TRUE} argument instructs \code{\link{terra}} to use parallelisation.
+For \code{R} functions that use \code{\link[terra:terra-package]{terra::terra-package}}, the 'fast-terra' \code{.fterra = TRUE} argument instructs \code{\link[terra:terra-package]{terra::terra-package}} to use parallelisation.
 
 For \code{R} functions with a \code{Julia} backend, parallelisation is implemented via the \code{JULIA_NUM_THREADS} argument to \code{\link[=julia_connect]{julia_connect()}}. This can only be set once per \code{R} session.
 }

@@ -20,11 +20,11 @@ skill_R(.obs, .mod)
 skill_d(.obs, .mod)
 }
 \arguments{
-\item{.obs}{The 'observed' (true) pattern of space use, as a \code{\link{SpatRaster}}.}
+\item{.obs}{The 'observed' (true) pattern of space use, as a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}}.}
 
-\item{.mod}{The 'modelled' (reconstructed) pattern of space use, as a \code{\link{SpatRaster}}.}
+\item{.mod}{The 'modelled' (reconstructed) pattern of space use, as a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}}.}
 
-\item{.summarise}{A function, passed to \code{\link[terra:global]{terra::global()}}, used to summarise \code{\link{SpatRaster}} values.}
+\item{.summarise}{A function, passed to \code{\link[terra:global]{terra::global()}}, used to summarise \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} values.}
 }
 \value{
 The functions return a number.

@@ -66,7 +66,7 @@ This vignette lists the steps required to use `patter` to reconstruct movements 
 
     * Define a timeline of interest;
     * Extract the observations _for a particular individual_;
-    * Observations should be arranged as `data.table`s in long-format;
+    * Observations should be arranged as [`data.table::data.table`]s in long-format;
     * For passive acoustic telemetry and archival datasets, use `pat_setup_data()` and `assemble_*()` functions to assemble datasets as required;
     * Otherwise, see the `assemble_*()` function documentation for straightforward dataset assembly instructions;
     
@@ -77,7 +77,7 @@ This vignette lists the steps required to use `patter` to reconstruct movements 
 ## Forward filter
 
 1. Implement the particle filter via `pf_filter()`:
-    * This returns a `list`, which includes a `states` `data.table` that defines the possible states (locations) of the individual at each time step (according to the movement model and the observations);
+    * This returns a `list`, which includes a `states` [`data.table::data.table`] that defines the possible states (locations) of the individual at each time step (according to the movement model and the observations);
 
 ## Two-filter smoother
 

@@ -48,7 +48,7 @@ To link \code{\link{patter}} and the \href{https://edwardlavender.github.io/Patt
 \item \code{\link[=julia_connect]{julia_connect()}} to connect to \code{R} to \code{Julia};
 \item \code{\link[=julia_validate]{julia_validate()}} to validate the \code{R}---\code{Julia} connection;
 \item \code{\link[=set_seed]{set_seed()}} to set the seed in \code{R} and \code{Julia};
-\item \code{\link[=set_map]{set_map()}} to make a \code{\link{SpatRaster}} of the study area available in \code{Julia};
+\item \code{\link[=set_map]{set_map()}} to make a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} of the study area available in \code{Julia};
 }
 
 These functions should be run at the start of every \code{R} session.

@@ -1,5 +1,5 @@
 #' @title Spatial helper: `spat*` functions
-#' @description Internal helpers for `terra` [`SpatRaster`] and [`SpatVector`] objects.
+#' @description Internal helpers for `terra` [`terra::SpatRaster`] and [`terra::SpatVector`] objects.
 #' @author Edward Lavender
 #' @name spat
 

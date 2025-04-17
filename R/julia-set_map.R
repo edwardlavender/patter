@@ -2,7 +2,7 @@
 #' @description Use [`set_map()`] at the start of your workflow to export maps of the study area to `Julia`.
 #'
 #' @param .x A map, supplied as:
-#' * A [`SpatRaster`], supported on Windows and MacOS;
+#' * A [`terra::SpatRaster`], supported on Windows and MacOS;
 #' * A `character` string specifying the file path to a raster, supported on Windows, MacOS and Linux;
 #' @param .as_Raster A `logical` input that defines whether or not to read the map as a `Raster` (see Details).
 #' @param .as_GeoArray A `logical` input that defines whether or not to read the map as `GeoArray` (see Details).

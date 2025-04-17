@@ -85,7 +85,7 @@ test_that(".map_*() functions work", {
   output <- .map_coord(.map = r, .coord = xy, .discretise = TRUE)
   expect_equal(output, expected)
 
-  # Test `.map_mark()` with a simple `data.table`
+  # Test `.map_mark()` with a simple [`data.table::data.table`]
   xy       <- data.table(timestep = 1L, id = c(1, 2, 1), x = c(1, 2, 1), y = c(3, 4, 3))
   output   <- .map_mark(copy(xy))
   expected <- data.table(id = c(1, 2),

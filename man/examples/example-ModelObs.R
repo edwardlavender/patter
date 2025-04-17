@@ -79,7 +79,7 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
                  "receiver_alpha", "receiver_beta", "receiver_gamma") |>
           as.data.table()))
 
-  # In real-world scenarios, we must assemble a `data.table` of acoustic observations
+  # In real-world scenarios, we must assemble a [`data.table::data.table`] of acoustic observations
   # (For convenience, here we simply use our simulated observations)
   acc <- assemble_acoustics(
     .timeline   = timeline,

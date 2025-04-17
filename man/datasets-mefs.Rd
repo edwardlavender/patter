@@ -42,8 +42,8 @@ dat_mpa(.return = c("SpatVector", "character"))
 \arguments{
 \item{.return}{A \code{character} that defines the object returned by \code{\link[=dat_gebco]{dat_gebco()}}, \code{\link[=dat_coast]{dat_coast()}} or \code{\link[=dat_mpa]{dat_mpa()}}:
 \itemize{
-\item \code{SpatRaster} returns a \code{\link{SpatRaster}};
-\item \code{SpatVector} returns a \code{\link{SpatVector}};
+\item \code{SpatRaster} returns a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}};
+\item \code{SpatVector} returns a \code{\link[terra:SpatVector-class]{terra::SpatVector}};
 \item \code{character} returns a file path to the raster. This is the only supported option on Linux if \code{JULIA_SESSION = "TRUE"};
 }}
 }
@@ -85,7 +85,7 @@ Data are arranged by \code{individual_id} and then \code{timestamp}.
 }
 
 \section{Bathymetry}{
-\code{\link[=dat_gebco]{dat_gebco()}} returns a bathymetry (m) dataset for the west coast of Scotland where MEFS data were collected. This dataset is a \code{\link{SpatRaster}} with the following properties:
+\code{\link[=dat_gebco]{dat_gebco()}} returns a bathymetry (m) dataset for the west coast of Scotland where MEFS data were collected. This dataset is a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} with the following properties:
 \itemize{
 \item \code{dimensions}---264, 190, 1 (\code{nrow}, \code{ncol}, \code{nlyr});
 \item \code{resolution}---100, 100  (\code{x}, \code{y});
@@ -95,11 +95,11 @@ Data are arranged by \code{individual_id} and then \code{timestamp}.
 }
 
 \section{Coastline}{
-\code{\link[=dat_coast]{dat_coast()}} returns a \code{\link{SpatVector}} of coastline for the same region.
+\code{\link[=dat_coast]{dat_coast()}} returns a \code{\link[terra:SpatVector-class]{terra::SpatVector}} of coastline for the same region.
 }
 
 \section{Marine Protected Area}{
-\code{\link[=dat_mpa]{dat_mpa()}} returns a \code{\link{SpatVector}} of the boundaries of the Loch Sunart to the Sound of Jura Marine Protected Area (MPA) with the following columns:
+\code{\link[=dat_mpa]{dat_mpa()}} returns a \code{\link[terra:SpatVector-class]{terra::SpatVector}} of the boundaries of the Loch Sunart to the Sound of Jura Marine Protected Area (MPA) with the following columns:
 \itemize{
 \item \code{id}---A \code{character} label for each polygon;
 \item \code{open}---A \code{character} that defines whether or not each \code{id} is \code{open} or \code{closed} to fishing;

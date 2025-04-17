@@ -134,7 +134,7 @@
 <span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co"># Set `JULIA_NUM_THREADS` (on MacOS/Linux):</span></span>
 <span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co"># - In general, more threads faster, up to a point;</span></span>
 <span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co"># - On Windows, follow the alternative instructions linked above;</span></span>
-<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co"># - (You may also set `data.table` threads here via `OMP_NUM_THREADS`)</span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co"># - (You may also set [`data.table::data.table`] threads here via `OMP_NUM_THREADS`)</span></span>
 <span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">JULIA_NUM_THREADS =</span> parallel<span class="sc">::</span><span class="fu">detectCores</span>() <span class="sc">-</span> <span class="dv">1</span><span class="dt">L</span>)</span>
 <span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a></span>
 <span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co"># (3) Save .Rprofile and restart R:</span></span>

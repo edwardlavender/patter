@@ -1,33 +1,33 @@
 #' @title Assemble observations
 #' @description These functions assemble a timeline and observations for the particle filter ([`pf_filter()`]).
 #' @param .datasets,.step,.trim Arguments for [`assemble_timeline()`].
-#' * `.datasets`---A `list` of [`data.table`]s, one for each data type, each containing a `timestamp` column;
+#' * `.datasets`---A `list` of [`data.table::data.table`]s, one for each data type, each containing a `timestamp` column;
 #' * `.step`---A `character` (such as `"2 mins"`), passed to [`lubridate::round_date()`] and [`seq.POSIXt()`], that defines the resolution of the timeline;
 #' * `.trim`---A `logical` variable that defines whether or not to trim the timeline to the overlapping period between datasets;
 #' @param .timeline A `POSIXct` vector of regularly spaced time stamps that defines the timeline for the simulation (optionally from [`assemble_timeline()`]). Here, `timeline` is used to:
 #' * Define the resolution of observations;
 #'
-#' @param .detections,.moorings,.services The [`data.table`]s for [`assemble_acoustics()`] (see [`pat_setup_data()`]).
-#' * `.detections` is a [data.table] of acoustic detections **for a single individual**. This must contain the `receiver_id` and `timestamp` columns.
-#' * `.moorings` is a [`data.table`] of acoustic receiver deployments. This must contain the `receiver_id`, `receiver_start`, and `receiver_end` columns, plus  (optional) additional parameter columns.
-#' * (optional) `.services` is a [`data.table`] of servicing events. This must contain the `receiver_id`, `service_start` and `service_end` columns.
+#' @param .detections,.moorings,.services The [`data.table::data.table`]s for [`assemble_acoustics()`] (see [`pat_setup_data()`]).
+#' * `.detections` is a [`data.table::data.table`] of acoustic detections **for a single individual**. This must contain the `receiver_id` and `timestamp` columns.
+#' * `.moorings` is a [`data.table::data.table`] of acoustic receiver deployments. This must contain the `receiver_id`, `receiver_start`, and `receiver_end` columns, plus  (optional) additional parameter columns.
+#' * (optional) `.services` is a [`data.table::data.table`] of servicing events. This must contain the `receiver_id`, `service_start` and `service_end` columns.
 #'
-#' @param .archival  For [`assemble_archival()`], `.archival` is a [`data.table`] of depth observations **for a single individual** with `timestamp` and `obs` columns (see `.dataset`, below).
+#' @param .archival  For [`assemble_archival()`], `.archival` is a [`data.table::data.table`] of depth observations **for a single individual** with `timestamp` and `obs` columns (see `.dataset`, below).
 #'
-#' @param .dataset For [`assemble_custom()`], `.dataset` is a [`data.table`] of observations (such as depth measurements) **for a single individual**. This must contain `timestamp` and `obs` columns plus (optional) additional parameter columns.
+#' @param .dataset For [`assemble_custom()`], `.dataset` is a [`data.table::data.table`] of observations (such as depth measurements) **for a single individual**. This must contain `timestamp` and `obs` columns plus (optional) additional parameter columns.
 #'
 #' @param .mobility,.map,.threshold Shared container threshold arguments (for [`assemble_xinit_containers()`] and [`assemble_acoustics_containers()`]).
 #'  * `.mobility` is the maximum movement distance (m) between two time steps (and sets the rate of container contraction).
 #'  * `.map`, `.threshold` are distance threshold options. Specify `.map` or `.threshold`:
-#'      * `.map` is a two-column `matrix` of the four coordinates of the study area or a [`SpatRaster`] or [`SpatVector`] from which such a `matrix` can be obtained. On Linux, the latter two options are only possible if `JUILA_SESSION = "FALSE"`. `.threshold` is set automatically based on the distances between container centroids and the boundaries of the study area.
+#'      * `.map` is a two-column `matrix` of the four coordinates of the study area or a [`terra::SpatRaster`] or [`terra::SpatVector`] from which such a `matrix` can be obtained. On Linux, the latter two options are only possible if `JUILA_SESSION = "FALSE"`. `.threshold` is set automatically based on the distances between container centroids and the boundaries of the study area.
 #'      * Otherwise, `.threshold` is a `double` that defines the distance threshold.
 #'
 #' @param .xinit,.radius, Dataset arguments for [`assemble_xinit_containers()`].
-#' * `.xinit` is a named `list`, with elements `"forward"` and `"backward"`. Elements should be `NULL` or a [`data.table`] of initial state(s) (i.e., capture or recapture locations) for the corresponding filter run. If capture/recapture locations are known exactly, use a one-row [`data.table`]. If starting/ending locations are not known exactly, multi-row [`data.table`]s (with all possible starting/ending locations) are permitted.
+#' * `.xinit` is a named `list`, with elements `"forward"` and `"backward"`. Elements should be `NULL` or a [`data.table::data.table`] of initial state(s) (i.e., capture or recapture locations) for the corresponding filter run. If capture/recapture locations are known exactly, use a one-row [`data.table::data.table`]. If starting/ending locations are not known exactly, multi-row [`data.table::data.table`]s (with all possible starting/ending locations) are permitted.
 #' * `.radius` is a double that defines the radius of the container around the capture/recapture location that particles must reach (in [`assemble_acoustics_containers()`], `.radius = .acoustics$detection_gamma`).
 #'
 #' @param .acoustics Dataset arguments for [`assemble_acoustics_containers()`].
-#'  * `.acoustics` is a [`data.table`] of acoustic observations, from [`assemble_acoustics()`].
+#'  * `.acoustics` is a [`data.table::data.table`] of acoustic observations, from [`assemble_acoustics()`].
 #'
 #' @param ... For [`assemble_containers()`], `...` represents container `list`s for multiple data types, such as capture events ([`assemble_xinit_containers()`]) and acoustic observations ([`assemble_acoustics_containers()`]).
 #'
@@ -48,11 +48,11 @@
 #'
 #'  [`assemble_acoustics()`], [`assemble_archival()`] and [`assemble_custom()`] assemble 'standard' observational time series:
 #'
-#' 1. [`assemble_acoustics()`] prepares a timeline of acoustic observations as required by the filter **for a single individual**. This function expects a 'standard' detection dataset (that is, a [`data.table`] like [`dat_detections`] but for a single individual) that defines detections at receivers alongside a moorings dataset (like [`dat_moorings`]) that defines receiver deployment periods and, optionally, a [`data.table`] of servicing events (when receiver(s) were non-operational). [`assemble_acoustics()`] uses these datasets to assemble a complete time series of acoustic observations; that is, a [`data.table`] of time stamps and receivers that defines, for each time step and each operational receiver whether (`1L`) or not (`0L`) a detection was recorded at that time step. Duplicate observations (that is, detections at the same receiver in the same time step) are dropped. If available in `.moorings`, additional columns (`receiver_alpha`, `receiver_beta` and `receiver_gamma`) are included as required for the default acoustic observation model (that is, [`ModelObsAcousticLogisTrunc`]). If observation model parameters vary both by receiver and through time, simply amend these columns as required.
+#' 1. [`assemble_acoustics()`] prepares a timeline of acoustic observations as required by the filter **for a single individual**. This function expects a 'standard' detection dataset (that is, a [`data.table::data.table`] like [`dat_detections`] but for a single individual) that defines detections at receivers alongside a moorings dataset (like [`dat_moorings`]) that defines receiver deployment periods and, optionally, a [`data.table::data.table`] of servicing events (when receiver(s) were non-operational). [`assemble_acoustics()`] uses these datasets to assemble a complete time series of acoustic observations; that is, a [`data.table::data.table`] of time stamps and receivers that defines, for each time step and each operational receiver whether (`1L`) or not (`0L`) a detection was recorded at that time step. Duplicate observations (that is, detections at the same receiver in the same time step) are dropped. If available in `.moorings`, additional columns (`receiver_alpha`, `receiver_beta` and `receiver_gamma`) are included as required for the default acoustic observation model (that is, [`ModelObsAcousticLogisTrunc`]). If observation model parameters vary both by receiver and through time, simply amend these columns as required.
 #'
 #' 2. [`assemble_archival()`] prepares a timeline of archival functions **for a single individual**. This simply wraps [`assemble_custom()`] and is informally deprecated.
 #'
-#' 3. [`assemble_custom()`] prepares a timeline of observations for other data types, as required by the filter. This function expects a [`data.table`] that includes, at a minimum, the `timestamp` and `obs` columns. The latter defines the observations. The `sensor_id` column (if unspecified) is simply set to `1L`. The function re-expresses time stamps at the resolution specified by `timeline`. Duplicate observations (that is, multiple measurements in the same time step) throw a [`warning`].
+#' 3. [`assemble_custom()`] prepares a timeline of observations for other data types, as required by the filter. This function expects a [`data.table::data.table`] that includes, at a minimum, the `timestamp` and `obs` columns. The latter defines the observations. The `sensor_id` column (if unspecified) is simply set to `1L`. The function re-expresses time stamps at the resolution specified by `timeline`. Duplicate observations (that is, multiple measurements in the same time step) throw a [`warning`].
 #'
 #' # Assemble containers
 #'
@@ -71,9 +71,9 @@
 #'
 #' 2. [`assemble_acoustics_containers()`] prepares a dataset of acoustic containers, given the acoustic time series from [`assemble_acoustics()`]. Acoustic containers define the region within which an individual must be located at a given time step according to the receiver(s) at which it was next detected. The radius depends on the time until the next detection, the maximum movement speed and the detection range around the receiver at the time of the detection. This function requires the [`tidyr::nest()`], [`tidyr::unnest()`] and [`zoo::na.locf()`] functions (suggested dependencies).
 #'
-#' 3. [`assemble_containers()`] is a post-processing function. Use this function to collate the container [`data.table`]s from multiple datasets, i.e., if you have capture/recapture and acoustic containers.
+#' 3. [`assemble_containers()`] is a post-processing function. Use this function to collate the container [`data.table::data.table`]s from multiple datasets, i.e., if you have capture/recapture and acoustic containers.
 #'
-#' All `assemble_*_containers()` functions assemble a `list` of [`data.table`]s (with one element for the forward filter run and one element for the backward filter run). Each row defines the maximum distance (`radius`) of the individual from the location in which a future observation was recorded. For computational efficiency,  [`data.table`]s only include containers with a `radius` < `.threshold`. If `.map` is supplied, the `.threshold` is set to the maximum distance between each location (e.g., receiver) and the furthest corner of the study area. Otherwise, set the .`threshold` to the desired value. The [`data.table`]s are used to instantiate a Vector of [`ModelObsContainer`] instances in `Julia`. (Only one sub-type is used for all container structures for speed.) In the particle filter ([`pf_filter()`]), for each particle, we compute the log-probability of the particle from the distance of the particle from the relevant location (0.0 or -Inf). By re-sampling particles with replacement, particles that move in a way that is incompatible with the future data (e.g., a detection) are killed.
+#' All `assemble_*_containers()` functions assemble a `list` of [`data.table::data.table`]s (with one element for the forward filter run and one element for the backward filter run). Each row defines the maximum distance (`radius`) of the individual from the location in which a future observation was recorded. For computational efficiency,  [`data.table::data.table`]s only include containers with a `radius` < `.threshold`. If `.map` is supplied, the `.threshold` is set to the maximum distance between each location (e.g., receiver) and the furthest corner of the study area. Otherwise, set the .`threshold` to the desired value. The [`data.table::data.table`]s are used to instantiate a Vector of [`ModelObsContainer`] instances in `Julia`. (Only one sub-type is used for all container structures for speed.) In the particle filter ([`pf_filter()`]), for each particle, we compute the log-probability of the particle from the distance of the particle from the relevant location (0.0 or -Inf). By re-sampling particles with replacement, particles that move in a way that is incompatible with the future data (e.g., a detection) are killed.
 #'
 #' # `Julia` implementation
 #'
@@ -94,8 +94,8 @@
 #'
 #' @return
 #' * [`assemble_timeline()`] returns a POSIXct vector;
-#' * [`assemble_acoustics()`], [`assemble_archival()`] and [`assemble_custom()`] return a [`data.table`] for [`pf_filter()`];
-#' * [`assemble_xinit_containers()`], [`assemble_acoustics_containers()`] and [`assemble_containers()`] return a named `list`, with one element ([`data.table`]) for (a) the forward and (b) the backward runs of [`pf_filter()`];
+#' * [`assemble_acoustics()`], [`assemble_archival()`] and [`assemble_custom()`] return a [`data.table::data.table`] for [`pf_filter()`];
+#' * [`assemble_xinit_containers()`], [`assemble_acoustics_containers()`] and [`assemble_containers()`] return a named `list`, with one element ([`data.table::data.table`]) for (a) the forward and (b) the backward runs of [`pf_filter()`];
 #'
 #' @author Edward Lavender
 #' @name assemble

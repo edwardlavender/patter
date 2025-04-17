@@ -607,8 +607,9 @@ We are now in a position to run the particle filter. This runs a
 simulation forwards (or backwards) in time, sampling states (locations,
 termed ‘particles’) that are consistent with the movement model and the
 observations up to and including each time point. We end up with a time
-series (`data.table`) of particles that approximate the partial marginal
-distribution for the location of the animal, at each time step:
+series (`data.table::data.table`) of particles that approximate the
+partial marginal distribution for the location of the animal, at each
+time step:
 
 ``` r
 # List filter arguments
@@ -644,10 +645,10 @@ head(fwd$diagnostics)
 fwd$callstats
 #>              timestamp         routine n_particle n_iter    loglik convergence
 #>                 <POSc>          <char>      <int>  <int>     <num>      <lgcl>
-#> 1: 2025-04-17 14:57:58 filter: forward      10000      1 -3556.524        TRUE
+#> 1: 2025-04-17 15:25:45 filter: forward      10000      1 -3556.524        TRUE
 #>        time
 #>       <num>
-#> 1: 7.512964
+#> 1: 7.775342
 
 # Backward run
 args$.yobs      <- yobs_bwd
@@ -676,10 +677,10 @@ head(bwd$diagnostics)
 bwd$callstats
 #>              timestamp          routine n_particle n_iter    loglik convergence
 #>                 <POSc>           <char>      <int>  <int>     <num>      <lgcl>
-#> 1: 2025-04-17 14:58:05 filter: backward      10000      1 -3558.672        TRUE
+#> 1: 2025-04-17 15:25:52 filter: backward      10000      1 -3558.672        TRUE
 #>        time
 #>       <num>
-#> 1: 1.091996
+#> 1: 1.145404
 ```
 
 ## Particle smoother
@@ -719,10 +720,10 @@ head(smo$diagnostics)
 smo$callstats
 #>              timestamp              routine n_particle n_iter loglik
 #>                 <POSc>               <char>      <int>  <int>  <num>
-#> 1: 2025-04-17 14:58:07 smoother: two-filter        750     NA    NaN
+#> 1: 2025-04-17 15:25:54 smoother: two-filter        750     NA    NaN
 #>    convergence     time
 #>         <lgcl>    <num>
-#> 1:        TRUE 3.789736
+#> 1:        TRUE 3.530813
 ```
 
 ## Mapping

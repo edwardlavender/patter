@@ -4,11 +4,11 @@
 #'
 #' # `.map`
 #'
-#' `.map` is [`SpatRaster`] (supported on Windows or MacOS) or a `character` that defines the path to raster (supported on Windows, MacOS and Linux) to a that defines the area of interest. `NAs` define inhospitable regions (such as land). A planar (e.g., Universal Transverse Mercator) projection with coordinates in metres is currently required.
+#' `.map` is [`terra::SpatRaster`] (supported on Windows or MacOS) or a `character` that defines the path to raster (supported on Windows, MacOS and Linux) to a that defines the area of interest. `NAs` define inhospitable regions (such as land). A planar (e.g., Universal Transverse Mercator) projection with coordinates in metres is currently required.
 #'
 #' # `.model_obs`
 #'
-#' `.model_obs` is a named `list` of [`ModelObs`] sub-types (named) and associated parameters ([`data.table`] elements).
+#' `.model_obs` is a named `list` of [`ModelObs`] sub-types (named) and associated parameters ([`data.table::data.table`] elements).
 #'
 #' # `.model_move`
 #'
@@ -20,7 +20,7 @@
 #'
 #' # `.yobs`
 #'
-#' `.yobs` is a named `list` of observational datasets, one for each data type. Element names must correspond [`ModelObs`] sub-types defined in `Julia`. Each element must be a [`data.table`] with the following columns:
+#' `.yobs` is a named `list` of observational datasets, one for each data type. Element names must correspond [`ModelObs`] sub-types defined in `Julia`. Each element must be a [`data.table::data.table`] with the following columns:
 #'
 #' * `timestamp`---a `POSIXct` vector of time stamps;
 #' * `sensor_id`---an `integer` vector of sensor IDs, such as receivers;

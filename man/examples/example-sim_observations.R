@@ -69,7 +69,7 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
   # Examine simulated observations
   # * sim_observations() returns a list, with one element for every `.model_obs`
   # * Each element is a `list`, with one element for each simulated path
-  # * Each element is a `data.table` that contains the observations
+  # * Each element is a [`data.table::data.table`] that contains the observations
   str(obs)
 
   # Plot detections

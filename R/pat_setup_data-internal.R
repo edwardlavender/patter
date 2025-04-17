@@ -1,14 +1,14 @@
 #' @title Utilities: check data
 #' @description These functions validate user datasets. See Details for [`patter`] requirements.
 #'
-#' @param .map A [`SpatRaster`] that defines the study area for the simulation (see [`glossary`]).
-#' @param .detections,.moorings,.services,.archival Observation [`data.table`]s.
+#' @param .map A [`terra::SpatRaster`] that defines the study area for the simulation (see [`glossary`]).
+#' @param .detections,.moorings,.services,.archival Observation [`data.table::data.table`]s.
 #'
 #' @details
 #' These are internal functions that ensure that input dataset(s) meet [`patter`] requirements. Users with acoustic and/or archival data should implement [`pat_setup_data()`] to prepare datasets for [`patter`] functions. Downstream functions (often) silently assume that input datasets meet all requirements, without subsequent checks. This simplifies internal code and documentation.
 #'
-#' * [`check_map()`] checks the `.map` [`SpatRaster`]:
-#'    - Class: [`SpatRaster`];
+#' * [`check_map()`] checks the `.map` [`terra::SpatRaster`]:
+#'    - Class: [`terra::SpatRaster`];
 #'    - Name(s): `"map_value"`;
 #'    - Properties:
 #'        * A square grid is recommended;
@@ -18,7 +18,7 @@
 #'        * The data source may be in memory or on disk, but the former is faster for pure `R` functions;
 #'
 #' * [`check_detections()`] checks detection time series:
-#'    - Class: [`data.table`];
+#'    - Class: [`data.table::data.table`];
 #'    - Columns:
 #'        * `timestamp`---an ordered, `POSIXct` vector of time stamps with a defined `tzone` attribute;
 #'        * `receiver_id`---see `.moorings$receiver_id`;
@@ -28,7 +28,7 @@
 #'        * For most functions, a single time series (for one individual) is required;
 #'
 #' * [`check_services()`] checks acoustic servicing records:
-#'    - Class: [`data.table`];
+#'    - Class: [`data.table::data.table`];
 #'    - Columns:
 #'        * `receiver_id`---see `.moorings$receiver_id`;
 #'        * `receiver_start`, `receiver_end`---`POSIXct` vectors of service start and end dates. Before/after service events, receivers are assumed to have been deployed in the same locations; receiver deployments in different locations before/after servicing should be treated as distinct deployments in `.moorings`.
@@ -36,7 +36,7 @@
 #'        * Serviced receivers should be found in the `.moorings` dataset;
 #'
 #' * [`check_moorings()`] checks receiver deployment records:
-#'    - Class: [`data.table`];
+#'    - Class: [`data.table::data.table`];
 #'    - Columns:
 #'        * `receiver_id`---an `integer` vector of unique receiver deployments (`1, ..., N`);
 #'        * `receiver_x` and `receiver_y``---Receiver coordinates on a planar projection, matching `.map`;
@@ -46,7 +46,7 @@
 #'       * Receiver coordinates must be valid on `.map` (not currently validated);
 #'
 #' * [`check_archival()`] checks archival depth time series data:
-#'    - Class: [`data.table`];
+#'    - Class: [`data.table::data.table`];
 #'    - Columns:
 #'        * `timestamp`---an ordered, `POSIXct` vector of time stamps with a defined `tzone` attribute;
 #'        * `depth`---a `numeric` vector of (absolute) depths (m);

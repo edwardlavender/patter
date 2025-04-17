@@ -2,9 +2,9 @@
 #' @description [`pf_smoother_two_filter()`] function implements the two-filter particle smoother (Fearnhead et al., [2010](https://doi.org/10.1093/biomet/asq013)).
 #' @param .map,.mobility,.vmap,.plot,... (optional) 'Validity map' arguments for [`set_map()`], used for two-dimensional states.
 #'
-#' * `.map` is a [`SpatRaster`] that defines the study area of the simulation (see [`pf_filter()`]). On Linux, this argument can only be used safely if `JULIA_SESSION = "FALSE"`.
+#' * `.map` is a [`terra::SpatRaster`] that defines the study area of the simulation (see [`pf_filter()`]). On Linux, this argument can only be used safely if `JULIA_SESSION = "FALSE"`.
 #' * `.mobility` is a `numeric` value that defines the maximum moveable distance between two time steps (e.g., `.timeline[1]` and `.timeline[2]` in [`pf_filter()`]).
-#' * `.vmap` is a [`SpatRaster`] (supported on Windows or MacOS), or a file path to a raster (supported on MacOS, Windows and Linux), that defines the validity map (see [`set_map()`]). This can be supplied, from a previous implementation of [`set_vmap()`] or the internal function [`spatVmap()`], instead of `.map` and `.mobility` to avoid re-computation.
+#' * `.vmap` is a [`terra::SpatRaster`] (supported on Windows or MacOS), or a file path to a raster (supported on MacOS, Windows and Linux), that defines the validity map (see [`set_map()`]). This can be supplied, from a previous implementation of [`set_vmap()`] or the internal function [`spatVmap()`], instead of `.map` and `.mobility` to avoid re-computation.
 #' * `.plot` is a `logical` variable that defines whether or not to plot the map.
 #' * `...` is a placeholder for additional arguments, passed to [`terra::plot()`], if `.plot = TRUE`.
 #'
@@ -32,7 +32,7 @@
 #'
 #' @returns
 #' * [`set_vmap()`]:
-#'      * [`set_vmap()`] returns the validity map (a [`SpatRaster`]), invisibly;
+#'      * [`set_vmap()`] returns the validity map (a [`terra::SpatRaster`]), invisibly;
 #' * [`pf_smoother_two_filter()`]:
 #'     * [`Patter.particle_smoother_two_filter()`](https://github.com/edwardlavender/Patter.jl) creates a NamedTuple in the `Julia` session (named `ptf`). If `.batch = NULL`, the NamedTuple contains particles (`states`) ; otherwise, the `states` element is `nothing` and `states` are written to `.jld2` files (as a  variable named `xsmo`). If `.collect = TRUE`, [`pf_smoother_two_filter()`] collects the outputs in `R` as a [`pf_particles-class`] object (the `states` element is `NULL` is `.batch` is used). Otherwise, `invisible(NULL)` is returned.
 #'

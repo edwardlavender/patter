@@ -31,7 +31,7 @@ map_dens(
 )
 }
 \arguments{
-\item{.map}{A \code{\link{SpatRaster}} that defines the grid on which the UD is represented. If \code{.coord = NULL}, \code{.map} also defines the points (and associated weights) that are smoothed (see \code{\link[=.map_coord]{.map_coord()}}). \strong{The coordinate reference system of \code{.map} must be planar} and specified.}
+\item{.map}{A \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} that defines the grid on which the UD is represented. If \code{.coord = NULL}, \code{.map} also defines the points (and associated weights) that are smoothed (see \code{\link[=.map_coord]{.map_coord()}}). \strong{The coordinate reference system of \code{.map} must be planar} and specified.}
 
 \item{.im, .owin}{A pixel image representation of \code{.map} (see \code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}} and \code{\link[spatstat.geom:im]{spatstat.geom::im()}}) and an observation window (see \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}}, \code{\link[=as.owin.sf]{as.owin.sf()}} and \code{\link[spatstat.geom:owin]{spatstat.geom::owin()}}). If un-supplied, \code{.owin} is defined automatically from \code{.map} via \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}}, which uses \code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}} internally (see Details). For faster results, use a rectangular or polygon observation window (see \code{\link[=as.owin.sf]{as.owin.sf()}}).}
 
@@ -69,7 +69,7 @@ The function returns a named \code{list}, with the following elements:
 \itemize{
 \item \code{x}: a \code{\link[spatstat.geom:ppp]{spatstat.geom::ppp}} object that defines points for density estimation;
 \item \code{D}: a \code{\link[spatstat.geom:im]{spatstat.geom::im}} object of estimated intensities, from \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}};
-\item \code{ud}: a normalised \code{\link{SpatRaster}};
+\item \code{ud}: a normalised \code{\link[terra:SpatRaster-class]{terra::SpatRaster}};
 }
 
 \code{D} and \code{ud} are \code{NULL} if \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} fails and \code{.tryCatch = TRUE}.
@@ -78,7 +78,7 @@ The function returns a named \code{list}, with the following elements:
 \code{\link[=map_dens]{map_dens()}} creates a smoothed utilisation distribution (UD).
 }
 \details{
-\code{\link[=map_dens]{map_dens()}} smooths (a) a \code{\link{SpatRaster}} or (b) a set of inputted coordinates.
+\code{\link[=map_dens]{map_dens()}} smooths (a) a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} or (b) a set of inputted coordinates.
 
 \code{\link[=.map_coord]{.map_coord()}} (and \code{\link[=.map_mark]{.map_mark()}}) are used to define coordinates and weights:
 \itemize{
@@ -88,7 +88,7 @@ The function returns a named \code{list}, with the following elements:
 
 Cell coordinates and associated weights are converted to a \code{\link[spatstat.geom:ppp]{spatstat.geom::ppp()}} object, which is passed, alongside the observation window (\code{.owin}), to \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} for the estimation. Weights must sum to one.
 
-\code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}}, \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}} and \code{\link[=as.owin.sf]{as.owin.sf()}} are helper functions that convert a \code{\link{SpatRaster}} to a pixel image and an observation window (see \code{\link[spatstat.geom:owin]{spatstat.geom::owin()}}). \code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}} is based on \code{maptools::as.im.RasterLayer()}. \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}} either defines a rectangular window, if there are no NAs on \code{.map}, or converts \code{.map} directly to an \code{owin} object. Gridded observation windows, especially if high resolution, considerably slow down density estimation and may exhaust vector memory. Use rectangular windows, or convert \code{sf} objects to polygon windows (via \code{\link[=as.owin.sf]{as.owin.sf()}}) if possible.
+\code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}}, \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}} and \code{\link[=as.owin.sf]{as.owin.sf()}} are helper functions that convert a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} to a pixel image and an observation window (see \code{\link[spatstat.geom:owin]{spatstat.geom::owin()}}). \code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}} is based on \code{maptools::as.im.RasterLayer()}. \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}} either defines a rectangular window, if there are no NAs on \code{.map}, or converts \code{.map} directly to an \code{owin} object. Gridded observation windows, especially if high resolution, considerably slow down density estimation and may exhaust vector memory. Use rectangular windows, or convert \code{sf} objects to polygon windows (via \code{\link[=as.owin.sf]{as.owin.sf()}}) if possible.
 
 If \code{.shortcut} is supplied, the preceding steps can be skipped and the function short-cuts straight to smoothing. Use this option if the preceding steps are slow and you want to trial different smoothing options (such as \code{sigma} functions).
 
@@ -172,7 +172,7 @@ Worton, B. J. (1989). Kernel Methods for Estimating the Utilization Distribution
 \item \code{\link{map_hr}}\verb{_*()} functions map home ranges;
 }
 
-All maps are represented as \code{\link{SpatRaster}}s.
+All maps are represented as \code{\link[terra:SpatRaster-class]{terra::SpatRaster}}s.
 
 To derive coordinates for mapping patterns of space use for tagged animals, see:
 \itemize{

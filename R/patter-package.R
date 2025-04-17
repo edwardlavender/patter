@@ -38,7 +38,7 @@
 #' * [`julia_connect()`] to connect to `R` to `Julia`;
 #' * [`julia_validate()`] to validate the `R`---`Julia` connection;
 #' * [`set_seed()`] to set the seed in `R` and `Julia`;
-#' * [`set_map()`] to make a [`SpatRaster`] of the study area available in `Julia`;
+#' * [`set_map()`] to make a [`terra::SpatRaster`] of the study area available in `Julia`;
 #'
 #' These functions should be run at the start of every `R` session.
 #'

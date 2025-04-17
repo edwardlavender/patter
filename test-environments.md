@@ -1,7 +1,7 @@
 ## Test environments
 
-* Local M2 MacBook (2023) with macOS Sequoia 15.3.1, `R` 4.4.2 and `Julia` 1.11.3
-    - Results: passed, 6m 26.6s, 2025-03-17
+* Local M2 MacBook (2023) with macOS Sequoia 15.4, `R` 4.5.0 and `Julia` 1.11.5
+    - Results: passed, 7m 6.9s, 2025-04-17
   
 * Local Intel MacBook (2017) with macOS Ventura 13.6.9, `R` 4.4.1 and `Julia` 1.10.5
     - Results: TO DO [check OS]

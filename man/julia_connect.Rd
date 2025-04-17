@@ -73,9 +73,9 @@ The function returns the \code{Julia} interface invisibly (see \code{\link[Julia
 This function connects \code{R} to \code{Julia}.
 }
 \details{
-\code{\link{patter}} is an \code{R} front-end for the \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} package. This requires a local installation of \code{Julia}. This function connects \code{R} to the local \code{Julia} installation, sets up \code{\link{JuliaCall}}, which provides the integration between \code{R} and \code{Julia}, and \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}. Internally, the steps are as follows:
+\code{\link{patter}} is an \code{R} front-end for the \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} package. This requires a local installation of \code{Julia}. This function connects \code{R} to the local \code{Julia} installation, sets up \href{https://github.com/JuliaInterop/JuliaCall}{\code{JuliaCall}}, which provides the integration between \code{R} and \code{Julia}, and \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}. Internally, the steps are as follows:
 \itemize{
-\item \code{\link{JuliaCall}} is set up via \code{\link[JuliaCall:julia_setup]{JuliaCall::julia_setup()}}.
+\item \href{https://github.com/JuliaInterop/JuliaCall}{\code{JuliaCall}} is set up via \code{\link[JuliaCall:julia_setup]{JuliaCall::julia_setup()}}.
 \item The environment variable \code{JULIA_SESSION} is set to \code{"TRUE"}.
 \item The number of threads is set, if possible, via \code{JULIA_NUM_THREADS}.
 \item The \code{Julia} installation is validated.
@@ -104,7 +104,7 @@ Sys.setenv(JULIA_PROJ = here::here("Julia"))
 # Set `JULIA_NUM_THREADS` (on MacOS/Linux):
 # - In general, more threads faster, up to a point;
 # - On Windows, follow the alternative instructions linked above;
-# - (You may also set `data.table` threads here via `OMP_NUM_THREADS`)
+# - (You may also set [`data.table::data.table`] threads here via `OMP_NUM_THREADS`)
 Sys.setenv(JULIA_NUM_THREADS = parallel::detectCores() - 1L)
 
 # (3) Save .Rprofile and restart R:

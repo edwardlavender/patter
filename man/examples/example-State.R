@@ -80,7 +80,7 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
   # (optional) Define a `Patter.states_init()` method to simulate initial states
   # * This function should accept:
   # * `state`: the state;
-  # * `coords`: A `data.table` with initial coordinates (x, y and map_value);
+  # * `coords`: A [`data.table::data.table`] with initial coordinates (x, y and map_value);
   julia_command(
   '
   function Patter.states_init(state_type::Type{StateCustom}, coords::DataFrame)
