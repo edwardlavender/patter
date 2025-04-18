@@ -15,7 +15,7 @@
     - Notes: Requires https://github.com/JuliaInterop/JuliaCall/issues/238 
   
 * Local Optimum Desktop with Windows 10 Pro, `R` 4.4.1 and `Julia` 1.10.5
-    - Results: TO DO
+    - Results: passed, 40m 42.9s, 2025-04-18
   
 * Eawag SIA-USER024-P HP workstation (SIA-USER024-P) with Windows 10 Education, `R` 4.3.1 and `Julia` 1.10.5
     - Results: passed, 28m 50.3s, 2025-02-28

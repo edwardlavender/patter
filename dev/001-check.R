@@ -135,6 +135,14 @@ if (Sys.getenv("AUTO_JULIA_INSTALL") == "") {
         .Renviron, append = TRUE)
 }
 
+# (E) Set `PATTER_RUN_EXPENSIVE`
+
+if (Sys.getenv("PATTER_RUN_EXPENSIVE") == "") {
+  write("PATTER_RUN_EXPENSIVE = \"TRUE\"",
+        .Renviron, append = TRUE)
+}
+
+
 #### (8) Connect to Julia ------------------------------------------------------
 
 # Load & attach patter
@@ -195,19 +203,11 @@ build_vignettes <- rmarkdown::pandoc_available()
 # Run package checks (>10 mins)
 # * This takes ~10 minutes on my machine
 # * On other machines, it may take >30 minutes depending on your setup!
+# * For example timings, see test-environments.md
 t1 <- Sys.time()
 devtools::check(vignettes = build_vignettes)
 t2 <- Sys.time()
 difftime(t2, t1)
-
-# Approximate timings (mins):
-# * Local M2 MacBook (2023):            8.0   (2024-12-29)
-# * Local Intel MacBook (2017):         22.2  (2024-12-29)
-# * Local Intel MacBook (2014):         24.3  (2024-12-30)
-# * Local Lenovo (XXXX):                TO DO
-# * Local Optimum Desktop:              33.8  (2024-12-29)
-# * Eawag SIA-USER024-P HP workstation: 28.5  (2024-12-29)
-# * Eawag (x86_64 siam-linux20):        TO DO
 
 
 #### (10) Report tests ---------------------------------------------------------
