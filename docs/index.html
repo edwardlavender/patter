@@ -105,7 +105,7 @@
 <li>
 <strong>Stable</strong>, with fewer dependencies and an upgraded spatial ecosystem;</li>
 <li>
-<strong>Better tested</strong>, with comprehensive unit tests (in progress!);</li>
+<strong>Better tested</strong>, with comprehensive unit tests;</li>
 </ul>
 <p>See <a href="https://github.com/edwardlavender/patter/blob/main/NEWS.md" class="external-link"><code>NEWS</code></a> for a summary of the evolution of <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a> to <code>patter</code>.</p>
 <p>At the time of writing (May 2024), <code>patter</code> is more streamlined than <a href="https://github.com/edwardlavender/flapper" class="external-link"><code>flapper</code></a> and focuses on the implementation of fast particle-based algorithms for the reconstruction of movements and patterns of space use. Please get in touch if you would like to see additional functionality brought into <code>patter</code>.</p>
@@ -178,7 +178,7 @@
 </li>
 </ol>
 <blockquote>
-<p><strong>Note:</strong> Install a recent <code>Julia</code> version. This README was last built on 2025-04-17 with Julia 1.11.5.</p>
+<p><strong>Note:</strong> Install a recent <code>Julia</code> version. This README was last built on 2025-04-18 with Julia 1.11.5.</p>
 </blockquote>
 <ol start="5" style="list-style-type: decimal">
 <li>
@@ -247,7 +247,7 @@
 <p>This should return <code>NULL</code>, invisibly, in which case you are good to go. Otherwise, the function will return an error (or <code>R</code> may crash).</p>
 <ol start="9" style="list-style-type: decimal">
 <li>
-<strong>(optional) Run package checks</strong>. To run package checks locally, follow the instructions in <a href="dev/001-check.R">dev/001-check.R</a>. <a href="https://github.com/edwardlavender/patter/issues" class="external-link">Issue</a> reports are appreciated.</li>
+<strong>(optional) Run package checks</strong>. To run package checks locally, follow the instructions in <a href="dev/001-check.R">dev/001-check.R</a>. See <a href="test-environments.html">test-environments.md</a> for a list of the systems on which we currently run comprehensive testing and the latest results. We run tests on <code>MacOS</code>, <code>Windows</code> and <code>Linux</code> systems for a selection of recent <code>R</code> and <code>Julia</code> versions. We only run tests using up-to-date <code>R</code> and <code>Julia</code> packages. <a href="https://github.com/edwardlavender/patter/issues" class="external-link">Issue</a> reports are appreciated.</li>
 </ol>
 </div>
 <div class="section level1">
@@ -577,10 +577,10 @@
 <span><span class="va">fwd</span><span class="op">$</span><span class="va">callstats</span></span>
 <span><span class="co">#&gt;              timestamp         routine n_particle n_iter    loglik convergence</span></span>
 <span><span class="co">#&gt;                 &lt;POSc&gt;          &lt;char&gt;      &lt;int&gt;  &lt;int&gt;     &lt;num&gt;      &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1: 2025-04-17 15:25:45 filter: forward      10000      1 -3556.524        TRUE</span></span>
+<span><span class="co">#&gt; 1: 2025-04-18 16:11:53 filter: forward      10000      1 -3556.524        TRUE</span></span>
 <span><span class="co">#&gt;        time</span></span>
 <span><span class="co">#&gt;       &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: 7.775342</span></span>
+<span><span class="co">#&gt; 1: 7.415571</span></span>
 <span></span>
 <span><span class="co"># Backward run</span></span>
 <span><span class="va">args</span><span class="op">$</span><span class="va">.yobs</span>      <span class="op">&lt;-</span> <span class="va">yobs_bwd</span></span>
@@ -609,10 +609,10 @@
 <span><span class="va">bwd</span><span class="op">$</span><span class="va">callstats</span></span>
 <span><span class="co">#&gt;              timestamp          routine n_particle n_iter    loglik convergence</span></span>
 <span><span class="co">#&gt;                 &lt;POSc&gt;           &lt;char&gt;      &lt;int&gt;  &lt;int&gt;     &lt;num&gt;      &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1: 2025-04-17 15:25:52 filter: backward      10000      1 -3558.672        TRUE</span></span>
+<span><span class="co">#&gt; 1: 2025-04-18 16:12:00 filter: backward      10000      1 -3558.672        TRUE</span></span>
 <span><span class="co">#&gt;        time</span></span>
 <span><span class="co">#&gt;       &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: 1.145404</span></span></code></pre></div>
+<span><span class="co">#&gt; 1: 1.042987</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="particle-smoother">Particle smoother<a class="anchor" aria-label="anchor" href="#particle-smoother"></a>
@@ -648,10 +648,10 @@
 <span><span class="va">smo</span><span class="op">$</span><span class="va">callstats</span></span>
 <span><span class="co">#&gt;              timestamp              routine n_particle n_iter loglik</span></span>
 <span><span class="co">#&gt;                 &lt;POSc&gt;               &lt;char&gt;      &lt;int&gt;  &lt;int&gt;  &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: 2025-04-17 15:25:54 smoother: two-filter        750     NA    NaN</span></span>
+<span><span class="co">#&gt; 1: 2025-04-18 16:12:02 smoother: two-filter        750     NA    NaN</span></span>
 <span><span class="co">#&gt;    convergence     time</span></span>
 <span><span class="co">#&gt;         &lt;lgcl&gt;    &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:        TRUE 3.530813</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:        TRUE 3.355024</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="mapping">Mapping<a class="anchor" aria-label="anchor" href="#mapping"></a>
