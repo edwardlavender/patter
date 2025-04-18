@@ -1,13 +1,16 @@
 test_that("check_{dataset}() functions work", {
 
-  expect_true(1 == 1)
+  skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
 
   #### check_map()
 
   expect_null(check_map(NULL))
   check_map(dat_gebco())
 
-  map <- terra::rast(vals = -1, res = c(5, 10))
+  map <- dat_gebco()
+  names(map) <- "lyr.1"
+  map <- terra::aggregate(map, c(2, 3))
+  map <- map * -1
   check_map(map) |>
     expect_message("`.map`: name updated from 'lyr.1' to 'map_value'.",
                    fixed = TRUE) |>
@@ -15,18 +18,18 @@ test_that("check_{dataset}() functions work", {
                    fixed = TRUE) |>
     expect_message("`.map`: absolute values are recommended. Use NA to define inhospitable habitats (such as land).", fixed = TRUE)
 
-  #### check_acoustics()
+  #### check_detections()
 
-  expect_null(check_acoustics(NULL))
-  check_acoustics(dat_acoustics, dat_moorings) |>
-    expect_message("`.acoustics`: multiple individuals detected in dataset.") |>
-    expect_message("`.acoustics`: time stamps should be ordered chronologically.")
+  expect_null(check_detections(NULL))
+  check_detections(dat_detections, dat_moorings) |>
+    expect_message("`.detections`: multiple individuals detected in dataset.") |>
+    expect_message("`.detections`: time stamps should be ordered chronologically.")
 
-  acc <- copy(dat_acoustics[individual_id == individual_id[1], ])
-  acc[, receiver_id := NULL][, receiver_id := 1.1][, na := NA]
-  check_acoustics(acc, dat_moorings) |>
-    expect_warning("`.acoustics`: not all receivers in `.acoustics` are found in `.moorings`." , fixed = TRUE) |>
-    expect_message("`.acoustics`: contains NAs.", fixed = TRUE)
+  det <- copy(dat_detections[individual_id == individual_id[1], ])
+  det[, receiver_id := NULL][, receiver_id := 1.1][, na := NA]
+  check_detections(det, dat_moorings) |>
+    expect_warning("`.detections`: not all receivers in `.detections` are found in `.moorings`." , fixed = TRUE) |>
+    expect_message("`.detections`: contains NAs.", fixed = TRUE)
 
   #### check_moorings()
   expect_null(check_moorings(NULL))
@@ -53,7 +56,7 @@ test_that("check_{dataset}() functions work", {
     expect_warning("`.moorings`: some `.moorings$receiver_start` entries are >= `.moorings$receiver_end` entries.",
                    fixed = TRUE)
 
-  check_moorings(dat_moorings[35:36, ], dat_acoustics[1:3, ]) |>
+  check_moorings(dat_moorings[35:36, ], dat_detections[1:3, ]) |>
     expect_warning("`.moorings`: the deployment period(s) of some receiver(s) (`52`, `53`) in `.moorings` are entirely outside the range of acoustic observations.",
                    fixed = TRUE)
 

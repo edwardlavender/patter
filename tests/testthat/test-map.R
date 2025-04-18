@@ -1,5 +1,7 @@
 test_that("as.im.SpatRaster() works", {
 
+  skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
+
   a <- readRDS(system.file("testdata", "as.im.SpatRaster.rds",
                            package = "patter", mustWork = TRUE))
   b <- as.im.SpatRaster(dat_gebco())
@@ -12,6 +14,8 @@ test_that("as.im.SpatRaster() works", {
 
 test_that("as.owin.SpatRaster() works", {
 
+  skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
+
   as.owin.SpatRaster(dat_gebco()) |>
     expect_message("Observation window is gridded.", fixed = TRUE)
 
@@ -21,9 +25,10 @@ test_that("as.owin.SpatRaster() works", {
 })
 
 test_that("as.owin.sf() works", {
-
+  skip_on_cran()
   skip_on_ci()
   skip_on_os(c("windows", "linux", "solaris"))
+  skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
 
   b <- terra::boundaries(dat_gebco())
   # terra::plot(b)
@@ -31,13 +36,32 @@ test_that("as.owin.sf() works", {
   # terra::plot(p, col = "blue")
   p <- sf::st_as_sf(p) |> sf::st_geometry()
   sea <- as.owin.sf(p)
-  expect_snapshot_file(snapshot_png(plot(sea, col = "blue")),
-                       "as.owin.sf.png")
+  png <- snapshot_png(plot(sea, col = "blue"))
+  expect_snapshot_file(png, "as.owin.sf.png")
+  unlink(png)
 
 })
 
+# test_that("bw.h() works", {
+#
+#   # Test commented to reduce suggested packages
+#   library(adehabitatHR)
+#   data(puechabonsp)
+#   loc      <- puechabonsp$relocs
+#   ud       <- kernelUD(loc[, 1])
+#   h_expect <- ud$Brock@h$h
+#   coord    <- loc[loc$Name == "Brock", ]@coords
+#   X        <- data.frame(x = coord[, 1], y = coord[, 2])
+#   sdxy     <- sqrt(0.5 * (var(X$x) + var(X$y)))
+#   h_calc   <- sdxy * (nrow(X)^(-1/6))
+#   expect_equal(h_calc, h_expect)
+#   # > TRUE
+#
+# })
 
 test_that("map_pou() and map_dens() work", {
+
+  skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
 
   # Define map & coordinates
   map   <- dat_gebco()
@@ -75,31 +99,32 @@ test_that("map_pou() and map_dens() work", {
   # Test map_dens() tryCatch() handling
   map_dens(.map = map,
            .coord = coord,
-           .use_tryCatch = TRUE,
-           sigma = "a")$ud |>
+           .tryCatch = TRUE,
+           .sigma = "a")$ud |>
     suppressWarnings() |>
     expect_null()
   map_dens(.map = map,
            .coord = coord,
-           .use_tryCatch = FALSE,
-           sigma = "a") |>
+           .tryCatch = FALSE,
+           .sigma = "a") |>
     expect_error()
 
 })
 
 test_that("map_hr_*() functions work", {
 
+  skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
+
   # Define hypothetical input SpatRaster
-  suppressWarnings(library(terra))
-  r <- rast()
-  n <- ncell(r)
+  r    <- terra::rast()
+  n    <- terra::ncell(r)
   # Define 'probability densities' around a point
-  i <- 2e4
+  i    <- 2e4
   r[i] <- 1
-  r <- distance(r)
-  r <- r / global(r, "sum")[1, 1]
+  r    <- terra::distance(r)
+  r    <- r / terra::global(r, "sum")[1, 1]
   # Convert zero 'probability densities' to NA
-  r <- classify(r, cbind(0, NA))
+  r <- terra::classify(r, cbind(0, NA))
   # terra::plot(r)
 
   # Check error handling

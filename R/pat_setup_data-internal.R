@@ -1,14 +1,14 @@
 #' @title Utilities: check data
 #' @description These functions validate user datasets. See Details for [`patter`] requirements.
 #'
-#' @param .map A [`SpatRaster`] that defines the study area for the simulation (see [`glossary`]).
-#' @param .acoustics,.moorings,.services,.archival Observation [`data.table`]s.
+#' @param .map A [`terra::SpatRaster`] that defines the study area for the simulation (see [`glossary`]).
+#' @param .detections,.moorings,.services,.archival Observation [`data.table::data.table`]s.
 #'
 #' @details
 #' These are internal functions that ensure that input dataset(s) meet [`patter`] requirements. Users with acoustic and/or archival data should implement [`pat_setup_data()`] to prepare datasets for [`patter`] functions. Downstream functions (often) silently assume that input datasets meet all requirements, without subsequent checks. This simplifies internal code and documentation.
 #'
-#' * [`check_map()`] checks the `.map` [`SpatRaster`]:
-#'    - Class: [`SpatRaster`];
+#' * [`check_map()`] checks the `.map` [`terra::SpatRaster`]:
+#'    - Class: [`terra::SpatRaster`];
 #'    - Name(s): `"map_value"`;
 #'    - Properties:
 #'        * A square grid is recommended;
@@ -17,8 +17,8 @@
 #'    - Source:
 #'        * The data source may be in memory or on disk, but the former is faster for pure `R` functions;
 #'
-#' * [`check_acoustics()`] checks detection time series:
-#'    - Class: [`data.table`];
+#' * [`check_detections()`] checks detection time series:
+#'    - Class: [`data.table::data.table`];
 #'    - Columns:
 #'        * `timestamp`---an ordered, `POSIXct` vector of time stamps with a defined `tzone` attribute;
 #'        * `receiver_id`---see `.moorings$receiver_id`;
@@ -28,7 +28,7 @@
 #'        * For most functions, a single time series (for one individual) is required;
 #'
 #' * [`check_services()`] checks acoustic servicing records:
-#'    - Class: [`data.table`];
+#'    - Class: [`data.table::data.table`];
 #'    - Columns:
 #'        * `receiver_id`---see `.moorings$receiver_id`;
 #'        * `receiver_start`, `receiver_end`---`POSIXct` vectors of service start and end dates. Before/after service events, receivers are assumed to have been deployed in the same locations; receiver deployments in different locations before/after servicing should be treated as distinct deployments in `.moorings`.
@@ -36,17 +36,17 @@
 #'        * Serviced receivers should be found in the `.moorings` dataset;
 #'
 #' * [`check_moorings()`] checks receiver deployment records:
-#'    - Class: [`data.table`];
+#'    - Class: [`data.table::data.table`];
 #'    - Columns:
 #'        * `receiver_id`---an `integer` vector of unique receiver deployments (`1, ..., N`);
 #'        * `receiver_x` and `receiver_y``---Receiver coordinates on a planar projection, matching `.map`;
 #'    - Properties:
 #'       * `receiver_start` should precede `receiver_end`;
-#'       * Receiver deployment periods should (usually) at least partially overlap with the time period of acoustic observations;
+#'       * Receiver deployment periods should (usually) at least partially overlap with the time period of acoustic detections;
 #'       * Receiver coordinates must be valid on `.map` (not currently validated);
 #'
 #' * [`check_archival()`] checks archival depth time series data:
-#'    - Class: [`data.table`];
+#'    - Class: [`data.table::data.table`];
 #'    - Columns:
 #'        * `timestamp`---an ordered, `POSIXct` vector of time stamps with a defined `tzone` attribute;
 #'        * `depth`---a `numeric` vector of (absolute) depths (m);
@@ -105,46 +105,46 @@ check_map <- function(.map) {
 #' @rdname check_dlist
 #' @keywords internal
 
-check_acoustics <- function(.acoustics, .moorings = NULL) {
+check_detections <- function(.detections, .moorings = NULL) {
   # Skip NULL
-  if (is.null(.acoustics)) {
+  if (is.null(.detections)) {
     return(NULL)
   }
   # Enforce class
-  .acoustics <- as.data.table(.acoustics)
+  .detections <- as.data.table(.detections)
   # Check required columns
-  check_names(.acoustics, req = c("timestamp", "receiver_id"))
+  check_names(.detections, req = c("timestamp", "receiver_id"))
   # Check for multiple individuals based on individual_id column
-  if (rlang::has_name(.acoustics, "individual_id") &&
-      fndistinct(.acoustics$individual_id) > 1L) {
-    msg("`.acoustics`: multiple individuals detected in dataset.")
+  if (rlang::has_name(.detections, "individual_id") &&
+      fndistinct(.detections$individual_id) > 1L) {
+    msg("`.detections`: multiple individuals detected in dataset.")
   }
   timestamp <- NULL
-  .acoustics[, timestamp := check_POSIXct(timestamp)]
-  if (is.unsorted(.acoustics$timestamp)) {
-    msg("`.acoustics`: time stamps should be ordered chronologically.")
+  .detections[, timestamp := check_POSIXct(timestamp)]
+  if (is.unsorted(.detections$timestamp)) {
+    msg("`.detections`: time stamps should be ordered chronologically.")
   }
   # Check receiver IDs
-  if (inherits(.acoustics$receiver_id, "numeric")) {
-    .acoustics$receiver_id <- as.integer(.acoustics$receiver_id)
+  if (inherits(.detections$receiver_id, "numeric")) {
+    .detections$receiver_id <- as.integer(.detections$receiver_id)
   }
-  check_inherits(.acoustics$receiver_id, "integer")
+  check_inherits(.detections$receiver_id, "integer")
   if (!is.null(.moorings)) {
-    if (!all(.acoustics$receiver_id %in% .moorings$receiver_id)) {
-      warn("`.acoustics`: not all receivers in `.acoustics` are found in `.moorings`.")
+    if (!all(.detections$receiver_id %in% .moorings$receiver_id)) {
+      warn("`.detections`: not all receivers in `.detections` are found in `.moorings`.")
     }
   }
   # Check for NAs
-  if (any(is.na(.acoustics))) {
-    msg("`.acoustics`: contains NAs.")
+  if (any(is.na(.detections))) {
+    msg("`.detections`: contains NAs.")
   }
-  .acoustics
+  .detections
 }
 
 #' @rdname check_dlist
 #' @keywords internal
 
-check_moorings <- function(.moorings, .acoustics = NULL, .map) {
+check_moorings <- function(.moorings, .detections = NULL, .map) {
 
   #### Check class
   if (is.null(.moorings)) {
@@ -184,14 +184,14 @@ check_moorings <- function(.moorings, .acoustics = NULL, .map) {
   if (any(.moorings$receiver_start >= .moorings$receiver_end)) {
     warn("`.moorings`: some `.moorings$receiver_start` entries are >= `.moorings$receiver_end` entries.")
   }
-  # Check for receivers with deployment periods entirely outside the range of acoustic observations
+  # Check for receivers with deployment periods entirely outside the range of acoustic detections
   # * This requires a temporary data.frame (`deps`)
-  if (!is.null(.acoustics)) {
+  if (!is.null(.detections)) {
     deps <- as.data.frame(.moorings)
     deps$interval <- lubridate::interval(deps$receiver_start, deps$receiver_end)
     deps$overlaps   <- lubridate::int_overlaps(
       deps$interval,
-      lubridate::interval(min(.acoustics$timestamp), max(.acoustics$timestamp))
+      lubridate::interval(min(.detections$timestamp), max(.detections$timestamp))
     )
     bool <- !deps$overlaps
     if (any(bool)) {

@@ -1,6 +1,7 @@
 .Rproj.user
 .Rhistory
 .Rdata
+.Rapp.history
 .httr-oauth
 .DS_Store
 .quarto
@@ -8,4 +9,7 @@ inst/doc
 Julia/README.md
 *.pdf
 *.html
+.Rprofile
 .Renviron
+data-raw/benchmark
+data-raw/extdata

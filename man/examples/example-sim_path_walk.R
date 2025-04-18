@@ -1,4 +1,4 @@
-if (julia_run()) {
+if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
 
   library(data.table)
   library(dtplyr)
@@ -20,7 +20,7 @@ if (julia_run()) {
   sim_path_walk(.map = map,
                 .timeline = timeline,
                 .state = "StateXY",
-                .model_move = move_xy())
+                .model_move = model_move_xy())
 
   #### Example (2): Set the starting location via `.xinit`
   # Define an initial location
@@ -33,7 +33,7 @@ if (julia_run()) {
                 .timeline = timeline,
                 .state = "StateXY",
                 .xinit = origin,
-                .model_move = move_xy())
+                .model_move = model_move_xy())
   points(origin$x, origin$y)
 
   #### Example (3): Simulate multiple paths with the same origin via `.xinit`
@@ -41,7 +41,7 @@ if (julia_run()) {
                 .timeline = timeline,
                 .state = "StateXY",
                 .xinit = origin,
-                .model_move = move_xy(),
+                .model_move = model_move_xy(),
                 .n_path = 4L,
                 .one_page = TRUE)
 
@@ -57,37 +57,51 @@ if (julia_run()) {
                 .timeline = timeline,
                 .state = "StateXY",
                 .xinit = origins,
-                .model_move = move_xy(),
+                .model_move = model_move_xy(),
                 .n_path = 4L,
                 .one_page = TRUE)
 
-  #### Example (5): Customise two-dimensional random walks via `move_xy()`
-  # Adjust distributions for step lengths and turning angles
-  move <- move_xy(dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)",
-                  dbn_angle = "VonMises(0.1, 0.1)")
+  #### Example (5): Customise two-dimensional random walks via `model_move_xy()`
+  # Adjust distributions for step lengths and headings
+  model_move <-
+    model_move_xy(.mobility = "750.0",
+            .dbn_length = "truncated(Normal(250, 50), lower = 0.0, upper = 750.0)",
+            .dbn_heading = "VonMises(0.1, 0.1)")
   sim_path_walk(.map = map,
                 .timeline = timeline,
                 .state = "StateXY",
-                .model_move = move)
+                .model_move = model_move)
   # Experiment with other options
-  move <- move_xy(dbn_length = "truncated(Normal(10, 50), lower = 0.0, upper = 300)")
+  model_move <-
+    model_move_xy(.mobility   = "300.0",
+            .dbn_length = "truncated(Normal(10.0, 50.0), lower = 0.0, upper = 300.0)")
   sim_path_walk(.map = map,
                 .timeline = timeline,
                 .state = "StateXY",
-                .model_move = move)
+                .model_move = model_move)
 
   #### Example (6): Use other .state/.model_move combinations
-  # Simulate a correlated random walk
+  # Simulate a random walk in XYZ
   sim_path_walk(.map = map,
                 .timeline = timeline,
-                .state = "StateXYZD",
-                .model_move = move_xyzd())
+                .state = "StateXYZ",
+                .model_move = model_move_xyz())
+  # Simulate a correlated random walk in XY
+  sim_path_walk(.map = map,
+                .timeline = timeline,
+                .state = "StateCXY",
+                .model_move = model_move_cxy())
+  # Simulate a correlated random walk in XYZ
+  sim_path_walk(.map = map,
+                .timeline = timeline,
+                .state = "StateCXYZ",
+                .model_move = model_move_cxyz())
   # Modify movement model parameters
   sim_path_walk(.map = map,
                 .timeline = timeline,
-                .state = "StateXYZD",
-                .model_move = move_xyzd(dbn_angle_delta = "Normal(0, 1)",
-                                        dbn_z_delta = "Normal(0, 0.5)"))
+                .state = "StateCXYZ",
+                .model_move = model_move_cxyz(.dbn_heading_delta = "Normal(0, 1)",
+                                        .dbn_z_delta = "Normal(0, 0.5)"))
 
   #### Example (7): Use custom .state/.model_move sub-types
   # See `?State` and ?ModelMove`
@@ -96,7 +110,7 @@ if (julia_run()) {
   sim_path_walk(.map = map,
                 .timeline = timeline,
                 .state = "StateXY",
-                .model_move = move_xy(),
+                .model_move = model_move_xy(),
                 .n_path = 10L)
 
   #### Example (9): Customise plotting options via `.plot` & `.one_page`
@@ -104,13 +118,13 @@ if (julia_run()) {
   sim_path_walk(.map = map,
                 .timeline = timeline,
                 .state = "StateXY",
-                .model_move = move_xy(),
+                .model_move = model_move_xy(),
                 .n_path = 2L, .one_page = TRUE)
   # Suppress plots via `.plot = FALSE`
   sim_path_walk(.map = map,
                 .timeline = timeline,
                 .state = "StateXY",
-                .model_move = move_xy(),
+                .model_move = model_move_xy(),
                 .plot = FALSE)
 
 }

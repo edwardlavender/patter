@@ -23,3 +23,17 @@ list_merge <- function(...) {
   }
   Reduce(list_modify, x = lists, init = list())
 }
+
+#' @rdname utils-lists
+#' @keywords internal
+
+# List arguments
+# * Merge a default list of arguments, dots and user provided options
+# * This function is meant for use with do.call()
+# * And situations when the user can provide arguments via a list
+list_args <- function(.default = list(), .dots = list(), .user = list()) {
+  if (is.null(.user)) {
+    return(NULL)
+  }
+  list_merge(.default, .dots, .user)
+}

@@ -2,89 +2,99 @@
 % Please edit documentation in R/julia-set.R
 \name{julia_set}
 \alias{julia_set}
-\alias{set_seed}
-\alias{set_map}
-\alias{set_threads}
-\alias{set_states_init}
-\alias{set_model_move}
+\alias{set_JULIA_NUM_THREADS}
 \alias{set_timeline}
+\alias{set_state_type}
+\alias{set_xinit}
+\alias{set_model_move}
 \alias{set_path}
 \alias{set_model_obs_types}
 \alias{set_model_obs}
-\alias{set_model_obs_pars}
-\alias{set_yobs_via_sim}
-\alias{set_datasets}
-\alias{set_yobs_via_datasets}
+\alias{set_yobs_vect}
+\alias{set_yobs_dict}
+\alias{set_yobs_dict_via_sim}
+\alias{set_n_particle}
+\alias{set_direction}
+\alias{set_states_init}
+\alias{set_t_resample}
+\alias{set_batch}
+\alias{set_progress}
+\alias{set_verbose}
 \alias{set_pf_filter}
+\alias{set_cache}
+\alias{set_smoother_two_filter}
 \title{\code{Julia}: set objects in \code{Julia}}
 \usage{
-set_seed(.seed = 123L)
-
-set_map(.x)
-
-set_threads(.threads)
-
-set_states_init(.xinit, .state)
-
-set_model_move(.model_move)
+set_JULIA_NUM_THREADS(JULIA_NUM_THREADS)
 
 set_timeline(.timeline)
 
+set_state_type(.state)
+
+set_xinit(.xinit)
+
+set_model_move(.model_move)
+
 set_path()
 
-set_model_obs_types(.model_obs)
+set_model_obs_types(.datasets)
 
 set_model_obs(.model_obs)
 
-set_model_obs_pars(.model_obs_pars)
+set_yobs_vect(.timeline, .yobs)
 
-set_yobs_via_sim()
+set_yobs_dict(.yobs)
 
-set_datasets(.datasets)
+set_yobs_dict_via_sim()
 
-set_yobs_via_datasets(.datasets, .model_obs)
+set_n_particle(.n_particle)
 
-set_pf_filter(.n_move, .n_resample, .n_record, .direction)
-}
-\value{
-Exported functions return \code{invisible(NULL)}.
+set_direction(.direction = c("forward", "backward"))
+
+set_states_init(
+  .timeline,
+  .state,
+  .xinit,
+  .model_move,
+  .yobs,
+  .n_particle,
+  .direction,
+  .collect
+)
+
+set_t_resample(.t_resample)
+
+set_batch(.batch, .type = c("fwd", "bwd", "smo"))
+
+set_progress(.progress)
+
+set_verbose(.verbose)
+
+set_pf_filter(
+  .n_move,
+  .n_resample,
+  .t_resample,
+  .n_record,
+  .n_iter,
+  .direction,
+  .batch,
+  .progress,
+  .verbose
+)
+
+set_cache(.cache)
+
+set_smoother_two_filter(
+  .n_particle,
+  .n_sim,
+  .cache,
+  .batch,
+  .progress,
+  .verbose
+)
 }
 \description{
-These are functions that assign objects to variable names in \code{Julia}.
-}
-\details{
-The following functions are exported:
-\itemize{
-\item \code{\link[=set_seed]{set_seed()}} sets a seed in both \code{R} and \code{Julia}.
-\itemize{
-\item It is often a good idea to call \code{\link[=set_seed]{set_seed()}} at the start of your workflow.
-}
-\item \code{\link[=set_map]{set_map()}} exports a \code{\link{SpatRaster}} map of the study area to a variable named \code{env} in \code{Julia} (see \code{\link{ModelMove}}).
-\itemize{
-\item Export the map at the start of your workflow.
-}
-}
-
-Other functions are internal.
-}
-\examples{
-if (julia_run()) {
-
-  # Connect to Julia
-  julia_connect()
-
-  # Set the seed in `R` and `Julia`
-  set_seed(1)
-
-  # Define a map of the study area & export
-  # > This map defines the region(s) within which movements are allowed
-  # > `set_map()` makes it available to `Julia` routines (see ?`ModelMove`)
-  map <- dat_gebco()
-  terra::plot(map)
-  set_map(map)
-
-}
-
+These are internal functions that assign objects to variable names in \code{Julia}.
 }
 \author{
 Edward Lavender

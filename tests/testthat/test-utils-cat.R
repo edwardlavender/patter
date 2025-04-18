@@ -1,6 +1,6 @@
 test_that("cat_log_file() works", {
 
-  cat_log_file(.verbose = dat_gebco()) |>
+  cat_log_file(.verbose = data.table(x = 1)) |>
     expect_error("`.verbose` should be a logical variable or a file path.", fixed = TRUE)
 
   cat_log_file(.verbose = "some-folder") |>

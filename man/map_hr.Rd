@@ -17,7 +17,7 @@ map_hr_home(.map, .add = FALSE, ...)
 map_hr_full(.map, .add = FALSE, ...)
 }
 \arguments{
-\item{.map}{A \code{\link{SpatRaster}} (utilisation distribution).}
+\item{.map}{A \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} (utilisation distribution).}
 
 \item{.prop}{For \code{\link[=map_hr_prop]{map_hr_prop()}}, \code{.prop} is a number that defines the range proportion.}
 
@@ -26,32 +26,37 @@ map_hr_full(.map, .add = FALSE, ...)
 \item{...}{If \code{.add = TRUE}, \code{...} is a place holder for additional arguments passed to \code{\link[terra:plot]{terra::plot()}}.}
 }
 \value{
-The functions return a \code{\link{SpatRaster}}. Cells with a value of one are inside the specified range boundaries; cells with a value of zero are beyond range boundaries. If \code{.add} is \code{TRUE}, the boundaries are added to an existing plot.
+The functions return a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}}. Cells with a value of one are inside the specified range boundaries; cells with a value of zero are beyond range boundaries. If \code{.add} is \code{TRUE}, the boundaries are added to an existing plot.
 }
 \description{
-These functions extract 'home range' estimates from a \code{\link{SpatRaster}} that describes the intensity of movements within an area.
+These functions extract 'home range' estimates from a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} that describes the intensity of movements within an area.
 }
 \details{
 These functions are modelled on \href{https://edwardlavender.github.io/flapper/reference/get_hr.html}{\verb{flapper::map_hr_*()}} functions, where full details are provided.
+
+On Linux, these functions cannot be used within a \code{Julia} session.
 }
 \examples{
-library(terra)
+if (patter_run(.julia = FALSE, .geospatial = TRUE)) {
 
-#### Set up example
-# Define hypothetical input SpatRaster
-r <- rast()
-n <- ncell(r)
-i <- 2e4
-r[i] <- 1
-r <- distance(r)
-r <- r / global(r, "sum")[1, 1]
-plot(r)
+  #### Set up example
+  # Define hypothetical input SpatRaster (probability distribution)
+  r    <- terra::setValues(dat_gebco(), NA)
+  i    <- 24073
+  r[i] <- 1
+  r    <- terra::distance(r)
+  r    <- terra::mask(r, dat_gebco())
+  r    <- r / terra::global(r, "sum", na.rm = TRUE)[1, 1]
+  terra::plot(r)
 
-#### Examples
-map <- map_hr_full(r, .add = TRUE, lwd = 5)
-map <- map_hr_home(r, .add = TRUE, border = "blue")
-map <- map_hr_core(r, .add = TRUE, border = "orange")
-map <- map_hr_prop(r, .prop = 0.2, .add = TRUE, border = "red")
+  # #### Examples
+  map <- map_hr_full(r, .add = TRUE, lwd = 5)
+  map <- map_hr_home(r, .add = TRUE, border = "blue")
+  map <- map_hr_core(r, .add = TRUE, border = "orange")
+  map <- map_hr_prop(r, .prop = 0.2, .add = TRUE, border = "red")
+
+}
+
 }
 \seealso{
 \verb{map_*()} functions build maps of space use:
@@ -61,7 +66,7 @@ map <- map_hr_prop(r, .prop = 0.2, .add = TRUE, border = "red")
 \item \code{\link{map_hr}}\verb{_*()} functions map home ranges;
 }
 
-All maps are represented as \code{\link{SpatRaster}}s.
+All maps are represented as \code{\link[terra:SpatRaster-class]{terra::SpatRaster}}s.
 
 To derive coordinates for mapping patterns of space use for tagged animals, see:
 \itemize{

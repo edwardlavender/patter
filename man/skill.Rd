@@ -20,11 +20,11 @@ skill_R(.obs, .mod)
 skill_d(.obs, .mod)
 }
 \arguments{
-\item{.obs}{The 'observed' (true) pattern of space use, as a \code{\link{SpatRaster}}.}
+\item{.obs}{The 'observed' (true) pattern of space use, as a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}}.}
 
-\item{.mod}{The 'modelled' (reconstructed) pattern of space use, as a \code{\link{SpatRaster}}.}
+\item{.mod}{The 'modelled' (reconstructed) pattern of space use, as a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}}.}
 
-\item{.summarise}{A function, passed to \code{\link[terra:global]{terra::global()}}, used to summarise \code{\link{SpatRaster}} values.}
+\item{.summarise}{A function, passed to \code{\link[terra:global]{terra::global()}}, used to summarise \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} values.}
 }
 \value{
 The functions return a number.
@@ -42,31 +42,40 @@ We follow the mathematical definitions in Lavender et al. (\href{https://www.doi
 \item \code{\link[=skill_d]{skill_d()}} computes the index of agreement.
 }
 
-These functions are not memory safe.
+These functions are not memory safe. On Linux, they cannot be used within a Julia session.
 }
 \examples{
-# Define template SpatRasters
-mod <- obs <- terra::rast()
-n <- terra::ncell(mod)
-mod[] <- runif(n)
-obs[] <- mod[] + rnorm(n)
+if (patter_run(.julia = FALSE, .geospatial = TRUE)) {
 
-# Normalise template SpatRasters
-mod   <- mod / terra::global(mod, "sum")[1, 1]
-obs   <- obs / terra::global(obs, "sum")[1, 1]
+  set.seed(123L)
 
-# Visualise 'observed' versus 'modelled' distributions
-pp <- par(mfrow = c(1, 2))
-terra::plot(mod)
-terra::plot(obs)
-par(pp)
+  # Generate hypothetical 'observed' utilisation distribution
+  obs        <- terra::setValues(dat_gebco(), NA)
+  obs[24073] <- 1
+  obs        <- terra::distance(obs)
+  obs        <- terra::mask(obs, dat_gebco())
+  obs        <- obs / terra::global(obs, "sum", na.rm = TRUE)[1, 1]
 
-# Calculate skill metrics
-skill_mb(mod, obs)
-skill_me(mod, obs)
-skill_rmse(mod, obs)
-skill_R(mod, obs)
-skill_d(mod, obs)
+  # Generate hypothetical modelled' distribution
+  mod    <- obs
+  mod[]  <- mod[] + rnorm(n = terra::ncell(mod), mean = 0, sd = 1e-5)
+  mod    <- terra::mask(mod, dat_gebco())
+  mod    <- mod / terra::global(mod, "sum", na.rm = TRUE)[1, 1]
+
+  # Visualise 'observed' versus 'modelled' distributions
+  pp <- par(mfrow = c(1, 2))
+  terra::plot(obs)
+  terra::plot(mod)
+  par(pp)
+
+  # Calculate skill metrics
+  skill_mb(mod, obs)
+  skill_me(mod, obs)
+  skill_rmse(mod, obs)
+  skill_R(mod, obs)
+  skill_d(mod, obs)
+
+}
 }
 \references{
 Lavender, E. et al. (2022). Benthic animal-borne sensors and citizen science combine to validate ocean modelling. Sci. Rep. 12: 16613. \url{https://www.doi.org/1038/s41598-022-20254-z}

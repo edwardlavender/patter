@@ -18,7 +18,7 @@ example_setup(.fun, .connect)
 \item{.connect}{A \code{logical} variable that defines whether or not to run \code{\link[=julia_connect]{julia_connect()}}. Set to \code{FALSE} for testing.}
 }
 \description{
-These functions are used to streamline package examples.
+These functions are used to streamline package examples. They are Windows and MacOS compatible.
 }
 \author{
 Edward Lavender

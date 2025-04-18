@@ -1,18 +1,20 @@
 #' @title Map: probability-of-use
 #' @description This function builds a 'probability-of-use' utilisation distribution.
 #'
-#' @param .map A [`SpatRaster`] that defines the grid for probability-of-use estimation.
+#' @param .map A [`terra::SpatRaster`] that defines the grid for probability-of-use estimation.
 #' @param .coord Coordinates, provided in any format accepted by [`.map_coord()`]
 #'
-#' @param .plot,... A logical input that defines whether or not to plot the [`SpatRaster`] and additional arguments passed to [`terra::plot()`].
+#' @param .plot,... A logical input that defines whether or not to plot the [`terra::SpatRaster`] and additional arguments passed to [`terra::plot()`].
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
 #' @details Probability-of-use is calculated via [`.map_coord()`] (and [`.map_mark()`]). If a single dataset of unweighted coordinates is provided, probability-of-use is simply the proportion of records in each grid cell. If a time series of unweighted coordinates is provided, probability-of-use is effectively the average proportion of records in each grid cell. This becomes a weighted average if coordinates are weighted. Weights are normalised to sum to one and the result can be interpreted as a utilisation distribution in which cell values define probability-of-use. Maps are sensitive to grid resolution.
 #'
 #' This function replaces [`flapper::pf_plot_map()`](https://edwardlavender.github.io/flapper/reference/pf_plot_map.html).
 #'
+#' On Linux, this function cannot be used within a `Julia` session.
+#'
 #' @return The function returns a named `list` with the following elements:
-#' * `ud`: a normalised [`SpatRaster`];
+#' * `ud`: a normalised [`terra::SpatRaster`];
 #' @example man/examples/example-map_pou.R
 #'
 #' @seealso `map_*()` functions build maps of space use:
@@ -20,7 +22,7 @@
 #' * [`map_dens()`] maps point density;
 #' * [`map_hr`]`_*()` functions map home ranges;
 #'
-#' All maps are represented as [`SpatRaster`]s.
+#' All maps are represented as [`terra::SpatRaster`]s.
 #'
 #' To derive coordinates for mapping patterns of space use for tagged animals, see:
 #' * [`coa()`] to calculate centre-of-activity;
@@ -65,7 +67,7 @@ map_pou <-
 
 #' @title Map: point density
 #' @description [`map_dens()`] creates a smoothed utilisation distribution (UD).
-#' @param .map A [`SpatRaster`] that defines the grid on which the UD is represented. If `.coord = NULL`, `.map` also defines the points (and associated weights) that are smoothed (see [`.map_coord()`]). **The coordinate reference system of `.map` must be planar** and specified.
+#' @param .map A [`terra::SpatRaster`] that defines the grid on which the UD is represented. If `.coord = NULL`, `.map` also defines the points (and associated weights) that are smoothed (see [`.map_coord()`]). **The coordinate reference system of `.map` must be planar** and specified.
 #' @param .im,.owin A pixel image representation of `.map` (see [`as.im.SpatRaster()`] and [`spatstat.geom::im()`]) and an observation window (see [`as.owin.SpatRaster()`], [`as.owin.sf()`] and [`spatstat.geom::owin()`]). If un-supplied, `.owin` is defined automatically from `.map` via [`as.owin.SpatRaster()`], which uses [`as.im.SpatRaster()`] internally (see Details). For faster results, use a rectangular or polygon observation window (see [`as.owin.sf()`]).
 #' @param .poly,.bbox,.invert For [`as.owin.sf()`] to construct observation windows from `sf` objects.
 #' * `.poly` is an `sf` polygon object;
@@ -73,17 +75,18 @@ map_pou <-
 #' * `.invert` is a logical variable that defines whether or not to invert `.poly` (e.g., to turn a terrestrial polygon into an aquatic polygon);
 #' @param .coord (optional) Coordinates for density estimation, provided in any format accepted by [`.map_coord()`]. **Coordinates must be planar**.
 #' @param .discretise If `.coord` is provided, `.discretise` is a `logical` variable that defines whether or not to discretise coordinates on `.map` (see [`.map_coord()`]).
+#' @param .sigma,X `.sigma` is a `numeric` value or a `function` that specifies the smoothing bandwidth (passed to [`spatstat.explore::density.ppp()`]'s `sigma` argument). The default option is [`bw.h()`], which sets the bandwidth based on combined variance of summarised coordinates, formatted as a point pattern `X` (see [`spatstat.geom::ppp`]), using the ad-hoc method (Worton, 1989). See `spatstat` functions (e.g., [`spatstat.explore::bw.diggle()`]) for more sophisticated methods.
 #' @param .shortcut (optional) A named `list` from a previous call to [`map_dens()`]. If supplied, the function short-cuts straight to smoothing (`.owin`, `.coord` and `.discretise` are silently unused).
 #' @param ... Arguments for density estimation, passed to [`spatstat.explore::density.ppp()`], such as `sigma` (i.e., the bandwidth). `at` and `se` are not permitted.
 #' @param .fterra A `logical` variable that defines whether or not to parallelise [`terra::resample()`].
 #' @param .plot A `logical` variable that defines whether or not to plot the output.
-#' @param .use_tryCatch A `logical` variable that controls error handling:
-#' * If `.use_tryCatch = FALSE`, if density estimation fails with an error, the function fails with the same error.
-#' * If `.use_tryCatch = TRUE`, if density estimation fails with an error, the function produces a warning with the error message and returns `NULL`.
+#' @param .tryCatch A `logical` variable that controls error handling:
+#' * If `.tryCatch = FALSE`, if density estimation fails with an error, the function fails with the same error.
+#' * If `.tryCatch = TRUE`, if density estimation fails with an error, the function produces a warning with the error message and returns `NULL`.
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #'
 #' @details
-#' [`map_dens()`] smooths (a) a [`SpatRaster`] or (b) a set of inputted coordinates.
+#' [`map_dens()`] smooths (a) a [`terra::SpatRaster`] or (b) a set of inputted coordinates.
 #'
 #' [`.map_coord()`] (and [`.map_mark()`]) are used to define coordinates and weights:
 #' * If `.coords` is `NULL`, `.map` cell coordinates are used for density estimation and cell values are used as weights.
@@ -91,20 +94,25 @@ map_pou <-
 #'
 #' Cell coordinates and associated weights are converted to a [`spatstat.geom::ppp()`] object, which is passed, alongside the observation window (`.owin`), to [`spatstat.explore::density.ppp()`] for the estimation. Weights must sum to one.
 #'
-#' [`as.im.SpatRaster()`], [`as.owin.SpatRaster()`] and [`as.owin.sf()`] are helper functions that convert a [`SpatRaster`] to a pixel image and an observation window (see [`spatstat.geom::owin()`]). [`as.im.SpatRaster()`] is based on `maptools::as.im.RasterLayer()`. [`as.owin.SpatRaster()`] either defines a rectangular window, if there are no NAs on `.map`, or converts `.map` directly to an `owin` object. Gridded observation windows, especially if high resolution, considerably slow down density estimation and may exhaust vector memory. Use rectangular windows, or convert `sf` objects to polygon windows (via [`as.owin.sf()`]) if possible.
+#' [`as.im.SpatRaster()`], [`as.owin.SpatRaster()`] and [`as.owin.sf()`] are helper functions that convert a [`terra::SpatRaster`] to a pixel image and an observation window (see [`spatstat.geom::owin()`]). [`as.im.SpatRaster()`] is based on `maptools::as.im.RasterLayer()`. [`as.owin.SpatRaster()`] either defines a rectangular window, if there are no NAs on `.map`, or converts `.map` directly to an `owin` object. Gridded observation windows, especially if high resolution, considerably slow down density estimation and may exhaust vector memory. Use rectangular windows, or convert `sf` objects to polygon windows (via [`as.owin.sf()`]) if possible.
 #'
 #' If `.shortcut` is supplied, the preceding steps can be skipped and the function short-cuts straight to smoothing. Use this option if the preceding steps are slow and you want to trial different smoothing options (such as `sigma` functions).
 #'
-#' Coordinates and associated weights are smoothed via [`spatstat.explore::density.ppp()`] into an image. Pixel resolution and smoothing parameters such as bandwidth can be controlled via `...` arguments which are passed directly to this function. The output is translated into a gridded probability density surface (on the geometry defined by `.map`). This process may use [`terra::resample()`], which can be parallelised via `.fterra` (which controls the `threads` argument of that function).
+#' Coordinates and associated weights are smoothed via [`spatstat.explore::density.ppp()`] into an image. Pixel resolution and smoothing parameters such as bandwidth can be controlled via `...` arguments which are passed directly to this function. The default bandwidth is set via [`bw.h()`] (see `.sigma`). The output is translated into a gridded probability density surface (on the geometry defined by `.map`). This process may use [`terra::resample()`], which can be parallelised via `.fterra` (which controls the `threads` argument of that function).
 #'
 #' This function replaces `flapper::kud*()` and `flapper::pf_kud*()` routines based on `adehabitatHR` (see [here](https://edwardlavender.github.io/flapper/reference/)).
+#'
+#'  On Linux, these functions cannot be used within a `Julia` session.
+#'
+#' @references
+#' Worton, B. J. (1989). Kernel Methods for Estimating the Utilization Distribution in Home-Range Studies. Ecology 70, 164–168. doi: 10.2307/1938423
 #'
 #' @return The function returns a named `list`, with the following elements:
 #' * `x`: a [`spatstat.geom::ppp`] object that defines points for density estimation;
 #' * `D`: a [`spatstat.geom::im`] object of estimated intensities, from [`spatstat.explore::density.ppp()`];
-#' * `ud`: a normalised [`SpatRaster`];
+#' * `ud`: a normalised [`terra::SpatRaster`];
 #'
-#' `D` and `ud` are `NULL` if [`spatstat.explore::density.ppp()`] fails and `.use_tryCatch = TRUE`.
+#' `D` and `ud` are `NULL` if [`spatstat.explore::density.ppp()`] fails and `.tryCatch = TRUE`.
 #'
 #' @example man/examples/example-map_dens.R
 #' @inherit map_pou seealso
@@ -167,13 +175,23 @@ as.owin.sf <- function(.poly, .bbox = sf::st_bbox(.poly), .invert = TRUE) {
 #' @rdname map_dens
 #' @export
 
+bw.h <- function(X) {
+  # Code from adehabitatHR:::.kernelUDs with tweaks
+  # & adapted for spatstat.explore
+  sdxy <- sqrt(0.5 * (var(X$x) + var(X$y)))
+  sdxy * (X$n^(-1/6))
+}
+
+#' @rdname map_dens
+#' @export
+
 map_dens <- function(.map,
                      .owin = as.owin.SpatRaster(.map),
                      .coord = NULL, .discretise = FALSE,
-                     .shortcut = list(), ...,
+                     .shortcut = list(), .sigma = bw.h, ...,
                      .fterra = FALSE,
                      .plot = TRUE,
-                     .use_tryCatch = TRUE,
+                     .tryCatch = TRUE,
                      .verbose = getOption("patter.verbose")
                      ) {
 
@@ -189,7 +207,7 @@ map_dens <- function(.map,
   check_inherits(.map, "SpatRaster")
   # Check dots
   # * check_dots_used(): this is not possible
-  check_dots_allowed(c("at", "se"), ...)
+  check_dots_allowed(c("sigma", "at", "se"), ...)
   check_dots_for_missing_period(formals(), list(...))
 
   #### Process SpatRaster
@@ -227,14 +245,19 @@ map_dens <- function(.map,
   #### Estimate density surface
   # Get intensity (expected number of points PER UNIT AREA)
   cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Estimating density surface..."))
-  D <- tryCatch(spatstat.explore::density.ppp(rppp, weights = expression(marks),
+  D <- tryCatch(spatstat.explore::density.ppp(x = rppp,
+                                              sigma = .sigma,
+                                              weights = expression(marks),
                                               at = "pixels", se = FALSE, ...),
                 error = function(e) e)
   if (inherits(D, "error")) {
-    if (!.use_tryCatch) {
+    if (!.tryCatch) {
       abort(D)
     } else {
-      warn(paste("\n", paste(D, collapse = "\n ")))
+      # Return error as warning
+      # * Use warning() not warn() to avoid glue() error
+      warning(paste("\n", paste(D, collapse = "\n ")),
+              call. = FALSE, immediate. = TRUE)
       return(list(x = rppp, D = NULL, ud = NULL))
     }
   }
@@ -268,16 +291,18 @@ map_dens <- function(.map,
 }
 
 #' @title Map: animal home ranges
-#' @description These functions extract 'home range' estimates from a [`SpatRaster`] that describes the intensity of movements within an area.
+#' @description These functions extract 'home range' estimates from a [`terra::SpatRaster`] that describes the intensity of movements within an area.
 #'
-#' @param .map A [`SpatRaster`] (utilisation distribution).
+#' @param .map A [`terra::SpatRaster`] (utilisation distribution).
 #' @param .prop For [`map_hr_prop()`], `.prop` is a number that defines the range proportion.
 #' @param .add A logical variable that defines whether or not to add a polygon of the range to an existing map.
 #' @param ... If `.add = TRUE`, `...` is a place holder for additional arguments passed to [`terra::plot()`].
 #'
 #' @details These functions are modelled on [`flapper::map_hr_*()`](https://edwardlavender.github.io/flapper/reference/get_hr.html) functions, where full details are provided.
 #'
-#' @return The functions return a [`SpatRaster`]. Cells with a value of one are inside the specified range boundaries; cells with a value of zero are beyond range boundaries. If `.add` is `TRUE`, the boundaries are added to an existing plot.
+#' On Linux, these functions cannot be used within a `Julia` session.
+#'
+#' @return The functions return a [`terra::SpatRaster`]. Cells with a value of one are inside the specified range boundaries; cells with a value of zero are beyond range boundaries. If `.add` is `TRUE`, the boundaries are added to an existing plot.
 #'
 #' @example man/examples/example-map_hr.R
 #' @inherit map_pou seealso

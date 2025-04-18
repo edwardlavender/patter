@@ -1,6 +1,6 @@
 Package: patter
 Title: Particle Filters, Smoothers and Samplers for Animal Movement Modelling
-Version: 1.0.1
+Version: 2.0.0
 Authors@R: 
     person("Edward", "Lavender", 
            email = "edward.lavender@eawag.ch", 
@@ -19,20 +19,25 @@ Imports:
     rlang,
     terra (>= 1.7.71)
 Suggests:
+    adaptMCMC,
     av, 
-    curl,
+    curl, 
+    configr,
+    fasttime,
     knitr, 
-    rmarkdown,
     pbapply,
+    Rfast,
+    rmarkdown,
     sf,
     spatstat.explore, 
     spatstat.geom,
     spelling, 
     testthat (>= 3.0.0), 
-    truncdist
+    tidyr,
+    zoo
 Depends: R (>= 4.1)
 Config/testthat/edition: 3
-URL: https://github.com/edwardlavender/patter/
+URL: https://github.com/edwardlavender/patter/, https://edwardlavender.github.io/patter/
 BugReports: https://github.com/edwardlavender/patter/issues/
 Encoding: UTF-8
 Language: en-GB

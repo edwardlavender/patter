@@ -6,18 +6,18 @@
 \usage{
 pat_setup_data(
   .map = NULL,
-  .acoustics = NULL,
+  .detections = NULL,
   .moorings = NULL,
   .services = NULL,
   .archival = NULL
 )
 }
 \arguments{
-\item{.map}{(optional) A \code{\link{SpatRaster}} that defines the study area (see \link{glossary}).}
+\item{.map}{(optional) A \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} that defines the study area (see \link{glossary}).}
 
-\item{.acoustics, .services, .archival, .moorings}{(optional) \code{\link{data.table}}s of observations and and associated parameters.
+\item{.detections, .services, .archival, .moorings}{(optional) \code{\link[data.table:data.table]{data.table::data.table}}s of observations and and associated parameters.
 \itemize{
-\item \code{.acoustics} contains a detection time series (see \code{\link{dat_acoustics}} for an example);
+\item \code{.detections} contains a detection time series (see \code{\link{dat_detections}} for an example);
 \item \code{.moorings} contains receiver deployments (see \code{\link{dat_moorings}}) for an example);
 \item \code{.services} contains receiver servicing information (times during the deployment period of a receiver when it was not active due to servicing);
 \item \code{.archival} contains archival (depth) time series (see \code{\link{dat_archival}} for an example);
@@ -31,24 +31,30 @@ This function is used to set up and validate telemetry data for \code{\link{patt
 }
 \details{
 The preparation of datasets for \code{\link{patter}} is a one-off inconvenience. You should be able to analyse any kind of electronic tagging and tracking data using the main \code{\link{patter}} functions (such as \code{\link[=pf_filter]{pf_filter()}}). For passive acoustic telemetry data and archival (depth) data, \code{\link{patter}} provides some additional helper routines and functionality (such as data assembly routines for the particle filter). If you have acoustic and/or archival data, use \code{\link[=pat_setup_data]{pat_setup_data()}} to verify that your datasets meet \code{\link{patter}} requirements and exploit this additional functionality. See the \code{\link{check_dlist}} documentation for the required properties of each input dataset. All requirements are kept to a minimum and are straightforward to address. To minimise inconvenience, all inputs are optional in \code{\link[=pat_setup_data]{pat_setup_data()}}. For other data types, see the documentation for \code{\link{assemble}}\verb{_*()} functions to incorporate them in particle filtering algorithms. Downstream functions may assume that input data are correctly formatted, which streamlines the API, documentation and internal code.
+
+On Linux, this function cannot be used within a \code{Julia} session.
 }
 \examples{
-# Setup acoustic and archival data for use with `patter` functions
-dlist <- pat_setup_data(.map = dat_gebco(),
-                        .acoustics = dat_acoustics,
-                        .moorings = dat_moorings,
-                        .services = NULL,
-                        .archival = dat_archival)
+if (patter_run(.julia = FALSE, .geospatial = TRUE)) {
 
-# `pat_setup_data()` returns a `list` with the updated datasets
-summary(dlist)
+  # Setup acoustic and archival data for use with `patter` functions
+  dlist <- pat_setup_data(.map = dat_gebco(),
+                          .detections = dat_detections,
+                          .moorings = dat_moorings,
+                          .services = NULL,
+                          .archival = dat_archival)
 
-# Extract updated datasets for use in downstream functions
-map <- dlist$map
-acoustics <- dlist$acoustics
-moorings <- dlist$archival
-services <- dlist$services
-archival <- dlist$archival
+  # `pat_setup_data()` returns a `list` with the updated datasets
+  summary(dlist)
+
+  # Extract updated datasets for use in downstream functions
+  map <- dlist$map
+  detections <- dlist$detections
+  moorings   <- dlist$archival
+  services   <- dlist$services
+  archival   <- dlist$archival
+
+}
 }
 \author{
 Edward Lavender

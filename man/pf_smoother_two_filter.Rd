@@ -2,24 +2,34 @@
 % Please edit documentation in R/particle-smoother.R
 \name{pf_smoother_two_filter}
 \alias{pf_smoother_two_filter}
+\alias{set_vmap}
 \title{PF: two-filter smoother}
 \usage{
+set_vmap(.map = NULL, .mobility = NULL, .vmap = NULL, .plot = FALSE, ...)
+
 pf_smoother_two_filter(
-  .map = NULL,
-  .mobility = NULL,
   .n_particle = NULL,
   .n_sim = 100L,
+  .cache = TRUE,
+  .batch = NULL,
+  .collect = TRUE,
+  .progress = julia_progress(),
   .verbose = getOption("patter.verbose")
 )
 }
 \arguments{
-\item{.map, .mobility}{(optional) 'Mobility box' arguments for two-dimensional states and 'fully hospitable' maps.
+\item{.map, .mobility, .vmap, .plot, ...}{(optional) 'Validity map' arguments for \code{\link[=set_map]{set_map()}}, used for two-dimensional states.
 \itemize{
-\item \code{.map} is a \code{\link{SpatRaster}} that defines the study area of the simulation (see \code{\link[=pf_filter]{pf_filter()}}).
+\item \code{.map} is a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} that defines the study area of the simulation (see \code{\link[=pf_filter]{pf_filter()}}). On Linux, this argument can only be used safely if \code{JULIA_SESSION = "FALSE"}.
 \item \code{.mobility} is a \code{numeric} value that defines the maximum moveable distance between two time steps (e.g., \code{.timeline[1]} and \code{.timeline[2]} in \code{\link[=pf_filter]{pf_filter()}}).
+\item \code{.vmap} is a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} (supported on Windows or MacOS), or a file path to a raster (supported on MacOS, Windows and Linux), that defines the validity map (see \code{\link[=set_map]{set_map()}}). This can be supplied, from a previous implementation of \code{\link[=set_vmap]{set_vmap()}} or the internal function \code{\link[=spatVmap]{spatVmap()}}, instead of \code{.map} and \code{.mobility} to avoid re-computation.
+\item \code{.plot} is a \code{logical} variable that defines whether or not to plot the map.
+\item \code{...} is a placeholder for additional arguments, passed to \code{\link[terra:plot]{terra::plot()}}, if \code{.plot = TRUE}.
 }
 
-\code{.map} and \code{.mobility} should be supplied if \code{\link[=pf_filter]{pf_filter()}} was implemented with \code{.state = "StateXY"} and there are no \code{NA}s on the \code{.map}.}
+The validity map is only set in Julia if \code{JULIA_SESSION = "TRUE"}.
+
+On Linux, the validity map cannot be created and set in the same \code{R} session. Running the function with \code{.map} and \code{.mobility} will create, but not set, the map. Write the map to file and then rerun the function with \code{.vmap} specified to set the map safely in \code{Julia}.}
 
 \item{.n_particle}{(optional) An \code{integer} that defines the number of particles to smooth.
 \itemize{
@@ -29,61 +39,140 @@ pf_smoother_two_filter(
 
 \item{.n_sim}{An \code{integer} that defines the number of Monte Carlo simulations.}
 
+\item{.cache}{A \code{logical} variable that defines whether or not to pre-compute and cache movement-density normalisation constants for each unique particle.}
+
+\item{.batch}{(optional) Batching controls:
+\itemize{
+\item If \code{\link[=pf_filter]{pf_filter()}} was implemented with \code{.batch = NULL}, leave \code{.batch = NULL} here.
+\item Otherwise, \code{.batch} must be specified. Pass a \code{character} vector of \code{.jld2} file paths to write particles in sequential batches to file (as \code{Julia} \verb{Matrix\{<:State\}} objects) to \code{.batch}; for example: \verb{./smo-1.jld2, ./smo-2.jld2, ...}. You must use the same number of batches as in \code{\link[=pf_filter]{pf_filter()}}. \code{.batch} is implemented as in that function.
+}}
+
+\item{.collect}{A \code{logical} variable that defines whether or not to collect outputs from the \code{Julia} session in \code{R}.}
+
+\item{.progress}{Progress controls (see \code{\link{patter-progress}} for supported options). If enabled, one progress bar is shown for each \code{.batch}.}
+
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }
 \value{
-The function returns a \code{\linkS4class{pf_particles}} object.
+\itemize{
+\item \code{\link[=set_vmap]{set_vmap()}}:
+\itemize{
+\item \code{\link[=set_vmap]{set_vmap()}} returns the validity map (a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}}), invisibly;
+}
+\item \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}}:
+\itemize{
+\item \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.particle_smoother_two_filter()}} creates a NamedTuple in the \code{Julia} session (named \code{ptf}). If \code{.batch = NULL}, the NamedTuple contains particles (\code{states}) ; otherwise, the \code{states} element is \code{nothing} and \code{states} are written to \code{.jld2} files (as a  variable named \code{xsmo}). If \code{.collect = TRUE}, \code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}} collects the outputs in \code{R} as a \code{\linkS4class{pf_particles}} object (the \code{states} element is \code{NULL} is \code{.batch} is used). Otherwise, \code{invisible(NULL)} is returned.
+}
+}
 }
 \description{
-This function implements the two-filter particle smoother (Fearnhead et al., \href{https://doi.org/10.1093/biomet/asq013}{2010}).
+\code{\link[=pf_smoother_two_filter]{pf_smoother_two_filter()}} function implements the two-filter particle smoother (Fearnhead et al., \href{https://doi.org/10.1093/biomet/asq013}{2010}).
 }
 \details{
-The two-filter smoother smooths particle samples from the particle filter (\code{\link[=pf_filter]{pf_filter()}}). Particles from a forward and backward filter run are required in the \code{Julia} workspace (as defined by \code{\link[=pf_filter]{pf_filter()}}). The backend function \href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.two_filter_smoother()}} does the work. Essentially, the function runs a simulation backwards in time and re-samples particles in line with the probability density of movements between each combination of states from the backward filter at time \code{t} and states from the forward filter at time \code{t - 1}. The time complexity of the algorithm is thus \eqn{O(TN^2)}. The probability density of movements is evaluated by \href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.logpdf_step()}} and \href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.logpdf_move()}}. If individual states are two-dimensional (see \code{\link{StateXY}}) and there are no \code{NAs} on the \code{.map}, a 'mobility \code{box}' can be defined to simplify probability calculations. The \code{box} is defined by the extent of the \code{.map}, shrunk by \code{.mobility}. Within this region, the probability density of movement between two states can be calculated directly. Otherwise, a Monte Carlo simulation, of \code{.n_sim} iterations, is required to compute the normalisation constant (accounting for movements into inhospitable areas, or beyond the boundaries of the study area).
+The two-filter smoother smooths particle samples from the particle filter (\code{\link[=pf_filter]{pf_filter()}}). Particles from a forward and backward filter run are required in the \code{Julia} workspace (as defined by \code{\link[=pf_filter]{pf_filter()}}). The backend function \href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.particle_smoother_two_filter()}} does the work. Essentially, the function runs a simulation backwards in time and re-samples particles in line with the probability density of movements between each combination of states from the backward filter at time \code{t} and states from the forward filter at time \code{t - 1}. The time complexity of the algorithm is thus \eqn{O(TN^2)}. The probability density of movements is evaluated by \href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.logpdf_step()}} and \href{https://edwardlavender.github.io/Patter.jl/}{\code{Patter.logpdf_move()}}. If individual states are two-dimensional (see \code{\link{StateXY}}), a validity map can be pre-defined in \code{Julia} via \code{\link[=set_vmap]{set_vmap()}} to speed up probability calculations. The validity map is defined as the set of valid (non-\code{NA} or bordering) locations on the \code{.map}, shrunk by \code{.mobility}. Within this region, the probability density of movement between two states can be calculated directly. Otherwise, a Monte Carlo simulation, of \code{.n_sim} iterations, is required to compute the normalisation constant (accounting for movements into inhospitable areas, or beyond the boundaries of the study area). For movement models for which the density only depends on the particle states, set \code{.cache = TRUE} to pre-compute and cache normalisation constants for improved speed.
 }
 \examples{
-#### Set up example
-# Set up the particle filter with an example dataset
-# (See `?pf_filter()` for the full workflow)
-args <- example_setup("pf_smoother_two_filter")
-# Run the particle filter forwards
-args$.direction <- "forward"
-fwd <- do.call(pf_filter, args)
-# Run the particle filter backwards
-args$.direction <- "backward"
-bwd <- do.call(pf_filter, args)
+if (patter_run()) {
 
-#### Example (1): Implement the smoother with default options
-# Run the smoother
-# * This uses objects defined by `pf_filter()` in `Julia`
-smo <- pf_smoother_two_filter()
-# The filter returns a `pf_particles`-class object
-# (See `?pf_filter()` for examples)
-class(smo)
-summary(smo)
+  library(JuliaCall)
 
-#### Example (2): Implement the smoother using 'mobility box' arguments
-# We can take advantage of the 'mobility box' arguments b/c:
-# * `.state` = "StateXY"
-# * `.map` does not contain NAs
-args$.state
-args$.map
-# To implement the mobility `box`, we define `.map` and `.mobility`,
-# ... which we can see here is 750 m:
-args$.model_move
-# Run the smoother
-# * In all of these examples, we should implement the smoother like this,
-# * but for illustration purposes we only do so here.
-smo <- pf_smoother_two_filter(.map = args$.map, .mobility = 750.0)
+  #### Set up example
+  # Set up the particle filter with an example dataset
+  # (See `?pf_filter()` for the full workflow)
+  setup <- example_setup("pf_smoother_two_filter")
+  map   <- setup$map
+  args  <- setup$pf_filter_args
+  # Run the particle filter forwards
+  args$.direction <- "forward"
+  fwd <- do.call(pf_filter, args)
+  # Run the particle filter backwards
+  args$.direction <- "backward"
+  bwd <- do.call(pf_filter, args)
 
-#### Example (3): Implement the smoother with a sub-sample of particles
-# This is useful for quick tests
-smo <- pf_smoother_two_filter(.n_particle = 50L)
+  #### Example (1): Implement the smoother with default options
+  # Run the smoother
+  # * This uses objects defined by `pf_filter()` in `Julia`
+  # (set_vmap() is explained below)
+  smo <- pf_smoother_two_filter()
+  # The filter returns a `pf_particles`-class object
+  # (See `?pf_filter()` for examples)
+  class(smo)
+  summary(smo)
 
-#### Example (4): Adjust the number of MC simulations
-smo <- pf_smoother_two_filter(.n_sim = 1000L)
+  #### Example (2): Implement the smoother using a validity map
+  # We can use a validity map b/c `.state` = "StateXY"
+  args$.state
+  # To define the validity map, define:
+  # * `.map`
+  # * `.mobility`, which we can see here is 750 m:
+  args$.model_move
+  # Run the smoother
+  set_vmap(.map = map, .mobility = 750.0, .plot = TRUE)
+  smo <- pf_smoother_two_filter()
+  # Reset `vmap` in `Julia` to run the smoother for other state types
+  # ... in the same R session:
+  set_vmap()
 
-#### Example (5): Analyse smoothed particles
-# * See `map_*()` functions (e.g., `?map_dens()`) to map utilisation distributions
+  #### Example (3): Implement the smoother with a sub-sample of particles
+  # This is useful for quick tests
+  set_vmap(.map = map, .mobility = 750.0)
+  smo <- pf_smoother_two_filter(.n_particle = 50L)
+
+  #### Example (4): Adjust the number of MC simulations
+  # set_vmap(.map = map, .mobility = 750.0)
+  smo <- pf_smoother_two_filter(.n_sim = 1000L)
+
+  #### Example (5): Batching workflow for filtering and smoothing
+  # (Use `.batch` to reduce memory demand)
+
+  folder <- file.path(tempdir(), "batch-outputs")
+  dir.create(folder)
+
+  ## Run forward filter with batching
+  batch_fwd       <- file.path(folder, c("fwd-1.jld2", "fwd-2.jld2", "fwd-3.jld2"))
+  args$.direction <- "forward"
+  args$.batch     <- batch_fwd
+  args$.collect   <- TRUE
+  fwd <- do.call(pf_filter, args)
+  # In the output, the 'states' element is null
+  fwd$states
+  # Other elements are as expected
+  fwd$callstats
+  head(fwd$diagnostics)
+  # Confirm that batch files exist
+  stopifnot(all(file.exists(batch_fwd)))
+
+  ## Run backward filter with batching:
+  batch_bwd       <- file.path(folder, c("bwd-1.jld2", "bwd-2.jld2", "bwd-3.jld2"))
+  args$.direction <- "backward"
+  args$.batch     <- batch_bwd
+  bwd <- do.call(pf_filter, args)
+  summary(bwd)
+  stopifnot(all(file.exists(batch_bwd)))
+
+  ## Run smoothing with batching
+  # set_vmap(.map = map, .mobility = 750.0)
+  batch_smo <- file.path(folder, c("smo-1.jld2", "smo-2.jld2", "smo-3.jld2"))
+  smo       <- pf_smoother_two_filter(.batch = batch_smo)
+  summary(smo)
+  stopifnot(all(file.exists(batch_smo)))
+
+  ## Collate outputs in R
+  julia_command('
+    smo_states = hcat([f["xsmo"] for f in map(jldopen, batch_smo)]...);')
+  smo$states <- julia_eval('
+    Patter.r_get_states(smo_states, collect(1:length(timeline)), timeline);
+    ')
+  head(smo$states)
+
+  #### Example (6): Analyse smoothed particles
+  # * See `map_*()` functions (e.g., `?map_dens()`) to map utilisation distributions
+
+
+  # Cleanup
+  file_cleanup(folder)
+  set_vmap()
+}
 }
 \references{
 Fearnhead, P. et al. (2010). A sequential smoothing algorithm with linear computational cost. Biometrika 97, 447–464. \url{https://doi.org/10.1093/biomet/asq013}.

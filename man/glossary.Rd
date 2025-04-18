@@ -7,11 +7,11 @@
 This is a glossary of key arguments in \code{\link{patter}}.
 }
 \section{\code{.map}}{
-\code{.map} is \code{\link{SpatRaster}} that defines the area of interest. \code{NAs} define inhospitable regions (such as land). A planar (Universal Transverse Mercator) projection with coordinates in metres is currently required.
+\code{.map} is \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} (supported on Windows or MacOS) or a \code{character} that defines the path to raster (supported on Windows, MacOS and Linux) to a that defines the area of interest. \code{NAs} define inhospitable regions (such as land). A planar (e.g., Universal Transverse Mercator) projection with coordinates in metres is currently required.
 }
 
 \section{\code{.model_obs}}{
-\code{.model_obs} is a \code{character} that defines a \code{\link{ModelObs}} sub-type.
+\code{.model_obs} is a named \code{list} of \code{\link{ModelObs}} sub-types (named) and associated parameters (\code{\link[data.table:data.table]{data.table::data.table}} elements).
 }
 
 \section{\code{.model_move}}{
@@ -23,7 +23,7 @@ This is a glossary of key arguments in \code{\link{patter}}.
 }
 
 \section{\code{.yobs}}{
-\code{.yobs} is a \code{list} of observational datasets, one for each data type. Each element must be a \code{\link{data.table}} with the following columns:
+\code{.yobs} is a named \code{list} of observational datasets, one for each data type. Element names must correspond \code{\link{ModelObs}} sub-types defined in \code{Julia}. Each element must be a \code{\link[data.table:data.table]{data.table::data.table}} with the following columns:
 \itemize{
 \item \code{timestamp}---a \code{POSIXct} vector of time stamps;
 \item \code{sensor_id}---an \code{integer} vector of sensor IDs, such as receivers;

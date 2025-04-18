@@ -13,18 +13,22 @@ The function returns \code{invisible(NULL)}, unless an error is experienced.
 Load and attach \code{\link{patter}}, connect to \code{Julia} via \code{\link[=julia_connect]{julia_connect()}} and then run \code{\link[=julia_validate]{julia_validate()}} to validate the \code{R}---\code{Julia} interface works.
 }
 \details{
-This function validates the \code{R}---\code{Julia} interface with an example \code{\link{SpatRaster}} that is exported to \code{Julia} and then modified in \code{R}. If the function returns nothing, you should be good to go. On some systems, we have observed segmentation faults that crash \code{R} when the map is exported to \code{Julia} and/or modified in \code{R}. Please report issues.
+This function validates the \code{R}---\code{Julia} interface with an example \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} that is exported to \code{Julia} and then modified in \code{R}. If the function returns nothing, you should be good to go. On some systems, we have observed segmentation faults that crash \code{R} when the map is exported to \code{Julia} and/or modified in \code{R}. Please report issues.
 }
 \examples{
-library(testthat)
+if (patter_run(.geospatial = FALSE)) {
 
-# Connect `R` to `Julia`
-julia_connect()
+  library(testthat)
 
-# Validate the connection
-# * If the function returns NULL, we are good to go.
-# * Otherwise, an error will be raised (or `R` will crash).
-expect_null(julia_validate())
+  # Connect `R` to `Julia`
+  julia_connect()
+
+  # Validate the connection
+  # * If the function returns NULL, we are good to go.
+  # * Otherwise, an error will be raised (or `R` will crash).
+  expect_null(julia_validate())
+
+}
 }
 \seealso{
 See \code{\link[=julia_connect]{julia_connect()}} to connect \code{R} to \code{Julia}.

@@ -4,6 +4,7 @@
 \alias{as.im.SpatRaster}
 \alias{as.owin.SpatRaster}
 \alias{as.owin.sf}
+\alias{bw.h}
 \alias{map_dens}
 \title{Map: point density}
 \usage{
@@ -13,21 +14,24 @@ as.owin.SpatRaster(.map, .im = NULL)
 
 as.owin.sf(.poly, .bbox = sf::st_bbox(.poly), .invert = TRUE)
 
+bw.h(X)
+
 map_dens(
   .map,
   .owin = as.owin.SpatRaster(.map),
   .coord = NULL,
   .discretise = FALSE,
   .shortcut = list(),
+  .sigma = bw.h,
   ...,
   .fterra = FALSE,
   .plot = TRUE,
-  .use_tryCatch = TRUE,
+  .tryCatch = TRUE,
   .verbose = getOption("patter.verbose")
 )
 }
 \arguments{
-\item{.map}{A \code{\link{SpatRaster}} that defines the grid on which the UD is represented. If \code{.coord = NULL}, \code{.map} also defines the points (and associated weights) that are smoothed (see \code{\link[=.map_coord]{.map_coord()}}). \strong{The coordinate reference system of \code{.map} must be planar} and specified.}
+\item{.map}{A \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} that defines the grid on which the UD is represented. If \code{.coord = NULL}, \code{.map} also defines the points (and associated weights) that are smoothed (see \code{\link[=.map_coord]{.map_coord()}}). \strong{The coordinate reference system of \code{.map} must be planar} and specified.}
 
 \item{.im, .owin}{A pixel image representation of \code{.map} (see \code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}} and \code{\link[spatstat.geom:im]{spatstat.geom::im()}}) and an observation window (see \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}}, \code{\link[=as.owin.sf]{as.owin.sf()}} and \code{\link[spatstat.geom:owin]{spatstat.geom::owin()}}). If un-supplied, \code{.owin} is defined automatically from \code{.map} via \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}}, which uses \code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}} internally (see Details). For faster results, use a rectangular or polygon observation window (see \code{\link[=as.owin.sf]{as.owin.sf()}}).}
 
@@ -44,16 +48,18 @@ map_dens(
 
 \item{.shortcut}{(optional) A named \code{list} from a previous call to \code{\link[=map_dens]{map_dens()}}. If supplied, the function short-cuts straight to smoothing (\code{.owin}, \code{.coord} and \code{.discretise} are silently unused).}
 
+\item{.sigma, X}{\code{.sigma} is a \code{numeric} value or a \code{function} that specifies the smoothing bandwidth (passed to \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}}'s \code{sigma} argument). The default option is \code{\link[=bw.h]{bw.h()}}, which sets the bandwidth based on combined variance of summarised coordinates, formatted as a point pattern \code{X} (see \code{\link[spatstat.geom:ppp]{spatstat.geom::ppp}}), using the ad-hoc method (Worton, 1989). See \code{spatstat} functions (e.g., \code{\link[spatstat.explore:bw.diggle]{spatstat.explore::bw.diggle()}}) for more sophisticated methods.}
+
 \item{...}{Arguments for density estimation, passed to \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}}, such as \code{sigma} (i.e., the bandwidth). \code{at} and \code{se} are not permitted.}
 
 \item{.fterra}{A \code{logical} variable that defines whether or not to parallelise \code{\link[terra:resample]{terra::resample()}}.}
 
 \item{.plot}{A \code{logical} variable that defines whether or not to plot the output.}
 
-\item{.use_tryCatch}{A \code{logical} variable that controls error handling:
+\item{.tryCatch}{A \code{logical} variable that controls error handling:
 \itemize{
-\item If \code{.use_tryCatch = FALSE}, if density estimation fails with an error, the function fails with the same error.
-\item If \code{.use_tryCatch = TRUE}, if density estimation fails with an error, the function produces a warning with the error message and returns \code{NULL}.
+\item If \code{.tryCatch = FALSE}, if density estimation fails with an error, the function fails with the same error.
+\item If \code{.tryCatch = TRUE}, if density estimation fails with an error, the function produces a warning with the error message and returns \code{NULL}.
 }}
 
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
@@ -63,16 +69,16 @@ The function returns a named \code{list}, with the following elements:
 \itemize{
 \item \code{x}: a \code{\link[spatstat.geom:ppp]{spatstat.geom::ppp}} object that defines points for density estimation;
 \item \code{D}: a \code{\link[spatstat.geom:im]{spatstat.geom::im}} object of estimated intensities, from \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}};
-\item \code{ud}: a normalised \code{\link{SpatRaster}};
+\item \code{ud}: a normalised \code{\link[terra:SpatRaster-class]{terra::SpatRaster}};
 }
 
-\code{D} and \code{ud} are \code{NULL} if \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} fails and \code{.use_tryCatch = TRUE}.
+\code{D} and \code{ud} are \code{NULL} if \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} fails and \code{.tryCatch = TRUE}.
 }
 \description{
 \code{\link[=map_dens]{map_dens()}} creates a smoothed utilisation distribution (UD).
 }
 \details{
-\code{\link[=map_dens]{map_dens()}} smooths (a) a \code{\link{SpatRaster}} or (b) a set of inputted coordinates.
+\code{\link[=map_dens]{map_dens()}} smooths (a) a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} or (b) a set of inputted coordinates.
 
 \code{\link[=.map_coord]{.map_coord()}} (and \code{\link[=.map_mark]{.map_mark()}}) are used to define coordinates and weights:
 \itemize{
@@ -82,70 +88,81 @@ The function returns a named \code{list}, with the following elements:
 
 Cell coordinates and associated weights are converted to a \code{\link[spatstat.geom:ppp]{spatstat.geom::ppp()}} object, which is passed, alongside the observation window (\code{.owin}), to \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} for the estimation. Weights must sum to one.
 
-\code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}}, \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}} and \code{\link[=as.owin.sf]{as.owin.sf()}} are helper functions that convert a \code{\link{SpatRaster}} to a pixel image and an observation window (see \code{\link[spatstat.geom:owin]{spatstat.geom::owin()}}). \code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}} is based on \code{maptools::as.im.RasterLayer()}. \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}} either defines a rectangular window, if there are no NAs on \code{.map}, or converts \code{.map} directly to an \code{owin} object. Gridded observation windows, especially if high resolution, considerably slow down density estimation and may exhaust vector memory. Use rectangular windows, or convert \code{sf} objects to polygon windows (via \code{\link[=as.owin.sf]{as.owin.sf()}}) if possible.
+\code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}}, \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}} and \code{\link[=as.owin.sf]{as.owin.sf()}} are helper functions that convert a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} to a pixel image and an observation window (see \code{\link[spatstat.geom:owin]{spatstat.geom::owin()}}). \code{\link[=as.im.SpatRaster]{as.im.SpatRaster()}} is based on \code{maptools::as.im.RasterLayer()}. \code{\link[=as.owin.SpatRaster]{as.owin.SpatRaster()}} either defines a rectangular window, if there are no NAs on \code{.map}, or converts \code{.map} directly to an \code{owin} object. Gridded observation windows, especially if high resolution, considerably slow down density estimation and may exhaust vector memory. Use rectangular windows, or convert \code{sf} objects to polygon windows (via \code{\link[=as.owin.sf]{as.owin.sf()}}) if possible.
 
 If \code{.shortcut} is supplied, the preceding steps can be skipped and the function short-cuts straight to smoothing. Use this option if the preceding steps are slow and you want to trial different smoothing options (such as \code{sigma} functions).
 
-Coordinates and associated weights are smoothed via \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} into an image. Pixel resolution and smoothing parameters such as bandwidth can be controlled via \code{...} arguments which are passed directly to this function. The output is translated into a gridded probability density surface (on the geometry defined by \code{.map}). This process may use \code{\link[terra:resample]{terra::resample()}}, which can be parallelised via \code{.fterra} (which controls the \code{threads} argument of that function).
+Coordinates and associated weights are smoothed via \code{\link[spatstat.explore:density.ppp]{spatstat.explore::density.ppp()}} into an image. Pixel resolution and smoothing parameters such as bandwidth can be controlled via \code{...} arguments which are passed directly to this function. The default bandwidth is set via \code{\link[=bw.h]{bw.h()}} (see \code{.sigma}). The output is translated into a gridded probability density surface (on the geometry defined by \code{.map}). This process may use \code{\link[terra:resample]{terra::resample()}}, which can be parallelised via \code{.fterra} (which controls the \code{threads} argument of that function).
 
 This function replaces \verb{flapper::kud*()} and \verb{flapper::pf_kud*()} routines based on \code{adehabitatHR} (see \href{https://edwardlavender.github.io/flapper/reference/}{here}).
+
+On Linux, these functions cannot be used within a \code{Julia} session.
 }
 \examples{
-library(data.table)
-library(dtplyr)
-library(dplyr, warn.conflicts = FALSE)
-library(spatstat.explore)
+if (patter_run(.julia = FALSE, .geospatial = TRUE)) {
 
-#### Define map
-map <- dat_gebco()
+  library(data.table)
+  library(dtplyr)
+  library(dplyr, warn.conflicts = FALSE)
+  library(spatstat.explore)
 
-#### Example (1): Use sample coordinates
-# Sample example coordinates
-coord <-
-  map |>
-  terra::spatSample(size = 5000L, xy = TRUE, cell = TRUE, na.rm = TRUE) |>
-  select("x", "y") |>
-  as.data.table()
-# Use x, y coordinates
-map_dens(map, .coord = coord)
-# Other formats are acceptable
-map_dens(map, .coord = as.matrix(coord))
-map_dens(map, .coord = as.data.frame(coord))
-# `cell_x` and `cell_y` coordinates are acceptable
-map_dens(map, .coord = coord[, .(cell_x = x, cell_y = y)])
-# A SpatRaster is also acceptable
-pou <- map_pou(map, .coord = coord, .plot = FALSE)$ud
-map_dens(pou)
+  #### Define map
+  map <- dat_gebco()
 
-#### Example (2): Use coordinates from `sim_path_walk()`
-coord <- dat_path()
-map_dens(map, .coord = coord)
-points(coord$x, coord$y, cex = 0.5)
+  #### Example (1): Use sample coordinates
+  # Sample example coordinates
+  coord <-
+    map |>
+    terra::spatSample(size = 100L, xy = TRUE, cell = TRUE, na.rm = TRUE) |>
+    select("x", "y") |>
+    as.data.table()
+  # Use x, y coordinates
+  map_dens(map, .coord = coord)
+  # Other formats are acceptable
+  map_dens(map, .coord = as.matrix(coord))
+  map_dens(map, .coord = as.data.frame(coord))
+  # `cell_x` and `cell_y` coordinates are acceptable
+  map_dens(map, .coord = coord[, .(cell_x = x, cell_y = y)])
+  # A SpatRaster is also acceptable
+  pou <- map_pou(map, .coord = coord, .plot = FALSE)$ud
+  map_dens(pou)
 
-#### Example (3): Use coordinates from `coa()`
-# Use example dataset
-coord <- dat_coa()
-map_dens(map, .coord = coord)
-points(coord$x, coord$y, cex = 0.5)
+  #### Example (2): Use coordinates from `sim_path_walk()`
+  coord <- dat_path()
+  map_dens(map, .coord = coord)
+  points(coord$x, coord$y, cex = 0.5)
 
-#### Example (4): Use a time series of coordinates from `pf_*()`
-# Use example dataset
-# * We use particles from the forward filter (`?pf_filter()`);
-# * Particles are equally weighted b/c re-sampling is implemented every time step;
-# * It is better to use outputs from the particle smoother;
-coord <- dat_pff()$states
-map_dens(map, .coord = coord)
-# points(coord$x, coord$y, cex = 0.5)
+  #### Example (3): Use coordinates from `coa()`
+  # Use example dataset
+  coord <- dat_coa()
+  map_dens(map, .coord = coord)
+  points(coord$x, coord$y, cex = 0.5)
 
-#### Example (5): Control smoothing via `spatstat.explore::density.ppp()`
-# E.g. use fixed bandwidth:
-map_dens(map, .coord = coord, sigma = 5)
-map_dens(map, .coord = coord, sigma = 100)
-# E.g., perform automatic bandwidth selection using cross validation:
-map_dens(map, .coord = coord, sigma = bw.diggle)
-map_dens(map, .coord = coord, sigma = bw.scott)
-map_dens(map, .coord = coord, sigma = bw.ppl)
-map_dens(map, .coord = coord, sigma = bw.CvL)
+  #### Example (4): Use a time series of coordinates from `pf_*()`
+  # Use example dataset
+  # * We use particles from the forward filter (`?pf_filter()`);
+  # * Particles are equally weighted b/c re-sampling is implemented every time step;
+  # * It is better to use outputs from the particle smoother;
+  coord <- dat_pff()$states
+  map_dens(map, .coord = coord)
+  # points(coord$x, coord$y, cex = 0.5)
+
+  #### Example (5): Control smoothing via `spatstat.explore::density.ppp()`
+  # E.g. use fixed bandwidth:
+  map_dens(map, .coord = coord, .sigma = 5)
+  map_dens(map, .coord = coord, .sigma = 100)
+  # E.g., perform automatic bandwidth selection using cross validation:
+  if (FALSE) {
+    # These examples are slow
+    map_dens(map, .coord = coord, .sigma = bw.diggle) # 2 s
+    map_dens(map, .coord = coord, .sigma = bw.scott)  # 1 s
+    map_dens(map, .coord = coord, .sigma = bw.ppl)    # 65 s
+    map_dens(map, .coord = coord, .sigma = bw.CvL)    # 25 s
+  }
+}
+}
+\references{
+Worton, B. J. (1989). Kernel Methods for Estimating the Utilization Distribution in Home-Range Studies. Ecology 70, 164–168. doi: 10.2307/1938423
 }
 \seealso{
 \verb{map_*()} functions build maps of space use:
@@ -155,7 +172,7 @@ map_dens(map, .coord = coord, sigma = bw.CvL)
 \item \code{\link{map_hr}}\verb{_*()} functions map home ranges;
 }
 
-All maps are represented as \code{\link{SpatRaster}}s.
+All maps are represented as \code{\link[terra:SpatRaster-class]{terra::SpatRaster}}s.
 
 To derive coordinates for mapping patterns of space use for tagged animals, see:
 \itemize{

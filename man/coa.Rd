@@ -6,7 +6,7 @@
 \usage{
 coa(
   .map,
-  .acoustics,
+  .detections,
   .moorings = NULL,
   .delta_t,
   .split = NULL,
@@ -16,22 +16,22 @@ coa(
 )
 }
 \arguments{
-\item{.map}{A \code{\link{SpatRaster}} that defines the study area (see \code{\link{glossary}}). Here, \code{.map} is used to:
+\item{.map}{A \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} that defines the study area (see \code{\link{glossary}}). Here, \code{.map} is used to:
 \itemize{
 \item Extract \code{map_value} at centres of activity, for consistency with other routines (such as \code{\link[=pf_filter]{pf_filter()}});
 }}
 
-\item{.acoustics, .moorings}{Acoustic detection \href{s}{\code{data.table}}.
+\item{.detections, .moorings}{Acoustic detection \href{s}{\code{data.table::data.table}}.
 \itemize{
-\item \code{.acoustics} is a \code{\link{data.table}} of acoustic detections, with the following columns: \code{receiver_id} (or \code{sensor_id}), \code{timestamp} and (optionally) \code{receiver_x} and \code{receiver_y} columns;
-\item (optional) \code{.moorings} is a \code{\link{data.table}} of receiver coordinates, which should be provided if unavailable in \code{.acoustics}, with \code{receiver_id}, \code{receiver_x} and \code{receiver_y} columns;
+\item \code{.detections} is a \code{\link[data.table:data.table]{data.table::data.table}} of acoustic detections, with the following columns: \code{receiver_id} (or \code{sensor_id}), \code{timestamp} and (optionally) \code{receiver_x} and \code{receiver_y} columns;
+\item (optional) \code{.moorings} is a \code{\link[data.table:data.table]{data.table::data.table}} of receiver coordinates, which should be provided if unavailable in \code{.detections}, with \code{receiver_id}, \code{receiver_x} and \code{receiver_y} columns;
 }
 
 Receiver coordinates \strong{must be planar}.}
 
 \item{.delta_t}{The time interval over which to calculate COAs. This can be specified in any way understood by \code{\link[lubridate:round_date]{lubridate::floor_date()}} (see the \code{unit} argument).}
 
-\item{.split}{(optional) A \code{character} that defines the name of the grouping factor in \code{.acoustics} (e.g., \code{individual_id} for \code{\link{dat_acoustics}}).}
+\item{.split}{(optional) A \code{character} that defines the name of the grouping factor in \code{.detections} (e.g., \code{individual_id} for \code{\link{dat_detections}}).}
 
 \item{.plot_weights, ..., .one_page}{Plot arguments.
 \itemize{
@@ -41,7 +41,7 @@ Receiver coordinates \strong{must be planar}.}
 }}
 }
 \value{
-The function returns a \code{\link{data.table}} with the following columns:
+The function returns a \code{\link[data.table:data.table]{data.table::data.table}} with the following columns:
 \itemize{
 \item \code{{.split}}---a \code{character} vector that distinguishes groups, if applicable;
 \item \code{timestep}---an \code{integer} vector of time steps;
@@ -58,45 +58,51 @@ This function calculates centres of activity (COAs) from detections at acoustic 
 COAs are calculated as a weighted mean of the locations of receivers at which individuals are detected over consecutive time intervals, weighted by the frequency of detections at each of those receivers. COAs are calculated via \code{\link[stats:weighted.mean]{stats::weighted.mean()}}, which assumes planar coordinates, for consistency with other \code{\link{patter}} routines. To handle longitude/latitude coordinates, use \code{geosphere::geomean()}.
 
 This function replaces \href{https://edwardlavender.github.io/flapper/reference/coa.html}{\code{flapper::coa()}}. See  \href{https://edwardlavender.github.io/flapper/reference/coa_setup_delta_t.html}{\code{flapper::coa_setup_delta_t()}} to evaluate alternative time internals.
+
+On Linux, this function cannot be used within a \code{Julia} session.
 }
 \examples{
-library(data.table)
+if (patter_run(.julia = FALSE, .geospatial = TRUE)) {
 
-#### Set up example
-map       <- dat_gebco()
-acoustics <- dat_acoustics
-moorings  <- dat_moorings
+  library(data.table)
 
-#### Example (1): Calculate COAs for an example individual
-id     <- dat_acoustics$individual_id[1]
-acc    <- dat_acoustics[individual_id == id, ]
-coa(.map = map, .acoustics = acc, .moorings = moorings,
-    .delta_t = "2 hours")
+  #### Set up example
+  map        <- dat_gebco()
+  detections <- dat_detections
+  moorings   <- dat_moorings
 
-#### Example (2): Customise the time interval via `.delta_t`
-coa(.map = map, .acoustics = acc, .moorings = moorings,
-    .delta_t = "4 hours")
+  #### Example (1): Calculate COAs for an example individual
+  id     <- dat_detections$individual_id[1]
+  det    <- dat_detections[individual_id == id, ]
+  coa(.map = map, .detections = det, .moorings = moorings,
+      .delta_t = "2 hours")
 
-#### Example (3): Calculate COAs for multiple individuals via `.split`
-# Calculate COAs
-coa(.map = map, .acoustics = acc, .moorings = moorings,
-    .delta_t = "6 hours", .split = "individual_id")
-# Use one page for plots via `.one_page = TRUE`
-coa(.map = map, .acoustics = acc, .moorings = moorings,
-    .delta_t = "6 hours", .split = "individual_id",
-    .one_page = FALSE)
-# Suppress plots via `.plot = FALSE`
-coa(.map = map, .acoustics = acc, .moorings = moorings,
-    .delta_t = "6 hours", .split = "individual_id",
-    .one_page = TRUE)
+  #### Example (2): Customise the time interval via `.delta_t`
+  coa(.map = map, .detections = det, .moorings = moorings,
+      .delta_t = "4 hours")
 
-#### Example (4): Specify `.acoustics` only
-# `.moorings` is not required if `.acoustics` contains receiver coordinates
-coa(.map = map,
-    .acoustics =
-      acoustics |>
-      merge(moorings, by = "receiver_id"),
-    .delta_t = "6 hours", .split = "individual_id")
+  #### Example (3): Calculate COAs for multiple individuals via `.split`
+  # Calculate COAs
+  coa(.map = map, .detections = det, .moorings = moorings,
+      .delta_t = "6 hours", .split = "individual_id")
+  # Use one page for plots via `.one_page = TRUE`
+  coa(.map = map, .detections = det, .moorings = moorings,
+      .delta_t = "6 hours", .split = "individual_id",
+      .one_page = FALSE)
+  # Suppress plots via `.plot = FALSE`
+  coa(.map = map, .detections = det, .moorings = moorings,
+      .delta_t = "6 hours", .split = "individual_id",
+      .one_page = TRUE)
+
+  #### Example (4): Specify `.detections` only
+  # `.moorings` is not required if `.detections` contains receiver coordinates
+  coa(.map = map,
+      .detections =
+        detections |>
+        merge(moorings, by = "receiver_id"),
+      .delta_t = "6 hours", .split = "individual_id")
+
+}
 }
 \seealso{
 \itemize{

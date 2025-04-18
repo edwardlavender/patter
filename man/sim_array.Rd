@@ -19,14 +19,14 @@ sim_array(
 )
 }
 \arguments{
-\item{.map}{A \code{\link{SpatRaster}} that defines the region of interest (see \code{\link{glossary}}). Here, \code{map} is used to:
+\item{.map}{A \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} that defines the region of interest (see \code{\link{glossary}}). Here, \code{.map} is used to:
 \itemize{
 \item Sample receiver locations in appropriate (non \code{NA}) regions, via \code{\link[terra:sample]{terra::spatSample()}};
 }}
 
 \item{.timeline}{A \code{POSIXct} vector of regularly spaced time stamps that defines the timeline for the simulation. Here, \code{.timeline} is used to:
 \itemize{
-\item Define receiver deployment periods (that is, \code{receiver_start} and \code{receiver_end} columns in the output \code{\link{data.table}}). Receiver deployment periods are defined by \code{min(.timeline)} and \code{max(.timeline)} and constant for all receivers.  (These columns are added solely for use in downstream functions.)
+\item Define receiver deployment periods (that is, \code{receiver_start} and \code{receiver_end} columns in the output \code{\link[data.table:data.table]{data.table::data.table}}). Receiver deployment periods are defined by \code{min(.timeline)} and \code{max(.timeline)} and constant for all receivers.  (These columns are added solely for use in downstream functions.)
 }}
 
 \item{.arrangement, .n_receiver, ...}{Arguments passed to \code{\link[terra:sample]{terra::spatSample()}}, used to sample receiver locations.
@@ -36,7 +36,7 @@ sim_array(
 \item \code{...} Additional arguments, passed to \code{\link[terra:sample]{terra::spatSample()}}, excluding \code{x}, \code{size}, \code{method}, \code{replace}, \code{na.rm}, \code{xy}, \code{cells} and \code{values}.
 }}
 
-\item{.receiver_alpha, .receiver_beta, .receiver_gamma}{(optional) \code{Numeric} constants for the default detection probability parameters for inclusion in the output \code{\link{data.table}}. (These columns are added solely for use in downstream functions, such as \code{\link[=sim_observations]{sim_observations()}}.)
+\item{.receiver_alpha, .receiver_beta, .receiver_gamma}{(optional) \code{Numeric} constants for the default detection probability parameters for inclusion in the output \code{\link[data.table:data.table]{data.table::data.table}}. (These columns are added solely for use in downstream functions, such as \code{\link[=sim_observations]{sim_observations()}}.)
 
 Single inputs are expected to these arguments, which are constant across all receivers.}
 
@@ -47,7 +47,7 @@ Single inputs are expected to these arguments, which are constant across all rec
 \item{.one_page}{If \code{.plot = TRUE}, \code{.one_page} is a \code{logical} variable that defines whether or not to produce plots on a single page.}
 }
 \value{
-The function returns a \code{data.table} with the following columns:
+The function returns a \code{\link[data.table:data.table]{data.table::data.table}} with the following columns:
 \itemize{
 \item \code{array_id}---an \code{integer} vector of array IDs,
 \item \code{receiver_id}---an \code{integer} vector of receiver IDs;
@@ -61,35 +61,41 @@ Simulate acoustic arrays (i.e., networks of acoustic receiver(s)) on a grid.
 }
 \details{
 This function replaces \href{https://edwardlavender.github.io/flapper/reference/sim_array.html}{\code{flapper::sim_array()}}.
+
+On Linux, this function cannot be used within a \code{Julia} session.
 }
 \examples{
-#### Define simulation arguments
-map      <- dat_gebco()
-timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
-                length.out = 1000L, by = "2 mins")
+if (patter_run(.julia = FALSE, .geospatial = TRUE)) {
 
-#### Example (1): The default implementation
-array <- sim_array(.map = map, .timeline  = timeline)
-head(array)
+  #### Define simulation arguments
+  map      <- dat_gebco()
+  timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
+                  length.out = 1000L, by = "2 mins")
 
-#### Example (2): Customise receiver placement/number
-array <- sim_array(.map = map, .timeline = timeline,
-                   .arrangement = "regular", .n_receiver = 100L)
+  #### Example (1): The default implementation
+  array <- sim_array(.map = map, .timeline  = timeline)
+  head(array)
 
-#### Example (3): Customise detection probability parameters
-# (This information is used by the default downstream functions)
-array <- sim_array(.map = map, .timeline = timeline,
-                   .receiver_alpha = 4.5,
-                   .receiver_beta = -0.02,
-                   .receiver_gamma = 500)
+  #### Example (2): Customise receiver placement/number
+  array <- sim_array(.map = map, .timeline = timeline,
+                     .arrangement = "regular", .n_receiver = 100L)
 
-#### Example (4): Control the plot(s)
-sim_array(.map = map, .timeline = timeline,
-          .plot = FALSE)
-sim_array(.map = map, .timeline = timeline,
-          .n_array = 5L, .plot = TRUE, .one_page = TRUE)
-sim_array(.map = map, .timeline = timeline,
-          .n_array = 5L, .plot = TRUE, .one_page = FALSE)
+  #### Example (3): Customise detection probability parameters
+  # (This information is used by the default downstream functions)
+  array <- sim_array(.map = map, .timeline = timeline,
+                     .receiver_alpha = 4.5,
+                     .receiver_beta = -0.02,
+                     .receiver_gamma = 500)
+
+  #### Example (4): Control the plot(s)
+  sim_array(.map = map, .timeline = timeline,
+            .plot = FALSE)
+  sim_array(.map = map, .timeline = timeline,
+            .n_array = 5L, .plot = TRUE, .one_page = TRUE)
+  sim_array(.map = map, .timeline = timeline,
+            .n_array = 5L, .plot = TRUE, .one_page = FALSE)
+
+}
 }
 \seealso{
 \itemize{

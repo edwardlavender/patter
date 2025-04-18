@@ -51,7 +51,7 @@ timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
 paths <- sim_path_walk(.map = map,
                        .timeline = timeline,
                        .state = "StateXY",
-                       .model_move = move_xy())
+                       .model_move = model_move_xy())
 
 #### Simulate array(s)
 arrays <- sim_array(.map = map,
@@ -59,17 +59,15 @@ arrays <- sim_array(.map = map,
                     .n_receiver = 500L)
 
 #### Simulate observation(s)
-models <- c("ModelObsAcousticLogisTrunc", "ModelObsDepthUniform")
 obs <- sim_observations(.timeline = timeline,
-                        .model_obs = models,
-                        .model_obs_pars =
+                        .model_obs =
                           list(
-                            arrays |>
+                            ModelObsAcousticLogisTrunc = arrays |>
                               select(sensor_id = "receiver_id",
                                      "receiver_x", "receiver_y",
                                      "receiver_alpha", "receiver_beta", "receiver_gamma") |>
                               as.data.table(),
-                            data.table(sensor_id = 1L,
+                            ModelObsDepthUniformSeabed = data.table(sensor_id = 1L,
                                        depth_shallow_eps = 30,
                                        depth_deep_eps = 30)
                           ))
@@ -80,29 +78,27 @@ detections <-
   filter(obs == 1L) |>
   as.data.table()
 out_coa <- coa(.map = map,
-               .acoustics = detections,
+               .detections = detections,
                .delta_t = "2 hours")
 
 #### Run the particle filter
 # Define filter args
-args <- list(.map = map,
-             .timeline = timeline,
+args <- list(.timeline = timeline,
              .state = "StateXY",
-             .xinit_pars = list(mobility = 750),
-             .model_move = move_xy(),
-             .yobs = list(obs$ModelObsAcousticLogisTrunc[[1]], obs$ModelObsDepthUniform[[1]]),
-             .model_obs = c("ModelObsAcousticLogisTrunc", "ModelObsDepthUniform"),
+             .model_move = model_move_xy(),
+             .yobs = list(ModelObsAcousticLogisTrunc = obs$ModelObsAcousticLogisTrunc[[1]],
+                          ModelObsDepthUniformSeabed = obs$ModelObsDepthUniformSeabed[[1]]),
              .n_particle = 1e5L,
              .n_record = 100L)
 # Run the filter forwards
 args$.direction = "forward"
-out_pff <- do.call(pf_filter, args)
+out_fwd <- do.call(pf_filter, args)
 # Run the filter backwards
 args$.direction = "backward"
-out_pfb <- do.call(pf_filter, args)
+out_bwd <- do.call(pf_filter, args)
 
 #### Run the smoother
-out_tff <- pf_smoother_two_filter()
+out_smo <- pf_smoother_two_filter()
 
 
 #########################
@@ -112,9 +108,9 @@ out_tff <- pf_smoother_two_filter()
 #### Collate datasets
 dat_path <- paths
 dat_coa  <- out_coa
-dat_pff  <- out_pff
-dat_pfb  <- out_pfb
-dat_tff  <- out_tff
+dat_pff  <- out_fwd
+dat_pfb  <- out_bwd
+dat_tff  <- out_smo
 datasets <-
   list(dat_path = dat_path,
        dat_coa = dat_coa,

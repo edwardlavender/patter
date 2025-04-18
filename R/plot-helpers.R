@@ -49,6 +49,15 @@ par_mf <- function(.n){
 #' @rdname prettyGraphics
 #' @keywords internal
 
+# Get the number of panels
+# * `...` accepts lists of graphical arguments or NULL for each panel
+par_mf_n <- function(...) {
+  sum(!sapply(list(...), is.null))
+}
+
+#' @rdname prettyGraphics
+#' @keywords internal
+
 add_sp_path <- function(x, y = NULL, col = hcl.colors(length(x)), ...){
   if (!is.null(y)) {
     x <- cbind(x, y)

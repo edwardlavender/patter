@@ -1,8 +1,8 @@
 
-# `patter`: particle algorithms for animal movement
+# `patter` <a href="https://edwardlavender.github.io/patter/"><img src="man/figures/logo.png" align="right" height="136" alt="patter website" /></a>
 
-**Particle filters, smoothers and sampling algorithms for animal
-movement modelling in [`R`](https://www.r-project.org)**
+**Particle algorithms for animal movement modelling in
+[`R`](https://www.r-project.org)**
 
 <!-- badges: start -->
 
@@ -13,7 +13,7 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/patter)](https://CRAN.R-project.org/package=patter)
-![Coverage](https://img.shields.io/badge/coverage-98%25-brightgreen)
+![Coverage](https://img.shields.io/badge/coverage-83%25-orange)
 [![R-CMD-check](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
@@ -32,6 +32,11 @@ et al., [2023](https://doi.org/10.1111/2041-210X.14193)).
 > should use it with a degree of caution. Please share feedback and
 > issues.
 
+> **[NEWS](NEWS)** Welcome to `patter v.2.0.0`! This includes some
+> **breaking changes**. For projects based on earlier versions, use
+> [`renv`](https://rstudio.github.io/renv/articles/renv.html). For
+> future projects, `patter v.2.0.0` is recommended.
+
 # Highlights
 
 `patter` is designed to reconstruct movement paths and emergent patterns
@@ -41,17 +46,18 @@ This framework unifies the
 [`flapper`](https://github.com/edwardlavender/flapper) algorithms and
 provides important opportunities for development, which we exploit here.
 
-The essential functions are `pf_filter()` and `pf_smoother_*()`:
+The essential functions are `pf_filter()` and
+`pf_smoother_two_filter()`:
 
 - **`pf_filter()`** is the particle filter. This simulates the possible
   locations of an individual moving forwards in time, accounting for all
   of the data (for example, acoustic observations, depth observations
   and any other observations) *up to* each time point and the animal’s
   movement (a partial marginal distribution).
-- **`pf_smoother_*()`** is a particle smoothing algorithm. At each time
-  step, the smoother accounts for all of the data from both the past
-  *and* the future (the full marginal distribution) and substantially
-  refines maps of space use.
+- **`pf_smoother_two_filter()`** is a particle smoothing algorithm. At
+  each time step, the smoother accounts for all of the data from both
+  the past *and* the future (the full marginal distribution) and
+  substantially refines maps of space use.
 
 We hope to add backward sampling algorithms to the package in due
 course.
@@ -65,7 +71,7 @@ course.
 - **Faster**, with overhauled internal routines;
 - **Simpler** to use and maintain;
 - **Stable**, with fewer dependencies and an upgraded spatial ecosystem;
-- **Better tested**, with comprehensive unit tests (in progress!);
+- **Better tested**, with comprehensive unit tests;
 
 See [`NEWS`](https://github.com/edwardlavender/patter/blob/main/NEWS.md)
 for a summary of the evolution of
@@ -80,16 +86,21 @@ touch if you would like to see additional functionality brought into
 
 # Installation
 
-> **Note:** `patter` currently works on Windows and MacOS. On Windows,
-> everything *should* work if you follow the instructions below. On
-> MacOS, some additional set up (such as compiler configuration) may be
-> required, depending on your set up. In our (limited) experience,
-> `patter` installs but crashes on Debian/Ubuntu. This is due to a
-> conflict between the GDAL/GEOS/PROJ libraries used by `R` and `Julia`
-> (which we hope to solve in due course). Please let us know your
-> experiences if you are using other Linux distributions. In case of
-> issues, you should be able to use `Patter.jl` directly, which on some
-> systems may be simpler than getting `R` and `Julia` to play together!
+> **Note:** `patter` works Windows, MacOS and Linux (with some
+> restrictions). On Windows, everything *should* work if you follow the
+> instructions below. On MacOS, some additional set up (such as compiler
+> configuration) may be required, depending on your set up. On
+> Debian/Ubuntu, `patter` can be used but you cannot simultaneously use
+> geospatial routines in `R` and `Julia`. Thus, you can only call
+> `library(terra)` or `terra::foo()` and use `patter` routines that
+> exploit `terra` and other geospatial packages in `R` sessions that are
+> not connected to a `Julia` session (via `julia_connect()`). We haven’t
+> tried other Linux distributions. Package examples were written on
+> MacOS and may not run safely on Linux without modification. Check the
+> function documentation for supported options and share your
+> experience. In case of issues, you should be able to use `Patter.jl`
+> directly, which on some systems may be simpler than getting `R` and
+> `Julia` to play together!
 
 1.  **Install [`R`](https://www.r-project.org)**. This package requires
     `R` version ≥ 4.1 (but the most recent version is recommended). You
@@ -99,11 +110,14 @@ touch if you would like to see additional functionality brought into
 2.  **Install build packages.** Package installation and configuration
     (may) require the [`devtools`](https://github.com/r-lib/devtools),
     [`pkgbuild`](https://github.com/r-lib/pkgbuild) and
-    [`here`](https://github.com/r-lib/here) packages. Install them with:
+    [`rmarkdown`](https://github.com/rstudio/rmarkdown) packages.
+    Install them with:
 
 ``` r
-install.packages(c("devtools", "pkgbuild", "here"))
+install.packages(c("devtools", "pkgbuild", "rmarkdown"))
 ```
+
+On Linux, this step may require system libraries (see below).
 
 3.  **Install system libraries**.
 
@@ -115,34 +129,99 @@ install.packages(c("devtools", "pkgbuild", "here"))
 - **On MacOS**, some system-specific step up (e.g., compiler
   configuration) may be required. Follow the steps below and address any
   issues as required for your system.
-- **On Linux**, our experience is currently limited—please share yours.
+- **On Linux**, a suite of system libraries, including `GDAL`, `GEOS`
+  and `PROJ`, are required. See the package [DESCRIPTION](DESCRIPTION)
+  for required/suggested packages and follow the instructions for your
+  system. On Debian/Ubuntu, see
+  [`r2u`](https://eddelbuettel.github.io/r2u/) or follow the
+  instructions below to get up and running.
+  <details>
+
+  <summary>
+
+  <b>Click</b> for system dependency installation instructions on
+  Ubuntu.
+  </summary>
+
+  ``` bash
+  sudo apt update
+
+  # `make` utility required to compile packages e.g., data.table
+  sudo apt install build-essential
+
+  # Geospatial dependencies for {terra}
+  sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
+  sudo apt install libgdal-dev libgeos-dev libproj-dev
+
+  # `ffpmeg` and `libavfilter-dev` for {av} (suggested)
+  sudo apt install ffmpeg
+  sudo apt install libavfilter-dev
+
+  # `GSL` for {RcppGSL} for {Rfast} (suggested)
+  sudo apt install libgsl-dev
+
+  # `gfortran` for {classInt} -> {sf} (suggested)
+  sudo apt install gfortran
+
+  # `units` for {units} -> {sf} (suggested)
+  sudo apt install libudunits2-dev
+  ```
+
+  </details>
 
 4.  **Install [`Julia`](https://julialang.org)**. `Julia` is
     high-performance programming language that `patter` uses as a
-    backend. If you do not have `Julia` installed on your system, you
-    have three options.
+    backend. If you do not have `Julia` installed on your system, follow
+    the instructions below to install `Julia`.
 
-> **Note:** Install a recent `Julia` version. `Julia` v1.10.5 (long-term
-> release) is recommended. `Julia` v1.11 is *not* currently supported by
-> `JuliaCall` (see
-> [here](https://github.com/Non-Contradiction/JuliaCall/issues/234)).
+    **A. On Windows, the easiest option is to download and install
+    `Julia` from
+    [JuliaLang](https://julialang.org/downloads/#long_term_support_release)**.
+    During installation, check `Add Julia to PATH`.
 
-**A. Install `Julia` via `R` using `JuliaCall`**:
+    **B. Another option is to use `juliaup`**. Some users have found
+    this easier on `MacOS` because you don’t have to worry about finding
+    the right `Julia` installation for your architecture.
+
+    - Install the `juliaup` installer, following the instructions
+      [here](https://github.com/JuliaLang/juliaup). For example, on
+      `MacOS`, open the shell (Terminal) and type:
+
+      ``` bash
+      curl -fsSL https://install.julialang.org | sh
+      ```
+
+    - In the shell, then install `Julia` (release version) via
+      `juliaup`:
+
+      ``` bash
+      juliaup update
+      juliaup default release
+      ```
+
+> **Note:** Install a recent `Julia` version. This README was last built
+> on 2025-04-18 with Julia 1.11.5.
+
+5.  **Setup JuliaCall.** The next step is to set up `JuliaCall`, which
+    provides the integration between `R` and `Julia`.
 
 ``` r
 # Install the {JuliaCall} package:
 install.packages("JuliaCall")
 
 # Use the development version if the CRAN version is unavailable:
-devtools::install_github("Non-Contradiction/JuliaCall",
+devtools::install_github("JuliaInterop/JuliaCall",
                          dependencies = TRUE)
 ```
 
 ``` r
-# Install `Julia` via {JuliaCall}:
+# Run julia_setup() to set up the Julia installation 
+# * This includes an installJulia argument if the above Julia installation options fail 
 # * Set `JULIA_HOME` if Julia is not found (see `?julia_setup()`)
+# * Note this may take several minutes
+# * Set `rebuild = TRUE` if you've previously used JuliaCall on an older R version
 library(JuliaCall)
-julia <- julia_setup(installJulia = TRUE)
+julia <- julia_setup()
 ```
 
 ``` r
@@ -156,48 +235,18 @@ If `julia_setup()` fails with `'Julia is not found'`, you should tell
 `R` the location of the `Julia` binary via `JULIA_HOME` (see
 `?JuliaCall::julia_setup()` and the
 [`JuliaCall`](https://cran.r-project.org/web/packages/JuliaCall)
-[README](https://cran.r-project.org/web/packages/JuliaCall/readme/README.html)
+[README](https://cran.r-project.org/web/packages/JuliaCall/readme/README.html),
+as well as the relevant `patter` GitHub
+[issues](https://github.com/edwardlavender/patter/issues?q=label%3Ainstallation)
 for troubleshooting and ways to get help).
 
-**B. If `JuliaCall` installation fails, download and install `Julia`
-from
-[JuliaLang](https://julialang.org/downloads/#long_term_support_release)**.
-On `MacOS`, make sure you download a version appropriate for your
-architecture (Intel or ARM). Then retry `julia_setup()`:
-
-``` r
-# Set up Julia
-# * Set `JULIA_HOME` if Julia is not found (see `?julia_setup()`)
-julia <- julia_setup()
-isTRUE(try(julia_eval('true'), silent = TRUE))
-```
-
-**C. The other option is to use `juliaup`**. Some users have found this
-easier on `MacOS` because you don’t have to worry about finding the
-right `Julia` installation for your architecture:
-
-- Install the `juliaup`installer, following the instructions
-  [here](https://github.com/JuliaLang/juliaup).
-
-- In the shell (e.g., Terminal on MacOS), install `Julia` via `juliaup`:
-
-<!-- -->
-
-    juliaup add 1.10.5  
-    juliaup default 1.10.5
-
-- Then test the installation as described above.
-
-*Please share the solution(s) that worked for you and help to improve
-these instructions.*
-
-5.  **Install [`patter`](https://github.com/edwardlavender/patter).** To
+6.  **Install [`patter`](https://github.com/edwardlavender/patter).** To
     install `patter` from the `main` branch, use:
 
 ``` r
 devtools::install_github("edwardlavender/patter", 
                          dependencies = TRUE, 
-                         build_vignettes = TRUE)
+                         build_vignettes = rmarkdown::pandoc_available())
 ```
 
 The `dependencies = TRUE` argument ensures that suggested packages are
@@ -211,7 +260,7 @@ use:
 ``` r
 devtools::install_github("edwardlavender/patter@dev", 
                          dependencies = TRUE, 
-                         build_vignettes = TRUE)
+                         build_vignettes = rmarkdown::pandoc_available())
 ```
 
 This branch may include bug fixes and new features but should be used
@@ -225,7 +274,7 @@ ensure that your code continues to work, even if we have to make
 breaking changes to `patter` as the package evolves in response to user
 feedback.
 
-6.  **Connect to `Julia`**. At the start of every `R` session, you need
+7.  **Connect to `Julia`**. At the start of every `R` session, you need
     to connect `R` to `Julia` (and `patter` to
     [`Patter.jl`](https://github.com/edwardlavender/Patter.jl)):
 
@@ -234,20 +283,23 @@ feedback.
 library(patter)
 
 # Option (A): Connect to `Julia`: 
-# * Set JULIA_HOME if 'Julia not found'
-# * Set JULIA_PROJ to use a local Julia project (recommended)
-# * Set JULIA_NUM_THREADS to exploit multi-threading (recommended)
-# * See `julia_connect()` for guidance
+# * Set `JULIA_HOME` if 'Julia not found'
+# * Set `JULIA_PROJ` to use a local Julia project (recommended)
+# * Set `JULIA_NUM_THREADS` to exploit multi-threading (recommended)
+# * Set `.pkg_update = TRUE` if you've just installed a newer version of `patter`
+# * Set `JULIA_PATTER_SOURCE` = "dev" as well if you've installed from the `dev` branch
+# * See `julia_connect()` for further guidance
 julia <- julia_connect()
 ```
 
 The first time you run `julia_connect()`, it will connect to `Julia` and
 install (and pre-compile)
 [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) and the
-additional `Julia` dependencies. This may take a few minutes. Subsequent
-`julia_connect()` calls will be faster.
+additional `Julia` dependencies. This usually takes up to five minutes
+on first run but may take up to twenty minutes depending on the speed of
+your machine. Subsequent `julia_connect()` calls will be faster.
 
-7.  **Validate the `R`—`Julia` connection**. To validate that `patter`
+8.  **Validate the `R`—`Julia` connection**. To validate that `patter`
     works on your system, run:
 
 ``` r
@@ -255,9 +307,17 @@ julia_validate()
 ```
 
 This should return `NULL`, invisibly, in which case you are good to go.
-Otherwise, the function will return an error (or `R` may crash). Please
-report any [issues](https://github.com/edwardlavender/patter/issues) you
-experience during this process.
+Otherwise, the function will return an error (or `R` may crash).
+
+9.  **(optional) Run package checks**. To run package checks locally,
+    follow the instructions in [dev/001-check.R](dev/001-check.R). See
+    [test-environments.md](test-environments.md) for a list of the
+    systems on which we currently run comprehensive testing and the
+    latest results. We run tests on `MacOS`, `Windows` and `Linux`
+    systems for a selection of recent `R` and `Julia` versions. We only
+    run tests using up-to-date `R` and `Julia` packages.
+    [Issue](https://github.com/edwardlavender/patter/issues) reports are
+    appreciated.
 
 # Functionality
 
@@ -280,9 +340,11 @@ For example datasets from the Movement Ecology of Flapper Skate project
 (`datasets-mefs`), which inspired `patter`, see:
 
 - `dat_moorings` for acoustic receiver deployments;
-- `dat_acoustics` for acoustic time series;
+- `dat_detections` for acoustic detection time series;
 - `dat_archival` for archival (depth) time series;
 - `dat_gebco()` for a bathymetry grid;
+- `dat_coast()` for a coastline vector;
+- `dat_mpa()` for a Marine Protected Area boundary
 
 To validate new datasets for use with `patter`, see `pat_setup_data()`
 and/or the `assemble_*()` function documentation.
@@ -366,7 +428,10 @@ functions:
 
 - `assemble_timeline()` assembles a timeline;
 - `assemble_acoustics()` assembles an acoustic time series;
+- `assemble_acoustics_containers()` assembles a corresponding time
+  series of acoustic containers;
 - `assemble_archival()` assembles an archival time series;
+- `assemble_custom()` assembles custom time series;
 
 Ancillary time series should be structured in the same way for inclusion
 in the particle filter.
@@ -380,7 +445,7 @@ These functions return `pf_particles-class` objects.
 
 **For convenience plotting functions**, see:
 
-- `pf_plot_xy()` to plot particle locations;
+- `plot_xyt()` to plot particle locations;
 
 **For mapping utilisation distributions**, use:
 
@@ -413,9 +478,8 @@ essential packages:
 
 ``` r
 library(patter)
-#> This is {patter} v.1.0.1. For an overview, see `?patter`. For support, contact edward.lavender@eawag.ch.
+#> This is {patter} v.2.0.0. For an overview, see `?patter`. For support, raise an issue at https://github.com/edwardlavender/patter/issues.
 library(data.table)
-#> Warning: package 'data.table' was built under R version 4.3.3
 library(dtplyr)
 library(dplyr, warn.conflicts = FALSE)
 options(patter.verbose = FALSE)
@@ -427,7 +491,7 @@ ensure reproducibility of our simulations:
 ``` r
 julia_connect()
 julia_validate()
-set_seed()
+set_seed(123L)
 ```
 
 Third, we define the properties of our study area; namely, a
@@ -437,6 +501,7 @@ movements:
 
 ``` r
 # Define map 
+# * Use file path on Linux 
 map <- dat_gebco()
 set_map(map)
 
@@ -457,7 +522,7 @@ the two-dimensional (x, y) location of our animal through time (that is,
 the animal’s ‘state’ is an object of type `StateXY`). The animal can
 move up to 750 m in two minutes, which is the resolution at which we
 will model movement, and we formulate a random walk model accordingly
-based on step lengths and turning angles:
+based on step lengths and headings:
 
 ``` r
 # Define the animal's state:
@@ -465,19 +530,22 @@ state      <- "StateXY"
 
 # Formulate a corresponding movement model:
 mobility   <- 750.0
-model_move <- move_xy(dbn_length = glue::glue("truncated(Gamma(1, 250.0), upper = {mobility})"),
-                      dbn_angle = "Uniform(-pi, pi)")
+model_move <- model_move_xy(.mobility    = "750.0", 
+                            .dbn_length  = "truncated(Gamma(1, 250.0), upper = 750.0)",
+                            .dbn_heading = "Uniform(-pi, pi)")
 
-# Visualise realisations of the movement model:
+# Visualise realisations of the movement model (Windows/MacOS):
+# (Paths are coloured by time step from purple (start) to yellow (end))
 map |> 
-  sim_path_walk(.timeline = timeline,
-                .state = state,
+  sim_path_walk(.timeline   = timeline,
+                .state      = state,
                 .model_move = model_move, 
-                .n_path = 4L, .one_page = TRUE) |> 
+                .n_path     = 4L, 
+                .one_page   = TRUE) |> 
   invisible()
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
 
 ## Observations
 
@@ -486,8 +554,8 @@ flapper skate. Let’s pull out the time series for a selected individual:
 
 ``` r
 # Define acoustic detections
-acc <-
-  dat_acoustics |>
+det <-
+  dat_detections |>
   filter(individual_id == 25L) |>
   mutate(individual_id = NULL) |>
   as.data.table()
@@ -496,9 +564,9 @@ acc <-
 arc <-
   dat_archival |>
   filter(individual_id == 25L) |>
-  mutate(individual_id = NULL,
-         depth_sigma = 50,
-         depth_deep_eps = 30) |>
+  mutate(individual_id  = NULL,
+         depth_sigma    = 50,
+         depth_deep_eps = 50) |>
   rename(obs = depth) |>
   as.data.table()
 ```
@@ -509,14 +577,28 @@ we bundle together the observations with the parameters of the
 observation models:
 
 ``` r
-model_1   <- "ModelObsAcousticLogisTrunc"
-acoustics <- assemble_acoustics(.timeline = timeline,
-                                .acoustics = acc,
-                                .moorings = dat_moorings)
+# ModelObsAcousticLogisTrunc
+acoustics <- assemble_acoustics(.timeline   = timeline,
+                                .detections = det,
+                                .moorings   = dat_moorings)
 
-model_2  <- "ModelObsDepthNormalTrunc"
+# ModelObsContainer
+containers <- assemble_acoustics_containers(.timeline  = timeline, 
+                                            .acoustics = acoustics, 
+                                            .mobility  = mobility)
+
+# ModelObsDepthNormalTruncSeabed
 archival <- assemble_archival(.timeline = timeline,
                               .archival = arc)
+
+# Named lists of ModelObs sub-types and associated observations
+# * The container dataset is direction specific so we assemble two yobs lists
+yobs_fwd <- list(ModelObsAcousticLogisTrunc     = acoustics, 
+                 ModelObsContainer              = containers$forward,
+                 ModelObsDepthNormalTruncSeabed = archival)
+yobs_bwd <- list(ModelObsAcousticLogisTrunc     = acoustics, 
+                 ModelObsContainer              = containers$backward,
+                 ModelObsDepthNormalTruncSeabed = archival)
 ```
 
 Of course, you do not need acoustic and archival data to implement the
@@ -530,36 +612,80 @@ We are now in a position to run the particle filter. This runs a
 simulation forwards (or backwards) in time, sampling states (locations,
 termed ‘particles’) that are consistent with the movement model and the
 observations up to and including each time point. We end up with a time
-series (`data.table`) of particles that approximate the partial marginal
-distribution for the location of the animal, at each time step:
+series (`data.table::data.table`) of particles that approximate the
+partial marginal distribution for the location of the animal, at each
+time step:
 
 ``` r
 # List filter arguments
-args <- list(.map = map,
-             .timeline = timeline,
-             .state = state,
-             .xinit_pars = list(mobility = mobility),
-             .yobs = list(acoustics, archival),
-             .model_obs = c(model_1, model_2),
+args <- list(.timeline   = timeline,
+             .state      = state,
+             .yobs       = yobs_fwd,
              .model_move = model_move,
-             .n_record = 500L,
-             .n_particle = 1e5L)
+             .n_record   = 1000L,
+             .n_particle = 1e4L)
 
 # Forward run
 fwd <- do.call(pf_filter, args, quote = TRUE)
+
+# Forward run outputs
 head(fwd$states)
 #>    path_id timestep           timestamp map_value        x       y
 #>      <int>    <int>              <POSc>     <num>    <num>   <num>
-#> 1:       1        1 2016-03-17 01:50:00  59.76520 709142.1 6253007
-#> 2:       1        2 2016-03-17 01:52:00  68.53316 709276.5 6253291
-#> 3:       1        3 2016-03-17 01:54:00  45.86026 709476.1 6252964
-#> 4:       1        4 2016-03-17 01:56:00  44.46762 709390.0 6252794
-#> 5:       1        5 2016-03-17 01:58:00  60.64737 708976.4 6252849
-#> 6:       1        6 2016-03-17 02:00:00  55.42853 709437.9 6253395
+#> 1:       1        1 2016-03-17 01:50:00  42.39980 709442.1 6252807
+#> 2:       1        2 2016-03-17 01:52:00  49.42750 709292.4 6253022
+#> 3:       1        3 2016-03-17 01:54:00  83.21526 709073.7 6253192
+#> 4:       1        4 2016-03-17 01:56:00  37.55011 709685.4 6252670
+#> 5:       1        5 2016-03-17 01:58:00  45.86026 709430.2 6252964
+#> 6:       1        6 2016-03-17 02:00:00  46.53543 709252.1 6252852
+head(fwd$diagnostics)
+#>    timestep           timestamp      ess     maxlp
+#>       <int>              <POSc>    <num>     <num>
+#> 1:        1 2016-03-17 01:50:00 4290.876 -4.934213
+#> 2:        2 2016-03-17 01:52:00 6391.392 -4.915979
+#> 3:        3 2016-03-17 01:54:00 7131.287 -4.913703
+#> 4:        4 2016-03-17 01:56:00 4862.654 -4.546714
+#> 5:        5 2016-03-17 01:58:00 4926.398 -4.917193
+#> 6:        6 2016-03-17 02:00:00 6690.797 -4.896022
+fwd$callstats
+#>              timestamp         routine n_particle n_iter    loglik convergence
+#>                 <POSc>          <char>      <int>  <int>     <num>      <lgcl>
+#> 1: 2025-04-18 16:11:53 filter: forward      10000      1 -3556.524        TRUE
+#>        time
+#>       <num>
+#> 1: 7.415571
 
 # Backward run
+args$.yobs      <- yobs_bwd
 args$.direction <- "backward"
 bwd <- do.call(pf_filter, args, quote = TRUE)
+
+# Backward run outputs
+head(bwd$states)
+#>    path_id timestep           timestamp map_value        x       y
+#>      <int>    <int>              <POSc>     <num>    <num>   <num>
+#> 1:       1        1 2016-03-17 01:50:00  42.39980 709458.5 6252790
+#> 2:       1        2 2016-03-17 01:52:00  43.58479 709525.9 6253099
+#> 3:       1        3 2016-03-17 01:54:00  45.88295 709363.9 6252886
+#> 4:       1        4 2016-03-17 01:56:00  51.52599 709173.0 6251836
+#> 5:       1        5 2016-03-17 01:58:00  42.54443 709499.0 6252997
+#> 6:       1        6 2016-03-17 02:00:00  45.88295 709321.2 6252872
+head(bwd$diagnostics)
+#>    timestep           timestamp      ess     maxlp
+#>       <int>              <POSc>    <num>     <num>
+#> 1:        1 2016-03-17 01:50:00 7085.354 -4.915860
+#> 2:        2 2016-03-17 01:52:00 6648.213 -4.913576
+#> 3:        3 2016-03-17 01:54:00 4777.271 -4.915514
+#> 4:        4 2016-03-17 01:56:00 5172.635 -4.546961
+#> 5:        5 2016-03-17 01:58:00 6692.765 -4.914546
+#> 6:        6 2016-03-17 02:00:00 4977.524 -4.899462
+bwd$callstats
+#>              timestamp          routine n_particle n_iter    loglik convergence
+#>                 <POSc>           <char>      <int>  <int>     <num>      <lgcl>
+#> 1: 2025-04-18 16:12:00 filter: backward      10000      1 -3558.672        TRUE
+#>        time
+#>       <num>
+#> 1: 1.042987
 ```
 
 ## Particle smoother
@@ -570,7 +696,39 @@ the individual at each time step (accounting for all of the data before
 and after each step).
 
 ``` r
-smo <- pf_smoother_two_filter(.n_particle = 100L, .n_sim = 100L)
+# Set `vmap` for probability calculations
+# * Use file path rather on Linux 
+set_vmap(.map = map, .mobility = mobility)
+
+# Run smoother 
+smo <- pf_smoother_two_filter(.n_particle = 750L, .n_sim = 100L)
+
+# Smoother outputs
+head(smo$states)
+#>    path_id timestep           timestamp map_value        x       y
+#>      <int>    <int>              <POSc>     <num>    <num>   <num>
+#> 1:       1        1 2016-03-17 01:50:00  42.39980 709458.5 6252790
+#> 2:       1        2 2016-03-17 01:52:00  52.98276 709339.1 6253123
+#> 3:       1        3 2016-03-17 01:54:00  44.46762 709360.3 6252834
+#> 4:       1        4 2016-03-17 01:56:00  73.27666 709147.1 6253184
+#> 5:       1        5 2016-03-17 01:58:00  42.39980 709398.4 6252821
+#> 6:       1        6 2016-03-17 02:00:00  84.47292 709282.8 6253530
+head(smo$diagnostics)
+#>    timestep           timestamp      ess maxlp
+#>       <int>              <POSc>    <num> <num>
+#> 1:        1 2016-03-17 01:50:00 750.0000   NaN
+#> 2:        2 2016-03-17 01:52:00 668.7949   NaN
+#> 3:        3 2016-03-17 01:54:00 596.4778   NaN
+#> 4:        4 2016-03-17 01:56:00 387.9994   NaN
+#> 5:        5 2016-03-17 01:58:00 664.7221   NaN
+#> 6:        6 2016-03-17 02:00:00 645.6459   NaN
+smo$callstats
+#>              timestamp              routine n_particle n_iter loglik
+#>                 <POSc>               <char>      <int>  <int>  <num>
+#> 1: 2025-04-18 16:12:02 smoother: two-filter        750     NA    NaN
+#>    convergence     time
+#>         <lgcl>    <num>
+#> 1:        TRUE 3.355024
 ```
 
 ## Mapping
@@ -581,9 +739,10 @@ samples as follows:
 
 ``` r
 # Estimate UD
-ud <- map_dens(.map = map,
+# * This must be done in a separate R session on Linux 
+ud <- map_dens(.map   = map,
                .coord = smo$states,
-               sigma = spatstat.explore::bw.diggle)$ud
+               .sigma = bw.h)$ud
 #> Observation window is gridded.
 
 # Add home range
@@ -608,13 +767,21 @@ out with queries.
 - `?patter::patter` for an overview of package functions;
 - `?patter::pf_filter`for information on specific functions (such as
   `pf_filter()`);
+- [`patter-workshops`](https://github.com/edwardlavender/patter-workshops)
+  for introductory materials;
 
 **For further code examples**, see:
 
-- [`patter-eval`](https://github.com/edwardlavender/patter-eval) for an
-  extensive simulation-based workflow and analysis;
+- [`patter-demo`](https://github.com/edwardlavender/patter-demo) for
+  simple demonstrations;
+- [`patter-eval`](https://github.com/edwardlavender/patter-eval) for a
+  simulation-based workflow and analysis;
 - [`patter-flapper`](https://github.com/edwardlavender/patter-flapper)
-  for a complete real-world analysis;
+  for a real-world analysis on flapper skate;
+- [`patter-trout`](https://github.com/edwardlavender/patter-trout) for a
+  real-world analysis on lake trout;
+
+Note that the code base in some repositories may be outdated.
 
 # Disclaimer and troubleshooting
 
@@ -625,17 +792,83 @@ evolution (<edward.lavender@eawag.ch>).
 
 # Citation
 
-To cite `patter` in publications, please use:
+**To cite `patter` in publications**, please use:
 
-- Lavender, E. et al. (2023). An integrative modelling framework for
-  passive acoustic telemetry. Methods in Ecology and Evolution.
-  <https://doi.org/10.1111/2041-210X.14193>
-- Lavender, E. et al. (in prep). Particle algorithms for animal movement
-  modelling in autonomous receiver networks.
-- Lavender, E. et al. (in prep). Particle algorithms for animal tracking
-  in `R` and `Julia`. <https://doi.org/10.1101/2024.07.30.605733>
-- Lavender, E. et al. (in prep). Particle algorithms reveal patterns of
-  space use in a Critically Endangered elasmobranch.
+- Lavender, E., Scheidegger, A., Albert, C., Biber, S. W., Illian, J.,
+  Thorburn, J., Smout, S., & Moor, H. (2025). Particle algorithms for
+  animal movement modelling in receiver arrays. Methods in Ecology and
+  Evolution, 00, 1–12. <https://doi.org/10.1111/2041-210X.70028>
+- Lavender, E., Scheidegger, A., Albert, C., Biber, S. W., Illian, J.,
+  Thorburn, J., Smout, S., & Moor, H. (2025). patter: Particle
+  algorithms for animal tracking in R and Julia. Methods in Ecology and
+  Evolution, 00, 1–8. <https://doi.org/10.1111/2041-210X.70029>
+- Lavender, E., Scheidegger, A., Albert, C., Biber, S. W., Brodersen,
+  J., Aleynik, D., Cole, G., Dodd, J., Wright, P. J., Illian, J., James,
+  M., Smout, S., Thorburn, J., & Moor, H. (2025). Animal tracking with
+  particle algorithms for conservation. bioRxiv.
+  <https://doi.org/10.1101/2025.02.13.638042>
+
+For the `BibTex`:
+
+``` bibtex
+@Article{Lavender2025a,
+  author  = {Lavender, Edward and Scheidegger, Andreas and Albert, Carlo and Biber, Stanisław W. and Illian, Janine and Thorburn, James and Smout, Sophie and Moor, Helen},
+  title   = {Particle algorithms for animal movement modelling in receiver arrays},
+  journal = {Methods in Ecology and Evolution},
+  year    = {2025},
+  volume  = {00},
+  pages   = {1--12},
+  doi     = {10.1111/2041-210X.70028}
+}
+```
+
+``` bibtex
+@Article{Lavender2025b,
+  author  = {Lavender, Edward and Scheidegger, Andreas and Albert, Carlo and Biber, Stanisław W. and Illian, Janine and Thorburn, James and Smout, Sophie and Moor, Helen},
+  title   = {patter: Particle algorithms for animal tracking in R and Julia},
+  journal = {Methods in Ecology and Evolution},
+  year    = {2025},
+  volume  = {00},
+  pages   = {1--8},
+  doi     = {10.1111/2041-210X.70029}
+}
+```
+
+``` bibtex
+@Article{Lavender2025c,
+  author  = {Lavender, Edward and Scheidegger, Andreas and Albert, Carlo and Biber, Stanisław W. and Brodersen, Jakob and Aleynik, Dmitry and Cole, Georgina and Dodd, Jane and Wright, Peter J. and Illian, Janine and James, Mark and Smout, Sophie and Thorburn, James and Moor, Helen},
+  title   = {Animal tracking with particle algorithms for conservation},
+  journal = {bioRxiv},
+  year    = {2025},
+  doi     = {10.1101/2025.02.13.638042}
+}
+```
+
+**`patter` evolved from the
+[`flapper`](https://github.com/edwardlavender/flapper)
+[`R`](https://www.r-project.org) package**. Please also consider citing
+that publication:
+
+Lavender, E., Biber, S., Illian, J., James, M., Wright, P., Thorburn,
+J., & Smout, S. (2023). An integrative modelling framework for passive
+acoustic telemetry. Methods in Ecology and Evolution, 14, 2626–2638.
+<https://doi.org/10.1111/2041-210X.14193>
+
+``` bibtex
+@Article{Lavender2023,
+  author  = {Lavender, Edward and Biber, Stanisław W. and Illian, Janine and James, Mark and Wright, Peter J. and Thorburn, James and Smout, Sophie},
+  title   = {An integrative modelling framework for passive acoustic telemetry},
+  journal = {Methods in Ecology and Evolution},
+  year    = {2023},
+  volume  = {14},
+  pages   = {2626--2638},
+  doi     = {10.1111/2041-210X.14193}
+  }
+}
+```
+
+**Thank you for citing the package. Your citations help to justify
+continued investments in its development.**
 
 ------------------------------------------------------------------------
 

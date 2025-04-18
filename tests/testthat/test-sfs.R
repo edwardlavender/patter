@@ -1,7 +1,9 @@
 test_that("st_invert() works", {
 
+  skip_on_cran()
   skip_on_ci()
   skip_on_os(c("windows", "linux", "solaris"))
+  skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
 
   b <- terra::boundaries(dat_gebco())
   # terra::plot(b)
@@ -15,7 +17,8 @@ test_that("st_invert() works", {
 
   expect_true(all.equal(land, land_check))
 
-  expect_snapshot_file(snapshot_png(terra::plot(sea, col = "blue")),
-                       "st_invert.png")
+  png <- snapshot_png(terra::plot(sea, col = "blue"))
+  expect_snapshot_file(png, "st_invert.png")
+  unlink(png)
 
 })

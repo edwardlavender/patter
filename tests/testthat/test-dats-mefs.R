@@ -1,5 +1,7 @@
 test_that("Example datasets follow documented structure", {
 
+  skip_if_not(patter_run(.julia = FALSE, .geospatial = TRUE))
+
   check_dt <- function(.dt, .class, .n_row, .n_col, .cols) {
     check_inherits(.dt, "data.table")
     expect_equal(nrow(.dt), .n_row)
@@ -15,8 +17,8 @@ test_that("Example datasets follow documented structure", {
              "receiver_x", "receiver_y",
              "receiver_alpha", "receiver_beta", "receiver_gamma"))
 
-  #### dat_acoustics
-  check_dt(dat_acoustics, "data.table", 39242, 3,
+  #### dat_detections
+  check_dt(dat_detections, "data.table", 39242, 3,
            c("individual_id", "timestamp", "receiver_id"))
 
   #### dat_archival

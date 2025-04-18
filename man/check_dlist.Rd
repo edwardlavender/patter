@@ -3,7 +3,7 @@
 \name{check_dlist}
 \alias{check_dlist}
 \alias{check_map}
-\alias{check_acoustics}
+\alias{check_detections}
 \alias{check_moorings}
 \alias{check_services}
 \alias{check_archival}
@@ -11,18 +11,18 @@
 \usage{
 check_map(.map)
 
-check_acoustics(.acoustics, .moorings = NULL)
+check_detections(.detections, .moorings = NULL)
 
-check_moorings(.moorings, .acoustics = NULL, .map)
+check_moorings(.moorings, .detections = NULL, .map)
 
 check_services(.services, .moorings)
 
 check_archival(.archival)
 }
 \arguments{
-\item{.map}{A \code{\link{SpatRaster}} that defines the study area for the simulation (see \code{\link{glossary}}).}
+\item{.map}{A \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} that defines the study area for the simulation (see \code{\link{glossary}}).}
 
-\item{.acoustics, .moorings, .services, .archival}{Observation \code{\link{data.table}}s.}
+\item{.detections, .moorings, .services, .archival}{Observation \code{\link[data.table:data.table]{data.table::data.table}}s.}
 }
 \value{
 Each function returns the input dataset, as described, formatted in line with \code{\link{patter}}'s requirements.
@@ -33,9 +33,9 @@ These functions validate user datasets. See Details for \code{\link{patter}} req
 \details{
 These are internal functions that ensure that input dataset(s) meet \code{\link{patter}} requirements. Users with acoustic and/or archival data should implement \code{\link[=pat_setup_data]{pat_setup_data()}} to prepare datasets for \code{\link{patter}} functions. Downstream functions (often) silently assume that input datasets meet all requirements, without subsequent checks. This simplifies internal code and documentation.
 \itemize{
-\item \code{\link[=check_map]{check_map()}} checks the \code{.map} \code{\link{SpatRaster}}:
+\item \code{\link[=check_map]{check_map()}} checks the \code{.map} \code{\link[terra:SpatRaster-class]{terra::SpatRaster}}:
 \itemize{
-\item Class: \code{\link{SpatRaster}};
+\item Class: \code{\link[terra:SpatRaster-class]{terra::SpatRaster}};
 \item Name(s): \code{"map_value"};
 \item Properties:
 \itemize{
@@ -48,9 +48,9 @@ These are internal functions that ensure that input dataset(s) meet \code{\link{
 \item The data source may be in memory or on disk, but the former is faster for pure \code{R} functions;
 }
 }
-\item \code{\link[=check_acoustics]{check_acoustics()}} checks detection time series:
+\item \code{\link[=check_detections]{check_detections()}} checks detection time series:
 \itemize{
-\item Class: \code{\link{data.table}};
+\item Class: \code{\link[data.table:data.table]{data.table::data.table}};
 \item Columns:
 \itemize{
 \item \code{timestamp}---an ordered, \code{POSIXct} vector of time stamps with a defined \code{tzone} attribute;
@@ -65,7 +65,7 @@ These are internal functions that ensure that input dataset(s) meet \code{\link{
 }
 \item \code{\link[=check_services]{check_services()}} checks acoustic servicing records:
 \itemize{
-\item Class: \code{\link{data.table}};
+\item Class: \code{\link[data.table:data.table]{data.table::data.table}};
 \item Columns:
 \itemize{
 \item \code{receiver_id}---see \code{.moorings$receiver_id};
@@ -78,7 +78,7 @@ These are internal functions that ensure that input dataset(s) meet \code{\link{
 }
 \item \code{\link[=check_moorings]{check_moorings()}} checks receiver deployment records:
 \itemize{
-\item Class: \code{\link{data.table}};
+\item Class: \code{\link[data.table:data.table]{data.table::data.table}};
 \item Columns:
 \itemize{
 \item \code{receiver_id}---an \code{integer} vector of unique receiver deployments (\verb{1, ..., N});
@@ -87,13 +87,13 @@ These are internal functions that ensure that input dataset(s) meet \code{\link{
 \item Properties:
 \itemize{
 \item \code{receiver_start} should precede \code{receiver_end};
-\item Receiver deployment periods should (usually) at least partially overlap with the time period of acoustic observations;
+\item Receiver deployment periods should (usually) at least partially overlap with the time period of acoustic detections;
 \item Receiver coordinates must be valid on \code{.map} (not currently validated);
 }
 }
 \item \code{\link[=check_archival]{check_archival()}} checks archival depth time series data:
 \itemize{
-\item Class: \code{\link{data.table}};
+\item Class: \code{\link[data.table:data.table]{data.table::data.table}};
 \item Columns:
 \itemize{
 \item \code{timestamp}---an ordered, \code{POSIXct} vector of time stamps with a defined \code{tzone} attribute;

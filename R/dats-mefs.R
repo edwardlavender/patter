@@ -2,6 +2,11 @@
 #'
 #' @description These are sample datasets collated by the Movement Ecology of Flapper Skate (MEFS) project (Lavender, 2022). The flapper skate (*Dipturus intermedius*) is a Critically Endangered benthic elasmobranch. As part of the MEFS project, flapper skate were tagged with acoustic transmitters and archival (data storage) tags off the west coast of Scotland in 2016--17. Acoustic transmissions were recorded at an array of passive acoustic telemetry receivers. Concurrent depth time series were recorded by archival tags and recovered from recaptured individuals. For full details, see the references below. The datasets are defined within [`patter`] to illustrate package functions using real-world datasets.
 #'
+#' @param .return A `character` that defines the object returned by [`dat_gebco()`], [`dat_coast()`] or [`dat_mpa()`]:
+#' * `SpatRaster` returns a [`terra::SpatRaster`];
+#' * `SpatVector` returns a [`terra::SpatVector`];
+#' * `character` returns a file path to the raster. This is the only supported option on Linux if `JULIA_SESSION = "TRUE"`;
+#'
 #' @details
 #'
 #' # Moorings
@@ -14,9 +19,9 @@
 #'
 #' Data are arranged by `receiver_id`.
 #'
-#' # Acoustics
+#' # Detections
 #'
-#' [`dat_acoustics`] contains sample detection time series. This includes the following columns:
+#' [`dat_detections`] contains sample detection time series. This includes the following columns:
 #'   * `individual_id`---an `integer` vector that identifies individuals;
 #'   * `timestamp`---a `POSIXct` vector that defines the time of each observation;
 #'   * `receiver_id`---the receiver ID (see [`dat_moorings`]);
@@ -26,7 +31,7 @@
 #' # Archival
 #'
 #' [`dat_archival`] contains sample depth time series. Observations were sampled every 2 minutes. The data includes the following columns:
-#'   * `individual_id`---an `integer` vector that identifies individuals (as in [`dat_acoustics`]);
+#'   * `individual_id`---an `integer` vector that identifies individuals (as in [`dat_detections`]);
 #'   * `timestamp`---a `POSIXct` vector that defines the time of each observation;
 #'   * `depth`---a `numeric` vector that defines the depth (m) of the individual at each time step;
 #'
@@ -34,15 +39,30 @@
 #'
 #' # Bathymetry
 #'
-#' [`dat_gebco()`] returns a bathymetry (m) dataset for the west coast of Scotland where MEFS data were collected. This dataset is a [`SpatRaster`] with the following properties:
+#' [`dat_gebco()`] returns a bathymetry (m) dataset for the west coast of Scotland where MEFS data were collected. This dataset is a [`terra::SpatRaster`] with the following properties:
 #'   * `dimensions`---264, 190, 1 (`nrow`, `ncol`, `nlyr`);
 #'   * `resolution`---100, 100  (`x`, `y`);
 #'   * `extent`---695492.1, 714492.1, 6246657, 6273057  (`xmin`, `xmax`, `ymin`, `ymax`);
 #'   * `coord. ref.`---WGS 84 / UTM zone 29N (EPSG:32629);
 #'
+#' # Coastline
+#'
+#' [`dat_coast()`] returns a [`terra::SpatVector`] of coastline for the same region.
+#'
+#' # Marine Protected Area
+#'
+#' [`dat_mpa()`] returns a [`terra::SpatVector`] of the boundaries of the Loch Sunart to the Sound of Jura Marine Protected Area (MPA) with the following columns:
+#'   * `id`---A `character` label for each polygon;
+#'   * `open`---A `character` that defines whether or not each `id` is `open` or `closed` to fishing;
+#'   * `col`---A `character` that defines a colour (for visualising);
+#'
 #' @source Biologging and biotelemetry data were collected by, and belong to, Marine Scotland Science and NatureScot. Data were processed by Lavender (2022). If you wish to use these data, please contact Marine Scotland Science and NatureScot for further information.
 #'
 #' Bathymetry data were sourced from GEBCO Compilation Group (2019) GEBCO 2019 Grid. \url{https://www.doi.org/10.5285/836f016a-33be-6ddc-e053-6c86abc0788e}
+#'
+#' Coastline data were sourced from [`flapper::dat_coast`](https://edwardlavender.github.io/flapper/reference/dat_coast.html).
+#'
+#' MPA boundary data were assembled by E. Lavender.
 #'
 #' @references Data collection and processing are described in Lavender (2022). Modelling the movements of flapper skate (*Dipturus intermedius*) in relation to a Scottish Marine Protected Area. University of St Andrews. \url{https://www.doi.org/10.17630/sta/201}
 #'
@@ -62,7 +82,7 @@ NULL
 "dat_moorings"
 
 #' @rdname datasets-mefs
-"dat_acoustics"
+"dat_detections"
 
 #' @rdname datasets-mefs
 "dat_archival"
@@ -70,6 +90,41 @@ NULL
 #' @rdname datasets-mefs
 #' @export
 
-dat_gebco <- function() {
-  terra::rast(system.file("extdata", "dat_gebco.tif", package = "patter", mustWork = TRUE))
+dat_gebco <- function(.return = c("SpatRaster", "character")) {
+  .return <- match.arg(.return)
+  path <- system.file("extdata", "dat_gebco.tif",
+                      package = "patter", mustWork = TRUE)
+  if (.return == "character") {
+    return(path)
+  } else {
+    return(terra::rast(path))
+  }
+}
+
+#' @rdname datasets-mefs
+#' @export
+
+dat_coast <- function(.return = c("SpatVector", "character")) {
+  .return <- match.arg(.return)
+  path <- system.file("extdata", "dat_coast.gpkg",
+                      package = "patter", mustWork = TRUE)
+  if (.return == "character") {
+    return(path)
+  } else {
+    return(terra::vect(path))
+  }
+}
+
+#' @rdname datasets-mefs
+#' @export
+
+dat_mpa <- function(.return = c("SpatVector", "character")) {
+  .return <- match.arg(.return)
+  path <- system.file("extdata", "dat_mpa.gpkg",
+                      package = "patter", mustWork = TRUE)
+  if (.return == "character") {
+    return(path)
+  } else {
+    return(terra::vect(path))
+  }
 }

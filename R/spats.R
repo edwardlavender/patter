@@ -1,5 +1,5 @@
 #' @title Spatial helper: `spat*` functions
-#' @description Internal helpers for `terra` [`SpatRaster`] and [`SpatVector`] objects.
+#' @description Internal helpers for `terra` [`terra::SpatRaster`] and [`terra::SpatVector`] objects.
 #' @author Edward Lavender
 #' @name spat
 
@@ -46,19 +46,25 @@ spatAllNA <- function(.x) {
 #' @rdname spat
 #' @keywords internal
 
-# Define a 'box' within which 2D movements are always valid
-# - This is NULL if the SpatRaster contains NAs
-# - Otherwise, it is the extent, shrunk by `.mobility`
-# - (2D Movements in this region are always valid)
-# * TO DO: generalise to spatPoly() in future
-spatMobilityBox <- function(.x, .mobility) {
-  if (spatContainsNA(.x)) {
-    warn("`Patter.two_filter_smoother()`'s `box` argument set to `nothing`: `.map` contains NAs.")
-    return(NULL)
-  } else {
-    # Shrink the boundary box by .mobility
-    bb <- terra::ext(.x) - .mobility
-    # Update the extent, as in Patter.bbox()
-    return(c(min_x = bb[1], max_x = bb[2], min_y = bb[3], max_y = bb[4]))
+# Define a 'validity map' within which 2D movements are always valid
+spatVmap <- function(.map, .mobility, .plot = FALSE, ...) {
+  # Set boundary as NA
+  .map <- terra::deepcopy(.map)
+  .map[1L, ]                <- NA
+  .map[terra::nrow(.map), ] <- NA
+  .map[, 1L]                <- NA
+  .map[, terra::ncol(.map)] <- NA
+  # Define land SpatRaster (land = TRUE, sea = NA)
+  land <- is.na(.map)
+  land <- terra::classify(land, cbind(FALSE, NA))
+  # Compute distance from points in the sea to the nearest land
+  distance_from_boundary <- terra::distance(land)
+  # Identify the points that are > mobility from land
+  # * Any XY movements from these points (1) are valid
+  # * Any XY movements from other points (0) require simulation
+  vmap <- distance_from_boundary > .mobility
+  if (.plot) {
+    terra::plot(vmap, ...)
   }
+  vmap
 }

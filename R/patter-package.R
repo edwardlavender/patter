@@ -17,9 +17,11 @@
 #' For example datasets from the Movement Ecology of Flapper Skate project ([`datasets-mefs`]), which inspired [`patter`], see:
 #'
 #' * [`dat_moorings`] for acoustic receiver deployments;
-#' * [`dat_acoustics`] for acoustic time series;
+#' * [`dat_detections`] for acoustic detection time series;
 #' * [`dat_archival`] for archival (depth) time series;
 #' * [`dat_gebco()`] for a bathymetry grid;
+#' * [`dat_coast()`] for a coastline vector;
+#' * [`dat_mpa()`] for a Marine Protected Area boundary
 #'
 #' To validate new datasets for use with [`patter`], see [`pat_setup_data()`] and/or the [`assemble`]`_*()` function documentation.
 #'
@@ -36,7 +38,7 @@
 #' * [`julia_connect()`] to connect to `R` to `Julia`;
 #' * [`julia_validate()`] to validate the `R`---`Julia` connection;
 #' * [`set_seed()`] to set the seed in `R` and `Julia`;
-#' * [`set_map()`] to make a [`SpatRaster`] of the study area available in `Julia`;
+#' * [`set_map()`] to make a [`terra::SpatRaster`] of the study area available in `Julia`;
 #'
 #' These functions should be run at the start of every `R` session.
 #'
@@ -83,7 +85,9 @@
 #'
 #' * [`assemble_timeline()`] assembles a timeline;
 #' * [`assemble_acoustics()`] assembles an acoustic time series;
+#' * [`assemble_acoustics_containers()`] assembles a corresponding time series of acoustic containers;
 #' * [`assemble_archival()`] assembles an archival time series;
+#' * [`assemble_custom()`] assembles custom time series;
 #'
 #' Ancillary time series should be structured in the same way for inclusion in the particle filter.
 #'
@@ -96,7 +100,7 @@
 #'
 #' **For convenience plotting functions**, see:
 #'
-#' * [`pf_plot_xy()`] to plot particle locations;
+#' * [`plot_xyt()`] to plot particle locations;
 #'
 #' **For mapping utilisation distributions**, use:
 #'
@@ -128,9 +132,8 @@
 #' * For information on the [`flapper`](https://github.com/edwardlavender/flapper) algorithms, see Lavender et al. ([2023](https://doi.org/10.1111/2041-210X.14193)).
 #' * For information on [`patter`]'s predecessor, see \url{https://github.com/edwardlavender/flapper}.
 #' * For further information on  [`patter`], including useful resources, see \url{https://github.com/edwardlavender/patter}.
-#' * For feature requests and bug reports, see \url{https://github.com/edwardlavender/patter/issues}.
+#' * For support, feature requests and bug reports, raise an issue at \url{https://github.com/edwardlavender/patter/issues}.
 #' * For the `Julia` backend, see \url{https://edwardlavender.github.io/Patter.jl}.
-#' * For support, contact [edward.lavender@eawag.ch](mailto:edward.lavender@eawag.ch).
 #'
 #' @references Lavender, E. et al. (2023). An integrative modelling framework for passive acoustic telemetry. Methods in Ecology and Evolution. \url{https://doi.org/10.1111/2041-210X.14193}.
 #'
@@ -147,20 +150,29 @@
 #' @importFrom data.table copy
 #' @importFrom data.table data.table
 #' @importFrom data.table .GRP
+#' @importFrom data.table nafill
 #' @importFrom data.table .N
 #' @importFrom data.table rbindlist
+#' @importFrom data.table rleid
+#' @importFrom data.table setDT
+#' @importFrom data.table setnames
 #' @importFrom data.table :=
 #'
 #' @importFrom dplyr all_of
 #' @importFrom dplyr any_of
 #' @importFrom dplyr arrange
+#' @importFrom dplyr desc
+#' @importFrom dplyr dense_rank
+#' @importFrom dplyr distinct
 #' @importFrom dplyr everything
 #' @importFrom dplyr filter
 #' @importFrom dplyr group_by
 #' @importFrom dplyr if_else
+#' @importFrom dplyr lead
 #' @importFrom dplyr left_join
 #' @importFrom dplyr mutate
 #' @importFrom dplyr n
+#' @importFrom dplyr pull
 #' @importFrom dplyr reframe
 #' @importFrom dplyr rename
 #' @importFrom dplyr row_number
@@ -201,7 +213,9 @@
 #'
 #' @importFrom rlang .data
 #'
+#' @importFrom stats plogis
 #' @importFrom stats runif
+#' @importFrom stats var
 #'
 #' @importFrom utils head
 #' @importFrom utils tail

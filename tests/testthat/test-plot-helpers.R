@@ -33,6 +33,7 @@ test_that("par_mf() works", {
 })
 
 test_that("add_sp_path() works", {
+  skip_on_cran()
   skip_on_ci()
   skip_on_os(c("windows", "linux", "solaris"))
   code <- expression(
@@ -42,6 +43,7 @@ test_that("add_sp_path() works", {
       add_sp_path(xy)
     }
   )
-  expect_snapshot_file(snapshot_png(code),
-                       "add_sp_path.png")
+  png <- snapshot_png(code)
+  expect_snapshot_file(png, "add_sp_path.png")
+  unlink(png)
 })

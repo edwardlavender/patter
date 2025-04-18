@@ -1,5 +1,74 @@
+#' @title Examples: run code
+#' @description These functions switch code blocks on/off.
+#' @param .julia A `logical` variable that defines whether or not the code requires connection to a `Julia` session.
+#' @param .geospatial A `logical` variable that defines whether or not `R`'s geospatial packages (e.g., `terra`) are required.
+#' @details
+#' [`patter_run()`] is the main switch:
+#' * If `.julia = TRUE`, the 'switch' is off if:
+#'    * `AUTO_JULIA_INSTALL != "true"`;
+#'    * You are on a Linux platform and geospatial packages are currently in use;
+#'    * You are on a Linux platform and `.geospatial = TRUE`;
+#'
+#' * Otherwise, the switch if off if:
+#'    * You are on a Linux platform, `JULIA_SESSION = "TRUE"` and `.geospatial = TRUE`;
+#'
+#' (On Linux, geospatial libraries cannot be used simultaneously in `R` and `Julia`.)
+#'
+#' [`patter_run_expensive()`] is a subsidiary switch for particularly expensive routines:
+#' * If `PATTER_RUN_EXPENSIVE = "TRUE"`, this returns `TRUE`;
+#' * Otherwise, `FALSE` is returned;
+#'
+#' @return The functions return a `logical` value.
+#' @example man/examples/example-patter_run.R
+#' @author Edward Lavender
+#' @name patter_run
+
+
+#' @rdname patter_run
+#' @export
+
+# Choose whether or not to run code (examples/tests)
+# * `.julia`: does the code require a julia session?
+# * `.geospatial`: does the code require R's geospatial libraries e.g., terra?
+patter_run <- function(.julia = TRUE, .geospatial = TRUE) {
+
+  run       <- TRUE
+  linux_msg <- "On Linux, geospatial dependencies cannot be used in R and Julia simultaneously."
+
+  if (.julia) {
+    # Suppress Julia examples if AUTO_JULIA_INSTALL != true
+    if (!identical(Sys.getenv("AUTO_JULIA_INSTALL"), "true")) {
+      run <- FALSE
+    }
+    # On Linux, suppress Julia examples if geospatial packages in use
+    if (run & os_linux() & any(c("sf", "terra") %in% loadedNamespaces())) {
+      message(linux_msg)
+      run <- FALSE
+    }
+    if (run & os_linux() & .geospatial) {
+      message(linux_msg)
+      run <- FALSE
+    }
+  } else {
+    # On Linux, suppress pure-R geospatial examples if JULIA_SESSION = TRUE
+    if (.geospatial & os_linux() & julia_session()) {
+      message(linux_msg)
+      run <- FALSE
+    }
+  }
+  run
+}
+
+
+#' @rdname patter_run
+#' @export
+
+patter_run_expensive <- function() {
+  Sys.getenv("PATTER_RUN_EXPENSIVE") == "TRUE"
+}
+
 #' @title Examples: streamline set up
-#' @description These functions are used to streamline package examples.
+#' @description These functions are used to streamline package examples. They are Windows and MacOS compatible.
 #' @param .fun A `character` that defines the name of a [`patter`] function with a corresponding [`example_setup()`] method.
 #' @param .connect A `logical` variable that defines whether or not to run [`julia_connect()`]. Set to `FALSE` for testing.
 #' @author Edward Lavender
@@ -34,22 +103,15 @@ example_setup.pf_smoother_two_filter <- function(.fun, .connect = TRUE) {
 
   #### Define study system
   # Define map
-  # * Simulate depths without NAs for examples
-  map <- terra::rast(vals = 0,
-                     res = c(10, 10),
-                     xmin = 0, xmax = 1e4,
-                     ymin = 0, ymax = 1e4,
-                     crs = terra::crs(dat_gebco()))
-  map_xy        <- terra::as.data.frame(map, xy = TRUE)
-  map_xy$depth  <- 250 - 100 * cos(sqrt(map_xy$x^2 + map_xy$y^2) / (500 * 2 * pi))
-  map           <- terra::rasterize(as.matrix(map_xy[, c("x", "y")]),
-                                    map,
-                                    values = map_xy$depth)
+  # * Selection region without NAs for examples
+  map <- terra::crop(dat_gebco(), terra::ext(707383.2, 711829.3, 6257189, 6261438))
   set_map(map)
   # terra::plot(map)
   # Define timeline
+  # * Set start and end, rather than length.out, to avoid test warnings
   timeline <- seq(as.POSIXct("2016-01-01", tz = "UTC"),
-                  length.out = 100L, by = "2 mins")
+                  as.POSIXct("2016-01-01 03:18:00 UTC", tz = "UTC"),
+                  by = "2 mins")
 
   #### Simulate an acoustic array
   moorings <- sim_array(.map = map,
@@ -57,19 +119,18 @@ example_setup.pf_smoother_two_filter <- function(.fun, .connect = TRUE) {
                         .n_receiver = 100L)
 
   #### Simulate movements
-  state    <- "StateXY"
-  mobility <- 750
-  move     <-
-    move_xy(dbn_length = glue::glue("truncated(Gamma(1, 250.0), upper = {mobility})"),
-            dbn_angle = "Uniform(-pi, pi)")
+  state      <- "StateXY"
+  model_move <-
+    model_move_xy(.mobility = "750.0",
+            .dbn_length = "truncated(Gamma(1, 250.0), upper = 750.0)",
+            .dbn_heading = "Uniform(-pi, pi)")
   sim_path_walk(.map = map,
                 .timeline = timeline,
                 .state = state,
-                .model_move = move)
+                .model_move = model_move)
 
   #### Simulate observations
   # Define models & parameters
-  models <- c("ModelObsAcousticLogisTrunc", "ModelObsDepthUniform")
   pars_1 <-
     moorings |>
     select(sensor_id = "receiver_id", "receiver_x", "receiver_y",
@@ -78,22 +139,25 @@ example_setup.pf_smoother_two_filter <- function(.fun, .connect = TRUE) {
   pars_2 <- data.table(sensor_id = 1L,
                        depth_shallow_eps = 10,
                        depth_deep_eps = 10)
-  pars <- list(pars_1, pars_2)
+  model_obs <- list(ModelObsAcousticLogisTrunc = pars_1,
+                    ModelObsDepthUniformSeabed = pars_2)
   # Simulate observational datasets
   obs <- sim_observations(.timeline = timeline,
-                          .model_obs = models,
-                          .model_obs_pars = pars)
+                          .model_obs = model_obs)
   # Collate observations for filter
-  yobs <- list(obs$ModelObsAcousticLogisTrunc[[1]], obs$ModelObsDepthUniform[[1]])
+  yobs <- list(ModelObsAcousticLogisTrunc = obs$ModelObsAcousticLogisTrunc[[1]],
+               ModelObsDepthUniformSeabed = obs$ModelObsDepthUniformSeabed[[1]])
 
   #### Collate filter arguments
-  list(.map = map,
-       .timeline = timeline,
-       .state = state,
-       .xinit = NULL, .xinit_pars = list(mobility = mobility),
-       .yobs = yobs,
-       .model_obs = models,
-       .model_move = move,
-       .n_particle = 1e4L,
-       .n_record = 100L)
+  list(map = map,
+       pf_filter_args =
+         list(.timeline   = timeline,
+              .state      = state,
+              .xinit      = NULL,
+              .yobs       = yobs,
+              .model_move = model_move,
+              .n_particle = 1e4L,
+              .n_record   = 100L)
+       )
+
 }

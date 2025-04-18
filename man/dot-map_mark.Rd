@@ -7,7 +7,7 @@
 .map_mark(.coord)
 }
 \arguments{
-\item{.coord}{A \code{\link{data.table}} that defines coordinates, with the following columns:
+\item{.coord}{A \code{\link[data.table:data.table]{data.table::data.table}} that defines coordinates, with the following columns:
 \itemize{
 \item (required) \code{id}---a vector that distinguishes coordinate IDs (such as grid cells or unique coordinate pairs);
 \item (optional) \code{timestep}---a vector that distinguishes time steps, if coordinates have been sampled through time;
@@ -15,7 +15,7 @@
 }}
 }
 \value{
-The function returns a \code{\link{data.table}}. Columns match \code{.coord}, excluding \code{timestep} if specified (since weights are summarised within and across time steps). There is one row for each unique coordinate ID and a \code{mark} column that defines the associated weights.
+The function returns a \code{\link[data.table:data.table]{data.table::data.table}}. Columns match \code{.coord}, excluding \code{timestep} if specified (since weights are summarised within and across time steps). There is one row for each unique coordinate ID and a \code{mark} column that defines the associated weights.
 }
 \description{
 This function calculates coordinate weights for a dataset or time series.

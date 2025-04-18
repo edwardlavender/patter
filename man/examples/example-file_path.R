@@ -1,6 +1,6 @@
 # Set up example
 temp <- tempdir()
-sink <- file.path(tempdir(), "patter")
+sink <- file.path(temp, "patter")
 dir.create(sink, recursive = TRUE)
 write.table("", file = file.path(sink, "1.csv"))
 write.table("", file = file.path(sink, "2.csv"))

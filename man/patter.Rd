@@ -24,9 +24,11 @@ For a glossary of key arguments, see \code{\link{glossary}}.
 For example datasets from the Movement Ecology of Flapper Skate project (\code{\link{datasets-mefs}}), which inspired \code{\link{patter}}, see:
 \itemize{
 \item \code{\link{dat_moorings}} for acoustic receiver deployments;
-\item \code{\link{dat_acoustics}} for acoustic time series;
+\item \code{\link{dat_detections}} for acoustic detection time series;
 \item \code{\link{dat_archival}} for archival (depth) time series;
 \item \code{\link[=dat_gebco]{dat_gebco()}} for a bathymetry grid;
+\item \code{\link[=dat_coast]{dat_coast()}} for a coastline vector;
+\item \code{\link[=dat_mpa]{dat_mpa()}} for a Marine Protected Area boundary
 }
 
 To validate new datasets for use with \code{\link{patter}}, see \code{\link[=pat_setup_data]{pat_setup_data()}} and/or the \code{\link{assemble}}\verb{_*()} function documentation.
@@ -46,7 +48,7 @@ To link \code{\link{patter}} and the \href{https://edwardlavender.github.io/Patt
 \item \code{\link[=julia_connect]{julia_connect()}} to connect to \code{R} to \code{Julia};
 \item \code{\link[=julia_validate]{julia_validate()}} to validate the \code{R}---\code{Julia} connection;
 \item \code{\link[=set_seed]{set_seed()}} to set the seed in \code{R} and \code{Julia};
-\item \code{\link[=set_map]{set_map()}} to make a \code{\link{SpatRaster}} of the study area available in \code{Julia};
+\item \code{\link[=set_map]{set_map()}} to make a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} of the study area available in \code{Julia};
 }
 
 These functions should be run at the start of every \code{R} session.
@@ -98,7 +100,9 @@ The main thrust of \code{\link{patter}} is the provision of fast, integrated mod
 \itemize{
 \item \code{\link[=assemble_timeline]{assemble_timeline()}} assembles a timeline;
 \item \code{\link[=assemble_acoustics]{assemble_acoustics()}} assembles an acoustic time series;
+\item \code{\link[=assemble_acoustics_containers]{assemble_acoustics_containers()}} assembles a corresponding time series of acoustic containers;
 \item \code{\link[=assemble_archival]{assemble_archival()}} assembles an archival time series;
+\item \code{\link[=assemble_custom]{assemble_custom()}} assembles custom time series;
 }
 
 Ancillary time series should be structured in the same way for inclusion in the particle filter.
@@ -113,7 +117,7 @@ These functions return \code{\linkS4class{pf_particles}} objects.
 
 \strong{For convenience plotting functions}, see:
 \itemize{
-\item \code{\link[=pf_plot_xy]{pf_plot_xy()}} to plot particle locations;
+\item \code{\link[=plot_xyt]{plot_xyt()}} to plot particle locations;
 }
 
 \strong{For mapping utilisation distributions}, use:
@@ -158,9 +162,8 @@ Lavender, E. et al. (2023). An integrative modelling framework for passive acous
 \item For information on the \href{https://github.com/edwardlavender/flapper}{\code{flapper}} algorithms, see Lavender et al. (\href{https://doi.org/10.1111/2041-210X.14193}{2023}).
 \item For information on \code{\link{patter}}'s predecessor, see \url{https://github.com/edwardlavender/flapper}.
 \item For further information on  \code{\link{patter}}, including useful resources, see \url{https://github.com/edwardlavender/patter}.
-\item For feature requests and bug reports, see \url{https://github.com/edwardlavender/patter/issues}.
+\item For support, feature requests and bug reports, raise an issue at \url{https://github.com/edwardlavender/patter/issues}.
 \item For the \code{Julia} backend, see \url{https://edwardlavender.github.io/Patter.jl}.
-\item For support, contact \href{mailto:edward.lavender@eawag.ch}{edward.lavender@eawag.ch}.
 }
 }
 \author{

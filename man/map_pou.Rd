@@ -13,18 +13,18 @@ map_pou(
 )
 }
 \arguments{
-\item{.map}{A \code{\link{SpatRaster}} that defines the grid for probability-of-use estimation.}
+\item{.map}{A \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} that defines the grid for probability-of-use estimation.}
 
 \item{.coord}{Coordinates, provided in any format accepted by \code{\link[=.map_coord]{.map_coord()}}}
 
-\item{.plot, ...}{A logical input that defines whether or not to plot the \code{\link{SpatRaster}} and additional arguments passed to \code{\link[terra:plot]{terra::plot()}}.}
+\item{.plot, ...}{A logical input that defines whether or not to plot the \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} and additional arguments passed to \code{\link[terra:plot]{terra::plot()}}.}
 
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 }
 \value{
 The function returns a named \code{list} with the following elements:
 \itemize{
-\item \code{ud}: a normalised \code{\link{SpatRaster}};
+\item \code{ud}: a normalised \code{\link[terra:SpatRaster-class]{terra::SpatRaster}};
 }
 }
 \description{
@@ -34,44 +34,50 @@ This function builds a 'probability-of-use' utilisation distribution.
 Probability-of-use is calculated via \code{\link[=.map_coord]{.map_coord()}} (and \code{\link[=.map_mark]{.map_mark()}}). If a single dataset of unweighted coordinates is provided, probability-of-use is simply the proportion of records in each grid cell. If a time series of unweighted coordinates is provided, probability-of-use is effectively the average proportion of records in each grid cell. This becomes a weighted average if coordinates are weighted. Weights are normalised to sum to one and the result can be interpreted as a utilisation distribution in which cell values define probability-of-use. Maps are sensitive to grid resolution.
 
 This function replaces \href{https://edwardlavender.github.io/flapper/reference/pf_plot_map.html}{\code{flapper::pf_plot_map()}}.
+
+On Linux, this function cannot be used within a \code{Julia} session.
 }
 \examples{
-library(data.table)
-library(dtplyr)
-library(dplyr, warn.conflicts = FALSE)
+if (patter_run(.julia = FALSE, .geospatial = TRUE)) {
 
-#### Define map
-map <- dat_gebco()
+  library(data.table)
+  library(dtplyr)
+  library(dplyr, warn.conflicts = FALSE)
 
-#### Example (1): Use sample coordinates
-# Sample example coordinates
-coord <-
-  map |>
-  terra::spatSample(size = 5000L, xy = TRUE, cell = TRUE, na.rm = TRUE) |>
-  select("x", "y") |>
-  as.data.table()
-# Use x, y coordinates
-map_pou(map, .coord = coord)
-# Other formats are acceptable
-map_pou(map, .coord = as.matrix(coord))
-map_pou(map, .coord = as.data.frame(coord))
-# `cell_x` and `cell_y` coordinates are acceptable
-map_pou(map, .coord = coord[, .(cell_x = x, cell_y = y)])
+  #### Define map
+  map <- dat_gebco()
 
-#### Example (2): Use coordinates from `coa()`
-# Use example dataset
-coord <- dat_coa()
-map_pou(map, .coord = coord)
-points(coord$x, coord$y, cex = 0.5)
+  #### Example (1): Use sample coordinates
+  # Sample example coordinates
+  coord <-
+    map |>
+    terra::spatSample(size = 5000L, xy = TRUE, cell = TRUE, na.rm = TRUE) |>
+    select("x", "y") |>
+    as.data.table()
+  # Use x, y coordinates
+  map_pou(map, .coord = coord)
+  # Other formats are acceptable
+  map_pou(map, .coord = as.matrix(coord))
+  map_pou(map, .coord = as.data.frame(coord))
+  # `cell_x` and `cell_y` coordinates are acceptable
+  map_pou(map, .coord = coord[, .(cell_x = x, cell_y = y)])
 
-#### Example (3): Use a time series of coordinates from `pf_*()`
-# Use example dataset
-# * We use particles from the forward filter (`?pf_filter()`);
-# * Particles are equally weighted b/c re-sampling is implemented every time step;
-# * It is better to use outputs from the particle smoother;
-coord <- dat_pff()$states
-map_pou(map, .coord = coord)
-# points(coord$x, coord$y, cex = 0.5)
+  #### Example (2): Use coordinates from `coa()`
+  # Use example dataset
+  coord <- dat_coa()
+  map_pou(map, .coord = coord)
+  points(coord$x, coord$y, cex = 0.5)
+
+  #### Example (3): Use a time series of coordinates from `pf_*()`
+  # Use example dataset
+  # * We use particles from the forward filter (`?pf_filter()`);
+  # * Particles are equally weighted b/c re-sampling is implemented every time step;
+  # * It is better to use outputs from the particle smoother;
+  coord <- dat_pff()$states
+  map_pou(map, .coord = coord)
+  # points(coord$x, coord$y, cex = 0.5)
+
+}
 }
 \seealso{
 \verb{map_*()} functions build maps of space use:
@@ -81,7 +87,7 @@ map_pou(map, .coord = coord)
 \item \code{\link{map_hr}}\verb{_*()} functions map home ranges;
 }
 
-All maps are represented as \code{\link{SpatRaster}}s.
+All maps are represented as \code{\link[terra:SpatRaster-class]{terra::SpatRaster}}s.
 
 To derive coordinates for mapping patterns of space use for tagged animals, see:
 \itemize{

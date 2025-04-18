@@ -1,4 +1,4 @@
-if (julia_run()) {
+if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
 
   library(data.table)
   library(dtplyr)
@@ -20,14 +20,14 @@ if (julia_run()) {
   paths <- sim_path_walk(.map = map,
                          .timeline = timeline,
                          .state = "StateXY",
-                         .model_move = move_xy())
+                         .model_move = model_move_xy())
 
   #### Example (1): Simulate observations via `ModelObsAcousticLogisTrunc`
 
   # Overview:
   # * `ModelObsAcousticLogisTrunc`: observation model structure for acoustic observations
   # * See ?ModelObsAcousticLogisTrunc
-  # * See JuliaCall::julia_help("ModelObsAcousticLogisTrunc")
+  # * See JuliaCall::julia_help("ModelObs")
   # * This structure holds:
   #   - sensor_id (the receiver_id)
   #   - receiver_x, receiver_y (the receiver coordinates)
@@ -64,13 +64,12 @@ if (julia_run()) {
 
   # Simulate observations
   obs <- sim_observations(.timeline = timeline,
-                          .model_obs = "ModelObsAcousticLogisTrunc",
-                          .model_obs_pars = list(moorings))
+                          .model_obs = list(ModelObsAcousticLogisTrunc = moorings))
 
   # Examine simulated observations
   # * sim_observations() returns a list, with one element for every `.model_obs`
   # * Each element is a `list`, with one element for each simulated path
-  # * Each element is a `data.table` that contains the observations
+  # * Each element is a [`data.table::data.table`] that contains the observations
   str(obs)
 
   # Plot detections
@@ -87,37 +86,33 @@ if (julia_run()) {
   moorings[, receiver_beta := runif(.N, -0.01, -0.001)]
   moorings[, receiver_gamma := runif(.N, 500, 1000)]
   obs <- sim_observations(.timeline = timeline,
-                          .model_obs = "ModelObsAcousticLogisTrunc",
-                          .model_obs_pars = list(moorings))
+                          .model_obs = list(ModelObsAcousticLogisTrunc = moorings))
 
-  #### Example (2): Simulate observations via `ModelObsDepthUniform`
-  # `ModelObsDepthUniform` is an observation model for depth observations
+  #### Example (2): Simulate observations via `ModelObsDepthUniformSeabed`
+  # `ModelObsDepthUniformSeabed` is an observation model for depth observations
   # * See ?ModelObsAcousticLogisTrunc
   # * See JuliaCall::julia_help("ModelObsAcousticLogisTrunc")
   pars <- data.frame(sensor_id = 1,
                      depth_shallow_eps = 10,
                      depth_deep_eps = 20)
   obs <- sim_observations(.timeline = timeline,
-                          .model_obs = "ModelObsDepthUniform",
-                          .model_obs_pars = list(pars))
+                          .model_obs = list(ModelObsDepthUniformSeabed = pars))
 
-  #### Example (3): Simulate observations via `ModelObsDepthNormalTrunc`
-  # `ModelObsDepthNormalTrunc` is an observation model for depth observations
+  #### Example (3): Simulate observations via `ModelObsDepthNormalTruncSeabed`
+  # `ModelObsDepthNormalTruncSeabed` is an observation model for depth observations
   pars <- data.frame(sensor_id = 1,
                      depth_sigma = 10,
                      depth_deep_eps = 20)
   obs <- sim_observations(.timeline = timeline,
-                          .model_obs = "ModelObsDepthNormalTrunc",
-                          .model_obs_pars = list(pars))
+                          .model_obs = list(ModelObsDepthNormalTruncSeabed = pars))
 
   #### Example (4): Simulate observations via custom `ModelObs` sub-types
   # See `?ModelObs`
 
   #### Example (5): Use multiple observation models
   obs <- sim_observations(.timeline = timeline,
-                          .model_obs = c("ModelObsAcousticLogisTrunc",
-                                         "ModelObsDepthNormalTrunc"),
-                          .model_obs_pars = list(moorings, pars))
+                          .model_obs = list(ModelObsAcousticLogisTrunc = moorings,
+                                            ModelObsDepthNormalTruncSeabed = pars))
   str(obs)
 
 }

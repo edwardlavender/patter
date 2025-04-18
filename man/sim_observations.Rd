@@ -4,26 +4,30 @@
 \alias{sim_observations}
 \title{Simulation: observations}
 \usage{
-sim_observations(.timeline, .model_obs, .model_obs_pars)
+sim_observations(.timeline, .model_obs, .collect = TRUE)
 }
 \arguments{
 \item{.timeline}{A \code{POSIXct} vector of regularly spaced time stamps that defines the timeline for the simulation. This should match the \code{.timeline} used to simulate movement paths (see \code{\link[=sim_path_walk]{sim_path_walk()}}).}
 
-\item{.model_obs}{A \code{character} vector of \code{\link{ModelObs}} sub-type(s).}
+\item{.model_obs}{A named \code{list} of \href{s}{\code{data.table::data.table}}. Element names should refer to \code{\link{ModelObs}} structures. Each element should be a  \code{\link[data.table:data.table]{data.table::data.table}} that defines observation model parameters (see \code{\link{glossary}}).}
 
-\item{.model_obs_pars}{A \code{list} of \code{\link{data.table}}s, one for each model in \code{.model_obs}, that define observation model parameters.}
+\item{.collect}{A \code{logical} variable that defines whether or not to collect outputs from the \code{Julia} session in \code{R}.}
 }
 \value{
-The function returns a named \code{list}, with one element for each sensor type, that is \code{.model_obs} element. Each element is a \code{list} of \code{data.table}s, one for each simulated path. Each row is a time step. The columns depend on the model type.
+\href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.simulate_yobs()}} creates a \code{Dict} in the \code{Julia} session (named  \code{yobs}).
+
+If \code{.collect = TRUE}, \code{\link[=sim_observations]{sim_observations()}} collects the outputs in \code{R} as a named \code{list}, with one element for each sensor type, that is \code{.model_obs} element. Each element is a \code{list} of \code{\link[data.table:data.table]{data.table::data.table}}s, one for each simulated path. Each row is a time step. The columns depend on the model type.
+
+Otherwise, \code{invisible(NULL)} is returned.
 }
 \description{
 Simulate a time series of observations, such as acoustic detections and depth measurements, arising from simulated animal movement path(s).
 }
 \details{
-This function wraps \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.simulate_yobs()}}. The function iterates over simulated paths defined in the \code{Julia} workspace by \code{\link[=sim_path_walk]{sim_path_walk()}}. For each path and time step, the function simulates observation(s). Collectively, \code{.model_obs} and \code{.model_obs_pars} define the observation models used for the simulation (that is, a \code{Vector} of \code{\link{ModelObs}} instances). In \code{Julia}, simulated observations are stored in a hash table (\code{Dict}) called \code{yobs}, which is translated into a named \code{list} that is returned by \code{R}.
+This function wraps \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.simulate_yobs()}}. The function iterates over simulated paths defined in the \code{Julia} workspace by \code{\link[=sim_path_walk]{sim_path_walk()}}. For each path and time step, the function simulates observation(s). Collectively, \code{.model_obs} names and parameter \code{\link[data.table:data.table]{data.table::data.table}} define the observation models used for the simulation (that is, a \code{Vector} of \code{\link{ModelObs}} instances). In \code{Julia}, simulated observations are stored in a hash table (\code{Dict}) called \code{yobs}, which is translated into a named \code{list} that is returned by \code{R}.
 }
 \examples{
-if (julia_run()) {
+if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
 
   library(data.table)
   library(dtplyr)
@@ -45,14 +49,14 @@ if (julia_run()) {
   paths <- sim_path_walk(.map = map,
                          .timeline = timeline,
                          .state = "StateXY",
-                         .model_move = move_xy())
+                         .model_move = model_move_xy())
 
   #### Example (1): Simulate observations via `ModelObsAcousticLogisTrunc`
 
   # Overview:
   # * `ModelObsAcousticLogisTrunc`: observation model structure for acoustic observations
   # * See ?ModelObsAcousticLogisTrunc
-  # * See JuliaCall::julia_help("ModelObsAcousticLogisTrunc")
+  # * See JuliaCall::julia_help("ModelObs")
   # * This structure holds:
   #   - sensor_id (the receiver_id)
   #   - receiver_x, receiver_y (the receiver coordinates)
@@ -89,13 +93,12 @@ if (julia_run()) {
 
   # Simulate observations
   obs <- sim_observations(.timeline = timeline,
-                          .model_obs = "ModelObsAcousticLogisTrunc",
-                          .model_obs_pars = list(moorings))
+                          .model_obs = list(ModelObsAcousticLogisTrunc = moorings))
 
   # Examine simulated observations
   # * sim_observations() returns a list, with one element for every `.model_obs`
   # * Each element is a `list`, with one element for each simulated path
-  # * Each element is a `data.table` that contains the observations
+  # * Each element is a [`data.table::data.table`] that contains the observations
   str(obs)
 
   # Plot detections
@@ -112,37 +115,33 @@ if (julia_run()) {
   moorings[, receiver_beta := runif(.N, -0.01, -0.001)]
   moorings[, receiver_gamma := runif(.N, 500, 1000)]
   obs <- sim_observations(.timeline = timeline,
-                          .model_obs = "ModelObsAcousticLogisTrunc",
-                          .model_obs_pars = list(moorings))
+                          .model_obs = list(ModelObsAcousticLogisTrunc = moorings))
 
-  #### Example (2): Simulate observations via `ModelObsDepthUniform`
-  # `ModelObsDepthUniform` is an observation model for depth observations
+  #### Example (2): Simulate observations via `ModelObsDepthUniformSeabed`
+  # `ModelObsDepthUniformSeabed` is an observation model for depth observations
   # * See ?ModelObsAcousticLogisTrunc
   # * See JuliaCall::julia_help("ModelObsAcousticLogisTrunc")
   pars <- data.frame(sensor_id = 1,
                      depth_shallow_eps = 10,
                      depth_deep_eps = 20)
   obs <- sim_observations(.timeline = timeline,
-                          .model_obs = "ModelObsDepthUniform",
-                          .model_obs_pars = list(pars))
+                          .model_obs = list(ModelObsDepthUniformSeabed = pars))
 
-  #### Example (3): Simulate observations via `ModelObsDepthNormalTrunc`
-  # `ModelObsDepthNormalTrunc` is an observation model for depth observations
+  #### Example (3): Simulate observations via `ModelObsDepthNormalTruncSeabed`
+  # `ModelObsDepthNormalTruncSeabed` is an observation model for depth observations
   pars <- data.frame(sensor_id = 1,
                      depth_sigma = 10,
                      depth_deep_eps = 20)
   obs <- sim_observations(.timeline = timeline,
-                          .model_obs = "ModelObsDepthNormalTrunc",
-                          .model_obs_pars = list(pars))
+                          .model_obs = list(ModelObsDepthNormalTruncSeabed = pars))
 
   #### Example (4): Simulate observations via custom `ModelObs` sub-types
   # See `?ModelObs`
 
   #### Example (5): Use multiple observation models
   obs <- sim_observations(.timeline = timeline,
-                          .model_obs = c("ModelObsAcousticLogisTrunc",
-                                         "ModelObsDepthNormalTrunc"),
-                          .model_obs_pars = list(moorings, pars))
+                          .model_obs = list(ModelObsAcousticLogisTrunc = moorings,
+                                            ModelObsDepthNormalTruncSeabed = pars))
   str(obs)
 
 }

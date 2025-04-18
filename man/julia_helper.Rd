@@ -2,17 +2,25 @@
 % Please edit documentation in R/julia-helpers.R
 \name{julia_helper}
 \alias{julia_helper}
-\alias{julia_run}
-\alias{julia_skip}
+\alias{julia_session}
 \alias{julia_works}
+\alias{julia_option}
 \alias{julia_proj_path}
 \alias{julia_proj_generate}
 \alias{julia_proj_activate}
 \alias{julia_proj_temp}
-\alias{julia_packages_dev_Patter.jl}
-\alias{julia_packages_install}
-\alias{julia_packages_library}
-\alias{julia_packages}
+\alias{julia_pkg_list_full}
+\alias{julia_pkg_list_req}
+\alias{julia_pkg_list_installed}
+\alias{julia_pkg_list_update}
+\alias{julia_pkg_list_load}
+\alias{julia_pkg_patter_source}
+\alias{julia_pkg_install_Patter}
+\alias{julia_pkg_install_deps}
+\alias{julia_pkg_library}
+\alias{julia_pkg_version_Patter.jl}
+\alias{julia_pkg_compat}
+\alias{julia_pkg_setup}
 \alias{julia_threads}
 \alias{julia_glimpse}
 \alias{julia_print}
@@ -22,13 +30,14 @@
 \alias{julia_timeline}
 \alias{julia_check_exists}
 \alias{julia_code}
+\alias{julia_n_particle}
 \title{Julia: helpers}
 \usage{
-julia_run()
-
-julia_skip()
+julia_session()
 
 julia_works(.action = abort)
+
+julia_option(VALUE)
 
 julia_proj_path(JULIA_PROJ)
 
@@ -38,15 +47,31 @@ julia_proj_activate(JULIA_PROJ)
 
 julia_proj_temp()
 
-julia_packages_dev_Patter.jl()
+julia_pkg_list_full(.pkg_install)
 
-julia_packages_install(.packages, .update)
+julia_pkg_list_req()
 
-julia_packages_library(.packages)
+julia_pkg_list_installed()
 
-julia_packages(.packages, .update)
+julia_pkg_list_update(.pkg_update)
 
-julia_threads(.threads)
+julia_pkg_list_load(.pkg_load)
+
+julia_pkg_patter_source(JULIA_PATTER_SOURCE)
+
+julia_pkg_install_Patter(JULIA_PATTER_SOURCE, .pkg_update)
+
+julia_pkg_install_deps(.pkg_install, .pkg_update)
+
+julia_pkg_library(.pkg_load)
+
+julia_pkg_version_Patter.jl()
+
+julia_pkg_compat()
+
+julia_pkg_setup(JULIA_PATTER_SOURCE, .pkg_install, .pkg_update, .pkg_load)
+
+julia_threads(JULIA_NUM_THREADS)
 
 julia_glimpse(.x)
 
@@ -63,15 +88,11 @@ julia_timeline(.x)
 julia_check_exists(...)
 
 julia_code(.x)
+
+julia_n_particle(.n_particle)
 }
 \description{
 A set of \code{Julia} helper functions.
-}
-\details{
-The following functions are exported:
-\itemize{
-\item \code{\link[=julia_run]{julia_run()}} defines whether or not to run examples;
-}
 }
 \author{
 Edward Lavender

@@ -1,12 +1,95 @@
-citHeader("To cite {patter} in publications, use Lavender et al. (2023).")
+c(
+  citHeader("To cite `patter` in publications, please cite the following publications:"),
 
-bibentry(
-  bibtype  = "Article",
-  title    = "An integrative modelling framework for passive acoustic telemetry",
-  author   = c("Edward Lavender", "Stanisław Biber", "Janine Illian", "Mark James", "Peter J. Wright", "James Thorburn", "Sophie Smout"),
-  journal  = "Methods in Ecology and Evolution",
-  year     = "2023",
-  volume   = "14",
-  pages    = "2626–2638",
-  doi      = "10.1111/2041-210X.14193"
+  bibentry(
+    bibtype = "Article",
+    key     = "Lavender2025a",
+    author  = c(
+      person("Edward", "Lavender"),
+      person("Andreas", "Scheidegger"),
+      person("Carlo", "Albert"),
+      person("Stanisław W.", "Biber"),
+      person("Janine", "Illian"),
+      person("James", "Thorburn"),
+      person("Sophie", "Smout"),
+      person("Helen", "Moor")
+    ),
+    title   = "Particle algorithms for animal movement modelling in receiver arrays.",
+    journal = "Methods in Ecology and Evolution",
+    year    = "2025",
+    volume  = "00",
+    pages   = "1–12",
+    doi     = "10.1111/2041-210X.70028"
+  ),
+
+  bibentry(
+    bibtype = "Article",
+    key     = "Lavender2025b",
+    author  = c(
+      person("Edward", "Lavender"),
+      person("Andreas", "Scheidegger"),
+      person("Carlo", "Albert"),
+      person("Stanisław W.", "Biber"),
+      person("Janine", "Illian"),
+      person("James", "Thorburn"),
+      person("Sophie", "Smout"),
+      person("Helen", "Moor")
+    ),
+    title   = "patter: Particle algorithms for animal tracking in R and Julia.",
+    journal = "Methods in Ecology and Evolution",
+    year    = "2025",
+    volume  = "00",
+    pages   = "1–8",
+    doi     = "10.1111/2041-210X.70029"
+  ),
+
+  bibentry(
+    bibtype = "Article",
+    key     = "Lavender2025c",
+    author  = c(
+      person("Edward", "Lavender"),
+      person("Andreas", "Scheidegger"),
+      person("Carlo", "Albert"),
+      person("Stanisław W.", "Biber"),
+      person("Jakob", "Brodersen"),
+      person("Dmitry", "Aleynik"),
+      person("Georgina", "Cole"),
+      person("Jane", "Dodd"),
+      person("Peter J.", "Wright"),
+      person("Janine", "Illian"),
+      person("Mark", "James"),
+      person("Sophie", "Smout"),
+      person("James", "Thorburn"),
+      person("Helen", "Moor")
+    ),
+    title   = "Animal tracking with particle algorithms for conservation.",
+    journal = "bioRxiv",
+    year    = "2025",
+    volume  = "",
+    pages   = "",
+    doi     = "10.1101/2025.02.13.638042"
+  ),
+
+  bibentry(
+    bibtype = "Article",
+    key     = "Lavender2023",
+    author  = c(
+      person("Edward", "Lavender"),
+      person("Stanisław W.", "Biber"),
+      person("Janine", "Illian"),
+      person("Mark", "James"),
+      person("Peter J.", "Wright"),
+      person("James", "Thorburn"),
+      person("Sophie", "Smout")
+    ),
+    title   = "An integrative modelling framework for passive acoustic telemetry.",
+    journal = "Methods in Ecology and Evolution",
+    year    = "2023",
+    volume  = "14",
+    pages   = "2626–2638",
+    doi     = "10.1111/2041-210X.14193",
+    header  = "`patter` evolved from the `flapper` `R` package. Please also consider citing that publication:"
+  ),
+
+  citFooter("Thank you for citing the package. Your citations help to justify continued investments in its development.")
 )
