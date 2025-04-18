@@ -98,7 +98,7 @@ We hope to add backward sampling algorithms to the package in due course.
 * **Faster**, with overhauled internal routines;
 * **Simpler** to use and maintain;
 * **Stable**, with fewer dependencies and an upgraded spatial ecosystem;
-* **Better tested**, with comprehensive unit tests (in progress!); 
+* **Better tested**, with comprehensive unit tests; 
 
 See [`NEWS`](https://github.com/edwardlavender/patter/blob/main/NEWS.md) for a summary of the evolution of [`flapper`](https://github.com/edwardlavender/flapper) to `patter`. 
 
@@ -256,7 +256,7 @@ julia_validate()
 
 This should return `NULL`, invisibly, in which case you are good to go. Otherwise, the function will return an error (or `R` may crash). 
 
-9. **(optional) Run package checks**. To run package checks locally, follow the instructions in [dev/001-check.R](dev/001-check.R). [Issue](https://github.com/edwardlavender/patter/issues) reports are appreciated.
+9. **(optional) Run package checks**. To run package checks locally, follow the instructions in [dev/001-check.R](dev/001-check.R). See [test-environments.md](test-environments.md) for a list of the systems on which we currently run comprehensive testing and the latest results. We run tests on `MacOS`, `Windows` and `Linux` systems for a selection of recent `R` and `Julia` versions. We only run tests using up-to-date `R` and `Julia` packages. [Issue](https://github.com/edwardlavender/patter/issues) reports are appreciated.
 
 # Functionality 
 

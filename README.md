@@ -71,7 +71,7 @@ course.
 - **Faster**, with overhauled internal routines;
 - **Simpler** to use and maintain;
 - **Stable**, with fewer dependencies and an upgraded spatial ecosystem;
-- **Better tested**, with comprehensive unit tests (in progress!);
+- **Better tested**, with comprehensive unit tests;
 
 See [`NEWS`](https://github.com/edwardlavender/patter/blob/main/NEWS.md)
 for a summary of the evolution of
@@ -200,7 +200,7 @@ On Linux, this step may require system libraries (see below).
       ```
 
 > **Note:** Install a recent `Julia` version. This README was last built
-> on 2025-04-17 with Julia 1.11.5.
+> on 2025-04-18 with Julia 1.11.5.
 
 5.  **Setup JuliaCall.** The next step is to set up `JuliaCall`, which
     provides the integration between `R` and `Julia`.
@@ -310,7 +310,12 @@ This should return `NULL`, invisibly, in which case you are good to go.
 Otherwise, the function will return an error (or `R` may crash).
 
 9.  **(optional) Run package checks**. To run package checks locally,
-    follow the instructions in [dev/001-check.R](dev/001-check.R).
+    follow the instructions in [dev/001-check.R](dev/001-check.R). See
+    [test-environments.md](test-environments.md) for a list of the
+    systems on which we currently run comprehensive testing and the
+    latest results. We run tests on `MacOS`, `Windows` and `Linux`
+    systems for a selection of recent `R` and `Julia` versions. We only
+    run tests using up-to-date `R` and `Julia` packages.
     [Issue](https://github.com/edwardlavender/patter/issues) reports are
     appreciated.
 
@@ -645,10 +650,10 @@ head(fwd$diagnostics)
 fwd$callstats
 #>              timestamp         routine n_particle n_iter    loglik convergence
 #>                 <POSc>          <char>      <int>  <int>     <num>      <lgcl>
-#> 1: 2025-04-17 15:25:45 filter: forward      10000      1 -3556.524        TRUE
+#> 1: 2025-04-18 15:18:29 filter: forward      10000      1 -3556.524        TRUE
 #>        time
 #>       <num>
-#> 1: 7.775342
+#> 1: 7.638168
 
 # Backward run
 args$.yobs      <- yobs_bwd
@@ -677,10 +682,10 @@ head(bwd$diagnostics)
 bwd$callstats
 #>              timestamp          routine n_particle n_iter    loglik convergence
 #>                 <POSc>           <char>      <int>  <int>     <num>      <lgcl>
-#> 1: 2025-04-17 15:25:52 filter: backward      10000      1 -3558.672        TRUE
+#> 1: 2025-04-18 15:18:37 filter: backward      10000      1 -3558.672        TRUE
 #>        time
 #>       <num>
-#> 1: 1.145404
+#> 1: 1.110303
 ```
 
 ## Particle smoother
@@ -720,10 +725,10 @@ head(smo$diagnostics)
 smo$callstats
 #>              timestamp              routine n_particle n_iter loglik
 #>                 <POSc>               <char>      <int>  <int>  <num>
-#> 1: 2025-04-17 15:25:54 smoother: two-filter        750     NA    NaN
+#> 1: 2025-04-18 15:18:38 smoother: two-filter        750     NA    NaN
 #>    convergence     time
 #>         <lgcl>    <num>
-#> 1:        TRUE 3.530813
+#> 1:        TRUE 3.442763
 ```
 
 ## Mapping
