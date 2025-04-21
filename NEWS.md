@@ -1,3 +1,7 @@
+# `patter` 2.0.1
+
+This version fixes the website documentation https://edwardlavender.github.io/patter/. 
+
 # `patter` v2.0.0
 
 `patter` v 2.0.0 includes some major internal and external changes associated with a revamp required to permit use on Linux and other improvements. There are some breaking changes in the API of some functions as a result. We have also added new data-assembly routines, such as `assemble_acoustics_containers()`, which support particle filtering, alongside additional improvements to select functions. Where required for existing code, you can continue to use `patter` v1.0.1 with [`renv`](https://rstudio.github.io/renv/articles/renv.html). 
