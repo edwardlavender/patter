@@ -7,8 +7,9 @@
 .quarto
 inst/doc
 Julia/README.md
+Julia/README.html
+test-environments.html
 *.pdf
-*.html
 .Rprofile
 .Renviron
 data-raw/benchmark
