@@ -42,6 +42,6 @@ BugReports: https://github.com/edwardlavender/patter/issues/
 Encoding: UTF-8
 Language: en-GB
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 LazyData: true
 VignetteBuilder: knitr
