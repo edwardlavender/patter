@@ -13,7 +13,7 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/patter)](https://CRAN.R-project.org/package=patter)
-![Coverage](https://img.shields.io/badge/coverage-83%25-orange)
+![Coverage](https://img.shields.io/badge/coverage-59%25-red)
 [![R-CMD-check](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
@@ -200,7 +200,7 @@ On Linux, this step may require system libraries (see below).
       ```
 
 > **Note:** Install a recent `Julia` version. This README was last built
-> on 2025-04-18 with Julia 1.11.5.
+> on 2025-12-01 with Julia 1.12.2.
 
 5.  **Setup JuliaCall.** The next step is to set up `JuliaCall`, which
     provides the integration between `R` and `Julia`.
@@ -478,7 +478,7 @@ essential packages:
 
 ``` r
 library(patter)
-#> This is {patter} v.2.0.0. For an overview, see `?patter`. For support, raise an issue at https://github.com/edwardlavender/patter/issues.
+#> This is {patter} v.2.0.1. For an overview, see `?patter`. For support, raise an issue at https://github.com/edwardlavender/patter/issues.
 library(data.table)
 library(dtplyr)
 library(dplyr, warn.conflicts = FALSE)
@@ -650,10 +650,10 @@ head(fwd$diagnostics)
 fwd$callstats
 #>              timestamp         routine n_particle n_iter    loglik convergence
 #>                 <POSc>          <char>      <int>  <int>     <num>      <lgcl>
-#> 1: 2025-04-18 16:11:53 filter: forward      10000      1 -3556.524        TRUE
+#> 1: 2025-12-01 16:55:04 filter: forward      10000      1 -3556.524        TRUE
 #>        time
 #>       <num>
-#> 1: 7.415571
+#> 1: 7.981062
 
 # Backward run
 args$.yobs      <- yobs_bwd
@@ -682,10 +682,10 @@ head(bwd$diagnostics)
 bwd$callstats
 #>              timestamp          routine n_particle n_iter    loglik convergence
 #>                 <POSc>           <char>      <int>  <int>     <num>      <lgcl>
-#> 1: 2025-04-18 16:12:00 filter: backward      10000      1 -3558.672        TRUE
+#> 1: 2025-12-01 16:55:12 filter: backward      10000      1 -3558.672        TRUE
 #>        time
 #>       <num>
-#> 1: 1.042987
+#> 1: 1.062307
 ```
 
 ## Particle smoother
@@ -699,6 +699,7 @@ and after each step).
 # Set `vmap` for probability calculations
 # * Use file path rather on Linux 
 set_vmap(.map = map, .mobility = mobility)
+#> Warning: PROJ: proj_create_from_name: Cannot find proj.db (GDAL error 1)
 
 # Run smoother 
 smo <- pf_smoother_two_filter(.n_particle = 750L, .n_sim = 100L)
@@ -725,10 +726,10 @@ head(smo$diagnostics)
 smo$callstats
 #>              timestamp              routine n_particle n_iter loglik
 #>                 <POSc>               <char>      <int>  <int>  <num>
-#> 1: 2025-04-18 16:12:02 smoother: two-filter        750     NA    NaN
+#> 1: 2025-12-01 16:55:14 smoother: two-filter        750     NA    NaN
 #>    convergence     time
 #>         <lgcl>    <num>
-#> 1:        TRUE 3.355024
+#> 1:        TRUE 3.343348
 ```
 
 ## Mapping
@@ -744,6 +745,7 @@ ud <- map_dens(.map   = map,
                .coord = smo$states,
                .sigma = bw.h)$ud
 #> Observation window is gridded.
+#> Warning: PROJ: proj_create_from_database: Cannot find proj.db (GDAL error 1)
 
 # Add home range
 map_hr_home(ud, .add = TRUE)
@@ -797,16 +799,16 @@ evolution (<edward.lavender@eawag.ch>).
 - Lavender, E., Scheidegger, A., Albert, C., Biber, S. W., Illian, J.,
   Thorburn, J., Smout, S., & Moor, H. (2025). Particle algorithms for
   animal movement modelling in receiver arrays. Methods in Ecology and
-  Evolution, 00, 1–12. <https://doi.org/10.1111/2041-210X.70028>
+  Evolution, 16, 1808–1819. <https://doi.org/10.1111/2041-210X.70028>
 - Lavender, E., Scheidegger, A., Albert, C., Biber, S. W., Illian, J.,
   Thorburn, J., Smout, S., & Moor, H. (2025). patter: Particle
   algorithms for animal tracking in R and Julia. Methods in Ecology and
-  Evolution, 00, 1–8. <https://doi.org/10.1111/2041-210X.70029>
+  Evolution, 16, 1609–1616. <https://doi.org/10.1111/2041-210X.70029>
 - Lavender, E., Scheidegger, A., Albert, C., Biber, S. W., Brodersen,
   J., Aleynik, D., Cole, G., Dodd, J., Wright, P. J., Illian, J., James,
   M., Smout, S., Thorburn, J., & Moor, H. (2025). Animal tracking with
-  particle algorithms for conservation. bioRxiv.
-  <https://doi.org/10.1101/2025.02.13.638042>
+  particle algorithms informs protected area design. Science Advances,
+  11, eadx0255. <https://doi.org/10.1126/sciadv.adx0255>
 
 For the `BibTex`:
 
@@ -816,8 +818,8 @@ For the `BibTex`:
   title   = {Particle algorithms for animal movement modelling in receiver arrays},
   journal = {Methods in Ecology and Evolution},
   year    = {2025},
-  volume  = {00},
-  pages   = {1--12},
+  volume  = {16},
+  pages   = {1808--1819},
   doi     = {10.1111/2041-210X.70028}
 }
 ```
@@ -828,8 +830,8 @@ For the `BibTex`:
   title   = {patter: Particle algorithms for animal tracking in R and Julia},
   journal = {Methods in Ecology and Evolution},
   year    = {2025},
-  volume  = {00},
-  pages   = {1--8},
+  volume  = {16},
+  pages   = {1609--1616},
   doi     = {10.1111/2041-210X.70029}
 }
 ```
@@ -837,10 +839,12 @@ For the `BibTex`:
 ``` bibtex
 @Article{Lavender2025c,
   author  = {Lavender, Edward and Scheidegger, Andreas and Albert, Carlo and Biber, Stanisław W. and Brodersen, Jakob and Aleynik, Dmitry and Cole, Georgina and Dodd, Jane and Wright, Peter J. and Illian, Janine and James, Mark and Smout, Sophie and Thorburn, James and Moor, Helen},
-  title   = {Animal tracking with particle algorithms for conservation},
-  journal = {bioRxiv},
+  title   = {Animal tracking with particle algorithms informs protected area design},
+  journal = {Science Advances},
   year    = {2025},
-  doi     = {10.1101/2025.02.13.638042}
+  volume  = {11},
+  pages   = {eadx0255},
+  doi     = {10.1126/sciadv.adx0255}
 }
 ```
 

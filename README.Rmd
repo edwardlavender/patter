@@ -16,45 +16,23 @@ op <- options(terra.pal = rev(terrain.colors(256)))
 **Particle algorithms for animal movement modelling in [`R`](https://www.r-project.org)**
 
 ```{r, include = FALSE}
-# Compute statistics for package badges
-
-# R CMD CHECK
-# * This is currently handled by a CI 
-
-# Test coverage
-# * We compute test coverage locally, when:
-#   - This readme is rendered
-#   - If the time since the last check was >= 24 hours
-# * The local computation of test coverage:
-#   - Saves GitHub Action minutes
-#   - Is simpler than using bespoke GitHub Actions for covr configured for Windows
-
-# Determine whether or not to compute coverage
-# * By default, TRUE
-# * If previously computed < 24 hours ago, FALSE
-cov_compute     <- TRUE
+# Get statistics for package badges
+# * This is expensive so run offline via render.R
 cov_cache_file  <- file.path("data-raw", "README", "coverage.rds")
 if (file.exists(cov_cache_file)) {
   cov_cache     <- readRDS(cov_cache_file)
   cov_pc        <- cov_cache$pc
   cov_timestamp <- cov_cache$timestamp
   cov_difftime  <- difftime(Sys.time(), cov_timestamp, units = "secs")
-  if (cov_difftime < 24 * 60 * 60) {
-    cov_compute <- FALSE
+  if (cov_difftime > 24 * 60 * 60) {
+    cat("Warning: Render README via render.R to recompute test-coverage statistics.\n", 
+        file = stderr())
   }
+} else {
+  cov_pc <- NA
+  cat("Warning: Package coverage is NA.\n", 
+      file = stderr())
 }
-
-# Compute coverage (~100 s)
-if (cov_compute) {
-  # Get coverage %
-  cov_pc <-
-    covr::package_coverage() |>
-    covr::percent_coverage()
-  # Update cov_cache
-  cov_cache <- list(pc = cov_pc, timestamp = Sys.time())
-  try(saveRDS(cov_cache, cov_cache_file), silent = TRUE)
-}
-
 # Build badge
 cov_pc    <- round(as.numeric(cov_pc))
 cov_col   <- ifelse(cov_pc >= 90, "brightgreen",
@@ -595,9 +573,9 @@ Note that the code base in some repositories may be outdated.
 
 **To cite `patter` in publications**, please use:
 
-* Lavender, E.,  Scheidegger, A.,  Albert, C.,  Biber, S. W.,  Illian, J.,  Thorburn, J.,  Smout, S., &  Moor, H. (2025). Particle algorithms for animal movement modelling in receiver arrays. Methods in Ecology and Evolution, 00,  1–12. https://doi.org/10.1111/2041-210X.70028
-* Lavender, E.,  Scheidegger, A.,  Albert, C.,  Biber, S. W.,  Illian, J.,  Thorburn, J.,  Smout, S., &  Moor, H. (2025). patter: Particle algorithms for animal tracking in R and Julia. Methods in Ecology and Evolution,  00,  1–8. https://doi.org/10.1111/2041-210X.70029 
-* Lavender, E., Scheidegger, A., Albert, C., Biber, S. W., Brodersen, J., Aleynik, D., Cole, G., Dodd, J., Wright, P. J., Illian, J., James, M., Smout, S., Thorburn, J., & Moor, H. (2025). Animal tracking with particle algorithms for conservation. bioRxiv. https://doi.org/10.1101/2025.02.13.638042
+* Lavender, E.,  Scheidegger, A.,  Albert, C.,  Biber, S. W.,  Illian, J.,  Thorburn, J.,  Smout, S., &  Moor, H. (2025). Particle algorithms for animal movement modelling in receiver arrays. Methods in Ecology and Evolution, 16, 1808–1819. https://doi.org/10.1111/2041-210X.70028
+* Lavender, E.,  Scheidegger, A.,  Albert, C.,  Biber, S. W.,  Illian, J.,  Thorburn, J.,  Smout, S., &  Moor, H. (2025). patter: Particle algorithms for animal tracking in R and Julia. Methods in Ecology and Evolution, 16, 1609–1616. https://doi.org/10.1111/2041-210X.70029 
+* Lavender, E., Scheidegger, A., Albert, C., Biber, S. W., Brodersen, J., Aleynik, D., Cole, G., Dodd, J., Wright, P. J., Illian, J., James, M., Smout, S., Thorburn, J., & Moor, H. (2025). Animal tracking with particle algorithms informs protected area design. Science Advances, 11, eadx0255. https://doi.org/10.1126/sciadv.adx0255
 
 For the `BibTex`:
 
@@ -607,8 +585,8 @@ For the `BibTex`:
   title   = {Particle algorithms for animal movement modelling in receiver arrays},
   journal = {Methods in Ecology and Evolution},
   year    = {2025},
-  volume  = {00},
-  pages   = {1--12},
+  volume  = {16},
+  pages   = {1808--1819},
   doi     = {10.1111/2041-210X.70028}
 }
 ```
@@ -619,8 +597,8 @@ For the `BibTex`:
   title   = {patter: Particle algorithms for animal tracking in R and Julia},
   journal = {Methods in Ecology and Evolution},
   year    = {2025},
-  volume  = {00},
-  pages   = {1--8},
+  volume  = {16},
+  pages   = {1609--1616},
   doi     = {10.1111/2041-210X.70029}
 }
 ```
@@ -628,10 +606,12 @@ For the `BibTex`:
 ```bibtex
 @Article{Lavender2025c,
   author  = {Lavender, Edward and Scheidegger, Andreas and Albert, Carlo and Biber, Stanisław W. and Brodersen, Jakob and Aleynik, Dmitry and Cole, Georgina and Dodd, Jane and Wright, Peter J. and Illian, Janine and James, Mark and Smout, Sophie and Thorburn, James and Moor, Helen},
-  title   = {Animal tracking with particle algorithms for conservation},
-  journal = {bioRxiv},
+  title   = {Animal tracking with particle algorithms informs protected area design},
+  journal = {Science Advances},
   year    = {2025},
-  doi     = {10.1101/2025.02.13.638042}
+  volume  = {11},
+  pages   = {eadx0255},
+  doi     = {10.1126/sciadv.adx0255}
 }
 ```
 

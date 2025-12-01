@@ -17,8 +17,8 @@ c(
     title   = "Particle algorithms for animal movement modelling in receiver arrays.",
     journal = "Methods in Ecology and Evolution",
     year    = "2025",
-    volume  = "00",
-    pages   = "1–12",
+    volume  = "16",
+    pages   = "1808–1819",
     doi     = "10.1111/2041-210X.70028"
   ),
 
@@ -38,8 +38,8 @@ c(
     title   = "patter: Particle algorithms for animal tracking in R and Julia.",
     journal = "Methods in Ecology and Evolution",
     year    = "2025",
-    volume  = "00",
-    pages   = "1–8",
+    volume  = "16",
+    pages   = "1609–1616",
     doi     = "10.1111/2041-210X.70029"
   ),
 
@@ -62,12 +62,12 @@ c(
       person("James", "Thorburn"),
       person("Helen", "Moor")
     ),
-    title   = "Animal tracking with particle algorithms for conservation.",
-    journal = "bioRxiv",
+    title   = "Animal tracking with particle algorithms informs protected area design.",
+    journal = "Science Advances",
     year    = "2025",
-    volume  = "",
-    pages   = "",
-    doi     = "10.1101/2025.02.13.638042"
+    volume  = "11",
+    pages   = "eadx0255",
+    doi     = "10.1126/sciadv.adx0255"
   ),
 
   bibentry(
