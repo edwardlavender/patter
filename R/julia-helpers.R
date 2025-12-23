@@ -288,7 +288,7 @@ julia_pkg_install_deps <- function(.pkg_install, .pkg_update) {
     update   <- ifelse(isFALSE(install) & .pkg %in% .pkg_update, TRUE, FALSE)
     # Run installation/update
     if (install) {
-      julia_pkg_install(.pkg)
+      julia_pkg_add(.pkg)
     }
     if (update) {
       julia_pkg_update(.pkg)
