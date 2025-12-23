@@ -1,8 +1,8 @@
 #' @title Julia: connect `R` to `Julia`
 #' @description This function connects `R` to `Julia`.
 #'
-#' @param JULIA_HOME,JULIA_PROJ,JULIA_NUM_THREADS,JULIA_PATTER_SOURCE (optional) `Julia` options, provided as function arguments, global options or environment variables.
-#' * `JULIA_HOME`---A `character` string that defines the location of the `Julia` installation (see [`JuliaCall::julia_setup()`]). Usually, this is not required.
+#' @param JULIA_HOME,JULIA_PROJ,JULIA_NUM_THREADS,JULIA_PATTER_SOURCE,JULIA_BACKEND (optional) `Julia` options, provided as function arguments, global options or environment variables.
+#' * `JULIA_HOME`---A `character` string that defines the location of the `Julia` installation (see [`JuliaCall::julia_start()`]). Usually, this is not required.
 #' * `JULIA_PROJ`---A `character` string that defines the directory of a `Julia` Project. If unspecified, the default environment (e.g., `~/.julia/environments/v1.10/Project.toml`) is used with a [`message`] instead of a local `Julia` project.
 #' * `JULIA_NUM_THREADS`---On MacOS or Linux, `JULIA_NUM_THREADS` is a `character` (`"auto"`) or an `integer` that defines the number of threads used by multi-threaded operations in `Julia`. This defaults to `"auto"` (not `1`). This can only be set once per `R` session. On Windows, `JULIA_NUM_THREADS` must be set system-wide and use of this argument produces a [`warning`]. See this [GitHub Issue](https://github.com/edwardlavender/patter/issues/11) for instructions.
 #' * `JULIA_PATTER_SOURCE`---For advanced use only: a `character` string that defines the source of [`Patter.jl`](https://github.com/edwardlavender/Patter.jl). This may be:
@@ -13,6 +13,8 @@
 #' If missing, `JULIA_PATTER_SOURCE` defaults to `"https://github.com/edwardlavender/Patter.jl.git"`.
 #'
 #' If `JULIA_PATTER_SOURCE` changes, force the update by `.pkg_update`.
+#'
+#'    * `JULIA_BACKEND`---A `character` string  (`"JuliaCall"` or `"JuliaConnectoR"`) that defines the package used to connect `R` to `Julia`, passed to [`JuliaSwitch::julia_backend()`].
 #'
 #' @param .pkg_config,.pkg_install,.pkg_update,.pkg_load (optional) `Julia` package options.
 #' * `.pkg_config` is a `character` string of `Julia` code, evaluated by [`julia_code()`], that configures `Julia` prior to dependency management.
@@ -32,10 +34,10 @@
 #' * Use `FALSE` (default) to skip re-running the function (i.e., if `JULIA_SESSION = "TRUE"`);
 #' * Use `TRUE` to force a reconnect. This is required for nodes in a socket cluster, which inherit `JULIA_SESSION = "TRUE"` but which are not connected to `Julia`;
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
-#' @param ... Additional arguments passed to [`JuliaCall::julia_setup()`] (excluding `verbose`).
+#' @param ... Additional arguments passed to [`JuliaCall::julia_start()`] (excluding `verbose`).
 #'
 #' @details [`patter`] is an `R` front-end for the [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) package. This requires a local installation of `Julia`. This function connects `R` to the local `Julia` installation, sets up [`JuliaCall`](https://github.com/JuliaInterop/JuliaCall), which provides the integration between `R` and `Julia`, and [`Patter.jl`](https://github.com/edwardlavender/Patter.jl). Internally, the steps are as follows:
-#' * [`JuliaCall`](https://github.com/JuliaInterop/JuliaCall) is set up via [`JuliaCall::julia_setup()`].
+#' * [`JuliaCall`](https://github.com/JuliaInterop/JuliaCall) is set up via [`JuliaCall::julia_start()`].
 #' * The environment variable `JULIA_SESSION` is set to `"TRUE"`.
 #' * The number of threads is set, if possible, via `JULIA_NUM_THREADS`.
 #' * The `Julia` installation is validated.
@@ -79,7 +81,7 @@
 #'
 #' To update the number of threads, restart `R` and re-run the function with an updated `JULIA_NUM_THREADS` argument.
 #'
-#' @return The function returns the `Julia` interface invisibly (see [`JuliaCall::julia_setup()`]). If `JULIA_SESSION` is already `"TRUE"` and `.socket = FALSE`, `invisible(NULL)` is returned.
+#' @return The function returns the `Julia` interface invisibly (see [`JuliaCall::julia_start()`]). If `JULIA_SESSION` is already `"TRUE"` and `.socket = FALSE`, `invisible(NULL)` is returned.
 #'
 #' @example man/examples/example-julia_connect.R
 #' @seealso See [`julia_validate()`] to validate the `R`---`Julia` interface.
@@ -90,6 +92,7 @@ julia_connect <- function(JULIA_HOME,
                           JULIA_PROJ,
                           JULIA_NUM_THREADS,
                           JULIA_PATTER_SOURCE,
+                          JULIA_BACKEND,
                           .pkg_config = NULL,
                           .pkg_install = NULL,
                           .pkg_update = NULL,
@@ -113,9 +116,10 @@ julia_connect <- function(JULIA_HOME,
   }
 
   #### Set up Julia
-  cats$cat("... Running `Julia` setup via `JuliaCall::julia_setup()`...")
+  # NB .verbose is not carried forward
+  cats$cat("... Running `Julia` setup via `JuliaCall::julia_start()`...")
   JULIA_NUM_THREADS <- set_JULIA_NUM_THREADS(JULIA_NUM_THREADS)
-  julia             <- julia_setup(..., verbose = .verbose)
+  julia             <- julia_start(...)
   Sys.setenv("JULIA_SESSION" = "TRUE")
 
   #### Test Julia
@@ -171,7 +175,7 @@ julia_validate <- function() {
   }
   # Export the map to Julia
   set_map(map)
-  if (!julia_exists("env")) {
+  if (!julia_defined("env")) {
     abort("Failed to export an example SpatRaster to `Julia`.")
   }
   # Test use of terra to modify map
