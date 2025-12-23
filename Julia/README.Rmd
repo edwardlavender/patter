@@ -98,7 +98,7 @@ In this (hidden) section, we prepare example datasets for analysis, using functi
 
 ```{r, include = FALSE}
 library(patter)
-library(JuliaCall)
+library(JuliaSwitch)
 library(data.table)
 library(dtplyr, warn.conflicts = FALSE)
 library(dplyr)

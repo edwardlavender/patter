@@ -27,7 +27,7 @@ library(dtplyr)
 library(dplyr, warn.conflicts = FALSE)
 library(dv)
 library(glue)
-library(JuliaCall)
+library(JuliaSwitch)
 
 #### Set up Julia
 julia_connect()

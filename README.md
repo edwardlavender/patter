@@ -220,7 +220,7 @@ devtools::install_github("JuliaInterop/JuliaCall",
 # * Set `JULIA_HOME` if Julia is not found (see `?julia_start()`)
 # * Note this may take several minutes
 # * Set `rebuild = TRUE` if you've previously used JuliaCall on an older R version
-library(JuliaCall)
+library(JuliaSwitch)
 julia <- julia_start()
 ```
 

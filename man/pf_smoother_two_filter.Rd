@@ -74,7 +74,7 @@ The two-filter smoother smooths particle samples from the particle filter (\code
 \examples{
 if (patter_run()) {
 
-  library(JuliaCall)
+  library(JuliaSwitch)
 
   #### Set up example
   # Set up the particle filter with an example dataset

@@ -125,7 +125,7 @@ For further information, see GitHub issues \href{https://github.com/edwardlavend
 \examples{
 if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
 
-  library(JuliaCall)
+  library(JuliaSwitch)
   library(data.table)
   library(dtplyr)
   library(dplyr, warn.conflicts = FALSE)

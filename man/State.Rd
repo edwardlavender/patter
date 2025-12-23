@@ -58,7 +58,7 @@ To use custom \code{\link{ModelObs}} sub-types, see Examples.
 if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
 
   library(data.table)
-  library(JuliaCall)
+  library(JuliaSwitch)
   library(testthat)
 
   #### Julia set up

@@ -130,7 +130,7 @@ For advice for your study system, please raise an issue on \href{https://github.
 if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
 
   library(data.table)
-  library(JuliaCall)
+  library(JuliaSwitch)
 
   #### Connect to Julia
   julia_connect()

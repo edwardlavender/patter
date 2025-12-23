@@ -147,7 +147,7 @@ if (Sys.getenv("PATTER_RUN_EXPENSIVE") == "") {
 
 # Load & attach patter
 rstudioapi::restartSession()
-library(JuliaCall)
+library(JuliaSwitch)
 library(patter)
 
 # (optional) Clean Julia records
