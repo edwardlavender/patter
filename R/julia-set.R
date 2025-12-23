@@ -8,7 +8,7 @@
 #' @keywords internal
 
 # Set backend
-set_backend <- function(JULIA_BACKEND) {
+set_JULIA_BACKEND <- function(JULIA_BACKEND) {
   JULIA_BACKEND <- julia_option(JULIA_BACKEND)
   julia_backend(JULIA_BACKEND)
   invisible(JULIA_BACKEND)

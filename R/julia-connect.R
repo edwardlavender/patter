@@ -119,6 +119,7 @@ julia_connect <- function(JULIA_HOME,
   # NB .verbose is not carried forward
   cats$cat("... Running `Julia` setup via `JuliaSwitch::julia_start()`...")
   JULIA_NUM_THREADS <- set_JULIA_NUM_THREADS(JULIA_NUM_THREADS)
+  JULIA_BACKEND     <- set_JULIA_BACKEND(JULIA_BACKEND)
   julia             <- julia_start(...)
   Sys.setenv("JULIA_SESSION" = "TRUE")
 
