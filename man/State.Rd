@@ -227,7 +227,7 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
   # Write a `Patter.logpdf_step()` method
   # ... to evaluate the unnormalised log probability (density)
   # ... of an unrestricted step from one state to another
-  # See: julia_help("Patter.logpdf_step")
+  # See: julia_helpfile("Patter.logpdf_step")
   julia_cmd(
   '
   function Patter.logpdf_step(state_from::StateCustom, state_to::StateCustom,

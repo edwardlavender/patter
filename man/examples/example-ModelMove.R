@@ -34,7 +34,7 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
   # Use a biased random walk
   model_move_xy(.dbn_heading = "VonMises(0, 1)")
   # Get help on a distribution in Julia:
-  julia_help("Exponential")
+  julia_helpfile("Exponential")
 
   #### Example (2): Use `model_move_xyz()`
   # Use default options
