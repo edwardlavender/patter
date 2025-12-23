@@ -159,8 +159,8 @@ test_that("julia_connect() works", {
   julia_connect(JULIA_PROJ = jproj,
                 .pkg_install = c("CSV", "BenchmarkTools"),
                 .socket = TRUE)
-  expect_true(julia_pkg_installed("CSV") != "nothing")
-  expect_true(julia_pkg_installed("BenchmarkTools") != "nothing")
+  expect_true(julia_pkg_installed("CSV"))
+  expect_true(julia_pkg_installed("BenchmarkTools"))
 
   #### Test .pkg_update & .pkg_load
   # Update all packages

@@ -244,7 +244,7 @@ julia_pkg_install_Patter <- function(JULIA_PATTER_SOURCE, .pkg_update) {
   JULIA_PATTER_SOURCE <- julia_pkg_patter_source(JULIA_PATTER_SOURCE)
   add <- FALSE
   # Install or update Patter
-  if (julia_pkg_installed("Patter") == "nothing" | "Patter" %in% .pkg_update) {
+  if (!julia_pkg_installed("Patter") | "Patter" %in% .pkg_update) {
     # (A) Add Patter.jl as a local development dependency
     if (dir.exists(JULIA_PATTER_SOURCE)) {
       julia_cmd(glue('Pkg.develop(path = "{JULIA_PATTER_SOURCE}");'))
@@ -277,13 +277,13 @@ julia_pkg_install_deps <- function(.pkg_install, .pkg_update) {
   # Iteratively install & update dependencies as required
   lapply(.pkg_install, function(.pkg) {
     # Choose whether or not to install packages
-    # * For packages in Julia's standard library (e.g., Random),
-    # * ... julia_pkg_installed() returns 'nothing'
+    # * For packages in Julia's standard library (e.g., Random)
+    #   julia_pkg_installed() returns FALSE
     # * But these packages do not require install & this is suppressed (for speed)
     if (.pkg %in% c("Pkg", "Random")) {
       install <- FALSE
     } else {
-      install  <- ifelse(julia_pkg_installed(.pkg) == "nothing", TRUE, FALSE)
+      install  <- !julia_pkg_installed(.pkg)
     }
     update   <- ifelse(isFALSE(install) & .pkg %in% .pkg_update, TRUE, FALSE)
     # Run installation/update
