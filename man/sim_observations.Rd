@@ -56,7 +56,7 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
   # Overview:
   # * `ModelObsAcousticLogisTrunc`: observation model structure for acoustic observations
   # * See ?ModelObsAcousticLogisTrunc
-  # * See JuliaSwitch::julia_help("ModelObs")
+  # * See JuliaSwitch::julia_helpfile("ModelObs")
   # * This structure holds:
   #   - sensor_id (the receiver_id)
   #   - receiver_x, receiver_y (the receiver coordinates)
@@ -120,7 +120,7 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
   #### Example (2): Simulate observations via `ModelObsDepthUniformSeabed`
   # `ModelObsDepthUniformSeabed` is an observation model for depth observations
   # * See ?ModelObsAcousticLogisTrunc
-  # * See JuliaSwitch::julia_help("ModelObsAcousticLogisTrunc")
+  # * See JuliaSwitch::julia_helpfile("ModelObsAcousticLogisTrunc")
   pars <- data.frame(sensor_id = 1,
                      depth_shallow_eps = 10,
                      depth_deep_eps = 20)

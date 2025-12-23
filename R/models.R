@@ -10,7 +10,7 @@
 #' * `"StateCXY"`, which maps to `StateCXY` ;
 #' * `"StateCXYZ"`, which maps to `StateCXYZ`;
 #'
-#' See [`State`](https://edwardlavender.github.io/Patter.jl) or `JuliaSwitch::julia_help("State")` for the fields of the built-in sub-types.
+#' See [`State`](https://edwardlavender.github.io/Patter.jl) or `JuliaSwitch::julia_helpfile("State")` for the fields of the built-in sub-types.
 #'
 #' `.state` is used by [`sim_path_walk()`] and [`pf_filter()`], both of which effectively simulate time series of states. `.state` controls the simulation of initial locations and subsequent method dispatch in [`Patter.jl`](https://github.com/edwardlavender/Patter.jl). [`Patter.sim_states_init()`](https://github.com/edwardlavender/Patter.jl) handles the simulation of initial states in these routines. When `.state` is
 #' * `"StateXY"`, the initial state comprises `x` and `y` coordinates;
@@ -67,7 +67,7 @@ NULL
 #'      * `container_x` and `container_y`
 #'      * `radius`
 #'
-#' See [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) or `JuliaSwitch::julia_help("ModelObs")` for details.
+#' See [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) or `JuliaSwitch::julia_helpfile("ModelObs")` for details.
 #'
 #' @param .strict A `logical` variable that defines whether or not to only retain columns in `.data` defined in the corresponding `ModelObs` structure.
 #' * Set `.strict = TRUE` (default) in [`sim_observations()`];
@@ -467,7 +467,7 @@ plot.ModelObsContainer <- function(x, .radius, .par = list(), ...) {
 #'    * [`ModelMoveCXY`]
 #'    * [`ModelMoveCXYZ`]
 #'
-#' See [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) or `JuliaSwitch::julia_help("ModelMove")` for the fields of the built-in sub-types. Briefly, all sub-types include:
+#' See [`Patter.jl`](https://edwardlavender.github.io/Patter.jl) or `JuliaSwitch::julia_helpfile("ModelMove")` for the fields of the built-in sub-types. Briefly, all sub-types include:
 #' * A `map` field, that defines the region(s) within which movements are permitted. In `R`, it is convenient to represent `map` as a [`terra::SpatRaster`], where `NAs` define inhospitable habitats (e.g., land). This should made available to `Julia` [`ModelMove`] constructors as `env` via [`set_map()`];
 #' * The `mobility` parameter;
 #' * Additional model-specific components (such as fields for the distribution of step lengths and headings in the case of two-dimensional random walks);

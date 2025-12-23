@@ -155,7 +155,7 @@
 <p>The filter is implemented by the <code>Julia</code> function <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.particle_filter()</code></a>.</p>
 <p>To multi-thread movement and likelihood evaluations, set the number of threads via <code><a href="julia_connect.html">julia_connect()</a></code>.</p>
 <p>The filter record <code>.n_record</code> particles in memory at each time step. If <code>batch</code> is provided, the <code>.timeline</code> is split into <code>length(.batch)</code> batches. The filter still moves along the whole <code>.timeline</code>, but only records the particles for the current batch in memory. At the end of each batch, the particles for that batch are written to file. This reduces total memory demand.</p>
-<p>See <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.particle_filter()</code></a> or <code>JuliaSwitch::julia_help("particle_filter")</code> for further information.</p>
+<p>See <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.particle_filter()</code></a> or <code>JuliaSwitch::julia_helpfile("particle_filter")</code> for further information.</p>
     </div>
     <div class="section level2">
     <h2 id="algorithms">Algorithms<a class="anchor" aria-label="anchor" href="#algorithms"></a></h2>
