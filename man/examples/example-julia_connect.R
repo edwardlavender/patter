@@ -5,7 +5,7 @@ if (patter_run(.geospatial = FALSE)) {
   # Otherwise: include JULIA options as function arguments below
 
   #### Example (1): First time use
-  # Use `...` to customise `JuliaCall::julia_start()`
+  # Use `...` to customise `JuliaSwitch::julia_start()`
   # Try `installJulia` if you require a Julia installation
   # The first call to `julia_connect()` may take several minutes
   julia_connect(installJulia = TRUE)

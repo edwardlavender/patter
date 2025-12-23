@@ -121,7 +121,7 @@ To multi-thread movement and likelihood evaluations, set the number of threads v
 
 The filter record \code{.n_record} particles in memory at each time step. If \code{batch} is provided, the \code{.timeline} is split into \code{length(.batch)} batches. The filter still moves along the whole \code{.timeline}, but only records the particles for the current batch in memory. At the end of each batch, the particles for that batch are written to file. This reduces total memory demand.
 
-See \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.particle_filter()}} or \code{JuliaCall::julia_help("particle_filter")} for further information.
+See \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.particle_filter()}} or \code{JuliaSwitch::julia_help("particle_filter")} for further information.
 }
 
 \section{Algorithms}{

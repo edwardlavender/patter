@@ -233,7 +233,7 @@ isTRUE(try(julia_pull('true'), silent = TRUE))
 
 If `julia_start()` fails with `'Julia is not found'`, you should tell
 `R` the location of the `Julia` binary via `JULIA_HOME` (see
-`?JuliaCall::julia_start()` and the
+`?JuliaSwitch::julia_start()` and the
 [`JuliaCall`](https://cran.r-project.org/web/packages/JuliaCall)
 [README](https://cran.r-project.org/web/packages/JuliaCall/readme/README.html),
 as well as the relevant `patter` GitHub

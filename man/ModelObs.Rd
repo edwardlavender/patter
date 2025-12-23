@@ -51,7 +51,7 @@ model_obs_container(.data, .strict = TRUE)
 }
 }
 
-See \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} or \code{JuliaCall::julia_help("ModelObs")} for details.}
+See \href{https://edwardlavender.github.io/Patter.jl}{\code{Patter.jl}} or \code{JuliaSwitch::julia_help("ModelObs")} for details.}
 
 \item{.strict}{A \code{logical} variable that defines whether or not to only retain columns in \code{.data} defined in the corresponding \code{ModelObs} structure.
 \itemize{

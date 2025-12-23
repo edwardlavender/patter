@@ -63,7 +63,7 @@
 
 
 <dl><dt id="arg-julia-home-julia-proj-julia-num-threads-julia-patter-source">JULIA_HOME, JULIA_PROJ, JULIA_NUM_THREADS, JULIA_PATTER_SOURCE<a class="anchor" aria-label="anchor" href="#arg-julia-home-julia-proj-julia-num-threads-julia-patter-source"></a></dt>
-<dd><p>(optional) <code>Julia</code> options, provided as function arguments, global options or environment variables.</p><ul><li><p><code>JULIA_HOME</code>—A <code>character</code> string that defines the location of the <code>Julia</code> installation (see <code><a href="https://rdrr.io/pkg/JuliaCall/man/julia_start.html" class="external-link">JuliaCall::julia_start()</a></code>). Usually, this is not required.</p></li>
+<dd><p>(optional) <code>Julia</code> options, provided as function arguments, global options or environment variables.</p><ul><li><p><code>JULIA_HOME</code>—A <code>character</code> string that defines the location of the <code>Julia</code> installation (see <code><a href="https://rdrr.io/pkg/JuliaCall/man/julia_start.html" class="external-link">JuliaSwitch::julia_start()</a></code>). Usually, this is not required.</p></li>
 <li><p><code>JULIA_PROJ</code>—A <code>character</code> string that defines the directory of a <code>Julia</code> Project. If unspecified, the default environment (e.g., <code>~/.julia/environments/v1.10/Project.toml</code>) is used with a <code><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></code> instead of a local <code>Julia</code> project.</p></li>
 <li><p><code>JULIA_NUM_THREADS</code>—On MacOS or Linux, <code>JULIA_NUM_THREADS</code> is a <code>character</code> (<code>"auto"</code>) or an <code>integer</code> that defines the number of threads used by multi-threaded operations in <code>Julia</code>. This defaults to <code>"auto"</code> (not <code>1</code>). This can only be set once per <code>R</code> session. On Windows, <code>JULIA_NUM_THREADS</code> must be set system-wide and use of this argument produces a <code><a href="https://rdrr.io/r/base/warning.html" class="external-link">warning</a></code>. See this <a href="https://github.com/edwardlavender/patter/issues/11" class="external-link">GitHub Issue</a> for instructions.</p></li>
 <li><p><code>JULIA_PATTER_SOURCE</code>—For advanced use only: a <code>character</code> string that defines the source of <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a>. This may be:</p><ul><li><p>An absolute file path to a local copy of the package, in which case it is added as a development dependency;</p></li>
@@ -99,16 +99,16 @@
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional arguments passed to <code><a href="https://rdrr.io/pkg/JuliaCall/man/julia_start.html" class="external-link">JuliaCall::julia_start()</a></code> (excluding <code>verbose</code>).</p></dd>
+<dd><p>Additional arguments passed to <code><a href="https://rdrr.io/pkg/JuliaCall/man/julia_start.html" class="external-link">JuliaSwitch::julia_start()</a></code> (excluding <code>verbose</code>).</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>The function returns the <code>Julia</code> interface invisibly (see <code><a href="https://rdrr.io/pkg/JuliaCall/man/julia_start.html" class="external-link">JuliaCall::julia_start()</a></code>). If <code>JULIA_SESSION</code> is already <code>"TRUE"</code> and <code>.socket = FALSE</code>, <code>invisible(NULL)</code> is returned.</p>
+    <p>The function returns the <code>Julia</code> interface invisibly (see <code><a href="https://rdrr.io/pkg/JuliaCall/man/julia_start.html" class="external-link">JuliaSwitch::julia_start()</a></code>). If <code>JULIA_SESSION</code> is already <code>"TRUE"</code> and <code>.socket = FALSE</code>, <code>invisible(NULL)</code> is returned.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p><code><a href="patter.html">patter</a></code> is an <code>R</code> front-end for the <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a> package. This requires a local installation of <code>Julia</code>. This function connects <code>R</code> to the local <code>Julia</code> installation, sets up <a href="https://github.com/JuliaInterop/JuliaCall" class="external-link"><code>JuliaCall</code></a>, which provides the integration between <code>R</code> and <code>Julia</code>, and <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a>. Internally, the steps are as follows:</p><ul><li><p><a href="https://github.com/JuliaInterop/JuliaCall" class="external-link"><code>JuliaCall</code></a> is set up via <code><a href="https://rdrr.io/pkg/JuliaCall/man/julia_start.html" class="external-link">JuliaCall::julia_start()</a></code>.</p></li>
+    <p><code><a href="patter.html">patter</a></code> is an <code>R</code> front-end for the <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a> package. This requires a local installation of <code>Julia</code>. This function connects <code>R</code> to the local <code>Julia</code> installation, sets up <a href="https://github.com/JuliaInterop/JuliaCall" class="external-link"><code>JuliaCall</code></a>, which provides the integration between <code>R</code> and <code>Julia</code>, and <a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a>. Internally, the steps are as follows:</p><ul><li><p><a href="https://github.com/JuliaInterop/JuliaCall" class="external-link"><code>JuliaCall</code></a> is set up via <code><a href="https://rdrr.io/pkg/JuliaCall/man/julia_start.html" class="external-link">JuliaSwitch::julia_start()</a></code>.</p></li>
 <li><p>The environment variable <code>JULIA_SESSION</code> is set to <code>"TRUE"</code>.</p></li>
 <li><p>The number of threads is set, if possible, via <code>JULIA_NUM_THREADS</code>.</p></li>
 <li><p>The <code>Julia</code> installation is validated.</p></li>
@@ -164,7 +164,7 @@
 <span class="r-in"><span>  <span class="co"># Otherwise: include JULIA options as function arguments below</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co">#### Example (1): First time use</span></span></span>
-<span class="r-in"><span>  <span class="co"># Use `...` to customise `JuliaCall::julia_start()`</span></span></span>
+<span class="r-in"><span>  <span class="co"># Use `...` to customise `JuliaSwitch::julia_start()`</span></span></span>
 <span class="r-in"><span>  <span class="co"># Try `installJulia` if you require a Julia installation</span></span></span>
 <span class="r-in"><span>  <span class="co"># The first call to `julia_connect()` may take several minutes</span></span></span>
 <span class="r-in"><span>  <span class="fu">julia_connect</span><span class="op">(</span>installJulia <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
@@ -186,14 +186,14 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2025-04-22 09:30:54... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_start()`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaSwitch::julia_start()`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... `Julia` set up with 11 thread(s). </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` call ended @ 2025-04-22 09:30:54 (duration: ~0 sec(s)). </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2025-04-22 09:30:54... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_start()`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaSwitch::julia_start()`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>

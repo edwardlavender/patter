@@ -23,7 +23,7 @@ In \code{\link{patter}} functions, the \code{.state} argument is a \code{charact
 \item \code{"StateCXYZ"}, which maps to \code{StateCXYZ};
 }
 
-See \href{https://edwardlavender.github.io/Patter.jl}{\code{State}} or \code{JuliaCall::julia_help("State")} for the fields of the built-in sub-types.
+See \href{https://edwardlavender.github.io/Patter.jl}{\code{State}} or \code{JuliaSwitch::julia_help("State")} for the fields of the built-in sub-types.
 
 \code{.state} is used by \code{\link[=sim_path_walk]{sim_path_walk()}} and \code{\link[=pf_filter]{pf_filter()}}, both of which effectively simulate time series of states. \code{.state} controls the simulation of initial locations and subsequent method dispatch in \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}. \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.sim_states_init()}} handles the simulation of initial states in these routines. When \code{.state} is
 \itemize{

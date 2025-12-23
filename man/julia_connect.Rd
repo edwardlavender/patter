@@ -22,7 +22,7 @@ julia_connect(
 \arguments{
 \item{JULIA_HOME, JULIA_PROJ, JULIA_NUM_THREADS, JULIA_PATTER_SOURCE, JULIA_BACKEND}{(optional) \code{Julia} options, provided as function arguments, global options or environment variables.
 \itemize{
-\item \code{JULIA_HOME}---A \code{character} string that defines the location of the \code{Julia} installation (see \code{\link[JuliaCall:julia_start]{JuliaCall::julia_start()}}). Usually, this is not required.
+\item \code{JULIA_HOME}---A \code{character} string that defines the location of the \code{Julia} installation (see \code{\link[JuliaSwitch:JuliaSwitch-interface]{JuliaSwitch::julia_start()}}). Usually, this is not required.
 \item \code{JULIA_PROJ}---A \code{character} string that defines the directory of a \code{Julia} Project. If unspecified, the default environment (e.g., \verb{~/.julia/environments/v1.10/Project.toml}) is used with a \code{\link{message}} instead of a local \code{Julia} project.
 \item \code{JULIA_NUM_THREADS}---On MacOS or Linux, \code{JULIA_NUM_THREADS} is a \code{character} (\code{"auto"}) or an \code{integer} that defines the number of threads used by multi-threaded operations in \code{Julia}. This defaults to \code{"auto"} (not \code{1}). This can only be set once per \code{R} session. On Windows, \code{JULIA_NUM_THREADS} must be set system-wide and use of this argument produces a \code{\link{warning}}. See this \href{https://github.com/edwardlavender/patter/issues/11}{GitHub Issue} for instructions.
 \item \code{JULIA_PATTER_SOURCE}---For advanced use only: a \code{character} string that defines the source of \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}. This may be:
@@ -68,10 +68,10 @@ Note that for \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl
 
 \item{.verbose}{User output control (see \code{\link{patter-progress}} for supported options).}
 
-\item{...}{Additional arguments passed to \code{\link[JuliaCall:julia_start]{JuliaCall::julia_start()}} (excluding \code{verbose}).}
+\item{...}{Additional arguments passed to \code{\link[JuliaSwitch:JuliaSwitch-interface]{JuliaSwitch::julia_start()}} (excluding \code{verbose}).}
 }
 \value{
-The function returns the \code{Julia} interface invisibly (see \code{\link[JuliaCall:julia_start]{JuliaCall::julia_start()}}). If \code{JULIA_SESSION} is already \code{"TRUE"} and \code{.socket = FALSE}, \code{invisible(NULL)} is returned.
+The function returns the \code{Julia} interface invisibly (see \code{\link[JuliaSwitch:JuliaSwitch-interface]{JuliaSwitch::julia_start()}}). If \code{JULIA_SESSION} is already \code{"TRUE"} and \code{.socket = FALSE}, \code{invisible(NULL)} is returned.
 }
 \description{
 This function connects \code{R} to \code{Julia}.
@@ -79,7 +79,7 @@ This function connects \code{R} to \code{Julia}.
 \details{
 \code{\link{patter}} is an \code{R} front-end for the \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} package. This requires a local installation of \code{Julia}. This function connects \code{R} to the local \code{Julia} installation, sets up \href{https://github.com/JuliaInterop/JuliaCall}{\code{JuliaCall}}, which provides the integration between \code{R} and \code{Julia}, and \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}. Internally, the steps are as follows:
 \itemize{
-\item \href{https://github.com/JuliaInterop/JuliaCall}{\code{JuliaCall}} is set up via \code{\link[JuliaCall:julia_start]{JuliaCall::julia_start()}}.
+\item \href{https://github.com/JuliaInterop/JuliaCall}{\code{JuliaCall}} is set up via \code{\link[JuliaSwitch:JuliaSwitch-interface]{JuliaSwitch::julia_start()}}.
 \item The environment variable \code{JULIA_SESSION} is set to \code{"TRUE"}.
 \item The number of threads is set, if possible, via \code{JULIA_NUM_THREADS}.
 \item The \code{Julia} installation is validated.
@@ -131,7 +131,7 @@ if (patter_run(.geospatial = FALSE)) {
   # Otherwise: include JULIA options as function arguments below
 
   #### Example (1): First time use
-  # Use `...` to customise `JuliaCall::julia_start()`
+  # Use `...` to customise `JuliaSwitch::julia_start()`
   # Try `installJulia` if you require a Julia installation
   # The first call to `julia_connect()` may take several minutes
   julia_connect(installJulia = TRUE)

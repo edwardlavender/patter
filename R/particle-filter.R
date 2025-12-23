@@ -65,7 +65,7 @@
 #'
 #' The filter record `.n_record` particles in memory at each time step. If `batch` is provided, the `.timeline` is split into `length(.batch)` batches. The filter still moves along the whole `.timeline`, but only records the particles for the current batch in memory. At the end of each batch, the particles for that batch are written to file. This reduces total memory demand.
 #'
-#' See [`Patter.particle_filter()`](https://github.com/edwardlavender/Patter.jl) or `JuliaCall::julia_help("particle_filter")` for further information.
+#' See [`Patter.particle_filter()`](https://github.com/edwardlavender/Patter.jl) or `JuliaSwitch::julia_help("particle_filter")` for further information.
 #'
 #' # Algorithms
 #'
