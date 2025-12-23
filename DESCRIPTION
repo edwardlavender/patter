@@ -15,6 +15,7 @@ Imports:
     collapse,
     glue,
     JuliaCall,
+    JuliaSwitch,
     lubridate,
     rlang,
     terra (>= 1.7.71)
@@ -35,6 +36,8 @@ Suggests:
     testthat (>= 3.0.0), 
     tidyr,
     zoo
+Remotes:
+    github::edwardlavender/JuliaSwitch
 Depends: R (>= 4.1)
 Config/testthat/edition: 3
 URL: https://github.com/edwardlavender/patter/, https://edwardlavender.github.io/patter/
