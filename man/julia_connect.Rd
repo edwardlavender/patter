@@ -77,9 +77,9 @@ The function returns the \code{Julia} interface invisibly (see \code{\link[Julia
 This function connects \code{R} to \code{Julia}.
 }
 \details{
-\code{\link{patter}} is an \code{R} front-end for the \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} package. This requires a local installation of \code{Julia}. This function connects \code{R} to the local \code{Julia} installation, sets up \href{https://github.com/JuliaInterop/JuliaCall}{\code{JuliaCall}}, which provides the integration between \code{R} and \code{Julia}, and \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}. Internally, the steps are as follows:
+\code{\link{patter}} is an \code{R} front-end for the \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} package. This requires a local installation of \code{Julia}. This function connects \code{R} to the local \code{Julia} installation, sets up the interface between \code{R} and \code{Julia}, and \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}}. Internally, the steps are as follows:
 \itemize{
-\item \href{https://github.com/JuliaInterop/JuliaCall}{\code{JuliaCall}} is set up via \code{\link[JuliaSwitch:JuliaSwitch-interface]{JuliaSwitch::julia_start()}}.
+\item \code{Julia} is set up via \code{\link[JuliaSwitch:JuliaSwitch-interface]{JuliaSwitch::julia_start()}}.
 \item The environment variable \code{JULIA_SESSION} is set to \code{"TRUE"}.
 \item The number of threads is set, if possible, via \code{JULIA_NUM_THREADS}.
 \item The \code{Julia} installation is validated.

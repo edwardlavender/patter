@@ -36,8 +36,8 @@
 #' @param .verbose User output control (see [`patter-progress`] for supported options).
 #' @param ... Additional arguments passed to [`JuliaSwitch::julia_start()`] (excluding `verbose`).
 #'
-#' @details [`patter`] is an `R` front-end for the [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) package. This requires a local installation of `Julia`. This function connects `R` to the local `Julia` installation, sets up [`JuliaCall`](https://github.com/JuliaInterop/JuliaCall), which provides the integration between `R` and `Julia`, and [`Patter.jl`](https://github.com/edwardlavender/Patter.jl). Internally, the steps are as follows:
-#' * [`JuliaCall`](https://github.com/JuliaInterop/JuliaCall) is set up via [`JuliaSwitch::julia_start()`].
+#' @details [`patter`] is an `R` front-end for the [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) package. This requires a local installation of `Julia`. This function connects `R` to the local `Julia` installation, sets up the interface between `R` and `Julia`, and [`Patter.jl`](https://github.com/edwardlavender/Patter.jl). Internally, the steps are as follows:
+#' * `Julia` is set up via [`JuliaSwitch::julia_start()`].
 #' * The environment variable `JULIA_SESSION` is set to `"TRUE"`.
 #' * The number of threads is set, if possible, via `JULIA_NUM_THREADS`.
 #' * The `Julia` installation is validated.
