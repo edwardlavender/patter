@@ -16,7 +16,7 @@ julia_session <- function() {
 
 # Test if Julia works
 julia_works <- function(.action = abort) {
-  works <- isTRUE(try(julia_eval('true'), silent = TRUE))
+  works <- isTRUE(try(julia_pull('true'), silent = TRUE))
   if (isFALSE(works)) {
     .action("Julia is not connected.")
   }
@@ -95,7 +95,7 @@ julia_proj_path <- function(JULIA_PROJ) {
 julia_proj_generate <- function(JULIA_PROJ) {
   if (!dir.exists(JULIA_PROJ) &&
       !file.exists(file.path(JULIA_PROJ, "Project.toml"))) {
-    julia_command(glue('Pkg.generate("{JULIA_PROJ}");'))
+    julia_cmd(glue('Pkg.generate("{JULIA_PROJ}");'))
   }
   nothing()
 }
@@ -105,8 +105,8 @@ julia_proj_generate <- function(JULIA_PROJ) {
 
 # Activate a Julia Project
 julia_proj_activate <- function(JULIA_PROJ) {
-  # julia_command("using Revise")
-  julia_command(glue('Pkg.activate("{JULIA_PROJ}");'))
+  # julia_cmd("using Revise")
+  julia_cmd(glue('Pkg.activate("{JULIA_PROJ}");'))
   nothing()
 }
 
@@ -154,7 +154,7 @@ julia_pkg_list_req <- function() {
 
 # List all installed Julia dependencies
 julia_pkg_list_installed <- function() {
-  sort(julia_eval('collect(keys(Pkg.project().dependencies));'))
+  sort(julia_pull('collect(keys(Pkg.project().dependencies));'))
 }
 
 #' @rdname julia_helper
@@ -244,10 +244,10 @@ julia_pkg_install_Patter <- function(JULIA_PATTER_SOURCE, .pkg_update) {
   JULIA_PATTER_SOURCE <- julia_pkg_patter_source(JULIA_PATTER_SOURCE)
   add <- FALSE
   # Install or update Patter
-  if (julia_installed_package("Patter") == "nothing" | "Patter" %in% .pkg_update) {
+  if (julia_pkg_installed("Patter") == "nothing" | "Patter" %in% .pkg_update) {
     # (A) Add Patter.jl as a local development dependency
     if (dir.exists(JULIA_PATTER_SOURCE)) {
-      julia_command(glue('Pkg.develop(path = "{JULIA_PATTER_SOURCE}");'))
+      julia_cmd(glue('Pkg.develop(path = "{JULIA_PATTER_SOURCE}");'))
     } else {
       # Add Patter.jl from remote if not installed
       # * Pkg.add(url = "...#dev") installs #dev#main (undesired)
@@ -259,7 +259,7 @@ julia_pkg_install_Patter <- function(JULIA_PATTER_SOURCE, .pkg_update) {
       if (is.na(revision)) {
         revision <- "main"
       }
-      julia_command(glue('Pkg.add(PackageSpec(url = "{url}", rev = "{revision}"))'))
+      julia_cmd(glue('Pkg.add(PackageSpec(url = "{url}", rev = "{revision}"))'))
     }
   }
   nothing()
@@ -278,20 +278,20 @@ julia_pkg_install_deps <- function(.pkg_install, .pkg_update) {
   lapply(.pkg_install, function(.pkg) {
     # Choose whether or not to install packages
     # * For packages in Julia's standard library (e.g., Random),
-    # * ... julia_installed_package() returns 'nothing'
+    # * ... julia_pkg_installed() returns 'nothing'
     # * But these packages do not require install & this is suppressed (for speed)
     if (.pkg %in% c("Pkg", "Random")) {
       install <- FALSE
     } else {
-      install  <- ifelse(julia_installed_package(.pkg) == "nothing", TRUE, FALSE)
+      install  <- ifelse(julia_pkg_installed(.pkg) == "nothing", TRUE, FALSE)
     }
     update   <- ifelse(isFALSE(install) & .pkg %in% .pkg_update, TRUE, FALSE)
     # Run installation/update
     if (install) {
-      julia_install_package(.pkg)
+      julia_pkg_install(.pkg)
     }
     if (update) {
-      julia_update_package(.pkg)
+      julia_pkg_update(.pkg)
     }
     NULL
   })
@@ -303,7 +303,7 @@ julia_pkg_install_deps <- function(.pkg_install, .pkg_update) {
 
 # Load Julia packages
 julia_pkg_library <- function(.pkg_load) {
-  lapply(.pkg_load, \(.pkg) julia_library(.pkg))
+  lapply(.pkg_load, \(.pkg) julia_using(.pkg))
   nothing()
 }
 
@@ -315,7 +315,7 @@ julia_pkg_library <- function(.pkg_load) {
 julia_pkg_version_Patter.jl <- function() {
   # Use tryCatch as Pkg.pkgversion requires Julia 1.9
   tryCatch({
-    version <- julia_eval('string(Pkg.pkgversion(Patter))')
+    version <- julia_pull('string(Pkg.pkgversion(Patter))')
     package_version(version)
   },
   error = function(e) NA)
@@ -377,7 +377,7 @@ julia_pkg_setup <- function(JULIA_PATTER_SOURCE,
 
 # Get the number of threads used by Julia
 julia_threads <- function(JULIA_NUM_THREADS) {
-  nthreads <- julia_eval("Threads.nthreads()")
+  nthreads <- julia_pull("Threads.nthreads()")
   if (!is.null(JULIA_NUM_THREADS) && JULIA_NUM_THREADS != "auto" && nthreads != JULIA_NUM_THREADS) {
     warn("`JULIA_NUM_THREADS` could not be set.")
   }
@@ -389,8 +389,8 @@ julia_threads <- function(JULIA_NUM_THREADS) {
 
 # Glimpse an R object in Julia
 julia_glimpse <- function(.x) {
-  julia_assign("x", .x)
-  julia_command("println(x);")
+  julia_push("x", .x)
+  julia_cmd("println(x);")
   nothing()
 }
 
@@ -399,7 +399,7 @@ julia_glimpse <- function(.x) {
 
 # Print an object in Julia
 julia_print <- function(.x) {
-  julia_command(glue('println({.x})'))
+  julia_cmd(glue('println({.x})'))
   nothing()
 }
 
@@ -408,7 +408,7 @@ julia_print <- function(.x) {
 
 # Print the summary of object in Julia
 julia_summary <- function(.x) {
-  julia_command(glue('summary({.x})'))
+  julia_cmd(glue('summary({.x})'))
   nothing()
 }
 
@@ -419,7 +419,7 @@ julia_summary <- function(.x) {
 julia_save <- function(.x, .file = .x) {
   .file <- normalizePath(.file, winslash = "/", mustWork = FALSE)
   .file <- glue("{tools::file_path_sans_ext(.file)}.jld2")
-  julia_command(glue('@save "{.file}" {.x};'))
+  julia_cmd(glue('@save "{.file}" {.x};'))
   tools::file_path_as_absolute(.file)
 }
 
@@ -429,7 +429,7 @@ julia_save <- function(.x, .file = .x) {
 # Load an object into Julia
 julia_load <- function(.file, .x = basename(tools::file_path_sans_ext(.file))) {
   .file <- normalizePath(.file, winslash = "/", mustWork = TRUE)
-  julia_command(glue('@load "{.file}" {.x};'))
+  julia_cmd(glue('@load "{.file}" {.x};'))
   nothing()
 }
 
@@ -473,7 +473,7 @@ julia_timeline <- function(.x) {
 julia_check_exists <- function(...) {
   x <- list(...)
   lapply(x, function(xi) {
-    if (!julia_exists(xi)) {
+    if (!julia_defined(xi)) {
       abort("'{xi}' does not exist in Julia.", .envir = environment())
     }
   })
@@ -489,7 +489,7 @@ julia_code <- function(.x) {
   on.exit(unlink(file), add = TRUE)
   writeLines(.x, file)
   # readLines(file)
-  julia_source(file)
+  julia_include(file)
 }
 
 #' @rdname julia_helper

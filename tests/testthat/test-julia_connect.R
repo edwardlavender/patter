@@ -127,14 +127,14 @@ test_that("julia_connect() works", {
   # A) Implement update of Patter as requested via .pkg_update
   # > "https://github.com/edwardlavender/Patter.jl.git#dev"
   # (We have to remove the compatibility entry for Patter.jl for this.)
-  julia_command('Pkg.compat("Patter");')
+  julia_cmd('Pkg.compat("Patter");')
   julia_connect(JULIA_PROJ = jproj,
                 JULIA_PATTER_SOURCE = "dev", .pkg_update = "Patter",
                 .socket = TRUE)
   expect_equal(Patter_repo_url(jproj),
                "https://github.com/edwardlavender/Patter.jl.git#dev")
   # B) As above, but swap to development version on file
-  julia_command('Pkg.compat("Patter");')
+  julia_cmd('Pkg.compat("Patter");')
   julia_connect(JULIA_PROJ = jproj,
                 JULIA_PATTER_SOURCE = local_Patter.jl,
                 .pkg_update = "Patter",
@@ -159,8 +159,8 @@ test_that("julia_connect() works", {
   julia_connect(JULIA_PROJ = jproj,
                 .pkg_install = c("CSV", "BenchmarkTools"),
                 .socket = TRUE)
-  expect_true(julia_installed_package("CSV") != "nothing")
-  expect_true(julia_installed_package("BenchmarkTools") != "nothing")
+  expect_true(julia_pkg_installed("CSV") != "nothing")
+  expect_true(julia_pkg_installed("BenchmarkTools") != "nothing")
 
   #### Test .pkg_update & .pkg_load
   # Update all packages
@@ -169,7 +169,7 @@ test_that("julia_connect() works", {
   julia_connect(JULIA_PROJ = jproj, .pkg_load = "CSV", .socket = TRUE)
   # Test load
   # * This will throw an error if CSV is not loaded
-  julia_command('methods(CSV.read);')
+  julia_cmd('methods(CSV.read);')
   file_cleanup(jproj)
 
   # Clean up

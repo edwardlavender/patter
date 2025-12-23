@@ -257,7 +257,7 @@
 <span class="r-in"><span>  <span class="co"># * ... is normally distributed around the previous depth.</span></span></span>
 <span class="r-in"><span>  <span class="co"># * We write a `ModelObs` sub-type in `Julia` that contains the parameters</span></span></span>
 <span class="r-in"><span>  <span class="co"># * ... for this model (i.e., the sigma parameter of the normal distribution).</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/pkg/JuliaCall/man/julia_command.html" class="external-link">julia_command</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/pkg/JuliaCall/man/julia_cmd.html" class="external-link">julia_cmd</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="st">'</span></span></span>
 <span class="r-in"><span><span class="st">    struct ModelObsDepthNormal &lt;: Patter.ModelObs</span></span></span>
 <span class="r-in"><span><span class="st">      sensor_id::Int64</span></span></span>
@@ -269,7 +269,7 @@
 <span class="r-in"><span>  <span class="co"># * We need to specify a function that simulates depths for `ModelObsDepthNormal`</span></span></span>
 <span class="r-in"><span>  <span class="co"># * We simulate depths around the previous depth (`state.z`), truncated between</span></span></span>
 <span class="r-in"><span>  <span class="co"># * ... the depth of the seabed (`state.map_value`) and the surface.</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/pkg/JuliaCall/man/julia_command.html" class="external-link">julia_command</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/pkg/JuliaCall/man/julia_cmd.html" class="external-link">julia_cmd</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="st">'</span></span></span>
 <span class="r-in"><span><span class="st">  function Patter.simulate_obs(state::StateCXYZ, model::ModelObsDepthNormal, t::Int64)</span></span></span>
 <span class="r-in"><span><span class="st">    dbn   = truncated(Normal(state.z, model.depth_sigma), 0, state.map_value)</span></span></span>
@@ -301,7 +301,7 @@
 <span class="r-in"><span>  <span class="fu"><a href="set_map.html">set_map</a></span><span class="op">(</span><span class="va">origin</span>, .as_Raster <span class="op">=</span> <span class="cn">TRUE</span>, .as_GeoArray <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="co"># Define a `Patter.logpdf_obs()` method</span></span></span>
 <span class="r-in"><span>  <span class="co"># * This is used to evaluate the log probability of a depth observation</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/pkg/JuliaCall/man/julia_command.html" class="external-link">julia_command</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/pkg/JuliaCall/man/julia_cmd.html" class="external-link">julia_cmd</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="st">'</span></span></span>
 <span class="r-in"><span><span class="st">  function Patter.logpdf_obs(state::State, model::ModelObsDepthNormal, t::Int64, obs::Float64)</span></span></span>
 <span class="r-in"><span><span class="st">    dbn   = truncated(Normal(state.map_value, model.depth_sigma),</span></span></span>
@@ -327,7 +327,7 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> `patter::julia_connect()` called @ 2025-04-22 09:30:19... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_setup()`... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ... Running `Julia` setup via `JuliaCall::julia_start()`... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Validating Julia installation... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Setting up Julia project... </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ... Handling dependencies... </span>

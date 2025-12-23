@@ -158,9 +158,9 @@ if (patter_run()) {
   stopifnot(all(file.exists(batch_smo)))
 
   ## Collate outputs in R
-  julia_command('
+  julia_cmd('
     smo_states = hcat([f["xsmo"] for f in map(jldopen, batch_smo)]...);')
-  smo$states <- julia_eval('
+  smo$states <- julia_pull('
     Patter.r_get_states(smo_states, collect(1:length(timeline)), timeline);
     ')
   head(smo$states)

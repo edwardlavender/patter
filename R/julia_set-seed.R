@@ -11,7 +11,7 @@ set_seed <- function(.seed = 123L) {
   stopifnot(!is.null(.seed))
   set.seed(.seed)
   if (julia_works(.action = warn)) {
-    julia_command(glue('Random.seed!({.seed});'))
+    julia_cmd(glue('Random.seed!({.seed});'))
   }
   nothing()
 }

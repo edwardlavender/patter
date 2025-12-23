@@ -78,7 +78,7 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
   # > (See: ?StateXYZ, ?ModelMoveXYZ, ?model_move_xyz)
 
   # Define a custom `State` sub-type
-  julia_command(
+  julia_cmd(
   '
   struct StateCustom <: Patter.State
     # Map value
@@ -94,7 +94,7 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
 
   # Define a corresponding movement model sub-type
   # > We will consider a random walk in 3D
-  julia_command(
+  julia_cmd(
   '
   struct ModelMoveCustom{T, U, V, W, X} <: Patter.ModelMove
     # The environment (i.e., map)
@@ -131,7 +131,7 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
   # * This function should accept:
   # * `state`: the state;
   # * `coords`: A [`data.table::data.table`] with initial coordinates (x, y and map_value);
-  julia_command(
+  julia_cmd(
   '
   function Patter.states_init(state_type::Type{StateCustom}, coords::DataFrame)
     coords.z = coords.map_value .* rand(nrow(coords))
@@ -141,7 +141,7 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
   )
 
   # Define a `Patter.simulate_step()` method to update the state in Julia
-  julia_command(
+  julia_cmd(
   '
   function Patter.simulate_step(state::StateCustom, model::ModelMoveCustom, t::Int64)
     # Simulate a step length
@@ -228,7 +228,7 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
   # ... to evaluate the unnormalised log probability (density)
   # ... of an unrestricted step from one state to another
   # See: julia_help("Patter.logpdf_step")
-  julia_command(
+  julia_cmd(
   '
   function Patter.logpdf_step(state_from::StateCustom, state_to::StateCustom,
                               model_move::ModelMoveCustom,

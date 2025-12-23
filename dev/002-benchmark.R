@@ -35,7 +35,7 @@ set_seed()
 
 #### Set up local parameters
 overwrite <- FALSE
-threads   <- julia_eval('Threads.nthreads()')
+threads   <- julia_pull('Threads.nthreads()')
 timestamp <- Sys.time()
 
 #### Set up helpers

@@ -123,7 +123,7 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
   # * ... is normally distributed around the previous depth.
   # * We write a `ModelObs` sub-type in `Julia` that contains the parameters
   # * ... for this model (i.e., the sigma parameter of the normal distribution).
-  julia_command(
+  julia_cmd(
     '
     struct ModelObsDepthNormal <: Patter.ModelObs
       sensor_id::Int64
@@ -135,7 +135,7 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
   # * We need to specify a function that simulates depths for `ModelObsDepthNormal`
   # * We simulate depths around the previous depth (`state.z`), truncated between
   # * ... the depth of the seabed (`state.map_value`) and the surface.
-  julia_command(
+  julia_cmd(
     '
   function Patter.simulate_obs(state::StateCXYZ, model::ModelObsDepthNormal, t::Int64)
     dbn   = truncated(Normal(state.z, model.depth_sigma), 0, state.map_value)
@@ -167,7 +167,7 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
   set_map(origin, .as_Raster = TRUE, .as_GeoArray = FALSE)
   # Define a `Patter.logpdf_obs()` method
   # * This is used to evaluate the log probability of a depth observation
-  julia_command(
+  julia_cmd(
     '
   function Patter.logpdf_obs(state::State, model::ModelObsDepthNormal, t::Int64, obs::Float64)
     dbn   = truncated(Normal(state.map_value, model.depth_sigma),

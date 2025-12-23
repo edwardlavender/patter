@@ -3,6 +3,17 @@
 #' @author Edward Lavender
 #' @name julia_set
 
+
+#' @rdname julia_set
+#' @keywords internal
+
+# Set backend
+set_backend <- function(JULIA_BACKEND) {
+  JULIA_BACKEND <- julia_option(JULIA_BACKEND)
+  julia_backend(JULIA_BACKEND)
+  invisible(JULIA_BACKEND)
+}
+
 #' @rdname julia_set
 #' @keywords internal
 
@@ -49,7 +60,7 @@ set_JULIA_NUM_THREADS <- function(JULIA_NUM_THREADS) {
 # Set a timeline in Julia
 set_timeline <- function(.timeline) {
   .timeline <- julia_timeline(.timeline)
-  julia_assign("timeline", .timeline)
+  julia_push("timeline", .timeline)
   nothing()
 }
 
@@ -59,7 +70,7 @@ set_timeline <- function(.timeline) {
 # Set the state type e.g., StateXY
 set_state_type <- function(.state) {
   check_inherits(.state, "character")
-  julia_command(glue('state_type = {.state};'))
+  julia_cmd(glue('state_type = {.state};'))
   nothing()
 }
 
@@ -69,9 +80,9 @@ set_state_type <- function(.state) {
 # Set xinit (NULL or a DataFrame)
 set_xinit <- function(.xinit) {
   if (is.null(.xinit)) {
-    julia_command('xinit = nothing;')
+    julia_cmd('xinit = nothing;')
   } else {
-    julia_assign("xinit", .xinit)
+    julia_push("xinit", .xinit)
   }
   nothing()
 }
@@ -82,7 +93,7 @@ set_xinit <- function(.xinit) {
 # Set a movement model (`model_move`) in Julia
 set_model_move <- function(.model_move) {
   check_inherits(.model_move, "character")
-  julia_command(glue('model_move = {.model_move};'))
+  julia_cmd(glue('model_move = {.model_move};'))
   nothing()
 }
 
@@ -92,7 +103,7 @@ set_model_move <- function(.model_move) {
 # Set simulated path(s) in Julia
 set_path <- function() {
   julia_check_exists("xinit", "model_move", "timeline")
-  julia_command(glue('paths = simulate_path_walk(xinit = xinit, model_move = model_move, timeline = timeline);'))
+  julia_cmd(glue('paths = simulate_path_walk(xinit = xinit, model_move = model_move, timeline = timeline);'))
   nothing()
 }
 
@@ -111,11 +122,11 @@ set_model_obs_types <- function(.datasets) {
   # Otherwise, set .datasets
   check_named_list(.datasets)
   if (length(.datasets) == 0L) {
-    julia_command('model_obs_types = nothing;')
+    julia_cmd('model_obs_types = nothing;')
   } else {
     model_obs_types <- names(.datasets)
-    julia_assign("model_obs_strings", model_obs_types)
-    julia_command('model_obs_types = Patter.julia_get_model_obs_types(model_obs_strings);')
+    julia_push("model_obs_strings", model_obs_types)
+    julia_cmd('model_obs_types = Patter.julia_get_model_obs_types(model_obs_strings);')
   }
 }
 
@@ -133,9 +144,9 @@ set_model_obs <- function(.model_obs) {
   set_model_obs_types(.model_obs)
   # Set ModelObs parameters
   model_obs_pars <- unname(.model_obs)
-  julia_assign("model_obs_pars", model_obs_pars)
+  julia_push("model_obs_pars", model_obs_pars)
   # Define model_obs structures for data simulation
-  julia_command('model_obs = Patter.julia_get_model_obs(model_obs_pars, model_obs_types);')
+  julia_cmd('model_obs = Patter.julia_get_model_obs(model_obs_pars, model_obs_types);')
   nothing()
 }
 
@@ -154,7 +165,7 @@ set_yobs_vect <- function(.timeline, .yobs) {
   .yobs <- list_compact(.yobs)
   check_named_list(.yobs)
   if (length(.yobs) == 0L) {
-    julia_command('yobs_vect = nothing;')
+    julia_cmd('yobs_vect = nothing;')
     return(nothing())
   }
   # Check dataset names & fix time stamps
@@ -177,7 +188,7 @@ set_yobs_vect <- function(.timeline, .yobs) {
   }
   # Export datasets
   .yobs <- unname(.yobs)
-  julia_assign("yobs_vect", .yobs)
+  julia_push("yobs_vect", .yobs)
   nothing()
 }
 
@@ -193,10 +204,10 @@ set_yobs_dict <- function(.yobs) {
     return(nothing())
   }
   if (length(.yobs) == 0L) {
-    julia_command('yobs = Dict();')
+    julia_cmd('yobs = Dict();')
   } else {
     julia_check_exists("model_obs_types", "yobs_vect")
-    julia_command('yobs = assemble_yobs(datasets = yobs_vect, model_obs_types = model_obs_types);')
+    julia_cmd('yobs = assemble_yobs(datasets = yobs_vect, model_obs_types = model_obs_types);')
   }
   nothing()
 }
@@ -207,7 +218,7 @@ set_yobs_dict <- function(.yobs) {
 # Set a dictionary of observations (`yobs`) via `simulate_obs()` in Julia
 set_yobs_dict_via_sim <- function() {
   julia_check_exists("paths", "model_obs", "timeline")
-  julia_command('yobs = simulate_yobs(paths = paths, model_obs = model_obs, timeline = timeline);')
+  julia_cmd('yobs = simulate_yobs(paths = paths, model_obs = model_obs, timeline = timeline);')
   nothing()
 }
 
@@ -216,7 +227,7 @@ set_yobs_dict_via_sim <- function() {
 
 set_n_particle <- function(.n_particle) {
   .n_particle <- as.integer(.n_particle)
-  julia_assign("n_particle", .n_particle)
+  julia_push("n_particle", .n_particle)
   nothing()
 }
 
@@ -225,7 +236,7 @@ set_n_particle <- function(.n_particle) {
 
 set_direction <- function(.direction = c("forward", "backward")) {
   .direction <- match.arg(.direction)
-  julia_command(glue('direction = "{.direction}";'))
+  julia_cmd(glue('direction = "{.direction}";'))
   nothing()
 }
 
@@ -247,7 +258,7 @@ set_states_init <- function(.timeline, .state, .xinit, .model_move, .yobs, .n_pa
   set_direction(.direction)
 
   # Simulate initial states (DataFrame)
-  julia_command(
+  julia_cmd(
     '
       xinit_df = simulate_states_init(map = env_init,
                                       timeline = timeline,
@@ -263,11 +274,11 @@ set_states_init <- function(.timeline, .state, .xinit, .model_move, .yobs, .n_pa
   )
 
   # Translate initial states (State Vector)
-  julia_command('xinit = Patter.julia_get_xinit(state_type, xinit_df);')
+  julia_cmd('xinit = Patter.julia_get_xinit(state_type, xinit_df);')
 
   # Return states to R as data.table
   if (.collect) {
-    return(as.data.table(julia_eval("xinit_df")))
+    return(as.data.table(julia_pull("xinit_df")))
   }
   nothing()
 
@@ -286,7 +297,7 @@ set_t_resample <- function(.t_resample) {
   # * NULL            -> nothing
   # * A single number -> Int
   # * A vector        -> Vector{Int}
-  julia_assign("t_resample", .t_resample)
+  julia_push("t_resample", .t_resample)
   nothing()
 }
 
@@ -312,9 +323,9 @@ set_batch <- function(.batch, .type = c("fwd", "bwd", "smo")) {
   }
   # Set batch Vector{String} or nothing (if .batch = NULL)
   batch_vector <- glue("batch_{.type}")
-  julia_assign(batch_vector, .batch)
+  julia_push(batch_vector, .batch)
   if (length(.batch) == 1L) {
-    julia_command(glue("{batch_vector} = [{batch_vector}];"))
+    julia_cmd(glue("{batch_vector} = [{batch_vector}];"))
   }
   invisible(batch_vector)
 }
@@ -324,14 +335,14 @@ set_batch <- function(.batch, .type = c("fwd", "bwd", "smo")) {
 
 set_progress <- function(.progress) {
   .progress <- list_merge(julia_progress(), .progress)
-  julia_assign("pb_enabled", .progress$enabled)
-  julia_assign("pb_dt", .progress$dt)
-  julia_assign("pb_showspeed", .progress$showspeed)
+  julia_push("pb_enabled", .progress$enabled)
+  julia_push("pb_dt", .progress$dt)
+  julia_push("pb_showspeed", .progress$showspeed)
   # Set selected Progress options
   # * output is controlled via Patter.progress_control
   # * color is not supported from R
   # * Other options are not implemented from R
-  julia_command('
+  julia_cmd('
   progress =
     Patter.progress_control(enabled   = pb_enabled,
                             dt        = pb_dt,
@@ -344,7 +355,7 @@ set_progress <- function(.progress) {
 #' @keywords internal
 
 set_verbose <- function(.verbose) {
-  julia_assign("verbose", .verbose)
+  julia_push("verbose", .verbose)
   nothing()
 }
 
@@ -375,7 +386,7 @@ set_pf_filter <- function(.n_move,
   # Define output name
   output <- name_particles(.fun = "pf_filter", .direction = .direction)
   # Run the filter
-  julia_command(
+  julia_cmd(
     glue(
       '
       {output} = particle_filter(timeline   = timeline,
@@ -401,10 +412,10 @@ set_pf_filter <- function(.n_move,
 #' @keywords internal
 
 # Set cache for two-filter smoother (true/false)
-# * Use julia_assign() to handle T, TRUE, F, FALSE
+# * Use julia_push() to handle T, TRUE, F, FALSE
 set_cache <- function(.cache) {
   check_inherits(.cache, "logical")
-  julia_assign("cache", .cache)
+  julia_push("cache", .cache)
   nothing()
 }
 
@@ -427,11 +438,11 @@ set_smoother_two_filter <- function(.n_particle, .n_sim, .cache, .batch, .progre
   set_progress(.progress)
   set_verbose(.verbose)
   if (is.null(.batch)) {
-    julia_command(glue('xfwd_for_smo = {fwd}.states;')) # {fwd}.states[1:{.n_particle}, :]
-    julia_command(glue('xbwd_for_smo = {bwd}.states;')) # {bwd}.states[1:{.n_particle}, :]
+    julia_cmd(glue('xfwd_for_smo = {fwd}.states;')) # {fwd}.states[1:{.n_particle}, :]
+    julia_cmd(glue('xbwd_for_smo = {bwd}.states;')) # {bwd}.states[1:{.n_particle}, :]
   } else {
-    julia_command('xfwd_for_smo = batch_fwd;')
-    julia_command('xbwd_for_smo = batch_bwd;')
+    julia_cmd('xfwd_for_smo = batch_fwd;')
+    julia_cmd('xbwd_for_smo = batch_bwd;')
   }
 
   #### Run smoother
@@ -447,6 +458,6 @@ set_smoother_two_filter <- function(.n_particle, .n_sim, .cache, .batch, .progre
                                                           batch      = {batch_vector},
                                                           progress   = progress,
                                                           verbose    = verbose);')
-  julia_command(cmd)
+  julia_cmd(cmd)
   invisible(output)
 }

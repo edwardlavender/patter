@@ -26,7 +26,7 @@ test_that("pf_smoother_two_filter() works", {
   # Test set_vamp() with correct inputs
   args$.model_move
   vmap <- set_vmap(map, .mobility = 750.0)
-  expect_true(julia_exists("vmap"))
+  expect_true(julia_defined("vmap"))
   check_inherits(vmap, "SpatRaster")
   # Check error handling
   set_vmap(.map = map, .mobility = NULL) |>
@@ -47,10 +47,10 @@ test_that("pf_smoother_two_filter() works", {
     expect_warning('"blah" is not a graphical parameter')
   # Check Julia handling
   # > For a valid point, extract should return 1.0
-  julia_command('!isnothing(vmap)')
-  expect_true(julia_eval('!isnothing(vmap) && isone(Patter.extract(vmap, 709774.3, 6259323))'))
+  julia_cmd('!isnothing(vmap)')
+  expect_true(julia_pull('!isnothing(vmap) && isone(Patter.extract(vmap, 709774.3, 6259323))'))
   # > For points near the edge, extract should _not_ return 1.0
-  expect_false(julia_eval('!isnothing(vmap) && isone(Patter.extract(vmap, 707837.2, 6259496))'))
+  expect_false(julia_pull('!isnothing(vmap) && isone(Patter.extract(vmap, 707837.2, 6259496))'))
 
   #### Smoother
 

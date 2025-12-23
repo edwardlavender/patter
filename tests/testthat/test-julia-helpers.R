@@ -18,8 +18,8 @@ test_that("Julia helpers work", {
   # Expect timestamps are set properly in Julia
   expect_Dates.DateTime <- function(x) {
     x <- julia_timeline(x) |> suppressWarnings()
-    julia_assign("tx", x)
-    expect_equal("Dates.DateTime", julia_eval('string(eltype(tx))'))
+    julia_push("tx", x)
+    expect_equal("Dates.DateTime", julia_pull('string(eltype(tx))'))
   }
 
   #### Test patter_run() and julia_works()
@@ -74,7 +74,7 @@ test_that("Julia helpers work", {
 
   #### julia_*() display
   julia_glimpse(data.frame(x = 1))
-  julia_assign("x", 1)
+  julia_push("x", 1)
   julia_print("x")
   julia_summary("x")
 
@@ -83,7 +83,7 @@ test_that("Julia helpers work", {
   julia_save(.x = "x", .file = file)
   expect_true(file.exists(file))
   julia_load(.file = file, .x = "x")
-  expect_true(julia_exists("x"))
+  expect_true(julia_defined("x"))
   unlink(file)
 
   #### julia_timeline()
@@ -132,7 +132,7 @@ test_that("Julia helpers work", {
   z = x + y
   '
   )
-  expect_identical(julia_eval("z"), 3L)
+  expect_identical(julia_pull("z"), 3L)
 
 })
 

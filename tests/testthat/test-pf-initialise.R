@@ -94,14 +94,14 @@ test_that("pf_filter_init() works", {
     set_yobs_vect(.timeline, .yobs)
     set_model_obs_types(.yobs)
     set_direction(.direction)
-    julia_command('if !isnothing(yobs_vect) yobs_vect = yobs_vect[1] end;')
-    julia_command('if !isnothing(model_obs_types) model_obs_types = model_obs_types[1] end;')
-    julia_command('map_init = Patter.map_init(deepcopy(env_init), timeline, model_move, yobs_vect, model_obs_types, direction);')
-    julia_eval.map_init()
+    julia_cmd('if !isnothing(yobs_vect) yobs_vect = yobs_vect[1] end;')
+    julia_cmd('if !isnothing(model_obs_types) model_obs_types = model_obs_types[1] end;')
+    julia_cmd('map_init = Patter.map_init(deepcopy(env_init), timeline, model_move, yobs_vect, model_obs_types, direction);')
+    julia_pull.map_init()
   }
 
-  # `julia_eval()` wrapper to pass a raster ('map_init') back to R
-  julia_eval.map_init <- function() {
+  # `julia_pull()` wrapper to pass a raster ('map_init') back to R
+  julia_pull.map_init <- function() {
     # Write Raster to file
     julia_check_exists("map_init")
     julia_code(
@@ -111,7 +111,7 @@ test_that("pf_filter_init() works", {
       write(map_init_tif, map_init, force = true)
     '
     )
-    file <- julia_eval("map_init_tif")
+    file <- julia_pull("map_init_tif")
     terra::rast(file)
   }
 
@@ -369,7 +369,7 @@ test_that("pf_filter_init() works", {
   # * This is indirectly tested above.
 
   # Clean up
-  unlink(julia_eval("map_init_tif"))
+  unlink(julia_pull("map_init_tif"))
 
 
   #########################
@@ -378,7 +378,7 @@ test_that("pf_filter_init() works", {
 
   # Patter.coords_init() R wrapper
   coords_init <- function(size = 1L) {
-    julia_eval(glue('coords_init = Patter.coords_init(env_init, {size});'))
+    julia_pull(glue('coords_init = Patter.coords_init(env_init, {size});'))
   }
 
   # Test basic implementation
@@ -412,11 +412,11 @@ test_that("pf_filter_init() works", {
 
   # `Patter.states_init()` R wrapper that uses `coords_init` object in Julia defined by the `coords_init()` R wrapper
   states_init <- function(state_type = "StateXY") {
-    julia_eval(glue('Patter.states_init({state_type}, coords_init)'))
+    julia_pull(glue('Patter.states_init({state_type}, coords_init)'))
   }
 
   # `states_init.default()`
-  julia_command('struct StateCustom <: Patter.State end')
+  julia_cmd('struct StateCustom <: Patter.State end')
   states_init(state_type = "StateCustom") |>
     expect_error("For custom states, you need to define a `Patter.states_init()` method or provide `.xinit`.",
                  fixed = TRUE)

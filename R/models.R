@@ -366,7 +366,7 @@ plot.ModelObsDepthUniformSeabed <- function(x,
 
   # Density plots
   lapply(split(x, seq_row(x)), function(xi) {
-    julia_command(glue('dbn_ModelObsDepthUniformSeabed = truncated(Uniform({.seabed - xi$depth_shallow_eps}, {.seabed + xi$depth_deep_eps}), lower = 0.0);'))
+    julia_cmd(glue('dbn_ModelObsDepthUniformSeabed = truncated(Uniform({.seabed - xi$depth_shallow_eps}, {.seabed + xi$depth_deep_eps}), lower = 0.0);'))
     panel <- list_args(list(main = xi$sensor_id), .dots = list(...))
     plot_dbn_ModelObsDepthUniformSeabed(panel)
   })
@@ -390,7 +390,7 @@ plot.ModelObsDepthNormalTruncSeabed <- function(x,
 
   # Density plots
   lapply(split(x, seq_row(x)), function(xi) {
-    julia_command(glue('dbn_ModelObsDepthNormalTruncSeabed = truncated(Normal({.seabed}, {xi$depth_sigma}), lower = 0.0, upper = {.seabed + xi$depth_deep_eps});'))
+    julia_cmd(glue('dbn_ModelObsDepthNormalTruncSeabed = truncated(Normal({.seabed}, {xi$depth_sigma}), lower = 0.0, upper = {.seabed + xi$depth_deep_eps});'))
     panel <- list_args(list(main = xi$sensor_id), .dots = list(...))
     plot_dbn_ModelObsDepthNormalTruncSeabed(panel)
   })
@@ -608,11 +608,11 @@ set_plot_dbn_par <- function(.default, .par) {
 # * (from 0.0001 to 0.9999)
 set_plot_dbn_lim <- function(.dbn, .panel) {
   if (!is.null(.panel$xlim)) {
-    julia_assign("from", .panel$xlim[1])
-    julia_assign("to", .panel$xlim[2])
+    julia_push("from", .panel$xlim[1])
+    julia_push("to", .panel$xlim[2])
   } else {
-    julia_command(glue('from = quantile({.dbn}, 0.0001);'))
-    julia_command(glue('to = quantile({.dbn}, 0.9999);'))
+    julia_cmd(glue('from = quantile({.dbn}, 0.0001);'))
+    julia_cmd(glue('to = quantile({.dbn}, 0.9999);'))
   }
   nothing()
 }
@@ -637,8 +637,8 @@ plot_dbn_wrap <- function(.dbn,
                       .panel)
   # Plot distribution
   set_plot_dbn_lim(.dbn = .dbn, .panel = .panel)
-  julia_command('x = range(from, stop = to, length = 1000);')
-  julia_command(glue('y = pdf({.dbn}, x);'))
+  julia_cmd('x = range(from, stop = to, length = 1000);')
+  julia_cmd(glue('y = pdf({.dbn}, x);'))
   plot_dbn(.panel = .panel)
 }
 
@@ -646,8 +646,8 @@ plot_dbn_wrap <- function(.dbn,
 # * .panel contains ... from the parent function (plot_dbn_wrap())
 plot_dbn <- function(.panel) {
   julia_check_exists("x", "y")
-  .panel$x    <- julia_eval('x')
-  .panel$y    <- julia_eval('y')
+  .panel$x    <- julia_pull('x')
+  .panel$y    <- julia_pull('y')
   do.call(plot, .panel)
   nothing()
 }
@@ -656,7 +656,7 @@ plot_dbn <- function(.panel) {
 plot_dbn_length <- function(.panel, ...) {
   julia_check_exists("model_move")
   plot_dbn_wrap(.dbn = "model_move.dbn_length",
-                .xlim = c(-0.001, julia_eval("model_move.mobility") + 0.001),
+                .xlim = c(-0.001, julia_pull("model_move.mobility") + 0.001),
                 .xlab = "Length (m)", .ylab = "Density",
                 .panel = .panel, ...)
 }

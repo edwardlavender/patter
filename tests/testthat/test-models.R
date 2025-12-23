@@ -4,7 +4,7 @@ test_that("model_move_*() functions work", {
   skip_if_not(patter_run(.julia = TRUE, .geospatial = FALSE))
 
   # Functions fail when the map has not been exported
-  if (!julia_exists("env")) {
+  if (!julia_defined("env")) {
     model_move_xy() |>
       expect_error("'env' does not exist in Julia.")
     model_move_xyz() |>

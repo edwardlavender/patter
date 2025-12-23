@@ -125,7 +125,7 @@ pf_filter <- function(.timeline,
 
   #### Check convergence
   # Issue a warning for convergence failures
-  if (isFALSE(julia_eval(glue('{pf_obj}.callstats.convergence[1]')))) {
+  if (isFALSE(julia_pull(glue('{pf_obj}.callstats.convergence[1]')))) {
     warn("The particle filter failed to converge.")
   }
 

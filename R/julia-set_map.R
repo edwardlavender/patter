@@ -84,12 +84,12 @@ set_map <- function(.x, .as_Raster = TRUE, .as_GeoArray = TRUE) {
   #### Read raster into Julia using Rasters or GeoArrays
   if (.as_Raster) {
     # Read Raster
-    julia_command(glue('{.Raster} = Patter.rast("{file}");'))
+    julia_cmd(glue('{.Raster} = Patter.rast("{file}");'))
   }
   if (.as_GeoArray) {
     # Read GeoArray directly as `env` or `vmap`
     # (GeoArray(env_init) does not correctly format the raster)
-    julia_command(glue('{.GeoArray} = GeoArrays.read("{file}");'))
+    julia_cmd(glue('{.GeoArray} = GeoArrays.read("{file}");'))
   }
 
   nothing()

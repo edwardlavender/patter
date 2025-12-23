@@ -19,8 +19,8 @@ test_that("Patter.jl::extract() works", {
     test_xy$r[is.na(test_xy$r)] <- NaN
 
     # Test terra::extract() and Patter.jl.extract() are identical
-    julia_assign("test_xy", test_xy)
-    test_xy$julia <- julia_eval('[Patter.extract(env, test_xy.x[i], test_xy.y[i]) for i in 1:nrow(test_xy)];')
+    julia_push("test_xy", test_xy)
+    test_xy$julia <- julia_pull('[Patter.extract(env, test_xy.x[i], test_xy.y[i]) for i in 1:nrow(test_xy)];')
     expect_equal(test_xy$r, test_xy$julia)
     NULL
 
@@ -32,7 +32,7 @@ test_that("Patter.jl::extract() works", {
     # points(x, y)
     expect_equal(
       terra::extract(dat_gebco(), cbind(710492.1497468759, 6.270256886936354e6), method = "simple")[, 1],
-      julia_eval('Patter.extract(env, 710492.1497468759, 6.270256886936354e6)')
+      julia_pull('Patter.extract(env, 710492.1497468759, 6.270256886936354e6)')
     )
   })
 

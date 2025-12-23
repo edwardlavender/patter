@@ -65,7 +65,7 @@ set_vmap  <- function(.map = NULL, .mobility = NULL, .vmap = NULL, .plot = FALSE
   if (is.null(.vmap)) {
     .vmap <- NULL
     if (julia_session()) {
-      julia_command("vmap = nothing;")
+      julia_cmd("vmap = nothing;")
     }
   } else {
     if (.plot) {
@@ -98,12 +98,12 @@ pf_smoother_two_filter <- function(.n_particle = NULL,
   # vmap should be pre-defined and exported to Julia via set_vmap() if required
   # * If vmap is undefined, it is set to `nothing`
   # * Otherwise, we validate that StateXY or StateXYZ
-  if (!julia_exists("vmap")) {
-    julia_command('vmap = nothing;')
+  if (!julia_defined("vmap")) {
+    julia_cmd('vmap = nothing;')
   } else {
-    if (julia_eval('!isnothing(vmap)') && is.null(.batch)) {
+    if (julia_pull('!isnothing(vmap)') && is.null(.batch)) {
       pf_obj <- name_particles(.fun = "pf_filter", .direction = "forward")
-      .state <- as.character(julia_eval(glue('typeof({pf_obj}.states[1]);')))
+      .state <- as.character(julia_pull(glue('typeof({pf_obj}.states[1]);')))
       if (!(.state %in% c("StateXY", "StateCXY"))) {
         warn("`vmap` is defined but `State` is not \"StateXY\" or \"StateXYZ\". If your model includes depth (`z`), set `vmap` to `NULL`.")
       }

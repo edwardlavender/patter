@@ -185,7 +185,7 @@ sim_path_walk <- function(.map = NULL,
   }
 
   #### Get paths in R
-  paths       <- julia_eval('Patter.r_get_states(paths, collect(1:length(timeline)), timeline)')
+  paths       <- julia_pull('Patter.r_get_states(paths, collect(1:length(timeline)), timeline)')
   paths       <- as.data.table(paths)
   state_dims  <- colnames(paths)[(!colnames(paths) %in% c("path_id", "timestep"))]
 
@@ -248,7 +248,7 @@ sim_observations <- function(.timeline, .model_obs, .collect = TRUE) {
     return(nothing())
   }
   out <- lapply(names(.model_obs), function(.model) {
-    julia_eval(glue("Patter.r_get_dataset(yobs, {.model})"))
+    julia_pull(glue("Patter.r_get_dataset(yobs, {.model})"))
   })
   out <- lapply(out, \(l) lapply(l, \(d) as.data.table(d)))
   names(out) <- names(.model_obs)

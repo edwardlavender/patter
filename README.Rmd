@@ -149,8 +149,8 @@ On Linux, this step may require system libraries (see below).
 
 ```{r, include = FALSE}
 library(JuliaCall)
-julia_setup()
-VERSION <- julia_eval("string(VERSION)")
+julia_start()
+VERSION <- julia_pull("string(VERSION)")
 ```
 
 > **Note:**
@@ -168,23 +168,23 @@ devtools::install_github("JuliaInterop/JuliaCall",
 ```
 
 ``` r
-# Run julia_setup() to set up the Julia installation 
+# Run julia_start() to set up the Julia installation 
 # * This includes an installJulia argument if the above Julia installation options fail 
-# * Set `JULIA_HOME` if Julia is not found (see `?julia_setup()`)
+# * Set `JULIA_HOME` if Julia is not found (see `?julia_start()`)
 # * Note this may take several minutes
 # * Set `rebuild = TRUE` if you've previously used JuliaCall on an older R version
 library(JuliaCall)
-julia <- julia_setup()
+julia <- julia_start()
 ```
 
 ``` r
 # Validate the Julia installation:
 # * TRUE: `Julia` is working! 
 # * FALSE: `Julia` is not working (see below)! 
-isTRUE(try(julia_eval('true'), silent = TRUE))
+isTRUE(try(julia_pull('true'), silent = TRUE))
 ```
 
-If `julia_setup()` fails with `'Julia is not found'`, you should tell `R` the location of the `Julia` binary via `JULIA_HOME` (see `?JuliaCall::julia_setup()` and the [`JuliaCall`](https://cran.r-project.org/web/packages/JuliaCall) [README](https://cran.r-project.org/web/packages/JuliaCall/readme/README.html), as well as the relevant `patter` GitHub [issues](https://github.com/edwardlavender/patter/issues?q=label%3Ainstallation) for troubleshooting and ways to get help). 
+If `julia_start()` fails with `'Julia is not found'`, you should tell `R` the location of the `Julia` binary via `JULIA_HOME` (see `?JuliaCall::julia_start()` and the [`JuliaCall`](https://cran.r-project.org/web/packages/JuliaCall) [README](https://cran.r-project.org/web/packages/JuliaCall/readme/README.html), as well as the relevant `patter` GitHub [issues](https://github.com/edwardlavender/patter/issues?q=label%3Ainstallation) for troubleshooting and ways to get help). 
 
 6. **Install [`patter`](https://github.com/edwardlavender/patter).** To install `patter` from the `main` branch, use: 
 

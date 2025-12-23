@@ -192,16 +192,17 @@
 #'
 #' @importFrom grDevices hcl.colors
 #'
-#' @importFrom JuliaCall julia_assign
-#' @importFrom JuliaCall julia_command
-#' @importFrom JuliaCall julia_eval
-#' @importFrom JuliaCall julia_exists
-#' @importFrom JuliaCall julia_installed_package
-#' @importFrom JuliaCall julia_install_package
-#' @importFrom JuliaCall julia_update_package
-#' @importFrom JuliaCall julia_library
-#' @importFrom JuliaCall julia_setup
-#' @importFrom JuliaCall julia_source
+#' @importFrom JuliaSwitch julia_backend
+#' @importFrom JuliaSwitch julia_start
+#' @importFrom JuliaSwitch julia_cmd
+#' @importFrom JuliaSwitch julia_defined
+#' @importFrom JuliaSwitch julia_include
+#' @importFrom JuliaSwitch julia_pkg_add
+#' @importFrom JuliaSwitch julia_pkg_installed
+#' @importFrom JuliaSwitch julia_pkg_update
+#' @importFrom JuliaSwitch julia_push
+#' @importFrom JuliaSwitch julia_pull
+#' @importFrom JuliaSwitch julia_using
 #'
 #' @importFrom lubridate interval
 #' @importFrom lubridate int_overlaps

@@ -23,9 +23,9 @@ test_that("set_seed() works", {
 
   # Test that set_seed() works in Julia
   set_seed(3)
-  a <- julia_eval('rand()')
+  a <- julia_pull('rand()')
   set_seed(3)
-  b <- julia_eval('rand()')
+  b <- julia_pull('rand()')
   expect_equal(a, b)
 
   # Test that set_seed() is thread safe in Julia
@@ -38,10 +38,10 @@ test_that("set_seed() works", {
   '
   set_seed()
   julia_code(code)
-  a <- julia_eval("x")
+  a <- julia_pull("x")
   set_seed()
   julia_code(code)
-  b <- julia_eval("x")
+  b <- julia_pull("x")
   expect_equal(a, b)
 
   # Test that set_seed() works with pf_filter()
@@ -65,12 +65,12 @@ test_that("set_map() works", {
   map <- dat_gebco()
   expect_true(terra::sources(map) != "")
   set_map(map)
-  expect_true(julia_exists("env"))
+  expect_true(julia_defined("env"))
 
   # Use SpatRaster in memory
   map <- terra::unwrap(terra::wrap(map))
   set_map(map)
-  expect_true(julia_exists("env"))
+  expect_true(julia_defined("env"))
 
 })
 
@@ -98,37 +98,37 @@ test_that("Additional Julia set_*() functions work", {
 
   # set_t_resample()
   set_t_resample(NULL)
-  expect_true(julia_eval('isnothing(t_resample)'))
+  expect_true(julia_pull('isnothing(t_resample)'))
   set_t_resample(5)
-  expect_equal(5L, julia_eval('t_resample'))
+  expect_equal(5L, julia_pull('t_resample'))
   set_t_resample(c(5, 10, 20))
-  expect_equal(c(5L, 10L, 20L), julia_eval('t_resample'))
+  expect_equal(c(5L, 10L, 20L), julia_pull('t_resample'))
 
   # set_batch()
   # set_batch(NULL) returns nothing in Julia
   batch <- NULL
   set_batch(batch, .type = "fwd")
-  expect_true(julia_eval('isnothing(batch_fwd)'))
+  expect_true(julia_pull('isnothing(batch_fwd)'))
   # set_batch() with one element returns Julia _Vector_
   batch <- c("./fwd-1.jld2")
   set_batch(batch, .type = "fwd")
-  expect_true(julia_eval('batch_fwd == ["./fwd-1.jld2"]'))
+  expect_true(julia_pull('batch_fwd == ["./fwd-1.jld2"]'))
   # set_batch() with multiple elements also returns Julia Vector
   batch <- c("./fwd-1.jld2", "./fwd-2.jld2")
   set_batch(batch, .type = "fwd")
-  expect_true(julia_eval('batch_fwd == ["./fwd-1.jld2", "./fwd-2.jld2"]'))
+  expect_true(julia_pull('batch_fwd == ["./fwd-1.jld2", "./fwd-2.jld2"]'))
   # set_batch() works for other .types
   # a) fwd
   batch_vector <- set_batch(NULL, .type = "fwd")
   expect_equal(batch_vector, "batch_fwd")
-  expect_true(julia_eval('isnothing(batch_fwd)'))
+  expect_true(julia_pull('isnothing(batch_fwd)'))
   # b) bwd
   batch_vector <- set_batch(NULL, .type = "bwd")
   expect_equal(batch_vector, "batch_bwd")
-  expect_true(julia_eval('isnothing(batch_bwd)'))
+  expect_true(julia_pull('isnothing(batch_bwd)'))
   # c) smo
   batch_vector <- set_batch(NULL, .type = "smo")
   expect_equal(batch_vector, "batch_smo")
-  expect_true(julia_eval('isnothing(batch_smo)'))
+  expect_true(julia_pull('isnothing(batch_smo)'))
 
 })
