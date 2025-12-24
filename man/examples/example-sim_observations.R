@@ -115,4 +115,6 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
                                             ModelObsDepthNormalTruncSeabed = pars))
   str(obs)
 
+  JuliaSwitch::julia_stop()
+
 }

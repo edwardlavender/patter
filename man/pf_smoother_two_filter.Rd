@@ -172,6 +172,8 @@ if (patter_run()) {
   # Cleanup
   file_cleanup(folder)
   set_vmap()
+  JuliaSwitch::julia_stop()
+
 }
 }
 \references{

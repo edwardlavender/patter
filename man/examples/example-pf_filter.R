@@ -499,4 +499,6 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
 
   }
 
+  JuliaSwitch::julia_stop()
+
 }

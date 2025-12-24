@@ -316,6 +316,8 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
   lines(obs$timestamp, obs$obs * -1 , col = "royalblue")
   lines(paths$timestamp, paths$map_value * -1, col = "grey")
 
+  JuliaSwitch::julia_stop()
+
 }
 }
 \seealso{

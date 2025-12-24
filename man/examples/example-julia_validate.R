@@ -10,4 +10,6 @@ if (patter_run(.geospatial = FALSE)) {
   # * Otherwise, an error will be raised (or `R` will crash).
   expect_null(julia_validate())
 
+  JuliaSwitch::julia_stop()
+
 }

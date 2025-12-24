@@ -9,7 +9,7 @@ test_that("example_setup() methods work", {
                  fixed = TRUE)
 
   # Test example_setup.pf_smoother_two_filter()
-  setup <- example_setup("pf_smoother_two_filter")
+  setup <- example_setup("pf_smoother_two_filter", .connect = FALSE)
   map   <- setup$map
   args  <- setup$pf_filter_args
   fwd   <- do.call(pf_filter, args)

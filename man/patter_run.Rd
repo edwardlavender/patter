@@ -52,6 +52,8 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
   terra::plot(map)
   # Set the map in `Julia`
   set_map(map)
+  # Stop `Julia`
+  JuliaSwitch::julia_stop()
 }
 }
 \author{

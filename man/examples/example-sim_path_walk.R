@@ -127,4 +127,6 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
                 .model_move = model_move_xy(),
                 .plot = FALSE)
 
+  JuliaSwitch::julia_stop()
+
 }

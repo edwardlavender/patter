@@ -46,4 +46,6 @@ if (patter_run(.julia = TRUE, .geospatial = FALSE)) {
                 .state = "StateXY",
                 .model_move = model_move_xy())
 
+  JuliaSwitch::julia_stop()
+
 }

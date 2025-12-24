@@ -252,6 +252,8 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
   #### (optional) Map UD
   # map_dens(map, .coord = smo$states)
 
+  JuliaSwitch::julia_stop()
+
 }
 }
 \seealso{

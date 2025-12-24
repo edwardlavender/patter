@@ -74,6 +74,8 @@ if (patter_run()) {
     path$map_value[1] == terra::extract(map_init, cell)$map_value)
   )
 
+  JuliaSwitch::julia_stop()
+
 }
 
 }

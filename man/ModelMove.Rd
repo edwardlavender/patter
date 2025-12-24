@@ -226,6 +226,8 @@ if (patter_run(.julia = TRUE, .geospatial = TRUE)) {
   # ... (with custom parameters) simulate movements and for particle filtering.
   # See the help file for `?State` to use a new sub-type.
 
+  JuliaSwitch::julia_stop()
+
 }
 }
 \seealso{

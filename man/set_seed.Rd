@@ -19,6 +19,7 @@ Use \code{\link[=set_seed]{set_seed()}} to set the seed in \code{R} and \code{Ju
 if (patter_run(.geospatial = FALSE)) {
   julia_connect()
   set_seed(2024L)
+  JuliaSwitch::julia_stop()
 }
 
 }

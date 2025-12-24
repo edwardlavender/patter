@@ -127,6 +127,8 @@ if (patter_run(.julia = TRUE, .geospatial = FALSE)) {
   mtext(side = 1, "Distance (m)", line = -1, outer = TRUE)
   mtext(side = 2, "Probability", line = -1, outer = TRUE)
 
+  JuliaSwitch::julia_stop()
+
 }
 }
 \author{
