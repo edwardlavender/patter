@@ -378,7 +378,8 @@ test_that("pf_filter_init() works", {
 
   # Patter.coords_init() R wrapper
   coords_init <- function(size = 1L) {
-    julia_pull(glue('coords_init = Patter.coords_init(env_init, {size});'))
+    julia_cmd(glue('coords_init = Patter.coords_init(env_init, {size});'))
+    julia_pull('coords_init')
   }
 
   # Test basic implementation
