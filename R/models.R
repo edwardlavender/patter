@@ -646,8 +646,8 @@ plot_dbn_wrap <- function(.dbn,
 # * .panel contains ... from the parent function (plot_dbn_wrap())
 plot_dbn <- function(.panel) {
   julia_check_exists("x", "y")
-  .panel$x    <- julia_pull('x')
-  .panel$y    <- julia_pull('y')
+  .panel$x    <- julia_pull('collect(x)')
+  .panel$y    <- julia_pull('collect(y)')
   do.call(plot, .panel)
   nothing()
 }
