@@ -64,7 +64,16 @@ test_that("julia_connect() works", {
   #### Test JULIA_PROJ implementation
 
   # Use JULIA_PROJ env variable
-  jproj <- file.path(tempdir(), "Julia")
+
+  # Warning
+  # Inside julia_connect(), the call to Pkg.add() in julia_pkg_add can delete tempdir()
+  # -> Error in file(con, "w") : cannot open the connection ...
+  # Solutions:
+  # * Set jproj to 'permanent' directory in tests/
+  # * julia_pkg_add() now recreates tempdir() but we also need to set jproj here
+
+  jproj <- test_path("_tmp")
+  unlink(jproj, recursive = TRUE)
   Sys.setenv("JULIA_PROJ" = jproj)
   julia_connect(.socket = TRUE)
   expect_true(file.exists(file.path(jproj, "Manifest.toml")))
@@ -127,14 +136,19 @@ test_that("julia_connect() works", {
   # A) Implement update of Patter as requested via .pkg_update
   # > "https://github.com/edwardlavender/Patter.jl.git#dev"
   # (We have to remove the compatibility entry for Patter.jl for this.)
-  julia_cmd('Pkg.compat("Patter");')
+  # julia_cmd('Pkg.compat("Patter");')
+  tom <- readLines(file.path(jproj, "Project.toml"))
+  tom <- toml::edit_toml(tom, "compat.Patter", NULL)
+  writeLines(tom, file.path(jproj, "Project.toml"))
   julia_connect(JULIA_PROJ = jproj,
                 JULIA_PATTER_SOURCE = "dev", .pkg_update = "Patter",
                 .socket = TRUE)
   expect_equal(Patter_repo_url(jproj),
                "https://github.com/edwardlavender/Patter.jl.git#dev")
   # B) As above, but swap to development version on file
-  julia_cmd('Pkg.compat("Patter");')
+  tom <- toml::read_toml(file.path(jproj, "Project.toml"))
+  tom$compat$Patter <- NULL
+  toml::write_toml(tom, file.path(jproj, "Project.toml"))
   julia_connect(JULIA_PROJ = jproj,
                 JULIA_PATTER_SOURCE = local_Patter.jl,
                 .pkg_update = "Patter",

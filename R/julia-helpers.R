@@ -106,7 +106,7 @@ julia_proj_generate <- function(JULIA_PROJ) {
 # Activate a Julia Project
 julia_proj_activate <- function(JULIA_PROJ) {
   # julia_cmd("using Revise")
-  julia_cmd(glue('Pkg.activate("{JULIA_PROJ}");'))
+  julia_cmd(glue('Pkg.activate("{JULIA_PROJ}"; temp = false);'))
   nothing()
 }
 
@@ -288,6 +288,10 @@ julia_pkg_install_deps <- function(.pkg_install, .pkg_update) {
     update   <- ifelse(isFALSE(install) & .pkg %in% .pkg_update, TRUE, FALSE)
     # Run installation/update
     if (install) {
+      # NB it appears Pkg.add() can remove the temporary directory
+      # This then breaks the loop when julia_pkg_installed is used for the next file
+      # because this uses tempfile() internally
+      # Hence julia_pkg_add() contains tempdir(check = TRUE) to resolve this issue
       julia_pkg_add(.pkg)
     }
     if (update) {
@@ -357,12 +361,12 @@ julia_pkg_setup <- function(JULIA_PATTER_SOURCE,
   pkg_full   <- julia_pkg_list_full(.pkg_install = .pkg_install)
   pkg_dep    <- pkg_full[!(pkg_full %in% "Patter")]
   pkg_update <- julia_pkg_list_update(.pkg_update)
-  # Install and optionally update Patter.jl
-  julia_pkg_install_Patter(JULIA_PATTER_SOURCE,
-                           .pkg_update = pkg_update)
   # Install and optionally update dependencies
   julia_pkg_install_deps(.pkg_install = pkg_dep,
                          .pkg_update  = pkg_update)
+  # Install and optionally update Patter.jl
+  julia_pkg_install_Patter(JULIA_PATTER_SOURCE,
+                           .pkg_update = pkg_update)
   # Load relevant Julia packages
   # (Run julia_pkg_list_load() at this point to pick up newly installed Julia packages)
   pkg_load <- julia_pkg_list_load(.pkg_load = .pkg_load)
