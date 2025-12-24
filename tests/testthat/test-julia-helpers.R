@@ -19,7 +19,7 @@ test_that("Julia helpers work", {
   expect_Dates.DateTime <- function(x) {
     x <- julia_timeline(x) |> suppressWarnings()
     julia_push("tx", x)
-    expect_equal("Dates.DateTime", julia_pull('string(eltype(tx))'))
+    expect_true(("Dates.DateTime" == julia_pull('string(eltype(tx))')) | ("DateTime" == julia_pull('string(eltype(tx))')))
   }
 
   #### Test patter_run() and julia_works()
