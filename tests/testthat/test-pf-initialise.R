@@ -104,7 +104,7 @@ test_that("pf_filter_init() works", {
   julia_pull.map_init <- function() {
     # Write Raster to file
     julia_check_exists("map_init")
-    julia_code(
+    julia_cmd(
       '
       map_init = Rasters.replace_missing(map_init, NaN)
       map_init_tif = joinpath(tempdir(), "map_init.tif")

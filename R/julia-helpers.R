@@ -487,18 +487,6 @@ julia_check_exists <- function(...) {
 #' @rdname julia_helper
 #' @keywords internal
 
-# Run multi-line sections of Julia code
-julia_code <- function(.x) {
-  file <- tempfile(fileext = ".jl")
-  on.exit(unlink(file), add = TRUE)
-  writeLines(.x, file)
-  # readLines(file)
-  julia_include(file)
-}
-
-#' @rdname julia_helper
-#' @keywords internal
-
 # Define the number of particles for the smoother (nothing or integer)
 # (This avoids setting n_particle for the smoother in Julia)
 julia_n_particle <- function(.n_particle) {

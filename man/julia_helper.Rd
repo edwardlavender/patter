@@ -29,7 +29,6 @@
 \alias{julia_load}
 \alias{julia_timeline}
 \alias{julia_check_exists}
-\alias{julia_code}
 \alias{julia_n_particle}
 \title{Julia: helpers}
 \usage{
@@ -86,8 +85,6 @@ julia_load(.file, .x = basename(tools::file_path_sans_ext(.file)))
 julia_timeline(.x)
 
 julia_check_exists(...)
-
-julia_code(.x)
 
 julia_n_particle(.n_particle)
 }

@@ -42,7 +42,7 @@ If \code{JULIA_PATTER_SOURCE} changes, force the update by \code{.pkg_update}.
 
 \item{.pkg_config, .pkg_install, .pkg_update, .pkg_load}{(optional) \code{Julia} package options.
 \itemize{
-\item \code{.pkg_config} is a \code{character} string of \code{Julia} code, evaluated by \code{\link[=julia_code]{julia_code()}}, that configures \code{Julia} prior to dependency management.
+\item \code{.pkg_config} is a \code{character} string of \code{Julia} code, evaluated by \code{\link[JuliaSwitch:JuliaSwitch-interface]{JuliaSwitch::julia_cmd()}}, that configures \code{Julia} prior to dependency management.
 \item \code{.pkg_install}---A \code{character} vector of accessory \code{Julia} packages for install.
 \item \code{.pkg_update}---Package update control:
 \itemize{
@@ -84,7 +84,7 @@ This function connects \code{R} to \code{Julia}.
 \item The number of threads is set, if possible, via \code{JULIA_NUM_THREADS}.
 \item The \code{Julia} installation is validated.
 \item A local \code{Julia} Project is generated in \code{JULIA_PROJ} (if specified and required) and activated. We recommend using \code{\link{patter}} within an RStudio Project, with a \code{Julia} directory at the top-level that contains the \code{Julia} project.
-\item If specified, \code{.pkg_config} is run via \code{\link[=julia_code]{julia_code()}}.
+\item If specified, \code{.pkg_config} is run via \code{\link[JuliaSwitch:JuliaSwitch-interface]{JuliaSwitch::julia_cmd()}}.
 \item \href{https://github.com/edwardlavender/Patter.jl}{\code{Patter.jl}} and supporting dependencies are added or updated (if required) and loaded (optionally in the local \code{Julia} Project).
 }
 

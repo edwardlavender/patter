@@ -124,8 +124,8 @@ test_that("Julia helpers work", {
   julia_check_exists("blah") |>
     expect_error("'blah' does not exist in Julia", fixed = TRUE)
 
-  #### julia_code()
-  julia_code(
+  #### julia_cmd()
+  julia_cmd(
     '
   x = 1
   y = 2

@@ -37,10 +37,10 @@ test_that("set_seed() works", {
   end
   '
   set_seed()
-  julia_code(code)
+  julia_cmd(code)
   a <- julia_pull("x")
   set_seed()
-  julia_code(code)
+  julia_cmd(code)
   b <- julia_pull("x")
   expect_equal(a, b)
 

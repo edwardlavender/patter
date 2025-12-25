@@ -75,7 +75,7 @@
 
 
 <dt id="arg--pkg-config-pkg-install-pkg-update-pkg-load">.pkg_config, .pkg_install, .pkg_update, .pkg_load<a class="anchor" aria-label="anchor" href="#arg--pkg-config-pkg-install-pkg-update-pkg-load"></a></dt>
-<dd><p>(optional) <code>Julia</code> package options.</p><ul><li><p><code>.pkg_config</code> is a <code>character</code> string of <code>Julia</code> code, evaluated by <code><a href="julia_helper.html">julia_code()</a></code>, that configures <code>Julia</code> prior to dependency management.</p></li>
+<dd><p>(optional) <code>Julia</code> package options.</p><ul><li><p><code>.pkg_config</code> is a <code>character</code> string of <code>Julia</code> code, evaluated by <code><a href="julia_helper.html">julia_cmd()</a></code>, that configures <code>Julia</code> prior to dependency management.</p></li>
 <li><p><code>.pkg_install</code>—A <code>character</code> vector of accessory <code>Julia</code> packages for install.</p></li>
 <li><p><code>.pkg_update</code>—Package update control:</p><ul><li><p><code>NULL</code> or <code>FALSE</code> suppresses package updates;</p></li>
 <li><p><code>TRUE</code> updates all installed packages;</p></li>
@@ -113,7 +113,7 @@
 <li><p>The number of threads is set, if possible, via <code>JULIA_NUM_THREADS</code>.</p></li>
 <li><p>The <code>Julia</code> installation is validated.</p></li>
 <li><p>A local <code>Julia</code> Project is generated in <code>JULIA_PROJ</code> (if specified and required) and activated. We recommend using <code><a href="patter.html">patter</a></code> within an RStudio Project, with a <code>Julia</code> directory at the top-level that contains the <code>Julia</code> project.</p></li>
-<li><p>If specified, <code>.pkg_config</code> is run via <code><a href="julia_helper.html">julia_code()</a></code>.</p></li>
+<li><p>If specified, <code>.pkg_config</code> is run via <code><a href="julia_helper.html">julia_cmd()</a></code>.</p></li>
 <li><p><a href="https://github.com/edwardlavender/Patter.jl" class="external-link"><code>Patter.jl</code></a> and supporting dependencies are added or updated (if required) and loaded (optionally in the local <code>Julia</code> Project).</p></li>
 </ul><p>To set <code>JULIA_*</code> options (e.g., <code>JULIA_HOME</code>, <code>JULIA_PROJ</code>, <code>JULIA_NUM_THREADS</code>), it is recommended to use <code>.Rprofile</code> or <code>.Renviron</code>. To set these options in <code>.Rprofile</code>, follow these instructions:</p>
 <p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># (1) Open .Rprofile</span></span>

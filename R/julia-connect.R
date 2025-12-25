@@ -17,7 +17,7 @@
 #'    * `JULIA_BACKEND`---A `character` string  (`"JuliaCall"` or `"JuliaConnectoR"`) that defines the package used to connect `R` to `Julia`, passed to [`JuliaSwitch::julia_backend()`].
 #'
 #' @param .pkg_config,.pkg_install,.pkg_update,.pkg_load (optional) `Julia` package options.
-#' * `.pkg_config` is a `character` string of `Julia` code, evaluated by [`julia_code()`], that configures `Julia` prior to dependency management.
+#' * `.pkg_config` is a `character` string of `Julia` code, evaluated by [`JuliaSwitch::julia_cmd()`], that configures `Julia` prior to dependency management.
 #' * `.pkg_install`---A `character` vector of accessory `Julia` packages for install.
 #' * `.pkg_update`---Package update control:
 #'      * `NULL` or `FALSE` suppresses package updates;
@@ -42,7 +42,7 @@
 #' * The number of threads is set, if possible, via `JULIA_NUM_THREADS`.
 #' * The `Julia` installation is validated.
 #' * A local `Julia` Project is generated in `JULIA_PROJ` (if specified and required) and activated. We recommend using [`patter`] within an RStudio Project, with a `Julia` directory at the top-level that contains the `Julia` project.
-#' * If specified, `.pkg_config` is run via [`julia_code()`].
+#' * If specified, `.pkg_config` is run via [`JuliaSwitch::julia_cmd()`].
 #' * [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) and supporting dependencies are added or updated (if required) and loaded (optionally in the local `Julia` Project).
 #'
 #' To set `JULIA_*` options (e.g., `JULIA_HOME`, `JULIA_PROJ`, `JULIA_NUM_THREADS`), it is recommended to use `.Rprofile` or `.Renviron`. To set these options in `.Rprofile`, follow these instructions:
@@ -138,7 +138,7 @@ julia_connect <- function(JULIA_HOME,
   #### Install & load packages (optionally within the Julia Project)
   cats$cat("... Handling dependencies...")
   if (!is.null(.pkg_config)) {
-    julia_code(.pkg_config)
+    julia_cmd(.pkg_config)
   }
   julia_pkg_setup(JULIA_PATTER_SOURCE,
                   .pkg_install = .pkg_install,

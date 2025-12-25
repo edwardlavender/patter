@@ -175,7 +175,7 @@ unlink(file.path(JULIA_PROJ, "Project.toml"))
 julia_connect(JULIA_PATTER_SOURCE = JULIA_PATTER_SOURCE)
 
 # Check Pkg.status()
-patter:::julia_code(
+julia_cmd(
   '
   using Pkg
   open("pkg-status.txt", "w") do io
