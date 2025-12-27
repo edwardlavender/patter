@@ -163,11 +163,18 @@ test_that("julia_connect() works", {
   file_cleanup(jproj)
 
   #### Test .pkg_config
-  julia_connect(JULIA_PROJ = jproj,
-                .pkg_config = 'error("Break installation")',
-                .socket = TRUE) |>
-    expect_error("Error happens in Julia.",
-                 fixed = TRUE)
+  if (getOption("JuliaSwitch.backend") == "JuliaCall") {
+    julia_connect(JULIA_PROJ = jproj,
+                  .pkg_config = 'error("Break installation")',
+                  .socket = TRUE) |>
+      expect_error("Error happens in Julia.",
+                   fixed = TRUE)
+  } else if (getOption("JuliaSwitch.backend") == "JuliaConnectoR") {
+    julia_connect(JULIA_PROJ = jproj,
+                  .pkg_config = 'error("Break installation")',
+                  .socket = TRUE) |>
+      expect_error("Evaluation in Julia failed.")
+  }
 
   #### Test .pkg_install
   julia_connect(JULIA_PROJ = jproj,

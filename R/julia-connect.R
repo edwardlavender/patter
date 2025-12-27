@@ -120,20 +120,12 @@ julia_connect <- function(JULIA_HOME,
   cats$cat("... Running `Julia` setup via `JuliaSwitch::julia_start()`...")
   JULIA_NUM_THREADS <- set_JULIA_NUM_THREADS(JULIA_NUM_THREADS)
   JULIA_BACKEND     <- set_JULIA_BACKEND(JULIA_BACKEND)
-  julia             <- julia_start(...)
+  julia             <- julia_start(..., JULIA_PROJ = JULIA_PROJ)
   Sys.setenv("JULIA_SESSION" = "TRUE")
 
   #### Test Julia
   cats$cat("... Validating Julia installation...")
   julia_works(.action = abort)
-
-  #### (optional) Use Julia Project
-  JULIA_PROJ <- julia_proj_path(JULIA_PROJ)
-  if (!is.null(JULIA_PROJ)) {
-    cats$cat("... Setting up Julia project...")
-    julia_proj_generate(JULIA_PROJ)
-    julia_proj_activate(JULIA_PROJ)
-  }
 
   #### Install & load packages (optionally within the Julia Project)
   cats$cat("... Handling dependencies...")
