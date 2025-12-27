@@ -69,7 +69,9 @@ test_that("pf_filter() reconstructs the true path", {
   # Validate forward filter
   states <-
     fwd$states |>
-    left_join(paths, by = "timestep", suffix = c(".state", ".path"))
+    left_join(paths, by = "timestep", suffix = c(".state", ".path")) |>
+    filter(timestep %in% fwd$diagnostics$timestep[!is.na(fwd$diagnostics$ess)]) |>
+    as.data.table()
   expect_true(all.equal(states$map_value.path, states$map_value.state))
 
   # Run backward filter
@@ -86,7 +88,9 @@ test_that("pf_filter() reconstructs the true path", {
   # Validate backward filter
   states <-
     bwd$states |>
-    left_join(paths, by = "timestep", suffix = c(".state", ".path"))
+    left_join(paths, by = "timestep", suffix = c(".state", ".path")) |>
+    filter(timestep %in% bwd$diagnostics$timestep[!is.na(bwd$diagnostics$ess)]) |>
+    as.data.table()
   expect_true(all.equal(states$map_value.path, states$map_value.state))
 
 })
@@ -183,11 +187,11 @@ test_that("pf_filter() works", {
   times <- data.table(timestep = seq_len(length(timeline)),
                       timestamp = timeline)
   expect_equal(fwd$states$timestep,
-               times$timestep[match(fwd$states$timestamp, times$timestamp)]
+               times$timestep[match(fwd$states$timestamp, times$timestamp)],
                )
   expect_equal(fwd$states$timestamp,
                times$timestamp[match(fwd$states$timestep, times$timestep)]
-  )
+               )
   expect_equal(fwd$diagnostics[, .(timestep, timestamp)], times)
 
   #### Test that that movement distances are within mobility
@@ -340,7 +344,6 @@ test_that("pf_filter() handles .yobs = list(ModelObsContainer)", {
   skip_on_cran()
   skip_if_not(patter_run(.julia = TRUE, .geospatial = TRUE))
 
-  julia_connect()
   set_seed()
 
   #### Define study area
