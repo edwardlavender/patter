@@ -53,15 +53,14 @@
 NULL
 
 # Build a `pf_particles` class object from Patter.jl outputs
-pf_particles <- function(.pf_obj, .timeline, .call_start = NULL, call_end = Sys.time()) {
+pf_particles <- function(.pf_obj, .tzone, .call_start = NULL, call_end = Sys.time()) {
 
   # Initialise output list
   out <- list()
 
   # Add Julia outputs
   # * states, diagnostics, convergence
-  out <- append(out, julia_pull(glue('Patter.r_get_particles({.pf_obj})')))
-  tz  <- lubridate::tzone(.timeline)
+  out   <- append(out, julia_pull(glue('Patter.r_get_particles({.pf_obj})')))
 
   # Process `states` data.table
   if (!is.null(out$states)) {
@@ -73,14 +72,14 @@ pf_particles <- function(.pf_obj, .timeline, .call_start = NULL, call_end = Sys.
     # * TO DO Resolve in JuliaSwitch
     # * This post-hoc fix of tzone is currently required
     #   b/c tzone is not maintained via JuliaSwitch
-    lubridate::tzone(out$states$timestamp) <- tz
+    lubridate::tz(out$states$timestamp) <- .tzone
   }
 
   # Process `diagnostics` data.table
   out$diagnostics <-
     out$diagnostics |>
     setDT()
-  lubridate::tzone(out$diagnostics$timestamp) <- tz
+  lubridate::tz(out$diagnostics$timestamp) <- .tzone
 
   # Process `callstats` data.table
   # * Set `n_iter` as integer

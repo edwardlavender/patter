@@ -125,7 +125,9 @@ pf_smoother_two_filter <- function(.n_particle = NULL,
   #### Get particles in R
   if (.collect) {
     cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Collating outputs..."))
-    out <- pf_particles(.pf_obj = pf_obj, .timeline = timeline, .call_start = t1)
+    out <- pf_particles(.pf_obj     = pf_obj,
+                        .tzone      = lubridate::tz(julia_pull("timeline[1]")),
+                        .call_start = t1)
   } else {
     out <- nothing()
   }
