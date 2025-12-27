@@ -154,7 +154,7 @@ julia_pkg_list_req <- function() {
 
 # List all installed Julia dependencies
 julia_pkg_list_installed <- function() {
-  sort(julia_pull('collect(keys(Pkg.project().dependencies));'))
+  sort(julia_pull('collect(keys(Pkg.project().dependencies))'))
 }
 
 #' @rdname julia_helper
