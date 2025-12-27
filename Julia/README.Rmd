@@ -377,7 +377,7 @@ op <- options(terra.pal = rev(terrain.colors(256)))
 map <- terra::rast(file.path("data", "bathymetry.tif"))
 
 # Convert smoothed particles from `Julia` into a `pf_particles` object
-smo <- patter:::pf_particles(.pf_obj = "smo")
+smo <- patter:::pf_particles(.pf_obj = "smo",  .timeline = timeline)
 
 # Estimate UD
 ud <- map_dens(.map     = map,

@@ -79,7 +79,7 @@ if (patter_run()) {
   #### Set up example
   # Set up the particle filter with an example dataset
   # (See `?pf_filter()` for the full workflow)
-  setup <- example_setup("pf_smoother_two_filter")
+  setup <- example_setup("pf_smoother_two_filter", .connect = FALSE)
   map   <- setup$map
   args  <- setup$pf_filter_args
   # Run the particle filter forwards
@@ -159,9 +159,9 @@ if (patter_run()) {
 
   ## Collate outputs in R
   julia_cmd('
-    smo_states = hcat([f["xsmo"] for f in map(jldopen, batch_smo)]...);')
+    smo_states = hcat([f["xsmo"] for f in map(jldopen, batch_smo)]...)')
   smo$states <- julia_pull('
-    Patter.r_get_states(smo_states, collect(1:length(timeline)), timeline);
+    Patter.r_get_states(smo_states, collect(1:length(timeline)), timeline)
     ')
   head(smo$states)
 

@@ -122,7 +122,7 @@ test_that("pf_smoother_two_filter() works with batching", {
   skip_if_not(patter_run(.julia = TRUE, .geospatial = TRUE))
 
   folder <- tempdir()
-  setup  <- example_setup("pf_smoother_two_filter")
+  setup  <- example_setup("pf_smoother_two_filter", .connect = FALSE)
   args   <- setup$pf_filter_args
 
   ## Run forward filter with batching

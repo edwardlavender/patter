@@ -132,7 +132,7 @@ pf_filter <- function(.timeline,
   #### Get particles in R
   if (.collect) {
     cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Collating outputs..."))
-    out <- pf_particles(.pf_obj = pf_obj, .call_start = t1)
+    out <- pf_particles(.pf_obj = pf_obj, .timeline = timeline, .call_start = t1)
   } else {
     out <- nothing()
   }

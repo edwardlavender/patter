@@ -103,7 +103,7 @@ pf_smoother_two_filter <- function(.n_particle = NULL,
   } else {
     if (julia_pull('!isnothing(vmap)') && is.null(.batch)) {
       pf_obj <- name_particles(.fun = "pf_filter", .direction = "forward")
-      .state <- as.character(julia_pull(glue('typeof({pf_obj}.states[1]);')))
+      .state <- as.character(julia_pull(glue('typeof({pf_obj}.states[1])')))
       if (!(.state %in% c("StateXY", "StateCXY"))) {
         warn("`vmap` is defined but `State` is not \"StateXY\" or \"StateXYZ\". If your model includes depth (`z`), set `vmap` to `NULL`.")
       }
@@ -125,7 +125,7 @@ pf_smoother_two_filter <- function(.n_particle = NULL,
   #### Get particles in R
   if (.collect) {
     cats$cat(paste0("... ", call_time(Sys.time(), "%H:%M:%S"), ": Collating outputs..."))
-    out <- pf_particles(.pf_obj = pf_obj, .call_start = t1)
+    out <- pf_particles(.pf_obj = pf_obj, .timeline = timeline, .call_start = t1)
   } else {
     out <- nothing()
   }
