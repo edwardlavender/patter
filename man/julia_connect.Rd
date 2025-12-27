@@ -131,12 +131,14 @@ if (patter_run(.geospatial = FALSE)) {
   # Otherwise: include JULIA options as function arguments below
 
   #### Example (1): First time use
+
   # Use `...` to customise `JuliaSwitch::julia_start()`
-  # Try `installJulia` if JULIA_BACKEND = "JuliaCall" &
+  # Try `installJulia` if JULIA_BACKEND = "JuliaCall" (default) &
   # you require a Julia installation
   # The first call to `julia_connect()` may take several minutes
-  julia_connect(installJulia = TRUE)
-  JuliaSwitch::julia_stop()
+
+  # julia_connect(installJulia = TRUE)
+  # JuliaSwitch::julia_stop()
 
   #### Example (2): Connect to `Julia` using default settings
   julia_connect()
