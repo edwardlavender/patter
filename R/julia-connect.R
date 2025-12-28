@@ -1,8 +1,7 @@
 #' @title Julia: connect `R` to `Julia`
 #' @description This function connects `R` to `Julia`.
 #'
-#' @param JULIA_HOME,JULIA_PROJ,JULIA_NUM_THREADS,JULIA_PATTER_SOURCE,JULIA_BACKEND (optional) `Julia` options, provided as function arguments, global options or environment variables.
-#' * `JULIA_HOME`---A `character` string that defines the location of the `Julia` installation (see [`JuliaSwitch::julia_start()`]). Usually, this is not required.
+#' @param JULIA_PROJ,JULIA_NUM_THREADS,JULIA_PATTER_SOURCE,JULIA_BACKEND (optional) `Julia` options, provided as function arguments, global options or environment variables.
 #' * `JULIA_PROJ`---A `character` string that defines the directory of a `Julia` Project. If unspecified, the default environment (e.g., `~/.julia/environments/v1.10/Project.toml`) is used with a [`message`] instead of a local `Julia` project.
 #' * `JULIA_NUM_THREADS`---On MacOS or Linux, `JULIA_NUM_THREADS` is a `character` (`"auto"`) or an `integer` that defines the number of threads used by multi-threaded operations in `Julia`. This defaults to `"auto"` (not `1`). This can only be set once per `R` session. On Windows, `JULIA_NUM_THREADS` must be set system-wide and use of this argument produces a [`warning`]. See this [GitHub Issue](https://github.com/edwardlavender/patter/issues/11) for instructions.
 #' * `JULIA_PATTER_SOURCE`---For advanced use only: a `character` string that defines the source of [`Patter.jl`](https://github.com/edwardlavender/Patter.jl). This may be:
@@ -45,7 +44,7 @@
 #' * If specified, `.pkg_config` is run via [`JuliaSwitch::julia_cmd()`].
 #' * [`Patter.jl`](https://github.com/edwardlavender/Patter.jl) and supporting dependencies are added or updated (if required) and loaded (optionally in the local `Julia` Project).
 #'
-#' To set `JULIA_*` options (e.g., `JULIA_HOME`, `JULIA_PROJ`, `JULIA_NUM_THREADS`), it is recommended to use `.Rprofile` or `.Renviron`. To set these options in `.Rprofile`, follow these instructions:
+#' To set `JULIA_*` options (e.g., `JULIA_HOME` or `JULIA_BINDIR`, `JULIA_PROJ`, `JULIA_NUM_THREADS`), it is recommended to use `.Rprofile` or `.Renviron`. To set these options in `.Rprofile`, follow these instructions:
 #'
 #' ```
 #' # (1) Open .Rprofile
@@ -88,8 +87,7 @@
 #' @author Edward Lavender
 #' @export
 
-julia_connect <- function(JULIA_HOME,
-                          JULIA_PROJ,
+julia_connect <- function(JULIA_PROJ,
                           JULIA_NUM_THREADS,
                           JULIA_PATTER_SOURCE,
                           JULIA_BACKEND,
@@ -120,9 +118,8 @@ julia_connect <- function(JULIA_HOME,
   #### Set up Julia
   # NB .verbose is not carried forward
   cats$cat("... Running `Julia` setup via `JuliaSwitch::julia_start()`...")
-  JULIA_NUM_THREADS <- set_JULIA_NUM_THREADS(JULIA_NUM_THREADS)
   JULIA_BACKEND     <- set_JULIA_BACKEND(JULIA_BACKEND)
-  julia             <- julia_start(..., JULIA_PROJ = JULIA_PROJ)
+  julia             <- julia_start(JULIA_PROJ = JULIA_PROJ, JULIA_NUM_THREADS = JULIA_NUM_THREADS, ...)
   Sys.setenv("JULIA_SESSION" = "TRUE")
 
   #### Test Julia
@@ -138,10 +135,6 @@ julia_connect <- function(JULIA_HOME,
                   .pkg_install = .pkg_install,
                   .pkg_update = .pkg_update,
                   .pkg_load = .pkg_load)
-
-  #### Validate Julia settings
-  nthreads <- julia_threads(JULIA_NUM_THREADS)
-  cats$cat(paste0("... `Julia` set up with ", nthreads, " thread(s)."))
 
   #### Return outputs
   invisible(julia)

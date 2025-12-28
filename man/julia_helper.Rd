@@ -21,7 +21,6 @@
 \alias{julia_pkg_version_Patter.jl}
 \alias{julia_pkg_compat}
 \alias{julia_pkg_setup}
-\alias{julia_threads}
 \alias{julia_glimpse}
 \alias{julia_print}
 \alias{julia_summary}
@@ -69,8 +68,6 @@ julia_pkg_version_Patter.jl()
 julia_pkg_compat()
 
 julia_pkg_setup(JULIA_PATTER_SOURCE, .pkg_install, .pkg_update, .pkg_load)
-
-julia_threads(JULIA_NUM_THREADS)
 
 julia_glimpse(.x)
 

@@ -79,12 +79,6 @@ test_that("Additional Julia set_*() functions work", {
   skip_on_cran()
   skip_if_not(patter_run(.julia = TRUE, .geospatial = FALSE))
 
-  # set_JULIA_NUM_THREADS()
-  JULIA_NUM_THREADS <- Sys.getenv("JULIA_NUM_THREADS")
-  set_JULIA_NUM_THREADS(Inf) |>
-    expect_warning("There are multiple values for `JULIA_NUM_THREADS`.", fixed = TRUE)
-  Sys.setenv("JULIA_NUM_THREADS" = JULIA_NUM_THREADS)
-
   # set_yobs_vect()
   dt1 <- data.table(timestamp = integer(),
                     sensor_id = integer(),

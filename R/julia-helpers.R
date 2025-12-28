@@ -379,18 +379,6 @@ julia_pkg_setup <- function(JULIA_PATTER_SOURCE,
 #' @rdname julia_helper
 #' @keywords internal
 
-# Get the number of threads used by Julia
-julia_threads <- function(JULIA_NUM_THREADS) {
-  nthreads <- julia_pull("Threads.nthreads()")
-  if (!is.null(JULIA_NUM_THREADS) && JULIA_NUM_THREADS != "auto" && nthreads != JULIA_NUM_THREADS) {
-    warn("`JULIA_NUM_THREADS` could not be set.")
-  }
-  invisible(nthreads)
-}
-
-#' @rdname julia_helper
-#' @keywords internal
-
 # Glimpse an R object in Julia
 julia_glimpse <- function(.x) {
   julia_push("x", .x)

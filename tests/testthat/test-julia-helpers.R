@@ -68,10 +68,6 @@ test_that("Julia helpers work", {
 
   #### julia_packages()
 
-  #### julia_threads()
-  julia_threads(999) |>
-    expect_warning("`JULIA_NUM_THREADS` could not be set.", fixed = TRUE)
-
   #### julia_*() display
   julia_glimpse(data.frame(x = 1))
   julia_push("x", 1)

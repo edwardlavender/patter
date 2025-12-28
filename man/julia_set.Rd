@@ -3,7 +3,6 @@
 \name{julia_set}
 \alias{julia_set}
 \alias{set_JULIA_BACKEND}
-\alias{set_JULIA_NUM_THREADS}
 \alias{set_timeline}
 \alias{set_state_type}
 \alias{set_xinit}
@@ -27,8 +26,6 @@
 \title{\code{Julia}: set objects in \code{Julia}}
 \usage{
 set_JULIA_BACKEND(JULIA_BACKEND)
-
-set_JULIA_NUM_THREADS(JULIA_NUM_THREADS)
 
 set_timeline(.timeline)
 

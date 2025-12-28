@@ -17,46 +17,6 @@ set_JULIA_BACKEND <- function(JULIA_BACKEND) {
 #' @rdname julia_set
 #' @keywords internal
 
-# Set Julia threads
-set_JULIA_NUM_THREADS <- function(JULIA_NUM_THREADS) {
-  # Get JULIA_NUM_THREADS
-  JULIA_NUM_THREADS <- julia_option(JULIA_NUM_THREADS)
-  # On unix, set JULIA_NUM_THREADS = "auto"
-  # (Otherwise, Julia is launched with one thread only)
-  if (os_unix() & is.null(JULIA_NUM_THREADS)) {
-    JULIA_NUM_THREADS <- "auto"
-  }
-  # On Windows, JULIA_NUM_THREADS should be NULL or set system-wide
-  if (os_windows()) {
-    if (is.null(JULIA_NUM_THREADS)) {
-      msg("On Windows, set `JULIA_NUM_THREADS` system-wide to improve performance (see https://github.com/edwardlavender/patter/issues/11).")
-    } else {
-      # Verify that JULIA_NUM_THREADs is set system-wide (not only in R)
-      # (System-wide variables are captured by Sys.getenv())
-      try({
-        # Obtain system-wide environment variables via registry
-        # Note this check appears to work on some, but not all, systems
-        # * Hence we use a message not a warning
-        # (system("cmd.exe /c set", intern = TRUE) inherits environment variables from R)
-        SET <- system("reg query \"HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment\" /s", intern = TRUE)
-        if (!any(grepl("JULIA_NUM_THREADS", SET))) {
-          msg("On Windows, `JULIA_NUM_THREADS` should be set system-wide (see https://github.com/edwardlavender/patter/issues/11).")
-        }
-      }, silent = TRUE)
-    }
-  }
-  # Update JULIA_NUM_THREADS setting
-  # * This is implemented on unix only
-  # * On Windows, JULIA_NUM_THREADS is already set if relevant
-  if (os_unix() & !is.null(JULIA_NUM_THREADS)) {
-    Sys.setenv(JULIA_NUM_THREADS = JULIA_NUM_THREADS)
-  }
-  invisible(JULIA_NUM_THREADS)
-}
-
-#' @rdname julia_set
-#' @keywords internal
-
 # Set a timeline in Julia
 set_timeline <- function(.timeline) {
   .timeline <- julia_timeline(.timeline)
