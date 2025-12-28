@@ -13,7 +13,7 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/patter)](https://CRAN.R-project.org/package=patter)
-![Coverage](https://img.shields.io/badge/coverage-59%25-red)
+![Coverage](https://img.shields.io/badge/coverage-58%25-red)
 [![R-CMD-check](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/edwardlavender/patter/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
@@ -57,10 +57,8 @@ The essential functions are `pf_filter()` and
 - **`pf_smoother_two_filter()`** is a particle smoothing algorithm. At
   each time step, the smoother accounts for all of the data from both
   the past *and* the future (the full marginal distribution) and
-  substantially refines maps of space use.
-
-We hope to add backward sampling algorithms to the package in due
-course.
+  substantially refines maps of space use. We hope to add backward
+  sampling algorithms to the package in due course.
 
 # Evolution
 
@@ -86,21 +84,24 @@ touch if you would like to see additional functionality brought into
 
 # Installation
 
-> **Note:** `patter` works Windows, MacOS and Linux (with some
-> restrictions). On Windows, everything *should* work if you follow the
-> instructions below. On MacOS, some additional set up (such as compiler
-> configuration) may be required, depending on your set up. On
-> Debian/Ubuntu, `patter` can be used but you cannot simultaneously use
-> geospatial routines in `R` and `Julia`. Thus, you can only call
-> `library(terra)` or `terra::foo()` and use `patter` routines that
-> exploit `terra` and other geospatial packages in `R` sessions that are
-> not connected to a `Julia` session (via `julia_connect()`). We haven’t
-> tried other Linux distributions. Package examples were written on
-> MacOS and may not run safely on Linux without modification. Check the
+> **Note:** `patter` works Windows, MacOS and Linux. On Windows,
+> everything *should* work if you follow the instructions below. On
+> MacOS, some additional set up (such as compiler configuration) may be
+> required, depending on your set up. On Debian/Ubuntu, `patter` can be
+> used but there are some restrictions if you use `JuliaCall` to connect
+> `R` to `Julia` (see below). With this backend, you generally cannot
+> simultaneously use geospatial routines in `R` and `Julia` without
+> special configuration. Thus, you can only call `library(terra)` or
+> `terra::foo()` and use `patter` routines that exploit `terra` and
+> other geospatial packages in `R` sessions that are not connected to a
+> `Julia` session (via `julia_connect()`). We haven’t tried other Linux
+> distributions. Package examples were written on MacOS with `JuliaCall`
+> and may not run safely on Linux without modification. Check the
 > function documentation for supported options and share your
-> experience. In case of issues, you should be able to use `Patter.jl`
-> directly, which on some systems may be simpler than getting `R` and
-> `Julia` to play together!
+> experience. Recently, `JuliaConnectoR` was added backend to solve
+> these challenges. Please report issues. If necessary, you should be
+> able to use `Patter.jl` directly, which on some systems may be simpler
+> than getting `R` and `Julia` to play together!
 
 1.  **Install [`R`](https://www.r-project.org)**. This package requires
     `R` version ≥ 4.1 (but the most recent version is recommended). You
@@ -200,28 +201,66 @@ On Linux, this step may require system libraries (see below).
       ```
 
 > **Note:** Install a recent `Julia` version. This README was last built
-> on 2025-12-01 with Julia 1.12.2.
+> on 2025-12-28 with Julia 1.12.3.
 
-5.  **Setup JuliaCall.** The next step is to set up `JuliaCall`, which
-    provides the integration between `R` and `Julia`.
+5.  **Setup `JuliaSwitch`.** The next step is to set up
+    [`JuliaSwitch`](https://github.com/edwardlavender/JuliaSwitch), plus
+    [`JuliaCall`](https://github.com/JuliaInterop/JuliaCall) and/or
+    [`JuliaConnectoR`](https://github.com/stefan-m-lenz/JuliaConnectoR/).
+    (This step is strictly optional, as installing `patter` and running
+    `patter::julia_connect()` should do this for you; but when setting
+    up `patter` for the first time, it is advisable to separate these
+    steps.) To connect `R` and `Julia`, `patter` uses `JuliaSwitch` .
+    This wrapper package enables users to toggle between two options
+    that interface `R` and `Julia`: `JuliaCall` and `JuliaConnectoR`.
+    When `patter` was first developed, we used `JuliaCall`. This package
+    connects `R` and `Julia` via a `C` interface, which is fast but can
+    be unstable across `Julia` versions and platforms. (We experienced
+    particular challenges on Linux when using `R` and `Julia` packages
+    that require the same dynamic libraries.) `JuliaConnectoR` is
+    another `R`–`Julia` option. Unlike `JuliaCall`, this package
+    interfaces `R` and `Julia` using Transmission Control Protocol. This
+    is a looser form of integration which trades speed for stability.
+    For recommended options on your system, see below.
 
 ``` r
-# Install the {JuliaCall} package:
-install.packages("JuliaCall")
+# Install the {JuliaSwitch} package
+# (This also installs JuliaCall and JuliaConnectoR)
+devtools::install_github("edwardlavender/JuliaConnectoR",
+                         dependencies = TRUE)
 
-# Use the development version if the CRAN version is unavailable:
+# (optional) For JuliaCall, use the development version if the CRAN version is unavailable:
 devtools::install_github("JuliaInterop/JuliaCall",
                          dependencies = TRUE)
+                         
+# (optional) For JuliaConnectoR, use the development version if the CRAN version is unavailable:
+devtools::install_github("stefan-m-lenz/JuliaConnectoR",
+                         dependencies = TRUE)
+                         
+# Load & attach package
+library(JuliaSwitch)
 ```
 
 ``` r
-# Run julia_start() to set up the Julia installation 
-# * This includes an installJulia argument if the above Julia installation options fail 
-# * Set `JULIA_HOME` if Julia is not found (see `?julia_start()`)
+# Set `Julia` backend for `JuliaSwitch` set up (one-off)
+# * `patter` was developed with `JuliaCall`, which should be fine on MacOS/Windows
+# * `JuliaConnectoR` may be more stable on Linux 
+julia_backend("JuliaCall")
+
+```r
+# Run `JuliaSwitch::julia_start()` to set up the Julia installation (one-off)
+# * Set `JULIA_HOME` (`JuliaCall`) or JULIA_BINDIR (`JuliaConnectoR`) if Julia is not found
 # * Note this may take several minutes
-# * Set `rebuild = TRUE` if you've previously used JuliaCall on an older R version
-library(JuliaSwitch)
+# * Set `rebuild = TRUE` if you're using `JuliaCall` and you previously used `JuliaCall` on an older `R` version
 julia <- julia_start()
+```
+
+``` r
+# If `JuliaSwitch` fails, try `JuliaCall::julia_setup()` directly & report issues
+julia <- julia_setup()
+
+# Or try `JuliaConnectoR::JuliaConnectoR::startJuliaServer()`
+julia <- JuliaConnectoR::startJuliaServer()
 ```
 
 ``` r
@@ -231,14 +270,10 @@ julia <- julia_start()
 isTRUE(try(julia_pull('true'), silent = TRUE))
 ```
 
-If `julia_start()` fails with `'Julia is not found'`, you should tell
-`R` the location of the `Julia` binary via `JULIA_HOME` (see
-`?JuliaSwitch::julia_start()` and the
-`JuliaCall`(https://cran.r-project.org/web/packages/JuliaCall)
-[README](https://cran.r-project.org/web/packages/JuliaCall/readme/README.html),
-as well as the relevant `patter` GitHub
-[issues](https://github.com/edwardlavender/patter/issues?q=label%3Ainstallation)
-for troubleshooting and ways to get help).
+If `julia_start()` fails with `'Julia is not found'` or similar, you
+should tell `R` the location of the `Julia` binary via `JULIA_HOME` or
+`JULIA_BINDIDR` (see `?JuliaCall::julia_setup()` or
+`JuliaConnectoR::JULIACONNECTOR_SERVER`).
 
 6.  **Install [`patter`](https://github.com/edwardlavender/patter).** To
     install `patter` from the `main` branch, use:
@@ -254,8 +289,8 @@ also installed, which are required for some functions and to build
 vignettes. This process may take several minutes. Set
 `build_vignettes = FALSE` for a faster installation.
 
-To install `patter` from the development (`dev`) branch, if available,
-use:
+To install `patter` from another branch, such as the development (`dev`)
+branch if available, use:
 
 ``` r
 devtools::install_github("edwardlavender/patter@dev", 
@@ -286,6 +321,7 @@ library(patter)
 # * Set `JULIA_HOME` if 'Julia not found'
 # * Set `JULIA_PROJ` to use a local Julia project (recommended)
 # * Set `JULIA_NUM_THREADS` to exploit multi-threading (recommended)
+# * Set `JULIA_BACKEND` to toggle between `JuliaCall` and `JuliaConnectoR`
 # * Set `.pkg_update = TRUE` if you've just installed a newer version of `patter`
 # * Set `JULIA_PATTER_SOURCE` = "dev" as well if you've installed from the `dev` branch
 # * See `julia_connect()` for further guidance
@@ -478,7 +514,7 @@ essential packages:
 
 ``` r
 library(patter)
-#> This is {patter} v.2.0.1. For an overview, see `?patter`. For support, raise an issue at https://github.com/edwardlavender/patter/issues.
+#> This is {patter} v.2.1.0. For an overview, see `?patter`. For support, raise an issue at https://github.com/edwardlavender/patter/issues.
 library(data.table)
 library(dtplyr)
 library(dplyr, warn.conflicts = FALSE)
@@ -490,6 +526,7 @@ ensure reproducibility of our simulations:
 
 ``` r
 julia_connect()
+#> ... `Julia` set up with 11 thread(s).
 julia_validate()
 set_seed(123L)
 ```
@@ -545,7 +582,7 @@ map |>
   invisible()
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" alt="" width="100%" />
 
 ## Observations
 
@@ -650,10 +687,10 @@ head(fwd$diagnostics)
 fwd$callstats
 #>              timestamp         routine n_particle n_iter    loglik convergence
 #>                 <POSc>          <char>      <int>  <int>     <num>      <lgcl>
-#> 1: 2025-12-01 16:55:04 filter: forward      10000      1 -3556.524        TRUE
+#> 1: 2025-12-28 15:12:54 filter: forward      10000      1 -3556.524        TRUE
 #>        time
 #>       <num>
-#> 1: 7.981062
+#> 1: 7.853554
 
 # Backward run
 args$.yobs      <- yobs_bwd
@@ -682,10 +719,10 @@ head(bwd$diagnostics)
 bwd$callstats
 #>              timestamp          routine n_particle n_iter    loglik convergence
 #>                 <POSc>           <char>      <int>  <int>     <num>      <lgcl>
-#> 1: 2025-12-01 16:55:12 filter: backward      10000      1 -3558.672        TRUE
+#> 1: 2025-12-28 15:13:02 filter: backward      10000      1 -3558.672        TRUE
 #>        time
 #>       <num>
-#> 1: 1.062307
+#> 1: 1.136602
 ```
 
 ## Particle smoother
@@ -726,10 +763,10 @@ head(smo$diagnostics)
 smo$callstats
 #>              timestamp              routine n_particle n_iter loglik
 #>                 <POSc>               <char>      <int>  <int>  <num>
-#> 1: 2025-12-01 16:55:14 smoother: two-filter        750     NA    NaN
+#> 1: 2025-12-28 15:13:03 smoother: two-filter        750     NA    NaN
 #>    convergence     time
 #>         <lgcl>    <num>
-#> 1:        TRUE 3.343348
+#> 1:        TRUE 3.424637
 ```
 
 ## Mapping
@@ -752,7 +789,7 @@ map_hr_home(ud, .add = TRUE)
 mtext(side = 4, "Probability density", line = -3)
 ```
 
-<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-12-1.png" alt="" width="100%" />
 
 This basic workflow is highly customisable. You have the flexibility to
 define species-specific movement models, include any type of
