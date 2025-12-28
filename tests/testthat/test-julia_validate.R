@@ -8,7 +8,6 @@ test_that("Julia validate works", {
       expect_error()
   }
 
-  julia_connect()
   julia_validate() |>
     expect_null()
 
