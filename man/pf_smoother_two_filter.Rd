@@ -79,7 +79,7 @@ if (patter_run()) {
   #### Set up example
   # Set up the particle filter with an example dataset
   # (See `?pf_filter()` for the full workflow)
-  setup <- example_setup("pf_smoother_two_filter", .connect = FALSE)
+  setup <- example_setup("pf_smoother_two_filter", .connect = TRUE)
   map   <- setup$map
   args  <- setup$pf_filter_args
   # Run the particle filter forwards
