@@ -37,7 +37,7 @@ Suggests:
     toml,
     zoo
 Remotes:
-    github::edwardlavender/JuliaSwitch
+    github::edwardlavender/JuliaSwitch@dev
 Depends: R (>= 4.1)
 Config/testthat/edition: 3
 URL: https://github.com/edwardlavender/patter/, https://edwardlavender.github.io/patter/
