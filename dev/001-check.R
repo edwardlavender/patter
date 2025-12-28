@@ -126,7 +126,7 @@ if (Sys.getenv("JULIA_NUM_THREADS") == "") {
 
 # `AUTO_INSTALL_JULIA` controls whether or not to run check that require Julia
 # On MacOS/Windows, set to AUTO_INSTALL_JULIA = "true"
-# On Linux Julia & geospatial checks cannot run simultaneously:
+# On Linux with JuliaCall, Julia & geospatial checks cannot run simultaneously:
 # (a) set to AUTO_INSTALL_JULIA = "true" and run checks
 # (b) then "false" to run remaining tests
 

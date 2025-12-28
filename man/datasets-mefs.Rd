@@ -44,7 +44,7 @@ dat_mpa(.return = c("SpatVector", "character"))
 \itemize{
 \item \code{SpatRaster} returns a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}};
 \item \code{SpatVector} returns a \code{\link[terra:SpatVector-class]{terra::SpatVector}};
-\item \code{character} returns a file path to the raster. This is the only supported option on Linux if \code{JULIA_SESSION = "TRUE"};
+\item \code{character} returns a file path to the raster. This is the best option on Linux with \code{JuliaCall} if \code{JULIA_SESSION = "TRUE"};
 }}
 }
 \description{

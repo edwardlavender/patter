@@ -11,7 +11,7 @@
 #'
 #' This function replaces [`flapper::pf_plot_map()`](https://edwardlavender.github.io/flapper/reference/pf_plot_map.html).
 #'
-#' On Linux, this function cannot be used within a `Julia` session.
+#' On Linux with `JuliaCall`, this function generally cannot be used within a `Julia` session.
 #'
 #' @return The function returns a named `list` with the following elements:
 #' * `ud`: a normalised [`terra::SpatRaster`];
@@ -102,7 +102,7 @@ map_pou <-
 #'
 #' This function replaces `flapper::kud*()` and `flapper::pf_kud*()` routines based on `adehabitatHR` (see [here](https://edwardlavender.github.io/flapper/reference/)).
 #'
-#'  On Linux, these functions cannot be used within a `Julia` session.
+#' On Linux with `JuliaCall`, these functions generally cannot be used within a `Julia` session.
 #'
 #' @references
 #' Worton, B. J. (1989). Kernel Methods for Estimating the Utilization Distribution in Home-Range Studies. Ecology 70, 164–168. doi: 10.2307/1938423
@@ -300,7 +300,7 @@ map_dens <- function(.map,
 #'
 #' @details These functions are modelled on [`flapper::map_hr_*()`](https://edwardlavender.github.io/flapper/reference/get_hr.html) functions, where full details are provided.
 #'
-#' On Linux, these functions cannot be used within a `Julia` session.
+#' On Linux with `JuliaCall`, these functions generally cannot be used within a `Julia` session.
 #'
 #' @return The functions return a [`terra::SpatRaster`]. Cells with a value of one are inside the specified range boundaries; cells with a value of zero are beyond range boundaries. If `.add` is `TRUE`, the boundaries are added to an existing plot.
 #'

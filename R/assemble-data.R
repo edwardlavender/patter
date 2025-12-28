@@ -19,7 +19,7 @@
 #' @param .mobility,.map,.threshold Shared container threshold arguments (for [`assemble_xinit_containers()`] and [`assemble_acoustics_containers()`]).
 #'  * `.mobility` is the maximum movement distance (m) between two time steps (and sets the rate of container contraction).
 #'  * `.map`, `.threshold` are distance threshold options. Specify `.map` or `.threshold`:
-#'      * `.map` is a two-column `matrix` of the four coordinates of the study area or a [`terra::SpatRaster`] or [`terra::SpatVector`] from which such a `matrix` can be obtained. On Linux, the latter two options are only possible if `JUILA_SESSION = "FALSE"`. `.threshold` is set automatically based on the distances between container centroids and the boundaries of the study area.
+#'      * `.map` is a two-column `matrix` of the four coordinates of the study area or a [`terra::SpatRaster`] or [`terra::SpatVector`] from which such a `matrix` can be obtained. On Linux with `JuliaCall`, the latter two options are often only possible if `JUILA_SESSION = "FALSE"`. `.threshold` is set automatically based on the distances between container centroids and the boundaries of the study area.
 #'      * Otherwise, `.threshold` is a `double` that defines the distance threshold.
 #'
 #' @param .xinit,.radius, Dataset arguments for [`assemble_xinit_containers()`].

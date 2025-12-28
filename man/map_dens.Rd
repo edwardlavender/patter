@@ -96,7 +96,7 @@ Coordinates and associated weights are smoothed via \code{\link[spatstat.explore
 
 This function replaces \verb{flapper::kud*()} and \verb{flapper::pf_kud*()} routines based on \code{adehabitatHR} (see \href{https://edwardlavender.github.io/flapper/reference/}{here}).
 
-On Linux, these functions cannot be used within a \code{Julia} session.
+On Linux with \code{JuliaCall}, these functions generally cannot be used within a \code{Julia} session.
 }
 \examples{
 if (patter_run(.julia = FALSE, .geospatial = TRUE)) {

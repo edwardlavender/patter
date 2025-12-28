@@ -48,7 +48,7 @@ For each \code{.step}, \code{\link[terra:plot]{terra::plot()}} is used to plot \
 
 This function replaces \href{https://edwardlavender.github.io/flapper/reference/pf_plot_history.html}{\code{flapper::pf_plot_history()}}.
 
-On Linux, this function cannot be used within a Julia session.
+On Linux with \code{JuliaCall}, this function generally cannot be used within a Julia session.
 }
 \examples{
 if (patter_run(.julia = FALSE, .geospatial = TRUE)) {

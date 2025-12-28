@@ -7,7 +7,7 @@
 This is a glossary of key arguments in \code{\link{patter}}.
 }
 \section{\code{.map}}{
-\code{.map} is \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} (supported on Windows or MacOS) or a \code{character} that defines the path to raster (supported on Windows, MacOS and Linux) to a that defines the area of interest. \code{NAs} define inhospitable regions (such as land). A planar (e.g., Universal Transverse Mercator) projection with coordinates in metres is currently required.
+\code{.map} is \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} (supported on Windows or MacOS or, if using \code{JuliaConnectoR}, Linux) or a \code{character} that defines the path to raster (supported on Windows, MacOS and Linux, via \code{JuliaCall} or \code{JuliaConnectoR}) that defines the area of interest. \code{NAs} define inhospitable regions (such as land). A planar (e.g., Universal Transverse Mercator) projection with coordinates in metres is currently required.
 }
 
 \section{\code{.model_obs}}{

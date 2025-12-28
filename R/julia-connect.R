@@ -110,9 +110,11 @@ julia_connect <- function(JULIA_HOME,
   cats <- cat_setup(.fun = "julia_connect", .verbose = .verbose)
   on.exit(eval(cats$exit, envir = cats$envir), add = TRUE)
   # Warn on Linux
-  if (os_linux() && any(c("sf", "terra") %in% loadedNamespaces())) {
-    warn("This is a Linux machine and one or more geospatial name spaces (e.g., `terra`) are loaded! Connecting to `Julia`, which simultaneously uses `Julia`'s geospatial dependencies (e.g., `GeoArrays`), is likely to crash the machine. Please report your experience. Pausing for 20 s so that you can optionally kill this process...")
-    Sys.sleep(20)
+  if (os_linux() &&
+      getOption("JuliaSwitch.backend") == "JuliaCall" &&
+      any(c("sf", "terra") %in% loadedNamespaces())) {
+    warn("This is a Linux machine and one or more geospatial name spaces (e.g., `terra`) are loaded! Connecting to `Julia` via `JuliaCall` and simultaneously using `Julia`'s geospatial dependencies (e.g., `GeoArrays`) may crash the machine. Please report your experience. Pausing for 10 s so that you can optionally kill this process...")
+    Sys.sleep(10)
   }
 
   #### Set up Julia

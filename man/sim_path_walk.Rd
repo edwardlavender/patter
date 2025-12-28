@@ -17,7 +17,7 @@ sim_path_walk(
 )
 }
 \arguments{
-\item{.map}{(optional) On Windows or MacOS, \code{.map} is a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} that defines the study area for visualisation (see \code{\link{glossary}}). This argument cannot be used on Linux. Here, \code{.map} is used to:
+\item{.map}{(optional) On Windows or MacOS, \code{.map} is a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} that defines the study area for visualisation (see \code{\link{glossary}}). This argument generally cannot be used on Linux with \code{JuliaCall}. Here, \code{.map} is used to:
 \itemize{
 \item Plot the movement path, if \code{.plot = TRUE}, via \code{\link[terra:plot]{terra::plot()}};
 }}

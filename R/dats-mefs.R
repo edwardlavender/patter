@@ -5,7 +5,7 @@
 #' @param .return A `character` that defines the object returned by [`dat_gebco()`], [`dat_coast()`] or [`dat_mpa()`]:
 #' * `SpatRaster` returns a [`terra::SpatRaster`];
 #' * `SpatVector` returns a [`terra::SpatVector`];
-#' * `character` returns a file path to the raster. This is the only supported option on Linux if `JULIA_SESSION = "TRUE"`;
+#' * `character` returns a file path to the raster. This is the best option on Linux with `JuliaCall` if `JULIA_SESSION = "TRUE"`;
 #'
 #' @details
 #'

@@ -6,13 +6,13 @@
 #' [`patter_run()`] is the main switch:
 #' * If `.julia = TRUE`, the 'switch' is off if:
 #'    * `AUTO_JULIA_INSTALL != "true"`;
-#'    * You are on a Linux platform and geospatial packages are currently in use;
-#'    * You are on a Linux platform and `.geospatial = TRUE`;
+#'    * You are on a Linux platform using `JuliaCall` and geospatial packages are currently in use;
+#'    * You are on a Linux platform using `JuliaCall` and `.geospatial = TRUE`;
 #'
 #' * Otherwise, the switch if off if:
-#'    * You are on a Linux platform, `JULIA_SESSION = "TRUE"` and `.geospatial = TRUE`;
+#'    * You are on a Linux platform using `JuliaCall`, `JULIA_SESSION = "TRUE"` and `.geospatial = TRUE`;
 #'
-#' (On Linux, geospatial libraries cannot be used simultaneously in `R` and `Julia`.)
+#' (On Linux with `JuliaCall`, geospatial libraries generally cannot be used simultaneously in `R` and `Julia` without specific configuration.)
 #'
 #' [`patter_run_expensive()`] is a subsidiary switch for particularly expensive routines:
 #' * If `PATTER_RUN_EXPENSIVE = "TRUE"`, this returns `TRUE`;
@@ -33,7 +33,7 @@
 patter_run <- function(.julia = TRUE, .geospatial = TRUE) {
 
   run       <- TRUE
-  linux_msg <- "On Linux, geospatial dependencies cannot be used in R and Julia simultaneously."
+  linux_msg <- "On Linux with `JuliaCall`, geospatial dependencies cannot be used in R and Julia simultaneously."
 
   if (.julia) {
     # Suppress Julia examples if AUTO_JULIA_INSTALL != true
@@ -41,17 +41,26 @@ patter_run <- function(.julia = TRUE, .geospatial = TRUE) {
       run <- FALSE
     }
     # On Linux, suppress Julia examples if geospatial packages in use
-    if (run & os_linux() & any(c("sf", "terra") %in% loadedNamespaces())) {
+    if (run &
+        getOption("JuliaSwitch.backend") == "JuliaCall" &
+        os_linux() &
+        any(c("sf", "terra") %in% loadedNamespaces())) {
       message(linux_msg)
       run <- FALSE
     }
-    if (run & os_linux() & .geospatial) {
+    if (run &
+        getOption("JuliaSwitch.backend") == "JuliaCall" &
+        os_linux() &
+        .geospatial) {
       message(linux_msg)
       run <- FALSE
     }
   } else {
     # On Linux, suppress pure-R geospatial examples if JULIA_SESSION = TRUE
-    if (.geospatial & os_linux() & julia_session()) {
+    if (.geospatial &
+        os_linux() &
+        getOption("JuliaSwitch.backend") == "JuliaCall" &
+        julia_session()) {
       message(linux_msg)
       run <- FALSE
     }

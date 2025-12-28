@@ -35,7 +35,7 @@ Probability-of-use is calculated via \code{\link[=.map_coord]{.map_coord()}} (an
 
 This function replaces \href{https://edwardlavender.github.io/flapper/reference/pf_plot_map.html}{\code{flapper::pf_plot_map()}}.
 
-On Linux, this function cannot be used within a \code{Julia} session.
+On Linux with \code{JuliaCall}, this function generally cannot be used within a \code{Julia} session.
 }
 \examples{
 if (patter_run(.julia = FALSE, .geospatial = TRUE)) {

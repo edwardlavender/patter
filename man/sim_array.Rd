@@ -62,7 +62,7 @@ Simulate acoustic arrays (i.e., networks of acoustic receiver(s)) on a grid.
 \details{
 This function replaces \href{https://edwardlavender.github.io/flapper/reference/sim_array.html}{\code{flapper::sim_array()}}.
 
-On Linux, this function cannot be used within a \code{Julia} session.
+On Linux with \code{JuliaCall}, this function generally cannot be used within a \code{Julia} session.
 }
 \examples{
 if (patter_run(.julia = FALSE, .geospatial = TRUE)) {

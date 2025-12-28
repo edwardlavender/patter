@@ -19,7 +19,7 @@
 #'
 #' This function replaces [`flapper::coa()`](https://edwardlavender.github.io/flapper/reference/coa.html). See  [`flapper::coa_setup_delta_t()`](https://edwardlavender.github.io/flapper/reference/coa_setup_delta_t.html) to evaluate alternative time internals.
 #'
-#' On Linux, this function cannot be used within a `Julia` session.
+#' On Linux with `JuliaCall`, this function generally cannot be used within a `Julia` session.
 #'
 #' @return The function returns a [`data.table::data.table`] with the following columns:
 #' * `{.split}`---a `character` vector that distinguishes groups, if applicable;

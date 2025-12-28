@@ -26,16 +26,16 @@ These functions switch code blocks on/off.
 \item If \code{.julia = TRUE}, the 'switch' is off if:
 \itemize{
 \item \code{AUTO_JULIA_INSTALL != "true"};
-\item You are on a Linux platform and geospatial packages are currently in use;
-\item You are on a Linux platform and \code{.geospatial = TRUE};
+\item You are on a Linux platform using \code{JuliaCall} and geospatial packages are currently in use;
+\item You are on a Linux platform using \code{JuliaCall} and \code{.geospatial = TRUE};
 }
 \item Otherwise, the switch if off if:
 \itemize{
-\item You are on a Linux platform, \code{JULIA_SESSION = "TRUE"} and \code{.geospatial = TRUE};
+\item You are on a Linux platform using \code{JuliaCall}, \code{JULIA_SESSION = "TRUE"} and \code{.geospatial = TRUE};
 }
 }
 
-(On Linux, geospatial libraries cannot be used simultaneously in \code{R} and \code{Julia}.)
+(On Linux with \code{JuliaCall}, geospatial libraries generally cannot be used simultaneously in \code{R} and \code{Julia} without specific configuration.)
 
 \code{\link[=patter_run_expensive]{patter_run_expensive()}} is a subsidiary switch for particularly expensive routines:
 \itemize{

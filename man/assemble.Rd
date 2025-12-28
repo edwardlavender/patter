@@ -73,7 +73,7 @@ assemble_containers(...)
 \item \code{.mobility} is the maximum movement distance (m) between two time steps (and sets the rate of container contraction).
 \item \code{.map}, \code{.threshold} are distance threshold options. Specify \code{.map} or \code{.threshold}:
 \itemize{
-\item \code{.map} is a two-column \code{matrix} of the four coordinates of the study area or a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} or \code{\link[terra:SpatVector-class]{terra::SpatVector}} from which such a \code{matrix} can be obtained. On Linux, the latter two options are only possible if \code{JUILA_SESSION = "FALSE"}. \code{.threshold} is set automatically based on the distances between container centroids and the boundaries of the study area.
+\item \code{.map} is a two-column \code{matrix} of the four coordinates of the study area or a \code{\link[terra:SpatRaster-class]{terra::SpatRaster}} or \code{\link[terra:SpatVector-class]{terra::SpatVector}} from which such a \code{matrix} can be obtained. On Linux with \code{JuliaCall}, the latter two options are often only possible if \code{JUILA_SESSION = "FALSE"}. \code{.threshold} is set automatically based on the distances between container centroids and the boundaries of the study area.
 \item Otherwise, \code{.threshold} is a \code{double} that defines the distance threshold.
 }
 }}

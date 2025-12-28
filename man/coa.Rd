@@ -59,7 +59,7 @@ COAs are calculated as a weighted mean of the locations of receivers at which in
 
 This function replaces \href{https://edwardlavender.github.io/flapper/reference/coa.html}{\code{flapper::coa()}}. See  \href{https://edwardlavender.github.io/flapper/reference/coa_setup_delta_t.html}{\code{flapper::coa_setup_delta_t()}} to evaluate alternative time internals.
 
-On Linux, this function cannot be used within a \code{Julia} session.
+On Linux with \code{JuliaCall}, this function generally cannot be used within a \code{Julia} session.
 }
 \examples{
 if (patter_run(.julia = FALSE, .geospatial = TRUE)) {
