@@ -133,34 +133,36 @@ test_that("julia_connect() works", {
                "https://github.com/edwardlavender/Patter.jl.git#main")
 
   # Test installation with JULIA_PATTER_SOURCE = new input & .pkg_update
-  # A) Implement update of Patter as requested via .pkg_update
-  # > "https://github.com/edwardlavender/Patter.jl.git#dev"
-  # (We have to remove the compatibility entry for Patter.jl for this.)
-  # julia_cmd('Pkg.compat("Patter");')
-  tom <- readLines(file.path(jproj, "Project.toml"))
-  tom <- toml::edit_toml(tom, "compat.Patter", NULL)
-  writeLines(tom, file.path(jproj, "Project.toml"))
-  julia_connect(JULIA_PROJ = jproj,
-                JULIA_PATTER_SOURCE = "dev", .pkg_update = "Patter",
-                .socket = TRUE)
-  expect_equal(Patter_repo_url(jproj),
-               "https://github.com/edwardlavender/Patter.jl.git#dev")
-  # B) As above, but swap to development version on file
-  tom <- toml::read_toml(file.path(jproj, "Project.toml"))
-  tom$compat$Patter <- NULL
-  toml::write_toml(tom, file.path(jproj, "Project.toml"))
-  julia_connect(JULIA_PROJ = jproj,
-                JULIA_PATTER_SOURCE = local_Patter.jl,
-                .pkg_update = "Patter",
-                .socket = TRUE)
-  expect_equal(read_pkg_metadata(jproj, "Patter")$path,
-               local_Patter.jl)
-  # C) We reset to the main branch unless specified
-  # > "https://github.com/edwardlavender/Patter.jl.git#main"
-  julia_connect(JULIA_PROJ = jproj, .pkg_update = "Patter", .socket = TRUE)
-  expect_equal(Patter_repo_url(jproj),
-               "https://github.com/edwardlavender/Patter.jl.git#main")
-  file_cleanup(jproj)
+  if (rlang::is_installed("toml")) {
+    # A) Implement update of Patter as requested via .pkg_update
+    # > "https://github.com/edwardlavender/Patter.jl.git#dev"
+    # (We have to remove the compatibility entry for Patter.jl for this.)
+    # julia_cmd('Pkg.compat("Patter");')
+    tom <- readLines(file.path(jproj, "Project.toml"))
+    tom <- toml::edit_toml(tom, "compat.Patter", NULL)
+    writeLines(tom, file.path(jproj, "Project.toml"))
+    julia_connect(JULIA_PROJ = jproj,
+                  JULIA_PATTER_SOURCE = "dev", .pkg_update = "Patter",
+                  .socket = TRUE)
+    expect_equal(Patter_repo_url(jproj),
+                 "https://github.com/edwardlavender/Patter.jl.git#dev")
+    # B) As above, but swap to development version on file
+    tom <- toml::read_toml(file.path(jproj, "Project.toml"))
+    tom$compat$Patter <- NULL
+    toml::write_toml(tom, file.path(jproj, "Project.toml"))
+    julia_connect(JULIA_PROJ = jproj,
+                  JULIA_PATTER_SOURCE = local_Patter.jl,
+                  .pkg_update = "Patter",
+                  .socket = TRUE)
+    expect_equal(read_pkg_metadata(jproj, "Patter")$path,
+                 local_Patter.jl)
+    # C) We reset to the main branch unless specified
+    # > "https://github.com/edwardlavender/Patter.jl.git#main"
+    julia_connect(JULIA_PROJ = jproj, .pkg_update = "Patter", .socket = TRUE)
+    expect_equal(Patter_repo_url(jproj),
+                 "https://github.com/edwardlavender/Patter.jl.git#main")
+    file_cleanup(jproj)
+  }
 
   #### Test .pkg_config
   if (getOption("JuliaSwitch.backend") == "JuliaCall") {
