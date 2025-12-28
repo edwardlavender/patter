@@ -1,10 +1,14 @@
-# `patter` 2.0.1
+# `patter` v2.1.0
+
+* `julia_connect()` includes `JULIA_BACKEND` argument. This enables you to toggle between `JuliaCall` and `JuliaConnectoR` as backends to connect `R` and `Julia`. See the new `JuliaSwitch` dependency for further information. The `JULIA_HOME` argument has been dropped. If needed, set `JULIA_HOME` (for `JuliaCall`) or `JULIA_BINDIR` (for `JuliaConnectoR`) as environmental variables manually. 
+
+# `patter` v2.0.1
 
 This version fixes the website documentation https://edwardlavender.github.io/patter/. 
 
 # `patter` v2.0.0
 
-`patter` v 2.0.0 includes some major internal and external changes associated with a revamp required to permit use on Linux and other improvements. There are some breaking changes in the API of some functions as a result. We have also added new data-assembly routines, such as `assemble_acoustics_containers()`, which support particle filtering, alongside additional improvements to select functions. Where required for existing code, you can continue to use `patter` v1.0.1 with [`renv`](https://rstudio.github.io/renv/articles/renv.html). 
+`patter` v2.0.0 includes some major internal and external changes associated with a revamp required to permit use on Linux and other improvements. There are some breaking changes in the API of some functions as a result. We have also added new data-assembly routines, such as `assemble_acoustics_containers()`, which support particle filtering, alongside additional improvements to select functions. Where required for existing code, you can continue to use `patter` v1.0.1 with [`renv`](https://rstudio.github.io/renv/articles/renv.html). 
 
 * **Julia setup** 
     * `julia_connect()` has been revised and enhanced. The `.threads` argument has been replaced with `JULIA_NUM_THREADS`. 
