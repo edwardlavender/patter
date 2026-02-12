@@ -143,6 +143,7 @@ julia_pkg_list_req <- function() {
     "Distributions",
     "GeoArrays",
     "JLD2",
+    "NaturalSort",
     "Patter",
     "Pkg",
     "Rasters",
