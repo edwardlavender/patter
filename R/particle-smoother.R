@@ -10,7 +10,7 @@
 #'
 #' The validity map is only set in Julia if `JULIA_SESSION = "TRUE"`.
 #'
-#' On Linux with `JuliaConnectoR`, the validity map generally cannot be created and set in the same `R` session. Running the function with `.map` and `.mobility` will create, but not set, the map. Write the map to file and then rerun the function with `.vmap` specified to set the map safely in `Julia`.
+#' On Linux with `JuliaCall`, the validity map generally cannot be created and set in the same `R` session. Running the function with `.map` and `.mobility` will create, but not set, the map. Write the map to file and then rerun the function with `.vmap` specified to set the map safely in `Julia`.
 #'
 #' @param .n_particle (optional) An `integer` that defines the number of particles to smooth.
 #' * If specified, a sub-sample of `.n_particle`s is used.
