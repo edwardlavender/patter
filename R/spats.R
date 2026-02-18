@@ -60,9 +60,10 @@ spatVmap <- function(.map, .mobility, .plot = FALSE, ...) {
   # Compute distance from points in the sea to the nearest land
   distance_from_boundary <- terra::distance(land)
   # Identify the points that are > mobility from land
-  # * Any XY movements from these points (1) are valid
-  # * Any XY movements from other points (0) require simulation
-  vmap <- distance_from_boundary > .mobility
+  # * Any XY movements from these points (1.0) are valid
+  # * Any XY movements from other points (0.0) require simulation
+  # * Note as.numeric() is required for Patter.jl extract
+  vmap <- as.numeric(distance_from_boundary > .mobility)
   if (.plot) {
     terra::plot(vmap, ...)
   }

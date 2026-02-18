@@ -62,11 +62,16 @@ set_map <- function(.x, .as_Raster = TRUE, .as_GeoArray = TRUE) {
   } else if (inherits(.x, "SpatRaster")) {
     # Abort on linux
     if (os_linux() && getOption("JuliaSwitch.backend") == "JuliaCall") {
-      abort("On Linux with `JuliaCall`, geospatial libraries in R and Julia generall cannot be used simultaneously in `R` and `Julia`. Restart `R`, connect to `Julia` and specify `.x` as a file path, not a `SpatRaster`.")
+      abort("On Linux with `JuliaCall`, geospatial libraries in R and Julia generally cannot be used simultaneously in `R` and `Julia`. Restart `R`, connect to `Julia` and specify `.x` as a file path, not a `SpatRaster`.")
     }
     # Define file
     if (terra::nlyr(.x) != 1L) {
       abort("`.x` should contain a single layer.")
+    }
+    # Force numeric (for)
+    if (!inherits(.x[1], "numeric")) {
+      warn("SpatRaster cells coerced to numeric class.")
+      .x <- terra::app(.x, as.numeric)
     }
     file <- terra::sources(.x)
     if (file == "") {
