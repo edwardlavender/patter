@@ -29,7 +29,7 @@ pf_smoother_two_filter(
 
 The validity map is only set in Julia if \code{JULIA_SESSION = "TRUE"}.
 
-On Linux with \code{JuliaConnectoR}, the validity map generally cannot be created and set in the same \code{R} session. Running the function with \code{.map} and \code{.mobility} will create, but not set, the map. Write the map to file and then rerun the function with \code{.vmap} specified to set the map safely in \code{Julia}.}
+On Linux with \code{JuliaCall}, the validity map generally cannot be created and set in the same \code{R} session. Running the function with \code{.map} and \code{.mobility} will create, but not set, the map. Write the map to file and then rerun the function with \code{.vmap} specified to set the map safely in \code{Julia}.}
 
 \item{.n_particle}{(optional) An \code{integer} that defines the number of particles to smooth.
 \itemize{
